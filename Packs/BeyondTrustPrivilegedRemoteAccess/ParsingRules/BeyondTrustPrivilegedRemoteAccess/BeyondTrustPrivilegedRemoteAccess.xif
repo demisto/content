@@ -1,0 +1,25 @@
+[INGEST:vendor="beyondtrust", product="pra", target_dataset="beyondtrust_pra_raw", no_hit=keep]
+/*  Supports RFC 5424 compatible timestamps format, which don't include a seconds fraction precision,
+    For example: "2023-07-20T11:18:59Z", or "2023-07-20T11:18:59+03:00". */ 
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)"
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0)
+| alter tmp_datetime_timestamp = if(
+    tmp_raw_timestamp ~= "Z$", parse_timestamp("%FT%XZ", tmp_raw_timestamp),
+    tmp_raw_timestamp ~= "[\+\-]\d{2}\:\d{2}$", parse_timestamp("%FT%X%Ez", tmp_raw_timestamp))
+| alter _time = tmp_datetime_timestamp
+| fields - tmp*;
+
+/* Supports RFC 5424 compatible timestamps format, which DO include a seconds fraction precision for example: 
+"2023-07-20T11:18:59.52Z", or "2023-07-20T11:18:59.52+03:00" */
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2}|Z)"
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0)
+| alter tmp_timestamp = replace(to_string(tmp_raw_timestamp), "Z", "+00:00") 
+| alter tmp_precision = arrayindex(regextract(tmp_timestamp, "\.(\d{1,6})"), 0)
+| alter tmp_precision_length = len(tmp_precision)
+| alter tmp_time = if( // adjust parsing format according to the precision length
+    tmp_precision_length = 1, parse_timestamp("%FT%H:%M:%E1S%Ez", tmp_timestamp),
+    tmp_precision_length = 2, parse_timestamp("%FT%H:%M:%E2S%Ez", tmp_timestamp),
+    tmp_precision_length = 3, parse_timestamp("%FT%H:%M:%E3S%Ez", tmp_timestamp),
+    tmp_precision_length = 6, parse_timestamp("%FT%H:%M:%E6S%Ez", tmp_timestamp))
+| alter _time = tmp_time
+| fields - tmp*;

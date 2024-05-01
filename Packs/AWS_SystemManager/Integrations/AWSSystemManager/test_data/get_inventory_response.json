@@ -1,0 +1,94 @@
+{"Entities": [
+    {
+        "Id": "i-test_1",
+        "Data": {}
+    },
+    {
+        "Id": "i-test_2",
+        "Data": {
+            "AWS:InstanceInformation": {
+                "TypeName": "AWS:InstanceInformation",
+                "SchemaVersion": "1.0",
+                "CaptureTime": "2023-07-25T16:02:02Z",
+                "Content": [
+                    {
+                        "AgentType": "amazon-ssm-agent",
+                        "AgentVersion": "agent_version",
+                        "ComputerName": "computer_name",
+                        "InstanceId": "i-test_2",
+                        "InstanceStatus": "Stopped",
+                        "IpAddress": "ip_address",
+                        "PlatformName": "Ubuntu",
+                        "PlatformType": "Linux",
+                        "PlatformVersion": "20.04",
+                        "ResourceType": "resource_type"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "Id": "i-test_3",
+        "Data": {
+            "AWS:InstanceInformation": {
+                "TypeName": "AWS:InstanceInformation",
+                "SchemaVersion": "1.0",
+                "CaptureTime": "2023-07-16T08:37:57Z",
+                "Content": [
+                    {
+                        "InstanceId": "i-test_3",
+                        "InstanceStatus": "Terminated"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "Id": "i-test_4",
+        "Data": {
+            "AWS:InstanceInformation": {
+                "TypeName": "AWS:InstanceInformation",
+                "SchemaVersion": "1.0",
+                "CaptureTime": "2023-07-25T16:01:29Z",
+                "Content": [
+                    {
+                        "AgentType": "amazon-ssm-agent",
+                        "AgentVersion": "agent_version",
+                        "ComputerName": "computer_name",
+                        "InstanceId": "i-test_4",
+                        "InstanceStatus": "Stopped",
+                        "IpAddress": "ip_address",
+                        "PlatformName": "Ubuntu",
+                        "PlatformType": "Linux",
+                        "PlatformVersion": "18.04",
+                        "ResourceType": "resource_type"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "Id": "i-test_5",
+        "Data": {
+            "AWS:InstanceInformation": {
+                "TypeName": "AWS:InstanceInformation",
+                "SchemaVersion": "1.0",
+                "CaptureTime": "2023-07-19T01:52:40Z",
+                "Content": [
+                    {
+                        "AgentType": "amazon-ssm-agent",
+                        "AgentVersion": "agent_version",
+                        "ComputerName": "computer_name",
+                        "InstanceId": "i-test_5",
+                        "InstanceStatus": "ConnectionLost",
+                        "IpAddress": "ip_address",
+                        "PlatformName": "Amazon Linux",
+                        "PlatformType": "Linux",
+                        "PlatformVersion": "2023",
+                        "ResourceType": "resource_type"
+                    }
+                ]
+            }
+        }
+    }
+]}

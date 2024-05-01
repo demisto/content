@@ -1,0 +1,43 @@
+{
+    "next": null,
+    "results": [
+        {
+            "domain": "www.character-try.xyz",
+            "port": 80,
+            "tags": [
+                "downloader",
+                "exploit",
+                "injector",
+                "spyware",
+                "sample_type:rtf_document",
+                "family:formbook",
+                "family:xloader",
+                "family:mal/generic-s"
+            ],
+            "ip_addresses": [
+                "some_ip_address"
+            ],
+            "updated_at": "2023-06-14T10:56:24Z",
+            "created_at": "2023-06-14T11:10:48.373715Z"
+        },
+        {
+            "domain": "www.character-try.xyz",
+            "port": 80,
+            "tags": [
+                "downloader",
+                "exploit",
+                "injector",
+                "spyware",
+                "sample_type:rtf_document",
+                "family:xloader",
+                "family:formbook",
+                "family:mal/generic-s"
+            ],
+            "ip_addresses": [
+                "some_ip_address"
+            ],
+            "updated_at": "2023-06-14T23:15:05Z",
+            "created_at": "2023-06-27T13:03:40.949689Z"
+        }
+    ]
+}

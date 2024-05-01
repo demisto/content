@@ -328,8 +328,49 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/trigger/pipeline'
         return self._http_request('POST', suffix, data=data)
 
+    def gitlab_cancel_pipeline(self, project_id: str, pipeline_id: str) -> dict:
+        """Cancel a pipeline on GitLab.
+
+        Args:
+            project_id: Project ID on which to cancel the pipeline.
+            pipeline_id: Pipeline ID to cancel.
+
+        Returns:
+            dict: The response in JSON format.
+        """
+        suffix = f'/projects/{project_id}/pipelines/{pipeline_id}/cancel'
+        return self._http_request('POST', suffix)
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def encode_file_path_if_needed(file_path: str) -> str:
+    """Encode the file path if not already encoded.
+
+    Args:
+        file_path (str): The file path, can be URL encoded or not.
+
+    Returns:
+        str: Return the file path as is if already URL encoded, else, returns the encoding it.
+    """
+    file_path_prefix = './' if file_path.startswith('./') else ''
+    # If starts with ./, then we don't want to encode the suffix, only the rest
+    file_path_to_encode = file_path[2:] if file_path_prefix else file_path
+    encoded_file_path = ''
+
+    # To decode file_path_to_encode
+    decoded_file_path = urllib.parse.unquote(file_path_to_encode)
+
+    if decoded_file_path == file_path_to_encode:
+        # If they are equal, that means file_path_to_encode is not encoded,
+        # since we tried to decode it, and we got the same value
+        # We can go ahead and encode it
+        encoded_file_path = urllib.parse.quote(file_path_to_encode, safe='')
+    else:
+        # file_path_to_encode is already encoded, no need to encode it
+        encoded_file_path = file_path_to_encode
+    return f"{file_path_prefix}{encoded_file_path}"
 
 
 def check_args_for_update(args: dict, optional_params: list) -> dict:
@@ -788,6 +829,8 @@ def get_raw_file_command(client: Client, args: dict[str, Any]) -> list:
     ref = args.get('ref', 'main')
     file_path = args.get('file_path', '')
     headers = ['path', 'reference', 'content']
+    if file_path:
+        file_path = encode_file_path_if_needed(file_path)
     response = client.get_raw_file_request(file_path, ref)
     outputs = {'path': file_path, 'content': response, 'ref': ref}
     human_readable = tableToMarkdown('Raw file', outputs, headers=headers)
@@ -889,6 +932,8 @@ def file_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     branch = args.get('ref', 'master')
     file_path = args.get('file_path', '')
     headers = ['FileName', 'FilePath', 'Ref', 'ContentSha', 'CommitId', 'LastCommitId', 'Size']
+    if file_path:
+        file_path = encode_file_path_if_needed(file_path)
     response = client.file_get_request(file_path, branch)
     human_readable_dict = {'FileName': response.get('file_name', ''),
                            'FilePath': response.get('file_path', ''),
@@ -933,7 +978,7 @@ def file_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
         with open(file_path_entry_id, 'rb') as f:
             file_content = f.read()
     elif file_path:
-        file_path = urllib.parse.quote(file_path, safe='')
+        file_path = encode_file_path_if_needed(file_path)
     response = client.file_create_request(file_path, branch, commit_msg, author_email, author_name,
                                           file_content, execute_filemode)
     return CommandResults(
@@ -1745,6 +1790,36 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
     )
 
 
+def gitlab_cancel_pipeline_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Cancels a GitLab pipeline.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (dict) XSOAR arguments:
+            - 'project_id': Project ID on which to cancel the pipeline.
+            - 'pipeline_id': The pipline ID to cancel.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id') or client.project_id
+    if not (pipeline_id := args.get('pipeline_id', '')):
+        return_error("The pipline id is required in order to cancel it")
+
+    response = client.gitlab_cancel_pipeline(project_id, pipeline_id)
+
+    outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+    human_readable = tableToMarkdown('GitLab Pipeline', outputs, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=human_readable
+    )
+
+
 def check_for_html_in_error(e: str):
     """
     Args:
@@ -1807,6 +1882,7 @@ def main() -> None:  # pragma: no cover
                 'gitlab-jobs-list': gitlab_jobs_list_command,
                 'gitlab-artifact-get': gitlab_artifact_get_command,
                 'gitlab-trigger-pipeline': gitlab_trigger_pipeline_command,
+                'gitlab-cancel-pipeline': gitlab_cancel_pipeline_command,
                 }
 
     try:

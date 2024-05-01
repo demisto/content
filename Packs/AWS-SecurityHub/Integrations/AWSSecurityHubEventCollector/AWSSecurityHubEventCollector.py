@@ -1,15 +1,17 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import datetime as dt
-import urllib3
-from typing import Iterator
+from typing import TYPE_CHECKING, cast
+from collections.abc import Iterator
 
 from AWSApiModule import *
 
-import boto3
+# The following import are used only for type hints and autocomplete.
+# It is not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_securityhub import SecurityHubClient
+    from mypy_boto3_securityhub.type_defs import AwsSecurityFindingTypeDef
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
@@ -20,7 +22,7 @@ DEFAULT_MAX_RESULTS = 1000
 API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
 
 
-def generate_last_run(events: list[dict]) -> dict:
+def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, Any]:
     """
     Generate the last run object using events data.
 
@@ -38,6 +40,8 @@ def generate_last_run(events: list[dict]) -> dict:
     ignore_list: list[str] = []
     last_update_date = events[-1].get(TIME_FIELD)
 
+    # Since the "_time" key is added to each event, the event type changes from "AwsSecurityFindingTypeDef" to just dict
+    events = cast(list[dict[str, Any]], events)
     for event in events:
         event['_time'] = event[TIME_FIELD]
 
@@ -50,14 +54,14 @@ def generate_last_run(events: list[dict]) -> dict:
     }
 
 
-def get_events(client: boto3.client, start_time: dt.datetime | None = None,
+def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = None,
                end_time: dt.datetime | None = None, id_ignore_list: list[str] | None = None,
-               page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[list[dict]]:
+               page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[List["AwsSecurityFindingTypeDef"]]:
     """
     Fetch events from AWS Security Hub.
 
     Args:
-        client (boto3.client): Boto3 client to use.
+        client (SecurityHubClient): Boto3 client to use.
         start_time (datetime | None, optional): Start time to fetch events from. Required if end_time is set.
         end_time (datetime | None, optional): Time to fetch events until. Defaults to current time.
         id_ignore_list (list[str] | None, optional): List of finding IDs to not include in the results.
@@ -84,9 +88,9 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
         }]
 
     if id_ignore_list:
-        ignore_filters = [{'Value': event_id, 'Comparison': 'NOT_EQUALS'} for event_id in id_ignore_list]
-
-        filters['Id'] = ignore_filters
+        id_ignore_set = set(id_ignore_list)
+    else:
+        id_ignore_set = set()
 
     if filters:
         # We send kwargs because passing Filters=None to get_findings() tries to use a None value for filters,
@@ -104,6 +108,10 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
 
         response = client.get_findings(**kwargs)
         result = response.get('Findings', [])
+
+        # Filter out events based on id_ignore_set
+        result = [event for event in result if event['Id'] not in id_ignore_set]
+
         count += len(result)
         yield result
 
@@ -114,13 +122,14 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
             break
 
 
-def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.datetime | None,
-                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], dict, Exception | None]:
+def fetch_events(client: "SecurityHubClient", last_run: dict, first_fetch_time: dt.datetime | None,
+                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0
+                 ) -> tuple[list["AwsSecurityFindingTypeDef"], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
     Args:
-        client (boto3.client): Boto3 client to use.
+        client (SecurityHubClient): Boto3 client to use.
         last_run (dict): Dict containing the last fetched event creation time.
         first_fetch_time (datetime | None, optional): In case of first fetch, fetch events from this datetime.
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
@@ -134,7 +143,7 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
 
     id_ignore_list: list = last_run.get('last_update_date_finding_ids', [])
 
-    events = []
+    events: list["AwsSecurityFindingTypeDef"] = []
     error = None
 
     try:
@@ -161,13 +170,13 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
     return events, next_run, error
 
 
-def get_events_command(client: boto3.client, should_push_events: bool,
+def get_events_command(client: "SecurityHubClient", should_push_events: bool,
                        page_size: int, limit: int = 0) -> CommandResults:
     """
     Fetch events from AWS Security Hub.
 
     Args:
-        client (boto3.client): Boto3 client to use.
+        client (SecurityHubClient): Boto3 client to use.
         should_push_events (bool): Whether to push events to XSIAM.
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
@@ -241,7 +250,7 @@ def main():  # pragma: no cover
             retries=retries,
         )
 
-        client = aws_client.aws_session(
+        client: "SecurityHubClient" = aws_client.aws_session(
             service='securityhub',
             region=aws_default_region,
             role_arn=aws_role_arn,

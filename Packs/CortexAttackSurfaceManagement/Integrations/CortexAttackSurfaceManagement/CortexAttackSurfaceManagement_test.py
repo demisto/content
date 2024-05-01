@@ -22,7 +22,8 @@ from test_data.raw_response import (
     RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200,
     RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200,
     RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200,
-    RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200
+    RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200,
+    ASM_GET_ATTACK_SURFACE_RULE_RESPONSE
 )
 from test_data.expected_results import (
     EXTERNAL_EXPOSURES_RESULTS,
@@ -39,7 +40,8 @@ from test_data.expected_results import (
     RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESULTS_200,
     RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200,
     RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200,
-    RCS_GET_SCAN_STATUS_OTHER_RESULTS_200
+    RCS_GET_SCAN_STATUS_OTHER_RESULTS_200,
+    ASM_GET_ATTACK_SURFACE_RULE_RESULTS
 )
 
 client = Client(
@@ -90,6 +92,8 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch('CortexAttackSurfaceManagement.Client.list_external_service_request',
                  return_value=EXTERNAL_SERVICE_RESPONSE)
+    mocker.patch('CortexAttackSurfaceManagement.Client.get_attack_surface_rule_request',
+                 return_value=ASM_GET_ATTACK_SURFACE_RULE_RESPONSE)
 
     main()
     assert demisto.results.call_count == 1
@@ -166,10 +170,38 @@ def test_list_external_service_command(requests_mock):
     }
 
     response = list_external_service_command(args=args, client=client)
-
     assert response.outputs == EXTERNAL_SERVICES_RESULTS
     assert response.outputs_prefix == "ASM.ExternalService"
     assert response.outputs_key_field == "service_id"
+
+
+def test_get_attack_surface_rule_command(requests_mock):
+    """Tests get_attack_surface_rule_command command function.
+
+    Given:
+        - requests_mock instance to generate the appropriate get_attack_surface_rule_command API response,
+          loaded from a local JSON file.
+    When:
+        - Running the 'get_attack_surface_rule_command'.
+    Then:
+        - Checks the output of the command function with the expected output.
+    """
+    from CortexAttackSurfaceManagement import get_attack_surface_rule_command
+
+    requests_mock.post(
+        "https://test.com/api/webapp/public_api/v1/get_attack_surface_rules/",
+        json=ASM_GET_ATTACK_SURFACE_RULE_RESPONSE,
+    )
+
+    args = {
+        "attack_surface_rule_id": "RdpServer",
+        "enabled_status": "ON",
+        "priority": "High",
+        "category": "Attack Surface Reduction"
+    }
+
+    response = get_attack_surface_rule_command(args=args, client=client)
+    assert response.outputs == ASM_GET_ATTACK_SURFACE_RULE_RESULTS
 
 
 def test_get_external_service_command(requests_mock):

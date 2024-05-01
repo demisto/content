@@ -1,6 +1,6 @@
 import pytest
-from TrendMicroCAS import Client, security_events_list_command, email_sweep_command, parse_date_to_isoformat,\
-    user_take_action_command, email_take_action_command, user_action_result_command, blocked_lists_get_command,\
+from TrendMicroCAS import Client, security_events_list_command, email_sweep_command, parse_date_to_isoformat, \
+    user_take_action_command, email_take_action_command, user_action_result_command, blocked_lists_get_command, \
     blocked_lists_update_command
 import datetime
 import test_data.commands_raw_response as data

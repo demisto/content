@@ -1,0 +1,28 @@
+{
+    "app": {
+      "id": "1111"
+    },
+    "attack_template": {
+      "id": "1111"
+    },
+    "assignment": {
+      "environment": "CLOUD",
+      "id": "1111",
+      "type": "ENGINE_GROUP"
+    },
+    "name": "string",
+    "description": "string",
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ],
+    "id": "1111",
+    "incremental": true,
+    "errors": [
+      "string"
+    ]
+  }

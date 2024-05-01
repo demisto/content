@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 import uuid
 
@@ -32,9 +32,9 @@ class Client(BaseClient):
     """Client class to interact with Cisco SMA API."""
 
     def __init__(
-        self, server_url: str, username: str, password: str, verify: bool, proxy: bool
+        self, server_url: str, username: str, password: str, verify: bool, proxy: bool, timeout: None | int = 60
     ):
-        super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy)
+        super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy, timeout=timeout)
         self.username = username
         self.password = password
         self.handle_request_headers()
@@ -73,7 +73,7 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if e.res.status_code == 401:
+            if hasattr(e.res, 'status_code') and e.res.status_code == 401:
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
                 )
@@ -460,7 +460,7 @@ class Client(BaseClient):
             **format_custom_query_args(custom_query),
         )
 
-        return self._http_request("GET", "message-tracking/messages", params=params)
+        return self._http_request("GET", "message-tracking/messages", params=params, params_parser=urllib.parse.quote)
 
     def message_details_get_request(
         self,
@@ -614,12 +614,9 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
     try:
         if custom_query:
-            return {
-                key: value
-                for key, value in (
-                    field.split("=") for field in custom_query.split(";")
-                )
-            }
+            return dict(
+                field.split("=") for field in custom_query.split(";")
+            )
         else:
             return {}
     except ValueError:
@@ -769,7 +766,7 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
     return args
 
 
-def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tuple:
+def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tuple:
     """
     Executing Manual Pagination (using the page and page size arguments)
     or Automatic Pagination (display a number of total results).
@@ -1854,7 +1851,7 @@ def main() -> None:
     filter_value = params.get("filter_value")
     recipient_filter_operator = params.get("recipient_filter_operator")
     recipient_filter_value = params.get("recipient_filter_value")
-
+    timeout = arg_to_number(params.get("timeout"))
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -1883,6 +1880,7 @@ def main() -> None:
             password,
             verify_certificate,
             proxy,
+            timeout=timeout
         )
 
         if command == "test-module":

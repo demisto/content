@@ -133,7 +133,7 @@ class TestHelperFunctions:
             assert get_indicator_object(ind_val, ind_type, dbot_score) == output
         else:
             assert get_indicator_object(ind_val, ind_type, dbot_score).to_context() == \
-                   output.to_context()
+                output.to_context()
 
     @pytest.mark.parametrize('items_list, ret_type, keys, output', [
         ([{'value': 1, 'name': 2}], 'str', 'value', '1'),
@@ -215,3 +215,39 @@ def test_bang_commands(mocker, indicators_type, values):
 
     results = demisto.results.call_args[0][0]
     assert len(results) == len(values.split(','))
+
+
+@pytest.mark.parametrize("args, excepted", [({}, False), ({"display_full_fields": True}, True)])
+def test_cs_acotrs(mocker, args, excepted):
+    """
+    Given:
+    - The args object with or without the display_full_fields argument.
+
+    When:
+    - Running cs_actors.
+
+    Then:
+    - Ensure we add the fields query param in case the argument is True.
+    """
+    mock_request = mocker.patch.object(CrowdStrikeClient, "http_request")
+    client = Client(params={})
+    client.cs_actors(args=args)
+    assert ("fields=__full__" in mock_request.call_args[1]["url_suffix"]) == excepted
+
+
+@pytest.mark.parametrize("args, excepted", [({}, False), ({"display_full_fields": True}, True)])
+def test_cs_reports(mocker, args, excepted):
+    """
+    Given:
+    - The args object with or without the display_full_fields argument.
+
+    When:
+    - Running cs_reports.
+
+    Then:
+    - Ensure we add the fields query param in case the argument is True.
+    """
+    mock_request = mocker.patch.object(CrowdStrikeClient, "http_request")
+    client = Client(params={})
+    client.cs_reports(args=args)
+    assert ("fields=__full__" in mock_request.call_args[1]["url_suffix"]) == excepted

@@ -138,6 +138,9 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | keyFindings | The Key Findings for the investigation | False |
 | type | The investigation type [Default: SECURITY_INVESTIGATION] | False |
 | assigneeId | The assignee for the investigation [Default: @secureworks] | False |
+| serviceDeskId | A 3rd party ticket number for tracking purposes | False |
+| serviceDeskType | The type of 3rd party ticket number | False |
+| tags | A list of tags to add to the investigation [Default: []] | False |
 
 #### Command Example
 
@@ -773,6 +776,9 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | prioirity | The priority of the Investigation (1-5) | False |
 | status | The current status of the Investigation | False |
 | assigneeId | The id of a user to assign, in `auth0|12345` format | False |
+| serviceDeskId | A 3rd party ticket number for tracking purposes | False |
+| serviceDeskType | The type of 3rd party ticket number | False |
+| tags | A list of tags to add to the investigation [Default: []] | False |
 
 Note: At least 1 of the above inputs (in addition to id) must be defined
 

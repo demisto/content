@@ -237,11 +237,11 @@ tasks:
           transformers:
           - operator: uniq
       MD5:
-        simple: B10CB004D83B2347343FF5E3718BBDFE
+        simple: B4EA38EB798EA1C1E067DFD176B882BB
       Path:
         simple: C:\\Windows\\system32\\drivers\\etc\\HOSTS
       SHA256:
-        simple: 6bc2aa391b8ef260e79b99409e44011874630c2631e4487e82b76e5cb0a49307
+        simple: 055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE
     separatecontext: true
     continueonerrortype: ""
     loop:

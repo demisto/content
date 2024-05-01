@@ -22,6 +22,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
     | Defines Alert severity to fetch. |  | False |
     | Define which Alerts should be fetched. |  | False |
+    | Define which Threats should be fetched. |  | False |
     | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
     | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
     | Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
@@ -52,13 +53,14 @@ Returns all agents that match the specified criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_name | The computer name by which to filter the results. | Optional | 
+| computer_name | The computer name by which to filter the results. It can match a partial computer name value (substring). | Optional | 
 | scan_status | A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted". Possible values are: started, none, finished, aborted. | Optional | 
 | os_type | Included operating system types, for example: "windows". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
 | created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | min_active_threats | Minimum number of threats per agent. | Optional | 
 | limit | The maximum number of agents to return. Default is 10. | Optional | 
 | params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd. | Optional | 
+| columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
 
@@ -148,7 +150,7 @@ Lists all exclusion items that match the specified input filter.
 ### sentinelone-get-hash
 
 ***
-Gets the file reputation by a SHA1 hash.
+Gets the file reputation verdict by a SHA1 hash.
 
 #### Base Command
 
@@ -165,6 +167,7 @@ Gets the file reputation by a SHA1 hash.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Hash.Rank | Number | The hash reputation \(1-10\). | 
+| SentinelOne.Hash.Verdict | String | The hash reputation verdict. | 
 | SentinelOne.Hash.Hash | String | The content hash. | 
 
 ### sentinelone-get-threats
@@ -193,7 +196,9 @@ Returns threats according to the specified filters.
 | threat_ids | A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915". | Optional | 
 | classifications | A comma-separated list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
 | rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
-| site_ids | A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915". | Optional | 
+| site_ids | A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915". | Optional |
+| incident_statuses | Incident status. Example: "IN_PROGRESS, UNRESOLVED". | Optional |
+| include_resolved_param | Whether to include the resolved parameter in the query. Possible values are: false, true. Default is false. | Optional | 
 
 #### Context Output
 
@@ -286,7 +291,7 @@ Applies a mitigation action to a group of threats that match the specified input
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.Mitigated | Boolean | Whether the threat was successfully mitigated. | 
-| SentinelOne.Threat.Mitigation.Action | Number | Number of threats affected. | 
+| SentinelOne.Threat.Mitigation.Action | String | The mitigation action performed. | 
 
 ### sentinelone-resolve-threat
 
@@ -670,6 +675,7 @@ Returns all Deep Visibility events that match the query.
 | limit | Maximum number of items to return (1-100). Default is 50. | Optional | 
 | query_id | QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3". | Required | 
 | cursor | Cursor pointer to get next page of results from query. | Optional | 
+| columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
 
@@ -1741,6 +1747,61 @@ Returns network interface details for a given Agent ID. This includes MAC addres
 | SentinelOne.MAC.ip | string | IP Address | 
 | SentinelOne.MAC.mac | string | MAC Address | 
 
+### sentinelone-get-accounts
+
+***
+Returns details of accounts.
+
+#### Base Command
+
+`sentinelone-get-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | Can filter on one account ID. Otherwise, it returns information from all accounts. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Accounts.AccountType | string | The account type. | 
+| SentinelOne.Accounts.ActiveAgents | number | The account number of active agents. | 
+| SentinelOne.Accounts.NumberOfSites | number | The account number of sites. | 
+| SentinelOne.Accounts.State | string | The account state. | 
+| SentinelOne.Accounts.CreatedAt | string | The account creation date. | 
+| SentinelOne.Accounts.Expiration | string | The account expiration date. | 
+| SentinelOne.Accounts.ID | string | The account ID. | 
+| SentinelOne.Accounts.Name | string | The account name. | 
+
+### sentinelone-get-threat-notes
+
+***
+Returns threat notes.
+
+#### Base Command
+
+`sentinelone-get-threat-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | The ID of the threat. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Notes.CreatedAt | string | The note creation date. | 
+| SentinelOne.Notes.Creator | string | The note creator. | 
+| SentinelOne.Notes.CreatorID | string | The note creator ID. | 
+| SentinelOne.Notes.Edited | boolean | Whether the note was edited or not.. | 
+| SentinelOne.Notes.ID | string | The note ID. | 
+| SentinelOne.Notes.Text | string | The note text. | 
+| SentinelOne.Notes.UpdatedAt | string | The note updated time. | 
+
 ### Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne v2 corresponding events (available from Cortex XSOAR version 6.0.0).
@@ -1757,4 +1818,5 @@ To set up the mirroring:
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SentinelOne v2.

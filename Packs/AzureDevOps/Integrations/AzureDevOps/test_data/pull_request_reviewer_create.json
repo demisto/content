@@ -1,0 +1,33 @@
+{
+    "_links": {
+        "avatar": {
+            "href": ""
+        }
+    },
+    "displayName": "TEST",
+    "hasDeclined": false,
+    "id": "TEST",
+    "imageUrl": "",
+    "isFlagged": false,
+    "reviewerUrl": "",
+    "uniqueName": "",
+    "url": "",
+    "vote": 0,
+    "votedFor": [
+        {
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "displayName": "",
+            "id": "",
+            "imageUrl": "",
+            "isContainer": true,
+            "reviewerUrl": "",
+            "uniqueName": "",
+            "url": "",
+            "vote": 0
+        }
+    ]
+}

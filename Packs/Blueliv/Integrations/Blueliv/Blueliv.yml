@@ -37,7 +37,7 @@ script:
     name: blueliv-get-attackingips-feed
   - description: 'Data related to the number of hacktivism tweets recently created. Blueliv provides two types of feeds: the first one contains the most popular hacktivism hashtags and the second one contains the countries where more number of hacktivism tweets are coming from.'
     name: blueliv-get-hacktivism-feed
-  dockerimage: demisto/blueliv:1.0.0.52588
+  dockerimage: demisto/blueliv:1.0.0.76921
   runonce: false
   script: ''
   type: python

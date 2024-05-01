@@ -1,0 +1,97 @@
+{
+    "id": 21,
+    "rev": 5,
+    "fields": {
+        "System.AreaPath": "DevOpsDemo",
+        "System.TeamProject": "DevOpsDemo",
+        "System.IterationPath": "DevOpsDemo",
+        "System.WorkItemType": "Task",
+        "System.State": "Doing",
+        "System.Reason": "Started",
+        "System.AssignedTo": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.CreatedDate": "2023-07-17T13:11:41.573Z",
+        "System.CreatedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.ChangedDate": "2023-07-17T13:22:46.127Z",
+        "System.ChangedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.CommentCount": 0,
+        "System.Title": "Test",
+        "Microsoft.VSTS.Common.StateChangeDate": "2023-07-17T13:13:50.61Z",
+        "Microsoft.VSTS.Common.ActivatedDate": "2023-07-17T13:13:50.61Z",
+        "Microsoft.VSTS.Common.ActivatedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "Microsoft.VSTS.Common.Priority": 2,
+        "System.Description": "",
+        "System.Tags": ""
+    },
+    "_links": {
+        "self": {
+            "href": ""
+        },
+        "workItemUpdates": {
+            "href": ""
+        },
+        "workItemRevisions": {
+            "href": ""
+        },
+        "workItemComments": {
+            "href": ""
+        },
+        "html": {
+            "href": ""
+        },
+        "workItemType": {
+            "href": ""
+        },
+        "fields": {
+            "href": ""
+        }
+    },
+    "url": ""
+}

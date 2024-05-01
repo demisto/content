@@ -15,40 +15,40 @@ enabled: true
 args:
 - name: summary
   required: true
-  description: Summary of the issue, a mandatory field
+  description: Summary of the issue, a mandatory field.
 - name: projectKey
-  description: Project key to associate the issue
+  description: Project key to associate the issue.
 - name: issueTypeName
-  description: Choose issue type by name - e.g. Problem
+  description: Choose issue type by name - e.g. Problem.
 - name: issueTypeId
-  description: Choose issue type by its numeric ID
+  description: Choose issue type by its numeric ID.
 - name: projectName
-  description: Project name to associate the issue
+  description: Project name to associate the issue.
 - name: description
-  description: Issue description
+  description: Issue description.
 - name: labels
-  description: 'comma separated list of labels'
+  description: 'comma separated list of labels.'
   isArray: true
 - name: priority
   description: priority name, e.g. High/Medium.
 - name: dueDate
-  description: Due date for the issue, in format YYYY-MM-DD
+  description: Due date for the issue, in format YYYY-MM-DD.
 - name: assignee
-  description: assignee name
+  description: assignee name.
 - name: reporter
-  description: reporter name
+  description: reporter name.
 - name: parentIssueKey
-  description: Parent issue key if you create a sub-task
+  description: Parent issue key if you create a sub-task.
 - name: parentIssueId
-  description: Parent issue ID if you create a sub-task
+  description: Parent issue ID if you create a sub-task.
 - name: customFields
-  description: Comma-separated custom field keys and values to include in the created incident, e.g. `customfield_10101=foo,customfield_10102=bar`
+  description: Comma-separated custom field keys and values to include in the created incident, e.g. `customfield_10101=foo,customfield_10102=bar`.
   isArray: true
 outputs:
 - contextPath: Ticket.Id
-  description: Id of ticket
+  description: Id of ticket.
 - contextPath: Ticket.Key
-  description: Key of ticket
+  description: Key of ticket.
 scripttarget: 0
 dependson:
   must:
@@ -56,4 +56,4 @@ dependson:
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255

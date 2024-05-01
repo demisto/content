@@ -1,0 +1,62 @@
+{
+    "mapping_with_date_time_format": {
+        "my_index": {
+            "mappings": {
+                "properties": {
+                    "created_at": {
+                        "type": "date",
+                        "format": "yyyy-MM-dd HH:mm:ss"
+                    }
+                }
+            }
+        },
+        "my_index1": {
+            "mappings": {
+                "properties": {
+                    "created_at": {
+                        "type": "date",
+                        "format": "yyyy-MM-dd"
+                    }
+                }
+            }
+        },
+        "my_index2": {
+            "mappings": {
+                "properties": {
+                    "content": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+    },
+    "mapping_without_date_time_format": {
+        "my_index": {
+            "mappings": {
+                "properties": {
+                    "created_at": {
+                        "type": "date"
+                    }
+                }
+            }
+        },
+        "my_index1": {
+            "mappings": {
+                "properties": {
+                    "created_at": {
+                        "type": "date"
+                    }
+                }
+            }
+        },
+        "my_index2": {
+            "mappings": {
+                "properties": {
+                    "content": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+    }
+}

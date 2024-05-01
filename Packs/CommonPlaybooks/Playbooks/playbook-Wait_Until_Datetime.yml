@@ -214,6 +214,8 @@ tasks:
               by:
                 value:
                   simple: '60'
+          - operator: round
+          - operator: Stringify
     reputationcalc: 1
     separatecontext: false
     view: |-

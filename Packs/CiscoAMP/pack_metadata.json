@@ -16,5 +16,9 @@
     "githubUser": [],
     "certification": "certified",
     "hidden": true,
-    "deprecated": true
+    "deprecated": true,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

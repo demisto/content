@@ -1,28 +1,24 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from PyPDF2 import PdfReader, PdfWriter
+from pikepdf import Pdf, PasswordError
 
 
-def unlock_pdf(entry_id):
-    res = demisto.getFilePath(entry_id)
+def unlock_pdf(args: dict):
+    res = demisto.getFilePath(args.get('entryID'))
     origin_path = res['path']
     output_name = "UNLOCKED_" + res['name']
 
-    input1 = PdfReader(open(origin_path, "rb"))
-    input1.decrypt(str(demisto.args()["password"]))
-
-    output = PdfWriter()
-    for pageNum in range(0, len(input1.pages)):
-        output.add_page(input1.pages[pageNum])
-    with open(output_name, "wb") as pf:
-        output.write(pf)
-
-    demisto.results(file_result_existing_file(output_name))
+    try:
+        with Pdf.open(origin_path, password=str(args.get("password"))) as unlocked_pdf:
+            unlocked_pdf.save(output_name)
+        return_results(file_result_existing_file(output_name))
+    except PasswordError:
+        return_error("Incorrect password. Please provide the correct password.")
 
 
 def main():
-    entry_id = demisto.args()['entryID']
-    unlock_pdf(entry_id)
+    args = demisto.args()
+    unlock_pdf(args)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

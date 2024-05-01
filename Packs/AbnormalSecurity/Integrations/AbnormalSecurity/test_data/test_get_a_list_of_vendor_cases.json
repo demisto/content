@@ -1,0 +1,14 @@
+{
+    "vendorCases": [
+        {
+            "vendorCaseId": 123
+        },
+        {
+            "vendorCaseId": 456
+        },
+        {
+            "vendorCaseId": 789
+        }
+    ],
+    "pageNumber": 1
+}

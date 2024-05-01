@@ -1,10 +1,10 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
 from google.cloud import storage
-from typing import Any, Dict
+from typing import Any
 import requests
 import traceback
 import urllib3
@@ -83,7 +83,7 @@ def ec_key(path, *merge_by):
             js_condition += ' && '
         js_condition += 'val.{0} && val.{0} === obj.{0}'.format(key)
 
-    return '{}({})'.format(path, js_condition)
+    return f'{path}({js_condition})'
 
 
 def reformat_datetime_str(dt_str):
@@ -103,7 +103,7 @@ def human_readable_table(title, contents):
     def header_transform(header):
         return re.sub(r'([a-z])([A-Z])', '\\1 \\2', header)
 
-    first_dict: Dict[str, Any] = {}
+    first_dict: dict[str, Any] = {}
     if isinstance(contents, list) and contents:
         first_dict = contents[0]
     elif isinstance(contents, dict):
@@ -122,9 +122,9 @@ def format_error(exc):
         class_name = exc.__class__.__name__
         details = str(exc)
         if isinstance(exc, BaseException) and details:
-            msg = '{}: {}'.format(class_name, details)
+            msg = f'{class_name}: {details}'
         else:
-            msg += ' ({})'.format(details if details else class_name)
+            msg += f' ({details if details else class_name})'
 
     return msg
 
@@ -189,8 +189,13 @@ def gcs_create_bucket(client, args):
     bucket_name = args['bucket_name']
     bucket_acl = args.get('bucket_acl', '')
     default_object_acl = args.get('default_object_acl', '')
+    location = args.get('location')
+    uniform_bucket_level_access = argToBoolean(args.get('uniform_bucket_level_access'))
 
-    bucket = client.create_bucket(bucket_name)
+    bucket = client.create_bucket(bucket_name, location=location)
+    if uniform_bucket_level_access:
+        bucket.iam_configuration.uniform_bucket_level_access_enabled = True
+        bucket.patch()
     if bucket_acl:
         bucket.acl.save_predefined(bucket_acl)
     if default_object_acl:
@@ -258,10 +263,23 @@ def upload_blob(client, file_path, bucket_name, object_name):
     return blob
 
 
+def copy_blob(client, source_bucket_name, destination_bucket_name, source_object_name, destination_object_name):
+    source_bucket = client.get_bucket(source_bucket_name)
+    destination_bucket = client.get_bucket(destination_bucket_name)
+    source_blob = source_bucket.blob(source_object_name)
+    destination_blob_name = destination_object_name
+
+    blob_copy = source_bucket.copy_blob(source_blob, destination_bucket, destination_blob_name)
+
+    return blob_copy
+
+
 def gcs_list_bucket_objects(client, default_bucket, args):
     bucket_name = get_bucket_name(args, default_bucket)
+    prefix = args.get('prefix', None)
+    delimiter = args.get('delimiter', None)
 
-    blobs = client.list_blobs(bucket_name)
+    blobs = client.list_blobs(bucket_name, prefix=prefix, delimiter=delimiter)
     result = [blob2dict(blob) for blob in blobs]
 
     return_outputs(
@@ -300,6 +318,21 @@ def gcs_upload_file(client, default_bucket, args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': f'File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}'
+    })
+
+
+def gcs_copy_file(client, default_bucket, args):
+    source_object_name = args['source_object_name']
+    source_bucket_name = args.get('source_bucket_name', default_bucket)
+    destination_bucket_name = args['destination_bucket_name']
+    destination_object_name = args.get('destination_object_name', source_object_name)
+
+    copy_blob(client, source_bucket_name, destination_bucket_name, source_object_name, destination_object_name)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': f'File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}'
     })
 
 
@@ -543,6 +576,9 @@ def main():
 
         elif command == 'gcs-upload-file':
             gcs_upload_file(client, default_bucket, args)
+
+        elif command == 'gcs-copy-file':
+            gcs_copy_file(client, default_bucket, args)
 
         #
         # Bucket policy (ACL)

@@ -53,12 +53,13 @@ parameters:
   node-orb-version:
     type: string
     default: "5.0.1" # disable-secrets-detection
-  
+
 references:
   environment: &environment
     environment:
-      # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
+      # A flag for the demisto_client to not cache its last response in order to avoid memory leaks.
       DONT_CACHE_LAST_RESPONSE: "true"
+      DEMISTO_SDK_LOG_FILE_SIZE: 1073741824  # 1GB
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
@@ -68,9 +69,9 @@ references:
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
-  
+
   install_build_dependencies: &install_build_dependencies
-    python/install-packages: 
+    python/install-packages:
         pkg-manager: "poetry"
         args: "--with ci"
         cache-version: << pipeline.parameters.cache-version >>
@@ -86,30 +87,36 @@ references:
 
   install_neo4j: &install_neo4j
     run:
-      name: Install Neo4j
-      command: |
-        wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
-        echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
-        sudo apt-get update
-        apt list -a neo4j
-        sudo apt-get install neo4j
-        sudo chown -R circleci /var/log/neo4j
-        sudo chown -R circleci /var/lib/neo4j
-        sudo chown -R circleci /etc/neo4j
-        mkdir -p /var/lib/neo4j/plugins
-        wget -O /var/lib/neo4j/plugins/apoc-5.5.0-core.jar https://github.com/neo4j/apoc/releases/download/5.5.0/apoc-5.5.0-core.jar
-        neo4j_conf_file="/etc/neo4j/neo4j.conf"
-        sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
-        sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
-        apoc_conf_file="/etc/neo4j/apoc.conf"
-        sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
-        sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
-        sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
-        neo4j-admin dbms set-initial-password contentgraph
+        name: Install Neo4j
+        command: |
+          sudo add-apt-repository -y ppa:openjdk-r/ppa
+          sudo apt-get update
+
+          wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
+          echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
+          sudo apt-get update
+          apt list -a neo4j
+          # The neo4j version should be consistent with APOC version below!
+          sudo apt-get install neo4j=1:5.13.0
+          sudo chown -R circleci /var/log/neo4j
+          sudo chown -R circleci /var/lib/neo4j
+          sudo chown -R circleci /etc/neo4j
+          mkdir -p /var/lib/neo4j/plugins
+          wget -O /var/lib/neo4j/plugins/apoc-5.13.0-core.jar https://github.com/neo4j/apoc/releases/download/5.13.0/apoc-5.13.0-core.jar
+          neo4j_conf_file="/etc/neo4j/neo4j.conf"
+          sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
+          sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
+          sudo echo "dbms.memory.transaction.total.max=2000m" >> $neo4j_conf_file
+
+          apoc_conf_file="/etc/neo4j/apoc.conf"
+          sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
+          sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
+          sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
+          neo4j-admin dbms set-initial-password contentgraph
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.49685  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.93625  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -132,6 +139,11 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        # add github to known hosts
+        [ ! -d ~/.ssh ] && mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+
         poetry --version
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
@@ -243,7 +255,7 @@ references:
         # poll for neo4j status until available
         while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
 
-        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
+        demisto-sdk lint -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
 
   generate_coverage_reports: &generate_coverage_reports
     run:
@@ -285,9 +297,10 @@ references:
             name: Get Contributor pack
             when: always
             command: |
-                REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+                $CONTRIB_REPO="content"
+                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO -gt $GITHUB_TOKEN
 
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:

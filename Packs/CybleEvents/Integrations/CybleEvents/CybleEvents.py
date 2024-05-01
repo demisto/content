@@ -365,7 +365,7 @@ def fetch_alert_details(client, args):
     curr_fetch = 0
     all_events = []
     if args.get('token'):
-        while(True):
+        while (True):
             client.get_event_details("POST", events_url, params, results)
             curr_fetch += len(results['events'])
             all_events.extend(results['events'])

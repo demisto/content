@@ -1,5 +1,6 @@
 import json
 import pytest
+from pytest_mock import MockerFixture
 import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
@@ -18,26 +19,26 @@ def util_load_bytes_file(path: str):
 
 
 @patch.object(JiraBaseClient, '__abstractmethods__', set())
-def jira_base_client_mock() -> JiraBaseClient:
+def jira_base_client_mock(username: str = "", api_key: str = "") -> JiraBaseClient:
     """The way to mock an abstract class is using the trick @patch.object(Abstract_Class, __abstractmethods__, set()),
     since Python, behind the scenes, checks the __abstractmethods__ property, which contains a set of the names of all
     the abstract methods defined on the abstract class, if it is not empty, we won't be able to instantiate the abstract class,
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback',
-                          api_version='999')
+                          api_version='999', username=username, api_key=api_key)
 
 
 def jira_cloud_client_mock() -> JiraCloudClient:
     return JiraCloudClient(proxy=False, verify=False, client_id='dummy_client_id',
                            client_secret='dummy_secret', callback_url='dummy_url', cloud_id='dummy_cloud_id',
-                           server_url='dummy_server_url')
+                           server_url='dummy_server_url', username="", api_key="")
 
 
 def jira_onprem_client_mock() -> JiraOnPremClient:
     return JiraOnPremClient(proxy=False, verify=False, client_id='dummy_client_id',
                             client_secret='dummy_secret', callback_url='dummy_url',
-                            server_url='dummy_server_url')
+                            server_url='dummy_server_url', username="", api_key="")
 
 
 def test_v2_args_to_v3():
@@ -226,6 +227,179 @@ def test_get_issue_id_or_key(issue_id, issue_key, expected_issue_id_or_key):
     from JiraV3 import get_issue_id_or_key
     issue_id_or_key = get_issue_id_or_key(issue_id, issue_key)
     assert issue_id_or_key == expected_issue_id_or_key
+
+
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        (
+            "dummy_username",
+            "dummy_api_key",
+        ),
+        ("", ""),
+    ],
+)
+def test_http_request(mocker, username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run http_request method
+    Then:
+        - Ensure when the username and api_key are provided then only the 'get_headers_with_basic_auth' method is called
+        - Ensure when the username and api_key are not provided then only the 'get_headers_with_access_token' method is called
+    """
+    client = jira_base_client_mock(username=username, api_key=api_key)
+
+    basic_auth_mock = mocker.patch.object(
+        client, "get_headers_with_basic_auth", return_value={}
+    )
+    oauth2_mock = mocker.patch.object(
+        client, "get_headers_with_access_token", return_value={}
+    )
+    mocker.patch.object(client, "_http_request")
+    client.http_request("GET")
+
+    assert basic_auth_mock.call_count == int(bool(client.username))
+    assert oauth2_mock.call_count == int(not bool(client.username))
+
+
+def test_test_module_basic_auth(mocker):
+    """
+    Given:
+        - mock client with username and api_key (basic auth)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure no error is raised, and return `ok`
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock("dummy_username", "dummy_api_key")
+    mocker.patch.object(client, "test_instance_connection")
+    assert test_module(client) == "ok"
+
+
+def test_module_oauth2(mocker):
+    """
+    Given:
+        - mock client without username and api_key (oauth2)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure that error msg is raised, with a guide how to connect through oauth2
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock()
+    mocker.patch.object(client, "test_instance_connection")
+    with pytest.raises(
+        DemistoException,
+        match="In order to authorize the instance, first run the command `!jira-oauth-start`."
+    ):
+        test_module(client)
+
+
+@pytest.mark.parametrize(
+    "params, expected_exception",
+    [
+        pytest.param(
+            {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
+            "The required parameters were not provided. See the help window for more information.",
+            id="no auth params provided"
+        ),
+        pytest.param(
+            {
+                "username": "dummy_username",
+                "api_key": "dummy_api_key",
+                "client_id": "dummy_client_id",
+                "client_secret": "dummy_client_secret"
+            },
+            "The `User name` or `API key` parameters cannot be provided together"
+            " with the `Client ID` or `Client Secret` parameters. See the help window"
+            " for more information.",
+            id="both types of auth params are provided"
+        ),
+        pytest.param(
+            {"username": "dummy_username", "api_key": "", "client_id": "", "client_secret": ""},
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory",
+            id="only `username` parameter was provided"
+        ),
+        pytest.param(
+            {"username": "", "api_key": "", "client_id": "dummy_client_id", "client_secret": ""},
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory",
+            id="only `client_id` parameter was provided"
+        )
+    ]
+)
+def test_validate_params_failure(params: dict[str, str], expected_exception: str):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that as long as no valid auth params are sent an error is raised with a special message
+    """
+    from JiraV3 import validate_auth_params
+    with pytest.raises(DemistoException, match=expected_exception):
+        validate_auth_params(**params)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        pytest.param(
+            {
+                "username": "dummy_username",
+                "api_key": "dummy_api_key",
+                "client_id": "",
+                "client_secret": ""
+            },
+            id="Only basic auth params were provided"
+        ),
+        pytest.param(
+            {
+                "username": "",
+                "api_key": "",
+                "client_id": "dummy_client_id",
+                "client_secret": "dummy_client_secret"
+            },
+            id="Only oauth2 params were provided oauth2"
+        )
+    ]
+)
+def test_validate_auth_params(params: dict[str, str]):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that when provided valid auth params
+          the function does not raise
+    """
+    from JiraV3 import validate_auth_params
+    validate_auth_params(**params)
+
+
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        ("dummy_username", "dummy_api_key"),
+        ("", "")
+    ]
+)
+def test_client_is_basic_auth_or_oauth(username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run `__init__` method for `JiraBaseClient` class
+    Then:
+        - Ensure that when the client class receives both username and api_key,
+          the `is_basic_auth` flag is True otherwise False
+    """
+    client = jira_base_client_mock(username, api_key)
+    assert client.is_basic_auth == bool(username)
 
 
 class TestJiraGetIssueCommand:
@@ -420,7 +594,7 @@ class TestJiraEditIssueCommand:
         When
             - Calling the edit issue command.
         Then
-            - Validate that get_transitions, and transition_issue method was called, which is in charge of changing the status
+            - Validate that get_transitions, and transition_issue method were called, which is in charge of changing the status
             of the issue.
         """
         from JiraV3 import edit_issue_command
@@ -433,6 +607,41 @@ class TestJiraEditIssueCommand:
         edit_issue_command(client=client, args=args)
         get_transitions_mocker.assert_called_once()
         apply_transition_mocker.assert_called_once()
+
+    @pytest.mark.parametrize('args', [
+        ({'issue_key': 'dummy_key', 'status': 'Selected for development'}),
+        ({'issue_key': 'dummy_key', 'transition': 'In Development'})
+    ])
+    def test_apply_issue_status_and_transition_with_arguments(self, mocker, args):
+        """
+        Given:
+            - A Jira client, and the status, or transition argument to change the status of the issue.
+        When
+            - Calling the edit issue command, with additional arguments to edit the issue.
+        Then
+            - Validate that correct issue fields were sent as part of the request.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        transitions_raw_response = util_load_json('test_data/get_transitions_test/raw_response.json')
+        mocker.patch.object(client, 'get_transitions', return_value=transitions_raw_response)
+        mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
+        command_args = args | {'issue_key': 'dummy_key', 'description': 'dummy description', 'project_key': 'dummy_project_key',
+                               'project_id': 'dummy_project_id',
+                               'labels': 'label1,label2', 'components': 'comp1,comp2',
+                               'customfield_1': 'dummy custom field'}
+        # The transition ID is 21 since the mocked transition 'In Development' has an ID of 21 and the status
+        # 'Selected for development' correlates to the transition 'In Development', which as stated, has an ID of 21
+        expected_issue_fields = {'transition': {'id': '21'},
+                                 'fields': {'description': 'dummy description', 'project':
+                                            {'key': 'dummy_project_key', 'id':
+                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
+                                            'components': [{'name': 'comp1'}, {'name': 'comp2'}],
+                                            'customfield_1': 'dummy custom field'}}
+        mocker.patch.object(client, 'get_issue', return_value={})
+        transition_issue_mocker = mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
+        edit_issue_command(client=client, args=command_args)
+        assert expected_issue_fields == transition_issue_mocker.call_args[1].get('json_data')
 
     def test_create_issue_fields_with_action_rewrite(self, mocker):
         """
@@ -509,6 +718,61 @@ class TestJiraEditIssueCommand:
         edit_issue_command(client=client, args=args)
         assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
 
+    def test_edit_issue_command_with_issue_json_and_another_arg_error(self):
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(
+            DemistoException,
+            match=(
+                "When using the `issue_json` argument, additional arguments cannot be used "
+                "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
+                "\n see the argument description"
+            )
+        ):
+            edit_issue_command(
+                client=client,
+                args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
+            )
+
+    @pytest.mark.parametrize(
+        "extra_args",
+        [
+            {"action": "test"},
+            {"status": "test"},
+            {"transition": "test"},
+            {"issue_key": "test"},
+            {"issue_id": "test"},
+        ]
+    )
+    def test_edit_issue_command_with_issue_json_and_another_arg_no_error(
+        self, mocker: MockerFixture, extra_args: dict
+    ):
+        """
+        Given:
+            - The `issue_json` arg and one more arg allowed for use with `issue_json`
+        When:
+            - run edit_issue_command function
+        Then:
+            - Ensure that the validation process,
+              which ensures that no additional arguments are present alongside the 'issue_json' argument,
+              does not result in an error in cases where the additional arguments are one of:
+              `action`, `status`, `transition`.
+
+        """
+        from JiraV3 import edit_issue_command
+
+        client = jira_base_client_mock()
+        mocker.patch("JiraV3.apply_issue_status")
+        mocker.patch("JiraV3.apply_issue_transition")
+        mocker.patch.object(client, "edit_issue")
+        mocker.patch.object(client, "get_issue", return_value={})
+        mocker.patch("JiraV3.create_issue_md_and_outputs_dict", return_value=({}, {}))
+        mocker.patch("JiraV3.create_issue_fields", return_value={})
+        mocker.patch("JiraV3.create_issue_fields_for_appending", return_value={})
+        mocker.patch("JiraV3.get_issue_id_or_key", return_value="test")
+        args = {"issue_json": '{"fields": {"customfield_10037":"field_value"}}'} | extra_args
+        assert edit_issue_command(client=client, args=args)
+
 
 class TestJiraCreateIssueCommand:
     def test_create_issue_command(self, mocker):
@@ -526,8 +790,63 @@ class TestJiraCreateIssueCommand:
                         'self': 'dummy_link'}
         expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
         mocker.patch.object(client, 'create_issue', return_value=raw_response)
-        command_result = create_issue_command(client=client, args={})
+        command_result = create_issue_command(client=client, args={"summary": "test"})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_with_issue_json(self, mocker):
+        """
+        Given:
+            - A Jira client
+            - Jira summary from issue_json
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that the issue id and key of the newly created issue is returned.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        raw_response = {'id': "1234", 'key': 'dummy_key', 'self': 'dummy_link'}
+        expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
+        mocker.patch.object(client, 'create_issue', return_value=raw_response)
+        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
+        assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_with_issue_json_and_another_arg(self):
+        """
+        Given:
+            - A Jira client
+            - issue_json and summary args
+        When
+            - Calling the create issue command.
+        Then
+            - Ensure an error is raised with an expected error message.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(
+            DemistoException,
+            match="When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
+        ):
+            create_issue_command(
+                client=client,
+                args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
+            )
+
+    def test_create_issue_command_no_summary(self):
+        """
+        Given:
+            - A Jira client
+            - no Jira summary from issue_json / args
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that DemistoException is raised
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(DemistoException) as e:
+            create_issue_command(client=client, args={})
+        assert 'The summary argument must be provided' in str(e)
 
 
 class TestJiraDeleteIssueCommand:
@@ -545,6 +864,24 @@ class TestJiraDeleteIssueCommand:
         mocker.patch.object(client, 'delete_issue', return_value=requests.Response())
         command_result = delete_issue_command(client=client, args={'issue_key': 'dummy_key'})
         assert 'Issue deleted successfully' in command_result.to_context().get('HumanReadable')
+
+
+class TestJiraDeleteAttachmentFileCommand:
+    def test_delete_attachment_file_command(self, mocker: MockerFixture):
+        """
+        Given:
+            - A Jira client.
+        When
+            - Calling the delete attachment file command.
+        Then
+            - Validate that the correct readable output is outputted to the user.
+        """
+        from JiraV3 import delete_attachment_file_command
+        attachment_id = "dummy_id"
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'delete_attachment_file', return_value=requests.Response())
+        command_result = delete_attachment_file_command(client=client, args={'attachment_id': attachment_id})
+        assert f'Attachment id {attachment_id} was deleted successfully' in command_result.to_context().get('HumanReadable')
 
 
 class TestJiraGetTransitionsCommand:
@@ -1159,6 +1496,118 @@ class TestJiraUploadFileCommand:
         mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
         command_results = upload_file_command(client=client, args={'issue_key': 'COMPANYSA-35'})
         assert command_results.to_context()['HumanReadable'] == expected_command_results_context['HumanReadable']
+
+    def test_upload_XSOAR_attachment_to_jira_mime_type_check(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        file_name = 'dummy_file_name.pdf'
+        issue_key = 'COMPANYSA-35'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        upload_file_raw_response = util_load_json('test_data/upload_file_test/raw_response.json')
+        files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        mock_request = mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
+        upload_XSOAR_attachment_to_jira(client=client,
+                                        entry_id='',
+                                        issue_id_or_key=issue_key)
+        mock_request.assert_called_with(issue_id_or_key=issue_key,
+                                        files=files)
+
+    def test_upload_XSOAR_attachment_to_jira_mime_type_fail(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of unsuccessful upload to Jira due to mime type issue,
+            we will try again with the default mime type.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        issue_key = 'COMPANYSA-35'
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=('application/pdf', ''))
+        mocker.patch.object(client, 'upload_attachment', side_effect=DemistoException('failed to upload', res={}))
+        mock_request = mocker.patch.object(client, 'upload_attachment',
+                                           side_effect=[DemistoException('failed to upload', res={}), {}])
+        upload_XSOAR_attachment_to_jira(client=client, entry_id='', issue_id_or_key=issue_key)
+
+        # Validate that we run upload_attachment twice, once with an error, and second time to use default file type
+        assert mock_request.call_count == 2
+        # Validate that the second call uses the default file type (application-type)
+        mock_request.assert_called_with(files={'file': ('dummy_file_name.pdf', b'dummy content', 'application-type')},
+                                        issue_id_or_key=issue_key)
+
+    def test_create_files_to_upload(self, mocker):
+        """
+        Given:
+            - An empty file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file, and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+
+    def test_create_files_to_upload_none_type(self, mocker):
+        """
+        Given:
+            - An empty file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of unsuccessful type guess, the default mime type is given (application-type),
+            and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application-type'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.guess_type', return_value=(None, ''))
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+
+    def test_create_files_to_upload_given_type(self, mocker):
+        """
+        Given:
+            - An application-type file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of a given mime type the function guess_type wasn't called,
+            and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application-type'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mock_guess_type = mocker.patch('JiraV3.guess_type', return_value=(None, ''))
+        result_files, result_mime_type = create_files_to_upload(expected_file_mime_type, file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+        mock_guess_type.assert_not_called()
 
 
 class TestJiraGetIdByAttribute:
@@ -2161,3 +2610,61 @@ class TestJiraFetchIncidents:
                 attachment_tag_from_jira='attachment_tag_from_jira'
             )
         assert 'The fetch query configured returned no Jira issues, please update it' in str(e)
+
+
+class TestJiraIssueAssign:
+    @pytest.mark.parametrize(
+        'assignee, assignee_id, excpected_body_request',
+        [
+            ("server_assignee", None, {"name": "server_assignee"}),
+            (None, "cloud_assignee", {"accountId": "cloud_assignee"})
+        ]
+    )
+    def test_update_issue_assignee_command(self, mocker, assignee, assignee_id, excpected_body_request):
+        """
+        Given:
+            - issue id, and assignees for cloud/server jira
+        When
+            - Running the update_issue_assignee_command
+        Then
+            - Ensure the body request is ok for both cloud/server jira
+        """
+        from JiraV3 import update_issue_assignee_command
+        get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        args = {
+            'assignee': assignee,           # For Jira OnPrem
+            'assignee_id': assignee_id,     # For Jira Cloud
+            'issue_id': 21487,
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        if assignee_id:
+            client = jira_cloud_client_mock()
+        else:
+            client = jira_onprem_client_mock()
+
+        jira_req_mocker = mocker.patch.object(client, 'update_assignee', return_value=None)
+        mocker.patch.object(client, 'get_issue', return_value=get_issue_response)
+        assert update_issue_assignee_command(client=client, args=args)
+        assert jira_req_mocker.call_args[1].get('assignee_body') == excpected_body_request
+
+    def test_test_update_issue_assignee_command_no_assignees(self):
+        """
+        Given:
+            - issue id, without assignee / assignee_id
+        When
+            - Running the update_issue_assignee_command
+        Then
+            - Ensure an exception is raised
+        """
+        from JiraV3 import update_issue_assignee_command
+
+        args = {
+            'assignee': None,       # For Jira OnPrem
+            'assignee_id': None,    # For Jira Cloud
+            'issue_id': 21487,
+        }
+
+        client = jira_base_client_mock()
+
+        with pytest.raises(DemistoException):
+            update_issue_assignee_command(client=client, args=args)

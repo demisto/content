@@ -4,10 +4,6 @@ This playbook is used to send email notifications to service owners to notify th
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-### Sub-playbooks
-
-Cortex ASM - Remediation Guidance
-
 ### Integrations
 
 This playbook does not use any integrations.
@@ -28,6 +24,7 @@ send-mail
 | --- | --- | --- | --- |
 | OwnerNotificationSubject | Subject of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
 | OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Optional |
+| RemediationGuidance | Remediation Guidance of the Attack Surface Rule |  | Required |
 
 ## Playbook Outputs
 

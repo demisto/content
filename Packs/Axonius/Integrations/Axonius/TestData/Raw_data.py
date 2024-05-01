@@ -201,39 +201,39 @@ USERS_SQS = [
 ]
 
 DUMMY_DEVICES = [
-  {
-    "adapter_list_length": 8,
-    "adapters": [
-      "active_directory_adapter",
-      "cisco_meraki_adapter",
-      "counter_act_adapter",
-      "eclypsium_adapter",
-      "epo_adapter",
-      "esx_adapter",
-      "sccm_adapter",
-      "tenable_security_center_adapter"
-    ],
-    "internal_axon_id": "98d57c96f73fbcb1edd63110f4f15613",
-    "labels": [
-      "Count Meraki",
-      "JB-Windows",
-      "Windows Workstation"
-    ],
-    "specific_data.data.hostname": [
-      "DESKTOP-DUMMY.DEMO.LOCAL"
-    ],
-    "specific_data.data.last_seen": "Tue, 05 Apr 2022 22:58:14 GMT",
-    "specific_data.data.name": [
-      "DESKTOP-DUMMY"
-    ],
-    "specific_data.data.network_interfaces.ips": [
-      "1.1.1.1"
-    ],
-    "specific_data.data.network_interfaces.mac": [
-      "52-84-D4-D0-79-04"
-    ],
-    "specific_data.data.os.type": [
-      "Windows"
-    ]
-  }
+    {
+        "adapter_list_length": 8,
+        "adapters": [
+            "active_directory_adapter",
+            "cisco_meraki_adapter",
+            "counter_act_adapter",
+            "eclypsium_adapter",
+            "epo_adapter",
+            "esx_adapter",
+            "sccm_adapter",
+            "tenable_security_center_adapter"
+        ],
+        "internal_axon_id": "98d57c96f73fbcb1edd63110f4f15613",
+        "labels": [
+            "Count Meraki",
+            "JB-Windows",
+            "Windows Workstation"
+        ],
+        "specific_data.data.hostname": [
+            "DESKTOP-DUMMY.DEMO.LOCAL"
+        ],
+        "specific_data.data.last_seen": "Tue, 05 Apr 2022 22:58:14 GMT",
+        "specific_data.data.name": [
+            "DESKTOP-DUMMY"
+        ],
+        "specific_data.data.network_interfaces.ips": [
+            "1.1.1.1"
+        ],
+        "specific_data.data.network_interfaces.mac": [
+            "52-84-D4-D0-79-04"
+        ],
+        "specific_data.data.os.type": [
+            "Windows"
+        ]
+    }
 ]

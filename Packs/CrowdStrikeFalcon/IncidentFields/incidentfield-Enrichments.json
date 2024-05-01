@@ -1,0 +1,31 @@
+{
+    "id": "incident_crowdstrikefalconenrichments",
+    "version": -1,
+    "modified": "2023-09-03T21:58:38.885634531Z",
+    "name": "CrowdStrike Falcon Enrichments",
+    "ownerOnly": false,
+    "cliName": "crowdstrikefalconenrichments",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CrowdStrike Falcon IOA Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

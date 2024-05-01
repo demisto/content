@@ -6,7 +6,7 @@ import pytest
 import json
 import io
 import os
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, urljoin
 from CiscoUmbrellaReporting import Client, get_destinations_list_command, \
     get_categories_list_command, get_identities_list_command, \
     get_file_list_command, create_cisco_umbrella_args, \
@@ -18,7 +18,6 @@ from CiscoUmbrellaReporting import Client, get_destinations_list_command, \
 
 client = Client(
     base_url="http://test.com",
-    organisation_id="1234567",
     secret_key="test_123",
     client_key="test@12345",
     proxy=False
@@ -822,11 +821,10 @@ def test_test_module(requests_mock, raw_response):
                 - Check weather the given credentials are correct or not.
     """
     from CiscoUmbrellaReporting import test_module
-    post_req_url = client.token_url
-    requests_mock.post(post_req_url, json={'access_token': '12345'})
+    token_url = urljoin(client._base_url, '/auth/v2/token')
+    requests_mock.post(token_url, json={'access_token': '12345'})
     access_token = client.get_access_token()
-    get_req_url = f'{client._base_url}/v2/organizations' \
-                  f'/{client.organisation_id}/activity'
+    get_req_url = f'{client._base_url}/reports/v2/activity'
     headers = {'Authorization': f'Bearer {access_token}'}
     requests_mock.get(get_req_url, headers=headers, json=raw_response)
     output = test_module(client)
@@ -856,21 +854,21 @@ def test_access_token(requests_mock):
             Then:
                 -  Checks the output of the command function with the expected output.
     """
-    req_url = client.token_url
+    token_url = urljoin(client._base_url, '/auth/v2/token')
 
-    requests_mock.post(req_url, json={'access_token': '12345'})
+    requests_mock.post(token_url, json={'access_token': '12345'})
 
     response = client.get_access_token()
     assert response == "12345"
 
     with pytest.raises(DemistoException) as e:
-        requests_mock.post(req_url, status_code=401)
+        requests_mock.post(token_url, status_code=401)
         client.get_access_token()
     assert e.value.args[0] == ('Authorization Error: The provided credentials for Cisco Umbrella Reporting are invalid.'
                                ' Please provide a valid Client ID and Client Secret.')
 
     with pytest.raises(DemistoException) as e:
-        requests_mock.post(req_url, status_code=400)
+        requests_mock.post(token_url, status_code=400)
         client.get_access_token()
     assert e.value.args[0] == 'Error: something went wrong, please try again.'
 

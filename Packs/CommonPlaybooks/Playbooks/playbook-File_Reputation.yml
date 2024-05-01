@@ -26,6 +26,7 @@ tasks:
       - "7"
       - "4"
       - "18"
+      - "25"
     separatecontext: false
     view: |-
       {
@@ -129,7 +130,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -346,7 +347,7 @@ tasks:
     task:
       id: afa05da2-350f-4d09-85f1-7d9ddb31477c
       version: -1
-      name: Set file verdict - NSRL
+      name: Set file verdict - IsNSRL
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -682,7 +683,7 @@ tasks:
     task:
       id: bb096e6a-72b8-43f3-81a3-14633d6a58d3
       version: -1
-      name: Set file verdict - NSRL
+      name: Set file verdict - IsNotNSRL
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -754,7 +755,7 @@ tasks:
     task:
       id: 9bc117b9-97ee-4aa4-81b5-e2ca1e5c9549
       version: -1
-      name: Set file verdict - XDR-TrustedSigners
+      name: Set file verdict - XDR-UnTrustedSigners
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -825,6 +826,112 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 825810e7-b8fb-4347-894b-51dae87fcb7f
+    type: title
+    task:
+      id: 825810e7-b8fb-4347-894b-51dae87fcb7f
+      version: -1
+      name: WildFire
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2950,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7bcc68bb-ba26-4690-8535-395ec5fbb28f
+    type: regular
+    task:
+      id: 7bcc68bb-ba26-4690-8535-395ec5fbb28f
+      version: -1
+      name: Get WildFire report
+      description: Retrieves results for a file hash using WildFire.
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.FileSHA256
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2730,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e91fa96b-14ce-40a2-8ba6-2607ee95ea47
+    type: regular
+    task:
+      id: e91fa96b-14ce-40a2-8ba6-2607ee95ea47
+      version: -1
+      name: Get WildFire verdict
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hash:
+        complex:
+          root: inputs.FileSHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3170,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -840,8 +947,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1195,
-        "width": 3540,
-        "x": -2280,
+        "width": 4430,
+        "x": -3170,
         "y": -600
       }
     }
@@ -878,6 +985,12 @@ outputs:
   type: unknown
 - contextPath: XDRFileSigners
   description: XDR file signers.
+  type: unknown
+- contextPath: WildFire.Report
+  description: WildFire report details.
+  type: unknown
+- contextPath: WildFire.Verdicts
+  description: WildFire verdict.
   type: unknown
 tests:
 - No tests.

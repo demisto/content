@@ -1,0 +1,77 @@
+{
+    "results": [{
+        "app_proto": "http",
+        "see_name": "stamus-central-server",
+        "type": "json-log",
+        "tags": [
+            "beats_input_codec_json_applied"
+        ],
+        "dest_port": 80,
+        "flow_id": 758953541069220,
+        "input": {
+            "type": "log"
+        },
+        "src_ip": "10.7.5.101",
+        "proto": "TCP",
+        "tcp": {
+            "syn": true,
+            "state": "established",
+            "tcp_flags": "1a",
+            "tcp_flags_ts": "1a",
+            "ack": true,
+            "tcp_flags_tc": "1a",
+            "psh": true
+        },
+        "see_id": "0a00af96dd83",
+        "ether": {
+            "src_macs": [
+                "00:08:02:1c:47:ae"
+            ],
+            "dest_macs": [
+                "20:e5:2a:b6:93:f1"
+            ]
+        },
+        "flow": {
+            "tx_cnt": 1,
+            "start": "2023-07-25T13:20:50.176707+0200",
+            "age": 135,
+            "pkts_toserver": 54,
+            "bytes_toclient": 3156,
+            "reason": "timeout",
+            "state": "established",
+            "pkts_toclient": 54,
+            "alerted": true,
+            "end": "2023-07-25T13:23:05.700097+0200",
+            "bytes_toserver": 3225
+        },
+        "in_iface": "tppdummy0",
+        "host": "host",
+        "@version": "1",
+        "metadata": {
+            "flowbits": [
+                "min.gethttp"
+            ]
+        },
+        "src_port": 49669,
+        "@timestamp": "2023-07-25T11:29:08.108Z",
+        "timestamp": "2023-07-25T13:29:08.108744+0200",
+        "agent": {
+            "hostname": "nico-probe-2-ssp-2",
+            "id": "9f305fa4-6db1-485c-81f9-598dce1469e3",
+            "type": "filebeat",
+            "ephemeral_id": "068737ef-d3c2-4903-b71b-5a955bd32ba5",
+            "version": "7.17.8",
+            "name": "host"
+        },
+        "dest_ip": "95.142.46.236",
+        "event_type": "flow",
+        "log": {
+            "file": {
+                "path": "/var/log/suricata/eve-0.json"
+            },
+            "offset": 443949853
+        },
+        "logger": "logstash-manager",
+        "_id": "oa3YjIkBWK2kIefhKqRO"
+    }]
+}

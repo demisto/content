@@ -2,7 +2,9 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Prisma Cloud Compute Compliance",
-        "Prisma Cloud Compute Audit"
+        "Prisma Cloud Compute Audit",
+        "Prisma Cloud Compute Audit v2",
+        "Prisma Cloud Compute Audit v3"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -28,7 +30,12 @@
     "selectValues": [],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
+    "systemAssociatedTypes": [
+        "Prisma Cloud Compute Compliance",
+        "Prisma Cloud Compute Audit",
+        "Prisma Cloud Compute Audit v2",
+        "Prisma Cloud Compute Audit v3"
+    ],
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,

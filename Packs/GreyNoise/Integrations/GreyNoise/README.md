@@ -10,7 +10,7 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | apikey | API Key | True |
+    | apikey | API Key | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 

@@ -7,8 +7,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * AWS - Unclaimed S3 Bucket Remediation
-* GCP - Firewall Remediation
 * AWS - Security Group Remediation v2
+* Cortex ASM - On Prem Remediation
+* GCP - Firewall Remediation
 * Azure - Network Security Group Remediation
 
 ### Integrations
@@ -26,7 +27,10 @@ This playbook does not use any commands.
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\) |  | Optional |
 
 ## Playbook Outputs
 

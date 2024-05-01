@@ -1,0 +1,38 @@
+{
+    "vendorCaseId": 123,
+    "vendorDomain": "some-domain.com",
+    "firstObservedTime": "2022-04-04T21:12:14Z",
+    "lastModifiedTime": "2022-04-05T14:40:11Z",
+    "insights": [
+        {
+            "highlight": "Inconsistent Sender Domain Registrars",
+            "description": "The suspicious sending domain, \"some-domain.com\", was registered in \"City, United States\" to \"unknown\" on 2022-02-07 with registrar \"ABCD\". The legitimate domain for \"some-domain.com\", was registered through \"Test, LLC\" in \"City, United States\" on 1999-12-02."
+        },
+        {
+            "highlight": "Look-a-like Sender Domain",
+            "description": "The sending domain of this message, \"some-domain.com\", is attempting to impersonate the legitimate domain of \"some-domain.com\"."
+        },
+        {
+            "highlight": "Young Sender Domain",
+            "description": "The sender domain \"some-domain.com\" was 65 days old when the first engagement in this case was observed, a suspicious signal for a financial email conversation."
+        }
+    ],
+    "timeline": [
+        {
+            "eventTimestamp": "2022-04-04T21:12:14Z",
+            "senderAddress": "john-doe@some-domain.com",
+            "recipientAddress": "jane.doe@some-other-domain.com",
+            "subject": "Important Notice",
+            "markedAs": "Malicious",
+            "threatId": 1234
+        },
+        {
+            "eventTimestamp": "2022-04-04T21:12:14Z",
+            "senderAddress": "jand-doe@some-domain.com",
+            "recipientAddress": "john@some-other-domain.com",
+            "subject": "Important Notice",
+            "markedAs": "Malicious",
+            "threatId": 12345
+        }
+    ]
+}

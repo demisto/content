@@ -1,0 +1,74 @@
+{
+    "content": [
+        {
+            "id": "7b",
+            "reportRequestId": "E3",
+            "processState": "AVAILABLE",
+            "accountId": "25",
+            "name": "Name",
+            "bundleId": "bundle.id",
+            "version": "2.12.0",
+            "riskVersion": "2.12.0",
+            "hash": "E3",
+            "platform": "android",
+            "platformId": 1,
+            "source": "UPLOAD",
+            "classification": "LEGIT",
+            "securityRisk": 79,
+            "security": "High",
+            "privacyRisk": 30,
+            "privacy": "Low",
+            "created": 1702304668599,
+            "updatedOn": 1702308488217
+        },
+        {
+            "id": "61",
+            "processState": "AVAILABLE",
+            "accountId": "25",
+            "name": "Name 2",
+            "bundleId": "bundle.id",
+            "version": "2.12.0",
+            "riskVersion": "2.12.0",
+            "hash": "hash",
+            "platform": "android",
+            "platformId": 1,
+            "source": "GLOBAL",
+            "classification": "LEGIT",
+            "securityRisk": 79,
+            "security": "High",
+            "privacyRisk": 30,
+            "privacy": "Low",
+            "developerSignature": "02",
+            "developerName": "Name",
+            "filename": "/tmp/sample",
+            "managed": false,
+            "created": 1702305485276,
+            "updatedOn": 1702308488294
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "unsorted": true,
+            "sorted": false,
+            "empty": true
+        },
+        "pageNumber": 0,
+        "pageSize": 20,
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "numberOfElements": 2,
+    "sort": {
+        "unsorted": true,
+        "sorted": false,
+        "empty": true
+    },
+    "size": 20,
+    "number": 0,
+    "empty": false
+}

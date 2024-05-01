@@ -1,0 +1,84 @@
+{
+    "meta": {
+        "query_time": 0.056516877,
+        "writes": {
+            "resources_affected": 2
+        },
+        "powered_by": "cspm-registration",
+        "trace_id": "dummy"
+    },
+    "errors": [],
+    "resources": [
+        {
+            "is_remediable": false,
+            "created_at": "2021-04-16T00:04:33.228416Z",
+            "updated_at": "2022-04-21T23:39:16.955178Z",
+            "policy_id": 257,
+            "name": "IAM role assumed itself",
+            "policy_type": "Behavioral",
+            "cloud_service": "iam",
+            "cloud_service_friendly": "IAM",
+            "cloud_asset_type": "role",
+            "cloud_asset_type_id": 7,
+            "cloud_provider": "aws",
+            "default_severity": "medium",
+            "policy_timestamp": "0001-01-01T00:00:00Z",
+            "policy_settings": [
+                {
+                    "account_id": "537409938058",
+                    "regions": [
+                        "af-south-1",
+                        "ap-east-1",
+                        "ap-northeast-1",
+                        "ap-northeast-2",
+                        "ap-northeast-3",
+                        "ap-south-1",
+                        "ap-south-2"
+                    ],
+                    "severity": "medium",
+                    "enabled": true,
+                    "tag_excluded": false
+                }
+            ],
+            "attack_types": [
+                "Defense Evasion",
+                "Privilege Escalation"
+            ]
+        },
+        {
+            "is_remediable": false,
+            "created_at": "2021-04-16T00:04:33.228416Z",
+            "updated_at": "2023-09-07T21:32:36.49764Z",
+            "policy_id": 260,
+            "name": "Root user password recovered and reset",
+            "policy_type": "Behavioral",
+            "cloud_service": "iam",
+            "cloud_service_friendly": "IAM",
+            "cloud_asset_type": "user",
+            "cloud_asset_type_id": 8,
+            "cloud_provider": "aws",
+            "default_severity": "high",
+            "policy_timestamp": "0001-01-01T00:00:00Z",
+            "policy_settings": [
+                {
+                    "account_id": "537409938058",
+                    "regions": [
+                        "af-south-1",
+                        "ap-east-1",
+                        "ap-northeast-1",
+                        "ap-northeast-2",
+                        "ap-northeast-3",
+                        "ap-south-1",
+                        "ap-south-2"
+                    ],
+                    "severity": "high",
+                    "enabled": true,
+                    "tag_excluded": false
+                }
+            ],
+            "attack_types": [
+                "Privilege Escalation"
+            ]
+        }
+    ]
+}

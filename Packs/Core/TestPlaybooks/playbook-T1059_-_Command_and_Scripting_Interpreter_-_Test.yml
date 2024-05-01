@@ -1,0 +1,615 @@
+id: T1059 - Command and Scripting Interpreter - Test
+version: -1
+name: T1059 - Command and Scripting Interpreter - Test
+description: |-
+  This playbook tests the 'T1059 - Command and Scripting Interpreter' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:
+  - Check the handling of malicious verdicts and non-malicious verdict commands.
+  - Validate Command-Line Analysis.
+  - Validate the comparison of process execution arguments to LOLBAS patterns.
+  - Validate the conditional task to determine if the command line is malicious and handle the alert as a True positive.
+  - Validate the conditional task to determine if the command line is non-malicious and handle the alert as a False positive.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 141d8ea0-1e4e-43f4-8bb5-2d2e02dd2345
+    type: start
+    task:
+      id: 141d8ea0-1e4e-43f4-8bb5-2d2e02dd2345
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: af36c749-232d-47a9-83e5-9c265aad04c1
+    type: regular
+    task:
+      id: af36c749-232d-47a9-83e5-9c265aad04c1
+      version: -1
+      name: Set command line to test
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Core.DynamicAnalysis.internals.attributes.content
+      value:
+        simple: c:\windows\system32\Loltool.exe -enc TmV0LndlYmNsaWVudCBQc0V4ZWMgU2NyZWVuc2hvdCBhbXNpSW5pdEZhaWxlZA==
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c873b579-b0f8-4213-8012-30b013e08c53
+    type: regular
+    task:
+      id: c873b579-b0f8-4213-8012-30b013e08c53
+      version: -1
+      name: Create Indicator for test
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      commands:
+        simple: |-
+          [
+                      {
+                          "category": "testcategory",
+                          "command": "cwindowssystem32Loltoolexe enc Netwebclient PsExec Screenshot amitFailed",
+                          "description": "testdescription",
+                          "mitreid": "testmitreid",
+                          "os": "testos",
+                          "privileges": "testprivileges",
+                          "usecase": "testusecase"
+                      }
+                  ]
+      type:
+        simple: Tool
+      value:
+        simple: Loltool.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1d2d71f6-0f85-48c7-89fa-1ff710636a1d
+    type: playbook
+    task:
+      id: 1d2d71f6-0f85-48c7-89fa-1ff710636a1d
+      version: -1
+      name: T1059 - Command and Scripting Interpreter
+      description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination"
+      playbookName: T1059 - Command and Scripting Interpreter
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      AutoContainment:
+        simple: "True"
+      AutoRestoreEndpoint:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      ShouldCloseAutomatically:
+        simple: "False"
+      ShouldOpenTicket:
+        simple: "False"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      addCommentPerEndpoint:
+        simple: "True"
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 63484e03-c39d-4c2b-8b5b-0b5f8fdf41f1
+    type: title
+    task:
+      id: 63484e03-c39d-4c2b-8b5b-0b5f8fdf41f1
+      version: -1
+      name: Test malicious verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8864b0d8-3448-46ec-8b85-f8afad0fd307
+    type: title
+    task:
+      id: 8864b0d8-3448-46ec-8b85-f8afad0fd307
+      version: -1
+      name: Test non-malicious verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 849414c6-7d08-4518-865b-fbf99c974f0d
+    type: regular
+    task:
+      id: 849414c6-7d08-4518-865b-fbf99c974f0d
+      version: -1
+      name: Clear Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 205828a1-0451-46cf-8825-cf1080b2a04e
+    type: playbook
+    task:
+      id: 205828a1-0451-46cf-8825-cf1080b2a04e
+      version: -1
+      name: T1059 - Command and Scripting Interpreter
+      description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination"
+      playbookName: T1059 - Command and Scripting Interpreter
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      AutoContainment:
+        simple: "True"
+      AutoRestoreEndpoint:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      ShouldCloseAutomatically:
+        simple: "False"
+      ShouldOpenTicket:
+        simple: "False"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      addCommentPerEndpoint:
+        simple: "True"
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a1e9901d-d769-481c-8ce2-de950516370a
+    type: regular
+    task:
+      id: a1e9901d-d769-481c-8ce2-de950516370a
+      version: -1
+      name: Set command line to test
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: Core.DynamicAnalysis.internals.attributes.content
+      value:
+        simple: c:\windows\system32\Testtool.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 312345e8-5372-44a6-8e7e-cf9b31199d99
+    type: condition
+    task:
+      id: 312345e8-5372-44a6-8e7e-cf9b31199d99
+      version: -1
+      name: Verify test succeeds
+      description: Verification of the success of the test playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 32eb56c1-c384-47bf-8544-0d44b4b211b8
+    type: regular
+    task:
+      id: 32eb56c1-c384-47bf-8544-0d44b4b211b8
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: The playbook failed to handle the suspicious command or script. Please check why the command is not identified as malicious.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: cc04613f-4238-4142-8443-7ddb56e6c55f
+    type: regular
+    task:
+      id: cc04613f-4238-4142-8443-7ddb56e6c55f
+      version: -1
+      name: Set command line prevalence
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: Core.AnalyticsPrevalence.Cmd.value
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ce311e81-945d-4f7b-860b-934a632466a8
+    type: title
+    task:
+      id: ce311e81-945d-4f7b-860b-934a632466a8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8344de57-0a0c-4ab5-8c36-39fd0ab4c439
+    type: regular
+    task:
+      id: 8344de57-0a0c-4ab5-8c36-39fd0ab4c439
+      version: -1
+      name: Clear Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 588fcdfd-42af-4b28-842a-dc7e43be8a75
+    type: regular
+    task:
+      id: 588fcdfd-42af-4b28-842a-dc7e43be8a75
+      version: -1
+      name: Delete Indicator
+      scriptName: DeleteIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      query:
+        simple: Loltool.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2435,
+        "width": 690,
+        "x": 450,
+        "y": -330
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

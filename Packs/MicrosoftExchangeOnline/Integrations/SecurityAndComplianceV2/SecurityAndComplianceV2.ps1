@@ -178,6 +178,7 @@ function ParseSearchToEntryContext([psobject]$search, [int]$limit = -1, [bool]$a
         "PublicFolderLocationExclusion" = $search.PublicFolderLocationExclusion
         "RunBy" = $search.RunBy
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search.SharePointLocation
         "SharePointLocationExclusion" = $search.SharePointLocationExclusion
         "Size" = $search.Size
@@ -236,6 +237,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "PublicFolderLocationExclusion" = $search_action.PublicFolderLocationExclusion
         "Retry" = $search_action.Retry
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search_action.SharePointLocation
         "SharePointLocationExclusion" = $search_action.SharePointLocationExclusion
         "Name" = $search_action.Name
@@ -555,6 +557,7 @@ class OAuth2DeviceCodeClient {
             $client.RefreshTokenIfExpired()
         #>
     }
+
     ClearContext(){
         $this.access_token = $null
         $this.refresh_token = $null
@@ -622,7 +625,6 @@ class SecurityAndComplianceClient {
         }
         Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
     }
-
 
     DisconnectSession(){
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
@@ -904,7 +906,10 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
+    [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type,
+                              [string]$share_point_archive_format, [string]$format,
+                              [bool]$include_sharepoint_document_versions, [string]$notify_email,
+                              [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
@@ -913,21 +918,40 @@ class SecurityAndComplianceClient {
         }
         if ($action -eq "Preview") {
             $cmd_params.Preview = $true
+            $cmd_params.Confirm = $false
         } elseif ($action -eq "Purge") {
             $cmd_params.Purge = $true
             $cmd_params.PurgeType = $purge_type
             $cmd_params.Confirm = $false
             $cmd_params.Force = $true
+        } elseif ($action -eq "Export") {
+            $cmd_params.Export = $true
+            $cmd_params.Confirm = $false
+            if ($share_point_archive_format) {
+                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
+            }
+            if ($format) {
+                $cmd_params.Format = $format
+            }
+            if ($include_sharepoint_document_versions -eq "true") {
+                $cmd_params.IncludeSharePointDocumentVersions = $true
+            }
+            if ($notify_email) {
+                $cmd_params.NotifyEmail = $notify_email
+            }
+            if ($notify_email_cc) {
+                $cmd_params.NotifyEmailCC = $notify_email_cc
+            }
+            if ($scenario) {
+                $cmd_params.Scenario = $scenario
+            }
+            if ($scope) {
+                $cmd_params.Scope = $scope
+            }
         } else {
-            throw "New action must include valid action - Preview/Purge"
+            throw "New action must include valid action - Preview/Purge/Export"
         }
         $response = New-ComplianceSearchAction @cmd_params
-        if (-not $response){
-            # Close session to remote
-            $this.DisconnectSession()
-
-            throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
-        }
 
         # Close session to remote
         $this.DisconnectSession()
@@ -941,7 +965,7 @@ class SecurityAndComplianceClient {
             The name of the compliance search.
 
             .PARAMETER action
-            Search action type - Preview (Showing results) / Purge (Delete found emails)
+            Search action type - Preview (Showing results) / Purge (Delete found emails) / Export (Create Export file in UI)
 
             .PARAMETER purge_type
             Used if action type is purge, Search action purge type - SoftDelete (allow recover) / HardDelete (not recoverable).
@@ -949,6 +973,8 @@ class SecurityAndComplianceClient {
             .EXAMPLE
             $client.NewSearchAction("search-name", "Preview")
             $client.NewSearchAction("search-name", "Purge", "HardDelete")
+            $client.NewSearchAction("search-name", "Export")
+         #>
 
             .OUTPUTS
             psobject - Raw response.
@@ -1560,6 +1586,19 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
     $raw_response = $client.GetSearch($kwargs.search_name)
+    # Check if raw_response is null
+    if ($null -eq $raw_response) {
+        # Handle the scenerio if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
     # Entry context
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
@@ -1611,7 +1650,24 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
-    $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
+    $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type,
+                                            $kwargs.share_point_archive_format, $kwargs.format,
+                                            $kwargs.include_sharepoint_document_versions, $kwargs.notify_email,
+                                            $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+
+    if ($null -eq $raw_response) {
+        # Handle the scenario if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ACTION_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1792,11 +1848,16 @@ function Main {
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
 
+    if ($integration_params.insecure -eq $true) {
+        # Bypass SSL verification if insecure is true
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
+
     try {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
 
         # Executing oauth2 commands
         switch ($command) {
@@ -1905,7 +1966,9 @@ function Main {
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
-        if ($command -ne "test-module") {
+        if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
+           Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
+        } elseif ($command -ne "test-module") {
             ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command

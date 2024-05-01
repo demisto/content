@@ -76,6 +76,8 @@ Checks the reputation of an IP address
 ### 2. domain
 ---
 Checks the reputation of a Domain
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `domain`
@@ -125,6 +127,8 @@ Checks the reputation of a Domain
 ### 3. url
 ---
 Checks the reputation of an URL
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `url`

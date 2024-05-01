@@ -47,24 +47,24 @@ RESPONSE_ASSET_DATA = {
     }
 }
 
-RESPONSE_SESSION_INFO = { 'sessionInfo': {
-        "numOfAssets": 29,
-        "riskScore": 0,
-        "numOfAccounts": 1,
-        "accounts": [],
-        "zones": [],
-        "endTime": "1591071360000",
-        "numOfZones": 5,
-        "startTime": "1591021860000",
-        "loginHost": "lt-dummy-888",
-        "sessionId": "dummy-20200601143100",
-        "numOfReasons": 0,
-        "label": "",
-        "username": "dummy",
-        "numOfSecurityEvents": 0,
-        "numOfEvents": 62,
-        "initialRiskScore": 0
-    }
+RESPONSE_SESSION_INFO = {'sessionInfo': {
+    "numOfAssets": 29,
+    "riskScore": 0,
+    "numOfAccounts": 1,
+    "accounts": [],
+    "zones": [],
+    "endTime": "1591071360000",
+    "numOfZones": 5,
+    "startTime": "1591021860000",
+    "loginHost": "lt-dummy-888",
+    "sessionId": "dummy-20200601143100",
+    "numOfReasons": 0,
+    "label": "",
+    "username": "dummy",
+    "numOfSecurityEvents": 0,
+    "numOfEvents": 62,
+    "initialRiskScore": 0
+}
 }
 
 RESPONSE_MODEL_DATA = {
@@ -134,27 +134,27 @@ RESPONSE_NOTABLE_SESSION_DETAILS = {
          'label': '', 'accounts': ['account1', 'account2'], 'numOfAccounts': 2,
          'zones': ['zone1', 'zone2', 'zone3', 'zone4'], 'numOfZones': 4,
          'numOfAssets': 17, 'numOfEvents': 30, 'numOfSecurityEvents': 1, 'riskTransferScore': 126.0}],
-     'users': {
-         'username2': {'username': 'username2', 'riskScore': 313.18, 'averageRiskScore': 171.41,
-                       'pastScores': [287.19, 218.36, 0.0, 0.0, 0.0, 0.0, 0.0], 'lastSessionId': 'session2',
-                       'firstSeen': 1591021500000, 'lastSeen': 1593820320000, 'lastActivityType': 'Account is active',
-                       'lastActivityTime': 1593818940000,
-                       'info': {'location': 'us',
-                                'photo': '',
-                                'phoneCell': '1234567890',
-                                'email': 'test@.com',
-                                'employeeType': 'employee', 'fullName': 'user username2',
-                                'departmentNumber': '000',
-                                'dn': 'test',
-                                'country': 'usa', 'division': 'division',
-                                'department': 'department',
-                                'manager': 'test',
-                                'phoneOffice': '1234567890',
-                                'employeeNumber': '1234',
-                                'title': 'title',
-                                'group': 'test'},
-                       'labels': [],
-                       'pendingRiskTransfers': []},
+    'users': {
+        'username2': {'username': 'username2', 'riskScore': 313.18, 'averageRiskScore': 171.41,
+                      'pastScores': [287.19, 218.36, 0.0, 0.0, 0.0, 0.0, 0.0], 'lastSessionId': 'session2',
+                      'firstSeen': 1591021500000, 'lastSeen': 1593820320000, 'lastActivityType': 'Account is active',
+                      'lastActivityTime': 1593818940000,
+                      'info': {'location': 'us',
+                               'photo': '',
+                               'phoneCell': '1234567890',
+                               'email': 'test@.com',
+                               'employeeType': 'employee', 'fullName': 'user username2',
+                               'departmentNumber': '000',
+                               'dn': 'test',
+                               'country': 'usa', 'division': 'division',
+                               'department': 'department',
+                               'manager': 'test',
+                               'phoneOffice': '1234567890',
+                               'employeeNumber': '1234',
+                               'title': 'title',
+                               'group': 'test'},
+                      'labels': [],
+                      'pendingRiskTransfers': []},
         'mburgess': {'username': 'username1', 'riskScore': 109.73, 'averageRiskScore': 52.25,
                      'pastScores': [109.7382543963077], 'lastSessionId': 'session1',
                      'firstSeen': 1591025220000, 'lastSeen': 1593727380000, 'lastActivityType': 'Account is active',
@@ -174,7 +174,7 @@ RESPONSE_NOTABLE_SESSION_DETAILS = {
                               'title': 'title',
                               'group': 'test'}, 'labels': [],
                      'pendingRiskTransfers': []}},
-     'executiveUserFlags': {'username1': False, 'username2': False}
+    'executiveUserFlags': {'username1': False, 'username2': False}
 }
 
 RESPONSE_NOTABLE_SEQUENCE_DETAILS = [{
@@ -243,4 +243,3 @@ RESPONSE_INCIDENT_LIST = {'totalCount': 341, 'offset': 0, 'count': 1, 'maxCount'
                                                     'createdAt': 1608020359194, 'createdBy': 'admin',
                                                     'owner': 'unassigned', 'vendor': 'Exabeam', 'updatedBy': 'admin',
                                                     'restrictTo': None, 'sourceId': 'phil-20201215023110'}}]}
-

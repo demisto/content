@@ -1,1 +1,3 @@
-A threat intelligence and investigation platform for domain names, IP addresses, email addresses, mame servers and so on.
+Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization.
+
+The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.

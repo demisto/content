@@ -26,7 +26,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  required: false
+  required: true
 - display: Role Arn
   additionalinfo: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
   name: roleArn
@@ -83,6 +83,15 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -103,7 +112,7 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   type: 0
   required: false
-description: Amazon Web Services IAM Access Analyzer
+description: Amazon Web Services IAM Access Analyzer.
 display: AWS - AccessAnalyzer
 name: AWS - AccessAnalyzer
 script:
@@ -179,7 +188,7 @@ script:
       - AWS::S3::Bucket # disable-secrets-detection
       - AWS::SQS::Queue # disable-secrets-detection
     - auto: PREDEFINED
-      description: Filter findings by status
+      description: Filter findings by status.
       name: status
       predefined:
       - ACTIVE
@@ -301,7 +310,7 @@ script:
       name: roleSessionDuration
     description: Updates findings with the new values provided in the request.
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.67945
+  dockerimage: demisto/boto3py3:1.0.0.91694
   isfetch: true
   runonce: false
   script: '-'

@@ -1154,6 +1154,119 @@ Search for a malware by specified filters.
 | RecordedFuture.Malware.type | string | Recorded Future entity type \(always = "Malware"\). | 
 | RecordedFuture.Malware.intelCard | date | Recorded Future intelligence card URL. | 
 
+
+#### Base Command
+
+`recordedfuture-threat-map`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| actors_ids | Actors IDs for which to get the threat map | Optional | 
+| actor_name | Actors name for which to get the threat map | Optional | 
+| include_links | Fetch links to threat actor or not | Optional | 
+
+#### Context Output
+
+| **Path**                             | **Type** | **Description**                           |
+|--------------------------------------|----------|-------------------------------------------|
+| RecordedFuture.ThreatMap.id          | string   | Recorded Future threat actor ID.          | 
+| RecordedFuture.ThreatMap.name        | string   | Recorded Future entity name.              | 
+| RecordedFuture.ThreatMap.alias       | array    | Recorded Future threat actor alias.       | 
+| RecordedFuture.ThreatMap.intent      | number   | Recorded Future threat actor intent.      | 
+| RecordedFuture.ThreatMap.id          | string   | Recorded Future threat actor ID.          | 
+| RecordedFuture.ThreatMap.opportunity | number   | Recorded Future threat actor opportunity. | 
+| RecordedFuture.ThreatMap.log_entries | array    | Recorded Future threat actor log entries. | 
+| RecordedFuture.ThreatMap.links       | array    | Recorded Future threat actor links.       |
+
+
+#### Base Command
+
+`recordedfuture-threat-links`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                         | **Required** |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entity_type       | Type of the entity to fetch links for. E.g. "domain", "ip", "file", "url", "cve", "malware", "organization, "person". Should be provided along with the entity in entity_name argument. | Optional     | 
+| entity_name       | Name of the entity to fetch links for                                                                                                                                                   | Optional     | 
+| entity_id         | ID of entity to fetch links for                                                                                                                                                         | Optional     | 
+| source_type       | Source of the links to be fetched. Can be "insikt" or "technical"                                                                                                                       | Optional     | 
+| timeframe         | Time range of the links to be fetched. Eg. "-1d" for last 1 day                                                                                                                         | Optional     | 
+| technical_type    | Type of technical source to fetch links from. Can be "type:MalwareAnalysis", "type:InfrastructureAnalysis", "type:NetworkTrafficAnalysis" or "type:TTPAnalysis"                         | Optional     | 
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                  |
+|---------------------------------------|----------|----------------------------------|
+| RecordedFuture.Links.entity.id        | string   | Recorded Future Entity id.       | 
+| RecordedFuture.Links.entity.type      | string   | Recorded Future Entity type      | 
+| RecordedFuture.Links.links.type       | string   | Recorded Future link type.       | 
+| RecordedFuture.Links.links.id         | string   | Recorded Future link id.         | 
+| RecordedFuture.Links.links.name       | string   | Recorded Future link name.       | 
+| RecordedFuture.Links.links.source     | string   | Recorded Future link source.     | 
+| RecordedFuture.Links.links.section    | string   | Recorded Future link section.    | 
+| RecordedFuture.Links.links.attributes | string   | Recorded Future link attributes. |
+
+
+#### Base Command
+
+`recordedfuture-detection-rules`
+
+#### Input
+
+| **Argument Name** | **Description**                            | **Required** |
+|-------------------|--------------------------------------------|--------------|
+| entity_type       | Type of the entity to fetch links for      | Optional     | 
+| entity_name       | Name of the entity to fetch links for      | Optional     | 
+| entity_id         | ID of entity to fetch links for            | Optional     | 
+| rule_types        | Rule type. Can be "yara", "sigma", "snort" | Optional     | 
+| title             | Rule title                                 | Optional     | 
+
+#### Context Output
+
+| **Path**                                          | **Type** | **Description**                             |
+|---------------------------------------------------|----------|---------------------------------------------|
+| RecordedFuture.DetectionRules.id                  | string   | Recorded Future Detection rule id.          | 
+| RecordedFuture.DetectionRules.type                | string   | Recorded Future Detection rule type.        | 
+| RecordedFuture.DetectionRules.title               | string   | Recorded Future Detection rule title.       | 
+| RecordedFuture.DetectionRules.description         | string   | Recorded Future Detection rule description. | 
+| RecordedFuture.DetectionRules.created             | string   | Recorded Future link name.                  | 
+| RecordedFuture.DetectionRules.updated             | string   | Recorded Future link source.                | 
+| RecordedFuture.DetectionRules.rules               | array    | Recorded Future link section.               | 
+| RecordedFuture.DetectionRules.rules.entities      | array    | Recorded Future link attributes.            |
+| RecordedFuture.DetectionRules.rules.entities.id   | string   | Recorded Future link attributes.            |
+| RecordedFuture.DetectionRules.rules.entities.type | string   | Recorded Future link attributes.            |
+| RecordedFuture.DetectionRules.rules.entities.name | string   | Recorded Future link attributes.            |
+| RecordedFuture.DetectionRules.rules.content       | string   | Recorded Future link attributes.            |
+| RecordedFuture.DetectionRules.rules.file_name     | string   | Recorded Future link attributes.            |
+
+
+#### Base Command
+
+`recordedfuture-collective-insight`
+
+#### Input
+#### Input
+
+| **Argument Name**  | **Description**                                                                                     | **Required** |
+|--------------------|-----------------------------------------------------------------------------------------------------|--------------|
+| entity_type        | Value that can contain one of the enumerated list of values (ip, hash, domain, vulnerability, url). | Required     | 
+| entity_name        | Value of the IOC itself                                                                             | Required     | 
+| entity_source_type | Used to describe what log source the IOC came from                                                  | Optional     | 
+| incident_name      | Title of the incident related to the IOC                                                            | Optional     | 
+| incident_id        | ID of the incident related to the IOC                                                               | Optional     | 
+| incident_type      | Attack vector associated with the incident (C2, Phishing.. etc)                                     | Optional     | 
+| mitre_codes        | List contains one or more MITRE codes associated with the IOC                                       | Optional     | 
+| malware            | List contains all known malware associated with the IOCs                                            | Optional     | 
+
+#### Context Output
+
+| **Path**                                | **Type** | **Description** |
+|-----------------------------------------|----------|-----------------|
+| RecordedFuture.CollectiveInsight.status | string   | Request status  | 
+
 ## Breaking changes from the previous version of this integration - Recorded Future v2
 
 Renamed the integration setting "Incident Sharing" to "Collective Insights", resetting any previous configuration to this setting. 

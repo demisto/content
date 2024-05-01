@@ -10,7 +10,7 @@ from splunklib.binding import AuthenticationError
 from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
-
+from pytest_mock import MockerFixture
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -344,6 +344,74 @@ def test_parse_time_to_minutes_invalid_time_integer(mocker):
                       "e.g '2 months, 4 days'."
 
 
+def test_splunk_submit_event_hec_command(mocker):
+    text = "a msg with a failure."
+
+    class MockRes:
+        def __init__(self, text):
+            self.text = text
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == f"Could not send event to Splunk {text}"
+
+
+def check_request_channel(args: dict):
+    """
+    Check if args contains a request_channel, return the proper text.
+    Args:
+        args: A dict of args.
+    Returns: A MockResRequestChannel with the correct text value.
+    """
+    if args.get('request_channel'):
+        return MockResRequestChannel('{"text":"Success","code":0,"ackId":1}')
+    else:
+        return MockResRequestChannel('{"text":"Data channel is missing","code":10}')
+
+
+class MockResRequestChannel:
+    def __init__(self, text):
+        self.text = text
+
+
+def test_splunk_submit_event_hec_command_request_channel(mocker):
+    """
+    Given
+    - An args dict that contains a request_channel and a dummy params.
+    When
+    - Executing splunk_submit_event_hec_command function
+    Then
+    - The return result object contains the correct message.
+    """
+    args = {"request_channel": "11111111-1111-1111-1111-111111111111"}
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
+    moc = mocker.patch.object(demisto, 'results')
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args=args)
+    readable_output = moc.call_args[0][0]
+    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+
+
+def test_splunk_submit_event_hec_command_without_request_channel(mocker):
+    """
+    Given
+    - An args dict that doesn't contain a request_channel and a dummy params.
+    When
+    - Executing splunk_submit_event_hec_command function
+    Then
+    - The return result object contains the correct message.
+    """
+    args = {}
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args=args)
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
+
+
 def test_parse_time_to_minutes_invalid_time_unit(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
@@ -561,6 +629,191 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     assert output == expected_output
 
 
+class TestFetchRemovingIrrelevantIncidents:
+
+    notable1 = {'status': '5', 'event_id': '3'}
+    notable2 = {'status': '6', 'event_id': '4'}
+
+    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # the following two classes
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+
+    class Service:
+        def __init__(self):
+            self.jobs = TestFetchForLateIndexedEvents.Jobs()
+
+    def test_backwards_compatible(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round with the epoch time of their occurrence
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the last fetched IDs now hold the start of the fetch window, and not the epoch time
+        """
+        from SplunkPy import UserMappingObject
+
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
+                         'found_incidents_ids': {'1': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        service = self.Service()
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
+        assert last_fetched_ids == {'1': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
+
+    def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the fetched IDs that are no longer in the fetch window are removed
+        """
+        from SplunkPy import UserMappingObject
+
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
+                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
+                                                 '2': {'occurred_time': '2024-02-18T10:00:00'}}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        service = self.Service()
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
+        assert last_fetched_ids == {'2': {'occurred_time': '2024-02-18T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
+
+
+class TestFetchForLateIndexedEvents:
+    notable1 = {'status': '5', 'event_id': 'id_1'}
+    notable2 = {'status': '6', 'event_id': 'id_2'}
+
+    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # the following two classes
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+
+    class Service:
+        def __init__(self):
+            self.jobs = TestFetchForLateIndexedEvents.Jobs()
+
+    # If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
+    # and kwargs_oneshot['offset'] == 0
+    def test_fetch_query_and_oneshot_args(self, mocker: MockerFixture):
+        """
+        Given
+        - Mocked incidents api response
+        - The key "late_indexed_pagination" in the last run object is set to True
+        - Some incident IDs that were fetched in the last fetch round
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that last fetched incident IDs are specified to be excluded from the fetch query
+        - Make sure that the offset of the fetch query is set to 0
+        """
+        from SplunkPy import UserMappingObject
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
+                         'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+        mock_params = {'fetchQuery': 'something'}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1])
+        service = self.Service()
+        oneshot_mocker = mocker.patch.object(service.jobs, 'oneshot', side_effect=service.jobs.oneshot)
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in ("1234","5678")'
+        assert oneshot_mocker.call_args_list[0][1]['offset'] == 0
+
+    # If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
+    def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+        - Mocked incidents api response, that have IDs as the last fetched IDs (which means that num_of_dropped == FETCH_LIMIT)
+        - `notable` is in the fetch query
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the key "late_indexed_pagination" in last run object is set to True
+        """
+        from SplunkPy import UserMappingObject
+        # MonkeyPatch can be used to patch global variables
+        monkeypatch.setattr(splunk, 'FETCH_LIMIT', 2)
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2018-10-24T14:13:20',
+                         'found_incidents_ids': {'id_1': 1700497516, 'id_2': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        service = self.Service()
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
+
+    # If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
+    def test_second_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+        - Mocked incidents api response, where only new incidents are fetched (which means that len(incidents) == FETCH_LIMIT)
+        - The key "late_indexed_pagination" in the last run object is set to True
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the key "late_indexed_pagination" in last run object is set to True
+        """
+        from SplunkPy import UserMappingObject
+        # MonkeyPatch can be used to patch global variables
+        monkeypatch.setattr(splunk, 'FETCH_LIMIT', 2)
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
+                         'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        service = self.Service()
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
+
+
 def test_fetch_incidents(mocker):
     """
     Given
@@ -584,7 +837,7 @@ def test_fetch_incidents(mocker):
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper)
+    splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
@@ -648,11 +901,12 @@ def test_fetch_notables(mocker):
     service = Service('DONE')
     mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper=mapper)
+    splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
+                           comment_tag_from_splunk='comment_tag_from_splunk')
     cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
     assert cache_object.submitted_notables
     notable = cache_object.submitted_notables[0]
-    incident_from_cache = notable.to_incident(mapper)
+    incident_from_cache = notable.to_incident(mapper, 'comment_tag_to_splunk', 'comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 0
@@ -661,7 +915,8 @@ def test_fetch_notables(mocker):
     assert not incident_from_cache.get('owner')
 
     # now call second time to make sure that the incident fetched
-    splunk.fetch_incidents(service, mapper=mapper)
+    splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
+                           comment_tag_from_splunk='comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
@@ -1072,7 +1327,8 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: list[resul
     mocker.patch('SplunkPy.results.JSONResultsReader', return_value=notable_data)
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
+                                   comment_tag_from_splunk='comment_tag_from_splunk', **func_call_kwargs)
     results = demisto.results.call_args[0][0]
 
     expected_results = [notable_data[1]]
@@ -1120,9 +1376,80 @@ def test_get_remote_data_command_with_message(mocker):
     )
     mocker.patch("SplunkPy.isinstance", return_value=True)
 
-    splunk.get_remote_data_command(Service(), **func_call_kwargs)
+    splunk.get_remote_data_command(Service(), comment_tag_from_splunk='from_splunk', **func_call_kwargs)
     (info_message,) = info_mock.call_args_list[0][0]
     assert info_message == "Splunk-SDK message: test message"
+
+
+def test_fetch_with_error_in_message(mocker):
+    """
+    Given - fetch result from Splunk return Error message
+    When - fetch incidents
+    Then - assert DemistoException is raised
+    """
+
+    mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
+    mocker.patch('demistomock.getLastRun', return_value={'time': '2018-10-24T14:13:20'})
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[results.Message("FATAL", "Error")])
+
+    # run
+    service = mocker.patch('splunklib.client.connect')
+    with pytest.raises(DemistoException) as e:
+        splunk.fetch_incidents(service, None, None, None)
+    assert 'Failed to fetch incidents, check the provided query in Splunk web search' in e.value.message
+
+
+@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
+                         [({'status_label': 'New', 'event_id': 'id', 'status_end': 'false',
+                            'comment': 'new comment from splunk', 'reviewer': 'admin',
+                            'review_time': '1612881691.589575'},
+                           {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                           None,
+                           )])
+def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
+                                             func_call_kwargs: dict, expected_closure_data: dict):
+    """
+    Test case for get_remote_data_command with comment addition.
+    Given:
+        - notable data with new comment
+    When:
+        new comment added in splunk
+    Then:
+        - ensure the comment added as a new note
+        - ensure the event was updated
+
+    """
+    class Jobs:
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return notable_data
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[notable_data])
+    mocker.patch.object(demisto, 'results')
+    service = Service()
+
+    expected_comment_note = {'Type': 1, 'Contents': 'new comment from splunk',
+                             'ContentsFormat': 'text', 'Tags': ['from_splunk'], 'Note': True}
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
+                                   comment_tag_from_splunk='from_splunk', **func_call_kwargs)
+    results = demisto.results.call_args[0][0][0]
+    notable_data.update({'SplunkComments': [{'Comment': 'new comment from splunk'}]})
+    note_results = demisto.results.call_args[0][0][1]
+
+    expected_results = [notable_data][0]
+
+    assert demisto.results.call_count == 1
+    assert results == expected_results
+    assert note_results == expected_comment_note
 
 
 def test_get_modified_remote_data_command(mocker):
@@ -1165,7 +1492,7 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
         'eventIDs': 'ID100',
         'owner': 'dbot'
     }
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(splunk, 'return_error')
 
     requests_mock.post(f'{test_base_url}services/notable_update', json='ValueError: Invalid owner value.')
 
@@ -1176,19 +1503,19 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
         args=test_args
     )
 
-    assert demisto.results.call_count == 1
-    error_message = demisto.results.call_args[0][0]['Contents']
-    assert error_message == 'Could not update notable events: ID100 : ValueError: Invalid owner value.'
+    assert splunk.return_error.call_count == 1
+    error_message = splunk.return_error.call_args[0][0]
+    assert error_message == 'Could not update notable events: ID100: ValueError: Invalid owner value.'
 
 
 @pytest.mark.parametrize('args, params, call_count, success', [
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 4, True),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, False),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
-     4, True)
+     5, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
 
@@ -1212,7 +1539,8 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
         mocker.patch.object(demisto, 'error')
     service = Service()
     mapper = splunk.UserMappingObject(service, False)
-    assert splunk.update_remote_system_command(args, params, service, None, mapper=mapper) == args['remoteId']
+    assert splunk.update_remote_system_command(args, params, service, None, mapper=mapper,
+                                               comment_tag_to_splunk='comment_tag_to_splunk') == args['remoteId']
     assert demisto.debug.call_count == call_count
     if not success:
         assert demisto.error.call_count == 1
@@ -1368,10 +1696,7 @@ IDENTITY = {
 
 def test_get_cim_mapping_field_command(mocker):
     """ Scenario: When the mapping is based on Splunk CIM. """
-    mocker.patch.object(demisto, 'results')
-    splunk.get_cim_mapping_field_command()
-    fields = demisto.results.call_args[0][0]
-    assert demisto.results.call_count == 1
+    fields = splunk.get_cim_mapping_field_command()
     assert fields == {
         'Notable Data': NOTABLE,
         'Drilldown Data': DRILLDOWN,
@@ -1489,6 +1814,7 @@ def test_splunk_search_command(mocker, polling, status):
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     search_result = splunk.splunk_search_command(Service(status), mock_args)
+    search_result = search_result if isinstance(search_result, CommandResults) else search_result[0]
 
     if search_result.scheduled_command:
         assert search_result.outputs['Status'] == status
@@ -1651,7 +1977,8 @@ def test_labels_with_non_str_values(mocker):
     # run
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mapper = UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper)
+    splunk.fetch_incidents(service, mapper, comment_tag_to_splunk='comment_tag_to_splunk',
+                           comment_tag_from_splunk='comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
 
     # validate

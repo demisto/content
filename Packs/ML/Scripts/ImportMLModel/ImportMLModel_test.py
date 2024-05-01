@@ -20,7 +20,7 @@ def test_main(mocker):
             key_args = ['modelData', 'modelName', 'modelLabels', 'modelOverride']
         if command == "evaluateMLModel":
             key_args = ['modelConfusionMatrix', 'modelName']
-        assert(all(k in args for k in key_args))
+        assert (all(k in args for k in key_args))
         return []
 
     def results(result):

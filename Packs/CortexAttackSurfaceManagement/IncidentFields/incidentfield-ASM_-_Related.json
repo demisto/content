@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Optional: The source of related item. Ex: Alerts, ServiceNOW, JIRA, etc."
         },
         {
             "displayName": "Link",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Optional: Link to object (if available)."
         }
     ],
     "content": true,

@@ -11,6 +11,15 @@ from MicrosoftApiModule import *  # noqa: E402
 urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
+REQUIRED_PERMISSIONS = (
+    'offline_access',  # allows device-flow login
+    'IdentityRiskEvent.Read.All',
+    'IdentityRiskyUser.ReadWrite.All',
+    'RoleManagement.ReadWrite.Directory',
+    'Policy.ReadWrite.ConditionalAccess',
+    'Policy.Read.All'
+)
+
 
 class Client:  # pragma: no cover
     def __init__(self, app_id: str, verify: bool, proxy: bool,
@@ -23,7 +32,7 @@ class Client:  # pragma: no cover
             integration_context = get_integration_context()
             integration_context['current_refresh_token'] = refresh_token
             set_integration_context(integration_context)
-        elif not enc_key and not (certificate_thumbprint and private_key):
+        elif client_credentials and (not enc_key and not (certificate_thumbprint and private_key)):
             raise DemistoException('Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For further '
                                    'information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
@@ -44,7 +53,7 @@ class Client:  # pragma: no cover
             "command_prefix": "msgraph-identity",
         }
         if not client_credentials:
-            args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
+            args["scope"] = ' '.join(REQUIRED_PERMISSIONS)
             args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
         self.ms_client = MicrosoftClient(**args)  # type: ignore
 
@@ -937,5 +946,5 @@ def main():  # pragma: no cover
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

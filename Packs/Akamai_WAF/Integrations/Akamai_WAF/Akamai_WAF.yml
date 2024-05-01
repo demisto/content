@@ -271,7 +271,7 @@ script:
       description: The network list environment activation production status.
       type: String
   - arguments:
-    - description: The ID of the network list to update
+    - description: The ID of the network list to update.
       name: network_list_id
       required: true
     - description: Comma-separated list of elements. Use BLANK to empty a list.
@@ -281,7 +281,7 @@ script:
     description: Updates list elements of a network list.
     name: akamai-update-network-list-elements
   - arguments:
-    - description: Group Name
+    - description: Group Name.
       name: checking_group_name
       type: textArea
     description: Check an existing group within the context of your account.
@@ -398,13 +398,13 @@ script:
       required: true
       type: textArea
     - defaultValue: 'True'
-      description: Network Configuration - Dns Name Settings - Clone DNS Names
+      description: Network Configuration - Dns Name Settings - Clone DNS Names.
       name: clone_dns_names
     - defaultValue: 'False'
-      description: Third Party - Exclude Sans
+      description: Third Party - Exclude Sans.
       name: exclude_sans
     - defaultValue: 'False'
-      description: Enable this will stop CPS from deploying the certificate to the network
+      description: Enable this will stop CPS from deploying the certificate to the network.
       name: change_management
     - defaultValue: core
       description: Use core to specify worldwide (includes China and Russia), china+core to specify worldwide and China, and 'russia+core` to specify worldwide and Russia.
@@ -428,7 +428,7 @@ script:
     - defaultValue: 'True'
       description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
       name: network_configuration_sni_only
-    - description: Multiple sans adding into the Common name
+    - description: Multiple sans adding into the Common name.
       isArray: true
       name: sans
     description: Create a new enrollment.
@@ -438,7 +438,7 @@ script:
       description: Enrollment path.
       type: string
   - arguments:
-    - description: Contract ID
+    - description: Contract ID.
       name: contract_id
       required: true
     description: List enrollments of a specific contract.
@@ -476,11 +476,11 @@ script:
     - description: Weight 2.
       name: weight_2
     - name: property_comments
-      description: GTM property comments
+      description: GTM property comments.
       type: textArea
-    - description: Data center ID 1
+    - description: Data center ID 1.
       name: dc1_id
-    - description: Data center ID 2
+    - description: Data center ID 2.
       name: dc2_id
     description: Update a property for a specific domain.
     name: akamai-update-property
@@ -511,10 +511,16 @@ script:
     - description: The updated trust chain.
       name: trust_chain
       type: textArea
+    - auto: PREDEFINED
+      description: Type of encryption.
+      name: key_algorithm
+      predefined:
+      - RSA
+      - ECDSA
     description: Update the certs and trust chains.
     name: akamai-update-change
   - arguments:
-    - description: Contract ID
+    - description: Contract ID.
       name: contract_id
       required: true
       type: textArea
@@ -533,7 +539,7 @@ script:
     name: akamai-list-groups
     outputs:
     - contextPath: Akamai.Group
-      description: Akmai Group
+      description: Akmai Group.
   - arguments:
     - defaultValue: '0'
       description: Group ID.
@@ -557,7 +563,7 @@ script:
     - contextPath: Akamai.Domain
       description: Domain.
   - arguments:
-    - description: Domain Name
+    - description: Domain Name.
       name: domain_name
       required: true
     - description: Domain controller name.
@@ -793,7 +799,7 @@ script:
       name: validate_rules
       required: true
       type: textArea
-    - description: JSON patch operation. Add, Remove, Replace
+    - description: JSON patch operation. Add, Remove, Replace.
       name: operation
       required: true
       type: textArea
@@ -801,7 +807,7 @@ script:
       name: path
       required: true
       type: textArea
-    - description: value
+    - description: value.
       name: origin
       required: true
       type: textArea
@@ -831,7 +837,7 @@ script:
       name: property_id
       required: true
       type: textArea
-    - description: STAGING or PRODUCTION
+    - description: STAGING or PRODUCTION.
       name: network
       type: textArea
     - description: Notification emails.
@@ -840,7 +846,7 @@ script:
     - description: PAPI (Ion Standard) property version.
       name: property_version
       type: textArea
-    - description: activation note
+    - description: activation note.
       name: note
     description: Activate a PAPI property.
     name: akamai-activate-papi-property
@@ -981,7 +987,7 @@ script:
     - contextPath: Akamai.AppSecConfig.LatestVersion
       description: Security configuration latest version number.
   - arguments:
-    - description: Security Policy Name
+    - description: Security Policy Name.
       name: policy_name
       required: true
       type: textArea
@@ -1024,26 +1030,26 @@ script:
     - description: Do not clone to create a new version. Use in the test.
       name: do_not_clone
       required: true
-    description: AppSec_clone appsec config version
+    description: AppSec_clone appsec config version.
     name: akamai-clone-appsec-config-version
     outputs:
     - contextPath: Akamai.AppSecConfig.Name
       description: AppSec configuration name.
     - contextPath: Akamai.AppSecConfig.Id
-      description: AppSec Configration ID
+      description: AppSec Configration ID.
     - contextPath: Akamai.AppSecConfig.NewVersion
-      description: AppSec Configration New Version
+      description: AppSec Configration New Version.
   - arguments:
-    - description: Contract ID
+    - description: Contract ID.
       name: contract_id
       required: true
-    - description: Group ID
+    - description: Group ID.
       name: group_id
       required: true
-    - description: Property ID
+    - description: Property ID.
       name: property_id
       required: true
-    - description: Property Version
+    - description: Property Version.
       name: property_version
     - description: Whether to validate the Rules.
       name: validate_rules
@@ -1125,52 +1131,52 @@ script:
     - name: enrollment_id
       description: The enrollment id.
       required: true
-    description: Get Production Deployment
+    description: Get Production Deployment.
     name: akamai-get-production-deployment
   - arguments:
     - name: enrollment_id
       description: The enrollment id.
       required: true
-    description: Get change history
+    description: Get change history.
     name: akamai-get-change-history
   - arguments:
-    - description: Akamai contract Identity
+    - description: Akamai contract Identity.
       name: contract_id
       required: true
-    - description: Akamai configuration group Identity
+    - description: Akamai configuration group Identity.
       name: group_id
       required: true
-    - description: Akamai Ion Property Identity
+    - description: Akamai Ion Property Identity.
       name: property_id
       required: true
-    - description: Akamai Ion Property Version Identity
+    - description: Akamai Ion Property Version Identity.
       name: property_version
       required: true
-    - description: Validate the rule or not - true or false
+    - description: Validate the rule or not - true or false.
       name: validate_rules
       required: true
-    - description: Json patch operation - add / delete / replace
+    - description: Json patch operation - add / delete / replace.
       name: operation
       required: true
-    - description: Json patch Rule path
+    - description: Json patch Rule path.
       name: path
       required: true
-    - description: siteshiled json format data
+    - description: siteshiled json format data.
       name: ssmap
       required: true
-    description: Patch papi property default rule siteshield
+    description: Patch papi property default rule siteshield.
     name: akamai-patch-papi-property-rule-siteshield
   - arguments:
-    - description: The ID of the application seucirty configuration
+    - description: The ID of the application seucirty configuration.
       name: config_id
       required: true
-    - description: The version number of the application seucirty configuration
+    - description: The version number of the application seucirty configuration.
       name: config_version
       required: true
-    - description: The notes need to be written into the application seucirty configuration version
+    - description: The notes need to be written into the application seucirty configuration version.
       name: notes
       required: true
-    description: Update application secuirty configuration version notes command
+    description: Update application secuirty configuration version notes command.
     name: akamai-update-appsec-config-version-notes
   - arguments:
     - description: A unique identifier for each configuration.
@@ -1179,25 +1185,25 @@ script:
     - description: A unique identifier for each version of a configuration.
       name: config_version
       required: true
-    - description: The type of the match target
+    - description: The type of the match target.
       name: match_type
       required: true
-    - description: bypass network lists
+    - description: bypass network lists.
       name: bypass_network_lists
       required: true
     - description: Describes the rule to match on paths.
       name: default_file
       required: true
-    - description: Contains a list of file paths
+    - description: Contains a list of file paths.
       name: file_paths
       required: true
-    - description: A list of hostnames that need to be added into match target
+    - description: A list of hostnames that need to be added into match target.
       name: hostnames
       required: true
-    - description: Specifies the security policy to filter match targets
+    - description: Specifies the security policy to filter match targets.
       name: policy_id
       required: true
-    description: New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated
+    description: New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated.
     name: akamai-new-or-renew-match-target
   - arguments:
     - description: A unique identifier for each configuration.
@@ -1206,31 +1212,31 @@ script:
     - description: A unique identifier for each group.
       name: group_id
       required: true
-    - description: A unique identifier for each Papi Property
+    - description: A unique identifier for each Papi Property.
       name: property_id
       required: true
     - description: A unique identifier for each Papi Property Version.
       name: property_version
       required: true
-    - description: whether validate rule or not
+    - description: whether validate rule or not.
       name: validate_rules
       required: true
-    - description: add/replace/remove
+    - description: add/replace/remove.
       name: operation
       required: true
-    - description: json rule tree path for the default rule
+    - description: json rule tree path for the default rule.
       name: path
       required: true
-    - description: value to be operated against
+    - description: value to be operated against.
       name: value
       required: true
-    - description: whether to convert value to json format. yes/no
+    - description: whether to convert value to json format. yes/no.
       name: value_to_json
       predefined:
       - 'yes'
       - 'no'
       auto: PREDEFINED
-    description: Generic JSON patch command for Papi Property Default Rule
+    description: Generic JSON patch command for Papi Property Default Rule.
     name: akamai-patch-papi-property-rule-generic
   - arguments:
     - description: A unique identifier for each configuration.
@@ -1239,33 +1245,33 @@ script:
     - description: A unique identifier for each group.
       name: group_id
       required: true
-    - description: A unique identifier for each Papi Property
+    - description: A unique identifier for each Papi Property.
       name: property_id
       required: true
     - description: A unique identifier for each Papi Property Version.
       name: property_version
       required: true
-    - description: whether validate rule or not
+    - description: whether validate rule or not.
       name: validate_rules
       required: true
-    description: get papi property rule json and dump into string
+    description: get papi property rule json and dump into string.
     name: akamai-get-papi-property-rule
     outputs:
     - contextPath: Akamai.PapiProperty.DefaultRule
-      description: Papi Property default rule
+      description: Papi Property default rule.
   - arguments:
-    - description: The path that includes enrollmentId and changeId
+    - description: The path that includes enrollmentId and changeId.
       name: change_path
       required: true
-    description: acknowledge pre verification warning
+    description: acknowledge pre verification warning.
     name: akamai-acknowledge-pre-verification-warning
   - arguments:
-    - description: Unique identifier for the contract
+    - description: Unique identifier for the contract.
       name: contract_id
       required: true
     - description: Name of the PAPI property.
       name: property_name
-    - description: Unique identifier for the group
+    - description: Unique identifier for the group.
       name: group_id
     description: Get PAPI property info without the default rule. To get the default rule, use the "get-papi-property-rule" command.
     name: akamai-get-papi-property-by-name
@@ -1273,22 +1279,22 @@ script:
     - description: Unique identifier for the contract.
       name: contract_id
       required: true
-    - description: Unique identifier for the group
+    - description: Unique identifier for the group.
       name: group_id
       required: true
     - defaultValue: PapiProperty.ByGroup
-      description: Custom output context path, default is "PapiProperty.ByGroup"
+      description: Custom output context path, default is "PapiProperty.ByGroup".
       name: context_path
     description: 'Lists properties available for the current contract and group. '
     name: akamai-list-papi-property-by-group
   - arguments:
-    - description: Unique identifier of the contract
+    - description: Unique identifier of the contract.
       name: contract_id
       required: true
-    - description: Unique identifier for the group
+    - description: Unique identifier for the group.
       name: group_id
       required: true
-    - description: Unique identifier of the property
+    - description: Unique identifier of the property.
       name: property_id
       required: true
     description: get papi property info by id without default rule. to get default rule, please use "get-papi-property-rule" command.
@@ -1324,21 +1330,21 @@ script:
     - description: Unique identifier for the contract.
       name: config_id
       required: true
-    description: '        Lists the activation history for a configuration.          The history is an array in descending order of submitDate.          The most recent submitted activation lists first. Products: All.'
+    description: 'Lists the activation history for a configuration. The history is an array in descending order of submitDate. The most recent submitted activation lists first. Products: All.'
     name: akamai-list-appsec-configuration-activation-history
   - arguments:
     - description: Filter the results by cnameFrom. Supports wildcard matches with *.
       name: hostname
       required: true
     - auto: PREDEFINED
-      description: Network of activated hostnames, either STAGING or PRODUCTION. Or leave it BLANK
+      description: Network of activated hostnames, either STAGING or PRODUCTION. Or leave it BLANK.
       name: network
       predefined:
       - STAGING
       - PRODUCTION
-    - description: Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time
+    - description: Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time.
       name: contract_id
-    - description: Unique identifier for the group. contract_id and groupd_id need to be presented at the same time
+    - description: Unique identifier for the group. contract_id and groupd_id need to be presented at the same time.
       name: group_id
     description: 'Lists active property hostnames for all properties available in an account. '
     name: akamai-list-papi-property-by-hostname
@@ -1347,11 +1353,135 @@ script:
     name: akamai-list-siteshield-map
     outputs:
     - contextPath: Akamai.SiteShieldMaps
-      description: Akamai SiteShield Maps
-  dockerimage: demisto/akamai:1.0.0.65229
+      description: Akamai SiteShield Maps.
+      type: List
+  - arguments:
+    - description: Unique identifier of the enrollment on which to perform the desired operation. And it can be retrieved via the akamai-list-enrollments command.
+      name: enrollment_id
+      required: true
+    - auto: PREDEFINED
+      description: Environment where the certificate is deployed.
+      name: environment
+      predefined:
+      - production
+      - staging
+    description: 'Returns the certification/enrollment deployment status for specific a environment: production or staging.'
+    name: akamai-get-cps-enrollment-deployment
+    outputs:
+    - contextPath: Akamai.Cps.Enrollments.Deployment
+      description: A collection of settings for the Akami CPS enrollments deployment.
+      type: Dictionary
+  - arguments:
+    - auto: PREDEFINED
+      description: Whether a CIDR block was added, updated, or removed from service. You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete. Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
+      name: last_action
+      predefined:
+      - all
+      - add
+      - delete
+      - update
+      type: textArea
+    - description: The ISO 8601 date the CIDR block starts serving traffic to your origin. Ensure your firewall rules are updated to allow this traffic to pass through before the effective date. Expected format MM-DD-YYYY or YYYY-MM-DD.
+      name: effective_date_gt
+      type: textArea
+    description: List all CIDR blocks for all services you are subscribed to. To see additional CIDR blocks, subscribe yourself to more services and run this operation again.
+    name: akamai-list-cidr-blocks
+    outputs:
+    - contextPath: Akamai.CidrBlocks
+      description: A list of CIDR blocks.
+      type: List
+  - arguments:
+    - description: Enrollment on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command.
+      name: enrollment_id
+      required: true
+    - description: 'The modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates.'
+      isArray: true
+      name: updates
+      required: true
+    - description: Enrollment information in dict format. If provided, the script will not make another API call to get the enrollment information. If not provided, another API call will be issued to retrieve the enrollment information.
+      isArray: true
+      name: enrollment
+    - description: Whether all pending changes are to be cancelled when updating an enrollment.
+      name: allow_cancel_pending_changes
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Whether to bypass staging and push meta_data updates directly to the production network. Current change will also be updated with the same changes.
+      name: allow_staging_bypass
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: "Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z."
+      name: deploy_not_after
+    - description: "Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z."
+      name: deploy_not_before
+    - description: Whether to force certificate renewal for enrollment.
+      name: force_renewal
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Whether CPS will automatically start a change to renew certificates in time before they expire.
+      name: renewal_date_check_override
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Applicable for Third Party Dual Stack Enrollment. Whether to update a missing certificate. Option supported from v10.
+      name: allow_missing_certificate_addition
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    description: 'Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation requires new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active changes and the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  Note: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowledging the warnings raised then waiting for the certificate to be deployed into Production. However, these additional steps are not included in this command. You need to perform those steps once the update command is completed.'
+    name: akamai-update-cps-enrollment
+    outputs:
+    - contextPath: Akamai.Enrollment.Changes
+      description: Akamai enrollment changes.
+      type: Dictionary
+  - arguments:
+    - description: Enrollment path found in the pending change location field.
+      name: enrollment_path
+    - description: Enrollment ID on which to perform the desired operation. The ID can be retrieved via the akamai-list-enrollments command.
+      name: enrollment_id
+    - description: Change ID on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command.
+      name: change_id
+    - description: 'The time after when the change will no longer be in effect. This value is an ISO-8601 timestamp. (UTC) Sample: 2021-01-31T00:00:00.000Z.'
+      name: deploy_not_after
+    - description: 'The time that you want the change to take effect. If you do not set this, the change occurs immediately, although most changes take some time to take effect even when they are immediately effective. This value is an ISO-8601 timestamp. (UTC) Sample: 2021-01-31T00:00:00.000Z.'
+      name: deploy_not_before
+      required: true
+    description: Updates the current deployment schedule.
+    name: akamai-update-cps-enrollment-schedule
+    outputs:
+    - contextPath: Akamai.Enrollment.Changes
+      description: Akamai enrollment changes.
+      type: Dictionary
+  - arguments:
+    - description: 'Enrollment path found in the pending change location field.'
+      name: enrollment_path
+    - description: The enrollment ID on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command.
+      name: enrollment_id
+    - description: The change for this enrollment on which to perform the desired operation.  It can be retrieved via the akamai-list-enrollments command.
+      name: change_id
+    description: Gets the status of a pending change.
+    name: akamai-get-cps-change-status
+    outputs:
+    - contextPath: Akamai.Enrollments.Change.Status
+      description: Akamai enrollments change status.
+      type: Dictionary
+  dockerimage: demisto/auth-utils:1.0.0.79304
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - Akamai_WAF-Test
 fromversion: 5.0.0

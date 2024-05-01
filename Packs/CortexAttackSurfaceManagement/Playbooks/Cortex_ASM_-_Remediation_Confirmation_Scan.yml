@@ -258,7 +258,7 @@ tasks:
       id: 0e09a874-f500-44a2-83c8-93356bbb6f4e
       version: -1
       name: Set service detection grid field
-      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "scannum,scandone,scanresult,timestamp,scanstate"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -270,7 +270,7 @@ tasks:
       gridfield:
         simple: asmservicedetection
       keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
+        simple: scannum,scandone,scanresult,timestamp,scanstate
       val1:
         complex:
           root: ASM.RemediationScan
@@ -319,7 +319,7 @@ tasks:
       id: 889bc552-55a5-49ee-8446-2053eb4dcdef
       version: -1
       name: Set service detection grid field
-      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "scannum,scandone,scanresult,timestamp,scanstate"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -331,7 +331,7 @@ tasks:
       gridfield:
         simple: asmservicedetection
       keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
+        simple: scannum,scandone,scanresult,timestamp,scanstate
       val1:
         complex:
           root: ASM.RemediationScan
@@ -339,7 +339,7 @@ tasks:
       val2:
         simple: "false"
       val3:
-        simple: N/A
+        simple: n/a
       val4:
         simple: TIMESTAMP
       val5:
@@ -370,7 +370,7 @@ tasks:
       id: 1ac9bd98-f085-472c-8e72-a35c9aba7511
       version: -1
       name: Set service detection grid field
-      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "scannum,scandone,scanresult,timestamp,scanstate"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -382,7 +382,7 @@ tasks:
       gridfield:
         simple: asmservicedetection
       keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
+        simple: scannum,scandone,scanresult,timestamp,scanstate
       val1:
         complex:
           root: ASM.RemediationScan
@@ -390,7 +390,7 @@ tasks:
       val2:
         simple: "false"
       val3:
-        simple: N/A
+        simple: n/a
       val4:
         simple: TIMESTAMP
       val5:
@@ -557,7 +557,7 @@ tasks:
       id: 975abb60-5eae-4507-844c-0f8a7cbf3b42
       version: -1
       name: Set service detection grid field
-      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "scannum,scandone,scanresult,timestamp,scanstate"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -569,17 +569,17 @@ tasks:
       gridfield:
         simple: asmservicedetection
       keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
+        simple: scannum,scandone,scanresult,timestamp,scanstate
       val1:
-        simple: N/A
+        simple: n/a
       val2:
         simple: "false"
       val3:
-        simple: N/A
+        simple: n/a
       val4:
         simple: TIMESTAMP
       val5:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-

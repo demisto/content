@@ -16,14 +16,7 @@ isHosted = function () {
     return false
 }
 
-// only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
-if  (isHosted()) {
-    if (!serverURL.endsWith('/xsoar')){
-        serverURL = serverURL + '/xsoar'
-    }
-}
-
-var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/content/packs/'
 
 getTenantAccountName = function () {
     // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
@@ -70,6 +63,14 @@ getAdvancedAuthMethodHeaders = function(key, auth_id, content_type,) {
 
 getRequestURL = function (uri) {
     var requestUrl = serverURL;
+
+    // only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
+    // and only when it is not a /public_api endpoint.
+    if (isHosted()) {
+        if ((!serverURL.endsWith('/xsoar')) && (!uri.startsWith('/public_api'))) {
+            requestUrl += '/xsoar'
+        }
+    }
     if (params.use_tenant){
         requestUrl += '/' + getTenantAccountName();
     }
@@ -345,27 +346,6 @@ var uploadFile= function(incident_id, file_content, file_name) {
     return res;
 };
 
-/**
- * deletes an entry  by entryID by the key_to_delete
-Arguments:
-    @param {String} key_to_delete  -- the name of the key to delete
-    @param {String} incident_id  -- the incident id
-Returns:
-    CommandResults
-"""
- */
-var deleteContextRequest = function (incident_id, key_to_delete) {
-    var body = JSON.stringify({
-        "args": null,
-        "id": "",
-        "investigationId": `${incident_id}`,
-        "data": `!DeleteContext key=${key_to_delete}\n`,
-        "markdown": false,
-        "version": 0
-    });
-   return sendRequest('POST', '/entry', body);
-};
-
 
 /**
  * deletes a file  by entryID
@@ -431,7 +411,7 @@ Note:
 """ 
  */
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
-    incident_id = (incident_id === 'undefined')? investigation.id: incident_id;
+    incident_id = (typeof incident_id === 'undefined')? investigation.id: incident_id;
     if (incident_id!=investigation.id){
         log(`Note that the file would be uploaded to ${incident_id} from incident ${investigation.id}`);
     }
@@ -488,13 +468,9 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`Files not found.`);
         
     }
-    var edit_content_data_files = []
     var not_found = true
     for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
-        if (files[i]['EntryID'] != EntryID) {
-            edit_content_data_files.push(files[i]);
-        }
-        else{
+        if (files[i]['EntryID'] == EntryID) {
             not_found= false 
         }
         
@@ -502,18 +478,11 @@ var fileDeleteCommand = function(EntryID) {
     if(not_found){
         throw new Error(`File already deleted or not found.`);
     }
-    deleteContextRequest(investigation.id, 'File');
     deleteFileRequest(EntryID);
-    let context = {
-        'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
-    };
     return  {Type: entryTypes.note,
-            Contents: '',
-            ContentsType: formats.json,
-            EntryContext: context,
-            HumanReadable: `File ${EntryID} was deleted successfully.`};
-
-
+        Contents: '',
+        ContentsType: formats.json,
+        HumanReadable: `File ${EntryID} was deleted successfully.`}
 }
 
 
@@ -527,7 +496,7 @@ var fileDeleteCommand = function(EntryID) {
 function coreApiFileCheckCommand(EntryID) {
     files =  invContext['File']instanceof Array? invContext['File']:[invContext['File']];
     var file_found = false;
-    var human_readable = `File ${EntryID} isn't exists`;
+    var human_readable = `File ${EntryID} does not exist`;
     if (typeof files['0'] !== 'undefined') {
         for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
             if (files[i]['EntryID'] == EntryID) {
@@ -556,7 +525,7 @@ function coreApiFileCheckCommand(EntryID) {
         Show a message that the file was deleted successfully
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    incident_id = (incident_id=='undefined')? investigation.id: incident_id;    
+    incident_id = (typeof incident_id == 'undefined')? investigation.id: incident_id;    
     deleteAttachmentRequest(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };

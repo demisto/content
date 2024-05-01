@@ -1,0 +1,1105 @@
+{
+    "flowId": "641dfd3f009023b71dc2b454",
+    "allFinished": true,
+    "allFilesDownloadFinished": true,
+    "reportsAmount": 3,
+    "priority": "least",
+    "pollPause": 12,
+    "fileSize": 15834135,
+    "fileReadProgressBytes": 15834135,
+    "sourceArchive": {
+        "scan_task_id": "afb3d699-be8f-4192-9ca5-904ec25320cb",
+        "name": "three_mal.zip",
+        "mimeType": "application/zip",
+        "sha256": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209",
+        "private": false,
+        "is_link_upload": false,
+        "sha1": "6146716546af728505996aae2d5c246361b1975f",
+        "sha512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e",
+        "md5": "91bcf62e6e5a9dd3db6f7a658fb162b1",
+        "tags": [
+            {
+                "source": "MEDIA_TYPE",
+                "tag": {
+                    "name": "zip"
+                }
+            }
+        ],
+        "verdict": "malicious"
+    },
+    "reports": {
+        "37c17741-5535-40f7-bb8f-5a4d65f6ec47": {
+            "finalVerdict": {
+                "verdict": "MALICIOUS",
+                "threatLevel": 1,
+                "confidence": 1
+            },
+            "allTags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "overallState": "success",
+            "taskReference": {
+                "name": "transform-file",
+                "additionalInfo": {
+                    "submitName": "bad_file.exe",
+                    "submitTime": 1679686979584,
+                    "digests": {
+                        "SHA-256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                    },
+                    "context": {
+                        "contextData": "eJwL8GZmEWEAAc4JhWEMSICLQYGhJKMoNbU4PzdVPzSEl4F90RyRlKVADKJLK7gZGFleMjMwgIkAsDmcDMkMCXnZgTAz/PpUGUQZtJHMKcjPL0ovrdQryEsHG2lyb3X8GqBxszGNZJzJzsDI4OjKzMHwokqoMGHb0WjLw9PT80/Irb/2rU8ku+XAScnY5BV3dSJltm6YL7K22KJ1abNd78pFW2/uzdrc1PpbzVGiM0jv1SG3fzKtrvHLpNfZLjROnmi7SPHK4sVxCflmq+MShLP8m1aU2R07uKzMgKPKM65m1bOtt7dWJnCcNfYVV5m9etL54ABvV5uF2tntqYf28R1JWK2enqipZGwy2//Ws6vPfEK/fji5ftqTk51mZzT5C0JXOaYuFHsucP53atTmxsC1MXFnN3pc3vB43yabxDlCJSaTE/wqlvcamcj5L+IMl/M8Mj/+aufh+6pRP8XvXuSPb9jIJVem++Jl0/K/33XfGOkL6hqUpM887esRcicyWTrlsG1MjnDGin2N95O/Hf1hqhPlkvlRxo370ZqSr1Iht/p3NAlwv/skeUBAyTz+4sLDW3nfp0Ruf5nQ41PreCjFfP6lGbqfP5v4MzH45d79+1Jpz1QfOVHOqGTRiZNnTG4qimN92GcWci33zftZh6qelyi8vbePYemk1K/MUZtr9j7KPGRfdtjEp+YYB8Mhpp/bJ9RyiRwMUji6yXLhK722OdceVDGe7vupG7phalfIi9Ueqty/JdX55W56XJpZqtnic+FMzZuVYYwvOwWXlseExSr+X6FyyvLh+ttuvMf3ZPh1rvjQrPVi+4/2ovstvRNOv85niD+7rPRN6sZrL540T3eP0vOYXrN4xfRz4Vp2eZLVR6PYbHaan3pz6Ke+5TKRc6qKe9Rn8309ks7+obxkl3B2pY9y2uRNHLaXdu/yVbpwhfWLv73EhIuf5uf9jFwmbt6vV/5F2dm/6hX3hAvTLcUnZ81iP/dEYLbztvXnNsQYZDKIbc0+sXJXUKdVw/x4zblzdwX32e51vH8kM2X6z4ivxpOSTrbYv7wdv2Jy+Yt6T53vH8N8LqwU+5a7jbX1/BaeE40rxI/d+vrve3TJLWmf2NRMrjNe5k8mqEUHvzwUxMUf9SDl4VPFrS/uXUqP+HnqR3t6ssL3H4+DWGamfphb/zeu5/OVb4vlDV5+2rFlmtr27Mc3/wZNWhQp86mw5p244eb1ploBQo6C6R/W1Llp8qo8U50t0hUpc+vqswKr5psMGb/jZ7y8k7GBlb9TLfv860NtXFOO8VssPPewM27v5/aDU9s5t65o+bgyrjfO/1RXgKbSr2WfZEpm3NjQEnr448pP038CADPE1yo=",
+                        "contextDataIsPartial": true,
+                        "contextIdentifier": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209",
+                        "contextType": "PARENT_FILE",
+                        "metaData": {
+                            "additionalHashes": {
+                                "MD5": "91bcf62e6e5a9dd3db6f7a658fb162b1",
+                                "SHA-1": "6146716546af728505996aae2d5c246361b1975f",
+                                "SHA-512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e"
+                            },
+                            "totalArchiveFiles": 3,
+                            "name": "three_mal.zip",
+                            "additionalInfo": "MEDIA_TYPE:zip"
+                        }
+                    }
+                },
+                "ID": "3c6775eb-fc32-4db8-baba-656c5d20dd02",
+                "state": "SUCCESS",
+                "resourceReference": {
+                    "type": "TRANSFORM_FILE",
+                    "name": "file",
+                    "ID": "bd10b829-65d5-4d85-8d45-a3725533c6a7"
+                },
+                "opcount": 1,
+                "processTime": 7455
+            },
+            "subtaskReferences": [
+                {
+                    "name": "visualization",
+                    "additionalInfo": "7bc78fe6-a0f2-43da-9a6f-b0c41a71d2b3",
+                    "ID": "e6b92030-6102-483c-a633-5a32794b39a6",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "VISUALIZATION",
+                        "name": "visualization",
+                        "ID": "7bc78fe6-a0f2-43da-9a6f-b0c41a71d2b3"
+                    },
+                    "opcount": 1,
+                    "processTime": 485
+                },
+                {
+                    "name": "osint",
+                    "additionalInfo": "bd10b829-65d5-4d85-8d45-a3725533c6a7",
+                    "ID": "9e9d69a2-8b62-4caa-bdbe-afe7230ac307",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "68c64cf8-7d43-40e7-b7d1-bf8c7c40db72"
+                    },
+                    "opcount": 6,
+                    "processTime": 1013
+                },
+                {
+                    "name": "domain-resolve",
+                    "additionalInfo": 1,
+                    "ID": "ac6ed533-d808-42f0-9104-fb6e4499aca7",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "DOMAIN_RESOLVE",
+                        "name": "domain-resolve",
+                        "ID": "53bacba1-cb31-4007-8170-fdb170a1ab98"
+                    },
+                    "opcount": 1,
+                    "processTime": 569
+                },
+                {
+                    "name": "file-download",
+                    "additionalInfo": 2,
+                    "ID": "4c28625a-1fb9-4b62-b3c8-e5333350c9e7",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "FILE_DOWNLOAD",
+                        "name": "file-download",
+                        "ID": "469a90f3-d45f-4d08-b552-80569919d30a"
+                    },
+                    "opcount": 2,
+                    "processTime": 7980
+                },
+                {
+                    "name": "osint-fuzzyhash",
+                    "additionalInfo": "bd10b829-65d5-4d85-8d45-a3725533c6a7",
+                    "ID": "ea4665be-089c-4cee-8852-a4c1e00af65c",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "b268e333-c0a1-4969-8c26-6f82007e4d22"
+                    },
+                    "opcount": 2,
+                    "processTime": 1007
+                }
+            ],
+            "allSignalGroups": [
+                {
+                    "identifier": "Y002",
+                    "description": "Matched a malicious YARA rule",
+                    "averageSignalStrength": 1,
+                    "peakSignalStrength": 1,
+                    "finalSignalStrength": 1,
+                    "verdict": {
+                        "verdict": "MALICIOUS",
+                        "threatLevel": 1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Matched YARA rule \"PUP_InstallRex_AntiFWb\" with strength \"0.75\"",
+                            "additionalInfo": "PUP_InstallRex_AntiFWb",
+                            "originPath": "file.yaraMatches",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "SIGG017",
+                    "description": "Executable may be carrying a suspicious packed payload",
+                    "averageSignalStrength": 0.5,
+                    "peakSignalStrength": 0.5,
+                    "finalSignalStrength": 0.5,
+                    "verdict": {
+                        "verdict": "SUSPICIOUS",
+                        "threatLevel": 0.5,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.5,
+                            "signalReadable": "Executable may be carrying a suspicious packed payload",
+                            "additionalInfo": "",
+                            "originPath": "signalSummary.allIdentifiers",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                            "dataUUID": "bd10b829-65d5-4d85-8d45-a3725533c6a7"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H043",
+                    "description": "PE has a known suspicious section name",
+                    "averageSignalStrength": 0.75,
+                    "peakSignalStrength": 0.75,
+                    "finalSignalStrength": 0.75,
+                    "verdict": {
+                        "verdict": "LIKELY_MALICIOUS",
+                        "threatLevel": 0.75,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.75,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Section .tsustub is suspicious (probably \"TSULoader\")",
+                            "originPath": "file.extendedData.sections.name",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.75,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Section .tsuarch is suspicious (probably \"TSULoader\")",
+                            "originPath": "file.extendedData.sections.name",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H001",
+                    "description": "PE section size is empty",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Section \".data\" is empty",
+                            "originPath": "file.extendedData.sections.sizeOfRawData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H011",
+                    "description": "PE imports APIs used for anti-debugging purposes",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.2,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found API reference \"OutputDebugStringA@KERNEL32.dll\"",
+                            "originPath": "file.extendedData.imports.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H000",
+                    "description": "Executable section has an unusual entropy",
+                    "allMitreTechniques": [
+                        {
+                            "ID": "T1027.002",
+                            "relatedTactic": {
+                                "ID": "TA0005",
+                                "name": "Defense Evasion"
+                            },
+                            "name": "Software Packing"
+                        }
+                    ],
+                    "averageSignalStrength": 0.5,
+                    "peakSignalStrength": 0.5,
+                    "finalSignalStrength": 0.5,
+                    "verdict": {
+                        "verdict": "SUSPICIOUS",
+                        "threatLevel": 0.5,
+                        "confidence": 1
+                    },
+                    "allTags": [
+                        {
+                            "source": "SIGNAL",
+                            "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                            "isRootTag": false,
+                            "tag": {
+                                "name": "packed",
+                                "synonyms": [],
+                                "descriptions": [],
+                                "verdict": {
+                                    "verdict": "SUSPICIOUS",
+                                    "threatLevel": 0.5,
+                                    "confidence": 1
+                                }
+                            }
+                        }
+                    ],
+                    "signals": [
+                        {
+                            "strength": 0.5,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "\".tsustub\" has an unusual entropy \"7.99748325348\"",
+                            "originPath": "file.extendedData.sections.entropy",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                            "tags": [
+                                {
+                                    "source": "SIGNAL",
+                                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                                    "isRootTag": false,
+                                    "tag": {
+                                        "name": "packed",
+                                        "synonyms": [],
+                                        "descriptions": [],
+                                        "verdict": {
+                                            "verdict": "SUSPICIOUS",
+                                            "threatLevel": 0.5,
+                                            "confidence": 1
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "strength": 0.5,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "\".tsuarch\" has an unusual entropy \"7.9999871254\"",
+                            "originPath": "file.extendedData.sections.entropy",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                            "tags": [
+                                {
+                                    "source": "SIGNAL",
+                                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                                    "isRootTag": false,
+                                    "tag": {
+                                        "name": "packed",
+                                        "synonyms": [],
+                                        "descriptions": [],
+                                        "verdict": {
+                                            "verdict": "SUSPICIOUS",
+                                            "threatLevel": 0.5,
+                                            "confidence": 1
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H036",
+                    "description": "PE imports APIs used to create temporary files",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found API reference \"CreateFileW@KERNEL32.dll\"",
+                            "originPath": "file.extendedData.imports.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found API reference \"GetTempPathW@KERNEL32.dll\"",
+                            "originPath": "file.extendedData.imports.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H016",
+                    "description": "PE imports APIs used to hide other imports",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found API reference \"GetProcAddress@KERNEL32.dll\"",
+                            "originPath": "file.extendedData.imports.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found API reference \"LoadLibraryW@KERNEL32.dll\"",
+                            "originPath": "file.extendedData.imports.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H038",
+                    "description": "PE has an uncommon section name",
+                    "averageSignalStrength": 0.5,
+                    "peakSignalStrength": 0.5,
+                    "finalSignalStrength": 0.5,
+                    "verdict": {
+                        "verdict": "SUSPICIOUS",
+                        "threatLevel": 0.5,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.5,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Entrypoint section \".tsustub\" is unusual",
+                            "originPath": "file.extendedData.sections.sectionName",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.5,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Entrypoint section \".tsuarch\" is unusual",
+                            "originPath": "file.extendedData.sections.sectionName",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H004",
+                    "description": "PE imports suspicious APIs",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.2,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Import \"GetFileSize@kernel32.dll\" is marked as suspicious",
+                            "originPath": "file.extendedData.importsEx.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Import \"GetProcessHeap@kernel32.dll\" is marked as suspicious",
+                            "originPath": "file.extendedData.importsEx.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Import \"SetFileTime@kernel32.dll\" is marked as suspicious",
+                            "originPath": "file.extendedData.importsEx.imports",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "H007",
+                    "description": "PE imports suspicious modules",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Imported module \"kernel32.dll\" is marked as suspicious",
+                            "originPath": "file.extendedData.importsEx.module",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Imported module \"user32.dll\" is marked as suspicious",
+                            "originPath": "file.extendedData.importsEx.module",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "I000",
+                    "description": "OSINT source detected malicious resource",
+                    "averageSignalStrength": 0.88,
+                    "peakSignalStrength": 1,
+                    "finalSignalStrength": 0.99,
+                    "verdict": {
+                        "verdict": "MALICIOUS",
+                        "threatLevel": 1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.75,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"OPSWAT_REPUTATION\" detected resource \"834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc\" as \"LIKELY_MALICIOUS\"",
+                            "additionalInfo": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        },
+                        {
+                            "strength": 1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"VIRUS_TOTAL\" detected resource \"834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc\" as \"MALICIOUS\" (28/70)",
+                            "additionalInfo": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "S007",
+                    "description": "Found a Windows desktop utility string artifact",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.2,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found string artifact \"help\"",
+                            "originPath": "file.strings.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "bfb1cd964148088f3d3ea8a04c04659d1db6d32bd818e2a2f6394f4ccf6df280"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "D001",
+                    "description": "Found a domain referencing a social media service",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found domain \"facebook.com\"",
+                            "originPath": "file.extractedDomains.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "bfb1cd964148088f3d3ea8a04c04659d1db6d32bd818e2a2f6394f4ccf6df280"
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found domain \"twitter.com\"",
+                            "originPath": "file.extractedDomains.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "bfb1cd964148088f3d3ea8a04c04659d1db6d32bd818e2a2f6394f4ccf6df280"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "D006",
+                    "description": "Found an unusual long domain part",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.2,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found domain part \"has-custom-content-position\" in \"has-custom-content-position.is\"",
+                            "originPath": "file.extractedDomains.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "bfb1cd964148088f3d3ea8a04c04659d1db6d32bd818e2a2f6394f4ccf6df280"
+                        }
+                    ]
+                }
+            ],
+            "file": {
+                "name": "bad_file.exe",
+                "hash": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "type": "pe"
+            },
+            "filesDownloadFinished": true,
+            "created_date": "03/24/2023, 19:42:59",
+            "estimatedTime": "10",
+            "estimated_progress": 1.0
+        },
+        "0d1211be-4c4b-4262-9686-bde74f0d4b9b": {
+            "finalVerdict": {
+                "verdict": "INFORMATIONAL",
+                "threatLevel": 0.1,
+                "confidence": 1
+            },
+            "allTags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "docx",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "ooxml",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "language-hu",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.2,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "overallState": "success",
+            "taskReference": {
+                "name": "transform-file",
+                "additionalInfo": {
+                    "submitName": "contract.docx",
+                    "submitTime": 1679686979386,
+                    "digests": {
+                        "SHA-256": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
+                    },
+                    "context": {
+                        "contextData": "eJwL8GZmEWEAAc4JhWEMSICLQYGhJKMoNbU4PzdVPzSEl4F90RyRlKVADKJLK7gZGFleMjMwgIkAsDmcDMkMCXnZgTAz/PpUGUQZtJHMKcjPL0ovrdQryEsHG2lyb3X8GqBxszGNZJzJzsDI4OjKzMHwokqoMGHb0WjLw9PT80/Irb/2rU8ku+XAScnY5BV3dSJltm6YL7K22KJ1abNd78pFW2/uzdrc1PpbzVGiM0jv1SG3fzKtrvHLpNfZLjROnmi7SPHK4sVxCflmq+MShLP8m1aU2R07uKzMgKPKM65m1bOtt7dWJnCcNfYVV5m9etL54ABvV5uF2tntqYf28R1JWK2enqipZGwy2//Ws6vPfEK/fji5ftqTk51mZzT5C0JXOaYuFHsucP53atTmxsC1MXFnN3pc3vB43yabxDlCJSaTE/wqlvcamcj5L+IMl/M8Mj/+aufh+6pRP8XvXuSPb9jIJVem++Jl0/K/33XfGOkL6hqUpM887esRcicyWTrlsG1MjnDGin2N95O/Hf1hqhPlkvlRxo370ZqSr1Iht/p3NAlwv/skeUBAyTz+4sLDW3nfp0Ruf5nQ41PreCjFfP6lGbqfP5v4MzH45d79+1Jpz1QfOVHOqGTRiZNnTG4qimN92GcWci33zftZh6qelyi8vbePYemk1K/MUZtr9j7KPGRfdtjEp+YYB8Mhpp/bJ9RyiRwMUji6yXLhK722OdceVDGe7vupG7phalfIi9Ueqty/JdX55W56XJpZqtnic+FMzZuVYYwvOwWXlseExSr+X6FyyvLh+ttuvMf3ZPh1rvjQrPVi+4/2ovstvRNOv85niD+7rPRN6sZrL540T3eP0vOYXrN4xfRz4Vp2eZLVR6PYbHaan3pz6Ke+5TKRc6qKe9Rn8309ks7+obxkl3B2pY9y2uRNHLaXdu/yVbpwhfWLv73EhIuf5uf9jFwmbt6vV/5F2dm/6hX3hAvTLcUnZ81iP/dEYLbztvXnNsQYZDKIbc0+sXJXUKdVw/x4zblzdwX32e51vH8kM2X6z4ivxpOSTrbYv7wdv2Jy+Yt6T53vH8N8LqwU+5a7jbX1/BaeE40rxI/d+vrve3TJLWmf2NRMrjNe5k8mqEUHvzwUxMUf9SDl4VPFrS/uXUqP+HnqR3t6ssL3H4+DWGamfphb/zeu5/OVb4vlDV5+2rFlmtr27Mc3/wZNWhQp86mw5p244eb1ploBQo6C6R/W1Llp8qo8U50t0hUpc+vqswKr5psMGb/jZ7y8k7GBlb9TLfv860NtXFOO8VssPPewM27v5/aDU9s5t65o+bgyrjfO/1RXgKbSr2WfZEpm3NjQEnr448pP038CADPE1yo=",
+                        "contextDataIsPartial": true,
+                        "contextIdentifier": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209",
+                        "contextType": "PARENT_FILE",
+                        "metaData": {
+                            "additionalHashes": {
+                                "MD5": "91bcf62e6e5a9dd3db6f7a658fb162b1",
+                                "SHA-1": "6146716546af728505996aae2d5c246361b1975f",
+                                "SHA-512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e"
+                            },
+                            "totalArchiveFiles": 3,
+                            "name": "three_mal.zip",
+                            "additionalInfo": "MEDIA_TYPE:zip"
+                        }
+                    }
+                },
+                "ID": "f77ccd5e-9001-4a6e-a063-004dd01cd312",
+                "state": "SUCCESS",
+                "resourceReference": {
+                    "type": "TRANSFORM_FILE",
+                    "name": "file",
+                    "ID": "356e5a5a-468a-4f13-8870-d587abdef32e"
+                },
+                "opcount": 1,
+                "processTime": 7079
+            },
+            "subtaskReferences": [
+                {
+                    "name": "visualization",
+                    "additionalInfo": "ed29211a-f509-4691-875b-c6623a2f0342",
+                    "ID": "d33e409a-8d91-4d78-b35f-ae1f20ef243c",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "VISUALIZATION",
+                        "name": "visualization",
+                        "ID": "ed29211a-f509-4691-875b-c6623a2f0342"
+                    },
+                    "opcount": 1,
+                    "processTime": 625
+                },
+                {
+                    "name": "osint",
+                    "additionalInfo": "356e5a5a-468a-4f13-8870-d587abdef32e",
+                    "ID": "1d8be6cb-b7d3-4847-b00f-308c1609cdb9",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "857d3027-b8d2-4ce9-b588-9ebaf6c36be7"
+                    },
+                    "opcount": 6,
+                    "processTime": 1011
+                },
+                {
+                    "name": "osint-fuzzyhash",
+                    "additionalInfo": "356e5a5a-468a-4f13-8870-d587abdef32e",
+                    "ID": "5d66104b-a596-4ab4-9535-c1ed04657e87",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "2bbc4cb7-eb21-44c0-a73c-8eef63e0942d"
+                    },
+                    "opcount": 2,
+                    "processTime": 1006
+                }
+            ],
+            "allSignalGroups": [
+                {
+                    "identifier": "TXT000",
+                    "description": "Detected an unusual language in the semantic information",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.2,
+                        "confidence": 1
+                    },
+                    "allTags": [
+                        {
+                            "source": "SIGNAL",
+                            "sourceIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                            "isRootTag": false,
+                            "tag": {
+                                "name": "language-hu",
+                                "synonyms": [],
+                                "descriptions": [],
+                                "verdict": {
+                                    "verdict": "INFORMATIONAL",
+                                    "threatLevel": 0.2,
+                                    "confidence": 1
+                                }
+                            }
+                        }
+                    ],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Detected unusual language \"hu\" in the semantic data",
+                            "additionalInfo": "hu",
+                            "originPath": "file.textGuessedLanguage",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                            "tags": [
+                                {
+                                    "source": "SIGNAL",
+                                    "sourceIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                                    "isRootTag": false,
+                                    "tag": {
+                                        "name": "language-hu",
+                                        "synonyms": [],
+                                        "descriptions": [],
+                                        "verdict": {
+                                            "verdict": "INFORMATIONAL",
+                                            "threatLevel": 0.2,
+                                            "confidence": 1
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "identifier": "V006",
+                    "description": "Document does not have extractable OLE streams (VBA macros)",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "No stream data found and/or unable to extract",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "I001",
+                    "description": "OSINT source detected benign resource",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"OPSWAT_REPUTATION\" detected resource \"ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2\" as \"BENIGN\"",
+                            "additionalInfo": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
+                        }
+                    ]
+                }
+            ],
+            "file": {
+                "name": "contract.docx",
+                "hash": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
+                "type": "ms-office"
+            },
+            "filesDownloadFinished": true,
+            "created_date": "03/24/2023, 19:42:59",
+            "estimatedTime": "10",
+            "estimated_progress": 1.0
+        },
+        "9435d05d-b6ab-48b7-91c9-9e2a7ea42a7b": {
+            "finalVerdict": {
+                "verdict": "INFORMATIONAL",
+                "threatLevel": 0.1,
+                "confidence": 1
+            },
+            "allTags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "png",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "overallState": "success",
+            "taskReference": {
+                "name": "transform-file",
+                "additionalInfo": {
+                    "submitName": "poorguy.png",
+                    "submitTime": 1679686979425,
+                    "digests": {
+                        "SHA-256": "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
+                    },
+                    "context": {
+                        "contextData": "eJwL8GZmEWEAAc4JhWEMSICLQYGhJKMoNbU4PzdVPzSEl4F90RyRlKVADKJLK7gZGFleMjMwgIkAsDmcDMkMCXnZgTAz/PpUGUQZtJHMKcjPL0ovrdQryEsHG2lyb3X8GqBxszGNZJzJzsDI4OjKzMHwokqoMGHb0WjLw9PT80/Irb/2rU8ku+XAScnY5BV3dSJltm6YL7K22KJ1abNd78pFW2/uzdrc1PpbzVGiM0jv1SG3fzKtrvHLpNfZLjROnmi7SPHK4sVxCflmq+MShLP8m1aU2R07uKzMgKPKM65m1bOtt7dWJnCcNfYVV5m9etL54ABvV5uF2tntqYf28R1JWK2enqipZGwy2//Ws6vPfEK/fji5ftqTk51mZzT5C0JXOaYuFHsucP53atTmxsC1MXFnN3pc3vB43yabxDlCJSaTE/wqlvcamcj5L+IMl/M8Mj/+aufh+6pRP8XvXuSPb9jIJVem++Jl0/K/33XfGOkL6hqUpM887esRcicyWTrlsG1MjnDGin2N95O/Hf1hqhPlkvlRxo370ZqSr1Iht/p3NAlwv/skeUBAyTz+4sLDW3nfp0Ruf5nQ41PreCjFfP6lGbqfP5v4MzH45d79+1Jpz1QfOVHOqGTRiZNnTG4qimN92GcWci33zftZh6qelyi8vbePYemk1K/MUZtr9j7KPGRfdtjEp+YYB8Mhpp/bJ9RyiRwMUji6yXLhK722OdceVDGe7vupG7phalfIi9Ueqty/JdX55W56XJpZqtnic+FMzZuVYYwvOwWXlseExSr+X6FyyvLh+ttuvMf3ZPh1rvjQrPVi+4/2ovstvRNOv85niD+7rPRN6sZrL540T3eP0vOYXrN4xfRz4Vp2eZLVR6PYbHaan3pz6Ke+5TKRc6qKe9Rn8309ks7+obxkl3B2pY9y2uRNHLaXdu/yVbpwhfWLv73EhIuf5uf9jFwmbt6vV/5F2dm/6hX3hAvTLcUnZ81iP/dEYLbztvXnNsQYZDKIbc0+sXJXUKdVw/x4zblzdwX32e51vH8kM2X6z4ivxpOSTrbYv7wdv2Jy+Yt6T53vH8N8LqwU+5a7jbX1/BaeE40rxI/d+vrve3TJLWmf2NRMrjNe5k8mqEUHvzwUxMUf9SDl4VPFrS/uXUqP+HnqR3t6ssL3H4+DWGamfphb/zeu5/OVb4vlDV5+2rFlmtr27Mc3/wZNWhQp86mw5p244eb1ploBQo6C6R/W1Llp8qo8U50t0hUpc+vqswKr5psMGb/jZ7y8k7GBlb9TLfv860NtXFOO8VssPPewM27v5/aDU9s5t65o+bgyrjfO/1RXgKbSr2WfZEpm3NjQEnr448pP038CADPE1yo=",
+                        "contextDataIsPartial": true,
+                        "contextIdentifier": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209",
+                        "contextType": "PARENT_FILE",
+                        "metaData": {
+                            "additionalHashes": {
+                                "MD5": "91bcf62e6e5a9dd3db6f7a658fb162b1",
+                                "SHA-1": "6146716546af728505996aae2d5c246361b1975f",
+                                "SHA-512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e"
+                            },
+                            "totalArchiveFiles": 3,
+                            "name": "three_mal.zip",
+                            "additionalInfo": "MEDIA_TYPE:zip"
+                        }
+                    }
+                },
+                "ID": "b3c5b93b-17ae-4a84-ad1a-544884961e92",
+                "state": "SUCCESS",
+                "resourceReference": {
+                    "type": "TRANSFORM_FILE",
+                    "name": "file",
+                    "ID": "a5db1667-954c-40ec-a3d9-9cd5d03f901f"
+                },
+                "opcount": 1,
+                "processTime": 2540
+            },
+            "subtaskReferences": [
+                {
+                    "name": "osint",
+                    "additionalInfo": "a5db1667-954c-40ec-a3d9-9cd5d03f901f",
+                    "ID": "34b80a85-9631-4ee3-aa72-f31cfff2c36b",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "638017a6-2cc6-4b8f-adae-73c78ccec0b6"
+                    },
+                    "opcount": 6,
+                    "processTime": 1011
+                },
+                {
+                    "name": "osint-fuzzyhash",
+                    "additionalInfo": "a5db1667-954c-40ec-a3d9-9cd5d03f901f",
+                    "ID": "1625d426-b0be-4a5e-81cd-c1f760cd682d",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "1464c459-2f5b-40d4-9ede-835f7237bc7b"
+                    },
+                    "opcount": 2,
+                    "processTime": 1006
+                }
+            ],
+            "allSignalGroups": [
+                {
+                    "identifier": "I001",
+                    "description": "OSINT source detected benign resource",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "INFORMATIONAL",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"OPSWAT_REPUTATION\" detected resource \"2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5\" as \"BENIGN\"",
+                            "additionalInfo": "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
+                        }
+                    ]
+                }
+            ],
+            "file": {
+                "name": "poorguy.png",
+                "hash": "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5",
+                "type": "other"
+            },
+            "filesDownloadFinished": true,
+            "created_date": "03/24/2023, 19:42:59",
+            "estimatedTime": "10",
+            "estimated_progress": 1.0
+        }
+    }
+}

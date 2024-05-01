@@ -125,7 +125,10 @@ RESPONSE_LIST_INCIDENT = {
                     "workflowName": "SOCTeamReview",
                     "url": "https://source_url.com",
                     "isWhitelisted": False,
-                    "watchlisted": False
+                    "watchlisted": False,
+                    "policystarttime": 1692950376801,
+                    "policyendtime": 1695613655539,
+                    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
                 }
             ]
         }
@@ -157,6 +160,8 @@ RESPONSE_GET_INCIDENT = {
                     "url": "https://source_url.com",
                     "isWhitelisted": False,
                     "watchlisted": False,
+                    "policystarttime": 1692950376801,
+                    "policyendtime": 1695613655539,
                     "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
                 }
             ]
@@ -322,7 +327,10 @@ RESPONSE_FETCH_INCIDENT_ITEM = {
     "violatorSubText": "1012",
     "violatorText": "Secret secret",
     "watchlisted": False,
-    "workflowName": "SOCTeamReview"
+    "workflowName": "SOCTeamReview",
+    "policystarttime": 1692950376801,
+    "policyendtime": 1695613655539,
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
 }
 
 RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
@@ -355,7 +363,10 @@ RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
     "violatorSubText": "1012",
     "violatorText": "Secret secret",
     "watchlisted": False,
-    "workflowName": "SOCTeamReview"
+    "workflowName": "SOCTeamReview",
+    "policystarttime": 1692950376801,
+    "policyendtime": 1695613655539,
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
 }
 
 RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
@@ -386,7 +397,10 @@ RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
     "violatorSubText": "1012",
     "violatorText": "Secret secret",
     "watchlisted": False,
-    "workflowName": "SOCTeamReview"
+    "workflowName": "SOCTeamReview",
+    "policystarttime": 1692950376801,
+    "policyendtime": 1695613655539,
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
 }
 RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "assignedGroup": "SECURITYOPERATIONS",
@@ -421,7 +435,10 @@ RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "violatorSubText": "1012",
     "violatorText": "Secret secret",
     "watchlisted": False,
-    "workflowName": "SOCTeamReview"
+    "workflowName": "SOCTeamReview",
+    "policystarttime": 1692950376801,
+    "policyendtime": 1695613655539,
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
 }
 RESPONSE_FETCH_INCIDENTS = {
     "totalIncidents": 1.0,
@@ -446,7 +463,10 @@ RESPONSE_FETCH_INCIDENTS = {
             "workflowName": "SOCTeamReview",
             "url": "https://source_url.com",
             "isWhitelisted": False,
-            "watchlisted": False
+            "watchlisted": False,
+            "policystarttime": 1692950376801,
+            "policyendtime": 1695613655539,
+            "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
         }
     ]
 }

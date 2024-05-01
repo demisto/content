@@ -1,16 +1,16 @@
 import pytest
 
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
-    get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
+    get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
-    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, \
-    change_attack_pattern_to_stix_attack_pattern, DemistoException
+    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, DemistoException
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
-    PUBLICATIONS, ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
+    ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
     DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
-    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE
+    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE, FETCH_RESULTS, FETCH_MOCK_RESPONSE, \
+    REPORTS_INDICATORS_WITH_RELATIONSHIPS, COURSE_OF_ACTION_INDICATORS_WITH_TLP
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -60,6 +60,30 @@ TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA = {
 }
 
 
+TYPE_TO_RESPONSE_FETCH = {
+    'indicator': INDICATORS_DATA,
+    'report': REPORTS_DATA,
+    'attack-pattern': ATTACK_PATTERN_DATA,
+    'malware': MALWARE_DATA,
+    'campaign': CAMPAIGN_RESPONSE,
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': COURSE_OF_ACTION_DATA,
+    'intrusion-set': INTRUSION_SET_DATA
+}
+
+
+TYPE_TO_RESPONSE_FETCH = {
+    'indicator': INDICATORS_DATA,
+    'report': FETCH_MOCK_RESPONSE,
+    'attack-pattern': ATTACK_PATTERN_DATA,
+    'malware': MALWARE_DATA,
+    'campaign': CAMPAIGN_RESPONSE,
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': COURSE_OF_ACTION_DATA,
+    'intrusion-set': INTRUSION_SET_DATA
+}
+
+
 def test_fetch_indicators_command(mocker):
     """
     Given
@@ -82,8 +106,9 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 17
+    assert len(indicators) == 18
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
+    assert indicators == FETCH_RESULTS
 
 
 def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
@@ -167,19 +192,6 @@ def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_re
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
 
 
-def test_get_indicator_publication():
-    """
-    Given
-    - Indicator with external_reference field
-    When
-    - we extract this field to publications grid field
-    Then
-    - run the get_indicator_publication
-    Validate The grid field extracted successfully.
-    """
-    assert get_indicator_publication(ATTACK_PATTERN_DATA[0]) == PUBLICATIONS
-
-
 @pytest.mark.parametrize('indicator_name, expected_result', [
     ({"name": "T1564.004: NTFS File Attributes",
       "x_mitre_is_subtechnique": True,
@@ -214,6 +226,23 @@ def test_parse_indicators():
     assert parse_indicators(INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
 
 
+def test_parse_indicators_ioc_in_pattern():
+    """
+    Given
+    - IOC in STIX format where the name value is file name and the ioc is in the pattern.
+    When
+    - we extract this IOCs list to Demisto format.
+    Then
+    - run the parse_indicators
+    - Validate The indicator value is the file hash.
+    - Validate The associatedfilenames value is the file name.
+
+    """
+    file_indicator = parse_indicators(INDICATORS_DATA, [], '')[10]
+    assert file_indicator['value'] == 'ca5fb5814ec621f4b79d'
+    assert file_indicator['fields']['associatedfilenames'] == 'Jrdhtjydhjf.exe'
+
+
 def test_parse_reports():
     """
     Given
@@ -224,7 +253,9 @@ def test_parse_reports():
     - run the parse_reports
     Validate The reports list extracted successfully.
     """
-    assert parse_reports_and_report_relationships(REPORTS_DATA, [], '') == REPORTS_INDICATORS
+    client = Client(api_key='1234', verify=False)
+    result = parse_reports_and_report_relationships(client, REPORTS_DATA, [], '')
+    assert result == REPORTS_INDICATORS
 
 
 def test_parse_campaigns():
@@ -237,10 +268,11 @@ def test_parse_campaigns():
     - run the parse_campaigns
     Validate The campaigns list extracted successfully.
     """
-    assert parse_campaigns(CAMPAIGN_RESPONSE, [], '') == CAMPAIGN_INDICATOR
+    client = Client(api_key='1234', verify=False)
+    assert parse_campaigns(client, CAMPAIGN_RESPONSE, [], '') == CAMPAIGN_INDICATOR
 
 
-def test_create_attack_pattern_indicator():
+def test_create_attack_pattern_indicator(mocker):
     """
     Given
     - list of IOCs in STIX format.
@@ -250,9 +282,12 @@ def test_create_attack_pattern_indicator():
     - run the attack_pattern_indicator
     Validate The attack pattern list extracted successfully.
     """
-    assert create_attack_pattern_indicator(ATTACK_PATTERN_DATA, [], '', True) == ATTACK_PATTERN_INDICATOR
-    assert create_attack_pattern_indicator(ATTACK_PATTERN_DATA, [], '', False) == STIX_ATTACK_PATTERN_INDICATOR
-    assert create_attack_pattern_indicator(SUB_TECHNIQUE_DATA, [], '', True) == SUB_TECHNIQUE_INDICATOR
+    import TAXII2ApiModule
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(TAXII2ApiModule, 'is_demisto_version_ge', side_effect=[True, False, True])
+    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '') == ATTACK_PATTERN_INDICATOR
+    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '') == STIX_ATTACK_PATTERN_INDICATOR
+    assert create_attack_pattern_indicator(client, SUB_TECHNIQUE_DATA, [], '') == SUB_TECHNIQUE_INDICATOR
 
 
 def test_create_course_of_action_indicators():
@@ -265,7 +300,8 @@ def test_create_course_of_action_indicators():
     - run the create_course_of_action_indicators
     Validate The course of action list extracted successfully.
     """
-    assert create_course_of_action_indicators(COURSE_OF_ACTION_DATA, [], '') == COURSE_OF_ACTION_INDICATORS
+    client = Client(api_key='1234', verify=False)
+    assert create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], '') == COURSE_OF_ACTION_INDICATORS
 
 
 def test_get_ioc_type():
@@ -326,7 +362,47 @@ def test_get_ioc_value_from_ioc_name():
     assert extract_ioc_value(name) == "4f75622c2dd839f"
 
 
-def test_change_attack_pattern_to_stix_attack_pattern():
-    assert change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
-                                                        {"killchainphases": "kill chain", "description": "des"}}) == \
-        {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
+def test_fetch_indicators_command_with_relationship(mocker):
+    """
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the Client's get_stix_objects.
+    Then
+    - run the fetch incidents command using the Client
+    Validate the amount of indicators fetched
+    Validate that the dummy indicator with the relationships list fetched
+    """
+
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_FETCH[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+
+    indicators = fetch_indicators(client, create_relationships=True)
+    assert len(indicators) == 18
+    assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
+    assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
+
+
+def test_create_course_of_action_indicators_with_tlp():
+    """
+    Given
+    - fetch indicator command.
+    - mock Client.
+    When
+    - call the create_course_of_action_indicators method
+    Then
+    - run the create_course_of_action_indicators method with TLP
+    - Validate that the TLP value was set correctly.
+    """
+
+    client = Client(api_key="1234", verify=False)
+    assert (
+        create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], "WHITE")
+        == COURSE_OF_ACTION_INDICATORS_WITH_TLP
+    )

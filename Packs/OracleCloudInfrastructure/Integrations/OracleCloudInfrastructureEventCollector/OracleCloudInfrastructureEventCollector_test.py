@@ -51,6 +51,7 @@ class MockResponse:
 
 class TestClientRelatedFunctions:
     """ Tests the Client related functions. """
+
     def test_build_singer_object(self, mocker):
         """
         Given:

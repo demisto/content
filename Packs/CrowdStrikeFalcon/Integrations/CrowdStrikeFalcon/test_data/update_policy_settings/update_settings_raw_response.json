@@ -1,0 +1,12 @@
+{
+    "meta": {
+        "query_time": 0.029030712,
+        "writes": {
+            "resources_affected": 1
+        },
+        "powered_by": "cspm-registration",
+        "trace_id": "dummy"
+    },
+    "errors": [],
+    "resources": null
+}

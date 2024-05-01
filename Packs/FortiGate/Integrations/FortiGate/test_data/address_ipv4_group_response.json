@@ -1,0 +1,62 @@
+{
+    "http_method": "GET",
+    "size": 2,
+    "matched_count": 2,
+    "next_idx": 1,
+    "revision": "12345",
+    "results": [
+        {
+            "name": "Charizard",
+            "q_origin_key": "Charizard",
+            "type": "folder",
+            "category": "default",
+            "uuid": "00000000-0000-0000-0000-000000000000",
+            "member": [
+                {
+                    "name": "a",
+                    "q_origin_key": "a"
+                }
+            ],
+            "comment": "",
+            "exclude": "disable",
+            "exclude-member": [],
+            "color": 0,
+            "tagging": [],
+            "allow-routing": "disable",
+            "fabric-object": "disable"
+        },
+        {
+            "name": "Blastoise",
+            "q_origin_key": "Blastoise",
+            "type": "default",
+            "category": "default",
+            "uuid": "00000000-0000-0000-0000-000000000000",
+            "member": [
+                {
+                    "name": "b",
+                    "q_origin_key": "b"
+                }
+            ],
+            "comment": "Hello",
+            "exclude": "enable",
+            "exclude-member": [
+                {
+                    "name": "c",
+                    "q_origin_key": "c"
+                }
+            ],
+            "color": 0,
+            "tagging": [],
+            "allow-routing": "disable",
+            "fabric-object": "disable"
+        }
+    ],
+    "vdom": "root",
+    "path": "firewall",
+    "name": "addrgrp",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

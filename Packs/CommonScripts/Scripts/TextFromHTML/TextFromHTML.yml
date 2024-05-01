@@ -7,23 +7,59 @@ type: python
 subtype: python3
 tags:
 - Utility
-comment: Extract regular text from the given HTML
+comment: Extract regular text from the given HTML.
 enabled: true
 args:
 - name: html
   required: true
   default: true
-  description: The HTML to strip tags from
+  description: The HTML to strip tags from.
 - name: html_tag
   default: true
   defaultValue: body
   description: Specify HTML tag to extract the text from within.
+- name: allow_body_fallback
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: 'Allow using the input HTML as a fallback for the body, if no body tag is found. This only applies, if html_tag is set to body.'
+  defaultValue: "false"
+- name: replace_line_breaks
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: 'Replace `br` in `html` with linebreaks in the output.'
+  defaultValue: "false"
+- name: trim_result
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: 'Trim the extracted result. When set to true, leading and trailing whitespaces are removed and blocks of more than 3 consecutive whitespaces are collapsed to two.'
+  defaultValue: "false"
+- name: output_to_context
+  description: Store the extracted text in context.
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.75921
 tests:
 - TextFromHTML_test_playbook
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
 runas: DBotWeakRole
+outputs:
+- contextPath: TextFromHTML
+  description: The Text extracted from the given HTML.
+  type: string

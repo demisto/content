@@ -1,0 +1,5 @@
+{
+    "statusCode": 500,
+    "success": false,
+    "message": "Incident should be under Member Feedback or Monitoring to Close"
+}

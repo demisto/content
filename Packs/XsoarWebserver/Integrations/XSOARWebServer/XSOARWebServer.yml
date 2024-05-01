@@ -11,94 +11,94 @@ configuration:
   name: longRunning
   type: 8
   required: false
-- additionalinfo: The port on which the integration instance will listen
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a port, an unused port for the XSOAR Web Server will automatically be generated when the instance is saved. However, if using an engine, you must enter a port."
   display: Server Listening Port
   name: longRunningPort
   required: true
   type: 0
 - additionalinfo: The URL on which the user should send the response to.
-  display: ""
+  display: "XSOAR external URL"
   name: xsoar-external-url
   required: true
   type: 0
-description: 'This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe) and data collection tasks that can be used to fetch key value pairs. What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup.This URL can be inserted to for eg: an HTML email.  User clicks are  are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling'
+description: 'This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe) and data collection tasks that can be used to fetch key value pairs. What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup.This URL can be inserted to for eg: an HTML email.  User clicks are  are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling.'
 display: XSOAR-Web-Server
 name: XSOAR-Web-Server
 script:
   commands:
   - arguments:
-    - description: Comma separated possible values for each action. Mandatory for get requests
+    - description: Comma separated possible values for each action. Mandatory for get requests.
       name: actions
       required: true
-    - description: Comma separated email addresses of the recipients
+    - description: Comma separated email addresses of the recipients.
       name: emailaddresses
       required: true
-    - description: User defined string that has to be set from the playbook. This is  used to differentiate between multiple jobs running on the same incident
+    - description: User defined string that has to be set from the playbook. This is  used to differentiate between multiple jobs running on the same incident.
       name: userstring
       required: true
-    - description: template to construct the html mail
+    - description: template to construct the html mail.
       name: htmltemplate
       required: true
     - auto: PREDEFINED
       default: true
       defaultValue: "true"
-      description: Used to specify what endpoint to submit the responses. If set to false, the  html template will have the endpoint containing the custom port
+      description: Used to specify what endpoint to submit the responses. If set to false, the  html template will have the endpoint containing the custom port.
       name: xsoarproxy
       predefined:
       - "true"
       - "false"
-    description: setup the web server to handle URL clicks for each action specified from single or multiple recipients
+    description: setup the web server to handle URL clicks for each action specified from single or multiple recipients.
     name: xsoar-ws-setup-simple-action
     outputs:
     - contextPath: WS-ActionDetails
-      description: The current status of the action's  configuration details
+      description: The current status of the action's  configuration details.
     - contextPath: WS-ActionDetails.job_uuid
-      description: Subset of action details, added for ease of configuration in playbooks
+      description: Subset of action details, added for ease of configuration in playbooks.
   - arguments: []
     description: Clear the backend storage containing all session information.
     name: xsoar-ws-clear-cache
   - arguments: []
-    description: Show the details of all the setup actions from the backend
+    description: Show the details of all the setup actions from the backend.
     name: xsoar-ws-show-cache
   - arguments:
-    - description: Job's uuid
+    - description: Job's uuid.
       name: uuid
       required: true
-    description: Remove a certain job from the backend
+    description: Remove a certain job from the backend.
     name: xsoar-ws-remove-action
   - arguments:
-    - description: Job's uuid
+    - description: Job's uuid.
       name: uuid
       required: true
     description: Gets the current status of an action that was setup; Used to track if the user responded to the action.
     name: xsoar-ws-get-action-status
     outputs:
     - contextPath: WS-ActionStatus
-      description: The current status of the action with some configuration data. Is used for polling the status
+      description: The current status of the action with some configuration data. Is used for polling the status.
     - contextPath: WS-ActionStatus.link_tracker
-      description: Subset of action status; tracked here to make it easier for configuring playbooks
+      description: Subset of action status; tracked here to make it easier for configuring playbooks.
   - arguments:
-    - description: Job's uuid
+    - description: Job's uuid.
       name: uuid
       required: true
-    description: Set a job to complete. Usually called from the automation that is polling the result
+    description: Set a job to complete. Usually called from the automation that is polling the result.
     name: xsoar-ws-set-job-complete
   - arguments:
-    - description: Comma separated email addresses of the recipients
+    - description: Comma separated email addresses of the recipients.
       name: emailaddresses
       required: true
-    - description: Optional user string that can be set from the playbook. Can be used to differentiate between multiple jobs running on the same incident
+    - description: Optional user string that can be set from the playbook. Can be used to differentiate between multiple jobs running on the same incident.
       name: userstring
-    - description: The template to build the email content
+    - description: The template to build the email content.
       name: htmltemplate
       required: true
     - default: true
       defaultValue: "true"
-      description: Used to specify what endpoint to submit the responses. If set to false, the  html template will have the endpoint containing the custom port
+      description: Used to specify what endpoint to submit the responses. If set to false, the  html template will have the endpoint containing the custom port.
       name: xsoarproxy
-    description: setup a form submission job that can take multiple values from multiple users
+    description: setup a form submission job that can take multiple values from multiple users.
     name: xsoar-ws-setup-form-submission
-  dockerimage: demisto/bottle:1.0.0.32745
+  dockerimage: demisto/bottle:1.0.0.76007
   longRunning: true
   longRunningPort: true
   script: ''

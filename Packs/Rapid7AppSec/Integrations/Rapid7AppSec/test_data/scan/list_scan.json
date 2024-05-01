@@ -1,0 +1,49 @@
+{
+    "metadata": {
+      "size": 0,
+      "total_data": 0,
+      "page_token": "string",
+      "index": 0,
+      "sort": "string",
+      "total_pages": 0
+    },
+    "data": [
+      {
+        "app": {
+          "id": "1111"
+        },
+        "submitter": {
+          "id": "1111",
+          "type": "USER"
+        },
+        "completion_time": "2021-08-03T14:07:37",
+        "scan_config": {
+          "id": "1111"
+        },
+        "submit_time": "2021-08-03T14:07:37",
+        "scan_type": "VALIDATION",
+        "links": [
+          {
+            "profile": "string",
+            "rel": "string",
+            "name": "string",
+            "href": "string"
+          }
+        ],
+        "id": "1111",
+        "failure_reason": "CANCELED",
+        "validation": {
+          "parent_scan_id": "1111"
+        },
+        "status": "PENDING"
+      }
+    ],
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ]
+  }

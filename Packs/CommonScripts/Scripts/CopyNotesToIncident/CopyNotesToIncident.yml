@@ -2,6 +2,13 @@ args:
 - description: Incident ID to copy notes to.
   name: target_incident
   required: true
+- description: Whether auto extract the indicators from the notes.
+  name: auto_extract
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'true'
 - description: Replicate only notes with these tags (array or comma separated).
   isArray: true
   name: tags
@@ -9,7 +16,7 @@ comment: Copy all entries marked as notes from current incident to another incid
 commonfields:
   id: CopyNotesToIncident
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.86272
 enabled: true
 name: CopyNotesToIncident
 runas: DBotWeakRole

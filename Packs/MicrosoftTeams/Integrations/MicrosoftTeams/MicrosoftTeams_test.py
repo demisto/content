@@ -1,7 +1,8 @@
 import demistomock as demisto
 import json
 import pytest
-from CommonServerPython import entryTypes
+from CommonServerPython import *  # noqa: F401
+from requests import Response
 
 entryTypes['warning'] = 11
 
@@ -463,7 +464,17 @@ def test_send_message_raising_errors(mocker, args, result):
     assert str(e.value) == result
 
 
-def test_send_message_with_user(mocker, requests_mock):
+@pytest.mark.parametrize('message', ['MESSAGE', '891f1e9d-b8c3-4e24-bfbb-c44bcca4d586',
+                                     'testing 891f1e9d-b8c3-4e24-bfbb-c44bcca4d586 testing'])
+def test_send_message_with_user(mocker, requests_mock, message):
+    """
+    Given:
+        - a message as a basic string and a  message that contains GUID.
+    When:
+        - running send message function.
+    Then:
+        - The message is sent successfully in both cases.
+    """
     # verify message is sent properly given user to send to
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
@@ -474,7 +485,7 @@ def test_send_message_with_user(mocker, requests_mock):
         'args',
         return_value={
             'team_member': 'Denzel Washington',
-            'message': 'MESSAGE'
+            'message': message
         }
     )
     requests_mock.post(
@@ -549,7 +560,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
         'options': ['yes', 'no', 'maybe'],
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
         'investigation_id': '72',
-        'task_id': '23'
+        'task_id': '23',
+        'form_type': 'predefined-options'
     }
     mocker.patch.object(
         demisto,
@@ -1459,8 +1471,8 @@ def test_direct_message_handler(mocker, requests_mock):
 
     assert response['type'] == "message"
     assert response['text'] == \
-           "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
-           "You're not allowed to run any command"
+        "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
+        "You're not allowed to run any command"
 
     # verify create incident successfully
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
@@ -2250,10 +2262,10 @@ def test_generate_login_url(mocker):
     mocked_params = {
         'REDIRECT_URI': redirect_uri,
         'AUTH_TYPE': 'Authorization Code',
-        'TENANT_ID': tenant_id,
         'BOT_ID': client_id
     }
     mocker.patch.dict(MicrosoftTeams.__dict__, MicrosoftTeams.__dict__ | mocked_params)
+    mocker.patch.object(MicrosoftTeams, "get_integration_context", return_value={'tenant_id': 'tenant_id'})
     mocker.patch.object(MicrosoftTeams, 'return_results')
     mocker.patch.object(MicrosoftTeams, 'support_multithreading')
     mocker.patch.object(demisto, 'command', return_value='microsoft-teams-generate-login-url')
@@ -2264,7 +2276,7 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
     res = MicrosoftTeams.return_results.call_args[0][0].readable_output
     assert expected_url in res
 
@@ -2281,3 +2293,86 @@ def test_is_bot_in_chat_parameters(mocker, requests_mock):
     is_bot_in_chat(GROUP_CHAT_ID)
     filters = request_mock.last_request.qs.get('$filter')[0]
     assert f"eq '{bot_id}'" in filters
+
+
+@pytest.mark.parametrize('error_content, status_code, expected_response', [
+    (b'{"error": "invalid_grant", "error_description": "AADSTS700082: The refresh token has expired due to inactivity.'
+     b'\\u00a0The token was issued on 2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.'
+     b'\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\nTimestamp: 2023-07-02 06:40:26Z", '
+     b'"error_codes": [700082], "timestamp": "2023-07-02 06:40:26Z", "trace_id": "test", "correlation_id": "test",'
+     b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}', 400,
+     'The refresh token has expired due to inactivity. Please regenerate the '
+     "'Authorization code' parameter and then run !microsoft-teams-auth-test to "
+     're-authenticate')])
+def test_error_parser_with_exception(mocker, error_content, status_code, expected_response):
+    """
+    Given:
+        - The error_content, status_code, and expected_response for testing the error_parser function.
+    When:
+        - The error_parser function is called with the given error_content and status_code.
+    Then:
+        - Assert that the error_parser function raises a DemistoException with the expected_response.
+    """
+    from MicrosoftTeams import error_parser
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'error')
+    err = Response()
+    err.status_code = status_code
+    err._content = error_content
+
+    with pytest.raises(DemistoException) as ex:
+        error_parser(err)
+
+    assert demisto.getIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
+
+    assert str(ex.value) == expected_response
+
+
+@pytest.mark.parametrize('is_xsoar_8, expected_result', [
+    (True, ({"http": "xsoar_8_proxy", "https": "xsoar_8_proxy"}, True)),
+    (False, (None, False))
+])
+def test_handle_teams_proxy_and_ssl(mocker, is_xsoar_8, expected_result):
+    """
+    Given:
+        - If the xsoar version is greater or less than 8, and the expected reuslts of the integration proxies.
+    When:
+        - The version of xsoar is greater than 8 or less than 8
+    Then:
+        - Assert that when the version is greater than 8, proxies dict is not empty and use_ssl is true
+        - Assert that when the version is less than 8, proxies dict is empty and use_ssl is false.
+    """
+    import MicrosoftTeams as ms_teams
+    os.environ['CRTX_HTTP_PROXY'] = 'xsoar_8_proxy'
+    mocker.patch.object(ms_teams, 'is_demisto_version_ge', return_value=is_xsoar_8)
+    mocker.patch.object(ms_teams, 'PARAMS', return_value={'insecure': True})
+
+    proxies, use_ssl = ms_teams.handle_teams_proxy_and_ssl()
+    assert (proxies, use_ssl) == expected_result
+
+
+DUMMY_ASK_MESSAGE = {"message_text": "message", "options": [
+    "option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task", "form_type": "form"}
+
+
+@pytest.mark.parametrize('message, result', [
+    (json.dumps(DUMMY_ASK_MESSAGE), True),
+    (json.dumps(DUMMY_ASK_MESSAGE | {"extra_key": "extra"}), False),
+    ("non json message", False)
+])
+def test_is_teams_ask_message(message, result):
+    """
+    Given:
+        - input message string
+    When:
+        - Running is_teams_ask_message.
+    Then:
+        - Assert only ask_teams messages return True
+    If the test fails, please update the first message param in the test to have the same keys as MS_TEAMS_ASK_MESSAGE_KEYS
+     constant in MicrosoftTeams.
+    """
+    from MicrosoftTeams import is_teams_ask_message
+
+    assert is_teams_ask_message(message) == result

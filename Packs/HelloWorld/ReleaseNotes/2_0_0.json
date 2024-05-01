@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "We updated the integration to use mocked data instead of making external API calls."
+}

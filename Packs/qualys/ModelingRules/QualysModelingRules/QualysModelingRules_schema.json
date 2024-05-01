@@ -58,7 +58,7 @@
     },
     "DNS_DATA": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "CLOUD_PROVIDER": {
       "type": "string",
@@ -66,11 +66,11 @@
     },
     "DETECTION": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "METADATA": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "NETBIOS": {
       "type": "string",
@@ -82,17 +82,25 @@
     },
     "TAG": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "CLOUD_PROVIDER_TAGS": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "event_type": {
       "type": "string",
       "is_array": false
     },
     "CLOUD_SERVICE": {
+      "type": "string",
+      "is_array": false
+    },
+    "EC2_INSTANCE_ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "CLOUD_RESOURCE_ID": {
       "type": "string",
       "is_array": false
     }

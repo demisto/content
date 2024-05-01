@@ -287,6 +287,26 @@
       "description":{
          "type":"string",
          "is_array":false
+      },
+      "impactScope": {
+          "type":"string",
+         "is_array":false
+      },
+      "indicators": {
+          "type":"string",
+         "is_array":false
+      },
+      "matchedRules": {
+          "type":"string",
+         "is_array":false
+      },
+      "act": {
+          "type":"string",
+         "is_array":false
+      },
+      "behaviorCat": {
+          "type":"string",
+         "is_array":false
       }
    }
 }

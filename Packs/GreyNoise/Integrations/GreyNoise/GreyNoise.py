@@ -1,13 +1,11 @@
 from CommonServerPython import *
-
 """ Imports """
-
 import urllib3  # type: ignore
 import traceback
 import requests
 import re
 import copy
-from typing import Tuple, Dict, Any
+from typing import Any
 from greynoise import GreyNoise, exceptions, util  # type: ignore
 
 # Disable insecure warnings
@@ -119,7 +117,7 @@ STATS_H_KEY = {
     "asn": "ASN",
     "count": "Count",
 }
-QUERY_OUTPUT_PREFIX: Dict[str, str] = {
+QUERY_OUTPUT_PREFIX: dict[str, str] = {
     "IP": "GreyNoise.IP(val.address && val.address == obj.address)",
     "QUERY": "GreyNoise.Query(val.query && val.query == obj.query)",
 }
@@ -210,7 +208,7 @@ def exception_handler(func: Any) -> Any:
     return inner_func
 
 
-def parse_code_and_body(message: str) -> Tuple[int, str]:
+def parse_code_and_body(message: str) -> tuple[int, str]:
     """Parse status code and body
 
     Parses code and body from the Exception raised by GreyNoise SDK.
@@ -269,7 +267,7 @@ def get_ip_context_data(responses: list) -> list:
     return ip_context_responses
 
 
-def get_ip_reputation_score(classification: str) -> Tuple[int, str]:
+def get_ip_reputation_score(classification: str) -> tuple[int, str]:
     """Get DBot score and human-readable of score.
 
     :type classification: ``str``
@@ -350,7 +348,7 @@ def test_module(client: Client) -> str:
 
 @exception_handler
 @logger
-def ip_quick_check_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ip_quick_check_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Check whether a given IP address is Internet Background Noise,
     or has been observed scanning or attacking devices across the internet.
         :type client: ``Client``
@@ -930,7 +928,7 @@ def timeline_command(client: Client, args: dict) -> Any:
 
 @exception_handler
 @logger
-def riot_command(client: Client, args: Dict, reliability: str) -> CommandResults:
+def riot_command(client: Client, args: dict, reliability: str) -> CommandResults:
     """
     Returns information about IP whether it is harmful or not. RIOT (Rule It Out) means to inform the analyst about
     the harmfulness of the IP. For the harmless IP, the value of Riot is "True" which in turn returns DNS and other
@@ -1024,7 +1022,7 @@ def riot_command(client: Client, args: Dict, reliability: str) -> CommandResults
 
 @exception_handler
 @logger
-def context_command(client: Client, args: Dict, reliability: str) -> CommandResults:
+def context_command(client: Client, args: dict, reliability: str) -> CommandResults:
     """
     Returns information about IP whether it is harmful or not. RIOT (Rule It Out) means to inform the analyst about
     the harmfulness of the IP. For the harmless IP, the value of Riot is "True" which in turn returns DNS and other
@@ -1133,7 +1131,9 @@ def main() -> None:
         if packs.get("name") == "GreyNoise":
             pack_version = packs.get("currentVersion")
 
-    api_key = demisto.params().get("apikey")
+    api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
+    if not api_key:
+        return_error('Please provide a valid API token')
     proxy = demisto.params().get("proxy", False)
     reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
     reliability = reliability if reliability else DBotScoreReliability.B

@@ -1,13 +1,15 @@
 {
     "CONTRIBUTION_REVIEWERS": [
+        "anas-yousef",
         "mmhw",
-        "maimorag",
-        "anas-yousef"
+        "maimorag"
     ],
-    "CONTRIBUTION_TL": "dorschw",
-    "CONTRIBUTION_SECURITY_REVIEWER": "efelmandar",
+    "CONTRIBUTION_TL": "JasBeilin",
+    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
     "ON_CALL_DEVS": [
-        "epintzov",
-        "mlainer"
-    ]
+        "adaud",
+        "ilappe"
+    ],
+    "DOC_REVIEWER": "ShirleyDenkberg",
+    "TIM_REVIEWER": "MLainer1"
 }

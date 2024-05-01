@@ -1,7 +1,7 @@
-from GetErrorsFromEntry import get_errors, main
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import entryTypes, CommandResults  # noqa: F401
-
+import GetErrorsFromEntry
+import pytest
 
 ERROR_ENTRY_1 = [{'Contents': 'This is the error message 1', 'Type': entryTypes['error']}]
 ERROR_ENTRY_2 = [{'Contents': 'This is the error message 2', 'Type': entryTypes['error']}]
@@ -17,9 +17,25 @@ WITHOUT_ERROR_ENTRIES = [
     STD_ENTRY,
     STD_ENTRY
 ]
+UNSUPPORTED_CMD_ERROR_ENTRY = {
+    'Contents': GetErrorsFromEntry.UNSUPPORTED_COMMAND_MSG,
+    'Type': entryTypes['error'],
+}
 
 
-def test_main_with_explicitly_passed_argument_as_list(mocker):
+def prepare_mocks(mocker, is_xsiam_or_xsoar_saas, args):
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=is_xsiam_or_xsoar_saas)
+    mocker.patch.object(
+        demisto,
+        'executeCommand',
+        return_value=ERROR_ENTRIES if is_xsiam_or_xsoar_saas else None,
+        side_effect=None if is_xsiam_or_xsoar_saas else ERROR_ENTRIES,
+    )
+
+
+@pytest.mark.parametrize("is_xsiam_or_xsoar_saas", [True, False])
+def test_main_with_explicitly_passed_argument_as_list(mocker, is_xsiam_or_xsoar_saas):
     """
     Tests the full flow of the script
 
@@ -35,13 +51,15 @@ def test_main_with_explicitly_passed_argument_as_list(mocker):
     Then:
         - Verify the two error entries' contents are returned
     """
-    mocker.patch.object(demisto, 'args',
-                        return_value={'entry_id': ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
+    prepare_mocks(
+        mocker,
+        is_xsiam_or_xsoar_saas,
+        args={'entry_id': ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']},
+    )
     demisto_args = mocker.spy(demisto, 'args')
     demisto_results = mocker.spy(demisto, 'results')
 
-    main()
+    GetErrorsFromEntry.main()
 
     demisto_args.assert_called_once()
     expected_error_msgs = ['This is the error message 1', 'This is the error message 2']
@@ -54,7 +72,8 @@ def test_main_with_explicitly_passed_argument_as_list(mocker):
     demisto_results.assert_called_once_with(expected_results)
 
 
-def test_main_with_explicitly_passed_argument_as_string(mocker):
+@pytest.mark.parametrize("is_xsiam_or_xsoar_saas", [True, False])
+def test_main_with_explicitly_passed_argument_as_string(mocker, is_xsiam_or_xsoar_saas):
     """
     Tests the full flow of the script
 
@@ -70,13 +89,15 @@ def test_main_with_explicitly_passed_argument_as_string(mocker):
     Then:
         - Verify the two error entries' contents are returned
     """
-    mocker.patch.object(demisto, 'args',
-                        return_value={'entry_id': 'err_entry_id_1, err_entry_id_2, std_entry_id_1'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
+    prepare_mocks(
+        mocker,
+        is_xsiam_or_xsoar_saas,
+        args={'entry_id': 'err_entry_id_1, err_entry_id_2, std_entry_id_1'},
+    )
     demisto_args = mocker.spy(demisto, 'args')
     demisto_results = mocker.spy(demisto, 'results')
 
-    main()
+    GetErrorsFromEntry.main()
 
     demisto_args.assert_called_once()
     expected_error_msgs = ['This is the error message 1', 'This is the error message 2']
@@ -89,7 +110,8 @@ def test_main_with_explicitly_passed_argument_as_string(mocker):
     demisto_results.assert_called_once_with(expected_results)
 
 
-def test_main_without_explicitly_passed_argument(mocker):
+@pytest.mark.parametrize("is_xsiam_or_xsoar_saas", [True, False])
+def test_main_without_explicitly_passed_argument(mocker, is_xsiam_or_xsoar_saas):
     """
     Tests the full flow of the script
 
@@ -105,15 +127,17 @@ def test_main_without_explicitly_passed_argument(mocker):
     Then:
         - Verify the two error entries' contents are returned
     """
-    mocker.patch.object(demisto, 'args',
-                        return_value={})
+    prepare_mocks(
+        mocker,
+        is_xsiam_or_xsoar_saas,
+        args={},
+    )
     mocker.patch.object(demisto, 'context', return_value={'lastCompletedTaskEntries': [
                         'err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
     demisto_args = mocker.spy(demisto, 'args')
     demisto_results = mocker.spy(demisto, 'results')
 
-    main()
+    GetErrorsFromEntry.main()
 
     demisto_args.assert_called_once()
     expected_error_msgs = ['This is the error message 1', 'This is the error message 2']
@@ -124,6 +148,31 @@ def test_main_without_explicitly_passed_argument(mocker):
         raw_response=expected_error_msgs,
     ).to_context()
     demisto_results.assert_called_once_with(expected_results)
+
+
+def test_get_entries_by_ids_raises_value_error(mocker):
+    """
+    Given:
+        - Entry IDs
+        - Platform is XSOAR SAAS
+    When:
+        - Calling get_entries() method
+        - `getEntriesByIDs` returns an error entry
+
+    Then:
+        - Verify the method complete as expected.
+        - Verify executeCommand is called once for `getEntriesByIDs` and 3 times for `getEntry`.
+    """
+    entry_ids = ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']
+    mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch.object(
+        demisto,
+        'executeCommand',
+        side_effect=[UNSUPPORTED_CMD_ERROR_ENTRY] + ERROR_ENTRIES,
+    )
+
+    assert GetErrorsFromEntry.get_entries(entry_ids) == ERROR_ENTRIES
+    assert demisto.executeCommand.call_count == 1 + len(entry_ids)
 
 
 def test_get_errors_with_error_entries():
@@ -137,7 +186,7 @@ def test_get_errors_with_error_entries():
     Then:
         - Verify the error entries' contents are returned
     """
-    error_messages = get_errors(ERROR_ENTRIES)
+    error_messages = GetErrorsFromEntry.get_errors(ERROR_ENTRIES)
     assert len(error_messages) == 2
     assert error_messages[0] == 'This is the error message 1'
     assert error_messages[1] == 'This is the error message 2'
@@ -154,5 +203,5 @@ def test_get_errors_without_error_entries():
     Then:
         - Verify that no error messages are returned
     """
-    error_messages = get_errors(WITHOUT_ERROR_ENTRIES)
+    error_messages = GetErrorsFromEntry.get_errors(WITHOUT_ERROR_ENTRIES)
     assert len(error_messages) == 0

@@ -1,0 +1,93 @@
+{
+    "result": [
+        {
+            "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LnRlc3QubG9jYWxob3N0:localhost.test/default",
+            "extattrs": {},
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localhost.test",
+                    "ipv4addr": "192.168.10.10"
+                },
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default",
+                    "configure_for_dhcp": true,
+                    "host": "localhost.test",
+                    "ipv4addr": "192.168.10.11"
+                }
+            ],
+            "name": "localhost.test",
+            "view": "default"
+        },
+        {
+            "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LnRlc3QubG9jYWxob3N0LmxvY2FsZG9tYW4:localdoman.localhost.test/default",
+            "extattrs": {
+                "IB Discovery Owned": {
+                    "value": "EMEA"
+                },
+                "Site": {
+                    "value": "Tel-Aviv"
+                }
+            },
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QubG9jYWxkb21hbi4xOTIuMTY4LjEwMC4xMDAu:192.168.100.100/localdoman.localhost.test/default",
+                    "configure_for_dhcp": true,
+                    "host": "localdoman.localhost.test",
+                    "ipv4addr": "192.168.100.100"
+                },
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localhost.test",
+                    "ipv4addr": "192.168.100.101"
+                }
+            ],
+            "name": "localdoman.localhost.test",
+            "view": "default"
+        },
+        {
+            "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LnRlc3Qu:test/default",
+            "extattrs": {
+                "Site": {
+                    "value": "Local"
+                }
+            },
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default",
+                    "configure_for_dhcp": false,
+                    "host": "test",
+                    "ipv4addr": "255.255.255.192"
+                }
+            ],
+            "name": "test",
+            "view": "default"
+        },
+        {
+            "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LnRlc3QuY2lhYy0zNjA3:ciac-3607.test/default",
+            "aliases": [
+                "test_host.test"
+            ],
+            "extattrs": {
+                "IB Discovery Owned": {
+                    "value": "dummy value"
+                },
+                "Site": {
+                    "value": "ciac-5843"
+                }
+            },
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "ciac-3607.test",
+                    "ipv4addr": "192.168.1.0"
+                }
+            ],
+            "name": "ciac-3607.test",
+            "view": "default"
+        }
+    ]
+}

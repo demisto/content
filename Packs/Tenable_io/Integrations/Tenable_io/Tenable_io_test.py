@@ -2,13 +2,17 @@ import demistomock as demisto
 import pytest
 from freezegun import freeze_time
 from CommonServerPython import *
+import json
+
+# mypy: disable-error-code="operator"
 
 MOCK_PARAMS = {
     'access-key': 'fake_access_key',
     'secret-key': 'fake_access_key',
     'url': 'http://123-fake-api.com/',
     'unsecure': True,
-    'proxy': True
+    'proxy': True,
+    'assetsFetchInterval': '1440'
 }
 
 MOCK_RAW_VULN_BY_ASSET = {
@@ -42,12 +46,35 @@ EXPECTED_VULN_BY_ASSET_RESULTS = [
         'VulnerabilityState': 'Resurfaced'
     }
 ]
+MOCK_CLIENT_ARGS = {
+    'base_url': MOCK_PARAMS['url'],
+    'verify': True,
+    'proxy': True,
+    'ok_codes': (200,),
+}
 
 
-def mock_demisto(mocker, mock_args):
+def util_load_json(file_path):
+    with open(file_path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+MOCK_AUDIT_LOGS = util_load_json('test_data/mock_events.json')
+MOCK_CHUNKS_STATUS = util_load_json('test_data/mock_chunks_status.json')
+MOCK_CHUNKS_STATUS_PROCESSING = util_load_json('test_data/mock_chunks_status_processing.json')
+MOCK_CHUNKS_STATUS_ERROR = util_load_json('test_data/mock_chunks_status_error.json')
+MOCK_UUID = util_load_json('test_data/mock_export_uuid.json')
+MOCK_CHUNK_CONTENT = util_load_json('test_data/mock_chunk_content.json')
+BASE_URL = 'https://cloud.tenable.com'
+
+
+def mock_demisto(mocker, mock_args=None):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker.patch.object(demisto, 'uniqueFile', return_value='file')
+    mocker.patch.object(demisto, 'investigation', return_value={'id': 'id'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'debug')
 
 
 def test_get_scan_status(mocker, requests_mock):
@@ -75,7 +102,7 @@ def test_get_vuln_by_asset(mocker, requests_mock):
 
     actual_result = results['EntryContext']['TenableIO.Vulnerabilities']
 
-    for k in actual_result[0].keys():
+    for k in actual_result[0]:
         assert EXPECTED_VULN_BY_ASSET_RESULTS[0][k] == actual_result[0][k]
 
 
@@ -179,6 +206,8 @@ def test_get_asset_details_command(mocker, requests_mock):
     ('2.5-3.5', 2.5, 3.5),
     ('0.1-3', 0.1, 3),
     ('0.1 - 3', 0.1, 3),
+    ('0-1', 'exception', 'exception'),
+    ('3-100', 'exception', 'exception'),
     ('0', 'exception', 'exception'),
     ('3-0', 'exception', 'exception')
 ])
@@ -193,11 +222,10 @@ def test_validate_range(range_str, expected_lower_range_bound, expected_upper_ra
     """
     from Tenable_io import validate_range
 
-    if isinstance(expected_lower_range_bound, str) and isinstance(expected_upper_range_bound, str):
-        with pytest.raises(DemistoException) as de:
+    if expected_lower_range_bound == expected_upper_range_bound == 'exception':
+        err_msg = 'Please specify a valid vprScoreRange. The VPR values range is 0.1-10.0.'
+        with pytest.raises(DemistoException, match=err_msg):
             lower_range_bound, upper_range_bound = validate_range(range_str)
-
-        assert de.value.message == 'Please specify valid vprScoreRange. VPR values range are 0.1-10.0.'
     else:
         lower_range_bound, upper_range_bound = validate_range(range_str)
         assert lower_range_bound == expected_lower_range_bound
@@ -348,7 +376,7 @@ def test_export_assets_command(mocker, args, return_value_export_request_with_ex
     from Tenable_io import export_assets_command
     import Tenable_io
     from test_data.response_and_results import export_assets_response
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     mocker.patch.object(Tenable_io, 'export_request', return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
     mocker.patch.object(Tenable_io, 'export_request_with_export_uuid',
                         return_value={"export_uuid": 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'})
@@ -417,3 +445,391 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
                                            ' 2023-08-15T15:56:18.852Z | 2023-08-15T15:56:18.852Z |' \
                                            ' some_description | solution. |\n'
         assert response.raw_response == export_vulnerabilities_response
+
+
+@pytest.mark.parametrize(
+    'args, expected_result',
+    [
+        # Test case 1: Basic input with limit and offset
+        (
+            {
+                'sortFields': '',
+                'sortOrder': 'asc',
+                'excludeRollover': False,
+                'limit': 10,
+                'offset': 0
+            },
+            {
+                'sort': '',
+                'exclude_rollover': False,
+                'limit': 10,
+                'offset': 0,
+            }
+        ),
+        # Test case 2: Sorting by a multiple fields in ascending order
+        (
+            {
+                'sortFields': 'name,date,status',
+                'sortOrder': 'asc',
+                'excludeRollover': False,
+            },
+            {
+                'sort': 'name:asc,date:asc,status:asc',
+                'exclude_rollover': False,
+                'limit': 50,
+                'offset': 0
+            }
+        ),
+        # Test case 3: Sorting by multiple fields in different orders
+        (
+            {
+                'sortFields': 'name,date,status',
+                'sortOrder': 'asc,desc,asc',
+                'excludeRollover': False,
+            },
+            {
+                'sort': 'name:asc,date:desc,status:asc',
+                'exclude_rollover': False,
+                'limit': 50,
+                'offset': 0
+            }
+        )
+    ]
+)
+def test_scan_history_params(args, expected_result):
+    """
+    Given:
+        Case 1: Only sortOrder is defined (Default).
+        Case 2: The sortFields has multiple values and sortOrder only one.
+        Case 3: Both sort lists have multiple values.
+
+    When:
+        - Running the tenable-io-get-scan-history command.
+
+    Then:
+        Case 1: Return empty sort.
+        Case 2: Sort all sortFields by sortOrder.
+        Case 3: Match sortFields and sortOrder's values by index.
+    """
+    from Tenable_io import scan_history_params
+
+    result = scan_history_params(args)
+
+    assert result == expected_result
+
+
+def test_list_scan_filters_command(mocker):
+    '''
+    Given:
+        -  A request to list Tenable IO scan filters.
+
+    When:
+        - Running the "list-scan-filters" command.
+
+    Then:
+        - Verify that tenable-io-list-scan-filters command works as expected.
+    '''
+    from Tenable_io import list_scan_filters_command, Client
+
+    test_data = util_load_json('test_data/list_scan_filters.json')
+
+    request = mocker.patch.object(BaseClient, '_http_request', return_value=test_data['response_json'])
+    mock_demisto(mocker)
+
+    results = list_scan_filters_command(Client(**MOCK_CLIENT_ARGS))
+
+    assert results.outputs == test_data['outputs']
+    assert results.readable_output == test_data['readable_output']
+    assert results.outputs_prefix == 'TenableIO.ScanFilter'
+    assert results.outputs_key_field == 'name'
+
+    request.assert_called_with(*test_data['called_with']['args'])
+
+
+def test_get_scan_history_command(mocker):
+    '''
+    Given:
+        -  A request to get Tenable IO scan history.
+
+    When:
+        - Running the "get-scan-history" command.
+
+    Then:
+        - Verify that tenable-io-get-scan-history command works as expected.
+    '''
+    from Tenable_io import get_scan_history_command, Client
+
+    test_data = util_load_json('test_data/get_scan_history.json')
+
+    request = mocker.patch.object(
+        BaseClient, '_http_request', return_value=test_data['response_json'])
+    mock_demisto(mocker)
+
+    results = get_scan_history_command(test_data['args'], Client(**MOCK_CLIENT_ARGS))
+
+    assert results.outputs_prefix == 'TenableIO.ScanHistory'
+    assert results.outputs_key_field == 'id'
+    assert results.outputs == test_data['outputs']
+    assert results.readable_output == test_data['readable_output']
+
+    request.assert_called_with(
+        *test_data['called_with']['args'],
+        **test_data['called_with']['kwargs'])
+
+
+def test_initiate_export_scan(mocker):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command.
+
+    Then:
+        - Initiate an export scan request.
+    '''
+
+    from Tenable_io import initiate_export_scan, Client
+
+    test_data = util_load_json('test_data/initiate_export_scan.json')
+    mock_demisto(mocker)
+    request = mocker.patch.object(
+        BaseClient, '_http_request', return_value=test_data['response_json'])
+    file = initiate_export_scan(test_data['args'], Client(**MOCK_CLIENT_ARGS))
+
+    assert file == test_data['expected_file']
+    request.assert_called_with(
+        *test_data['called_with']['args'],
+        **test_data['called_with']['kwargs'])
+
+
+def test_download_export_scan(mocker):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command.
+
+    Then:
+        - Initiate an export scan request.
+    '''
+    from Tenable_io import Client
+
+    mock_demisto(mocker)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    request = mocker.patch.object(
+        BaseClient, '_http_request', return_value=b'')
+
+    result = Client(**MOCK_CLIENT_ARGS).download_export_scan('scan_id', 'file_id', 'HTML')
+
+    assert result == {
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'Type': 9,
+        'File': 'scan_scan_id_file_id.html',
+        'FileID': 'file',
+    }
+    request.assert_called_with(
+        'GET', 'scans/scan_id/export/file_id/download', resp_type='content')
+
+
+@pytest.mark.parametrize(
+    'args, response_json, message',
+    [
+        ({'scanId': '', 'format': 'HTML', 'filterSearchType': ''}, {},
+         'The "chapters" field must be provided for PDF or HTML formats.'),
+        ({'scanId': '', 'format': '', 'filterSearchType': ''}, {'status': 'error'},
+         'Tenable IO encountered an error while exporting the scan report file.')
+    ]
+)
+def test_export_scan_command_errors(mocker, args, response_json, message):
+    '''
+    Given:
+        - A request to export a scan report.
+
+    When:
+        - Running the "export-scan" command in any of the following cases:
+            - Case A: The "format" arg is HTML or PDF but "chapters" is not defined.
+            - Case B: An export scan request has been made and the report status is "error" or unrecognized.
+
+    Then:
+        - Return an error.
+    '''
+
+    from Tenable_io import export_scan_command, Client
+
+    mock_demisto(mocker)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    mocker.patch.object(BaseClient, '_http_request', return_value=response_json)
+    mocker.patch.object(Client, 'initiate_export_scan', return_value={'file': 'file_id'})
+
+    with pytest.raises(DemistoException, match=message):
+        export_scan_command(args, Client(**MOCK_CLIENT_ARGS))
+
+
+@pytest.mark.parametrize(
+    'args, expected_result',
+    (
+        (
+            {
+                'page': '10',
+                'pageSize': '5',
+                'limit': '50'
+            },
+            {
+                'limit': 5,
+                'offset': 45
+            }
+        ),
+        (
+            {
+                'limit': '50',
+                'page': '23'
+            },
+            {
+                'limit': '50',
+                'offset': 0
+            }
+        )
+    )
+)
+def test_scan_history_pagination_params(args, expected_result):
+
+    from Tenable_io import scan_history_pagination_params
+
+    result = scan_history_pagination_params(args)
+
+    assert result == expected_result
+
+
+def test_get_audit_logs_command(mocker, requests_mock):
+    """
+    Given:
+        - get-audit-logs command arguments.
+    When:
+        - Running the command tenable-get-audit-logs
+    Then:
+        - Verify that when a list of events exists, it will take the last timestamp
+        - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
+    """
+    from Tenable_io import get_audit_logs_command, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=2', json=MOCK_AUDIT_LOGS)
+
+    results, audit_logs = get_audit_logs_command(client, limit=2)
+
+    assert len(audit_logs) == 3
+
+
+def test_vulnerabilities_process(mocker, requests_mock):
+    """
+    Given:
+        - vulnerabilities fetch interval.
+    When:
+        - Running the fetch vulnerabilities process running.
+    Then:
+        - Verify that fetch should run
+        - Verify export uuid being updated in the integration context
+        - Verify vulnerabilities returned and finished flag is up.
+    """
+    from Tenable_io import generate_export_uuid, get_vulnerabilities_chunks, run_vulnerabilities_fetch, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
+    requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)
+    requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
+    last_run = {}
+    assert run_vulnerabilities_fetch(client, last_run=last_run)
+
+    generate_export_uuid(client, last_run=last_run)
+    assert last_run.get('vuln_export_uuid') == '123'
+
+    vulnerabilities, finished = get_vulnerabilities_chunks(client, '123')
+
+    assert len(vulnerabilities) == 1
+    assert finished
+
+
+def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
+    """
+
+    Given:
+        - last run object and audit log response from API.
+    When:
+        - Running the fetch events process.
+    Then:
+        - Verify no duplicated audit logs are returned from the API.
+
+    """
+    from Tenable_io import fetch_events_command, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000', json=MOCK_AUDIT_LOGS)
+    last_run = {'last_fetch_time': '2022-09-20'}
+    first_fetch = arg_to_datetime('3 days')
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '1234'
+
+    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '12345'
+    assert new_last_run.get('index_audit_logs') == 2
+
+    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '123456'
+    assert new_last_run.get('index_audit_logs') == 3
+
+
+def test_test_module(requests_mock, mocker):
+    """
+    Given:
+        - The client object.
+    When:
+        - Running the test_module function.
+    Then:
+        - Verify the result is ok as expected.
+    """
+    from Tenable_io import test_module, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/filters/scans/reports', json={})
+    result = test_module(client, demisto.params())
+
+    assert result == 'ok'
+
+
+def test_fetch_assets(requests_mock):
+    """
+    Given:
+        - vulnerabilities fetch interval.
+    When:
+        - Running the fetch vulnerabilities process running.
+    Then:
+        - Verify that fetch should run
+        - Verify export uuid being updated in the integration context
+        - Verify vulnerabilities returned and finished flag is up.
+    """
+    from Tenable_io import generate_assets_export_uuid, handle_assets_chunks, get_asset_export_job_status, Client
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.post(f'{BASE_URL}/assets/export', json={"export_uuid": "123"})
+    requests_mock.get(f'{BASE_URL}/assets/export/123/status', json={"status": "FINISHED", "chunks_available": [1]})
+    requests_mock.get(f'{BASE_URL}/assets/export/123/chunks/1', json=util_load_json('test_data/mock_assets_chunk.json'))
+    last_run = {}
+
+    generate_assets_export_uuid(client, last_run)
+    assert last_run.get('assets_export_uuid') == '123'
+    status = get_asset_export_job_status(client, last_run)
+    assert status == "FINISHED"
+    assert last_run.get("assets_available_chunks")
+    assets, last_run = handle_assets_chunks(client, last_run)
+
+    assert len(assets) == 2

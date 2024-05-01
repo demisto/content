@@ -16,5 +16,9 @@
     "githubUser": [
         "GavrielFilippov"
     ],
-    "hidden": true
+    "hidden": true,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

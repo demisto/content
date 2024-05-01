@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import urllib3
 import urllib.parse
-from typing import Dict
 from enum import Enum
 from string import Template
 import bz2
@@ -57,6 +56,7 @@ class Client(BaseClient):
             self.refresh_token = credentials[PASSWORD]
         else:
             self.access_token = ''
+            self._refresh_token_with_client_credentials()
 
     def _refresh_token(self):
         """Refreshes Access Token"""
@@ -162,7 +162,7 @@ class Client(BaseClient):
 
         return result_json, res.status_code
 
-    def _post_dlp_api_call(self, url_suffix: str, payload: Dict = None):
+    def _post_dlp_api_call(self, url_suffix: str, payload: dict = None):
         """
         Makes a POST HTTP(s) call to the DLP API
         Args:
@@ -214,7 +214,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> dict:
+    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> tuple:
         url = INCIDENTS_URL
         params = {}
         if regions:
@@ -226,7 +226,7 @@ class Client(BaseClient):
         query_string = urllib.parse.urlencode(params)
         url = f"{url}?{query_string}"
         resp, status_code = self._get_dlp_api_call(url)
-        return resp
+        return resp, status_code
 
     def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str,
                             report_id: str, dlp_channel: str, error_details: str = None):
@@ -329,7 +329,7 @@ def convert_to_human_readable(data_patterns):
         detections = k.get('Detections', [])
         if detections:
             for detection in detections:
-                col = 'Detection {}'.format(index)
+                col = f'Detection {index}'
                 if col not in headers:
                     headers.append(col)
                 match[col] = detection
@@ -357,18 +357,24 @@ def parse_dlp_report(report_json) -> CommandResults:
     )
 
 
-def test(client):
+def test(client: Client, params: dict):
     """ Test Function to test validity of access and refresh tokens"""
-    report_json, status_code = client.get_dlp_report('1')
+    dlp_regions = params.get("dlp_regions", "")
+    report_json, status_code = client.get_dlp_incidents(regions=dlp_regions)
     if status_code in [200, 204]:
         return_results("ok")
     else:
-        raise DemistoException("Integration test failed: Unexpected status ({})".format(status_code))
+        message = f"Integration test failed: Unexpected status ({status_code}) - "
+        if "error" in report_json:
+            message += f"Error message: \"{report_json.get('error')}\""
+        else:
+            message += "Could not determine the error reason. Make sure the DLP Regions parameter is configured correctly."
+        raise DemistoException(message)
 
 
 def print_debug_msg(msg: str):
     """
-    Prints a message to debug with QRadarMsg prefix.
+    Prints a message to debug with PAN-DLP-Msg prefix.
     Args:
         msg (str): Message to be logged.
 
@@ -448,7 +454,7 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
     else:
         print_debug_msg('Start fetching most recent incidents')
 
-    notification_map = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
+    notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
     for region, notifications in notification_map.items():
         for notification in notifications:
@@ -499,7 +505,7 @@ def fetch_notifications(client: Client, regions: str):
         print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
 
 
-def long_running_execution_command(client: Client, params: Dict):
+def long_running_execution_command(client: Client, params: dict):
     """
     Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
     Will continue to fetch in an infinite loop.
@@ -569,7 +575,7 @@ def slack_bot_message_command(args: dict, params: dict):
     )
 
 
-def fetch_incidents_command() -> List[Dict]:
+def fetch_incidents_command() -> List[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
@@ -589,17 +595,16 @@ def reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = 'true'
-    set_to_integration_context_with_retries(ctx)
+    set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
 
 def main():
     """ Main Function"""
     try:
-        demisto.info('Command is %s' % (demisto.command(),))
+        demisto.info(f'Command is {demisto.command()}')
         params = demisto.params()
-        print_debug_msg('Received parameters')
-        print_debug_msg(params)
+        print_debug_msg(f'Received parameters: {",".join(params.keys())}.')
         credentials = params.get('credentials')
 
         client = Client(BASE_URL, credentials, params.get('insecure'), params.get('proxy'))
@@ -622,7 +627,7 @@ def main():
         elif demisto.command() == 'pan-dlp-reset-last-run':
             return_results(reset_last_run_command())
         elif demisto.command() == "test-module":
-            test(client)
+            test(client, params)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

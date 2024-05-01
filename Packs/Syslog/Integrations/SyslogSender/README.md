@@ -8,6 +8,10 @@ Use the Syslog Sender integration to send messages in RFC 5424 message format an
 ---
 * Send messages to Syslog via TCP or UDP or TLS.
 * Mirror incident war room entries to Syslog.
+* Track any activity from the Playground and War Room to your SIEM for improved visibility. This activity should be logged and attributed to the specific analyst.
+
+
+
 
 ## Configure Syslog Sender on Cortex XSOAR
 ---
@@ -26,6 +30,35 @@ For UDP:
 module(load="imudp")
 input(type="imudp" port="<port>")
 ```
+
+### Usage example for sending War Room/Playground actions to Syslog
+
+1. From the Incidents page, click an incident.
+2. Run the ***!mirror-investigation type="all"*** command.
+If you receive an * Investication mirrored to Syslog successfully* response, any action in the War Room will be sent to Syslog.
+
+For example:
+Run the command !Print value="test msg"
+
+```
+<14>1 2023-09-19T13:49:38.140870+00:00 a1427a8493b5 SysLogLogger 1 - - 29, 105@29, admin:   !Print value=" incident owner is ${incident.owner}"
+<14>1 2023-09-19T13:49:38.162145+00:00 a4140f2eb707 SysLogLogger 1 - - 29, 106@29, DBot:    incident owner is admin
+```
+
+Syslog already contains the analyst name - admin (the user who performed the action).
+The action is: !Print value="test msg"
+The action result appears on the second line.
+
+If you run the same command with a different user on the same Cortex XSOAR instance, the output will be:
+
+```
+<14>1 2023-09-19T13:56:02.152486+00:00 a1427a8493b5 SysLogLogger 1 - - 8069, 86@8069, jsmith:   !Print value=" incident owner is ${incident.owner}"
+<14>1 2023-09-19T13:56:02.180858+00:00 a4140f2eb707 SysLogLogger 1 - - 8069, 87@8069, DBot:    incident owner is admin
+```
+
+Username (analyst) is present and located before each command.  In this case, jsmith.
+The timestamp is present and loacated at the beginning of each string.
+To determine the execution time (duration), calculate the difference between the second timestamp and the first.
 
 ### Integration configuration
 

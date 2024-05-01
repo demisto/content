@@ -1,5 +1,5 @@
 {
-    "description": "CheckPointHEC Incidents Layout",
+    "description": "Check Point HEC Incidents Layout",
     "detailsV2": {
         "tabs": [
             {
@@ -9,63 +9,59 @@
             },
             {
                 "hidden": false,
-                "id": "u9xzifnfzu",
-                "name": "Check Point Info",
+                "id": "zsgh4yoppk",
+                "name": "Check Point HEC Info",
                 "sections": [
                     {
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
-                        "i": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                        "i": "zsgh4yoppk-caseinfoid-e3d26b30-30a1-11ee-a2f1-bb0fdfd31f7a",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "checkpointheccustomer",
+                                "endCol": 4,
+                                "fieldId": "externallink",
                                 "height": 53,
-                                "id": "a4340fc0-1f89-11ee-a584-e72e916fb060",
+                                "id": "7c014190-7f37-11ee-b215-3f9c6cb66dbc",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "checkpointhecsaas",
+                                "fieldId": "eventtype",
                                 "height": 53,
-                                "id": "aaa2ca40-1f89-11ee-a584-e72e916fb060",
-                                "index": 1,
+                                "id": "db4609a0-5247-11ee-8baf-93fd1e8f095a",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 53,
+                                "id": "257ac5b0-5248-11ee-8baf-93fd1e8f095a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "state",
                                 "height": 53,
-                                "id": "b0885790-1f89-11ee-a584-e72e916fb060",
-                                "index": 2,
-                                "listId": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                                "id": "ce02f060-357c-11ee-b33b-21e4a1f3ca81",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "checkpointhectype",
-                                "height": 53,
-                                "id": "a89b1360-1f89-11ee-a584-e72e916fb060",
-                                "index": 0,
-                                "listId": "u9xzifnfzu-caseinfoid-8da75b40-1f89-11ee-a584-e72e916fb060",
+                                "fieldId": "details",
+                                "height": 106,
+                                "id": "1f030a80-5248-11ee-8baf-93fd1e8f095a",
+                                "index": 5,
                                 "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "checkpointhecentity",
-                                "height": 53,
-                                "id": "7405be00-202b-11ee-b262-3763e4f7e303",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -76,6 +72,410 @@
                         "w": 2,
                         "x": 0,
                         "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "zsgh4yoppk-28abc140-3302-11ee-ae75-252a1de5d493",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email Info",
+                        "query": "ShowCPEmailInfo",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "zsgh4yoppk-722daf70-3570-11ee-b33b-21e4a1f3ca81",
+                        "items": [
+                            {
+                                "args": {
+                                    "action": {
+                                        "simple": "quarantine"
+                                    },
+                                    "customer": {
+                                        "complex": {
+                                            "accessor": "checkpointheccustomer",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "entity": {
+                                        "complex": {
+                                            "accessor": "checkpointhecentity",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "farm": {
+                                        "complex": {
+                                            "accessor": "checkpointhecfarm",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "state"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "new"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "checkpointhecemailtask"
+                                                }
+                                            },
+                                            "operator": "isEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
+                                "id": "c7f88c20-323e-11ee-a6a3-6fc59c892e47",
+                                "index": 0,
+                                "listId": "zsgh4yoppk-caseinfoid-cd39e4f0-30a3-11ee-a2f1-bb0fdfd31f7a",
+                                "name": "Quarantine Email",
+                                "scriptId": "SendCPAction",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "action": {
+                                        "simple": "restore"
+                                    },
+                                    "customer": {
+                                        "complex": {
+                                            "accessor": "checkpointheccustomer",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "entity": {
+                                        "complex": {
+                                            "accessor": "checkpointhecentity",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "farm": {
+                                        "complex": {
+                                            "accessor": "checkpointhecfarm",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "state"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "remediated"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "checkpointhecemailtask"
+                                                }
+                                            },
+                                            "operator": "isEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
+                                "id": "680e2530-323f-11ee-a6a3-6fc59c892e47",
+                                "index": 1,
+                                "listId": "zsgh4yoppk-722daf70-3570-11ee-b33b-21e4a1f3ca81",
+                                "name": "Release from Quarantine",
+                                "scriptId": "SendCPAction",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "customer": {
+                                        "complex": {
+                                            "accessor": "checkpointheccustomer",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "farm": {
+                                        "complex": {
+                                            "accessor": "checkpointhecfarm",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "task": {
+                                        "complex": {
+                                            "accessor": "checkpointhecemailtask",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "checkpointhecemailtask"
+                                                }
+                                            },
+                                            "operator": "isNotEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
+                                "id": "abaa10c0-3635-11ee-b944-c7997e9b1fa5",
+                                "index": 2,
+                                "name": "Get Action Result",
+                                "scriptId": "CheckPointHEC|||checkpointhec-get-action-result",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "eventtype"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "alert"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "checkpointheccampaigntask"
+                                                }
+                                            },
+                                            "operator": "isEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
+                                "id": "c412e950-3245-11ee-a6a3-6fc59c892e47",
+                                "index": 3,
+                                "name": "Run Phishing Campaign",
+                                "scriptId": "RunCPPhishingCampaign",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "customer": {
+                                        "complex": {
+                                            "accessor": "checkpointheccustomer",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "farm": {
+                                        "complex": {
+                                            "accessor": "checkpointhecfarm",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    },
+                                    "task": {
+                                        "complex": {
+                                            "accessor": "checkpointheccampaigntask",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "checkpointheccampaigntask"
+                                                }
+                                            },
+                                            "operator": "isNotEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
+                                "id": "d46a3d40-4806-11ee-8b3e-2fd74623537f",
+                                "index": 4,
+                                "name": "Get Campaign Result",
+                                "scriptId": "CheckPointHEC|||checkpointhec-get-action-result",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "entity": {
+                                        "complex": {
+                                            "accessor": "checkpointhecentity",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "eventtype"
+                                                }
+                                            },
+                                            "operator": "isNotEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "alert"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
+                                "id": "4754b380-3452-11ee-972b-17833fbd34fb",
+                                "index": 5,
+                                "name": "Send Warning",
+                                "scriptId": "CheckPointHEC|||checkpointhec-send-notification",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email Actions",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": false,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "zsgh4yoppk-8e43d870-3579-11ee-b33b-21e4a1f3ca81",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Scan Info",
+                        "query": "ShowCPScanInfo",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -87,7 +487,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "i": "zsgh4yoppk-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
                             {
@@ -155,7 +555,7 @@
                     },
                     {
                         "h": 2,
-                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "zsgh4yoppk-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "moved": false,
                         "name": "Notes",
@@ -168,7 +568,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "zsgh4yoppk-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "moved": false,
                         "name": "Work Plan",
@@ -181,7 +581,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "zsgh4yoppk-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "maxW": 3,
                         "moved": false,
@@ -195,7 +595,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "zsgh4yoppk-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "moved": false,
                         "name": "Child Incidents",
@@ -208,7 +608,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "i": "zsgh4yoppk-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "maxW": 3,
                         "moved": false,
                         "name": "Evidence",
@@ -222,7 +622,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "i": "zsgh4yoppk-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "maxW": 3,
                         "moved": false,
                         "name": "Team Members",
@@ -235,7 +635,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "i": "zsgh4yoppk-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
                         "maxW": 3,
                         "moved": false,
                         "name": "Indicators",
@@ -250,7 +650,7 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "i": "zsgh4yoppk-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                         "items": [
                             {
                                 "endCol": 1,
@@ -303,13 +703,13 @@
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
-                        "x": 1,
+                        "x": 0,
                         "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "i": "zsgh4yoppk-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
@@ -351,7 +751,7 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "i": "zsgh4yoppk-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
@@ -369,7 +769,7 @@
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
-                        "x": 0,
+                        "x": 1,
                         "y": 2
                     }
                 ],
@@ -403,11 +803,11 @@
         ]
     },
     "group": "incident",
-    "id": "CheckPointHEC Security Event Layout",
+    "id": "CP HEC Security Event Layout",
     "marketplaces": [
         "xsoar"
     ],
-    "name": "CheckPointHEC Security Event Layout",
+    "name": "CP HEC Security Event Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.9.0"

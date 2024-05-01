@@ -1002,13 +1002,13 @@ def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
         The extracted data
     """
     return {
-        'Assignee'               : entity.get('assigned_to'),                              # noqa: E203
-        'AssignedDate'           : convert_date(entity.get('assigned_date')),              # noqa: E203
-        'CertaintyScore'         : entity.get('certainty'),                                # noqa: E203
-        'ID'                     : entity.get('id'),                                       # noqa: E203
-        'State'                  : entity.get('state'),                                    # noqa: E203
-        'Tags'                   : entity.get('tags'),                                     # noqa: E203
-        'ThreatScore'            : entity.get('threat'),                                   # noqa: E203
+        'Assignee': entity.get('assigned_to'),                              # noqa: E203
+        'AssignedDate': convert_date(entity.get('assigned_date')),              # noqa: E203
+        'CertaintyScore': entity.get('certainty'),                                # noqa: E203
+        'ID': entity.get('id'),                                       # noqa: E203
+        'State': entity.get('state'),                                    # noqa: E203
+        'Tags': entity.get('tags'),                                     # noqa: E203
+        'ThreatScore': entity.get('threat'),                                   # noqa: E203
     }
 
 
@@ -1022,13 +1022,13 @@ def extract_account_data(account: Dict[str, Any]) -> Dict[str, Any]:
         The Account extracted data
     """
     return common_extract_data(account) | {
-        'LastDetectionTimestamp' : convert_date(account.get('last_detection_timestamp')),  # noqa: E203
-        'PrivilegeLevel'         : account.get('privilege_level'),                         # noqa: E203
-        'PrivilegeCategory'      : account.get('privilege_category'),                      # noqa: E203
-        'Severity'               : unify_severity(account.get('severity')),                # noqa: E203
-        'Type'                   : account.get('account_type'),                            # noqa: E203
-        'URL'                    : forge_entity_url('account', account.get('id')),         # noqa: E203
-        'Username'               : account.get('name'),                                    # noqa: E203
+        'LastDetectionTimestamp': convert_date(account.get('last_detection_timestamp')),  # noqa: E203
+        'PrivilegeLevel': account.get('privilege_level'),                         # noqa: E203
+        'PrivilegeCategory': account.get('privilege_category'),                      # noqa: E203
+        'Severity': unify_severity(account.get('severity')),                # noqa: E203
+        'Type': account.get('account_type'),                            # noqa: E203
+        'URL': forge_entity_url('account', account.get('id')),         # noqa: E203
+        'Username': account.get('name'),                                    # noqa: E203
     }
 
 
@@ -1059,23 +1059,23 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
         description = dst_ips = dst_ports = None
 
     return common_extract_data(detection) | remove_empty_elements({
-        'Category'            : detection.get('category'),                                                # noqa: E203
-        'Description'         : description,                                                              # noqa: E203
-        'DestinationIPs'      : dst_ips,                                                                  # noqa: E203
-        'DestinationPorts'    : dst_ports,                                                                # noqa: E203
-        'FirstTimestamp'      : convert_date(detection.get('first_timestamp')),                           # noqa: E203
-        'IsTargetingKeyAsset' : detection.get('is_targeting_key_asset'),                                  # noqa: E203
-        'LastTimestamp'       : convert_date(detection.get('last_timestamp')),                            # noqa: E203
-        'Name'                : detection_name,                                                           # noqa: E203
-        'Severity'            : scores_to_severity(detection.get('threat'), detection.get('certainty')),  # noqa: E203
-        'SensorLUID'          : detection.get('sensor'),                                                  # noqa: E203
-        'SensorName'          : detection.get('sensor_name'),                                             # noqa: E203
-        'SourceAccountID'     : source_account_id,                                                        # noqa: E203
-        'SourceHostID'        : source_host_id,                                                           # noqa: E203
-        'SourceIP'            : detection.get('src_ip'),                                                  # noqa: E203
-        'TriageRuleID'        : detection.get('triage_rule_id'),                               # noqa: E203
-        'Type'                : detection.get('detection'),                                               # noqa: E203
-        'URL'                 : forge_entity_url('detection', detection.get('id')),                       # noqa: E203
+        'Category': detection.get('category'),                                                # noqa: E203
+        'Description': description,                                                              # noqa: E203
+        'DestinationIPs': dst_ips,                                                                  # noqa: E203
+        'DestinationPorts': dst_ports,                                                                # noqa: E203
+        'FirstTimestamp': convert_date(detection.get('first_timestamp')),                           # noqa: E203
+        'IsTargetingKeyAsset': detection.get('is_targeting_key_asset'),                                  # noqa: E203
+        'LastTimestamp': convert_date(detection.get('last_timestamp')),                            # noqa: E203
+        'Name': detection_name,                                                           # noqa: E203
+        'Severity': scores_to_severity(detection.get('threat'), detection.get('certainty')),  # noqa: E203
+        'SensorLUID': detection.get('sensor'),                                                  # noqa: E203
+        'SensorName': detection.get('sensor_name'),                                             # noqa: E203
+        'SourceAccountID': source_account_id,                                                        # noqa: E203
+        'SourceHostID': source_host_id,                                                           # noqa: E203
+        'SourceIP': detection.get('src_ip'),                                                  # noqa: E203
+        'TriageRuleID': detection.get('triage_rule_id'),                               # noqa: E203
+        'Type': detection.get('detection'),                                               # noqa: E203
+        'URL': forge_entity_url('detection', detection.get('id')),                       # noqa: E203
     })
 
 
@@ -1089,19 +1089,19 @@ def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
         The Host extracted data
     """
     return common_extract_data(host) | {
-        'HasActiveTraffic'       : host.get('has_active_traffic'),                      # noqa: E203
-        'Hostname'               : host.get('name'),                                    # noqa: E203
-        'IPAddress'              : host.get('ip'),                                      # noqa: E203
-        'IsKeyAsset'             : host.get('is_key_asset'),                            # noqa: E203
-        'IsTargetingKeyAsset'    : host.get('is_targeting_key_asset'),                  # noqa: E203
-        'LastDetectionTimestamp' : convert_date(host.get('last_detection_timestamp')),  # noqa: E203
-        'PrivilegeLevel'         : host.get('privilege_level'),                         # noqa: E203
-        'PrivilegeCategory'      : host.get('privilege_category'),                      # noqa: E203
-        'ProbableOwner'          : host.get('probable_owner'),                          # noqa: E203
-        'SensorLUID'             : host.get('sensor'),                                  # noqa: E203
-        'SensorName'             : host.get('sensor_name'),                             # noqa: E203
-        'Severity'               : unify_severity(host.get('severity')),                # noqa: E203
-        'URL'                    : forge_entity_url('host', host.get('id')),            # noqa: E203
+        'HasActiveTraffic': host.get('has_active_traffic'),                      # noqa: E203
+        'Hostname': host.get('name'),                                    # noqa: E203
+        'IPAddress': host.get('ip'),                                      # noqa: E203
+        'IsKeyAsset': host.get('is_key_asset'),                            # noqa: E203
+        'IsTargetingKeyAsset': host.get('is_targeting_key_asset'),                  # noqa: E203
+        'LastDetectionTimestamp': convert_date(host.get('last_detection_timestamp')),  # noqa: E203
+        'PrivilegeLevel': host.get('privilege_level'),                         # noqa: E203
+        'PrivilegeCategory': host.get('privilege_category'),                      # noqa: E203
+        'ProbableOwner': host.get('probable_owner'),                          # noqa: E203
+        'SensorLUID': host.get('sensor'),                                  # noqa: E203
+        'SensorName': host.get('sensor_name'),                             # noqa: E203
+        'Severity': unify_severity(host.get('severity')),                # noqa: E203
+        'URL': forge_entity_url('host', host.get('id')),            # noqa: E203
     }
 
 
@@ -1130,19 +1130,19 @@ def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
     triaged_as = assignment['events'][0]['context'].get('triage_as')
 
     return remove_empty_elements({
-        'AccountID'         : assignment.get('account_id'),                                  # noqa: E203
-        'AssignedBy'        : assigned_by_user,                                              # noqa: E203
-        'AssignedDate'      : convert_date(assignment.get('date_assigned')),                 # noqa: E203
-        'AssignedTo'        : assigned_to_user,                                              # noqa: E203
-        'HostID'            : assignment.get('host_id'),                                     # noqa: E203
-        'ID'                : assignment.get('id'),                                          # noqa: E203
-        'IsResolved'        : True if assignment.get('resolved_by') is not None else False,  # noqa: E203
-        'OutcomeCategory'   : convert_outcome_category_raw2text(outcome_category),           # noqa: E203
-        'OutcomeTitle'      : outcome_title,                                                 # noqa: E203
-        'TriagedDetections' : assignment.get('triaged_detections'),                          # noqa: E203
-        'TriagedAs'         : triaged_as,                                                    # noqa: E203
-        'ResolvedBy'        : resolved_by_user,                                              # noqa: E203
-        'ResolvedDate'      : convert_date(assignment.get('date_resolved')),                 # noqa: E203
+        'AccountID': assignment.get('account_id'),                                  # noqa: E203
+        'AssignedBy': assigned_by_user,                                              # noqa: E203
+        'AssignedDate': convert_date(assignment.get('date_assigned')),                 # noqa: E203
+        'AssignedTo': assigned_to_user,                                              # noqa: E203
+        'HostID': assignment.get('host_id'),                                     # noqa: E203
+        'ID': assignment.get('id'),                                          # noqa: E203
+        'IsResolved': True if assignment.get('resolved_by') is not None else False,  # noqa: E203
+        'OutcomeCategory': convert_outcome_category_raw2text(outcome_category),           # noqa: E203
+        'OutcomeTitle': outcome_title,                                                 # noqa: E203
+        'TriagedDetections': assignment.get('triaged_detections'),                          # noqa: E203
+        'TriagedAs': triaged_as,                                                    # noqa: E203
+        'ResolvedBy': resolved_by_user,                                              # noqa: E203
+        'ResolvedDate': convert_date(assignment.get('date_resolved')),                 # noqa: E203
     })
 
 
@@ -1156,10 +1156,10 @@ def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
         The Outcome extracted data
     """
     return {
-        'Category'               : convert_outcome_category_raw2text(outcome.get('category')),  # noqa: E203
-        'ID'                     : outcome.get('id'),                                           # noqa: E203
-        'IsBuiltIn'              : outcome.get('builtin'),                                      # noqa: E203
-        'Title'                  : outcome.get('title')                                         # noqa: E203
+        'Category': convert_outcome_category_raw2text(outcome.get('category')),  # noqa: E203
+        'ID': outcome.get('id'),                                           # noqa: E203
+        'IsBuiltIn': outcome.get('builtin'),                                      # noqa: E203
+        'Title': outcome.get('title')                                         # noqa: E203
     }
 
 
@@ -1173,12 +1173,12 @@ def extract_user_data(user: Dict[str, Any]) -> Dict[str, Any]:
         The User extracted data
     """
     return {
-        'Email'         : user.get('email'),                    # noqa: E203
-        'ID'            : user.get('id'),                       # noqa: E203
-        'Role'          : user.get('role'),                     # noqa: E203
-        'Type'          : user.get('account_type'),             # noqa: E203
-        'Username'      : user.get('username'),                 # noqa: E203
-        'LastLoginDate' : convert_date(user.get('last_login'))  # noqa: E203
+        'Email': user.get('email'),                    # noqa: E203
+        'ID': user.get('id'),                       # noqa: E203
+        'Role': user.get('role'),                     # noqa: E203
+        'Type': user.get('account_type'),             # noqa: E203
+        'Username': user.get('username'),                 # noqa: E203
+        'LastLoginDate': convert_date(user.get('last_login'))  # noqa: E203
     }
 
 

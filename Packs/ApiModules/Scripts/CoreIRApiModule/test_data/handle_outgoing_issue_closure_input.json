@@ -1,0 +1,69 @@
+{
+    "xsoar_ui_common_mapping": {
+        "args": {
+            "remoteId": "47",
+            "delta": {
+                "close_reason": "False Positive",
+                "resolve_comment": "closing 47 false positive"
+            },
+            "data": {
+                "assigned_user_mail": "assigned_user_mail",
+                 "assigned_user_pretty_name": "User",
+                 "close_reason": "False Positive",
+                 "manual_severity": "high",
+                 "resolve_comment": "closing 47 false positive",
+                 "status": "new"
+            },
+            "status": 2
+        },
+        "expected_delta": {
+            "close_reason": "False Positive",
+            "resolve_comment": "closing 47 false positive",
+            "status": "resolved_false_positive"
+        }
+    },
+    "xsoar_ui_cortex_xdr_incident": {
+        "args": {
+            "remoteId": "47",
+            "delta": {
+                "closeReason": "False Positive",
+                "closeNotes": "closing 47 false positive"
+            },
+            "data": {
+                "assigned_user_mail": "assigned_user_mail",
+                 "assigned_user_pretty_name": "User",
+                 "manual_severity": "high",
+                 "status": "new"
+            },
+            "status": 2
+        },
+        "expected_delta": {
+            "closeReason": "False Positive",
+            "closeNotes": "closing 47 false positive",
+            "resolve_comment": "closing 47 false positive",
+            "status": "resolved_false_positive"
+        }
+    },
+    "xdr": {
+        "args": {
+            "remoteId": "47",
+            "delta": {
+                "close_reason": "False Positive",
+                "resolve_comment": "resolving from xdr"
+            },
+            "data": {
+                "assigned_user_mail": "assigned_user_mail",
+                "assigned_user_pretty_name": "User",
+                "close_reason": "False Positive",
+                "manual_severity": "high",
+                "resolve_comment": "resolving from xdr",
+                "status": "resolved_false_positive"
+            },
+            "status": 2
+        },
+        "expected_delta": {
+            "close_reason": "False Positive",
+            "resolve_comment": "resolving from xdr"
+        }
+    }
+}

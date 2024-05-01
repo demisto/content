@@ -48,13 +48,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan
-* Endpoint Investigation Plan
 * Handle False Positive Alerts
+* Endpoint Investigation Plan
+* Containment Plan
+* Ticket Management - Generic
 * Eradication Plan
 * Enrichment for Verdict
 * Recovery Plan
-* Ticket Management - Generic
 
 ### Integrations
 
@@ -66,8 +66,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* closeInvestigation
 * setParentIncidentFields
+* closeInvestigation
 
 ## Playbook Inputs
 

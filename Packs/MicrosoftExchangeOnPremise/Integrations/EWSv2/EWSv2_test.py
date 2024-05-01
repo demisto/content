@@ -1,15 +1,20 @@
 import datetime
+import json
+
+from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
 import EWSv2
 import logging
 
 import dateparser
 import pytest
-from exchangelib import Message
-from EWSv2 import fetch_last_emails
-from exchangelib.errors import UnauthorizedError
+from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address
+from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
+import demistomock as demisto
+from exchangelib.properties import ItemId
 
 
 class TestNormalCommands:
@@ -92,6 +97,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
     Then:
         - Verify datetime_received__gte is ten minutes earlier
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -130,6 +136,7 @@ def test_fetch_last_emails_last_run(mocker, since_datetime, expected_result):
     Then:
         - Verify datetime_received__gte according to the datetime received
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -172,6 +179,7 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
         - Return 2 emails
         - Return 5 emails
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -192,6 +200,98 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
 
     x = fetch_last_emails(client, since_datetime='since_datetime')
     assert len(x) == expected_result
+
+
+def test_fetch_last_emails_fail(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash.
+
+    Given:
+        - First exception raised is ErrorMimeContentConversionFailed
+        - Second exception raised is ValueError
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Catch ErrorMimeContentConversionFailed, print relevant debug message
+          for encountered corrupt object and continue iteration to next object
+        - Catch ValueError, and raise it forward
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 1
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[ErrorMimeContentConversionFailed(AttributeError()), ValueError()])
+
+    with pytest.raises(ValueError) as e:
+        fetch_last_emails(client, since_datetime='since_datetime')
+        assert str(e) == 'Got an error when pulling incidents. You might be using the wrong exchange version.'
+
+
+def test_fetch_last_emails_object_stream_behavior(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash
+
+    Given:
+        - A stream of 3 fetched objects, where objects in indexes 0,2 are valid message objects
+          and the object in index 1 is an exception object (corrupt object)
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Iterate over the fetched objects
+        - Catch the corrupt object object, print relevant debug message
+          and continue iteration to next object
+        - Assert only valid objects are in the result
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 3
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[True, ErrorMimeContentConversionFailed(AttributeError()), True])
+
+    x = fetch_last_emails(client, since_datetime='since_datetime')
+    assert len(x) == 2
 
 
 def test_dateparser():
@@ -360,11 +460,34 @@ def test_send_mail(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+def test_send_mail_with_from_arg(mocker):
+    """
+    Given -
+        to, subject and replyTo arguments to send an email.
+
+    When -
+        trying to send an email
+
+    Then -
+        verify the context output is returned correctly and that the 'to' and 'replyTo' arguments were sent
+        as a list of strings.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
+    assert results[0].get('Contents') == {
+        'from': 'somemail@what.ever', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
 
@@ -382,7 +505,7 @@ def test_send_mail_with_trailing_comma(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com,", subject="test")
+    results = send_email({'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
@@ -534,3 +657,192 @@ def test_get_entry_for_object():
     from EWSv2 import get_entry_for_object
     obj = {"a": 1, "b": 2}
     assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
+
+
+def test_get_time_zone(mocker):
+    """
+    When -
+        trying to send/reply an email we check the XOSAR user time zone
+
+    Then -
+        verify that info returns
+    """
+    from EWSv2 import get_time_zone
+    mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
+    results = get_time_zone()
+    assert results.key == 'Asia/Jerusalem'
+
+
+def test_resolve_names_command_no_contact(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            Only a Mailbox is returned
+        Then:
+            The results are displayed correctly without FullContactInfo
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    protocol.resolve_names.return_value = [Mailbox(email_address=email)]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert email in result.get('HumanReadable')
+    assert email == list(result.get('EntryContext').values())[0][0].get('email_address')
+    assert not list(result.get('EntryContext').values())[0][0].get('FullContactInfo')
+
+
+def test_resolve_names_command_with_contact(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            A Mailbox, Contact tuple is returned
+        Then:
+            The results are displayed correctly with FullContactInfo
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    number_label = 'Bussiness2'
+    phone_numbers = [PhoneNumber(label=number_label, phone_number='+972 058 000 0000'),
+                     PhoneNumber(label='Bussiness', phone_number='+972 058 000 0000')]
+    protocol.resolve_names.return_value = [(Mailbox(email_address=email), Contact(phone_numbers=phone_numbers))]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert email in result.get('HumanReadable')
+    context_output = list(result.get('EntryContext').values())[0][0]
+    assert email == context_output.get('email_address')
+
+    assert any(number.get('label') == number_label for number in context_output.get('FullContactInfo').get('phoneNumbers'))
+
+
+def test_resolve_names_command_no_result(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            ErrorNameResolutionNoResults is returned
+        Then:
+            A human readable string is returned
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    protocol.resolve_names.return_value = [ErrorNameResolutionNoResults(value='No results')]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert result == 'No results were found.'
+
+
+def test_parse_phone_number():
+    """
+        Given: A filled phone number and a Phonenumber with no backing number
+        When: Calling parse_phone_number
+        Then: Only get the context object when the phpone_number is populated
+    """
+    good_number = EWSv2.parse_phone_number(PhoneNumber(label='123', phone_number='123123123'))
+    assert good_number.get('label')
+    assert good_number.get('phone_number')
+    assert not EWSv2.parse_phone_number(PhoneNumber(label='123'))
+
+
+def test_switch_hr_headers():
+    """
+           Given: A context object
+           When: switching headers using a given header switch dict
+           Then: The keys that are present are switched
+       """
+    assert (EWSv2.switch_hr_headers(
+        {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
+        {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
+        == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
+
+
+@pytest.mark.parametrize('input, output', [
+    ('John Smith', 'John Smith'),
+    ('SomeName', 'SomeName'),
+    ('sip:test@test.com', 'sip:test@test.com'),
+    ('hello@test.com', 'smtp:hello@test.com')
+])
+def test_format_identifier(input, output):
+    """
+           Given: several inputs with and without prefixes, that are or arent mails
+           When: calling format_identifier
+           Then: Only mails without a prefix have smtp appended
+       """
+    assert EWSv2.format_identifier(input) == output
+
+
+def test_get_message_for_body_type_no_body_type_with_html_body():
+    body = "This is a plain text body"
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type(body, None, html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
+def test_get_message_for_body_type_no_body_type_with_no_html_body():
+    body = "This is a plain text body"
+    result = get_message_for_body_type(body, None, None)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_get_message_for_body_type_html_body_type_with_html_body():
+    body = "This is a plain text body"
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type(body, 'html', html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
+def test_get_message_for_body_type_text_body_type_with_html_body():
+    body = "This is a plain text body"
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type(body, 'text', html_body)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_get_message_for_body_type_html_body_type_with_no_html_body():
+    body = "This is a plain text body"
+    result = get_message_for_body_type(body, 'html', None)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_get_message_for_body_type_text_body_type_with_no_html_body():
+    body = "This is a plain text body"
+    result = get_message_for_body_type(body, 'text', None)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_parse_physical_address():
+    assert parse_physical_address(PhysicalAddress(city='New York',
+                                                  country='USA',
+                                                  label='SomeLabel',
+                                                  state='NY',
+                                                  street='Broadway Ave.',
+                                                  zipcode=10001)) == {'city': 'New York',
+                                                                      'country': 'USA',
+                                                                      'label': 'SomeLabel',
+                                                                      'state': 'NY',
+                                                                      'street': 'Broadway Ave.',
+                                                                      'zipcode': 10001}
+
+
+def test_parse_item_as_dict_return_json_serializable():
+    """
+    Given:
+        - A message with cc_recipients with an object that includes a non-serializable object (ItemId).
+    When:
+        - Calling parse_item_as_dict
+
+    Then:
+        - Verify that the received dict is json serializable,
+        and that the ItemId appears both in the received dict and the json serialized object.
+    """
+    item = Message(cc_recipients=[Mailbox(item_id=ItemId(id='id123', changekey='change'))])
+    item_as_dict = parse_item_as_dict(item, None)
+    item_as_json = json.dumps(item_as_dict, ensure_ascii=False)
+    assert isinstance((item_as_dict.get("cc_recipients", [])[0]).get("item_id"), dict)
+    assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json

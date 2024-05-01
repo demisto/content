@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-from google.cloud import kms
+from google.cloud import kms  # type: ignore[attr-defined]
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -720,8 +720,8 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, 
     # Print results
     response = client.kms_client.update_crypto_key_version(request={'crypto_key_version': version,
                                                                     'update_mask': update_mask})
-    return(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-           f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
+    return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
+            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
 def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:

@@ -1,0 +1,53 @@
+[
+  [
+    {
+      "Value": "foo.bar@baz.test",
+      "CreationDate": "2023-07-29T02:18:39+00:00",
+      "ModificationDate": "2023-07-29T02:18:39+00:00",
+      "Tags": [],
+      "ExternalLinks": [
+        {
+          "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+          "url": "4a10a5f41c846c1f64b470a29cb6bc3fdfc55a900366adfa29bd2768d086c4af"
+        },
+        {
+          "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+          "url": "https://t.me/c/1736933682/1562"
+        }
+      ]
+    }
+  ],
+  [],
+  [
+    {
+      "Value": "foo.bar@baz.test",
+      "CreationDate": "2023-07-29T02:18:39+00:00",
+      "ModificationDate": "2023-07-29T02:18:39+00:00",
+      "Tags": [],
+      "ExternalLinks": [
+        {
+          "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+          "url": "4a10a5f41c846c1f64b470a29cb6bc3fdfc55a900366adfa29bd2768d086c4af"
+        },
+        {
+          "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+          "url": "https://t.me/c/1736933682/1562"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "detail": [
+        {
+          "loc": [
+            "query",
+            "added_after"
+          ],
+          "msg": "invalid datetime format",
+          "type": "value_error.datetime"
+        }
+      ]
+    }
+  ]
+]

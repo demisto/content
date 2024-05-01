@@ -63,13 +63,14 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.AuthenticateEmail
+              complex:
+                root: inputs.AuthenticateEmail
             iscontext: true
           right:
             value:
               simple: "True"
           ignorecase: true
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -289,11 +290,14 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.CheckMicrosoftHeaders
+              complex:
+                root: inputs.CheckMicrosoftHeaders
             iscontext: true
           right:
             value:
               simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {

@@ -7,3 +7,6 @@
 !minio-put-object bucket_name="test10" data="'test100'" name="test.txt"
 !minio-stat-object bucket_name="test10" name="test.txt"
 !minio-remove-object bucket_name="test10" name="test.txt"
+!minio-copy-object bucket_name_src="test12" name_src="test_source.txt" bucket_name_dst="test12" name_dst="test_destination.txt"
+!minio-set-tag bucket_name="test11" name="test.txt" tag_key="status" tag_value="in_progress"
+!minio-get-tags bucket_name="test11" name="test.txt"

@@ -165,10 +165,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Hostname
+              complex:
+                root: inputs.Hostname
             iscontext: true
     view: |-
       {
@@ -1370,7 +1371,6 @@ tests:
 - Test Convert file hash to corresponding hashes
 - Detonate File - Generic Test
 - Endpoint Enrichment - Generic v2.1 - Test
-- Retrieve File from Endpoint - Generic V2 Test
 - Isolate and unisolate endpoint - test
 - Block IP - Generic V3_Test
 fromversion: 5.0.0

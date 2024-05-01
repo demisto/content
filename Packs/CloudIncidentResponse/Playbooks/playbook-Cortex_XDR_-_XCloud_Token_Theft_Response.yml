@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -1470
+          "y": -1380
         }
       }
     note: false
@@ -77,7 +77,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       alert_ids:
         complex:
@@ -93,8 +93,8 @@ tasks:
                   simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
               ignorecase: true
           accessor: alertid
-      extend-context:
-        simple: alertData=
+      filter_alert_fields:
+        simple: "false"
       ignore-outputs:
         simple: "false"
     separatecontext: false
@@ -103,7 +103,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -1340
+          "y": -1250
         }
       }
     note: false
@@ -116,143 +116,6 @@ tasks:
     - incidentfield: ASN Name
       output:
         simple: ${PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn_org}
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 3414e15e-a296-4440-857e-b67e8d110e51
-    type: regular
-    task:
-      id: 3414e15e-a296-4440-857e-b67e8d110e51
-      version: -1
-      name: Load alert JSON
-      description: Loads a JSON from a string input, and returns a JSON object result.
-      scriptName: LoadJSON
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      extend-context:
-        simple: alertJson=
-      ignore-outputs:
-        simple: "true"
-      input:
-        complex:
-          root: alertData.alerts
-          accessor: original_alert_json
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -230,
-          "y": -1180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: ASN
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: caller_ip_asn
-          transformers:
-          - operator: uniq
-    - incidentfield: ASN Name
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: caller_ip_asn_org
-          transformers:
-          - operator: uniq
-    - incidentfield: Country
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          accessor: action_country
-          transformers:
-          - operator: uniq
-    - incidentfield: Operation Type
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: operation_name
-          transformers:
-          - operator: uniq
-    - incidentfield: Operation Name
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: operation_name_orig
-          transformers:
-          - operator: uniq
-    - incidentfield: Project ID
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
-          accessor: project
-    - incidentfield: Identity Type
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
-          accessor: identity_type
-          transformers:
-          - operator: uniq
-    - incidentfield: Source IP
-      output:
-        complex:
-          root: incident.xdralerts
-          filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: incident.xdralerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
-          accessor: hostip
-          transformers:
-          - operator: uniq
-    - incidentfield: Resource Type
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: resource_type_orig
-          transformers:
-          - operator: uniq
-    - incidentfield: Region
-      output:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: region
-          transformers:
-          - operator: uniq
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -278,7 +141,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -1020
+          "y": -1080
         }
       }
     note: false
@@ -342,7 +205,7 @@ tasks:
       {
         "position": {
           "x": -640,
-          "y": 280
+          "y": 220
         }
       }
     note: false
@@ -404,7 +267,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 450
+          "y": 390
         }
       }
     note: false
@@ -450,7 +313,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 750
+          "y": 690
         }
       }
     note: false
@@ -532,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1410
+          "y": 1370
         }
       }
     note: false
@@ -559,13 +422,14 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+      - "63"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1280
+          "y": 1220
         }
       }
     note: false
@@ -630,7 +494,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 2530
+          "y": 2450
         }
       }
     note: false
@@ -734,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2530
+          "y": 2450
         }
       }
     note: false
@@ -765,7 +629,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2665
+          "y": 2585
         }
       }
     note: false
@@ -798,7 +662,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2830
+          "y": 2750
         }
       }
     note: false
@@ -829,7 +693,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3180
+          "y": 3100
         }
       }
     note: false
@@ -923,7 +787,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3490
+          "y": 3410
         }
       }
     note: false
@@ -956,7 +820,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3310
+          "y": 3230
         }
       }
     note: false
@@ -987,7 +851,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 3660
+          "y": 3580
         }
       }
     note: false
@@ -1022,7 +886,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 3790
+          "y": 3710
         }
       }
     note: false
@@ -1053,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3960
+          "y": 3880
         }
       }
     note: false
@@ -1088,7 +952,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 4130
+          "y": 4050
         }
       }
     note: false
@@ -1116,7 +980,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 4300
+          "y": 4220
         }
       }
     note: false
@@ -1203,7 +1067,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 585
+          "y": 525
         }
       }
     note: false
@@ -1273,7 +1137,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 280
+          "y": 220
         }
       }
     note: false
@@ -1321,8 +1185,8 @@ tasks:
     scriptarguments:
       AWSAccessKeyID:
         complex:
-          root: alertJson.raw_abioc.event._aws_specific_fields
-          accessor: access_key_id
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: accessKeyId
       AWSTimespan:
         complex:
           root: incident
@@ -1343,6 +1207,10 @@ tasks:
                   simple: "1"
       AzureTimespan:
         simple: 2h
+      GCPProjectName:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: project
       GCPTimespan:
         complex:
           root: incident
@@ -1368,10 +1236,6 @@ tasks:
           accessor: cloudprovider
           transformers:
           - operator: uniq
-      projectName:
-        complex:
-          root: incident
-          accessor: cloudproject
       region:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert.event
@@ -1592,7 +1456,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 920
+          "y": 860
         }
       }
     note: false
@@ -1638,7 +1502,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1100
+          "y": 1030
         }
       }
     note: false
@@ -1726,7 +1590,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 3005
+          "y": 2925
         }
       }
     note: false
@@ -1783,7 +1647,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -720
+          "y": -780
         }
       }
     note: false
@@ -1821,7 +1685,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -540
+          "y": -600
         }
       }
     note: false
@@ -1869,7 +1733,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -890
+          "y": -950
         }
       }
     note: false
@@ -1973,7 +1837,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -380
+          "y": -440
         }
       }
     note: false
@@ -2006,7 +1870,7 @@ tasks:
       {
         "position": {
           "x": -860,
-          "y": -30
+          "y": -90
         }
       }
     note: false
@@ -2041,7 +1905,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -200
+          "y": -260
         }
       }
     note: false
@@ -2101,7 +1965,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 280
+          "y": 220
         }
       }
     note: false
@@ -2134,7 +1998,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 140
+          "y": 80
         }
       }
     note: false
@@ -2175,7 +2039,7 @@ tasks:
       {
         "position": {
           "x": -860,
-          "y": 3010
+          "y": 2930
         }
       }
     note: false
@@ -2214,13 +2078,172 @@ tasks:
       {
         "position": {
           "x": -860,
-          "y": 3185
+          "y": 3105
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 79eb65d2-1cd8-4e44-86cc-4355db4ddb08
+    type: playbook
+    task:
+      id: 79eb65d2-1cd8-4e44-86cc-4355db4ddb08
+      version: -1
+      name: Cloud Credentials Rotation - Generic
+      description: |-
+        ## **Cloud Credentials Rotation - Generic**
+
+        This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+
+        The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
+
+        ## **Integrations for Each Sub-Playbook**
+
+        In order to seamlessly execute the actions mentioned in each sub-playbook, specific integrations are essential. These integrations facilitate the automated tasks and processes that the playbook carries out. Here are the required integrations for each sub-playbook:
+
+        ### **AWS Sub-Playbook:**
+        1. [**AWS - IAM**](https://xsoar.pan.dev/docs/reference/integrations/aws---iam): Used to manage AWS Identity and Access Management.
+        2. [**AWS - EC2**](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2): Essential for managing Amazon Elastic Compute Cloud (EC2) instances.
+
+        ### **GCP Sub-Playbook:**
+        1. [**Google Workspace Admin**](https://xsoar.pan.dev/docs/reference/integrations/g-suite-admin): Manages users, groups, and other entities within Google Workspace.
+        2. [**GCP-IAM**](https://xsoar.pan.dev/docs/reference/integrations/gcp-iam): Ensures management and control of GCP's Identity and Access Management.
+
+        ### **Azure Sub-Playbook:**
+        1. [**Microsoft Graph Users**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user): Manages users and related entities in Microsoft Graph.
+        2. [**Microsoft Graph Applications**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-applications): Manages applications within Microsoft Graph.
+      playbookName: Cloud Credentials Rotation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AWS-accessKeyID:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: accessKeyId
+      AWS-instanceID:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: i-
+              ignorecase: true
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "2"
+      AWS-newInstanceProfileName:
+        complex:
+          root: inputs.AWS-newInstanceProfileName
+      AWS-newRoleName:
+        complex:
+          root: inputs.AWS-newRoleName
+      AWS-roleNameToRestrict:
+        complex:
+          root: inputs.AWS-roleNameToRestrict
+      AWS-userID:
+        complex:
+          root: incident
+          accessor: username
+      Azure-AppID:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig.claims
+          accessor: appid
+      Azure-ObjectID:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: claims
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}
+              unpack_matches: {}
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"
+              to:
+                value:
+                  simple: '"'
+      Azure-userID:
+        complex:
+          root: incident
+          accessor: username
+      GCP-SAEmail:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: principalEmail
+      GCP-cloudProject:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: project
+      GCP-userID:
+        complex:
+          root: incident
+          accessor: username
+      GCP-zone:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: zone
+      RemediationType:
+        complex:
+          root: inputs.credentialsRemediationType
+      cloudProvider:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: cloud_provider
+      identityType:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig.sessionContext.sessionIssuer
+          accessor: type
+      shouldCloneSA:
+        complex:
+          root: inputs.shouldCloneSA
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2234,6 +2257,7 @@ view: |-
       "36_37_#default#": 0.8,
       "38_39_Yes": 0.42,
       "49_61_#default#": 0.1,
+      "50_5_#default#": 0.47,
       "54_59_#default#": 0.11,
       "55_57_yes": 0.43,
       "55_59_#default#": 0.21,
@@ -2243,10 +2267,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5835,
+        "height": 5665,
         "width": 2130,
         "x": -860,
-        "y": -1470
+        "y": -1380
       }
     }
   }
@@ -2260,7 +2284,26 @@ inputs:
   description: The alert ID.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
   description: A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation.
   playbookInputQuery:
@@ -2311,6 +2354,48 @@ inputs:
     simple: "False"
   required: false
   description: Whether to execute the indicators remediation automatically.
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value:
+    simple: Reset
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
+  playbookInputQuery:
+- key: shouldCloneSA
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    Supports: AWS.
+    True/False
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The new role name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The new instance profile name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
   playbookInputQuery:
 outputs: []
 tests:

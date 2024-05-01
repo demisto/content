@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from CommonServerPython import *
 
@@ -17,6 +16,7 @@ class Client:
     """
     The integration's client
     """
+
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         self.fe_client: FireEyeClient = FireEyeClient(base_url=base_url, username=username, password=password,
                                                       verify=verify, proxy=proxy)
@@ -85,8 +85,9 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     request_params = parse_request_params(args)
     limit = int(args.get('limit', '20'))
+    timeout = int(args.get('timeout', '120'))
 
-    raw_response = client.fe_client.get_alerts_request(request_params)
+    raw_response = client.fe_client.get_alerts_request(request_params, timeout=timeout)
 
     alerts = raw_response.get('alert')
     if not alerts:
@@ -327,7 +328,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
 
 @logger
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
-                    info_level: str = 'concise') -> Tuple[dict, list]:
+                    info_level: str = 'concise') -> tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {
             'time': to_fe_datetime_converter(first_fetch),

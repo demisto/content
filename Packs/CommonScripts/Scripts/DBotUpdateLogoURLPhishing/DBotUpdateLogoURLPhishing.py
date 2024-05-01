@@ -177,10 +177,10 @@ def display_all_logos(model):
     logo_list = []
     for name, logo in model.logos_dict.items():
         custom_associated_logo = model.custom_logo_associated_domain.get(name, '')
-        if name in model.custom_logo_associated_domain.keys():
-            description = description + ", %s (%s, %s)" % (name, 'Custom Logo', ','.join(custom_associated_logo))
+        if name in model.custom_logo_associated_domain:
+            description = description + ", {} ({}, {})".format(name, 'Custom Logo', ','.join(custom_associated_logo))
         else:
-            description = description + ", %s (%s)" % (name, 'Default Logo')
+            description = description + ", {} ({})".format(name, 'Default Logo')
         logo_list.append(logo)
     description = description[1:]
     merged_logos = get_concat_logo_single_image([image_from_base64_to_bytes(logo) for logo in logo_list])
@@ -214,7 +214,7 @@ def main():
             else:
                 model = load_model_from_docker()
             display_all_logos(model)
-            return
+            return None
 
         if (action == KEY_ADD_LOGO) and (not logo_image_id or not logo_name):
             return_error(MSG_EMPTY_NAME_OR_URL)

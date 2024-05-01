@@ -1,9 +1,9 @@
 args:
-- description: Incident System ID
+- description: Incident System ID.
   name: id
-- description: Incident number
+- description: Incident number.
   name: number
-- description: Incident assigne name (e.g John Smith)
+- description: Incident assigne name (e.g John Smith).
   name: assignee
 comment: |-
   This script is used to wrap the generic query-table command in ServiceNow.
@@ -16,16 +16,16 @@ enabled: true
 name: ServiceNowQueryIncident
 outputs:
 - contextPath: ServiceNow.Incident.ID
-  description: Incident ID
+  description: Incident ID.
   type: string
 - contextPath: ServiceNow.Incident.Description
-  description: Incident description
+  description: Incident description.
   type: string
 - contextPath: ServiceNow.Incident.Number
-  description: Incident number
+  description: Incident number.
   type: number
 - contextPath: ServiceNow.Incident.Caller
-  description: Incident caller
+  description: Incident caller.
   type: string
 script: '-'
 tags:
@@ -40,6 +40,6 @@ dependson:
   must:
   - servicenow-query-table
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 skipprepare:
 - script-name-incident-to-alert

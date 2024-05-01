@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
 from typing import Any
-from MicrosoftApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 
@@ -17,13 +17,15 @@ class MsGraphClient:
                  tenant_id: str,
                  verify: bool,
                  proxy: bool,
+                 azure_cloud: AzureCloud,
+                 auth_code: str,
+                 redirect_uri: str,
                  certificate_thumbprint: str | None = None,
                  private_key: str | None = None,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
                  managed_identities_client_id: str | None = None,
                  ):
         client_args = {
-            'base_url': 'https://graph.microsoft.com',
+            'base_url': azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"),
             'auth_id': app_id,
             'scope': Scopes.graph,
             'enc_key': app_secret,
@@ -31,18 +33,22 @@ class MsGraphClient:
             'verify': verify,
             'proxy': proxy,
             'self_deployed': True,
-            'grant_type': CLIENT_CREDENTIALS,
+            'grant_type': AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS,
             'ok_codes': (200, 201, 204),
-            'azure_ad_endpoint': azure_ad_endpoint,
+            'azure_ad_endpoint': azure_cloud.endpoints.active_directory,
             'private_key': private_key,
             'certificate_thumbprint': certificate_thumbprint,
             'managed_identities_client_id': managed_identities_client_id,
             'managed_identities_resource_uri': Resources.graph,
+            'azure_cloud': azure_cloud,
+            'auth_code': auth_code,
+            'redirect_uri': redirect_uri,
             'command_prefix': "msgraph-api",
         }
-        if not (app_secret and tenant_id):
+        if not ((app_secret or (certificate_thumbprint and private_key)) and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
-            client_args['token_retrieval_url'] = f'{azure_ad_endpoint}/organizations/oauth2/v2.0/token'
+            client_args['token_retrieval_url'] = urljoin(azure_cloud.endpoints.active_directory,
+                                                         '/organizations/oauth2/v2.0/token')
             client_args['scope'] = scope
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore[arg-type]
 
@@ -56,16 +62,14 @@ class MsGraphClient:
     ):
         url_suffix = urljoin(api_version, resource)
         if odata:
-            url_suffix += '?' + odata
+            url_suffix += f'?{odata}'
         res = self.ms_client.http_request(
             method=http_method,
             url_suffix=url_suffix,
             json_data=request_body,
             resp_type='resp',
         )
-        if res.content:
-            return res.json()
-        return None
+        return res.json() if res.content else None
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:  # pragma: no cover
@@ -79,15 +83,15 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
 
 
 def test_module(client: MsGraphClient,
-                app_secret: str,
-                tenant_id: str,
                 managed_identities_client_id: str | None) -> str:  # pragma: no cover
-    if (app_secret and tenant_id) or managed_identities_client_id:
+    if client.ms_client.grant_type == CLIENT_CREDENTIALS or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
     else:
-        raise ValueError('The test module is not functional when using Cortex XSOAR Azure app, '
-                         'run the msgraph-test command instead.')
+        raise DemistoException('The *Test* button is not available when using `Cortex XSOAR Azure app`, '
+                               '`self-deployed - Device Code Flow` or '
+                               ' `self-deployed - Authorization Code Flow`. '
+                               'Use the !msgraph-api-test command instead once all relevant parameters have been entered.')
 
 
 def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
@@ -147,11 +151,14 @@ def main() -> None:  # pragma: no cover
     if params.get('scope'):
         scope += params.get('scope')
 
+    azure_cloud = get_azure_cloud(params, 'MicrosoftGraphAPI')
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
     app_secret = app_secret if isinstance(app_secret, str) else ''
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
 
     try:
         client = MsGraphClient(
@@ -161,15 +168,16 @@ def main() -> None:  # pragma: no cover
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            azure_cloud=azure_cloud,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri,
         )
 
         if command == 'test-module':
-            result = test_module(client, app_secret, params.get('tenant_id'), managed_identities_client_id)
+            result = test_module(client, managed_identities_client_id)
             return_results(result)
         elif command == 'msgraph-api-request':
             return_results(generic_command(client, demisto.args()))
@@ -181,6 +189,8 @@ def main() -> None:  # pragma: no cover
             return_results(test_command(client))
         elif command == 'msgraph-api-auth-reset':
             return_results(reset_auth())
+        elif command == 'msgraph-api-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

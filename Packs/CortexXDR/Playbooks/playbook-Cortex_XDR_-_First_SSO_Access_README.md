@@ -1,3 +1,4 @@
+Deprecated. Use `Cortex XDR - Identity Analytics` instead.
 Investigates a Cortex XDR incident containing First SSO access from ASN in organization
  or First successful SSO connection from a country in organization.
 
@@ -15,17 +16,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* TIM - Indicator Relationships Analysis
-* Account Enrichment - Generic v2.1
 * Cortex XDR - First SSO Access - Set Verdict
 * User Investigation - Generic
+* TIM - Indicator Relationships Analysis
 * Block Account - Generic v2
+* Account Enrichment - Generic v2.1
+* Endpoint Enrichment - Generic v2.1
 
 ### Integrations
 
+* CortexXDRIR
 * XQLQueryingEngine
 * XDR_iocs
-* CortexXDRIR
 
 ### Scripts
 
@@ -33,10 +35,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setIncident
-* xdr-endpoint-isolate
 * okta-clear-user-sessions
+* xdr-endpoint-isolate
 * ip
+* setIncident
 
 ## Playbook Inputs
 
@@ -67,7 +69,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
 | XDRUsernameField | Cortex XDR User name Field. | actor_effective_username | Optional |
-| AutomaticallyClearSessions | Whether to clear all the user sessions automatically. | False | Optional |
+| AutomaticallyClearSessions | Whether to clear all the user sessions automatically. Can be used in conjunction with the ForceClearSessionsForHighRiskUsers input. | False | Optional |
+| ForceClearSessionsForHighRiskUsers | Whether to clear user sessions regardless of the AutomaticallyClearSessions input for users with High risk.<br/>Users receive their risk level based on Cortex XDR's ITDR module. The risks can be:<br/>- LOW<br/>- MED<br/>- HIGH<br/><br/>Setting this to True will automatically clear the user sessions in Okta if the user has a high risk. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it. | False | Optional |
 
 ## Playbook Outputs
 

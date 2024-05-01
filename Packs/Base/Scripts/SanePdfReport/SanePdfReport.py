@@ -22,6 +22,8 @@ SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
 TENANT_ACCOUNT_NAME = get_tenant_account_name()
+MD_IMAGE_PATH_SAAS = '/xsoar/markdown/image'
+MD_IMAGE_SAAS_VERSION = '8.0'
 
 
 def find_zombie_processes():
@@ -73,10 +75,11 @@ def startServer():
 
         def do_GET(self):
             demisto.debug(f'Handling MD Image request {self.path}')
+            img_path = MD_IMAGE_PATH_SAAS if is_demisto_version_ge(MD_IMAGE_SAAS_VERSION) else MD_IMAGE_PATH
             if TENANT_ACCOUNT_NAME:
-                markdown_path_prefix = f"/{TENANT_ACCOUNT_NAME}{MD_IMAGE_PATH}"
+                markdown_path_prefix = f"/{TENANT_ACCOUNT_NAME}{img_path}"
             else:
-                markdown_path_prefix = MD_IMAGE_PATH
+                markdown_path_prefix = img_path
 
             if not self.path.startswith(markdown_path_prefix):
                 # not a standard xsoar markdown image endpoint
@@ -126,7 +129,8 @@ def main():
         pageSize = demisto.args().get('paperSize', 'letter')
         disableHeaders = demisto.args().get('disableHeaders', '')
         tableTextMaxLength = demisto.args().get('tableTextMaxLength', '300')
-        forceServerFormattedTimeString = argToBoolean(demisto.args().get('forceServerFormattedTimeString', 'false'))
+        forceServerFormattedTimeString = demisto.args().get('forceServerFormattedTimeString', 'false')
+        addUtf8Bom = demisto.args().get('addUtf8Bom', 'false')
 
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
@@ -159,6 +163,7 @@ def main():
                 extra_cmd += ' ""'
 
             extra_cmd += f' "{forceServerFormattedTimeString}"'
+            extra_cmd += f' "{addUtf8Bom}"'
 
         with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:  # type: ignore[call-overload]
             input_file = tmpdir + '/input.json'
@@ -178,7 +183,8 @@ def main():
                 f' resourceTimeout="{resourceTimeout}",' \
                 f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
                 f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
-                f' disableHeaders="{disableHeaders}", forceServerFormattedTimeString="{forceServerFormattedTimeString}"'
+                f' disableHeaders="{disableHeaders}", forceServerFormattedTimeString="{forceServerFormattedTimeString}",' \
+                f' addUtf8Bom="{addUtf8Bom}"'
 
             if isMDImagesSupported:
                 params += f', markdownArtifactsServerAddress="{mdServerAddress}"'

@@ -32,6 +32,7 @@ def does_password_meet_requirement(
     [
         (1, 2, 1, 2, 1, 2, 1, 2),  # Test case with all ranges set to 1-2
         (2, 5, 3, 5, 4, 6, 1, 3),  # Test case with various ranges
+        (2, 5, 3, 5, 4, 10, 0, 0),  # Test case with no symbols
     ]
 )
 def test_generate_password(

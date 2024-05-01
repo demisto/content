@@ -3,9 +3,11 @@ from __future__ import print_function
 import json
 import logging
 import uuid
+import os
 
 integrationContext = {}
 is_debug = False  # type: bool
+ARGS_COMMAND_PATH = os.path.join(os.path.dirname(__file__), ".args_command.json")
 
 exampleIncidents = [
     {
@@ -434,6 +436,12 @@ def params():
       dict: Integrations parameters object
 
     """
+    demisto_params = os.getenv("DEMISTO_PARAMS")
+    if demisto_params:
+        try:
+            return json.loads(demisto_params)
+        except json.JSONDecodeError:
+            return {}
     return {}
 
 
@@ -444,6 +452,14 @@ def args():
       dict: Arguments object
 
     """
+    if os.path.exists(ARGS_COMMAND_PATH):
+        with open(ARGS_COMMAND_PATH) as f:
+            try:
+                args = json.load(f)
+            except json.JSONDecodeError:
+                return {}
+            args.pop("cmd", None)
+            return args
     return {}
 
 
@@ -455,6 +471,14 @@ def command():
       str: Integrations command name
 
     """
+    if os.path.exists(ARGS_COMMAND_PATH):
+        with open(ARGS_COMMAND_PATH) as f:
+            try:
+                return json.load(f)["cmd"]
+            except json.JSONDecodeError:
+                return ""
+            except KeyError:
+                return ""
     return ""
 
 
@@ -758,7 +782,7 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
     Returns:
       None: No data returned
 
-    """
+    """  # noqa: E501
     global integrationContext
     integrationContext = context
 
@@ -780,13 +804,13 @@ def getIntegrationContextVersioned(refresh=False):
 
 def incidents(incidents=None):
     """In script, retrieves the `Incidents` list from the context
-    In integration, used to return incidents to the server
+    In integration, used to return incidents to the server.
 
     Args:
-      incidents (list): In integration only, list of incident objects (Default value = None)
+      incidents (list): In integration only, list of incident objects (Default value = None).
 
     Returns:
-      list: List of incident objects
+      list: List containing the current incident object.
 
     """
     if incidents is None:
@@ -1038,7 +1062,7 @@ def createIndicators(indicators_batch, noUpdate=False):
 
 
 def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
-                     populateFields=None):
+                     populateFields=None, **kwargs):
     """Searches for indicators according to given query.
     If using Elasticsearch with Cortex XSOAR 6.1 or later,
     the searchAfter argument must be used instead of the page argument.
@@ -1206,7 +1230,7 @@ def searchRelationships(args):
     Retrieves Indicators Relationship data according to given filters.
     Args:
       args (dict): The relationships filter object.
-        Should contain a "filter" item, holding any of the relationship filters, E.g.:
+        A dictionary with the following keys:
         - size (int)
         - relationshipNames (List[str])
         - entities (List[str])
@@ -1224,7 +1248,7 @@ def searchRelationships(args):
 
     Example (partial results):
     ```
-    >>> demisto.searchRelationships({"filter": {"entities": ["8.8.8.8", "google.com"], "size": 2}})
+    >>> demisto.searchRelationships({"entities": ["8.8.8.8", "google.com"], "size": 2})
         {
         "total": 2,
         "data": [
@@ -1309,3 +1333,18 @@ def getLicenseCustomField(key):
     """
 
     return get(contentSecrets, key)
+
+
+def setAssetsLastRun(obj):
+    """(Integration only)
+    Stores given object in the AssetsLastRun object
+    Args:
+      obj (dict): The object to store
+    Returns:
+      None: No data returned
+    """
+    return
+
+
+def getAssetsLastRun():
+    return {"lastRun": "2018-10-24T14:13:20+00:00"}

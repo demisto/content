@@ -21,7 +21,11 @@ def main():
             json_transformers[header_key] = JsonTransformer(**values)
     markdown = tableToMarkdown(title, value, headers=headers, json_transform_mapping=json_transformers,
                                is_auto_json_transform=is_auto_json_transform)
-    return_results(markdown)
+
+    return_results(CommandResults(
+        readable_output=markdown,
+        raw_response=markdown,
+    ))
 
 
 def get_value_from_str(value: Any):

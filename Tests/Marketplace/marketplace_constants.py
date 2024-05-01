@@ -19,24 +19,34 @@ BASE_PACK_DEPENDENCY_DICT = {
         }
 }
 
-SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate']
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate', 'AssetsModelingRule']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XPANSE_MP = "xpanse"
+XSOAR_SAAS_MP = "xsoar_saas"
+XSOAR_ON_PREM_MP = "xsoar_on_prem"
 XSIAM_START_TAG = "<~XSIAM>"
 XSIAM_END_TAG = "</~XSIAM>"
 XSOAR_START_TAG = "<~XSOAR>"
 XSOAR_END_TAG = "</~XSOAR>"
 XPANSE_START_TAG = "<~XPANSE>"
 XPANSE_END_TAG = "</~XPANSE>"
+XSOAR_SAAS_START_TAG = "<~XSOAR_SAAS>"
+XSOAR_SAAS_END_TAG = "</~XSOAR_SAAS>"
+XSOAR_ON_PREM_TAG = "<~XSOAR_ON_PREM>"
+XSOAR_ON_PREM_END_TAG = "</~XSOAR_ON_PREM>"
+COREPACKS_OVERRIDE_FILE_PATH = "Tests/Marketplace/corepacks_override.json"
+
 TAGS_BY_MP = {
     XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
     XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG),
     XPANSE_MP: (XPANSE_START_TAG, XPANSE_END_TAG),
+    XSOAR_SAAS_MP: (XSOAR_SAAS_START_TAG, XSOAR_SAAS_END_TAG),
+    XSOAR_ON_PREM_MP: (XSOAR_ON_PREM_TAG, XSOAR_ON_PREM_END_TAG)
 }
 
 
-class BucketUploadFlow(object):
+class BucketUploadFlow:
     """ Bucket Upload Flow constants
 
     """
@@ -55,6 +65,7 @@ class BucketUploadFlow(object):
     README_IMAGES = 'readme_images'
     INTEGRATIONS = 'integrations'
     PREVIEW_IMAGES = 'preview_images'
+    DYNAMIC_DASHBOARD_IMAGES = 'dynamic_dashboard_images'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     # Different upload job names relate to different CI platforms:
@@ -63,9 +74,16 @@ class BucketUploadFlow(object):
     UPLOAD_JOB_NAMES = ["Upload Packs To Marketplace", "upload-packs-to-marketplace"]
     LATEST_VERSION = 'latest_version'
     INTEGRATION_DIR_REGEX = r"^integration-(.+).yml$"
+    MARKDOWN_IMAGES_ARTIFACT_FILE_NAME = "markdown_images.json"
+    MARKDOWN_IMAGES = 'markdown_images'
 
 
-class GCPConfig(object):
+class ImagesFolderNames(enum.Enum):
+    README_IMAGES = "readme_images"
+    INTEGRATION_DESCRIPTION_IMAGES = "integration_description_images"
+
+
+class GCPConfig:
     """ Google cloud storage basic configurations
 
     """
@@ -85,33 +103,31 @@ class GCPConfig(object):
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
-    INDEX_V2_NAME = "index_v2"
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     VERSIONS_METADATA_FILE = 'versions-metadata.json'
     COREPACKS_OVERRIDE_FILE = 'corepacks_override.json'
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json')) as core_packs_xsoar_list_file:
         packs_list = json.load(core_packs_xsoar_list_file)
         CORE_PACKS_LIST = packs_list.get('core_packs_list')
         CORE_PACKS_LIST_TO_UPDATE = packs_list.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_xsiam_list_file:
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json')) as core_packs_xsiam_list_file:
         packs_list_xsiam = json.load(core_packs_xsiam_list_file)
         CORE_PACKS_MPV2_LIST = packs_list_xsiam.get('core_packs_list')
         CORE_PACKS_MPV2_LIST_TO_UPDATE = packs_list_xsiam.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'),
-              'r') as core_packs_xpanse_list_file:
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json')) as core_packs_xpanse_list_file:
         packs_list_xpanse = json.load(core_packs_xpanse_list_file)
         CORE_PACKS_XPANSE_LIST = packs_list_xpanse.get('core_packs_list')
         CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE), 'r') as server_versions_metadata:
+    with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE)) as server_versions_metadata:
         versions_metadata_contents = json.load(server_versions_metadata)
         core_packs_file_versions = versions_metadata_contents.get('version_map')
 
-    with open(os.path.join(os.path.dirname(__file__), COREPACKS_OVERRIDE_FILE), 'r') as corepacks_override_file:
+    with open(os.path.join(os.path.dirname(__file__), COREPACKS_OVERRIDE_FILE)) as corepacks_override_file:
         corepacks_override_contents = json.load(corepacks_override_file)
 
     @classmethod
@@ -138,7 +154,7 @@ class GCPConfig(object):
         Find the current server versions that are unlocked and return the matching corepacks files.
         """
         unlocked_corepacks_files = []
-        for version, core_pack_file_value in cls.core_packs_file_versions.items():
+        for _version, core_pack_file_value in cls.core_packs_file_versions.items():
             # check if the file is unlocked
             if not core_pack_file_value.get('core_packs_file_is_locked'):
                 # check if version should be used for this marketplace (all are used by default if none was specified)
@@ -148,7 +164,7 @@ class GCPConfig(object):
         return unlocked_corepacks_files
 
 
-class PackTags(object):
+class PackTags:
     """ Pack tag constants """
     TRENDING = "Trending"
     NEW = "New"
@@ -160,12 +176,13 @@ class PackTags(object):
     DATA_SOURCE = "Data Source"
 
 
-class Metadata(object):
+class Metadata:
     """ Metadata constants and default values that are used in metadata parsing.
     """
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     XSOAR_SUPPORT = "xsoar"
     PARTNER_SUPPORT = "partner"
+    COMMUNITY_SUPPORT = "community"
     XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
     XSOAR_AUTHOR = "Cortex XSOAR"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
@@ -251,6 +268,7 @@ class PackFolders(enum.Enum):
     WIZARDS = 'Wizards'
     XDRC_TEMPLATES = 'XDRCTemplates'
     LAYOUT_RULES = 'LayoutRules'
+    ASSETS_MODELING_RULES = 'AssetsModelingRules'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -263,14 +281,15 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value,
-            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value,
+            PackFolders.ASSETS_MODELING_RULES.value
         }
 
     @classmethod
     def yml_supported_folders(cls):
         return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
                 PackFolders.TEST_PLAYBOOKS.value, PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value,
-                PackFolders.CORRELATION_RULES.value}
+                PackFolders.CORRELATION_RULES.value, PackFolders.ASSETS_MODELING_RULES.value}
 
     @classmethod
     def json_supported_folders(cls):
@@ -286,7 +305,7 @@ class PackFolders(enum.Enum):
         }
 
 
-class PackIgnored(object):
+class PackIgnored:
     """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
 
     ROOT_FILES: The files in the pack root directory
@@ -345,10 +364,12 @@ class PackStatus(enum.Enum):
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
     SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Successfully uploaded pack while creating dependencies zip"
-    FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
+    FAILED_LOADING_PACK_METADATA = "Failed in loading user-defined pack metadata"
+    FAILED_ENHANCING_PACK_ATTRIBUTES = "Failed in enhancing pack's object attributes"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
+    FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD = "Failed to upload pack dynamic dashboard images to gcs"
     FAILED_README_IMAGE_UPLOAD = "Failed to upload readme images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
@@ -357,11 +378,12 @@ class PackStatus(enum.Enum):
     FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
+    FAILED_DOWNLOADING_PACK_FOLDER = "Failed in downloading the pack zip from gcs"
+    FAILED_UPDATING_PACK_FOLDER_METADATA = "Failed updating pack folder metadata"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
-    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
@@ -381,7 +403,7 @@ SKIPPED_STATUS_CODES = {
 }
 
 
-class Changelog(object):
+class Changelog:
     """
     A class that represents all the keys that are present in a Changelog entry.
     """
@@ -420,7 +442,8 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
-    'Layout Rules': 'LayoutRules'
+    'Layout Rules': 'LayoutRules',
+    'Packs': 'Packs'
 }
 
 # the format is defined in issue #19786, may change in the future
@@ -452,7 +475,8 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
-    PackFolders.LAYOUT_RULES.value: "layoutrule"
+    PackFolders.LAYOUT_RULES.value: "layoutrule",
+    PackFolders.ASSETS_MODELING_RULES.value: "assetsmodelingrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -482,5 +506,6 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule"
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.ASSETS_MODELING_RULES.value]: "Assets Modeling Rule"
 }

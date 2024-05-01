@@ -1,0 +1,309 @@
+id: Code42 Add Departing Employee From Ticketing System v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Code42 Add Departing Employee From Ticketing System v2
+description: Parses a Ticket Summary containing a username='username' and optionally a departure='date' and adds the user to the Code42 Departing Employee list. This playbook uses Jira out-of-the-box, but you can swap it with a different Ticketing system and achieve the same result. For example, to use Zendesk, change the command `jira-get-issue` to be `zendesk-ticket-details` and use the `id` parameter for `issueId`. Change the output (what gets parsed) to be either the Subject or the Description from Zendesk.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73c30ef8-f4e9-47c4-8728-1d94b1735364
+    type: start
+    task:
+      id: 73c30ef8-f4e9-47c4-8728-1d94b1735364
+      version: -1
+      name: ""
+      description: The start task.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 464c4766-a29c-4fc9-8ee9-f34c4c949d26
+    type: title
+    task:
+      id: 464c4766-a29c-4fc9-8ee9-f34c4c949d26
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1dcbb265-1286-4f59-8d7a-ee9b5f96cea3
+    type: regular
+    task:
+      id: 1dcbb265-1286-4f59-8d7a-ee9b5f96cea3
+      version: -1
+      name: Get Ticket
+      description: Fetches an issue from Jira.
+      script: Jira V3|||jira-get-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "25"
+      - "26"
+    scriptarguments:
+      issue_id:
+        simple: ${inputs.IssueId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 7ceccfdf-ce0c-4d5c-8067-a458fa571fe3
+    type: regular
+    task:
+      id: 7ceccfdf-ce0c-4d5c-8067-a458fa571fe3
+      version: -1
+      name: Add user to Departing Employee watchlist
+      description: Add a user to a watchlist.
+      script: Code42|||code42-watchlists-add-user
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      username:
+        complex:
+          root: Ticket
+          accessor: Summary
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=username=)(\S+)
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ' '
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      watchlist:
+        simple: DEPARTING_EMPLOYEE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0e5d7154-4957-49a6-8781-ccf7728e77eb
+    type: regular
+    task:
+      id: 0e5d7154-4957-49a6-8781-ccf7728e77eb
+      version: -1
+      name: Update Departure Date on User Risk Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      end_date:
+        complex:
+          root: Ticket
+          accessor: Summary
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=departure=)(\S+)
+              unpack_matches: {}
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ' '
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      notes:
+        simple: Added from Ticket via Cortex XSOAR
+      username:
+        complex:
+          root: Ticket
+          accessor: Summary
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=username=)(\S+)
+              unpack_matches: {}
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ' '
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 5d610e80-dbef-455d-8691-aa80cad55100
+    type: condition
+    task:
+      id: 5d610e80-dbef-455d-8691-aa80cad55100
+      version: -1
+      name: Is Jira available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "23"
+      "yes":
+      - "24"
+    scriptarguments:
+      brandname:
+        simple: Jira V3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IssueId
+  value:
+    simple: ${incident.labels.id}
+  required: true
+  description: The ID of the Ticket to pull Departing Employee information from.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

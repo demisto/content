@@ -111,7 +111,7 @@ class Client:
                                    aws_secret_access_key=self.secret_key, verify=self.verify,
                                    config=self.config)
 
-    def return_error_based_on_status_code(self, status_code: int, error_message: str) -> Optional[None]:
+    def return_error_based_on_status_code(self, status_code, error_message: str) -> Optional[None]:
         """
         Return error message based on status code.
         Throws a ValueError based on respected status code.

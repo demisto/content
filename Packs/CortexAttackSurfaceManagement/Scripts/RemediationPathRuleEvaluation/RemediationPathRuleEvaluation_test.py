@@ -6,26 +6,26 @@ ALERT_CONTEXT = {
     "severity": 1,
     "ip": "1.1.1.1",
     "tag": [
-        {"Key": "env", "Source": "AWS", "Value": "dev"},
-        {"Key": "Name", "Source": "AWS", "Value": "rdp_server"},
+        {"key": "env", "source": "AWS", "value": "dev"},
+        {"key": "Name", "source": "AWS", "value": "rdp_server"},
     ],
     "provider": ["Amazon Web Services", "Google"],
     "development_environment": True,
     "cloud_managed": [
         {
-            "Organization": "n/a",
-            "Other": "us-east-1a",
-            "Project": "n/a",
-            "Provider": "AWS",
-            "Region": "us-east-1",
+            "organization": "n/a",
+            "other": "us-east-1a",
+            "project": "n/a",
+            "provider": "AWS",
+            "region": "us-east-1",
         }
     ],
     "service_owner_identified": [
         {
-            "Email": "n/a",
-            "Name": "service_XSOAR",
-            "Source": "AWS",
-            "Timestamp": "2023-01-26T15:51:17.346Z",
+            "email": "n/a",
+            "name": "service_XSOAR",
+            "source": "AWS",
+            "timestamp": "2023-01-26T15:51:17.346Z",
         }
     ],
 }

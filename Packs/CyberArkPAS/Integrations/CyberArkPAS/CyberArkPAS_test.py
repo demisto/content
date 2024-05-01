@@ -4,7 +4,7 @@ from CyberArkPAS import Client, add_user_command, get_users_command, \
     update_user_command, add_safe_command, update_safe_command, get_list_safes_command, get_safe_by_name_command, \
     add_safe_member_command, update_safe_member_command, list_safe_members_command, add_account_command, \
     update_account_command, get_list_accounts_command, get_list_account_activity_command, fetch_incidents, \
-    get_account_details_command
+    get_account_details_command, order_properties_to_dict
 from test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
@@ -487,3 +487,39 @@ def test_pas_safe_members_list(mocker, response: dict, count_or_total: str, expe
     results = list_safe_members_command(client=client, safe_name="Test")
     assert count_or_total in results.readable_output
     assert results.outputs == expected_output
+
+
+@pytest.mark.parametrize("properties,expected", [
+    ({}, {}),
+    ({"a": 1}, {"a": 1}),
+    ({'a': 1}, {"a": 1}),
+    ("{'a': 1}", {"a": 1}),
+    ('{"a": 1}', {"a": 1}),
+    ("", {})
+])
+def test_order_properties_to_dict(properties, expected):
+    """
+    Given:
+        - properties as input
+    When:
+        - order_properties_to_dict is called on properties
+    Then:
+        - it returns the expected output
+    """
+    assert order_properties_to_dict(properties) == expected
+
+
+@pytest.mark.parametrize("properties,expected", [
+    ("not json", ValueError),
+])
+def test_order_properties_to_dict_failure(properties, expected):
+    """
+    Given:
+        - Invalid properties as input
+    When:
+        - order_properties_to_dict is called on properties
+    Then:
+        - An error is raised
+    """
+    with pytest.raises(expected):
+        order_properties_to_dict(properties)

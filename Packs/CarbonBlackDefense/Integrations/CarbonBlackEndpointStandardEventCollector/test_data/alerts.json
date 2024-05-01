@@ -1,0 +1,111 @@
+{
+    "results": [
+        {
+            "org_key": "joe",
+            "alert_url": "alert_url",
+            "id": "a",
+            "type": "WATCHLIST",
+            "backend_timestamp": "2023-12-17T15:25:41.416Z",
+            "user_update_timestamp": null,
+            "backend_update_timestamp": "2023-12-17T15:25:41.416Z",
+            "detection_timestamp": "2023-12-17T15:25:07.930Z",
+            "first_event_timestamp": "2023-12-17T15:22:10.889Z",
+            "last_event_timestamp": "2023-12-17T15:22:10.889Z",
+            "severity": 7,
+            "reason": "reason",
+            "reason_code": "b",
+            "threat_id": "A",
+            "primary_event_id": "q",
+            "policy_applied": "NOT_APPLIED",
+            "run_state": "RAN",
+            "sensor_action": "ALLOW",
+            "workflow": {
+                "change_timestamp": "2023-12-17T15:25:41.416Z",
+                "changed_by_type": "SYSTEM",
+                "changed_by": "ALERT_CREATION",
+                "closure_reason": "NO_REASON",
+                "status": "OPEN"
+            },
+            "determination": {
+                "change_timestamp": "2023-12-17T15:25:41.416Z",
+                "value": "NONE",
+                "changed_by_type": "SYSTEM",
+                "changed_by": "ALERT_CREATION"
+            },
+            "tags": null,
+            "alert_notes_present": false,
+            "threat_notes_present": false,
+            "asset_id": "",
+            "is_updated": false,
+            "device_id": 7,
+            "device_name": "device_name",
+            "device_uem_id": "",
+            "device_target_value": "MEDIUM",
+            "device_policy": "default",
+            "device_policy_id": 6,
+            "device_os": "WINDOWS",
+            "device_os_version": "Windows 10 x64",
+            "device_username": "device name",
+            "device_location": "UNKNOWN",
+            "device_external_ip": "1.1.1.1",
+            "device_internal_ip": "1.1.1.1",
+            "mdr_alert": false,
+            "mdr_alert_notes_present": false,
+            "mdr_threat_notes_present": false,
+            "report_id": "reportid",
+            "report_name": "name",
+            "report_description": "description",
+            "report_tags": [
+                "powershell",
+                "downloadfile",
+                "downloaddata",
+                "downloadstring",
+                "t1059",
+                "windows",
+                "execution"
+            ],
+            "report_link": "link",
+            "ioc_id": "id",
+            "ioc_hit": "hit",
+            "watchlists": [
+                {
+                    "id": "a",
+                    "name": "Carbon Black Advanced Threats"
+                }
+            ],
+            "process_guid": "guid",
+            "process_pid": 7,
+            "process_name": "name",
+            "process_sha256": "c",
+            "process_md5": "7",
+            "process_effective_reputation": "TRUSTED_WHITE_LIST",
+            "process_reputation": "TRUSTED_WHITE_LIST",
+            "process_cmdline": "x",
+            "process_username": "username",
+            "process_issuer": [
+                "PCA 2011"
+            ],
+            "process_publisher": [
+                "publisher"
+            ],
+            "parent_guid": "guid",
+            "parent_pid": 4,
+            "parent_name": "",
+            "parent_sha256": "b",
+            "parent_md5": "06c6",
+            "parent_effective_reputation": "TRUSTED_WHITE_LIST",
+            "parent_reputation": "TRUSTED_WHITE_LIST",
+            "parent_cmdline": "c",
+            "parent_username": "NT",
+            "childproc_guid": "",
+            "childproc_username": "",
+            "childproc_cmdline": "",
+            "ml_classification_final_verdict": "NOT_ANOMALOUS",
+            "ml_classification_global_prevalence": "LOW",
+            "ml_classification_org_prevalence": "LOW",
+            "ml_classification_anomalies": []
+        }
+    ],
+    "num_available": 1,
+    "num_found": 1
+}

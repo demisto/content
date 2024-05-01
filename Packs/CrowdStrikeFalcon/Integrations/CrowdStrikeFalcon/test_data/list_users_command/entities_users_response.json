@@ -1,0 +1,19 @@
+{
+ "meta": {
+  "query_time": 0.005546221,
+  "pagination": {
+   "offset": 0,
+   "limit": 100,
+   "total": 5
+  },
+  "powered_by": "cs.flightcontrolapi",
+  "trace_id": "9b3d50fb-6780-43b2-9f15-08acea316bb3"
+ },
+ "resources": [
+  "8ce129ae-b2c5-48f1-9c24-4e39aaf1ff16",
+  "b97bf3b6-4cc7-72de-b85b-01548ff82799",
+  "516de4b4-fbd9-44bf-927a-da026dbb61b9",
+  "bf3bc61c-da90-4098-82d9-8023fe5f290e",
+  "4b2a1f42-dc61-3eb5-86cc-4175a7c902c1"
+ ]
+}

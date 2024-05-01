@@ -10,4 +10,3 @@ rules  # unused variable (SophosXGFirewall.py:1148)
 host_group  # unused variable (SophosXGFirewall.py:1188)
 urls  # unused variable (SophosXGFirewall.py:1259)
 hosts  # unused variable (SophosXGFirewall.py:1291)
-

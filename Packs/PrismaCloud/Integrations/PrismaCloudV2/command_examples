@@ -11,6 +11,9 @@
 !prisma-cloud-network-search query="network from vpc.flow_record where cloud.account = 'AWS Prod' AND source.publicnetwork IN ( 'Suspicious IPs' ) AND bytes > 0 "
 !prisma-cloud-trigger-scan
 !prisma-cloud-resource-get rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25
+!prisma-cloud-resource-list limit=3
+!prisma-cloud-user-roles-list limit=3
+!prisma-cloud-users-list limit=2
 !prisma-cloud-account-list limit=3
 !prisma-cloud-account-status-get account_ids=111111111111
 !prisma-cloud-account-owner-list account_ids=888888888888888888888888888888888888,111111111111

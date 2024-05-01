@@ -33,7 +33,6 @@ def test_validate_date_field_data_remains(due_date: str):
     ("ABC")
 ])
 def test_validate_date_field_format(due_date: str):
-
     """
     Given:
         - An invalid string.
@@ -57,7 +56,6 @@ def test_validate_date_field_format(due_date: str):
     ("2022-12-12Z12")
 ])
 def test_validate_date_field_time_data_doesnt_match(due_date: str):
-
     """
     Given:
         - An invalid string.
@@ -85,7 +83,6 @@ def test_validate_date_field_time_data_doesnt_match(due_date: str):
     ([], {}),
 ])
 def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any]):
-
     """
     Given:
         - A list of strings of custom fields.

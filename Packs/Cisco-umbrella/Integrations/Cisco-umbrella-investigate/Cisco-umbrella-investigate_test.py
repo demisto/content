@@ -3,7 +3,7 @@ import requests
 
 import demistomock as demisto
 import importlib
-from CommonServerPython import DBotScoreReliability
+from CommonServerPython import DBotScoreReliability, Common
 
 Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
 
@@ -12,13 +12,13 @@ ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid threshold values for the 
                                  'Suspicious is greater than Malicious and both are within a range of -100 to 100'
 
 
-@pytest.mark.parametrize('suspicous, malicious, expected_mock_result', [
+@pytest.mark.parametrize('suspicious, malicious, expected_mock_result', [
     (0, -100, None),
     (0, -200, ERROR_VERIFY_THRESHOLD_MESSAGE),
     (200, -100, ERROR_VERIFY_THRESHOLD_MESSAGE),
     (0, 50, ERROR_VERIFY_THRESHOLD_MESSAGE)
 ])
-def test_verify_threshold_suspicouns_and_malicious_parameters(suspicous, malicious, expected_mock_result, mocker):
+def test_verify_threshold_suspicious_and_malicious_parameters(suspicious, malicious, expected_mock_result, mocker):
     """
         Given:
             - The suspicious and malicious thresholds params
@@ -28,7 +28,7 @@ def test_verify_threshold_suspicouns_and_malicious_parameters(suspicous, malicio
             - Verify suspicious is bigger then malicious and both of them in range of -100 to 100
     """
     mock_result = mocker.patch('Cisco-umbrella-investigate.return_error')
-    Cisco_umbrella_investigate.verify_threshold_params(suspicous, malicious)
+    Cisco_umbrella_investigate.verify_threshold_params(suspicious, malicious)
 
     if not mock_result.call_args:
         assert not expected_mock_result
@@ -216,3 +216,33 @@ def different_inputs_handling(*args):
         error.response = requests.Response()
         error.response.status_code = 404
         raise error
+    return None
+
+
+@pytest.mark.parametrize(("status", "securerank2", "expected_score"), (
+    pytest.param(0, None, Common.DBotScore.NONE, id="status 0"),
+    pytest.param(-1, None, Common.DBotScore.BAD, id="status -1"),
+    pytest.param(1, None, Common.DBotScore.GOOD, id="status 1"),
+    pytest.param(None, None, Common.DBotScore.NONE, id="status None, rank None"),
+    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD + 1, Common.DBotScore.GOOD, id="above suspicious threshold"),
+    pytest.param(1, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD + 1,
+                 Common.DBotScore.GOOD, id="status (1) is stronger than threshold"),
+    pytest.param(-1, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD + 1,
+                 Common.DBotScore.BAD, id="status (-1) is stronger than threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD, Common.DBotScore.GOOD, id="equal to suspicious threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD - 1,
+                 Common.DBotScore.SUSPICIOUS, id="below suspicious to threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD + 1,
+                 Common.DBotScore.SUSPICIOUS, id="above malicious threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD,
+                 Common.DBotScore.SUSPICIOUS, id="equal to malicious threshold"),
+    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD - 1, Common.DBotScore.BAD, id="below malicious threshold"),
+))
+def test_calculate_domain_dbot_score(status: int | None, securerank2: int | None, expected_score: int):
+    assert Cisco_umbrella_investigate.calculate_domain_dbot_score(status, securerank2) == expected_score
+
+
+@pytest.mark.parametrize("status", (("", "3", "none", "na", "NA", "🥲")))
+def test_calculate_domain_dbot_score_unexpected_status(status: str):
+    with pytest.raises(ValueError, match=f"unexpected {status=}, expected 0,1 or -1"):
+        Cisco_umbrella_investigate.calculate_domain_dbot_score(status, 0)

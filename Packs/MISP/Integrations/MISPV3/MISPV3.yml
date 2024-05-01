@@ -13,6 +13,26 @@ configuration:
   hiddenusername: true
   display: ""
   required: false
+- display: Client Certificate
+  displaypassword: Private Key
+  name: certificate
+  type: 9
+  required: false
+- display: Use IDS flag
+  name: check_to_ids
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: This is to enable checking the boolean flag to_ids. The flag
+    allows you to indicate if an attribute should be actionable or not.
+- display: ORG names to use for reputation checks
+  name: allowed_orgs
+  type: 12
+  required: false
+  additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). 
+    When pulling data from MISP you may have data coming from a reliable source.
+    However, some of the orgs are including things like 8.8.8.8 in their feeds.
+    This parameter is used to filter such orgs out by specifying the exact list of orgs to trust.
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -944,7 +964,7 @@ script:
       name: category
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to create the event''s attribute with the Intrusion Detection System flag. Possible values: "true" and "false".'
+      description: 'Whether to create the event''s attribute with the Intrusion Detection System flag. Possible values are: true, false.'
       name: to_ids
       predefined:
       - 'true'
@@ -1114,7 +1134,7 @@ script:
       name: category
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to create the attribute with the Intrusion Detection System flag. Possible values: "true" and "false".'
+      description: 'Whether to create the attribute with the Intrusion Detection System flag. Possible values are: true, false.'
       name: to_ids
       predefined:
       - 'true'
@@ -2021,7 +2041,7 @@ script:
     - description: Template name. (Can be found at https://www.misp-project.org/objects.html). For example, 'vehicle'.
       name: template
       required: true
-    - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}'
+    - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}.'
       name: attributes
       required: true
     description: Adds any other object to MISP.
@@ -2070,7 +2090,7 @@ script:
       description: Attribute last changed timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
-      description: Whether the object was deleted?
+      description: Whether the object was deleted?.
       type: Boolean
     - contextPath: MISP.Event.Object.Attribute.ObjectID
       description: ID of the object.
@@ -2105,6 +2125,97 @@ script:
     - contextPath: MISP.Event.Object.Description
       description: Description of the object.
       type: String
+  - arguments:
+      - description: ID of the event to add the object to.
+        name: event_id
+        required: true
+      - description: Custom Template name.
+        name: template
+        required: true
+      - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}.'
+        name: attributes
+        required: true
+    description: Adds custom objects to MISP.
+    name: misp-add-custom-object
+    outputs:
+      - contextPath: MISP.Event.ID
+        description: MISP event ID.
+        type: number
+      - contextPath: MISP.Event.Object.MetaCategory
+        description: Object meta category.
+        type: String
+      - contextPath: MISP.Event.Object.Distribution
+        description: Distribution of the object.
+        type: Number
+      - contextPath: MISP.Event.Object.Name
+        description: Name of the object.
+        type: String
+      - contextPath: MISP.Event.Object.TemplateVersion
+        description: Template version of the object.
+        type: Number
+      - contextPath: MISP.Event.Object.EventID
+        description: ID of the event in which the object was first created.
+        type: Number
+      - contextPath: MISP.Event.Object.TemplateUUID
+        description: UUID of the template.
+        type: String
+      - contextPath: MISP.Event.Object.LastChanged
+        description: Timestamp when the object was last changed.
+        type: String
+      - contextPath: MISP.Event.Object.Deleted
+        description: Whether the object was deleted.
+        type: Boolean
+      - contextPath: MISP.Event.Object.ID
+        description: ID of the object.
+        type: Number
+      - contextPath: MISP.Event.Object.UUID
+        description: UUID of the object.
+        type: String
+      - contextPath: MISP.Event.Object.Attribute.Value
+        description: Value of the attribute.
+        type: String
+      - contextPath: MISP.Event.Object.Attribute.EventID
+        description: ID of the first event from which the object originated.
+        type: Number
+      - contextPath: MISP.Event.Object.Attribute.LastChanged
+        description: Attribute last changed timestamp.
+        type: Date
+      - contextPath: MISP.Event.Object.Attribute.Deleted
+        description: Whether the object was deleted?.
+        type: Boolean
+      - contextPath: MISP.Event.Object.Attribute.ObjectID
+        description: ID of the object.
+        type: Number
+      - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+        description: Whether correlation is disabled.
+        type: Boolean
+      - contextPath: MISP.Event.Object.Attribute.ID
+        description: ID of the attribute.
+        type: Unknown
+      - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+        description: Relation of the object.
+        type: String
+      - contextPath: MISP.Event.Object.Attribute.Type
+        description: Object type.
+        type: String
+      - contextPath: MISP.Event.Object.Attribute.UUID
+        description: UUID of the attribute.
+        type: String
+      - contextPath: MISP.Event.Object.Attribute.ToIDs
+        description: Whether the to_ids flag is on.
+        type: Boolean
+      - contextPath: MISP.Event.Object.Attribute.Category
+        description: Category of the attribute.
+        type: String
+      - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+        description: ID of the sharing group.
+        type: Number
+      - contextPath: MISP.Event.Object.Attribute.Comment
+        description: Comment of the attribute.
+        type: String
+      - contextPath: MISP.Event.Object.Description
+        description: Description of the object.
+        type: String
   - arguments:
     - description: ID of a MISP event.
       name: event_id
@@ -2221,7 +2332,7 @@ script:
     - description: Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. For example, 59523300-4be8-4fa6-8867-0037ac110002.
       name: uuid
     - auto: PREDEFINED
-      description: 'Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values: "true" and "false".'
+      description: 'Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values are: true, false.'
       name: to_ids
       predefined:
       - 'true'
@@ -2229,7 +2340,7 @@ script:
     - description: Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event.
       name: last
     - auto: PREDEFINED
-      description: 'Whether to return the decay score at the attribute level. Possible values: "true" and "false".'
+      description: 'Whether to return the decay score at the attribute level. Possible values are: true, false.'
       name: include_decay_score
       predefined:
       - 'true'
@@ -2247,17 +2358,23 @@ script:
       isArray: true
       name: event_id
     - auto: PREDEFINED
-      description: 'Whether to include the the sightings of the matching attributes. Default is false. Possible values: "true" and "false".'
+      description: 'Whether to include the the sightings of the matching attributes. Default is false. Possible values are: true, false.'
       name: include_sightings
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'Whether to include the full correlations of the matching attributes. Possible values: "true" and "false". Default is false.'
+      description: 'Whether to include the full correlations of the matching attributes. Possible values are: true, false. Default is false.'
       name: include_correlations
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      description: 'Whether to include the file data of the matching attributes. Possible values are: true, false. Default is false.'
+      name: with_attachments
+      predefined:
+        - 'true'
+        - 'false'
     - description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300. Default is 1.
       defaultValue: '1'
       name: page
@@ -2265,13 +2382,13 @@ script:
       name: limit
       defaultValue: '50'
     - auto: PREDEFINED
-      description: 'Whether to return only the values that are not on the warninglists. Possible values: "true" and "false".'
+      description: 'Whether to return only the values that are not on the warninglists. Possible values are: true, false.'
       name: enforceWarninglist
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'Whether to return only the attribute''s values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values: "true" and "false".'
+      description: 'Whether to return only the attribute''s values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values are: true, false.'
       defaultValue: 'false'
       name: compact
       predefined:
@@ -2465,7 +2582,7 @@ script:
     - description: Event ID to set attributes for.
       name: event_id
       required: true
-    - description: 'Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]'
+    - description: 'Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}].'
       name: attribute_data
       required: true
     description: Set event attributes according to the given attributes data.
@@ -2594,7 +2711,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.66985
+  dockerimage: demisto/pymisp2:2.4.183.84720
   runonce: false
   script: ''
   subtype: python3

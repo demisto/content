@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -16,7 +16,7 @@ ENV_URLS = {
     "eu (echo)": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
-ALERT_STATUSES = set((
+ALERT_STATUSES = {
     "FALSE_POSITIVE",
     "NOT_ACTIONABLE",
     "OPEN",
@@ -24,7 +24,7 @@ ALERT_STATUSES = set((
     "TRUE_POSITIVE_MALICIOUS",
     "OTHER",
     "SUPPRESSED",
-))
+}
 ASSET_SEARCH_FIELDS = ((
     "endpoint_type",
     "host_id",
@@ -37,10 +37,10 @@ ASSET_SEARCH_FIELDS = ((
     "sensor_version",
     "username",
 ))
-COMMENT_TYPES = set((
+COMMENT_TYPES = {
     "investigation",
-))
-INVESTIGATION_STATUSES = set((
+}
+INVESTIGATION_STATUSES = {
     "OPEN",
     "ACTIVE",
     "AWAITING_ACTION",
@@ -52,8 +52,8 @@ INVESTIGATION_STATUSES = set((
     "CLOSED_INFORMATIONAL",
     "CLOSED_NOT_VULNERABLE",
     "CLOSED_THREAT_MITIGATED",
-))
-INVESTIGATION_TYPES = set((
+}
+INVESTIGATION_TYPES = {
     "SECURITY_INVESTIGATION",
     "INCIDENT_RESPONSE",
     "THREAT_HUNT",
@@ -61,16 +61,19 @@ INVESTIGATION_TYPES = set((
     "CTU_THREAT_HUNT",
     "MANAGED_XDR_ELITE_THREAT_HUNT",
     "SECUREWORKS_INCIDENT_RESPONSE",
-))
-INVESTIGATION_UPDATE_FIELDS = set((
+}
+INVESTIGATION_UPDATE_FIELDS = {
     "keyFindings",
     "priority",
     "status",
     "assigneeId",
     "title",
     "type",
-))
-SHARELINK_TYPES = set((
+    "serviceDeskId",
+    "serviceDeskType",
+    "tags",
+}
+SHARELINK_TYPES = {
     "alertId",
     "connectorId",
     "connectionId",
@@ -81,7 +84,7 @@ SHARELINK_TYPES = set((
     "playbookTemplateId",
     "playbookInstanceId",
     "playbookExecutionId",
-))
+}
 
 DEFAULT_FIRST_FETCH_INTERVAL = "1 day"
 
@@ -110,7 +113,6 @@ class Client(BaseClient):
         self._client_secret = client_secret
         self.verify = verify
         self.tenant_id = tenant_id
-        return
 
     def auth(self) -> None:
         """Authenticate to the Taegis API using client_id and client_secret
@@ -131,9 +133,7 @@ class Client(BaseClient):
             "x-tenant-context": self.tenant_id,
         }
 
-        return
-
-    def graphql_run(self, query: str, variables: Dict[str, Any] = None):
+    def graphql_run(self, query: str, variables: dict[str, Any] = None):
         """Perform a GraphQL query
 
         :type query: ``str``
@@ -142,7 +142,7 @@ class Client(BaseClient):
         :type variables: ``Dict[str, Any]``
         :param variables: The variables to utilize with the query
         """
-        json_data: Dict[str, Any] = {"query": query}
+        json_data: dict[str, Any] = {"query": query}
 
         if variables:
             json_data["variables"] = variables
@@ -155,7 +155,7 @@ class Client(BaseClient):
         )
         return response
 
-    def test(self) -> Dict[str, Any]:
+    def test(self) -> dict[str, Any]:
         """
         Get the current API/asset version for testing auth and connectivity
         """
@@ -183,8 +183,8 @@ def add_evidence_to_investigation_command(client: Client, env: str, args=None):
     variables: dict = {
         "input": {
             "investigationId": args.get("id"),
-            "alerts": split_and_trim(args.get("alerts", [])),
-            "events": split_and_trim(args.get("events", [])),
+            "alerts": argToList(args.get("alerts")),
+            "events": argToList(args.get("events")),
             "alertsSearchQuery": args.get("alert_query", ""),
         }
     }
@@ -242,7 +242,7 @@ def create_comment_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "comment": args.get("comment"),
-            "id": args.get("id"),
+            "investigationId": args.get("id"),
         }
     }
 
@@ -281,12 +281,13 @@ def create_investigation_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "title": args.get("title"),
-            "priority": arg_to_number(args.get("priority")) or 3,
+            "priority": arg_to_number(args.get("priority", 3)),
             "status": args.get("status", "OPEN"),
-            "alerts": split_and_trim(args.get("alerts", [])),
+            "alerts": argToList(args.get("alerts")),
             "keyFindings": args.get("key_findings", ""),
             "type": args.get("type", "SECURITY_INVESTIGATION"),
             "assigneeId": args.get("assignee_id", "@secureworks"),
+            "tags": argToList(args.get("tags")),
         }
     }
 
@@ -295,13 +296,13 @@ def create_investigation_command(client: Client, env: str, args=None):
     if variables["input"]["priority"] and not 0 < variables["input"]["priority"] < 5:
         raise ValueError("Priority must be between 1-4")
     if variables["input"]["status"] not in INVESTIGATION_STATUSES:
-        raise ValueError((
+        raise ValueError(
             f"The provided status, {variables['input']['status']}, is not valid for updating an investigation. "
-            f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+            f"Supported Status Values: {INVESTIGATION_STATUSES}")
     if variables["input"]["type"] not in INVESTIGATION_TYPES:
-        raise ValueError((
+        raise ValueError(
             f"The provided type, {variables['input']['type']}, is not valid for updating an investigation. "
-            f"Supported Type Values: {INVESTIGATION_TYPES}"))
+            f"Supported Type Values: {INVESTIGATION_TYPES}")
     if not variables["input"]["title"]:
         raise ValueError("Title must be defined")
 
@@ -339,9 +340,9 @@ def create_sharelink_command(client: Client, env: str, args=None):
     if not args.get("type"):
         raise ValueError("Cannot create ShareLink, type cannot be empty")
     if args["type"] not in SHARELINK_TYPES:
-        raise ValueError((
+        raise ValueError(
             f"The provided ShareLink type, {args['type']}, is not valid for creating a ShareLink. "
-            f"Supported Type Values: {SHARELINK_TYPES}"))
+            f"Supported Type Values: {SHARELINK_TYPES}")
 
     variables: dict = {
         "sharelink": {
@@ -443,8 +444,8 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     """
     variables: dict = {
         "cql_query": args.get("cql_query", "from alert severity >= 0.4 and status='OPEN'"),
-        "limit": args.get("limit", 10),
-        "offset": args.get("offset", 0),
+        "limit": arg_to_number(args.get("limit", 10)),
+        "offset": arg_to_number(args.get("offset", 0)),
         "ids": args.get("ids", []),  # ["alert://id1", "alert://id2"]
     }
     fields: str = args.get("fields") or """
@@ -519,7 +520,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         }
         """ % (fields)
 
-        variables["ids"] = split_and_trim(variables["ids"])
+        variables["ids"] = argToList(variables["ids"])
     else:
         field = "alertsServiceSearch"
         query = """
@@ -562,7 +563,7 @@ def fetch_assets_command(client: Client, env: str, args=None):
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 10
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "input": {},
         "pagination_input": {
             "limit": page_size,
@@ -722,8 +723,8 @@ def fetch_comments_command(client: Client, env: str, args=None):
     variables = {
         "arguments": {
             "investigationId": args.get("id"),
-            "page": arg_to_number(args.get("page")) or 0,
-            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "orderBy": args.get("order_direction", "DESCENDING")
         }
     }
@@ -754,7 +755,7 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot fetch endpoint information, missing id")
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "id": args.get("id")
     }
 
@@ -900,7 +901,7 @@ def fetch_incidents(
         """
 
         variables = {
-            "limit": max_fetch,
+            "limit": arg_to_number(max_fetch),
             # We only support Medium, High, Critical
             "cql_query": f"from alert where severity >=0.4 AND earliest = '{start_time}'",
         }
@@ -908,7 +909,8 @@ def fetch_incidents(
         asset_query = ""
         if include_assets:
             demisto.debug("include_assets=True, fetching assets with investigation")
-            asset_query = "assets {id hostnames {id hostname} tags {tag}}"
+            # Assets to be deprecated in the future
+            asset_query = "assets {id hostnames {id hostname} tags {tag}} assetsEvidence {id assetId}"
 
         query = """
         query investigationsSearch(
@@ -933,6 +935,12 @@ def fetch_incidents(
                 key_findings
                 assignee {
                     name
+                    id
+                    email
+                }
+                assignee_user {
+                    family_name
+                    given_name
                     id
                     email
                 }
@@ -965,6 +973,8 @@ def fetch_incidents(
                 status
                 created_at
                 archived_at
+                alertsEvidence {id alertId}
+                tags
                 %s
             }
           }
@@ -975,7 +985,7 @@ def fetch_incidents(
             "orderByField": "created_at",
             "orderDirection": "asc",
             "page": 0,
-            "perPage": max_fetch,
+            "perPage": arg_to_number(max_fetch),
             "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'"
         }
 
@@ -1027,8 +1037,8 @@ def fetch_incidents(
 
 def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
-    page = arg_to_number(args.get("page")) or 0
-    page_size = arg_to_number(args.get("page_size")) or 10
+    page = arg_to_number(args.get("page", 0))
+    page_size = arg_to_number(args.get("page_size", 10))
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
@@ -1079,7 +1089,9 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
 
 def fetch_investigation_command(client: Client, env: str, args=None):
     fields: str = ""
+    variables: Dict[str, Any] = {}
     if args.get("id"):
+        # alerts, assets, and assignee to be deprecated in the future
         fields = args.get("fields") or """
             id
             shortId
@@ -1087,6 +1099,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             keyFindings
             alerts
             assets
+            alertsEvidence {id alertId}
+            assetsEvidence {id assetId}
             status
             assignee {
                 id
@@ -1095,12 +1109,13 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             }
             priority
             type
-            processing_status {
+            processingStatus {
                 assets
                 events
                 alerts
             }
             archivedAt
+            tags
             """
 
         query = """
@@ -1118,6 +1133,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         result = client.graphql_run(query=query, variables=variables)
     else:
+        # assignee {} to be deprecated in the future
         fields = args.get("fields") or """
             id
             tenant_id
@@ -1162,6 +1178,12 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 id
                 email
             }
+            assignee_user {
+                family_name
+                given_name
+                email
+                id
+            }
             archived_at
             created_at
             updated_at
@@ -1171,7 +1193,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             priority
             status
             type
-            processingStatus {
+            processing_status {
                 assets
                 events
                 alerts
@@ -1186,6 +1208,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                     tag
                 }
             }
+            alertsEvidence {id alertId}
+            assetsEvidence {id assetId}
+            tags
             """
 
         query = """
@@ -1197,6 +1222,11 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             $query: String
         ) {
             investigationsSearch(
+                page: $page
+                perPage: $perPage
+                orderByField: $orderByField
+                orderDirection: $orderDirection
+                query: $query
             ) {
                 totalCount
                 investigations {
@@ -1206,8 +1236,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
         variables = {
-            "page": args.get("page", 0),
-            "perPage": args.get("page_size", 10),
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
             "orderDirection": args.get("order_direction", "desc")
@@ -1218,6 +1248,10 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         investigations = [result["data"]["investigationV2"]] if args.get("id") \
             else result["data"]["investigationsSearch"]["investigations"]
     except (KeyError, TypeError):
+        investigations = []
+
+    # If no investigation found, no error status is returned but investigation will be null
+    if len(investigations) == 1 and investigations[0] is None:
         investigations = []
 
     for investigation in investigations:
@@ -1300,7 +1334,7 @@ def fetch_users_command(client: Client, env: str, args=None):
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 10
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "filters": {
             "status": args.get("status", ""),
             "perPage": page_size,
@@ -1365,7 +1399,7 @@ def isolate_asset_command(client: Client, env: str, args=None):
     if not args.get("reason"):
         raise ValueError("Cannot isolate asset, missing reason")
 
-    variables: Dict[str, Any] = {
+    variables: dict[str, Any] = {
         "id": args.get("id"),
         "reason": args.get("reason")
     }
@@ -1409,9 +1443,9 @@ def update_alert_status_command(client: Client, env: str, args=None):
         raise ValueError("Alert status must be defined")
 
     if args.get("status").upper() not in ALERT_STATUSES:
-        raise ValueError((
+        raise ValueError(
             f"The provided status, {args['status']}, is not valid for updating an alert. "
-            f"Supported Status Values: {ALERT_STATUSES}"))
+            f"Supported Status Values: {ALERT_STATUSES}")
 
     variables = {
         "alert_ids": argToList(args.get("ids")),
@@ -1521,21 +1555,23 @@ def update_investigation_command(client: Client, env: str, args=None):
         if not args.get(field):
             continue
 
-        if field == "assigneeId":
-            if not args["assigneeId"].startswith("auth0") and args["assigneeId"] != "@secureworks":
-                raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
+        if field == "assigneeId" and not args["assigneeId"].startswith("auth0") and args["assigneeId"] != "@secureworks":
+            raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
         if field == "priority" and not 0 < int(args.get("priority", 0)) < 5:
             raise ValueError("Priority must be between 1-4")
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
-            raise ValueError((
+            raise ValueError(
                 f"The provided status, {args['status']}, is not valid for updating an investigation. "
-                f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+                f"Supported Status Values: {INVESTIGATION_STATUSES}")
         if field == "type" and args.get("type") not in INVESTIGATION_TYPES:
-            raise ValueError((
+            raise ValueError(
                 f"The provided type, {args['type']}, is not valid for updating an investigation. "
-                f"Supported Type Values: {INVESTIGATION_TYPES}"))
+                f"Supported Type Values: {INVESTIGATION_TYPES}")
 
-        variables["input"][field] = args.get(field)
+        if field == "tags":
+            variables["input"]["tags"] = argToList(args["tags"])
+        else:
+            variables["input"][field] = args.get(field)
 
     if len(variables["input"]) < 2:
         raise ValueError(f"No valid investigation fields provided. Supported Update Fields: {INVESTIGATION_UPDATE_FIELDS}")
@@ -1674,12 +1710,6 @@ def test_module(client: Client) -> str:
 """ UTILITIES """
 
 
-def split_and_trim(element):
-    if type(element) == str:
-        element = element.split(",")  # alerts://id1,alerts://id2
-    return [x.strip() for x in element]  # Ensure no whitespace
-
-
 def generate_id_url(env: str, endpoint: str, element_id: str):
     element_id: str = element_id.replace('/', '%2F')
     return f"{ENV_URLS[env]['xdr']}/{endpoint}/{element_id}"
@@ -1692,7 +1722,7 @@ def main():
     command = demisto.command()
     demisto.debug(f'Running Taegis Command: {command}')
 
-    commands: Dict[str, Any] = {
+    commands: dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
         "taegis-add-evidence-to-investigation": add_evidence_to_investigation_command,
         "taegis-create-comment": create_comment_command,

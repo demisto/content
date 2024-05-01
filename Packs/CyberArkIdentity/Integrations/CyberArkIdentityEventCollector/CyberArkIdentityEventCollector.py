@@ -106,8 +106,8 @@ class CyberArkIdentityEventsOptions(IntegrationOptions):
 
 
 class CyberArkIdentityEventsRequest(IntegrationHTTPRequest):
-    method = Method.POST
-    headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
+    method: Method = Method.POST
+    headers: dict = {'Accept': '*/*', 'Content-Type': 'application/json'}
 
 
 class CyberArkIdentityEventsClient(IntegrationEventsClient):
@@ -132,7 +132,7 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=f"{self.request.url.removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
+            url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
             headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
@@ -169,7 +169,8 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
 
         result = self.client.call(self.client.request).json()['Result']
 
-        if events := result.get('Results'):
+        events = result.get('Results')
+        if events:
             fetched_events_ids = demisto.getLastRun().get('ids', [])
             yield [event.get('Row') for event in events if event.get('Row', {}).get('ID') not in fetched_events_ids]
 

@@ -9,7 +9,7 @@
 				"Xpanse Alert ID": {
 					"complex": {
 						"filters": [],
-						"root": "external_id",
+						"root": "alert_id",
 						"transformers": []
 					}
 				},
@@ -78,19 +78,10 @@
 				"Xpanse IP": {
 					"complex": {
 						"filters": [],
-						"root": "action_remote_ip",
+						"root": "ipv4_addresses",
 						"transformers": [
 							{
-								"args": {
-									"applyIfEmpty": {},
-									"defaultValue": {
-										"isContext": true,
-										"value": {
-											"simple": "ipv4_addresses[0]"
-										}
-									}
-								},
-								"operator": "SetIfEmpty"
+								"operator": "FirstArrayElement"
 							}
 						]
 					}
@@ -148,15 +139,63 @@
 				"Xpanse Tags": {
 					"complex": {
 						"filters": [],
-						"root": "original_tags",
-						"transformers": []
+						"root": "tags",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": true
+									},
+									"defaultValue": {
+										"isContext": true,
+										"value": {
+											"simple": "original_tags"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
 					}
 				},
                 "Xpanse Category": {
                     "simple": "asm_alert_categories"
                 }
             }
-		}
+		},
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+				"Description": {
+					"simple": "description"
+				},
+				"Destination IP": {
+					"complex": {
+						"filters": [],
+						"root": "ipv4_addresses",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
+				"Protocol": {
+					"complex": {
+						"filters": [],
+						"root": "port_protocol",
+						"transformers": []
+					}
+				},
+				"Tags": {
+					"complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+				}
+			}
+        }
     },
     "name": "Xpanse - Incoming Mapper",
     "type": "mapping-incoming",

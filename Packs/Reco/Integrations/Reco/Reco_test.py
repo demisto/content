@@ -18,7 +18,8 @@ from Reco import (
     get_assets_user_has_access,
     get_sensitive_assets_by_name,
     get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
-    get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score
+    get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score,
+    get_user_context_by_email_address
 )
 
 from test_data.structs import (
@@ -29,6 +30,7 @@ from test_data.structs import (
     GetTableResponse,
     GetIncidentTableResponse,
 )
+
 
 DUMMY_RECO_API_DNS_NAME = "https://dummy.reco.ai/api"
 INCIDET_ID_UUID = "87799f2f-c012-43b6-ace2-78ec984427f3"
@@ -254,7 +256,7 @@ def get_random_assets_user_has_access_to_response() -> GetIncidentTableResponse:
                                 ).decode(ENCODING),
                             ),
                             KeyValuePair(
-                                key="file_id",
+                                key="asset_id",
                                 value=base64.b64encode("1".encode(ENCODING)).decode(
                                     ENCODING
                                 ),
@@ -328,6 +330,77 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
     )
 
 
+def get_random_user_context_response() -> GetIncidentTableResponse:
+    return GetIncidentTableResponse(
+        get_table_response=GetTableResponse(
+            data=TableData(
+                rows=[
+                    RowData(
+                        cells=[
+                            KeyValuePair(
+                                key="email_account",
+                                value=base64.b64encode(
+                                    "charles@corp.com".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="departments",
+                                value=base64.b64encode(
+                                    '["Pro"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="job_titles",
+                                value=base64.b64encode(
+                                    '["VP Product"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="category",
+                                value=base64.b64encode(
+                                    "external".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="groups",
+                                value=base64.b64encode(
+                                    '["Product"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="full_name",
+                                value=base64.b64encode(
+                                    'Yossi'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="labels",
+                                value=base64.b64encode('["{\\"label\\": {\\"name\\": \\"VIP User\\",'
+                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                                       ' \\"tooltip\\": \\"VIP User\\", \\"created_by\\": 10,'
+                                                       ' \\"risk_level\\": 0, \\"description\\": \\"VIP User\\"}}",'
+                                                       '"{\\"label\\": {\\"name\\": \\"GSuite Admin\\",'
+                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                                       ' \\"tooltip\\": \\"GSuite Admin\\", \\"created_by\\": 10,'
+                                                       ' \\"risk_level\\": 0, \\"description\\": \\"GSuite Admin\\"}}",'
+                                                       '"{\\"label\\": {\\"name\\": \\"Okta Admin\\",'
+                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                                       ' \\"tooltip\\": \\"Okta Admin\\", '
+                                                       '\\"created_by\\": 10, \\"risk_level\\": 0,'
+                                                       '\\"description\\": \\"Okta Admin\\"}}"]'.
+                                                       encode(ENCODING)).decode(ENCODING)),
+                        ]
+                    )
+                ]
+            ),
+            total_number_of_results=1,
+            table_definition="",
+            dynamic_table_definition="",
+            token="",
+        ),
+    )
+
+
 def get_mock_assets() -> list[dict[str, Any]]:
     return {
         "assets": [
@@ -345,9 +418,9 @@ def get_mock_assets() -> list[dict[str, Any]]:
 
 
 def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
-    mock_response = {"dataSources": {"tablesMetadata": [{"name": "table1"}]}}
+    mock_response = {"alerts": {"tablesMetadata": [{"name": "table1"}]}}
     requests_mock.get(
-        f"{DUMMY_RECO_API_DNS_NAME}/data-sources", json=mock_response
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox?limit=1", json=mock_response
     )
 
     res = reco_client.validate_api_key()
@@ -370,9 +443,9 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
     )
     random_alerts_response, alert = get_alerts_and_table_response()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{ALERT_ID}", json=alert)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=random_alerts_response
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response
     )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
@@ -400,9 +473,9 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
     )
     random_alerts_response, alert = get_alerts_and_table_response()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{ALERT_ID}", json=alert)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=random_alerts_response
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response
     )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
@@ -426,7 +499,7 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_fetch_incidents_without_assets_info(
-        requests_mock, reco_client: RecoClient
+    requests_mock, reco_client: RecoClient
 ) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
@@ -434,8 +507,8 @@ def test_fetch_incidents_without_assets_info(
         f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={}
     )
     random_alerts_response, alert = get_alerts_and_table_response()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{ALERT_ID}", json=alert)
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=random_alerts_response)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
     )
@@ -451,7 +524,7 @@ def test_fetch_incidents_without_assets_info(
 
 
 def test_fetch_assets_with_empty_response(
-        requests_mock, reco_client: RecoClient
+    requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.get(
@@ -475,7 +548,7 @@ def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/incident",
         json=table_empty,
     )
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=table_empty)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, max_fetch=1
     )
@@ -498,7 +571,7 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/incident",
         json=table_empty,
     )
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=table_empty)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, max_fetch=1
     )
@@ -509,7 +582,7 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
 
 def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json={"getTableResponse": {}})
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json={
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json={
         "getTableResponse": {}
     })
     last_run, fetched_incidents = fetch_incidents(
@@ -559,7 +632,7 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 
 def test_update_reco_incident_timeline_error(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(
@@ -585,7 +658,7 @@ def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> Non
 
 
 def test_resolve_visibility_event_error(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(
@@ -610,7 +683,7 @@ def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_get_risky_users_bad_response(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
@@ -645,7 +718,7 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 
 
 def test_get_assets_user_bad_response(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
@@ -772,3 +845,27 @@ def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200
     )
     reco_client.add_exclusion_filter("key", ["val1", "val2"])
+
+
+def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
+    alert_id = uuid.uuid1()
+    status = 'ALERT_STATUS_CLOSED'
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{str(alert_id)}/status/{status}",
+        json={},
+        status_code=200,
+    )
+    res = reco_client.change_alert_status(alert_id=str(alert_id),
+                                          status=status)
+    assert res == {}
+
+
+def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_user_context_response()
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    res = get_user_context_by_email_address(reco_client, "charles@corp.com")
+    assert res.outputs_prefix == "Reco.User"
+    assert res.outputs.get("email_account") != ""
+    assert res.outputs.get("email_account") == "charles@corp.com"

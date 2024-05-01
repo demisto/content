@@ -27,3 +27,4 @@
 !prisma-sase-security-rule-delete rule_id="Id"
 !prisma-sase-external-dynamic-list-delete id="Id"
 !prisma-sase-candidate-config-push folders="Mobile Users"
+!prisma-sase-quarantine-host host_id="host_id"

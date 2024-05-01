@@ -33,6 +33,7 @@ Generate an ASM Alert Summary report.
 | asm_service_id | External Service ID for generating Service Summary. |
 | asm_asset_id | Asset ID related to alert. |
 | report_type | Type of report to generate \(Analysis report after enrichment or Summary). |
+| asm_remediation_guidance |  Remediation Guidance of Attack Surface Rule. |
 
 ## Outputs
 

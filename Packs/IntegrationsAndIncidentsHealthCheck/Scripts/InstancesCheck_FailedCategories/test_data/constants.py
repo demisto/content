@@ -401,10 +401,10 @@ INCIDENTS_RESULTS_NO_FAILED = [
      'IndicatorTimeline': None}]
 
 INCIDENTS_RESULTS_NO_FAILED_EXPECTED = {'Contents': {'params': {'layout': 'horizontal'},
-                                           'stats': [{'color': '#0003e8',
-                                                      'data': [1],
-                                                      'groups': None,
-                                                      'label': '0',
-                                                      'name': '0'}]},
-                              'ContentsFormat': 'pie',
-                              'Type': 17}
+                                                     'stats': [{'color': '#0003e8',
+                                                                'data': [1],
+                                                                'groups': None,
+                                                                'label': '0',
+                                                                'name': '0'}]},
+                                        'ContentsFormat': 'pie',
+                                        'Type': 17}

@@ -51,6 +51,10 @@
       "cs1Label": {
         "type": "string",
         "is_array": false
+      },
+      "request": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

@@ -27,18 +27,18 @@ employee_id_to_user_profile = {
 }
 
 email_to_user_profile = {
-   "rrahardjo@paloaltonetworks.com": {
-       "employmentstatus": "Active",
-       "lastdayofwork": "10/05/2035",
-       "hiredate": "10/05/2020",
-       "employeeid": "100122",
-       "displayname": "Rony Rahardjo",
-       "username": "rrahardjo@paloaltonetworks.com",
-       "email": "rrahardjo@paloaltonetworks.com",
-       "sourcepriority": 1,
-       "sourceoftruth": "Workday IAM",
-       "isprocessed": False
-   }
+    "rrahardjo@paloaltonetworks.com": {
+        "employmentstatus": "Active",
+        "lastdayofwork": "10/05/2035",
+        "hiredate": "10/05/2020",
+        "employeeid": "100122",
+        "displayname": "Rony Rahardjo",
+        "username": "rrahardjo@paloaltonetworks.com",
+        "email": "rrahardjo@paloaltonetworks.com",
+        "sourcepriority": 1,
+        "sourceoftruth": "Workday IAM",
+        "isprocessed": False
+    }
 }
 
 display_name_to_user_profile = {

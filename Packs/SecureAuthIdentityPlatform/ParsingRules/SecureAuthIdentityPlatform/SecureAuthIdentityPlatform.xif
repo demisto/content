@@ -1,0 +1,8 @@
+[INGEST:vendor="secureauth", product="idp", target_dataset="secureauth_idp_raw", no_hit = keep]
+// Supports RFC5424 compatible timestamps (for e.g. 2024-01-13T14:30:59.123+03:00)
+alter tmp_timestamp_string = arrayindex(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}\S+)"), 0)
+| filter tmp_timestamp_string != null 
+| alter tmp_timestamp_string_normalized = replace(to_string(tmp_timestamp_string), "Z", "+00:00") 
+| alter tmp_timestamp_datetime = parse_timestamp("%FT%R:%E3S%Ez", tmp_timestamp_string_normalized) 
+| alter _time = tmp_timestamp_datetime
+| fields - tmp_timestamp_string, tmp_timestamp_string_normalized, tmp_timestamp_datetime;

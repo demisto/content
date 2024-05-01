@@ -1,4 +1,6 @@
+import pytest
 import requests
+from CommonServerPython import DemistoException
 import demistomock as demisto
 
 
@@ -229,9 +231,10 @@ def test_add_reply_fail(mocker):
     mocked_response._content = b'400'
     mocked_response.status_code = 400
     mocker.patch('RTIR.add_reply_request', return_value=mocked_response)
-    mocked_demisto_results = mocker.patch('RTIR.return_error')
-    add_reply()
-    mocked_demisto_results.assert_called_with('Failed to reply')
+    mocker.patch('RTIR.demisto.error')
+    with pytest.raises(DemistoException) as e:
+        add_reply()
+    assert str(e.value) == 'Failed to reply'
 
 
 def test_add_comment(mocker):
@@ -278,6 +281,27 @@ def test_add_comment_fail(mocker):
     mocked_response._content = b'400'
     mocked_response.status_code = 400
     mocker.patch('RTIR.add_comment_request', return_value=mocked_response)
-    mocked_demisto_results = mocker.patch('RTIR.return_error')
-    add_comment()
-    mocked_demisto_results.assert_called_with('Failed to add comment')
+    with pytest.raises(DemistoException) as e:
+        add_comment()
+    assert str(e.value) == 'Failed to add comment'
+
+
+def test_edit_ticket(mocker):
+    """
+    Test failure in edit a ticket if no fields was given.
+
+    Given:
+    - ticket id
+
+    When:
+    - editing a ticket
+
+    Then:
+    - Ensure the command fails with an error message.
+    """
+    from RTIR import edit_ticket
+    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234'})
+    try:
+        edit_ticket()
+    except Exception as ex:
+        assert ex.message == 'No arguments were given to edit the ticket.'

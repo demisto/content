@@ -2,9 +2,10 @@ commonfields:
   id: Remedy On-Demand
   version: -1
 name: Remedy On-Demand
-display: Remedy On-Demand
+display: Remedy On-Demand (Deprecated)
+deprecated: true
 category: Case Management
-description: Use Remedy On-Demand to manage tickets
+description: Deprecated. Use BMC Helix ITSM instead.
 configuration:
 - display: Server URL (e.g. 'https://myurl.com', 'http://41.79.151.82')
   name: url
@@ -103,7 +104,10 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Comma separated query (e.g., field1=value1,field2=value2)
+      description: Custom fields for incident creation. Comma-separated query or custom-fields-seperator separated query. (e.g., field1=value1,field2=value2).
+    - name: custom-fields-separator
+      description: A custom delimiter to use for the custom-fields. Don't use '=' as a delimiter. Default value is ','.
+      defaultValue: ','
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID

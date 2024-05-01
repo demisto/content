@@ -13,6 +13,10 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | --- | --- | --- |
     | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
     | API Key |  | False |
+    | Client Certificate |  | False |
+    | Private Key |  | False |
+    | Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
+    | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
@@ -312,6 +316,8 @@ Search for events in MISP. This search command will return only information abou
 
 ***
 Checks the reputation of the given domain.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command
@@ -1038,6 +1044,8 @@ Checks the file reputation of the given hash.
 
 ***
 Checks the reputation of the given URL.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command
@@ -2223,7 +2231,7 @@ Creates a new MISP event.
 | --- | --- | --- |
 | type | Attribute type to be created as part of the new event. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
 | category | Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
-| to_ids | Whether to create the event's attribute with the Intrusion Detection System flag. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
+| to_ids | Whether to create the event's attribute with the Intrusion Detection System flag. Possible values are: true, false. Default is true. | Optional | 
 | distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", "Sharing_group" and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Your_organization_only. | Optional | 
 | comment | Attribute comment to be created as part of the new event. | Optional | 
 | value | Attribute value to be created as part of the new event. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
@@ -2347,7 +2355,7 @@ Adds an attribute to an existing MISP event.
 | event_id | MISP event ID. | Required | 
 | type | Attribute type. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
 | category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
-| to_ids | Whether to create the attribute with the Intrusion Detection System flag. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
+| to_ids | Whether to create the attribute with the Intrusion Detection System flag. Possible values are: true, false. Default is true. | Optional | 
 | distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Inherit_event. | Optional | 
 | comment | Comment for the attribute. | Optional | 
 | value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
@@ -3644,6 +3652,58 @@ Adds any other object to MISP.
 
 >Object has been added to MISP event ID 1655
 
+### misp-add-custom-object
+
+***
+Adds custom objects to MISP.
+
+#### Base Command
+
+`misp-add-custom-object`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | ID of the event to add the object to. | Required | 
+| template | Custom Template name. | Required | 
+| attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Event.ID | number | MISP event ID. | 
+| MISP.Event.Object.MetaCategory | String | Object meta category. | 
+| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
+| MISP.Event.Object.Name | String | Name of the object. | 
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
+| MISP.Event.Object.ID | Number | ID of the object. | 
+| MISP.Event.Object.UUID | String | UUID of the object. | 
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted?. | 
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
+| MISP.Event.Object.Attribute.Type | String | Object type. | 
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
+| MISP.Event.Object.Description | String | Description of the object. | 
+
+#### Command Example
+
+```!misp-add-custom-object event_id="1572" template="corporate-asset" attributes="{\"asset-type\":\"Server\",\"asset-id\":\"12\",\"text\":\"Asset Details\"}"```
+
 ### misp-add-ip-object
 
 ***
@@ -3928,27 +3988,27 @@ Search for attributes in MISP.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| type | The attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url". | Optional | 
-| value | Search for the specified value in the attribute's value field. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional | 
-| category | The attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional | 
-| uuid | Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. For example, 59523300-4be8-4fa6-8867-0037ac110002. | Optional | 
-| to_ids | Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
-| last | Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event. | Optional | 
-| include_decay_score | Whether to return the decay score at the attribute level. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
-| org | Search by the creator organization by supplying the organization identifier. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                     | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| type | The attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url".                                                                                                                                  | Optional | 
+| value | Search for the specified value in the attribute's value field. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).                                               | Optional | 
+| category | The attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type".                                                                                                       | Optional | 
+| uuid | Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. For example, 59523300-4be8-4fa6-8867-0037ac110002.                                                         | Optional | 
+| to_ids | Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes with and with out to_ids flag. Possible values are: true, false.                                                  | Optional | 
+| last | Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event.                   | Optional | 
+| include_decay_score | Whether to return the decay score at the attribute level. Possible values are: true, false.                                                                                                                                         | Optional | 
+| org | Search by the creator organization by supplying the organization identifier.                                                                                                                                                        | Optional | 
 | tags | A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3". | Optional | 
-| from | Events with the date set to a date after the one specified. This filter will use the date of the event. | Optional | 
-| to | Events with the date set to a date before the one specified. This filter will use the date of the event. | Optional | 
-| event_id | A comma-separated list of event IDs. Returns the attributes that are part of the given event IDs. | Optional | 
-| include_sightings | Whether to include the the sightings of the matching attributes. Default is false. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
-| include_correlations | Whether to include the full correlations of the matching attributes. Possible values: "true" and "false". Default is false. Possible values are: true, false. | Optional | 
-| page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1. Default is 1. | Optional | 
-| limit | Limit the number of attributes returned. Default is 50. Default is 50. | Optional | 
-| enforceWarninglist | Whether to return only the values that are not on the warninglists. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
-| compact | Whether to return only the attribute's values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
-
+| from | Events with the date set to a date after the one specified. This filter will use the date of the event.                                                                                                                             | Optional | 
+| to | Events with the date set to a date before the one specified. This filter will use the date of the event.                                                                                                                            | Optional | 
+| event_id | A comma-separated list of event IDs. Returns the attributes that are part of the given event IDs.                                                                                                                                   | Optional | 
+| include_sightings | Whether to include the the sightings of the matching attributes. Default is false. Possible values are: true, false.                                                                                                                | Optional | 
+| include_correlations | Whether to include the full correlations of the matching attributes. Possible values are: true, false. Default is false.                                                                       | Optional | 
+| page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1.                                                                                                      | Optional | 
+| limit | Limit the number of attributes returned. Default is 50. Default is 50.                                                                                                                                                              | Optional | 
+| enforceWarninglist | Whether to return only the values that are not on the warninglists. Possible values are: true, false.                                                                                                                               | Optional | 
+| compact | Whether to return only the attribute's values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values are: true, false. Default is false.                        | Optional |
+| with_attachments | Whether to download attachments from MISP. Possible values are: true, false. Default "false".                                                                                                                                    | Optional |
 
 #### Context Output
 

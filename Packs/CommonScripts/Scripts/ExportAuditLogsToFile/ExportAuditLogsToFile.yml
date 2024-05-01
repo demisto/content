@@ -10,12 +10,12 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: csv
-  description: Type of File to return, either JSON, or CSV
+  description: Type of File to return, either JSON, or CSV.
   name: output
   predefined:
   - csv
   - json
-comment: Uses the Demisto REST API integration to query the server audit trail logs, and return back a CSV or JSON file.
+comment: Uses the Core REST API integration to query the server audit trail logs, and return back a CSV or JSON file.
 commonfields:
   id: ExportAuditLogsToFile
   version: -1
@@ -24,8 +24,8 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must:
-  - demisto-api-post
-dockerimage: demisto/python3:3.10.12.63474
+  - core-api-post
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ExportAuditLogsToFile
 runas: DBotWeakRole

@@ -1,19 +1,18 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 
 SCRIPT_NAME = 'CustomPackInstaller'
 
 
-def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, instance_name: str = '') -> Tuple[bool, str]:
+def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, instance_name: str = '') -> tuple[bool, str]:
     """Installs a custom pack in the machine.
 
     Args:
         pack_id (str): The ID of the pack to install.
         skip_verify (bool): If true will skip pack signature validation.
         skip_validation (bool) if true will skip all pack validations.
-        instance_name (str) Demisto REST API instance name.
+        instance_name (str) Core REST API instance name.
 
     Returns:
         - bool. Whether the installation of the pack was successful or not.
@@ -43,7 +42,7 @@ def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, 
             args['using'] = instance_name
 
         status, res = execute_command(
-            'demisto-api-install-packs',
+            'core-api-install-packs',
             args,
             fail_on_error=False,
         )

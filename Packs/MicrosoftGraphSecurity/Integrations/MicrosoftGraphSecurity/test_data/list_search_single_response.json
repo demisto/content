@@ -1,0 +1,26 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/cases/ediscoveryCases('f108b7fa-d177-438e-9679-01cd79e3df3f')/searches",
+    "value": [
+        {
+            "contentQuery": "",
+            "createdBy": {
+                "application": {
+                    "displayName": "Cortex XSOAR - MS Graph Security Dev",
+                    "id": "734f96d8-b19c-4ab1-9382-e04aa9a5debd"
+                },
+                "user": {
+                    "displayName": "Content Test",
+                    "id": "38c41451-94b8-44cc-8c02-649208c43b6b",
+                    "userPrincipalName": "ContentTest@demistodev.onmicrosoft.com"
+                }
+            },
+            "createdDateTime": "2023-08-10T09:15:03.9436228Z",
+            "dataSourceScopes": "allCaseNoncustodialDataSources",
+            "description": "",
+            "displayName": "mysearch",
+            "id": "7147a635-3597-4f00-920f-f80ff0326d98",
+            "lastModifiedBy": null,
+            "lastModifiedDateTime": "2023-08-10T09:15:03.9436228Z"
+        }
+    ]
+}

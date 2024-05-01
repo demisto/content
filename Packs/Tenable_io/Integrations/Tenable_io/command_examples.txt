@@ -1,0 +1,3 @@
+!tenable-io-list-scan-filters
+!tenable-io-get-scan-history scanId=16 excludeRollover=true sortFields=end_date,status sortOrder=desc page=2 pageSize=30
+!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=OR filter="port.protocol eq tcp, plugin_id eq 1234567" assetId=10

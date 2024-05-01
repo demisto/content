@@ -27,7 +27,9 @@ class MsClient:
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,
             base_url=base_url_with_subscription, verify=verify, proxy=proxy, self_deployed=self_deployed,
             ok_codes=ok_codes, scope="https://management.azure.com/.default",
-            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            command_prefix="ms-defender-for-cloud",
+        )
         self.server = server
         self.subscription_id = subscription_id
 
@@ -253,6 +255,9 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             test_module(client)
+
+        elif command == 'ms-defender-for-cloud-auth-reset':
+            return_results(reset_auth())
 
         elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
 

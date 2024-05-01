@@ -10,12 +10,16 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
   type: 0
+  hidden: true
 - display: Client Secret
   name: client_secret
-  required: true
-  type: 0
+  type: 4
+  hidden: true
+- display: Client ID
+  name: credentials
+  type: 9
+  displaypassword: Client Secret
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -36,9 +40,9 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
   required: false
-description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
+  type: 15
+description: Lists all of the security vulnerabilities for various products (OS,Applications) etc).
 display: VulnDB
 name: VulnDB
 script:
@@ -136,9 +140,9 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - description: specific vendor id
+    - description: specific vendor id.
       name: vendor_id
-    - description: specific vendor name (only human readable)
+    - description: specific vendor name (only human readable).
       name: vendor_name
     - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
@@ -245,7 +249,7 @@ script:
       description: CVSS access vector.
       type: string
     - contextPath: VulnDB.CvssMetrics.AccessComplexity
-      description: Cvss access complexity
+      description: Cvss access complexity.
       type: string
     - contextPath: VulnDB.CvssMetrics.Authentication
       description: CVSS metric authentication.
@@ -769,9 +773,11 @@ script:
   - arguments:
     - description: Deprecated. Use the `cve` argument instead.
       name: cve_id
+      isArray: true
     - default: true
-      description: CVE ID.
+      description: Comma separated list of CVE IDs.
       name: cve
+      isArray: true
     - description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
       name: max_size
     description: Returns CVE information by CVE ID.
@@ -804,7 +810,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.90585
   runonce: false
   script: '-'
   subtype: python3

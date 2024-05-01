@@ -14,14 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 
-* gcp-compute-insert-firewall
 * gcp-compute-list-firewall
-* gcp-compute-get-instance
+* gcp-compute-insert-firewall
 * gcp-compute-add-network-tag
+* gcp-compute-get-instance
 
 ## Playbook Inputs
 
@@ -35,6 +35,7 @@ This playbook does not use any scripts.
 | RemotePort | The remote port that is publicly exposed to. | alert.remoteport | Required |
 | RemoteProtocol | The remote protocol that is publicly exposed to. |  | Required |
 | GcpProject | The name of the GCP project associated with the instance and related objects. | alert.asmcloud.Project | Required |
+| instance_name | Google Cloud Compute integration instance to use if you have multiple instances configured \(optional\). |  | Optional |
 
 ## Playbook Outputs
 

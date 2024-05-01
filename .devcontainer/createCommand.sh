@@ -3,21 +3,22 @@
 set -e
 
 echo "Fixing permissions"
+# get current folder name
+repo=${PWD##*/}
+sudo chown demisto /workspaces /workspaces/$repo
+sudo chown -R demisto /workspaces/$repo/.vscode /workspaces/content/.git /workspaces/$repo/.venv /workspaces/$repo/node_modules /workspaces/$repo/package-lock.json
 
-sudo chown demisto .venv
-sudo chown demisto node_modules
-sudo chown demisto /workspaces
 sudo chown -R demisto $HOME
 
-echo "Setting up VSCode paths"
-
-cp .devcontainer/settings.json .vscode/settings.json 
-touch CommonServerUserPython.py
-touch DemistoClassApiModule.py
-path=$(printf '%s:' Packs/ApiModules/Scripts/*)
-rm -f .env
-echo "PYTHONPATH=""$path"":$PYTHONPATH" >> .env
-echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
+echo "Setting up git safe directory"
+git config --global --add safe.directory /workspaces/$repo
 
 echo "Setting up content dependencies"
 .hooks/bootstrap
+
+echo "Setting up VSCode"
+poetry run demisto-sdk setup-env
+
+
+echo "Run demisto-sdk pre-commit to cache dependencies"
+poetry run demisto-sdk pre-commit --mode=commit >/dev/null 2>&1 || true

@@ -1,0 +1,238 @@
+{
+    "content": [
+        {
+            "id": "d6",
+            "accountId": "25",
+            "teamId": "3",
+            "teamName": "Default",
+            "zappInstanceId": "63",
+            "deviceId": "62",
+            "device": {
+                "id": "62",
+                "mdmDeviceId": "",
+                "mamDeviceId": "",
+                "model": "ONEPLUS A5000",
+                "os": {
+                    "id": 1,
+                    "name": "ANDROID",
+                    "version": "7.1.1"
+                },
+                "zdeviceId": "59"
+            },
+            "os": "android",
+            "zappId": "40",
+            "groupId": "37",
+            "timestamp": 1702393165000,
+            "timestampInfo": {
+                "timestamp": 1702393165000,
+                "toTheSecond": 1702393165000,
+                "toTheMinute": 1702393140000,
+                "toTheHour": 1702389600000,
+                "toTheDay": 1702339200000
+            },
+            "eventReceivedTimestamp": 1702393167359,
+            "eventProcessedTimestamp": 1702393167374,
+            "threatTypeId": 37,
+            "threatTypeName": "SYSTEM TAMPERING",
+            "severity": 3,
+            "severityName": "CRITICAL",
+            "vector": 2,
+            "vectorName": "Device",
+            "categoryId": 15,
+            "classification": 1,
+            "classificationName": "CRITICAL",
+            "state": 1,
+            "responses": [
+                {
+                    "responseId": 3,
+                    "eventId": "30",
+                    "timestamp": 1702393165000
+                }
+            ],
+            "mitigationEvents": [],
+            "generalInfo": {
+                "timeInterval": 8,
+                "ssid": "BlueStacks",
+                "bssid": "22",
+                "actionTriggered": "Silent Alert",
+                "deviceTimestamp": 1702393165000,
+                "jailbreakReasons": "SELinux disabled"
+            },
+            "suspiciousUrlInfo": {},
+            "arpTablesInfo": {
+                "before": [
+                    {
+                        "ip": "1.1.1.1",
+                        "mac": "52"
+                    },
+                    {
+                        "ip": "1.1.1.1",
+                        "mac": "52"
+                    }
+                ]
+            },
+            "simulated": false,
+            "lastModified": 1702393165000,
+            "detectionFiles": [],
+            "activationName": "user@email.com",
+            "agentType": 2,
+            "deviceOwner": "user@email.com",
+            "policiesInfo": [
+                {
+                    "type": "App Policy Android v2",
+                    "hash": "64",
+                    "deployedAt": 1701806956000,
+                    "downloadedAt": 1702393157000
+                }
+            ],
+            "zeventId": "a1",
+            "zappInstance": {
+                "id": "63",
+                "name": "MTD",
+                "bundleId": "com.zimperium.zips",
+                "version": "5.2.14",
+                "buildNumber": "23",
+                "zversion": "5.2.14",
+                "zbuildNumber": "23"
+            }
+        },
+        {
+            "id": "42",
+            "accountId": "25",
+            "teamId": "33",
+            "teamName": "Default",
+            "zappInstanceId": "63",
+            "deviceId": "62",
+            "device": {
+                "id": "62",
+                "mdmDeviceId": "",
+                "mamDeviceId": "",
+                "model": "ONEPLUS A5000",
+                "os": {
+                    "id": 1,
+                    "name": "ANDROID",
+                    "version": "7.1.1"
+                },
+                "zdeviceId": "59"
+            },
+            "os": "android",
+            "zappId": "40",
+            "groupId": "37",
+            "timestamp": 1702393166000,
+            "timestampInfo": {
+                "timestamp": 1702393166000,
+                "toTheSecond": 1702393166000,
+                "toTheMinute": 1702393140000,
+                "toTheHour": 1702389600000,
+                "toTheDay": 1702339200000
+            },
+            "eventReceivedTimestamp": 1702393167616,
+            "eventProcessedTimestamp": 1702393167629,
+            "threatTypeId": 25,
+            "threatTypeName": "UNKNOWN SOURCES ON",
+            "severity": 2,
+            "severityName": "ELEVATED",
+            "vector": 2,
+            "vectorName": "Device",
+            "categoryId": 6,
+            "classification": 2,
+            "classificationName": "RISKY",
+            "state": 1,
+            "responses": [
+                {
+                    "responseId": 3,
+                    "eventId": "1f",
+                    "timestamp": 1702393166000
+                }
+            ],
+            "mitigationEvents": [],
+            "generalInfo": {
+                "timeInterval": 8,
+                "ssid": "BlueStacks",
+                "bssid": "22",
+                "actionTriggered": "Silent Alert",
+                "deviceTimestamp": 1702393166000
+            },
+            "suspiciousUrlInfo": {},
+            "arpTablesInfo": {
+                "before": [
+                    {
+                        "ip": "1.1.1.1",
+                        "mac": "52"
+                    },
+                    {
+                        "ip": "1.1.1.1",
+                        "mac": "52"
+                    }
+                ]
+            },
+            "runningServices": [],
+            "networkStatistics": [],
+            "nearByNetworks": [],
+            "processList": [
+                {
+                    "service": "n/a",
+                    "user": "1",
+                    "processId": "7",
+                    "parentProcessId": "1",
+                    "processName": "name"
+                }
+            ],
+            "simulated": false,
+            "lastModified": 1702393166000,
+            "detectionFiles": [],
+            "activationName": "user@email.com",
+            "agentType": 2,
+            "deviceOwner": "user@email.com",
+            "policiesInfo": [
+                {
+                    "type": "App Policy Android v2",
+                    "hash": "64",
+                    "deployedAt": 1701806956000,
+                    "downloadedAt": 1702393157000
+                },
+                {
+                    "type": "App Settings",
+                    "hash": "61",
+                    "deployedAt": 1701806956000,
+                    "downloadedAt": 1702393157000
+                }
+            ],
+            "zeventId": "52",
+            "zappInstance": {
+                "id": "63",
+                "name": "MTD",
+                "bundleId": "bundle.id",
+                "version": "5.2.14",
+                "buildNumber": "23",
+                "zversion": "5.2.14",
+                "zbuildNumber": "23"
+            }
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "unsorted": true,
+            "sorted": false,
+            "empty": true
+        },
+        "pageSize": 2,
+        "pageNumber": 0,
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "totalPages": 12,
+    "totalElements": 24,
+    "last": false,
+    "first": true,
+    "numberOfElements": 2,
+    "sort": {
+        "unsorted": true,
+        "sorted": false,
+        "empty": true
+    },
+    "size": 2,
+    "number": 0,
+    "empty": false
+}

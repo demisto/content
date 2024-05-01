@@ -47,6 +47,7 @@ class TestGetUserCommand:
     """
     Class to group the get user commands test
     """
+
     def test_get_user_command__existing_user(self, mocker):
         """
         Given:
@@ -294,6 +295,7 @@ class TestDisableUserTest:
     """
     Class to group the disable user commands test
     """
+
     def test_disable_user_command__non_existing_user(self, mocker):
         """
         Given:
@@ -324,6 +326,7 @@ class TestGetMappingFieldsTest:
     """
     Class to group the disable user commands test
     """
+
     def test_get_mapping_fields_command(self, mocker):
         """
         Given:

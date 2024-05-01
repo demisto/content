@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: The IP address of the relevant asset."
         },
         {
             "displayName": "Source",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: The source of the IP address."
         }
     ],
     "content": true,
@@ -37,7 +39,7 @@
         {},
         {}
     ],
-    "description": "Private IP addresses found",
+    "description": "Field for private IP addresses found.",
     "editForm": true,
     "group": 0,
     "hidden": false,

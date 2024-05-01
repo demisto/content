@@ -318,8 +318,11 @@ def test_module(mocker):
     (create_lookup_table,
      {'name': 'test_table', 'field_names': 'accname,id', 'key': 'accname,id', 'tenant_name': 'test_tenant',
       'scope': 'Global'}, get_mock_create_lookup_table_response().text, EXPECTED_CREATE_LOOKUP_TABLE),
-    (list_violation_data, {'from': "01/17/2022 00:00:00",
+    (list_violation_data, {'from': "01/17/2022 00:00:00", 'query': 'policy="Response-Account-AutoPlay"',
                            'to': "01/17/2023 00:00:20"}, RESPONSE_LIST_VIOLATION_6_4,
+     EXPECTED_LIST_VIOLATION_DATA_6_4),
+    (list_violation_data, {'query': ' index  = violation and policy="Response-Account-AutoPlay"',
+                           'from': "01/17/2022 00:00:00", 'to': "01/17/2023 00:00:20"}, RESPONSE_LIST_VIOLATION_6_4,
      EXPECTED_LIST_VIOLATION_DATA_6_4),
     (get_incident_attachments, {'incident_id': 'test_id'}, get_mock_attachment_response(),
      EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4),
@@ -377,7 +380,7 @@ def test_get_remote_data(mocker):
     mocker.patch.object(Client, '_generate_token')
     client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies', 0, 0, 'Fixed')
 
-    args = {'id': '2849604490', 'lastUpdate': 0}
+    args = {'id': '2849604490', 'lastUpdate': "2022-02-01T00:00:00Z"}
     mocker.patch.object(client, 'get_incident_request',
                         return_value=RESPONSE_GET_INCIDENT['result']['data'])
     mocker.patch.object(client, 'get_incident_activity_history_request',

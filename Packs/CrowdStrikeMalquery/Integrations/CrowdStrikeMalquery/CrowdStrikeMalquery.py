@@ -387,7 +387,7 @@ def main():
     base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/malquery')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
-    if not(client_id and client_secret):
+    if not (client_id and client_secret):
         raise DemistoException('Client ID and Client Secret must be provided.')
     commands = {
         'test-module': test_module,

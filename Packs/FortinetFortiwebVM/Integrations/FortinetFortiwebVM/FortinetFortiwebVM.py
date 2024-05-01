@@ -8219,7 +8219,6 @@ class ClientV2(Client):
                     "health": health_check,
                     "health-check-inherit": health_check_inherit,
                     "hlck-domain": health_check_domain,
-                    "weight": weight,
                     "http2": http2,
                     "ssl": enable_ssl,
                     "client-certificate": client_certificate_file,

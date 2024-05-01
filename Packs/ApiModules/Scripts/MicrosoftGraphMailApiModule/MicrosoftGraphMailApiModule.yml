@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Microsoft Graph Mail code that will be appended into the Microsoft Graph Mail integrations when it's deployed
+comment: Common Microsoft Graph Mail code that will be appended into the Microsoft Graph Mail integrations when it's deployed.
 system: true
 scripttarget: 0
 dependson: {}

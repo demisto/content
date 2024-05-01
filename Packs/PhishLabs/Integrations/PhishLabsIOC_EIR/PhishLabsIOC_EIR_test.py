@@ -345,3 +345,188 @@ class TestHelperFunctions:
         client = Client(base_url='http://test.com')
         result = raw_response_to_context(client=client, incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]
+
+
+def test_fetch__last_run_not_none(mocker):
+    """Tests the fetch-incidents command function.
+
+    Give: last run to request from
+    When: running fetch command and no incidents returned
+    Then: assert new last run is not None
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 0}, 'incidents': []})
+
+    incident_report, last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='2',
+        last_ids=set()
+    )
+
+    assert last_run == {'lastRun': '2023-09-20T03:44:55Z', 'lastIds': []}
+
+
+def test_fetch_merge_open_closed(mocker):
+    """Tests the fetch-incidents command function.
+
+    Give: last run to request from
+    When: running fetch command and no incidents returned
+    Then: assert new last run is not None
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+
+    mocker.patch.object(Client, 'get_incidents', side_effect=[{'metadata': {'count': 2},
+                                                               'incidents': [{'id': '1', 'created': '2023-09-20T03:44:55Z',
+                                                                              'details': {'subClassification': "Test"}},
+                                                                             {'id': '2', 'created': '2023-09-20T03:47:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 2},
+                                                               'incidents': [{'id': '4', 'created': '2023-09-20T03:48:55Z',
+                                                                              'details': {'subClassification': "Test"}},
+                                                                             {'id': '5', 'created': '2023-09-20T03:49:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 1},
+                                                               'incidents': [{'id': '3', 'created': '2023-09-20T03:45:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 1},
+                                                               'incidents': [{'id': '4', 'created': '2023-09-20T03:48:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 0},
+                                                               'incidents': []}
+                                                              ])
+
+    incident_report, last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='4',
+        last_ids=set()
+    )
+
+    assert last_run == {'lastRun': '2023-09-20T03:48:55Z', 'lastIds': ['4']}
+    assert len(incident_report) == 4
+
+
+def test_get_incidents_with_offset(mocker):
+    """
+
+    Given: limit number of incidents to fetch.
+    When: running fetch command
+    Then: assert the correct amount of incidents is returned
+
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    def mock_get_incident(status=None, created_after=None,
+                          created_before=None, closed_before=None,
+                          closed_after=None, sort=None, direction=None,
+                          limit=25, offset=0, period=None):
+        total_res = 4
+        incidents = []
+        if offset < total_res:
+            for i in range(offset, total_res):
+                incidents.append({'id': i, 'created': '2023-09-20T03:44:55Z'})
+        return {'metadata': {'count': total_res - offset}, 'incidents': incidents}
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+
+    mocker.patch.object(Client, 'get_incidents', side_effect=mock_get_incident)
+    incident_report, _ = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='4',
+        last_ids=set()
+    )
+
+    assert len(incident_report) == 4
+
+
+def test_duplicated_incident(mocker):
+    """
+
+    Given: incidents from Phislabs in 2 api calls.
+    When: running fetch command
+    Then: assert the correct amount of incidents is returned without dups
+
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+    incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '3', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}}]
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': incidents})
+
+    incident_report, new_last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='10',
+        last_ids=set()
+    )
+
+    assert len(incident_report) == 3
+    assert '1'
+    assert '2'
+    assert '3' in new_last_run.get('lastIds')
+
+    incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '3', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '4', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '5', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}}]
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': incidents})
+
+    incident_report, new_last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='10',
+        last_ids=set(new_last_run.get('lastIds', set()))
+    )
+
+    assert len(incident_report) == 2
+    assert len(new_last_run.get('lastIds')) == 5
+
+    incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '3', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '4', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '5', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
+                 {'id': '6', 'created': '2023-09-20T03:45:55Z', 'details': {'subClassification': "No Threat Detected"}}]
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': incidents})
+
+    incident_report, new_last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='10',
+        last_ids=set(new_last_run.get('lastIds', set()))
+    )
+
+    assert len(incident_report) == 1
+    assert new_last_run.get('lastIds') == ['6']

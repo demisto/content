@@ -439,7 +439,8 @@ def test_delete_intel_doc(mocker, requests_mock):
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/intels/?id=431', json={})
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.delete_intel_doc(MOCK_CLIENT, {'intel_doc_id': 431})
-    assert 'Intel Doc deleted' in human_readable
+    assert 'Intel doc deleted' in human_readable
+    assert isinstance(raw_response, str)
 
 
 def test_start_quick_scan(mocker, requests_mock):

@@ -18,7 +18,7 @@
                 "allow_multiple": true,
                 "_links": {
                     "self": {
-                        "href": "https://content.demisto.works:57345/api/attribute/35"
+                        "href": "https://xsoar-example:57345/api/attribute/35"
                     }
                 }
             }

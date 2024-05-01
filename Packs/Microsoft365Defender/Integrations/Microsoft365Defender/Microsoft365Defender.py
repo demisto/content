@@ -532,7 +532,7 @@ def _query_set_limit(query: str, limit: int) -> str:
         return query
 
     # the query has the structure of "section | section | section ..."
-    query_list = query.split('|')
+    query_list = re.split(r'(?<!\|)\|(?!\|)', query)
 
     # split the query to sections and find limit sections
     changed = False
@@ -678,8 +678,6 @@ def main() -> None:
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 ''' ENTRY POINT '''
 

@@ -14,6 +14,7 @@ class Client(BaseClient):
     """
     Atlassian IAM Client class that implements logic to authenticate with Atlassian.
     """
+
     def __init__(self, base_url, directory_id, headers, ok_codes=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.directory_id = directory_id

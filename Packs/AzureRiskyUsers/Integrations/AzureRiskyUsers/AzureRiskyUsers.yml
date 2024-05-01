@@ -68,9 +68,13 @@ script:
     - defaultValue: '50'
       description: Limit of results to retrieve.
       name: limit
-    - defaultValue: '1'
-      description: Page number.
+    - description: Page number.
       name: page
+      hidden: true
+    - description: Amount of results per request. Value can be between 1 and 500. When only page_size is given, the first page results will be fetched.
+      name: page_size
+    - description: The URL for the next set of items to return during pagination. (This URL can be retrieved from a previous call).
+      name: next_token
     - auto: PREDEFINED
       description: Sets the Risk Level to retrieve.
       name: risk_level
@@ -78,7 +82,7 @@ script:
       - low
       - medium
       - high
-    description: Returns a comma-separated list of all risky users and their properties.
+    description: Returns a list of all risky users and their properties.
     name: azure-risky-users-list
     outputs:
     - contextPath: AzureRiskyUsers.RiskyUser.id
@@ -97,7 +101,7 @@ script:
       description: 'State of the user''s risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised.'
       type: String
     - contextPath: AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime
-      description: 'The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: 2014-01-01T00:00:00Z'
+      description: 'The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskyUser.isDeleted
       description: Indicates whether the user is deleted.
@@ -107,6 +111,9 @@ script:
       type: Boolean
     - contextPath: AzureRiskyUsers.RiskyUser.riskDetail
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUserListNextToken
+      description: A property in the response that contains a URL to the next page of results.
       type: String
   - arguments:
     - description: Risky user ID to retrieve.
@@ -131,7 +138,7 @@ script:
       description: 'State of the user''s risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised.'
       type: String
     - contextPath: AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime
-      description: 'The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: 2014-01-01T00:00:00Z'
+      description: 'The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskyUser.isDeleted
       description: Indicates whether the user is deleted.
@@ -215,7 +222,7 @@ script:
       description: 'Timing of the detected risk (real-time/offline). Possible values are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.lastUpdatedDateTime
-      description: 'Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      description: 'Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskDetection.location
       description: Location of the sign-in.
@@ -224,7 +231,7 @@ script:
       description: 'Indicates the activity type the detected risk is linked to. . Possible values are: signin, user, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.activityDateTime
-      description: 'Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      description: 'Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskDetection.additionalInfo
       description: Additional information associated with the risk detection in JSON format.
@@ -233,7 +240,7 @@ script:
       description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.detectedDateTime
-      description: 'Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      description: 'Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskDetection.requestId
       description: Request ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
@@ -264,7 +271,7 @@ script:
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskEventType
-      description: The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. If the risk detection is a premium detection, will show generic
+      description: The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. If the risk detection is a premium detection, will show generic.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskLevel
       description: 'Level of the detected risk. Possible values are: low, medium, high, hidden, none, unknownFutureValue.'
@@ -282,7 +289,7 @@ script:
       description: 'Timing of the detected risk (real-time/offline). Possible values are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.lastUpdatedDateTime
-      description: 'Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      description: 'Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskDetection.location
       description: Location of the sign-in.
@@ -291,7 +298,7 @@ script:
       description: 'Indicates the activity type the detected risk is linked to. . Possible values are: signin, user, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.activityDateTime
-      description: 'Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      description: 'Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskDetection.additionalInfo
       description: Additional information associated with the risk detection in JSON format.
@@ -300,7 +307,7 @@ script:
       description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.detectedDateTime
-      description: 'Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      description: 'Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: AzureRiskyUsers.RiskDetection.requestId
       description: Request ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
@@ -308,7 +315,7 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.87358
   runonce: false
   script: '-'
   subtype: python3

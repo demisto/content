@@ -1,0 +1,5 @@
+[known_words]
+vpc
+
+[file:GCP_-_Firewall_Remediation.yml]
+ignore=PB106

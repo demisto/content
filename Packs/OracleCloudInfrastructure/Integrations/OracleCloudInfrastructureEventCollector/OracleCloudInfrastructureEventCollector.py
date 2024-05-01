@@ -21,6 +21,7 @@ class Client(BaseClient):
     """Client class to interact with the OCI SDK and API requests.
     Will validate the fetching related parameters and create an OCI Singer object which will be used to fetch audit events.
     """
+
     def __init__(self, verify_certificate: bool, proxy: bool, user_ocid: str, private_key: str, key_fingerprint: str,
                  tenancy_ocid: str, region: str):
         self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid)

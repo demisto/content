@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 class Claims(BaseModel):
     iss: str = Field(alias='client_id')
     sub: str = Field(alias='id', description='user id or enterprise id')
-    box_sub_type = 'enterprise'
+    box_sub_type: str = 'enterprise'
     aud: AnyUrl
     jti: str = secrets.token_hex(64)
     exp: int = round(time.time()) + 45
@@ -62,8 +62,8 @@ def get_box_events_timestamp_format(value):
 class BoxEventsParams(BaseModel):
     event_type: Optional[str] = None
     limit: int = Field(500, alias='page_size', gt=0, le=500)
-    stream_position: Optional[str]
-    stream_type = 'admin_logs'
+    stream_position: Optional[str] = None
+    stream_type: str = 'admin_logs'
     created_after: Optional[str]
     # validators
     _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
@@ -89,7 +89,7 @@ def not_gate(v):
 
 class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
-    method = Method.GET
+    method: Method = Method.GET
     params: BoxEventsParams   # type: ignore[assignment]
     verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
 
@@ -98,8 +98,8 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
 
 
 class BoxIntegrationOptions(IntegrationOptions):
-    product_name = 'box'
-    vendor_name = 'box'
+    product_name: str = 'box'
+    vendor_name: str = 'box'
     should_push_events: bool = False
 
 

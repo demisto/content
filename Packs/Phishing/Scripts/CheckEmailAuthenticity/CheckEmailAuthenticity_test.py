@@ -81,5 +81,5 @@ def test_get_authentication_value():
     assert get_authentication_value(MOCK_HEADERS_DIFFERENT_AUTH_HEADER,
                                     original_authentication_header_not_included_in_headers) == 'mock_different_value'
     assert get_authentication_value(MOCK_HEADERS, original_authentication_header_included_in_headers) \
-           == 'spf=pass (sender IP is 8.8.8.8) smtp.mailfrom=test.com; dkim=fail (body hash did not verify) ' \
-              'header.d=test.com; dmarc=pass action=none header.from=test.com;compauth=pass reason=100'
+        == 'spf=pass (sender IP is 8.8.8.8) smtp.mailfrom=test.com; dkim=fail (body hash did not verify) ' \
+        'header.d=test.com; dmarc=pass action=none header.from=test.com;compauth=pass reason=100'

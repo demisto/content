@@ -1,36 +1,46 @@
-Accepts a SHA256 hash and adds it to the Global Quarantine list using the Cylance Protect v2 integration.
+This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
-## Integrations
-* Cylance Protect v2
+### Integrations
 
-## Scripts
+* Cylance_Protect_v2
+
+### Scripts
+
 This playbook does not use any scripts.
 
-## Commands
+### Commands
+
 * cylance-protect-add-hash-to-list
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| SHA256 | The SHA256 hash of the file to block. | SHA256 | File | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| SHA256 | The SHA256 hash of the file to block. | File.SHA256 | Optional |
+| ListType | The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe". | GlobalQuarantine | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.BlockedHashes.LastBlock.Time | The last block time. | unknown |
-| CbResponse.BlockedHashes.LastBlock.Hostname | The last block hostname. | unknown |
-| CbResponse.BlockedHashes.LastBlock.CbSensorID | The last block sensor ID. | unknown |
+| CbResponse.BlockedHashes.LastBlock.Time | Last block time. | unknown |
+| CbResponse.BlockedHashes.LastBlock.Hostname | Last block hostname. | unknown |
+| CbResponse.BlockedHashes.LastBlock.CbSensorID | Last block sensor ID. | unknown |
 
 ## Playbook Image
+
 ---
-![Block_File_Cylance_Protect_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Cylance_Protect_v2.png)
+
+![Block File - Cylance Protect v2](../doc_files/Block_File_-_Cylance_Protect_v2.png)

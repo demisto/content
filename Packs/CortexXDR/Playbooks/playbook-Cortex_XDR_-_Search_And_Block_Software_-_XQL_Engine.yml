@@ -1,0 +1,1017 @@
+id: Cortex XDR - Search And Block Software - XQL Engine
+version: -1
+name: Cortex XDR - Search And Block Software - XQL Engine
+description: This playbook will search a file or process activity of a software by a given image file name using Cortex XDR XQL Engine. The analyst can then choose the files to block.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cbeb7f45-4649-4f96-84f2-5736dad91d27
+    type: start
+    task:
+      id: cbeb7f45-4649-4f96-84f2-5736dad91d27
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0fd8efb5-81e4-41a2-85cf-74c85202fcb3
+    type: condition
+    task:
+      id: 0fd8efb5-81e4-41a2-85cf-74c85202fcb3
+      version: -1
+      name: Has Query Results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery.results
+                accessor: filesha256
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: ${PaloAltoNetworksXQL.GenericQuery.results.procsha256}
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 03df075e-50a7-4db7-8d8e-56c398303518
+    type: title
+    task:
+      id: 03df075e-50a7-4db7-8d8e-56c398303518
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 966601b5-4bb5-43d6-803e-4f3db45b5713
+    type: regular
+    task:
+      id: 966601b5-4bb5-43d6-803e-4f3db45b5713
+      version: -1
+      name: delete context - XDR Results
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b21f9224-ae7d-4b2a-8f8f-ca9baa153cff
+    type: condition
+    task:
+      id: b21f9224-ae7d-4b2a-8f8f-ca9baa153cff
+      version: -1
+      name: Has software name and timeframe from input?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Filename
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.TimeFrame
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d73217e1-5008-4a40-86fa-ffdafbc3f6d2
+    type: regular
+    task:
+      id: d73217e1-5008-4a40-86fa-ffdafbc3f6d2
+      version: -1
+      name: Execute XQL query to search software
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      query:
+        simple: "config case_sensitive = false \n| dataset = xdr_data \n| filter (event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE) or (event_type = ENUM.PROCESS and event_sub_type = ENUM.PROCESS_START)\n| filter action_process_image_name contains \"${inputs.Filename}\" or action_file_name contains \"${inputs.Filename}\"\n| fields action_process_image_name as procname, action_process_image_sha256 as procsha256, action_process_image_path as procpath, action_file_name as filename, action_file_sha256 as filesha256, action_file_path as filepath, event_type as eventtype, event_sub_type as event_sub_type, action_process_image_md5 as procmd5, action_file_md5 as filemd5"
+      query_name:
+        simple: hunt
+      time_frame:
+        complex:
+          root: inputs.TimeFrame
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 5e5e7260-277b-4ec0-8181-b57681ca3389
+    type: collection
+    task:
+      id: 5e5e7260-277b-4ec0-8181-b57681ca3389
+      version: -1
+      name: Would you like to block the files found?
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to block the files found?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Yes - All
+        - simple: Yes - Choose specific files
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Would you like to block the files found?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d84b8688-535b-4259-864d-9e0f37f31409
+    type: condition
+    task:
+      id: d84b8688-535b-4259-864d-9e0f37f31409
+      version: -1
+      name: Block the files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      Yes - All:
+      - "19"
+      Yes - Choose specific files:
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: Yes - All
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Would you like to block the files found?.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Yes - All
+          ignorecase: true
+    - label: Yes - Choose specific files
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Would you like to block the files found?.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Yes - Choose specific files
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6ddfccf7-f21d-4fec-8b81-7ac7bf8bd5e0
+    type: collection
+    task:
+      id: 6ddfccf7-f21d-4fec-8b81-7ac7bf8bd5e0
+      version: -1
+      name: Choose specific files to block
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose specific files to block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: PaloAltoNetworksXQL.GenericQuery.results
+            filters:
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: PaloAltoNetworksXQL.GenericQuery.results.filesha256
+                  iscontext: true
+            accessor: filepath
+        - complex:
+            root: PaloAltoNetworksXQL.GenericQuery.results
+            filters:
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: PaloAltoNetworksXQL.GenericQuery.results.procsha256
+                  iscontext: true
+            accessor: procpath
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose specific files to block
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 5ba53350-4d22-48e9-89ca-3659f8a9c7f9
+    type: regular
+    task:
+      id: 5ba53350-4d22-48e9-89ca-3659f8a9c7f9
+      version: -1
+      name: Set Indicators To Block
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: IndicatorsToBlock
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          accessor: filesha256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.procsha256
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1c33e0da-582b-42de-8b62-1bd2e406abd3
+    type: regular
+    task:
+      id: 1c33e0da-582b-42de-8b62-1bd2e406abd3
+      version: -1
+      name: delete context - Indicators To block
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 23a2fb4f-b065-4699-8d77-8e7d0a3f4947
+    type: regular
+    task:
+      id: 23a2fb4f-b065-4699-8d77-8e7d0a3f4947
+      version: -1
+      name: Set Indicators To Block - Files
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IndicatorsToBlock
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.filepath
+                iscontext: true
+              right:
+                value:
+                  simple: Choose specific files to block.Answers.0
+                iscontext: true
+          accessor: filesha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bc8c5f97-2667-47fa-8333-6ebd3c7fc0f6
+    type: regular
+    task:
+      id: bc8c5f97-2667-47fa-8333-6ebd3c7fc0f6
+      version: -1
+      name: Set Indicators To Block - Process
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IndicatorsToBlock
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.procpath
+                iscontext: true
+              right:
+                value:
+                  simple: Choose specific files to block.Answers.0
+                iscontext: true
+          accessor: procsha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c6bbff42-e2df-49c3-8b73-6b3f0603188a
+    type: condition
+    task:
+      id: c6bbff42-e2df-49c3-8b73-6b3f0603188a
+      version: -1
+      name: has relevant files to block
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery.results
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.results.procpath
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Choose specific files to block.Answers.0
+                      iscontext: true
+                accessor: procsha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 09683597-6525-4cc0-82b7-9777d26c51ef
+    type: condition
+    task:
+      id: 09683597-6525-4cc0-82b7-9777d26c51ef
+      version: -1
+      name: has relevant files to block
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery.results
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.results.filepath
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Choose specific files to block.Answers.0
+                      iscontext: true
+                accessor: filesha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 391d4c59-dc10-4cdc-8240-7df0d498eb74
+    type: regular
+    task:
+      id: 391d4c59-dc10-4cdc-8240-7df0d498eb74
+      version: -1
+      name: Set query results to layout
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      extend-context:
+        simple: customquerymarkdown=
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery
+          accessor: results
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: FALSE,null,UNKNOWN,NO
+              remove_keys:
+                value:
+                  simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Custom Query Results
+      output:
+        simple: ${customquerymarkdown}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3eab99a0-518e-403b-89e4-55af1d2b7741
+    type: regular
+    task:
+      id: 3eab99a0-518e-403b-89e4-55af1d2b7741
+      version: -1
+      name: Delete context - markdown
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: customquerymarkdown
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 67f2a88b-19c8-4e19-8bb8-e0080da47105
+    type: playbook
+    task:
+      id: 67f2a88b-19c8-4e19-8bb8-e0080da47105
+      version: -1
+      name: Cortex XDR - Block File
+      description: Use this playbook to add files to the Cortex XDR block list with a given SHA256 file playbook input.
+      playbookName: Cortex XDR - Block File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      HashList:
+        complex:
+          root: IndicatorsToBlock
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 64e27d12-e594-4939-8eeb-d32ba9a031eb
+    type: regular
+    task:
+      id: 64e27d12-e594-4939-8eeb-d32ba9a031eb
+      version: -1
+      name: Delete context to avoid duplications - customquerymarkdown
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: customquerymarkdown
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: fefa53d3-b2cb-4858-802d-503b88a8fbad
+    type: regular
+    task:
+      id: fefa53d3-b2cb-4858-802d-503b88a8fbad
+      version: -1
+      name: Delete context to avoid duplications - PaloAltoNetworksXQL
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_6_#default#": 0.14,
+      "17_18_Yes - Choose specific files": 0.52,
+      "17_6_#default#": 0.25,
+      "24_28_#default#": 0.54,
+      "25_28_#default#": 0.25,
+      "3_26_yes": 0.54,
+      "3_6_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2595,
+        "width": 1960,
+        "x": 240,
+        "y": -160
+      }
+    }
+  }
+inputs:
+- key: Filename
+  value: {}
+  required: false
+  description: File name to search.
+  playbookInputQuery:
+- key: TimeFrame
+  value: {}
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

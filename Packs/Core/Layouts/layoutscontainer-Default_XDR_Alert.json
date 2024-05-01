@@ -922,13 +922,33 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "agentossubtype",
+                                "fieldId": "hostrisklevel",
                                 "height": 26,
-                                "id": "bec9f010-ac80-11ed-90e1-81bc84c0d1fb",
+                                "id": "cac64c20-6354-11ee-ae84-23f4070ef7f7",
                                 "index": 5,
                                 "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostriskreasons",
+                                "height": 26,
+                                "id": "cdc81a70-6354-11ee-ae84-23f4070ef7f7",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "agentossubtype",
+                                "height": 26,
+                                "id": "bec9f010-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb"
                             },
                             {
                                 "dropEffect": "move",
@@ -936,7 +956,7 @@
                                 "fieldId": "agentid",
                                 "height": 26,
                                 "id": "bd79a250-ac80-11ed-90e1-81bc84c0d1fb",
-                                "index": 6,
+                                "index": 8,
                                 "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -946,7 +966,7 @@
                                 "fieldId": "agentversion",
                                 "height": 26,
                                 "id": "c54a5dd0-ac80-11ed-90e1-81bc84c0d1fb",
-                                "index": 7,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1006,18 +1026,18 @@
                                     }
                                 },
                                 "buttonClass": "secondary",
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "81881100-b04a-11ed-95eb-6fbf73c92c07",
-                                "index": 8,
-                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 10,
                                 "name": "Choose host to scan",
                                 "scriptId": "Cortex Core - IR|||core-endpoint-scan",
                                 "sectionItemType": "button",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb"
                             },
                             {
                                 "args": {
@@ -1075,18 +1095,18 @@
                                     }
                                 },
                                 "buttonClass": "secondary",
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "82800590-b04a-11ed-95eb-6fbf73c92c07",
-                                "index": 9,
-                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 11,
                                 "name": "Abort host scan",
                                 "scriptId": "Cortex Core - IR|||core-endpoint-scan-abort",
                                 "sectionItemType": "button",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb"
                             },
                             {
                                 "args": {},
@@ -1096,7 +1116,7 @@
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "75e16e50-b04a-11ed-95eb-6fbf73c92c07",
-                                "index": 10,
+                                "index": 12,
                                 "name": "Choose host to isolate",
                                 "scriptId": "Cortex Core - IR|||core-isolate-endpoint",
                                 "sectionItemType": "button",
@@ -1110,7 +1130,7 @@
                                 "height": 44,
                                 "hexColor": null,
                                 "id": "77403b00-b04a-11ed-95eb-6fbf73c92c07",
-                                "index": 11,
+                                "index": 13,
                                 "name": "Choose host to unisolate",
                                 "scriptId": "Cortex Core - IR|||core-unisolate-endpoint",
                                 "sectionItemType": "button",
@@ -1249,6 +1269,24 @@
                                 "height": 26,
                                 "id": "b252baa0-b77b-11ed-a817-f75b1612b8eb",
                                 "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userrisklevel",
+                                "height": 26,
+                                "id": "ddd376d0-6354-11ee-ae84-23f4070ef7f7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userriskreasons",
+                                "height": 26,
+                                "id": "df6ab8a0-6354-11ee-ae84-23f4070ef7f7",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -1731,10 +1769,6 @@
                 "fields": [
                     {
                         "fieldId": "incident_phonenumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_tags",
                         "isVisible": true
                     }
                 ],

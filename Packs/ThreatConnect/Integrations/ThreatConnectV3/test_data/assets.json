@@ -1,0 +1,32 @@
+[
+    {
+        "id": 756,
+        "type": "Phone",
+        "victimId": 672,
+        "phone": "111111",
+        "webLink": "link?victim=672"
+    },
+    {
+        "id": 741,
+        "type": "EmailAddress",
+        "victimId": 659,
+        "address": "buug",
+        "webLink": "link?victim=659"
+    },
+    {
+        "id": 747,
+        "type": "SocialNetwork",
+        "victimId": 664,
+        "accountName": "def",
+        "socialNetwork": "bj",
+        "webLink": "link?victim=664"
+    },
+    {
+        "id": 736,
+        "type": "NetworkAccount",
+        "victimId": 659,
+        "accountName": "tpb",
+        "networkType": "tpb",
+        "webLink": "link?victim=659"
+    }
+]

@@ -1595,19 +1595,18 @@ Get the list of projects of a given group.
 
 ### gitlab-raw-file-get
 ***
-Get file the file in a raw format.
-
+Get the file in a raw format.
 
 #### Base Command
 
 `gitlab-raw-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_path | The file path. | Required | 
-| ref | The branch to retrieve the file from, default is master. | Optional | 
-
+| ref | The branch to retrieve the file from. Default is master. | Optional | 
 
 #### Context Output
 
@@ -1616,6 +1615,7 @@ Get file the file in a raw format.
 | GitLab.File.ref | String | The branch the file's content was taken from. | 
 | GitLab.File.path | String | The file path. | 
 | GitLab.File.content | String | The file content. | 
+
 
 #### Command Example
 
@@ -2179,6 +2179,44 @@ Triggers a GitLab pipeline on a selected project and branch.
 | project_id | Project ID on which to run the pipeline. | Optional | 
 | ref_branch | The branch on which to run the pipeline. Default is 'master'. | Optional | 
 | trigger_variables | JSON containing the pipeline variables. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Pipeline.id | Number | Pipeline ID. | 
+| GitLab.Pipeline.project_id | Number | Project ID that the pipeline belongs to. | 
+| GitLab.Pipeline.status | String | Status of the pipeline. | 
+| GitLab.Pipeline.ref | String | Reference of the pipeline. | 
+| GitLab.Pipeline.sha | String | SHA of the pipeline. | 
+| GitLab.Pipeline.created_at | Date | Time when the pipeline was created. | 
+| GitLab.Pipeline.updated_at | Date | Time when the pipeline was last updated. | 
+| GitLab.Pipeline.started_at | Date | Time when the pipeline was started. | 
+| GitLab.Pipeline.finished_at | Date | Time when the pipeline was finished. | 
+| GitLab.Pipeline.duration | Number | Duration of the pipeline in seconds. | 
+| GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+| GitLab.Pipeline.user.name | String | Name of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.username | String | Username that triggered the pipeline. | 
+| GitLab.Pipeline.user.id | Number | ID of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
+| GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 
+
+### gitlab-cancel-pipeline
+
+***
+Cancels a GitLab pipeline.
+
+#### Base Command
+
+`gitlab-cancel-pipeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID on which to run the pipeline. | Optional | 
+| pipeline_id | The pipline ID to cancel. | Optional | 
 
 #### Context Output
 

@@ -1,4 +1,3 @@
-import io
 import json
 from pathlib import Path
 from typing import Any
@@ -7,7 +6,7 @@ from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -1667,6 +1666,7 @@ def test_list_indicator_categories_command(mocker, requests_mock, file_name: str
     request = requests_mock.get(f'{base_url}/indicator_categories', status_code=status_code, json=mocked_response)
     client = Client(base_url)
     command_result = list_indicator_categories_command(client, {'search': 'foo', 'limit': 49})
+    command_result.raw_response = command_result.raw_response or None
     assert command_result.to_context() == expected_context
     assert request.called_once
     assert request.last_request._url_parts.query == 'limit=49&search=foo'

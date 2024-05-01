@@ -22,3 +22,8 @@ You can modify the severity levels of any disposition received from CheckPhish. 
 - Bad = cryptojacking, phish, likely_phish, scam\
 
 **Note**: The worst category in which a label is included will be the effective one. 
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***CheckPhish-check-urls***
+See the vendor’s documentation for more details.

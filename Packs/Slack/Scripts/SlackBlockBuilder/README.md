@@ -1,4 +1,4 @@
-SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination.
+SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key** integration parameters if you want to get a response to the incident context.
 
 The Slack Block Kit Builder can be found [here](https://app.slack.com/block-kit-builder).
 
@@ -36,20 +36,22 @@ This script uses the following commands and scripts.
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| blocks_url | The URL copied from Slack's Block Builder. |
-| list_name | The name of the Cortex XSOAR list to use as the block's input. |
-| user | The Slack user to which to send the message. Can be either an email address or a Slack user name. |
-| channel | The Slack channel to send the message to. |
-| channel_id | The Slack channel ID to send the message to. |
-| task | The task to close with the reply. If empty, then no playbook tasks will be closed. |
-| replyEntriesTag | Tag to add to email reply entries. |
-| persistent | Indicates whether to use one-time entitlement or persistent entitlement. |
+| **Argument Name** | **Description**                                                                                                                                                               |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| blocks_url | The URL copied from Slack's Block Builder.                                                                                                                                    |
+| list_name | The name of the Cortex XSOAR list to use as the block's input.                                                                                                                |
+| user | The Slack user to which to send the message. Can be either an email address or a Slack user name.                                                                             |
+| channel | The Slack channel to send the message to.                                                                                                                                     |
+| channel_id | The Slack channel ID to send the message to.                                                                                                                                  |
+| task | The task to close with the reply. If empty, then no playbook tasks will be closed.                                                                                            |
+| replyEntriesTag | Tag to add to email reply entries.                                                                                                                                            |
+| persistent | Indicates whether to use one-time entitlement or persistent entitlement.                                                                                                      |
 | reply | The reply to send to the user. Use the templates \{user\} and \{response\} to incorporate these in the reply. \(i.e., "Thank you \{user\}. You have answered \{response\}."\) |
-| lifetime | Time until the question expires. For example - 1 day. When it expires, a default response is sent. |
-| defaultResponse | Default response in case the question expires. |
-| slackInstance | The instance of SlackV3 this script should use. |
+| lifetime | Time until the question expires. For example - 1 day. When it expires, a default response is sent.                                                                            |
+| defaultResponse | Default response in case the question expires.                                                                                                                                |
+| slackInstance | The instance of SlackV3 this script should use.                                                                                                                               |
+| thread_id | The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.                                                                           |
+
 
 ## Outputs
 ---
@@ -120,9 +122,24 @@ Verify your Slack blocks payload is valid. Try simplifying the payload. Test wit
 ---
 **Issue**: The survey is sent to Slack and submitted successfully, but the response does not show up in context data in Cortex XSOAR.
 
-**Troubleshooting**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by default admin. Ensure an API key created by a default admin user is entered into the Slack v3 integration instance settings.
+**Troubleshooting**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by default admin. Ensure an API key created by a default admin user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (not secure)** integration parameter.
 
 ---
 **Issue**: The survey is sent to Slack successfully, but clicking the Submit button in Slack does nothing. No response is returned to Cortex XSOAR. There may be a ⚠️ icon next to the Submit button in Slack. 
 
 **Troubleshooting**: Ensure the "Long running instance" checkbox is checked in the Slack v3 integration instance settings.
+
+---
+**Issue**: Migrating to pack version 3.3.0.
+
+**Troubleshooting**: # Implementation Guide for Changes in SlackV3 for XSOAR (Version 3.3.0)
+
+## 1. Review and Identify Affected Playbooks
+- Identify all playbooks currently utilizing the SlackBlockBuilder script or its derivatives.
+
+## 2. Implement Conditional Tasks
+- Introduce a conditional task in your playbooks that waits for the expected response.
+- Configure the task to proceed once the response is received.
+
+## 3. Integrate the `GetSlackBlockBuilderResponse` Script
+- After receiving the response and closing the conditional task, initiate a new task that runs the `ParseSlackResponse` script.

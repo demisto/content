@@ -2,12 +2,12 @@ commonfields:
   id: SlackBlockBuilder
   version: -1
 name: SlackBlockBuilder
-script: '-'
+script: ''
 type: python
 tags:
 - slack
 enabled: true
-comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination.
+comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
 args:
 - description: The URL copied from Slack's Block Builder.
   name: blocks_url
@@ -31,7 +31,7 @@ args:
   - 'true'
   - 'false'
 - defaultValue: Thank you for your response.
-  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e., "Thank you {user}. You have answered {response}.")
+  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply (i.e., "Thank you {user}. You have answered {response}.").
   name: reply
 - defaultValue: 1 day
   description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
@@ -41,13 +41,33 @@ args:
   defaultValue: NoResponse
 - description: The instance of SlackV3 this script should use.
   name: slackInstance
+- description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
+  name: thread_id
 outputs:
 - contextPath: SlackBlockState
   type: unknown
   description: The state of the response from the user will be stored under this context path.
+- contextPath: SlackBlockBuilder.ThreadID
+  type: unknown
+  description: The thread ID retrieved from the message notification.
+- contextPath: SlackBlockBuilder.Channel
+  type: unknown
+  description: The channel name retrieved from the message notification.
+- contextPath: SlackBlockBuilder.Text
+  type: unknown
+  description: The text contents retrieved from the message notification.
+- contextPath: SlackBlockBuilder.BotID
+  type: unknown
+  description: The bot ID retrieved from the message notification.
+- contextPath: SlackBlockBuilder.Username
+  type: unknown
+  description: The username retrieved from the message notification.
+- contextPath: SlackBlockBuilder.AppID
+  type: unknown
+  description: The app ID retrieved from the message notification.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.13.90168
 runas: DBotWeakRole
 dependson:
   must:
@@ -55,3 +75,7 @@ dependson:
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+runonce: false

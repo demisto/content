@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from collections import OrderedDict # noqa
+from collections import OrderedDict  # noqa
 
-import json ## noqa
-import traceback ## noqa
-from typing import Dict, Any  ## noqa
+import json  # noqa
+import traceback  # noqa
+from typing import Dict, Any  # noqa
 
 
 # Disable insecure warnings
@@ -33,6 +33,7 @@ SNX_VERDICT_TO_DBOTSCORE = {
 
 class Client(BaseClient):
     """Implement class for SecneurX Analysis sandbox"""
+
     def get_response(self, urlSuffix: str, paramsDict: Dict[str, str]):
         try:
             if urlSuffix == '/get_report':

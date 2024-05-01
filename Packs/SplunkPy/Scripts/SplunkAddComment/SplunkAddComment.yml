@@ -1,0 +1,28 @@
+args:
+- description: Comment to be added to the Splunk notable.
+  name: comment
+  required: true
+- auto: PREDEFINED
+  defaultValue: FROM XSOAR
+  description: The comment tag. Use the comment entry tag (defined in your instance configuration) to mirror the comment to Splunk.
+  name: tags
+  predefined:
+  - FROM XSOAR
+  required: false
+  isArray: true
+comment: Use this script to add a comment with a tag (the "Comment tag to Splunk" defined in the instance configuration) as an entry in Cortex XSOAR, which will then be mirrored as a comment to a Splunk issue. This script should be run within an incident.
+commonfields:
+  id: SplunkAddComment
+  version: -1
+name: SplunkAddComment
+script: ""
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68714
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

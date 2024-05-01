@@ -1,8 +1,7 @@
 id: 00e35aeb-5332-4e3e-8cbe-f5596a829ea1
-version: 9
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: WAB_test
-description: Basic playbook to test simple GET commands on the WALLIX Bastion
+description: Basic playbook to test simple GET commands on the WALLIX Bastion.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -75,8 +75,7 @@ tasks:
       id: 38f62f60-cb4f-495c-896f-6086cb8d7899
       version: -1
       name: wab-get-object-to-onboard
-      description: Get object to onboard, by type (either devices with their linked
-        accounts or global accounts alone)
+      description: Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
       script: WALLIX Bastion|||wab-get-object-to-onboard
       type: regular
       iscommand: true

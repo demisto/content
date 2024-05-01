@@ -76,3 +76,24 @@ class TestPDFUnlocker:
         main()
         result = self.get_demisto_results()
         assert result.get('File') == 'UNLOCKED_Testpdf_.pdf'
+
+    def test_unlock_encrypted_with_incorrect_password(self, mocker):
+        """
+        Given:
+            - A PDF file encrypted by a password, but incorrect password is provided.
+
+        When:
+            - Run the PDFUnlocker script.
+
+        Then:
+            - Verify that the expected error is thrown.
+
+        """
+        from PDFUnlocker import main
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/Testpdf_.pdf"),
+                          args_value={"entryID": "entry_id", "password": "123"})
+        return_error_mock = mocker.patch("PDFUnlocker.return_error")
+
+        main()
+        assert return_error_mock.call_count == 1
+        assert return_error_mock.call_args[0][0] == "Incorrect password. Please provide the correct password."

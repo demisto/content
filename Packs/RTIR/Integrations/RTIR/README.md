@@ -24,7 +24,11 @@
 <strong>Name</strong>: A textual name for the integration instance.</li>
 <li>
 <strong>Server URL</strong> (for example: https://192.168.0.1)</li>
-<li><strong>Credentials</strong></li>
+<li><strong>Username</strong></li>
+<li><strong>Password</strong></li>
+<li><strong>Token</strong></li>
+<li><strong>Certificate</strong></li>
+<li><strong>Private Key</strong></li>
 <li>
 <strong>Trust any certificate </strong>(not secure)</li>
 <li><strong>Use system proxy settings</strong></li>
@@ -114,6 +118,14 @@
 <tr>
 <td style="width: 132px;">final-priority</td>
 <td style="width: 589px;">Final priority of ticket</td>
+</tr>
+<tr>
+<td style="width: 132px;">member-of</td>
+<td style="width: 589px;">Ticket MembersOF links</td>
+</tr>
+<tr>
+<td style="width: 132px;">members</td>
+<td style="width: 589px;">Ticket Members links</td>
 </tr>
 <tr>
 <td style="width: 132px;">attachment</td>
@@ -458,6 +470,30 @@
 <tr>
 <td>status</td>
 <td>Modified ticket status.</td>
+</tr>
+<tr>
+<td style="width: 132px;">member-of</td>
+<td style="width: 589px;">Modified ticket MembersOF ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">members</td>
+<td style="width: 589px;">Modified ticket Members ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">depends-on</td>
+<td style="width: 589px;">Modified ticket DependedOn ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">depended-on-by</td>
+<td style="width: 589px;">Modified ticket DependedOnBy ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">refers-to</td>
+<td style="width: 589px;">Modified ticket RefersTo ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">referred-to-by</td>
+<td style="width: 589px;">Modified ticket ReferredToBy ID</td>
 </tr>
 <tr>
 <td>due</td>

@@ -1,0 +1,54 @@
+{
+    "AutomationExecutionMetadataList": [
+        {
+            "AutomationExecutionId": "",
+            "DocumentName": "",
+            "DocumentVersion": "1",
+            "AutomationExecutionStatus": "Success",
+            "ExecutionStartTime": "2023-08-30T19:00:50.433000+03:00",
+            "ExecutionEndTime": "2023-08-30T19:00:51.963000+03:00",
+            "ExecutedBy": "arn",
+            "LogFile": "",
+            "Outputs": {},
+            "Mode": "Auto",
+            "Targets": [],
+            "ResolvedTargets": {
+                "ParameterValues": [],
+                "Truncated": false
+            },
+            "AutomationType": "Local"
+        },
+        {
+            "AutomationExecutionId": "",
+            "DocumentName": "AWS",
+            "DocumentVersion": "1",
+            "AutomationExecutionStatus": "Success",
+            "ExecutionStartTime": "2023-08-30T19:00:50.141000+03:00",
+            "ExecutionEndTime": "2023-08-30T19:00:51.807000+03:00",
+            "ExecutedBy": "arn",
+            "LogFile": "",
+            "Outputs": {},
+            "Mode": "Auto",
+            "Targets": [],
+            "ResolvedTargets": {
+                "ParameterValues": [],
+                "Truncated": false
+            },
+            "AutomationType": "Local"
+        }
+    ],
+    "NextToken": "",
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Wed, 30 Aug 2023 17:01:14 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

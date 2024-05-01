@@ -10,32 +10,32 @@ comment: Recursively extracts specified fields from provided list of assets for 
 commonfields:
   id: PrismaCloudAttribution
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: PrismaCloudAttribution
 outputs:
 - contextPath: PrismaCloud.Attribution.accountId
-  description: Cloud Account ID
+  description: Cloud Account ID.
 - contextPath: PrismaCloud.Attribution.accountName
-  description: Cloud Account Name
+  description: Cloud Account Name.
 - contextPath: PrismaCloud.Attribution.cloudType
-  description: Cloud Type
+  description: Cloud Type.
 - contextPath: PrismaCloud.Attribution.fqdn
-  description: FQDNs associated to the resource
+  description: FQDNs associated to the resource.
 - contextPath: PrismaCloud.Attribution.rrn
-  description: Resource RRN
+  description: Resource RRN.
 - contextPath: PrismaCloud.Attribution.ip
-  description: IPs associated to the resource
+  description: IPs associated to the resource.
 - contextPath: PrismaCloud.Attribution.regionId
-  description: Cloud Region ID
+  description: Cloud Region ID.
 - contextPath: PrismaCloud.Attribution.hasAlert
-  description: Resource has Prisma Cloud Alert
+  description: Resource has Prisma Cloud Alert.
 - contextPath: PrismaCloud.Attribution.resourceName
-  description: Resource Name
+  description: Resource Name.
 - contextPath: PrismaCloud.Attribution.resourceType
-  description: Resource Type
+  description: Resource Type.
 - contextPath: PrismaCloud.Attribution.service
-  description: Cloud Service
+  description: Cloud Service.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

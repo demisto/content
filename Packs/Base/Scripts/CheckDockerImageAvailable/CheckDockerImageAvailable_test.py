@@ -2,6 +2,8 @@ from CheckDockerImageAvailable import docker_auth, main, docker_min_layer, parse
 import demistomock as demisto
 import json
 import pytest
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 RETURN_ERROR_TARGET = 'CheckDockerImageAvailable.return_error'
@@ -55,6 +57,8 @@ def test_min_layer():
 
 
 def test_valid_docker_image(mocker):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     demisto_image = 'demisto/python:2.7.15.155'  # disable-secrets-detection
     args = {'input': demisto_image, 'trust_any_certificate': 'yes'}
     mocker.patch.object(demisto, 'args', return_value=args)
@@ -79,6 +83,8 @@ def test_valid_docker_image(mocker):
 
 
 def test_invalid_docker_image(mocker):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     image_name = 'demisto/python:bad_tag'
     mocker.patch.object(demisto, 'args', return_value={'input': image_name, 'trust_any_certificate': 'yes'})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)

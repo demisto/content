@@ -1,6 +1,5 @@
 id: BitcoinAbuse-test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: BitcoinAbuse-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -74,8 +74,7 @@ tasks:
       id: e6825cb1-1546-41ca-8342-2f80e29db553
       version: -1
       name: Bitcoin Report Address
-      description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other'
-        field is required when 'abuse_type' is other
+      description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is required when 'abuse_type' is other
       script: '|||bitcoinabuse-report-address'
       type: regular
       iscommand: true
@@ -117,6 +116,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -177,3 +177,7 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+deprecated: true
+tests:
+- No tests (deprecated)
+description: Deprecated. No available replacement.

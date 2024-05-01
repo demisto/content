@@ -3,11 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import json
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, Tuple
-
 import dateparser
-
 import urllib3
-
 
 """Dragos Worldview Integration for XSOAR."""
 
@@ -79,26 +76,60 @@ def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
-    serial = args.get('serial')
-    if serial:
-        api_query = "indicators?serial%5B%5D=" + serial
-    else:
-        time = datetime.now() - timedelta(hours=48)
-        api_query = "indicators?updated_after="
-        api_query = api_query + str(time)
-        api_query = api_query.replace(":", "%3A")
+    exclude_suspect_domain = argToBoolean(args.get('exclude_suspect_domain', False))
+    page = args.get('page')
+    page_size = args.get('page_size')
+    updated_after = args.get('updated_after')
+    value = args.get('value')
+    indicator_type = args.get('type')
+    serials = argToList(args.get('serial'))
+    tags = argToList(args.get('tags'))
 
+    # The arguments page, page_size and exclude_suspect_domain have an API default of 1, 500 and false respectively,
+    # and do not need to be included in the query unless changed
+    query_list = []
+    if page:
+        query_list.append('page=' + page)
+    if exclude_suspect_domain:
+        query_list.append('exclude_suspect_domain=' + str(exclude_suspect_domain).lower())
+    if page_size:
+        query_list.append('page_size=' + page_size)
+    if updated_after:
+        query_list.append('updated_after=' + updated_after.replace(":", "%3A"))
+    if value:
+        query_list.append('value=' + value)
+    if indicator_type:
+        query_list.append('type=' + indicator_type)
+    for serial in serials:
+        query_list.append('serial%5B%5D=' + serial)
+    for tag in tags:
+        query_list.append('tags%5B%5D=' + tag)
+
+    # If any arguments were submitted then run the relevent query, 
+    # else return all indicators from the last 48 hours
+    if query_list:
+        query_string = '&'.join(query_list)
+        api_query = f'indicators?{query_string}'
+    else:
+        time = str(datetime.now() - timedelta(hours=48))
+        time = time.replace(":", "%3A")
+        api_query = f'indicators?updated_after={time}'
     raw_response = client.api_request(api_query)
     data = raw_response['indicators']
-    page_number = 2
+    page_number = 2 if not page else int(page) + 1
+    if page:   
+        query_list.pop(0)
+        query_string = '&'.join(query_list)
     full_response = raw_response
-
-    while raw_response['total_pages'] >= raw_response['page']:
-        if serial:
-            api_query = "indicators?page=" + str(page_number) + "&serial%5B%5D=" + serial
+        
+    # If there are still more dragos pages (ie more indicators) than was returned by
+    # the intial query, iterate through the remaining pages and add all unique indicators
+    # to the return data
+    while int(raw_response['total_pages']) > int(raw_response['page']):
+        if query_list:  
+            api_query = f'indicators?page={page_number}&{query_string}'
         else:
-            api_query = "indicators?page=" + str(page_number) + "&updated_after=" + str(time)
-            api_query = api_query.replace(":", "%3A")
+            api_query = f'indicators?page={page_number}&updated_after={time}'
         page_number += 1
         raw_response = client.api_request(api_query)
         new_data = raw_response['indicators']
@@ -112,6 +143,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='Dragos.Indicators',
         outputs_key_field='indicator_id',
         outputs=data,
+        readable_output=tableToMarkdown('Dragos Indicators', data),
         raw_response=full_response
     )
 
@@ -164,10 +196,16 @@ def main() -> None:
         base_url = base_url + "/api/v1"
         verify_ssl = not demisto_params.get("insecure", False)
         proxy = demisto_params.get("proxy", False)
+        api_token = demisto_params.get("credential_token", {}).get("password") or demisto_params.get("apitoken")
+        if not api_token:
+            return_error('Please provide a valid API token')
+        api_key = demisto_params.get("credential_key", {}).get("password") or demisto_params.get("apikey")
+        if not api_key:
+            return_error('Please provide a valid API key')
         headers = {
             "accept": "*/*",
-            "API-TOKEN": demisto_params["apitoken"],
-            "API-SECRET": demisto_params["apikey"],
+            "API-TOKEN": api_token,
+            "API-SECRET": api_key,
         }
         client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy

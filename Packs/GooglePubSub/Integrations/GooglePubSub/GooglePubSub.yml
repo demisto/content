@@ -105,6 +105,10 @@ script:
       name: attributes
     - description: Project ID.
       name: project_id
+    - description: Set delimiter of attributes split
+      name: delim_char_attributes
+      defaultValue: ','
+      type: unknown
     description: Publish a message in a topic.
     name: gcp-pubsub-topic-publish-message
     outputs:
@@ -526,7 +530,7 @@ script:
       required: true
     description: Acknowledge previously pulled message or messages.
     name: gcp-pubsub-topic-ack-messages
-  dockerimage: demisto/googleapi-python3:1.0.0.64222
+  dockerimage: demisto/googleapi-python3:1.0.0.71902
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,60 @@
+{
+    "id": "DomainTools Iris",
+    "version": -1,
+    "modified": "2023-12-19T20:11:35.191562524Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "DomainTools Iris",
+    "prevDetails": "DomainTools Iris",
+    "reputationCommand": "domain",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "domaintoolsirisadditionalwhoisemails": {
+            "simple": "DomainTools.Identity.AdditionalWhoisEmails.value"
+        },
+        "domaintoolsirisdomainage": {
+            "simple": "DomainTools.FirstSeen"
+        },
+        "domaintoolsirisemaildomains": {
+            "simple": "DomainTools.Identity.EmailDomains"
+        },
+        "domaintoolsirisfirstseen": {
+            "simple": "DomainTools.FirstSeen"
+        },
+        "domaintoolsirisipaddresses": {
+            "simple": "DomainTools.Hosting.IPAddresses.address.value"
+        },
+        "domaintoolsirisipcountrycode": {
+            "simple": "DomainTools.Hosting.IPAddresses.country_code.value"
+        },
+        "domaintoolsirismailservers": {
+            "simple": "DomainTools.Hosting.MailServers.domain.value"
+        },
+        "domaintoolsirisregistrantorg": {
+            "simple": "DomainTools.Identity.RegistrantContact.Org.value"
+        },
+        "domaintoolsirisriskscore": {
+            "simple": "DomainTools.Analytics.OverallRiskScore"
+        },
+        "domaintoolsirisriskscorecomponents": {
+            "simple": "DomainTools.Analytics"
+        },
+        "domaintoolsirissoaemail": {
+            "simple": "DomainTools.Identity.SOAEmail.value"
+        },
+        "domaintoolsiristags": {
+            "simple": "DomainTools.Analytics.Tags.label"
+        },
+        "domaintoolsirisexpirationdate": {
+            "simple": "DomainTools.Registration.ExpirationDate"
+        }
+    },
+    "expiration": 0,
+    "layout": "DomainTools Iris Indicator Layout",
+    "fromVersion": "6.6.0"
+}

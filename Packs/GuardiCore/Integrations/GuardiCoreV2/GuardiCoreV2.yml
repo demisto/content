@@ -952,10 +952,10 @@ script:
       description: Whether the incident is in backwards compatibility format.
       type: String
   - arguments:
-    - description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
+    - description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days).
       name: from_time
       required: true
-    - description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
+    - description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days).
       name: to_time
       required: true
     - defaultValue: "50"
@@ -1192,7 +1192,7 @@ script:
     - contextPath: Endpoint.MACAddress
       description: The endpoint's MAC address.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   script: "-"

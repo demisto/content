@@ -61,7 +61,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Allow query results tables larger than 128 MB compressed (legacy SQL only)
+      description: Allow query results tables larger than 128 MB compressed (legacy SQL only).
     - name: default_dataset
       description: A string of the fully-qualified dataset ID in standard SQL format. The value must include a project ID and dataset ID, separated by periods.
     - name: destination_table
@@ -109,7 +109,9 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.61798
+  dockerimage: demisto/bigquery:1.0.0.73837
   subtype: python3
   isfetch: true
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

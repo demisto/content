@@ -570,7 +570,7 @@ List all assets found in the model
                 "Name": {
                     "LastUser": "IDENTITY:0",
                     "Property Name": "Name",
-                    "Value": "ec2-54-245-171-52.us-west-2.compute.amazonaws.com"
+                    "Value": "ec2.us.compute-1.amazonaws.com"
                 }
             },
             {
@@ -578,7 +578,7 @@ List all assets found in the model
                 "Name": {
                     "LastUser": "IDENTITY:0",
                     "Property Name": "Name",
-                    "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+                    "Value": "ec2.us.compute-1.amazonaws.com"
                 }
             }
         ]
@@ -592,11 +592,11 @@ List all assets found in the model
 >### Asset(ID:1914)
 >|LastUser|Property Name|Value|
 >|---|---|---|
->| IDENTITY:0 | Name | ec2-54-245-171-52.us-west-2.compute.amazonaws.com |
+>| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
 >### Asset(ID:1928)
 >|LastUser|Property Name|Value|
 >|---|---|---|
->| IDENTITY:0 | Name | ec2-44-234-115-112.us-west-2.compute.amazonaws.com |
+>| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
 >### Endpoint
 >|IPAddress|
 >|---|
@@ -668,7 +668,7 @@ Retrieves the asset by id
             "Name": {
                 "LastUser": "IDENTITY:0",
                 "Property Name": "Name",
-                "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+                "Value": "ec2.us.compute-1.amazonaws.com"
             }
         }
     }
@@ -681,7 +681,7 @@ Retrieves the asset by id
 >### Asset(ID:1928)
 >|LastUser|Property Name|Value|
 >|---|---|---|
->| IDENTITY:0 | Name | ec2-44-234-115-112.us-west-2.compute.amazonaws.com |
+>| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
 >### Endpoint
 >|IPAddress|MACAddress|
 >|---|---|

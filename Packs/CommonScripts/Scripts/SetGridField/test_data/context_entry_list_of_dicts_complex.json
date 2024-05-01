@@ -1,0 +1,21 @@
+[
+  {
+  "firstname": "fname1",
+  "lastname": "lname1",
+  "email": "email1",
+      "phones": {"p1": "phone1", "p2": "phone2"}
+  },
+  {
+  "firstname": "fname2",
+  "lastname": "lname2",
+  "email": "email2",
+      "phones": {"p1": "phone1", "p2": "phone2"}
+  },
+  {
+  "firstname": "fname3",
+  "lastname": "lname3",
+  "email": "email3",
+      "phones": [{"p1": "phone1", "p2": "phone2"},
+          {"p1": "phone3", "p2": "phone4"}]
+  }
+]

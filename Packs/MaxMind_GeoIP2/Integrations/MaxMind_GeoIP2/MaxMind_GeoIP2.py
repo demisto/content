@@ -10,12 +10,13 @@ import urllib3
 urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BASE_URL = demisto.params().get('url')
-APIKEY = demisto.params().get('apikey')
-ACCOUNT_ID = demisto.params().get('account')
-MODE = demisto.params().get('mode')
-USE_SSL = not demisto.params().get('insecure', False)
-PROXY = demisto.params().get('proxy')
+PARAMS = demisto.params()
+BASE_URL = PARAMS.get('url')
+APIKEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('apikey')
+ACCOUNT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('account')
+MODE = PARAMS.get('mode')
+USE_SSL = not PARAMS.get('insecure', False)
+PROXY = PARAMS.get('proxy')
 API_VERSION = 'geoip/v2.1'
 
 HR_HEADERS = [
@@ -56,7 +57,7 @@ def http_request(query):
     )
     if r.status_code != 200:
         return_error(
-            'Error in API call to MaxMind, got status code - {} and a reason: {}'.format(r.status_code, r.reason))
+            f'Error in API call to MaxMind, got status code - {r.status_code} and a reason: {r.reason}')
     return r
 
 
@@ -141,7 +142,7 @@ def format_results(res_json):
         'Type': 'ip',
         'Vendor': 'MaxMind_GeoIP2',
         'Score': 0,
-        'Reliability': demisto.params().get('integrationReliability')
+        'Reliability': PARAMS.get('integrationReliability')
     }
     return hr, ip_ec, maxmind_ec, dbot_score
 
@@ -156,25 +157,28 @@ def get_geo_ip(query):
 
 
 def geo_ip_command():
-    ip_query = demisto.args().get('ip')
-    res_json = get_geo_ip(ip_query)
-    hr, ip_ec, maxmind_ec, dbot_score = format_results(res_json)
-    ec = ({
-        'IP(val.Address && val.Address == obj.Address)': ip_ec,
-        'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec,
-        'DBotScore': dbot_score
-    })
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': res_json,
-        'HumanReadable': tableToMarkdown('{} - Scan Results'.format(ip_query), hr, HR_HEADERS, removeNull=True),
-        'EntryContext': ec
-    })
+    ip_list = argToList(demisto.args().get('ip', ""))
+    results = []
+    for ip in ip_list:
+        res_json = get_geo_ip(ip)
+        hr, ip_ec, maxmind_ec, dbot_score = format_results(res_json)
+        ec = ({
+            'IP(val.Address && val.Address == obj.Address)': ip_ec,
+            'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec,
+            'DBotScore': dbot_score
+        })
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': res_json,
+            'HumanReadable': tableToMarkdown(f'{ip} - Scan Results', hr, HR_HEADERS, removeNull=True),
+            'EntryContext': ec
+        })
+    demisto.results(results)
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(),))
+LOG(f'command is {demisto.command()}')
 try:
     handle_proxy()
     if demisto.command() == 'ip':

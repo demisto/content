@@ -16,10 +16,15 @@ ExceedLMS
 Okta
 SecneurX
 VirusTotal
+URLSSL
 DetectedHashes
 NonFoundHashes
 opswat
 filescan
+Stringify
+QR
+unescape_url
+unescape
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
@@ -81,6 +86,9 @@ ignore=RM106
 [file:playbook-Block_Indicators_-_Generic_v2_README.md]
 ignore=RM106
 
+[file:playbook-Block_URL_-_Generic_README.md]
+ignore=RM106
+
 [file:playbook-Block_Indicators_-_Generic_v2_5_5_README.md]
 ignore=RM106
 
@@ -110,3 +118,6 @@ ignore=RM108
 
 [file:playbook-Get_File_Sample_By_Hash_-_Generic_v2_README.md]
 ignore=RM108
+
+[file:playbook-Containment_Plan_-_Block_Indicators.yml]
+ignore=PB118

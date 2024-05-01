@@ -1153,9 +1153,11 @@ function getFileRequest(sessionId, path, offset, bytes)   {
     let queryParams = {
         name: 'get file',
         object: path,
-        offset: offset,
-        get_count: bytes
+        offset: offset
     };
+    if (bytes) {
+        queryParams['get_count'] = bytes;
+    }
 
     let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
     try {
@@ -1166,24 +1168,16 @@ function getFileRequest(sessionId, path, offset, bytes)   {
 }
 
 function getFile() {
-    let command = directoryListRequest(args.session, args.path);
-    let commandId = command.id;
-    try {
-        command = getCommandInfo(args.session, commandId, DEFAULT_WAIT_TIMEOUT, SLEEP_BETWEEN_RETRIES);
-    }
-    catch(err) {
-        throw "Failed to get information on the file";
-    }
-    if (command.status === 'error') {
-        throw 'File not found on the endpoint';
-    }
-    let file = command.files[0];
-    let result = getFileRequest(args.session, args.path, 0, file.size);
+    let command = getFileRequest(args.session, args.path, 0);
     //wait for 1 second before trying to get command information
     sleep(1000);
     let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-    command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
+    try{
+        command = getCommandInfo(args['session'], command.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
+    }
+    catch(err) {
+        throw `Failed to get the file.\nError: ${err}.`;
+    }
     let commandEntry = commandEntries['get file'](command);
     let fileEntry = {}
     if (args.download == 'true') {

@@ -1,9 +1,10 @@
 {
     "id": "incident_dataminrpulsepostlink",
     "version": -1,
-    "modified": "2023-01-30T12:37:58.098918843+05:30",
+    "modified": "2023-08-28T17:02:14.295529523+05:30",
     "name": "Dataminr Pulse Post Link",
     "ownerOnly": false,
+    "description": "Link to original post referenced in Dataminr Pulse alert.",
     "cliName": "dataminrpulsepostlink",
     "type": "url",
     "closeForm": true,

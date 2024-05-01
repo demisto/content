@@ -1,0 +1,45 @@
+{
+    "TypeName": "AWS:InstanceInformation",
+    "InstanceId": "test",
+    "SchemaVersion": "1.0",
+    "CaptureTime": "2023-07-25T16:01:59Z",
+    "Entries": [
+        {
+            "AgentType": "agent_type",
+            "AgentVersion": "agent_version",
+            "ComputerName": "computer_name",
+            "InstanceId": "instance_id",
+            "InstanceStatus": "Stopped",
+            "IpAddress": "ip_address",
+            "PlatformName": "Ubuntu",
+            "PlatformType": "Linux",
+            "PlatformVersion": "20.04",
+            "ResourceType": "resource_type"
+        },
+        {
+            "AgentType": "agent_type",
+            "AgentVersion": "agent_version",
+            "ComputerName": "computer_name",
+            "InstanceId": "instance_id",
+            "InstanceStatus": "Stopped",
+            "IpAddress": "ip_address",
+            "PlatformName": "Ubuntu",
+            "PlatformType": "Linux",
+            "PlatformVersion": "20.04",
+            "ResourceType": "resource_type"
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "request_id",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Sun, 13 Aug 2023 17:53:49 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "000",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "request_id"
+        },
+        "RetryAttempts": 0
+    }
+}

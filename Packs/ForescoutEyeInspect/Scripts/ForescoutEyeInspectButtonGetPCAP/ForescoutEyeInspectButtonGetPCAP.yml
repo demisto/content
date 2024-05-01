@@ -9,9 +9,9 @@ enabled: true
 script: ""
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 6.1.0
-comment: Get PCAP of a Forescout EyeInspect incident
+comment: Get PCAP of a Forescout EyeInspect incident.
 tests:
 - No tests (auto formatted)

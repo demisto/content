@@ -281,6 +281,7 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
         Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
     """
     headers = demisto.get(email_data, 'payload.headers')
+    output = None
     if not headers or not isinstance(headers, list):
         demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
     else:
@@ -292,18 +293,28 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
                 if val:
                     res = get_date_from_email_header(val)
                     if res:
-                        demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
-                        return res, True
+                        output = datetime.fromtimestamp(res.timestamp(), tz=timezone.utc)
+                        demisto.debug(f"The timing from header: {name} value: {val} the result: {res}, the UTC time is {output}")
+                        break
     internalDate = email_data.get('internalDate')
-    demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
+    demisto.info(f"trying internalDate: {internalDate}")
     if internalDate and internalDate != '0':
         # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
         # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
         timestamp_len = len(str(int(time.time())))
-        if len(str(internalDate)) > timestamp_len:
+        if len(str(internalDate)) >= timestamp_len:
             internalDate = (str(internalDate)[:timestamp_len])
-        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
-        # we didn't get a date from anywhere
+            internalDate_dt = datetime.fromtimestamp(int(internalDate), tz=timezone.utc)
+            demisto.debug(f"{internalDate=} {internalDate_dt=}")
+            if output and internalDate_dt:
+                # check which time is earlier, return it
+                output = internalDate_dt if internalDate_dt < output else output
+            elif internalDate_dt and not output:
+                output = internalDate_dt
+    if output:
+        demisto.debug(f"The final occurred time is {output}")
+        return output, True
+    # we didn't get a date from anywhere
     demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
     return datetime.now(tz=timezone.utc), False
 
@@ -340,11 +351,7 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    base_time = email_data.get('internalDate')
-    if not base_time or not get_date_from_email_header(base_time):
-        # we have an invalid date. use the occurred in rfc 2822
-        demisto.debug(f'Using Date base time from occurred: {occurred} instead of date header: [{base_time}]')
-        base_time = format_datetime(occurred)
+    demisto.debug(f"get_email_context {body=} {parsed_body=}")
 
     context_gmail = {
         'Type': 'Gmail',
@@ -367,7 +374,7 @@ def get_email_context(email_data, mailbox):
         # only for incident
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
-        'Date': base_time,
+        'Date': format_datetime(occurred),
         'Html': None,
     }
 
@@ -387,7 +394,7 @@ def get_email_context(email_data, mailbox):
 
         'CC': headers.get('cc', []),
         'BCC': headers.get('bcc', []),
-        'Date': base_time,
+        'Date': format_datetime(occurred),
         'Body/HTML': None,
     }
 
@@ -396,10 +403,12 @@ def get_email_context(email_data, mailbox):
         context_gmail['Body'] = html_to_text(context_gmail['Body'])
         context_email['Body/HTML'] = context_gmail['Html']
         context_email['Body/Text'] = context_gmail['Body']
+        demisto.debug(f"In text/html {context_gmail['Body']=}")
 
     if 'multipart' in context_gmail['Format']:  # type: ignore
         context_gmail['Body'], context_gmail['Html'], context_gmail['Attachments'] = parse_mail_parts(
             email_data.get('payload', {}).get('parts', []))
+        demisto.debug(f"In multipart {context_gmail['Body']=}")
         context_gmail['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_gmail['Attachments']])  # type: ignore
         context_email['Body/Text'], context_email['Body/HTML'], context_email['Attachments'] = parse_mail_parts(
@@ -1056,7 +1065,7 @@ def set_autoreply_command():
     file_content = ''
     if response_body_entry_id and not args.get('response-body'):
         file_entry = demisto.getFilePath(response_body_entry_id)
-        with open(file_entry['path'], 'r') as f:
+        with open(file_entry['path']) as f:
             file_content = str(f.read())
     response_body_plain_text = file_content if file_content else args.get('response-body')
     response_body_type = args.get('response-body-type')
@@ -1151,7 +1160,7 @@ def create_user(primary_email, first_name, family_name, password):
         'name': {
             'givenName': first_name,
             'familyName': family_name,
-            'fullName': '%s %s' % (first_name, family_name,),
+            'fullName': f'{first_name} {family_name}',
         },
         'password': password
     }
@@ -1190,7 +1199,8 @@ def list_labels(user_key):
     service = get_service(
         'gmail',
         'v1',
-        ['https://www.googleapis.com/auth/gmail.readonly'])
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=user_key)
     results = service.users().labels().list(userId=user_key).execute()
     labels = results.get('labels', [])
     return labels
@@ -1205,7 +1215,7 @@ def get_user_role_command():
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     roles = get_user_role(user_key, GAPPS_ID)
-    return user_roles_to_entry('User Roles of %s:' % (user_key,), roles)
+    return user_roles_to_entry(f'User Roles of {user_key}:', roles)
 
 
 def get_user_role(user_key, customer):
@@ -1398,7 +1408,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
 
     if max_results > 500:
         raise ValueError(
-            'maxResults must be lower than 500, got %s' % (max_results,))
+            f'maxResults must be lower than 500, got {max_results}')
     try:
         mails, q = search(user_id, subject, _from, to,
                           before, after, filename, _in, query,
@@ -1434,9 +1444,9 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'in': _in,
         'has': 'attachment' if has_attachments else ''
     }
-    q = ' '.join('%s:%s ' % (name, value,)
+    q = ' '.join(f'{name}:{value} '
                  for name, value in list(query_values.items()) if value != '')
-    q = ('%s %s' % (q, query,)).strip()
+    q = (f'{q} {query}').strip()
 
     command_args = {
         'userId': user_id,
@@ -1477,9 +1487,15 @@ def get_mail_command():
     user_id = args.get('user-id', ADMIN_EMAIL)
     _id = args.get('message-id')
     _format = args.get('format')
+    should_run_get_attachments = argToBoolean(args.get('include-attachments', 'false'))
 
     mail = get_mail(user_id, _id, _format)
-    return emails_to_entry('Email:', [mail], _format, user_id)
+    email_entry = emails_to_entry('Email:', [mail], _format, user_id)
+    results = [email_entry]
+    if should_run_get_attachments:
+        get_attachments_command_results = get_attachments_command()
+        results.append(get_attachments_command_results)  # type: ignore
+    return results
 
 
 def get_mail(user_id, _id, _format, service=None):
@@ -1903,7 +1919,7 @@ def handle_html(htmlBody):
         re.finditer(  # pylint: disable=E1101
             r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
             htmlBody,
-            re.I  # pylint: disable=E1101
+            re.I | re.S  # pylint: disable=E1101
         )
     ):
         maintype, subtype = m.group(2).split('/', 1)
@@ -1952,6 +1968,7 @@ def collect_inline_attachments(attach_cids):
             })
 
         return inline_attachment
+    return None
 
 
 def collect_manual_attachments():
@@ -2078,7 +2095,7 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
-              templateParams, inReplyTo=None, references=None):
+              templateParams, inReplyTo=None, references=None, force_handle_htmlBody=False):
     if templateParams:
         templateParams = template_params(templateParams)
         if body:
@@ -2087,7 +2104,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             htmlBody = htmlBody.format(**templateParams)
 
     attach_body_to = None
-    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
+    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body, force_handle_htmlBody]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         message = MIMEText(htmlBody, 'html')  # type: ignore
     elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
@@ -2122,7 +2139,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         message['References'] = header(' '.join(references))
 
     # if there are any attachments to the mail or both body and htmlBody were given
-    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
+    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody) or force_handle_htmlBody:
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
@@ -2179,6 +2196,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
+    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', False))
     reply_to = args.get('replyTo')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
@@ -2193,7 +2211,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
 
     result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                        attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
-                       additional_headers, template_param, in_reply_to, references)
+                       additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
@@ -2601,7 +2619,7 @@ def fetch_incidents():
 
     incidents = []
     # so far, so good
-    LOG(f'GMAIL: possible new incidents are {result}')
+    demisto.debug(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -2616,7 +2634,7 @@ def fetch_incidents():
             ignore_list_used = True
             ignore_ids.append(msg_id)
         # update last run only if we trust the occurred timestamp
-        if is_valid_date and occurred > next_last_fetch:
+        if is_valid_date and occurred >= next_last_fetch:
             next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
@@ -2626,7 +2644,7 @@ def fetch_incidents():
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info('extract {} incidents'.format(len(incidents)))
+    demisto.info(f'extract {len(incidents)} incidents')
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
         # we still have more results
@@ -2695,7 +2713,7 @@ def main():  # pragma: no cover
         'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command,))
+    demisto.debug(f'GMAIL: command is {command},')
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
@@ -2718,8 +2736,8 @@ def main():  # pragma: no cover
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
-            LOG(traceback.format_exc())
-            LOG.print_log()
+            demisto.error(traceback.format_exc())
+            demisto.error(f'GMAIL: {str(e)}')
             raise
 
         else:

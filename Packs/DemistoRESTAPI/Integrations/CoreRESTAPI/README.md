@@ -8,7 +8,7 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Core Server URL |  | True |
+    | Core Server URL | For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the **API Keys** page. For Cortex XSOAR 6, use the server URL. | True |
     | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
     | API Key (Password) | The core server API key. | True |
     | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
@@ -34,7 +34,7 @@ send HTTP POST request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request URI (i.e. /incident). | Required | 
+| uri | Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident). | Required | 
 | body | Body of HTTP POST. | Optional | 
 
 
@@ -61,8 +61,7 @@ send HTTP GET requests
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request URI (i.e. /user). | Required | 
-
+| uri | Request endpoint (e.g. /user or /public_api/v1/rbac/get_users). | Required | 
 
 #### Context Output
 
@@ -87,7 +86,7 @@ send HTTP PUT request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request URI (i.e. /user). | Required | 
+| uri | Request endpoint (e.g. /user). | Required | 
 | body | Request body. | Optional | 
 
 
@@ -103,8 +102,7 @@ send HTTP DELETE request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request URI (i.e. /user). | Required | 
-
+| uri | Request endpoint (e.g. /user). | Required | 
 
 #### Context Output
 
@@ -129,7 +127,7 @@ Download files from core server
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request URI. | Required | 
+| uri | Request endpoint. | Required | 
 | filename | File name of download. | Optional | 
 | description | Description of file entry. | Optional | 
 
@@ -176,7 +174,7 @@ Send HTTP Multipart request to upload files to Core server
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request URI. | Required | 
+| uri | Request endpoint. | Required | 
 | entryID | File entry ID. | Required | 
 | body | Request body. | Optional | 
 
@@ -315,7 +313,7 @@ Delete the attachment from the incident and from the Cortex XSOAR server.
 ### core-api-file-check
 
 ***
-Check if the file exists in Cortex XSOAR by entry_id.
+Check if the file exists in Cortex XSOAR (Context) by entry_id.
 
 #### Base Command
 

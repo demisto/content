@@ -68,7 +68,9 @@ Upload file for analysis
 
 ### polygon-upload-url
 ***
-Upload URL for analysis
+Upload URL for analysis.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

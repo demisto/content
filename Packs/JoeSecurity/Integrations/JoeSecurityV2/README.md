@@ -490,6 +490,8 @@ Retrieves files information from Joe Security.
 ***
 Retrieves URL information from Joe Security.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -868,6 +870,7 @@ Retrieve the submission info.
 
 ### joe-submit-sample
 ***
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
  
 
 
@@ -879,6 +882,7 @@ Retrieve the submission info.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The War Room entry ID of the file to submit. | Required | 
+| file_name | The filename of the submitted sample | Optional |
 | full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 1200. | Optional | 
 | hide_polling_output | Hide polling output. | Optional | 
@@ -1052,7 +1056,7 @@ Retrieve the submission info.
 
 ### joe-submit-url
 ***
- 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

@@ -129,7 +129,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -188,7 +188,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -250,7 +250,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -293,7 +293,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -318,189 +318,242 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
-                    },
-                    {
-                        "description": "",
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "rsaid",
-                                "height": 22,
-                                "id": "a5662d50-67f8-11ec-9835-13bff9c08978",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourcestatus",
-                                "height": 22,
-                                "id": "270a4b70-67f4-11ec-85d1-d512017eafcc",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourcecategory",
-                                "height": 22,
-                                "id": "9c7335c0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "description",
-                                "height": 22,
-                                "id": "049111a0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourcecreatedby",
-                                "height": 22,
-                                "id": "a0bb3fb0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "7ed19bb0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "lastmodifiedby",
-                                "height": 22,
-                                "id": "5f267600-67f4-11ec-85d1-d512017eafcc",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "lastmodifiedon",
-                                "height": 22,
-                                "id": "57e8f9d0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "incidentlink",
-                                "height": 22,
-                                "id": "5648f410-7229-11ec-a281-e9fab1bf96ab",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "RSA NetWitness Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-8b6f0f90-67f6-11ec-9835-13bff9c08978",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "rsaruleid",
-                                "height": 22,
-                                "id": "f6115e50-67f3-11ec-85d1-d512017eafcc",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "rsaalertcount",
-                                "height": 22,
-                                "id": "f7557710-67f3-11ec-85d1-d512017eafcc",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "rsaeventcount",
-                                "height": 22,
-                                "id": "f860a580-67f3-11ec-85d1-d512017eafcc",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "riskscore",
-                                "height": 22,
-                                "id": "18c445c0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourceip",
-                                "height": 22,
-                                "id": "aa12e950-67f4-11ec-85d1-d512017eafcc",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "destinationip",
-                                "height": 22,
-                                "id": "b0e128f0-67f4-11ec-85d1-d512017eafcc",
-                                "index": 5,
-                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "RSA NetWitness Tech Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
                         "y": 2
                     }
                 ],
                 "type": "custom"
             },
+            {
+                "id": "0woxq0tq6v",
+				"name": "SIEM",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "v2roofhoxd-caseinfoid-y5zvvqnsrd-caseinfoid-22752ee0-2a1c-11ee-afb8-ef08f29d9b00",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "rsaid",
+								"height": 22,
+								"id": "812831d0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "description",
+								"height": 22,
+								"id": "82e6aab0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcecategory",
+								"height": 22,
+								"id": "89ee97f0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcecreatedby",
+								"height": 22,
+								"id": "8c590840-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lastmodifiedon",
+								"height": 22,
+								"id": "8fdefab0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lastmodifiedby",
+								"height": 22,
+								"id": "9546cc80-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 22,
+								"id": "92256840-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "incidentlink",
+								"height": 22,
+								"id": "988a85d0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "v2roofhoxd-caseinfoid-y5zvvqnsrd-caseinfoid-24f10450-2a1c-11ee-afb8-ef08f29d9b00",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "rsaruleid",
+								"height": 22,
+								"id": "9c4543e0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "rsaalertcount",
+								"height": 22,
+								"id": "9ecf9840-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "rsaeventcount",
+								"height": 22,
+								"id": "9f6fa8d0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "riskscore",
+								"height": 22,
+								"id": "a26a2420-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 22,
+								"id": "a7cfd310-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "destinationip",
+								"height": 22,
+								"id": "aa27a5c0-2a1c-11ee-afb8-ef08f29d9b00",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "v2roofhoxd-caseinfoid-y5zvvqnsrd-caseinfoid-43fbb8a0-3d12-11ee-b0cf-71422dd13679",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "rsarawlogslist",
+								"height": 106,
+								"id": "a9662260-3d13-11ee-b0cf-71422dd13679",
+								"index": 0,
+								"listId": "v2roofhoxd-caseinfoid-y5zvvqnsrd-caseinfoid-43fbb8a0-3d12-11ee-b0cf-71422dd13679",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "RSA Logs",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 3,
+						"i": "v2roofhoxd-caseinfoid-y5zvvqnsrd-80efda90-3de2-11ee-9dd5-ef3f83db7b1c",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "RSA Metas Event",
+						"query": "RSA_DisplayMetasEvents",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "v2roofhoxd-8341e390-4195-11ee-ac17-719ce9fb51cd",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "RSA Alerts",
+						"query": "SetRSANetWitnessAlertsMD",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 3,
+						"x": 0,
+						"y": 6
+					}
+				],
+				"type": "custom"
+			},
             {
                 "id": "warRoom",
                 "name": "War Room",
@@ -525,32 +578,6 @@
                 "id": "canvas",
                 "name": "Canvas",
                 "type": "canvas"
-            },
-            {
-                "hidden": false,
-                "id": "Alerts",
-                "name": "Alerts",
-                "sections": [
-                    {
-                        "h": 5,
-                        "hideName": true,
-                        "i": "caseinfoid-fbc44d60-1b4a-11ee-9c71-716af4f9d468",
-                        "items": [],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "alerts",
-                        "query": "SetRSANetWitnessAlertsMD",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
-                    }
-                ],
-                "type": "custom"
             }
         ]
     },

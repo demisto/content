@@ -1,0 +1,114 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Cybersixgill Actionable Alerts - Incoming Mapper",
+    "mapping": {
+        "Cybersixgill Actionable Alerts": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Cybersixgill CVSS 2.0": {
+                    "simple": "additional_info.nvd.v3.current"
+                },
+                "Cybersixgill CVSS 3.1": {
+                    "simple": "additional_info.nvd.v2.current"
+                },
+                "Cybersixgill DVE Score": {
+                    "simple": "additional_info.score.current"
+                },
+                "Cybersixgill Suspicious domain": {
+                    "simple": "additional_info.tables.suspicious_domain"
+                },
+                "Cybersixgill Triggered domain": {
+                    "simple": "additional_info.tables.triggered_domain"
+                },
+                "Cybersixgill Post URL": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "sub_alerts_length"
+                                        }
+                                    },
+                                    "operator": "greaterThan",
+                                    "right": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "sub_alerts_length",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "sub_alerts_length"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "https://portal.cybersixgill.com/#/alerts?actionable_alert_content_id={id}\u0026aggregatedIndex={aggregate_alert_id}\u0026filters.alert_id={id}"
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "{id}"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "aggregate_alert_id"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "{aggregate_alert_id}"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Cybersixgill Actionable Alerts - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -169,6 +169,10 @@ parses
 yaml
 indexerror
 gTLD
+qr
+cv
+unescape_url
+unescape
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
@@ -255,4 +259,7 @@ DockerHardeningCheck
 ignore=BA124
 
 [file:ContextContains.yml]
+ignore=BA124
+
+[file:VerdictResult.yml]
 ignore=BA124

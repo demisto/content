@@ -77,6 +77,231 @@
 					"complex": null,
 					"simple": "message"
 				},
+                "Prisma Cloud Compute Namespaces": {
+					"complex": null,
+					"simple": "namespaces"
+				},
+				"Prisma Cloud Compute Raw Alert JSON": {
+					"complex": null,
+					"simple": "rawJSONAlert"
+				},
+				"Prisma Cloud Compute Region": {
+					"complex": null,
+					"simple": "region"
+				},
+				"Prisma Cloud Compute Rule": {
+					"complex": null,
+					"simple": "rule"
+				},
+				"Prisma Cloud Compute Runtime": {
+					"complex": null,
+					"simple": "runtime"
+				},
+				"Prisma Cloud Compute Service": {
+					"complex": null,
+					"simple": "service"
+				},
+				"Prisma Cloud Compute Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"Prisma Cloud Compute User": {
+					"complex": null,
+					"simple": "user"
+				}
+			}
+		},
+        "Prisma Cloud Compute Audit v2": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Prisma Cloud Compute Activity Type": {
+					"complex": null,
+					"simple": "activityType"
+				},
+				"Prisma Cloud Compute AppID": {
+					"complex": null,
+					"simple": "appID"
+				},
+				"Prisma Cloud Compute Category": {
+					"complex": null,
+					"simple": "category"
+				},
+				"Prisma Cloud Compute Command": {
+					"complex": null,
+					"simple": "command"
+				},
+				"Prisma Cloud Compute Container": {
+					"complex": null,
+					"simple": "container"
+				},
+				"Prisma Cloud Compute FQDN": {
+					"complex": null,
+					"simple": "fqdn"
+				},
+				"Prisma Cloud Compute Forensic": {
+					"complex": null,
+					"simple": "forensicLink"
+				},
+				"Prisma Cloud Compute Function": {
+					"complex": null,
+					"simple": "function"
+				},
+				"Prisma Cloud Compute Host": {
+					"complex": null,
+					"simple": "host"
+				},
+				"Prisma Cloud Compute Image": {
+					"complex": null,
+					"simple": "image"
+				},
+				"Prisma Cloud Compute Interactive": {
+					"complex": null,
+					"simple": "interactive"
+				},
+				"Prisma Cloud Compute Kubernetes Resource": {
+					"complex": null,
+					"simple": "kubernetesResource"
+				},
+				"Prisma Cloud Compute Labels": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "labels",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Prisma Cloud Compute Line": {
+					"complex": null,
+					"simple": "line"
+				},
+				"Prisma Cloud Compute Log File": {
+					"complex": null,
+					"simple": "logFile"
+				},
+				"Prisma Cloud Compute Message": {
+					"complex": null,
+					"simple": "message"
+				},
+                "Prisma Cloud Compute Namespaces": {
+					"complex": null,
+					"simple": "namespaces"
+				},
+				"Prisma Cloud Compute Raw Alert JSON": {
+					"complex": null,
+					"simple": "rawJSONAlert"
+				},
+				"Prisma Cloud Compute Region": {
+					"complex": null,
+					"simple": "region"
+				},
+				"Prisma Cloud Compute Rule": {
+					"complex": null,
+					"simple": "rule"
+				},
+				"Prisma Cloud Compute Runtime": {
+					"complex": null,
+					"simple": "runtime"
+				},
+				"Prisma Cloud Compute Service": {
+					"complex": null,
+					"simple": "service"
+				},
+				"Prisma Cloud Compute Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"Prisma Cloud Compute User": {
+					"complex": null,
+					"simple": "user"
+				}
+			}
+		},
+        "Prisma Cloud Compute Audit v3": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+                "Cloud Account ID": {
+					"simple": "accountID"
+				},
+				"External Link": {
+					"simple": "consoleLink"
+				},
+				"Prisma Cloud Compute Activity Type": {
+					"complex": null,
+					"simple": "activityType"
+				},
+				"Prisma Cloud Compute AppID": {
+					"complex": null,
+					"simple": "appID"
+				},
+				"Prisma Cloud Compute Category": {
+					"complex": null,
+					"simple": "category"
+				},
+				"Prisma Cloud Compute Cluster": {
+					"simple": "cluster"
+				},
+				"Prisma Cloud Compute Command": {
+					"complex": null,
+					"simple": "command"
+				},
+				"Prisma Cloud Compute Container": {
+					"complex": null,
+					"simple": "container"
+				},
+				"Prisma Cloud Compute FQDN": {
+					"complex": null,
+					"simple": "fqdn"
+				},
+				"Prisma Cloud Compute Forensic": {
+					"complex": null,
+					"simple": "forensicLink"
+				},
+				"Prisma Cloud Compute Function": {
+					"complex": null,
+					"simple": "function"
+				},
+				"Prisma Cloud Compute Host": {
+					"complex": null,
+					"simple": "host"
+				},
+				"Prisma Cloud Compute Image": {
+					"complex": null,
+					"simple": "image"
+				},
+				"Prisma Cloud Compute Interactive": {
+					"complex": null,
+					"simple": "interactive"
+				},
+				"Prisma Cloud Compute Kubernetes Resource": {
+					"complex": null,
+					"simple": "kubernetesResource"
+				},
+				"Prisma Cloud Compute Labels": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "labels",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Prisma Cloud Compute Line": {
+					"complex": null,
+					"simple": "line"
+				},
+				"Prisma Cloud Compute Log File": {
+					"complex": null,
+					"simple": "logFile"
+				},
+				"Prisma Cloud Compute Message": {
+					"complex": null,
+					"simple": "message"
+				},
+                "Prisma Cloud Compute Namespaces": {
+					"complex": null,
+					"simple": "namespaces"
+				},
 				"Prisma Cloud Compute Raw Alert JSON": {
 					"complex": null,
 					"simple": "rawJSONAlert"
@@ -181,6 +406,27 @@
 		"Prisma Cloud Compute Compliance": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Prisma Cloud Compute Markdown": {
+					"complex": null,
+					"simple": "complianceMarkdownTable"
+				},
+				"Prisma Cloud Compute Raw Alert JSON": {
+					"complex": null,
+					"simple": "rawJSONAlert"
+				}
+			}
+		},
+        "Prisma Cloud Compute Compliance v2": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+                "Alert Category": {
+					"complex": null,
+					"simple": "type"
+				},
+                "Compliance Notes": {
+					"complex": null,
+					"simple": "compliance"
+				},
 				"Prisma Cloud Compute Markdown": {
 					"complex": null,
 					"simple": "complianceMarkdownTable"

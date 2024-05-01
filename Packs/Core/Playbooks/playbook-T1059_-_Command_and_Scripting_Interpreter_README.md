@@ -40,18 +40,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Handle False Positive Alerts
-* Ticket Management - Generic
 * Command-Line Analysis
-* Recovery Plan
 * Containment Plan
+* Recovery Plan
+* Handle False Positive Alerts
 * Eradication Plan
+* Ticket Management - Generic
 * Endpoint Investigation Plan
 
 ### Integrations
 
-* Cortex Core - IR
 * CortexCoreIR
+* Cortex Core - IR
 
 ### Scripts
 
@@ -59,10 +59,10 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* core-get-dynamic-analysis
-* setParentIncidentFields
-* closeInvestigation
 * core-get-cmd-analytics-prevalence
+* closeInvestigation
+* setParentIncidentFields
+* core-get-dynamic-analysis
 
 ## Playbook Inputs
 

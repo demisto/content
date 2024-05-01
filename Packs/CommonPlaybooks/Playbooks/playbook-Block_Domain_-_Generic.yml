@@ -2,7 +2,7 @@ id: Block Domain - Generic
 version: -1
 name: Block Domain - Generic
 description: |-
-  This playbook blocks malicious Domains using all integrations that are enabled.
+  Deprecated. Use 'Block Domain - Generic v2' instead. This playbook blocks malicious Domains using all integrations that are enabled.
 
   Supported integrations for this playbook:
   * Zscaler
@@ -290,3 +290,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+deprecated: true

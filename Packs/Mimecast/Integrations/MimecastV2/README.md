@@ -562,9 +562,10 @@ The following permissions are required for this command.
 | Mimecast.Message.Attachments.FileName | string   | Message attachment's file name.                                    | 
 | Mimecast.Message.Attachments.SHA256   | string   | Message attachment's SHA256.                                       | 
 | Mimecast.Message.Attachments.ID       | string   | Message attachment's ID.                                           | 
-| Mimecast.Message.Attachments.Size     | number   | Message attachment's file size.                                    | 
+| Mimecast.Message.Attachments.Size     | number   | Message attachment's file size.                                    |
+| Mimecast.Message.Attachments.Extension| boolean  | Message attachment's file extension.                               | 
 | Mimecast.Message.Processed            | date     | The date the message was processed by Mimecast in ISO 8601 format. | 
-| Mimecast.Message.HasHtmlBody          | boolean  | If the message has an HTML body part.                              | 
+| Mimecast.Message.HasHtmlBody          | boolean  | If the message has an HTML body part.                              |
 | File.Size                             | number   | File size                                                          | 
 | File.SHA1                             | string   | SHA1 hash of the file                                              | 
 | File.SHA256                           | string   | SHA256 hash of the file                                            | 
@@ -574,6 +575,8 @@ The following permissions are required for this command.
 | File.Info                             | string   | Basic information of the file                                      | 
 | File.Type                             | string   | File type e.g. "PE"                                                | 
 | File.MD5                              | string   | MD5 hash of the file                                               | 
+| File.Extension                        | string   | The extension of the file.                                         | 
+
 
 ### mimecast-download-attachments
 
@@ -596,6 +599,7 @@ The following permissions are required for this command.
 | **Argument Name** | **Description**                                                                                   | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------|--------------|
 | attachmentID      | The Mimecast ID of the message attachment to return. (Can be retrieved from mimecast-get-message) | Required     |
+| attachmentName      | The Mimecast attachment name, use this argument in order for the extension value to be included in the context data. (Can be retrieved from mimecast-get-message). | Optional    |
 
 #### Context Output
 
@@ -609,7 +613,9 @@ The following permissions are required for this command.
 | File.EntryID | string   | War-Room Entry ID of the file | 
 | File.Info    | string   | Basic information of the file | 
 | File.Type    | string   | File type e.g., "PE"          | 
-| File.MD5     | string   | MD5 hash of the file          | 
+| File.MD5     | string   | MD5 hash of the file          |
+| File.Extension| string   | The extension of the file.          | 
+
 
 ### mimecast-find-groups
 

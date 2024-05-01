@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 import pytest
 import sqlalchemy
@@ -15,6 +16,34 @@ class ResultMock:
 
     def fetchall(self):
         return []
+
+    def mappings(self):
+        class NestedResultMock:
+
+            def fetchall(self):
+                return []
+
+            def fetchmany(self, fetch_limit):
+                return []
+
+        return NestedResultMock()
+
+
+class ConnectionMock:
+    def __enter__(self):
+        return ConnectionMock()
+
+    def __exit__(self, exc, value, tb):
+        pass
+
+    def execute(self, sql_query, bind_vars):
+        return ResultMock()
+
+    def execution_options(self, isolation_level):
+        pass
+
+    def commit(self):
+        pass
 
 
 ARGS1 = {
@@ -210,6 +239,46 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
+@pytest.mark.parametrize('use_ldap, expected_url', [
+    pytest.param(True, "teradatasql://username:password@host:/?logmech=LDAP", id="LDAP"),
+    pytest.param(False, "teradatasql://host:/?user=username&password=password", id="Username & Password"),
+])
+def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    - The use_ldap parameter
+    When
+    - Executing _create_engine_url_for_teradata client's method
+    Then
+    - Ensure the engine url is generated correctly according to use_ldap
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
+           database='', ssl_connect=False, use_ldap=use_ldap)
+    assert mock_create_engine.mock_calls[0][1][0] == expected_url
+
+
+@pytest.mark.parametrize('dialect, expected_port', [
+    ("Microsoft SQL Server", "1433"),
+    ("ODBC Driver 18 for SQL Server", "1433"),
+    ("Teradata", "1025"),
+    ("DB_NOT_EXIST", None),
+])
+def test_generate_default_port_by_dialect(dialect: str, expected_port: str):
+    """
+    Given
+    - a dialect (DB)
+    When
+    - Executing generate_default_port_by_dialect() function
+    Then
+    - Ensure the right port is generated or None in case of DB not found
+    """
+
+    assert generate_default_port_by_dialect(dialect) == expected_port
+
+
 def test_sql_queries_with_empty_table(mocker):
     """Unit test
     Given
@@ -222,11 +291,11 @@ def test_sql_queries_with_empty_table(mocker):
     - create the context
     - validate the expected_result and the created context
     """
-    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
-    mocker.patch.object(client.connection, 'execute', return_value=ResultMock())
     result = sql_query_execute(client, ARGS3)
-    assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
+    assert result[1] == EMPTY_OUTPUT  # entry context is found in the 2nd place in the result of the command
+    assert result[2] == []  # just ensuring a valid table is returned
 
 
 def test_mysql_integration():
@@ -244,16 +313,26 @@ def test_mysql_integration():
     if not host:
         pytest.skip('Skipping mysql integration test as MYSQL_HOST is not set')
     dialect = 'MySQL'
-    client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False, True)
+    port = generate_default_port_by_dialect(dialect)
+    assert port is not None
+    client = Client(dialect, host, 'root', 'password', port, 'mysql', "", False, True)
     res = client.sql_query_execute_request('show processlist', {})
     assert len(res) >= 1
 
 
 @pytest.mark.parametrize('connect_parameters, dialect, expected_response', [
-    ('arg1=value1&arg2=value2', 'MySQL', {'arg1': 'value1', 'arg2': 'value2'}),
-    ('arg1=value1&arg2=value2', 'Microsoft SQL Server', {'arg1': 'value1', 'arg2': 'value2', 'driver': 'FreeTDS'}),
+    ('arg1=value1&arg2=value2', 'MySQL',
+     {'arg1': 'value1', 'arg2': 'value2'}),
+    ('arg1=value1&arg2=value2', 'Microsoft SQL Server',
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'FreeTDS', 'autocommit': 'True'}),
+    ('arg1=value1&arg2=value2&autocommit=False', 'Microsoft SQL Server',
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'FreeTDS', 'autocommit': 'False'}),
     ('arg1=value1&arg2=value2', 'Microsoft SQL Server - MS ODBC Driver',
-     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 18 for SQL Server', 'TrustServerCertificate': 'yes'})])
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 18 for SQL Server',
+      'TrustServerCertificate': 'yes', 'autocommit': 'True'}),
+    ('arg1=value1&arg2=value2&autocommit=False', 'Microsoft SQL Server - MS ODBC Driver',
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 18 for SQL Server',
+      'TrustServerCertificate': 'yes', 'autocommit': 'False'})])
 def test_parse_connect_parameters(connect_parameters, dialect, expected_response):
     assert Client.parse_connect_parameters(connect_parameters, dialect, False) == expected_response
 
@@ -515,3 +594,35 @@ def test_fetch_incidents_de_duplication(table_first_cycle, table_second_cycle, t
     incidents, last_run = fetch_incidents(client, params)
     assert expected_last_run_5_3 == last_run
     assert len(incidents) == 1
+
+
+GENERATE_VARS_NAMES_MSSQL = ([1, 123], "SELECT * FROM TABLE WHERE ID = ? and EMPLOYEE = ?", "Microsoft SQL Server",
+                             ({"bind_variable_1": 1, "bind_variable_2": 123}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"
+                                                                              " and EMPLOYEE = :bind_variable_2"))
+GENERATE_VARS_NAMES_MYSQL = ([1, 123], "SELECT * FROM TABLE WHERE ID = %s and EMPLOYEE = %s", "MySQL",
+                             ({"bind_variable_1": 1, "bind_variable_2": 123}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"
+                                                                              " and EMPLOYEE = :bind_variable_2"))
+GENERATE_VARS_NAMES_POSTGRES = ([1, 123], "SELECT * FROM TABLE WHERE ID = %s", "MySQL",
+                                ({"bind_variable_1": 1}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"))
+GENERATE_VARS_NAMES_DO_NOTHING = ([1, 123], "SELECT * FROM TABLE", "MySQL", ({}, "SELECT * FROM TABLE"))
+
+
+@pytest.mark.parametrize('bind_variables_values_list, query, dialect, expected_result',
+                         [GENERATE_VARS_NAMES_MSSQL, GENERATE_VARS_NAMES_MYSQL, GENERATE_VARS_NAMES_POSTGRES,
+                          GENERATE_VARS_NAMES_DO_NOTHING])
+def test_generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str,
+                                             expected_result: tuple[dict[str, Any], str | Any]):
+    """
+    Given
+    - A query with placeholders
+    - A list of bind variables values
+    When
+    - Executing generate_variable_names_and_mapping function
+    Then
+    - Ensure the mapping is correct
+    - Ensure the query contains unique variables names instead of the placeholders
+    """
+    from GenericSQL import generate_variable_names_and_mapping
+    result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
+    assert expected_result[0] == result[0]
+    assert expected_result[1] == result[1]

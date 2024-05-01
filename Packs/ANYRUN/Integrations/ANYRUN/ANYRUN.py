@@ -851,6 +851,7 @@ def run_analysis(args):
         entry_id = args.pop('file', None)
         obj_url = args.get('obj_url')
         obj_type = args.get('obj_type')
+        obj_ext_cmd = args.get('obj_ext_cmd')
         if obj_type == 'remote file':
             obj_type = 'download'
             args['obj_type'] = 'download'
@@ -878,6 +879,8 @@ def run_analysis(args):
             args['env_version'] = '10'
         else:
             args['env_version'] = '7'
+        if obj_ext_cmd and (obj_type == 'file' or obj_type == 'download'):
+            args['obj_ext_cmd'] = args.get('obj_ext_cmd')
         url_suffix = 'analysis'
         response = http_request('POST', url_suffix, data=args, files=files)
         return response

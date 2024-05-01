@@ -84,7 +84,7 @@ def action_wrap(args: dict) -> dict:
         raise DemistoException('not a valid action')
     final_image = Image.fromarray(image)
     if img_sizes:
-        final_image = final_image.resize(img_sizes, Image.ANTIALIAS)
+        final_image = final_image.resize(img_sizes, Image.Resampling.LANCZOS)
     final_image.save(stream_buffer, format='png')
     stream_buffer.seek(0)
     return fileResult(f'{action}_{name}.png', stream_buffer.read())

@@ -1,8 +1,10 @@
+import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable, Dict, Tuple
-
-
+from collections.abc import Callable
+from typing import Any
+import csv
+import io
 import requests
 
 from urllib3 import disable_warnings
@@ -11,6 +13,26 @@ from urllib3 import disable_warnings
 disable_warnings()  # pylint: disable=no-member
 """ CONSTANTS """
 
+VENDOR = 'qualys'
+PRODUCT = 'qualys'
+BEGIN_RESPONSE_LOGS_CSV = "----BEGIN_RESPONSE_BODY_CSV"
+END_RESPONSE_LOGS_CSV = "----END_RESPONSE_BODY_CSV"
+BEGIN_RESPONSE_FOOTER_CSV = "----BEGIN_RESPONSE_FOOTER_CSV"
+END_RESPONSE_FOOTER_CSV = "----END_RESPONSE_FOOTER_CSV"
+WARNING = 'WARNING'
+ACTIVITY_LOGS_NEWEST_EVENT_DATETIME = 'activity_logs_newest_event_datetime'
+ACTIVITY_LOGS_NEXT_PAGE = 'activity_logs_next_page'
+ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN = 'activity_logs_since_datetime_prev_run'
+HOST_DETECTIONS_NEWEST_EVENT_DATETIME = 'host_detections_newest_event_datetime'
+HOST_DETECTIONS_NEXT_PAGE = 'host_detections_next_page'
+HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_run'
+HOST_LAST_FETCH = 'host_last_fetch'
+ASSETS_FETCH_FROM = '90 days'
+MIN_ASSETS_INTERVAL = 59
+HOST_LIMIT = 1000
+TEST_FROM_DATE = 'one day'
+
+ASSETS_DATE_FORMAT = '%Y-%m-%d'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 API_SUFFIX = "/api/2.0/fo/"
@@ -36,7 +58,7 @@ DATE_ARGUMENTS = {
 }
 
 # Data for parsing and creating output
-COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
+COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
     "qualys-purge-scan-host-data": {
         "table_name": "Deleted report",
         "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
@@ -323,6 +345,23 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         "human_readable_massage": "Asset tag deleted.",
         "json_path": ["ServiceResponse", "data", "Tag"],
     },
+    "qualys-update-vmware-record": {
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
+    "qualys-update-vcenter-record": {
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "collection_name": "VCENTER_ESXI_MAP",
+        "table_name": "Vcenter ESXI IP List",
+        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE", "VCENTER_ESXI_MAP_LIST", "VCENTER_ESXI_MAP"],
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "json_path": ["SIMPLE_RETURN", "RESPONSE"],
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "json_path": ["SIMPLE_RETURN", "RESPONSE"],
+    },
 }
 
 # Context prefix and key for each command
@@ -525,10 +564,30 @@ COMMANDS_CONTEXT_DATA = {
         "context_prefix": "",
         "context_key": "",
     },
+    "qualys-update-vmware-record": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-update-vcenter-record": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "context_prefix": "Qualys.VcenterToEsxi",
+        "context_key": "VCENTER_IP",
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "context_prefix": "",
+        "context_key": "",
+    },
 }
 
 # Information about the API request of the commands
-COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
+COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     "qualys-purge-scan-host-data": {
         "api_route": API_SUFFIX + "asset/host/?action=purge",
         "call_method": "POST",
@@ -774,10 +833,35 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
         "call_method": "GET",
         "resp_type": "text",
     },
+    "qualys-update-vmware-record": {
+        "api_route": API_SUFFIX + "auth/vmware/?action=update",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-update-vcenter-record": {
+        "api_route": API_SUFFIX + "auth/vcenter/?action=update",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=list&output_format=xml",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=import",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=purge",
+        "call_method": "POST",
+        "resp_type": "text"
+    },
 }
 
 # Information about the API tag asset request of the commands
-TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
+TAG_ASSET_COMMANDS_API_DATA: dict[str, dict[str, Any]] = {
     "qualys-asset-tag-create": {
         "api_route": urljoin(TAG_API_SUFFIX, "create/am/tag"),
         "call_method": "POST",
@@ -807,7 +891,7 @@ TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
 }
 
 # Arguments' names of each command
-COMMANDS_ARGS_DATA: Dict[str, Any] = {
+COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-purge-scan-host-data": {
         "args": [
             "action",
@@ -1221,7 +1305,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
     "qualys-virtual-host-manage": {
         "args": ["action", "ip", "network_id", "port", "fqdn"],
     },
-    "test-module": {"args": []},
+    "test-module": {"args": ["launched_after_datetime"]},
     "qualys-host-list-detection": {
         "args": [
             "ids",
@@ -1265,6 +1349,22 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
     },
     "qualys-update-unix-record": {
         "args": ["ids", "add_ips"],
+    },
+    "qualys-update-vmware-record": {
+        "args": ["ids", "add_ips"],
+    },
+    "qualys-update-vcenter-record": {
+        "args": ["ids", "add_ips"],
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "args": [],
+        "inner_args": ["limit"],
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "args": ["csv_data"],
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "args": ["csv_data"],
     },
     "qualys-asset-group-add": {
         "args": [
@@ -1337,6 +1437,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude",
             "active",
             "scanners_in_network",
+            "fqdn",
             "recurrence",
             "end_after_mins",
             "iscanner_id",
@@ -1474,10 +1575,10 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
 }
 
 # Dictionary for arguments used by Qualys API
-args_values: Dict[str, Any] = {}
+args_values: dict[str, Any] = {}
 
 # Dictionary for arguments used internally by this integration
-inner_args_values: Dict[str, Any] = {}
+inner_args_values: dict[str, Any] = {}
 
 """ CLIENT CLASS """
 
@@ -1488,7 +1589,11 @@ class Client(BaseClient):
 
     @staticmethod
     def error_handler(res):
-        err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
+        err_msg = ""
+        if res.status_code == 414 or res.status_code == 520:
+            err_msg += ("If this error was produced by a schedule-scan-create, "
+                        "please execute it again with IP list of less than 5000 characters\n\n")
+        err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
             err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
@@ -1496,15 +1601,15 @@ class Client(BaseClient):
             try:
                 # Try to parse json error response
                 error_entry = res.json()
-                err_msg += "\n{}".format(json.dumps(error_entry))
+                err_msg += f"\n{json.dumps(error_entry)}"
                 raise DemistoException(err_msg, res=res)
             except (ValueError, TypeError):
-                err_msg += "\n{}".format(res.text)
+                err_msg += f"\n{res.text}"
                 raise DemistoException(err_msg, res=res)
         raise DemistoException(err_msg, res=res)
 
     @logger
-    def command_http_request(self, command_api_data: Dict[str, str]) -> Union[str, bytes]:
+    def command_http_request(self, command_api_data: dict[str, str]) -> Union[str, bytes]:
         """
         Make a http request to Qualys API
         Args:
@@ -1527,12 +1632,91 @@ class Client(BaseClient):
             error_handler=self.error_handler,
         )
 
+    def get_user_activity_logs(self, since_datetime: str, max_fetch: int = 0, next_page=None) -> Union[str, bytes]:
+        """
+        Make a http request to Qualys API to get user activities logs
+        Args:
+        Returns:
+            response from Qualys API
+        Raises:
+            DemistoException: can be raised by the _http_request function
+        """
+        self._headers.update({"Content-Type": 'application/json'})
+        params: dict[str, Any] = {
+            "truncation_limit": max_fetch
+        }
+        if since_datetime:
+            params["since_datetime"] = since_datetime
+        if next_page:
+            params["id_max"] = next_page
+
+        response = self._http_request(
+            method='GET',
+            url_suffix=urljoin(API_SUFFIX, 'activity_log/?action=list'),
+            resp_type='text/csv',
+            params=params,
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response.text
+
+    def get_host_list_detection(self, since_datetime, next_page=None) -> Union[str, bytes]:
+        """
+        Make a http request to Qualys API to get assets
+        Args:
+        Returns:
+            response from Qualys API
+        Raises:
+            DemistoException: can be raised by the _http_request function
+        """
+        self._headers.update({"Content-Type": 'application/json'})
+        params: dict[str, Any] = {
+            "truncation_limit": HOST_LIMIT,
+            "vm_scan_date_after": since_datetime
+        }
+        if next_page:
+            params["id_min"] = next_page
+
+        response = self._http_request(
+            method='GET',
+            url_suffix=urljoin(API_SUFFIX, 'asset/host/vm/detection/?action=list'),
+            resp_type='text',
+            params=params,
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+        return response
+
+    def get_vulnerabilities(self, since_datetime) -> Union[str, bytes]:
+        """
+        Make a http request to Qualys API to get vulnerabilities
+        Args:
+        Returns:
+            response from Qualys API
+        Raises:
+            DemistoException: can be raised by the _http_request function
+        """
+        self._headers.update({"Content-Type": 'application/json'})
+        params: dict[str, Any] = {"last_modified_after": since_datetime}
+
+        response = self._http_request(
+            method='POST',
+            url_suffix=urljoin(API_SUFFIX, 'knowledge_base/vuln/?action=list'),
+            resp_type='text',
+            params=params,
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response
+
 
 """ HELPER FUNCTIONS """
 
 
 @logger
-def create_ip_list_dict(res_json: Dict[str, Any], type_of_dict: str) -> Dict[str, Any]:
+def create_ip_list_dict(res_json: dict[str, Any], type_of_dict: str) -> dict[str, Any]:
     """
     Creates a dictionary of a range type of ips or single address type of ips
     Args:
@@ -1546,7 +1730,7 @@ def create_ip_list_dict(res_json: Dict[str, Any], type_of_dict: str) -> Dict[str
     if type_of_dict in res_json:
         ips = res_json[type_of_dict]
         # In case a single value returned it can be either a Dict or a str
-        if isinstance(ips, str) or isinstance(ips, Dict):
+        if isinstance(ips, dict | str):
             ips_dict = {"0": ips}
         else:
             for index, ip in enumerate(ips):
@@ -1556,7 +1740,7 @@ def create_ip_list_dict(res_json: Dict[str, Any], type_of_dict: str) -> Dict[str
 
 
 @logger
-def build_ip_and_range_dicts(ips_and_ranges: List[str]) -> List[List[Dict[str, str]]]:
+def build_ip_and_range_dicts(ips_and_ranges: List[str]) -> List[List[dict[str, str]]]:
     """
     Separates the list of ips and ranges to two lists, one of singles ips
     and the other of ranges of ips
@@ -1576,7 +1760,7 @@ def build_ip_and_range_dicts(ips_and_ranges: List[str]) -> List[List[Dict[str, s
 
 
 @logger
-def create_single_host_list(ip_and_range_lists: Dict[str, Union[str, List]]) -> List[str]:
+def create_single_host_list(ip_and_range_lists: dict[str, Union[str, List]]) -> List[str]:
     """
     Creates a single list containing both single ips and ranges of ips
     Args:
@@ -1603,7 +1787,7 @@ def create_single_host_list(ip_and_range_lists: Dict[str, Union[str, List]]) -> 
 
 
 @logger
-def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[Dict[str, str]]]) -> str:
+def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[dict[str, str]]]) -> str:
     """
     Creates two tables one describes a list of ips and the other a list of ranges
     Args:
@@ -1620,7 +1804,7 @@ def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[Dict[str, s
 
 
 @logger
-def create_ip_list_dicts(res_json: Dict[str, Any]) -> List[Dict[str, Any]]:
+def create_ip_list_dicts(res_json: dict[str, Any]) -> List[dict[str, Any]]:
     """
     Creates separate dictionaries of addresses and ranges
     Args:
@@ -1647,7 +1831,7 @@ def create_ip_list_dicts(res_json: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 @logger
-def generate_list_dicts(asset_dict: Dict[str, Any]) -> Union[List[Any], Dict]:
+def generate_list_dicts(asset_dict: dict[str, Any]) -> Union[List[Any], dict]:
     """
         Takes a dictionary with a specific structure of a single key containing
         a list of dictionaries and returns the list of dictionaries
@@ -1660,7 +1844,7 @@ def generate_list_dicts(asset_dict: Dict[str, Any]) -> Union[List[Any], Dict]:
 
 
 @logger
-def build_args_dict(args: Optional[Dict[str, str]], command_args_data: Dict[str, Any], is_inner_args: bool) -> None:
+def build_args_dict(args: Optional[dict[str, str]], command_args_data: dict[str, Any], is_inner_args: bool) -> None:
     """
     Takes the arguments needed by the command that were received by the user
     and stores them in the general commands data dictionary
@@ -1699,7 +1883,7 @@ def build_args_dict(args: Optional[Dict[str, str]], command_args_data: Dict[str,
 
 
 @logger
-def is_empty_result(json_response: Dict[str, Any]) -> bool:
+def is_empty_result(json_response: dict[str, Any]) -> bool:
     """
     Checking whether the response object contains no object or only timestamp object,
     both are considered an empty result, otherwise it's not empty
@@ -1729,7 +1913,7 @@ def limit_result(result: List[Any], limit: Union[int, str]) -> List[Any]:
 
 
 @logger
-def calculate_ip_original_amount(result: Dict[str, Any]) -> int:
+def calculate_ip_original_amount(result: dict[str, Any]) -> int:
     """
     Calculating the amount of ip addresses and ranges returned.
     Args:
@@ -1753,7 +1937,7 @@ def calculate_ip_original_amount(result: Dict[str, Any]) -> int:
 
 
 @logger
-def limit_ip_results(result: Dict[str, Any], limit: int) -> Dict[str, Any]:
+def limit_ip_results(result: dict[str, Any], limit: int) -> dict[str, Any]:
     """
     Limiting the results of commands like qualys-ip-list and qualys-excluded-host-list.
     First will limit the single ips and if needed will also limit the ranges of ips list
@@ -1785,7 +1969,7 @@ def limit_ip_results(result: Dict[str, Any], limit: int) -> Dict[str, Any]:
 
 
 @logger
-def validate_required_group(command_data: Dict) -> None:
+def validate_required_group(command_data: dict) -> None:
     """
     Validates that if exactly one of each `required_group` have been given.
     Args:
@@ -1803,7 +1987,7 @@ def validate_required_group(command_data: Dict) -> None:
 
 
 @logger
-def validate_depended_args(command_data: Dict) -> None:
+def validate_depended_args(command_data: dict) -> None:
     """
     Validates that if one arg was given, and other arg is dependant on given arg, that it was given as well.
     Args:
@@ -1823,7 +2007,7 @@ def validate_depended_args(command_data: Dict) -> None:
 
 
 @logger
-def validate_at_most_one_group(command_data: Dict) -> None:
+def validate_at_most_one_group(command_data: dict) -> None:
     """
     Validates that for each group, at most one argument was given.
     Args:
@@ -1859,7 +2043,7 @@ def input_validation(command_name: str) -> None:
     if limit := inner_args_values.get("limit"):
         try:
             if int(limit) < 1:
-                raise ValueError()
+                raise ValueError
         except ValueError as exc:
             raise DemistoException("Limit parameter must be an integer bigger than 0") from exc
 
@@ -1868,7 +2052,7 @@ def input_validation(command_name: str) -> None:
     validate_at_most_one_group(command_data)
 
 
-def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str):
+def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str):
     """generate asset tag xml request body according to passed command
 
     Args:
@@ -1933,7 +2117,7 @@ def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str)
     return ET.tostring(ServiceRequest)
 
 
-def handle_asset_tag_request_parameters(args: Dict[str, str], command_name: str) -> None:
+def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str) -> None:
     """Handle 'asset tag' command parameters related to the HTTP request.
     Add 'id' argument to URL suffix if required by the command.
     Generate a request body if required by the command.
@@ -1954,14 +2138,12 @@ def handle_asset_tag_request_parameters(args: Dict[str, str], command_name: str)
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
 
-    return
-
 
 """ PARSERS """
 
 
 @logger
-def change_dict_keys(new_names_dict: Dict[str, str], output_dict: Dict[str, Any]) -> Dict[str, Any]:
+def change_dict_keys(new_names_dict: dict[str, str], output_dict: dict[str, Any]) -> dict[str, Any]:
     """
     Takes a dictionary and changes the names of the keys
     Args:
@@ -1979,7 +2161,7 @@ def change_dict_keys(new_names_dict: Dict[str, str], output_dict: Dict[str, Any]
 
 
 @logger
-def change_list_dicts_names(command_parse_and_output_data: Dict[str, Any], output: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def change_list_dicts_names(command_parse_and_output_data: dict[str, Any], output: List[dict[str, Any]]) -> List[dict[str, Any]]:
     """
     Changing keys names of a list of dicts
     Args:
@@ -1999,7 +2181,7 @@ def change_list_dicts_names(command_parse_and_output_data: Dict[str, Any], outpu
 
 
 @logger
-def parse_two_keys_dict(json_res: Dict[str, Any]) -> Dict[str, Any]:
+def parse_two_keys_dict(json_res: dict[str, Any]) -> dict[str, Any]:
     """
     Takes a dictionary in a specific format creates a new dictionary
     Args:
@@ -2016,7 +2198,7 @@ def parse_two_keys_dict(json_res: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @logger
-def parse_text_value_pairs_list(multiple_key_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+def parse_text_value_pairs_list(multiple_key_list: List[dict[str, Any]]) -> dict[str, Any]:
     """
     Creates a single dictionary from a list of dictionaries
     Args:
@@ -2030,7 +2212,7 @@ def parse_text_value_pairs_list(multiple_key_list: List[Dict[str, Any]]) -> Dict
     return parsed_dict
 
 
-def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
+def parse_raw_response(response: Union[bytes, requests.Response]) -> dict:
     """
     Parses raw response from Qualys.
     Tries to load as JSON. If fails to do so, tries to load as XML.
@@ -2051,7 +2233,7 @@ def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
 
 
 @logger
-def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
+def get_simple_response_from_raw(raw_response: Any) -> Union[Any, dict]:
     """
     Gets the simple response from a given JSON dict structure returned by Qualys service
     If object is not a dict, returns the response as is.
@@ -2068,7 +2250,7 @@ def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
 
 
 @logger
-def format_and_validate_response(response: Union[bytes, requests.Response]) -> Dict[str, Any]:
+def format_and_validate_response(response: Union[bytes, requests.Response]) -> dict[str, Any]:
     """
     first tries to load the response as json if possible, if not will
     try to convert from xml to json, then it validates the response
@@ -2110,7 +2292,7 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str):
         raise DemistoException(response_error_details.get("errorMessage"))
 
     elif formatted_response.get("ServiceResponse", {}).get("count") == "0":
-        return
+        return None
 
     elif path_list := COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]["json_path"]:
         if len(path_list) == 0:
@@ -2118,9 +2300,9 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str):
         response_requested_value = dict_safe_get(formatted_response, path_list)
 
         if not response_requested_value:
-            raise ValueError()
+            raise ValueError
         return response_requested_value
-    return
+    return None
 
 
 @logger
@@ -2143,7 +2325,7 @@ def handle_general_result(raw_response: requests.Response, command_name: str) ->
     response_requested_value = dict_safe_get(formatted_response, path_list)
 
     if not response_requested_value:
-        raise ValueError()
+        raise ValueError
     return response_requested_value
 
 
@@ -2194,7 +2376,7 @@ def handle_fetch_result(raw_response: Union[bytes, requests.Response], command_n
 
 
 @logger
-def build_one_value_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_one_value_parsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     creates a dictionary with a single key for command_results outputs field
     and a markdown table with a single value
@@ -2219,7 +2401,7 @@ def build_one_value_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_single_text_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_single_text_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     creates output with the dictionary returned from the request and the text attached to it
     Args:
@@ -2234,7 +2416,7 @@ def build_single_text_output(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_unparsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_unparsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     creates output with the dictionary returned from the request and a markdown table generated
     from the unparsed response received
@@ -2261,7 +2443,7 @@ def build_unparsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_ip_list_output(**kwargs) -> Tuple[Dict[str, List[str]], str]:
+def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     """
     creates output with a new dictionary parsed from the original response and two markdown tables, generated
     for commands which output is a dictionary containing two lists, one of single IPs and the other of ranges of ips.
@@ -2304,7 +2486,7 @@ def build_ip_list_output(**kwargs) -> Tuple[Dict[str, List[str]], str]:
 
 
 @logger
-def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
+def build_multiple_values_parsed_output(**kwargs) -> tuple[List[Any], str]:
     """
     When the response from Qualys has a list of dictionaries this function will get this list and
     will generate a markdown table from it
@@ -2340,7 +2522,7 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
+def build_host_list_detection_outputs(**kwargs) -> tuple[List[Any], str]:
     """
     Builds the outputs and readable output for host list detection.
     Args:
@@ -2385,7 +2567,7 @@ def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_changed_names_output(**kwargs) -> Tuple[List[Any], str]:
+def build_changed_names_output(**kwargs) -> tuple[List[Any], str]:
     """
     Takes the output and changes the output fields names as described in the command data
     Args:
@@ -2405,7 +2587,7 @@ def build_changed_names_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_multiple_text_options_output(**kwargs) -> Tuple[None, str]:
+def build_multiple_text_options_output(**kwargs) -> tuple[None, str]:
     """
     When there's no need to build output from the response but output text is based on command's action requested
     this function will take the text based on the action and will return it
@@ -2424,7 +2606,7 @@ def build_multiple_text_options_output(**kwargs) -> Tuple[None, str]:
 
 
 @logger
-def build_text_value_pairs_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_text_value_pairs_parsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     A command might have multiple key value pairs. The data is returned as a list of dictionaries, each dictionary has
     a key named '@value' which holds the name of the field, and a key named '#text' which holds the
@@ -2446,7 +2628,7 @@ def build_text_value_pairs_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]
 
 
 @logger
-def build_ip_list_from_single_value(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_ip_list_from_single_value(**kwargs) -> tuple[dict[str, Any], str]:
     """
     Given a command response that has a value which contains a list of ips in the following format:
     '1.1.1.1','1.1.1.2'
@@ -2470,7 +2652,7 @@ def build_ip_list_from_single_value(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
+def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
     command_parse_and_output_data = kwargs["command_parse_and_output_data"]
     handled_result = kwargs["handled_result"]
 
@@ -2478,10 +2660,9 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-    if type(handled_result) == dict:
-        if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
-            handled_result["childTags"] = children_list
-            handled_result.pop("children")
+    if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
+        handled_result["childTags"] = children_list
+        handled_result.pop("children")
 
     readable_output = tableToMarkdown(
         name=command_parse_and_output_data.get("table_name"),
@@ -2494,28 +2675,408 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
     return handled_result, readable_output
 
 
-""" COMMAND FUNCTIONS """
-
-
-@logger
-def test_module(client: Client) -> str:
+def get_partial_response(response: str, start: str, end: str):
+    """ Cut response string from start to end tokens.
     """
-    Makes a http request to qualys API in order to test the connection
+    if start not in response or end not in response:
+        return None
+    start_index = response.index(start) + len(start)
+    end_index = response.index(end)
+    result = response[start_index:end_index].strip()
+    if result.startswith(WARNING):
+        result = result.replace(WARNING, '').strip()
+    return result
+
+
+def skip_fetch_assets(last_run):
+    """ Checks if enough time has passed since the previous run.
     Args:
-        client: Client object for making a http request
+        last_run: Last run time.
     Returns:
-        'ok' message if the connection test was successful
-    Raises:
-        DemistoException: will be raised when connection was not successful by command_http_request
+        Returns true or false if enough time has passed since the previous run.
     """
-    build_args_dict(None, COMMANDS_ARGS_DATA["test-module"], False)
-    client.command_http_request(COMMANDS_API_DATA["test-module"])
-    return "ok"
+    time_to_check = last_run.get("assets_last_fetch")
+    if not time_to_check:
+        return False
+    passed_minutes = (time.time() - time_to_check) / 60
+    if passed_minutes < MIN_ASSETS_INTERVAL:
+        demisto.info(f"Skipping fetch-assets command. Only {passed_minutes} minutes have passed since the last fetch. "
+                     f"It should be a minimum of 1 hour.")
+        return True
+    return False
+
+
+def csv2json(csv_data: str):
+    """ Converts data from csv to json
+    Args:
+        csv_data: data in csv format
+    Returns:
+        the same data in json formal
+    """
+    reader = csv.DictReader(io.StringIO(csv_data))
+    json_data = list(reader)
+    return json_data
+
+
+def get_next_page_from_url(url, field):
+    """
+    Get the next page field from url.
+    """
+    match = re.search(rf"{field}=(\d+)", url)
+    res = match.group(1) if match else None
+    return res
+
+
+def get_next_page_activity_logs(footer):
+    """
+    Extracts the next token from activity logs response.
+    """
+    if isinstance(footer, list):
+        footer = footer[0]
+    next_url = footer.get('URL', '')
+    max_id = get_next_page_from_url(next_url, 'id_max')
+    return max_id
+
+
+def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[list, Optional[str]]:
+    """
+    Handles Host list detection response - parses xml to json and gets the list
+    Args:
+        raw_response (requests.Response): the raw result received from Qualys API command
+    Returns:
+        List with data generated for the result given
+    """
+    formatted_response = parse_raw_response(raw_response)
+    simple_response = get_simple_response_from_raw(formatted_response)
+    if simple_response and simple_response.get("CODE"):
+        raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
+
+    response_requested_value = dict_safe_get(formatted_response,
+                                             ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"])
+    response_next_url = dict_safe_get(formatted_response,
+                                      ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"], default_return_value='')
+    if isinstance(response_requested_value, dict):
+        response_requested_value = [response_requested_value]
+
+    return response_requested_value, str(response_next_url)
+
+
+def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
+    """
+    Handles vulnerabilities response - parses xml to json and gets the list
+    Args:
+        raw_response (requests.Response): the raw result received from Qualys API command
+    Returns:
+        List with data generated for the result given
+    """
+    formatted_response = parse_raw_response(raw_response)
+
+    vulnerabilities = dict_safe_get(formatted_response, ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'VULN'])
+    if isinstance(vulnerabilities, dict):
+        vulnerabilities = [vulnerabilities]
+
+    return vulnerabilities
+
+
+def remove_last_events(events, time_to_remove, time_field):
+    """ Removes events with certain time.
+        Args:
+            events: list of events to remove the time from
+            time_to_remove: remove events with this time
+            time_field: the field name where the time is
+    """
+    new_events = []
+    for event in events:
+        if event.get(time_field) == time_to_remove:
+            demisto.debug(f'Removed activity log event with time: {time_to_remove}, log: {event}')
+        else:
+            new_events.append(event)
+    return new_events
+
+
+def add_fields_to_events(events, time_field_path, event_type_field):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+        time_field_path: the list of fields to get _time from
+        event_type_field: type field in order to distinguish between the API's
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            event['_time'] = dict_safe_get(event, time_field_path)
+            event['event_type'] = event_type_field
+
+
+def get_detections_from_hosts(hosts):
+    """
+    Parses detections from hosts.
+    Each host contains list of detections:
+    {'ID':1,
+    'IP': '1.1.1.1',
+    'LAST_VM_SCANNED_DATE': '01-01-2020',
+    'DETECTION_LIST': {'DETECTION': [first_detection_data, second_detection, ...]}
+    'additional_fields': ...
+    }
+
+    The function parses the data in the following way:
+    {''ID':1,
+    'IP': '1.1.1.1',
+    'LAST_VM_SCANNED_DATE': '01-01-2020',
+    'DETECTION': first_detection_data
+    'additional_fields': ...
+    },
+    {'ID':1,
+    'IP': '1.1.1.1',
+    'LAST_VM_SCANNED_DATE': '01-01-2020',
+    'DETECTION': second_detection_data
+    'additional_fields': ...
+    }
+    ....
+
+    :param hosts: list of hosts that contains detections.
+    :return: parsed events.
+    """
+    fetched_events = []
+    for host in hosts:
+        if detections_list := host.get('DETECTION_LIST', {}).get('DETECTION'):
+            if isinstance(detections_list, list):
+                for detection in detections_list:
+                    new_detection = copy.deepcopy(host)
+                    del new_detection['DETECTION_LIST']
+                    new_detection['DETECTION'] = detection
+                    fetched_events.append(new_detection)
+            elif isinstance(detections_list, dict):
+                new_detection = copy.deepcopy(host)
+                new_detection['DETECTION'] = detections_list
+                del new_detection['DETECTION_LIST']
+                fetched_events.append(new_detection)
+        else:
+            del host['DETECTION_LIST']
+            host['DETECTION'] = {}
+            fetched_events.append(host)
+    return fetched_events
+
+
+def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
+    """ Get logs activity from qualys
+    API response returns events sorted in descending order. We are saving the next_page param and
+    sending next request with next_page arg if needed. Saving the newest event fetched.
+    We are deleting the newest event each time to avoid duplication.
+    Args:
+        client: Qualys client
+        since_datetime: datetime to get events from
+        max_fetch: max number of events to return
+        next_page: pagination marking
+    Returns:
+        Logs activity events, Next run datetime
+    """
+    demisto.debug(f'Starting to fetch activity logs events: since_datetime={since_datetime}, next_page={next_page}')
+    activity_logs = client.get_user_activity_logs(since_datetime=since_datetime, max_fetch=max_fetch, next_page=next_page)
+    activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV,
+                                                         END_RESPONSE_LOGS_CSV) or activity_logs) or []
+    footer_json = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_FOOTER_CSV,
+                                                END_RESPONSE_FOOTER_CSV)) or {}
+    new_next_page = get_next_page_activity_logs(footer_json)
+    demisto.debug(f'Got activity logs events from server: {len(activity_logs_events)=}.')
+
+    newest_event_time = activity_logs_events[0].get('Date') if activity_logs_events else since_datetime
+
+    if not next_page:
+        activity_logs_events = remove_last_events(activity_logs_events, newest_event_time, 'Date')
+    add_fields_to_events(activity_logs_events, ['Date'], 'activity_log')
+
+    next_run_dict = {
+        ACTIVITY_LOGS_NEWEST_EVENT_DATETIME: newest_event_time,
+        ACTIVITY_LOGS_NEXT_PAGE: new_next_page,
+        ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN: since_datetime,
+    }
+    demisto.debug(f'Done to fetch activity logs events: {next_run_dict=}, sending {len(activity_logs_events)} events.')
+    return activity_logs_events, next_run_dict
+
+
+def get_host_list_detections_events(client, since_datetime) -> list:
+    """ Get host list detections from qualys
+    Args:
+        client: Qualys client
+        since_datetime: The start fetch date.
+    Returns:
+        Host list detections assets
+    """
+    demisto.debug('Starting to fetch assets')
+    assets = []  # type: ignore[var-annotated]
+    next_page = ''
+
+    while True:
+        host_list_detections = client.get_host_list_detection(since_datetime, next_page=next_page)
+        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
+        assets += host_list_assets
+        next_page = get_next_page_from_url(next_url, 'id_min')
+        if not next_page:
+            break
+
+    edited_host_detections = get_detections_from_hosts(assets)
+    demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} assets.')
+
+    add_fields_to_events(edited_host_detections, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+
+    return edited_host_detections
+
+
+def get_vulnerabilities(client, since_datetime) -> list:
+    """ Get vulnerabilities list from qualys
+    Args:
+        client: Qualys client
+        since_datetime: The start fetch date.
+    Returns:
+        list vulnerabilities
+    """
+    demisto.debug('Starting to fetch vulnerabilities')
+    host_list_detections = client.get_vulnerabilities(since_datetime)
+    vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
+
+    demisto.debug(f'Parsed detections from hosts, got {len(vulnerabilities)=} vulnerabilities.')
+    return vulnerabilities
+
+
+def fetch_assets(client, since_datetime=None):
+    """ Fetches host list detections
+    Args:
+        client: command client
+        since_datetime: The start fetch date.
+    Return:
+        assets: assets to push to xsiam
+        vulnerabilities: vulnerabilities to push to xsiam
+    """
+    demisto.debug('Starting fetch for assets')
+    if not since_datetime:
+        since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+
+    assets = get_host_list_detections_events(client, since_datetime)
+    vulnerabilities = get_vulnerabilities(client, since_datetime)
+
+    demisto.info(f"Pulled {len(assets)} assets, and {len(vulnerabilities)} vulnerabilities from API, sending them to XSIAM")
+    return assets, vulnerabilities
+
+
+def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_event_field, next_page_field,
+                 previous_run_time_field, max_fetch: Optional[int] = 0):
+    """ Fetches activity logs and host list detections
+    Args:
+        client: command client
+        last_run: last fetch time
+        first_fetch_time: when start to fetch from
+        fetch_function: function that gets the events
+        max_fetch: max number of items to return (0 to return all)
+        newest_event_field
+        next_page_field
+        previous_run_time_field
+    Return:
+        next_last_run: where to fetch from next time
+        event: events to push to xsiam
+    """
+    demisto.debug(f'Starting fetch for {fetch_function.__name__}, last run: {last_run}')
+    newest_event_time = last_run.get(newest_event_field) if last_run else None
+    next_page = last_run.get(next_page_field)
+    previous_time_field = last_run.get(previous_run_time_field)
+
+    if not newest_event_time:
+        newest_event_time = first_fetch_time
+
+    time_to_fetch = newest_event_time if not next_page else previous_time_field
+
+    events, new_next_run = fetch_function(client, time_to_fetch, max_fetch, next_page)
+
+    updated_next_run = {previous_run_time_field: time_to_fetch}
+    new_next_page = new_next_run.get(next_page_field)
+
+    # if the fetch is not during the pagination (fetched without next_page)
+    if not next_page:
+        # update the newest event
+        updated_next_run[newest_event_field] = new_next_run.get(newest_event_field)
+
+    # update if there is next page and this fetch is not over
+    updated_next_run[next_page_field] = new_next_page
+
+    if last_fetch_time := new_next_run.get(HOST_LAST_FETCH):
+        updated_next_run[HOST_LAST_FETCH] = last_fetch_time
+
+    demisto.info(f"Sending len{len(events)} to XSIAM. updated_next_run={updated_next_run}.")
+    return updated_next_run, events
+
+
+def get_activity_logs_events_command(client, args, first_fetch_time):
+    """
+    Args:
+        client: command client
+        args: Demisto args for this command: limit and since_datetime
+        first_fetch_time: first fetch time
+    Retuns:
+        Command results with activity logs
+
+    """
+    limit = arg_to_number(args.get('limit', 50))
+    offset = arg_to_number(args.get('offset', 0))
+    since_datetime = arg_to_datetime(args.get('since_datetime'))
+    since_datetime = since_datetime.strftime(DATE_FORMAT) if since_datetime else first_fetch_time
+    activity_logs_events, _ = get_activity_logs_events(
+        client=client,
+        since_datetime=since_datetime,
+        max_fetch=0,
+    )
+    limited_activity_logs_events = activity_logs_events[offset:limit + offset]  # type: ignore[index,operator]
+    activity_logs_hr = tableToMarkdown(name='Activity Logs', t=limited_activity_logs_events)
+    results = CommandResults(
+        readable_output=activity_logs_hr,
+        raw_response=limited_activity_logs_events,
+    )
+
+    return limited_activity_logs_events, results
+
+
+def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
+    """
+    Tests API connectivity and authentication'
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
+    Raises exceptions if something goes wrong.
+    Args:
+        client (Client): HelloWorld client to use.
+        params (Dict): Integration parameters.
+        first_fetch_time (int): The first fetch time as configured in the integration params.
+    Returns:
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+    """
+    is_fetch_events = params.get('isFetchEvents') or False
+    is_fetch_assets = params.get('isFetchAssets') or False
+
+    if is_fetch_assets or is_fetch_events:
+        if is_fetch_events:
+            fetch_events(
+                client=client,
+                last_run={},
+                first_fetch_time=first_fetch_time,
+                max_fetch=1,
+                fetch_function=get_activity_logs_events,
+                newest_event_field=ACTIVITY_LOGS_NEWEST_EVENT_DATETIME,
+                next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
+                previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
+            )
+        if is_fetch_assets:
+            since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            fetch_assets(client=client, since_datetime=since_datetime)
+    else:
+        build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
+        client.command_http_request(COMMANDS_API_DATA["test-module"])
+
+    return 'ok'
 
 
 @logger
 def qualys_command_flow_manager(
-    client: Client, args: Dict[str, str], command_name: str, command_methods: Dict[str, Callable]
+    client: Client, args: dict[str, str], command_name: str, command_methods: dict[str, Callable]
 ) -> Optional[CommandResults]:
     """
     Args:
@@ -2530,7 +3091,7 @@ def qualys_command_flow_manager(
     """
 
     # handle asset tag command parameters for HTTP request
-    if command_name in TAG_ASSET_COMMANDS_API_DATA.keys():
+    if command_name in TAG_ASSET_COMMANDS_API_DATA:
 
         handle_asset_tag_request_parameters(args, command_name)
 
@@ -2579,14 +3140,16 @@ def qualys_command_flow_manager(
 
 def main():  # pragma: no cover
     params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-    base_url = params["url"]
+    base_url = params.get('url')
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 
-    commands_methods: Dict[str, Dict[str, Callable]] = {
+    commands_methods: dict[str, dict[str, Callable]] = {
         # *** Commands with unparsed response as output ***
         "qualys-purge-scan-host-data": {
             "result_handler": handle_general_result,
@@ -2805,29 +3368,98 @@ def main():  # pragma: no cover
             "result_handler": handle_asset_tag_result,
             "output_builder": build_tag_asset_output,
         },
+        "qualys-update-vmware-record": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-update-vcenter-record": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-list": {
+            "result_handler": handle_general_result,
+            "output_builder": build_unparsed_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-import": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-purge": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
     }
 
-    requested_command = demisto.command()
-
-    demisto.debug(f"Command being called is {requested_command}")
+    demisto.debug(f"Command being called is {command}")
     try:
-        headers: Dict = {"X-Requested-With": "Demisto"}
-
+        headers: dict = {"X-Requested-With": "Cortex"}
         client = Client(
             base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers, proxy=proxy
         )
 
-        if requested_command == "test-module":
-            text_res = test_module(client)
+        first_fetch_datetime: datetime = arg_to_datetime(  # type: ignore[assignment]
+            arg=params.get('first_fetch', '3 days'),
+            arg_name='First fetch time',
+            required=True
+        )
+        first_fetch_str = first_fetch_datetime.strftime(DATE_FORMAT)
+
+        if command == "test-module":
+            text_res = test_module(client, params, first_fetch_str)
             return_results(text_res)
+
+        elif command == "qualys-get-events":
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            events, results = get_activity_logs_events_command(client, args, first_fetch_str)
+            return_results(results)
+            if should_push_events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == "qualys-get-assets":
+            should_push_events = argToBoolean(args.get('should_push_assets', False))
+            assets, vulnerabilities = fetch_assets(client=client)
+            return_results(f'Pulled {len(assets)} assets, and {len(vulnerabilities)} vulnerabilities from API')
+            if should_push_events:
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product='host_detections', data_type='assets')
+                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            max_fetch_activity_logs = arg_to_number(params.get("max_fetch_activity_logs", 0))
+            logs_next_run, activity_logs_events = fetch_events(
+                client=client,
+                last_run=last_run,
+                newest_event_field=ACTIVITY_LOGS_NEWEST_EVENT_DATETIME,
+                next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
+                previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
+                fetch_function=get_activity_logs_events,
+                first_fetch_time=first_fetch_str,
+                max_fetch=max_fetch_activity_logs,
+            )
+            send_events_to_xsiam(activity_logs_events, vendor=VENDOR, product=PRODUCT)
+
+            # saves next_run for the time fetch-events is invoked
+            demisto.setLastRun(logs_next_run)
+
+        elif command == 'fetch-assets':
+            assets_last_run = demisto.getAssetsLastRun()
+            demisto.debug(f'saved lastrun assets: {assets_last_run}')
+            if skip_fetch_assets(assets_last_run):
+                return
+            execution_start_time = time.time()
+            assets, vulnerabilities = fetch_assets(client=client)
+            send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets')
+            send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
+            demisto.setAssetsLastRun({'assets_last_fetch': execution_start_time})
+
         else:
             return_results(
-                qualys_command_flow_manager(client, demisto.args(), requested_command, commands_methods[requested_command])
+                qualys_command_flow_manager(client, demisto.args(), command, commands_methods[command])
             )
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {requested_command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

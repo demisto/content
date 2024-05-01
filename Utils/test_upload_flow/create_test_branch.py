@@ -5,23 +5,26 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
-from typing import Union
 from git import GitCommandError, Head, Repo
 from zipfile import ZipFile
 from packaging.version import Version
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
+from Utils.github_workflow_scripts.utils import get_env_var
+from demisto_sdk.commands.common.constants import MarketplaceVersions
 
 versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
+GITLAB_SERVER_HOST = get_env_var('CI_SERVER_HOST', 'gitlab.xdr.pan.local')  # disable-secrets-detection
+GITLAB_PROJECT_NAMESPACE = get_env_var('CI_PROJECT_NAMESPACE', 'xdr/cortex-content')  # disable-secrets-detection
 
 # HELPER FUNCTIONS
 
 
-def json_write(file_path: str, data: Union[list, dict]):
+def json_write(file_path: str, data: list | dict):
     """ Writes given data to a json file
 
     Args:
@@ -33,7 +36,7 @@ def json_write(file_path: str, data: Union[list, dict]):
         f.write(json.dumps(data, indent=4))
 
 
-def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
+def get_pack_content_paths(pack_path: Path, marketplace=MarketplaceVersions.XSOAR.value):
     """
     Gets a dict of all the paths of the given pack content items as it is in the bucket.
     To get these paths we are running the `demisto-sdk prepare-content` command and saving the result
@@ -124,18 +127,18 @@ def add_changed_pack(func):
 
 
 @add_changed_pack
-def create_new_pack():
+def create_new_pack(pack_id: str):
     """
     Creates a new pack with a given pack name
     """
     content_path = Path(__file__).parent.parent.parent
-    source_path = Path(__file__).parent / 'TestUploadFlow'
-    dest_path = content_path / 'Packs' / 'TestUploadFlow'
+    source_path = Path(__file__).parent / pack_id
+    dest_path = content_path / 'Packs' / pack_id
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
 
-    return dest_path, '1.0.0', get_pack_content_paths(dest_path)
+    return dest_path, '1.0.0', get_pack_content_paths(dest_path, marketplace=MarketplaceVersions.XSOAR_SAAS.value)
 
 
 @add_changed_pack
@@ -154,6 +157,7 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool = 
         }
     })
     json_write(str(metadata_json), base_metadata)
+    enhance_release_notes(base_pack)
     return base_pack, base_metadata['currentVersion'], None
 
 
@@ -249,6 +253,20 @@ def modify_pack(pack: Path, integration: str):
 
 
 @add_changed_pack
+def modify_pack_metadata(pack: Path):
+    """
+    Modify a packmetadata file, in order to check that only the permitted fields have been changed in metadata.json
+    """
+    metadata_json = pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
+        base_metadata = json.load(f)
+    base_metadata['keywords'] = ["Mobile"]
+    with metadata_json.open('w') as f:
+        json.dump(base_metadata, f)
+    return pack, base_metadata['currentVersion'], None
+
+
+@add_changed_pack
 def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str):
     """
     Modify modeling rules path, in order to verify that the pack was uploaded correctly and that the path was changed
@@ -259,7 +277,8 @@ def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str
     parent = modeling_rule.parent
     pack_path = modeling_rule.parent.parent
     modeling_rule.rename(parent.joinpath(new_name))
-    return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path, marketplace='marketplacev2')
+    return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path,
+                                                                             marketplace=MarketplaceVersions.MarketplaceV2.value)
 
 
 @add_changed_pack
@@ -281,7 +300,7 @@ def do_changes_on_branch(packs_path: Path):
     Makes the test changes on the created branch
     """
     # Case 1: Verify new pack - TestUploadFlow
-    new_pack_path, _, _ = create_new_pack()
+    new_pack_path, _, _ = create_new_pack(pack_id='TestUploadFlow')
 
     # Case 2: Verify modified pack - Armorblox
     modify_pack(packs_path / 'Armorblox', 'Integrations/Armorblox/Armorblox.py')
@@ -298,9 +317,8 @@ def do_changes_on_branch(packs_path: Path):
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
     set_pack_hidden(packs_path / 'Microsoft365Defender')
 
-    # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
-    # update_readme(packs_path / 'Maltiverse')
+    update_readme(packs_path / 'Maltiverse')
 
     # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
     # Case 8: Verify failing pack - Absolute
@@ -320,6 +338,15 @@ def do_changes_on_branch(packs_path: Path):
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
+
+    # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
+    create_new_pack(pack_id='TestUploadFlowXSOAR')
+
+    # case 14: Verify new only-XSOAR-SaaS pack uploaded only to XSOAR SAAS bucket - TestUploadFlowXsoarSaaS
+    create_new_pack(pack_id='TestUploadFlowXsoarSaaS')
+
+    # case 15: metadata changes (soft upload) - verify that only the permitted fields have been changed in metadata.json
+    modify_pack_metadata(packs_path / 'Zoom')
 
     logging.info("Finished making test changes on the branch")
 
@@ -366,8 +393,9 @@ def main():
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
-                      f'code.pan.run/xsoar/content.git', branch, push_option="ci.skip")  # disable-secrets-detection
-        logging.info("Successfuly pushing the branch to Gitlab content repo")
+                      f'{GITLAB_SERVER_HOST}/{GITLAB_PROJECT_NAMESPACE}/content.git',  # disable-secrets-detection
+                      branch, push_option="ci.skip")  # disable-secrets-detection
+        logging.info("Successfully pushed the branch to GitLab content repo")
 
     except GitCommandError as e:
         logging.error(e)

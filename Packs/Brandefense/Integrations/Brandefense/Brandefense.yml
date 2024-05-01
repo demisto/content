@@ -1,0 +1,173 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Brandefense
+  version: -1
+configuration:
+- defaultvalue: https://api.brandefense.io/api/v1/incidents
+  display: Server URL (e.g., https://api.brandefense.io/api/v1/incidents)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- defaultvalue: "10"
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  required: false
+  section: Collect
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
+  advanced: true
+  defaultvalue: "65"
+  display: Score threshold for IP reputation command
+  name: threshold_ip
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: Branddefense is looking for data for each brand and collecting information and alarming the related brand about dark web finding (credentials, similar domain names etc.) related to the firm.With Brandefense integration it is possible to automate Brand related alarms and breach notifications, actions and much more.
+display: Brandefense
+name: Brandefense
+script:
+  commands:
+  - arguments: []
+    description: Gets assets from Brandefense.
+    name: branddefense-get-assets
+    outputs:
+    - contextPath: branddefense_assets
+      description: Assets from Branddefense Platform.
+  - arguments:
+    - description: The id of the asset.
+      name: assetid
+      required: true
+    description: Call a specific asset from Brandefense.
+    name: branddefense-get-specific-asset
+    outputs:
+    - contextPath: branddefense_requested_asset
+      description: The requested asset from Brandefense.
+  - arguments: []
+    description: Get audit logs from Brandefense platform.
+    name: branddefense-get-audit-logs
+    outputs:
+    - contextPath: branddefense_audit_logs
+      description: Audit logs from Brandefense.
+  - arguments:
+    - description: The id of the audit log from Brandefense platform.
+      name: audit_log_id
+      required: true
+    description: Get a specific audit log from Brandefense platform.
+    name: branddefense-get-specific-audit-log
+    outputs:
+    - contextPath: branddefense_requested_audit_log
+      description: The requested audit log from Brandefense.
+  - arguments:
+    - description: the uuid of the search on Brandefense.
+      name: search_uuid
+    description: Get Threat Search endpoint allows you to investigate indicator of compromises by UUID.
+    name: branddefense-get-threat-search
+  - arguments:
+    - description: The required code parameter should be given to perform incident searches on Brandefense.
+      name: incident_code
+      required: true
+    description: Search for a specific incident on Brandefense.
+    name: branddefense-get-specific-incident
+    outputs:
+    - contextPath: branddefense_requested_incident
+      description: The requested incident via incident code from Brandefense.
+  - arguments:
+    - description: The required code parameter should be given to perform incident searches on Brandefense.
+      name: incident_code
+      required: true
+    - description: 'The required status parameter should be given to perform change incident status Possible Values: ''OPEN'' ''IN_PROGRESS'' ''CLOSED'' ''RISK_ACCEPTED'' ''REJECTED''.'
+      isArray: true
+      name: incident_status
+      required: true
+    description: Change the status of an existing incident on Brandefense.
+    name: branddefense-change-incident-status
+  - arguments:
+    - description: The required code parameter should be given to perform incident searches on Brandefense.
+      name: incident_code
+      required: true
+    description: Get indicators related to an incident on Brandefense using incident's code.
+    name: branddefense-get-incident-indicators
+    outputs:
+    - contextPath: branddefense_requested_incident_indicators
+      description: Requested indicators from Brandefense based on provided incident code.
+  - arguments:
+    - description: The indicator type on the Brandefense.
+      name: indicator_type
+      required: true
+    description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists on Brandefense.
+    name: branddefense-get-indicators
+    outputs:
+    - contextPath: branddefense_requested_indicator
+      description: Requested indicator based on the indicator type from Brandefense.
+  - arguments:
+    - description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists.
+      name: ioc_type
+      required: true
+    description: Get IOCs from Brandefense.
+    name: branddefense-get-ioc
+    outputs:
+    - contextPath: branddefense_ioc
+      description: hash,domain,url veya ip address girilmeli.
+  - arguments:
+    - description: Cti Rule Created at range.
+      name: created_at__range
+    - description: Cti rule search.
+      name: search
+    - description: Tag for the Brandefense search.
+      name: tag
+    - description: Source from Brandefense CTI rule search.
+      name: source__ilike
+    description: Get CTI rules from Brandefense.
+    name: branddefense-get-cti-rules
+  - arguments:
+    - description: Required value for Created Threat Search such as an IP address, domain, Hash or url.
+      name: value
+      required: true
+    description: Create Threat Search endpoint allows you to post indicator of compromises to investigate suspicious/malicious IP, Domain, URL address or Hash values.
+    name: branddefense-create-threat-search
+    outputs:
+    - contextPath: search_result
+      description: The result of Theat search from Brandefense.
+  - arguments:
+    - description: Exact created date of the incident.
+      name: created_at
+    description: Get incidents from the Brandefense platform.
+    name: branddefense-get-incidents
+    outputs:
+    - contextPath: branddefense_all_incidents
+      description: All incidents from the Brandefense platform.
+  dockerimage: demisto/python3:3.10.13.84405
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

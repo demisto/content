@@ -6,14 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6c547e3a-63fe-4752-8b38-bd178dd7ef14
+    taskid: c385dce7-f89d-4e3a-8d48-8a1a632dc844
     type: start
     task:
-      id: 6c547e3a-63fe-4752-8b38-bd178dd7ef14
+      id: c385dce7-f89d-4e3a-8d48-8a1a632dc844
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -21,362 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 3558e0e2-e8f0-4d3a-8088-18ddc4d1074c
-    type: regular
-    task:
-      id: 3558e0e2-e8f0-4d3a-8088-18ddc4d1074c
-      version: -1
-      name: Select query - show all test table
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit:
-        simple: "10"
-      query:
-        simple: select * from TestTable
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 42a4bcb9-adf1-40b5-820b-6902904774f9
-    type: condition
-    task:
-      id: 42a4bcb9-adf1-40b5-820b-6902904774f9
-      version: -1
-      name: Select query check
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "13"
-      "yes":
-      - "3"
-      - "23"
-      - "26"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: ${GenericSQL.GenericSQL.Result}
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 6cf20399-fa04-426d-8219-bbd3499d72a2
-    type: regular
-    task:
-      id: 6cf20399-fa04-426d-8219-bbd3499d72a2
-      version: -1
-      name: Insert query in mssql syntax with bind variables values
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values:
-        simple: '"playbook,test"'
-      limit: {}
-      query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, ? , ?)
-      skip: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 75
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: b8b5861e-4142-42c4-857f-ff45918bade7
-    type: condition
-    task:
-      id: b8b5861e-4142-42c4-857f-ff45918bade7
-      version: -1
-      name: Check insert
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: ${GenericSQL.GenericSQL.Result}
-            iscontext: true
-          right:
-            value:
-              simple: "6"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 650b2be2-30ac-435e-82dc-ae69e5748330
-    type: regular
-    task:
-      id: 650b2be2-30ac-435e-82dc-ae69e5748330
-      version: -1
-      name: Select query - show all test table
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit:
-        simple: "10"
-      query:
-        simple: select * from TestTable
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 635
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: f4582036-739e-4f7a-86ee-f65efccfd5e2
-    type: regular
-    task:
-      id: f4582036-739e-4f7a-86ee-f65efccfd5e2
-      version: -1
-      name: Delete query id=11211
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit: {}
-      query:
-        simple: Delete FROM TestTable WHERE ID=11211
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 32a90ac2-c362-4e22-82f3-c663387fd199
-    type: regular
-    task:
-      id: 32a90ac2-c362-4e22-82f3-c663387fd199
-      version: -1
-      name: Select query - show all test table
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit:
-        simple: "10"
-      query:
-        simple: select * from TestTable
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1485
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: e04411fa-9c03-4f9f-841d-eda8f4d6276b
-    type: condition
-    task:
-      id: e04411fa-9c03-4f9f-841d-eda8f4d6276b
-      version: -1
-      name: Check Delete
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "20"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: ${GenericSQL.GenericSQL.Result}
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 5d2853d6-bbb4-4e85-8a14-6e8dbf8aadeb
-    type: title
-    task:
-      id: 5d2853d6-bbb4-4e85-8a14-6e8dbf8aadeb
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1855
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 5c4908db-3376-4cf9-89d6-17baa8de9071
-    type: regular
-    task:
-      id: 5c4908db-3376-4cf9-89d6-17baa8de9071
-      version: -1
-      name: PrintErrorEntry
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Query failed
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -460,
+          "x": 480,
           "y": 50
         }
       }
@@ -385,12 +31,190 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: d65718f6-accc-46ca-8047-b903bec5e1fc
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e1d0cbe2-505f-4b23-80c0-885ea77ba976
     type: regular
     task:
-      id: d65718f6-accc-46ca-8047-b903bec5e1fc
+      id: e1d0cbe2-505f-4b23-80c0-885ea77ba976
+      version: -1
+      name: Select query - show all test table
+      script: Generic SQL|||sql-command
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+      description: Running a sql query
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      limit:
+        simple: "10"
+      query:
+        simple: select * from TestTable
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f559fc88-1270-4549-8027-62c05a6420a6
+    type: regular
+    task:
+      id: f559fc88-1270-4549-8027-62c05a6420a6
+      version: -1
+      name: Insert query in mssql syntax with bind variables values
+      script: Generic SQL|||sql-command
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+      description: Running a sql query
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      bind_variables_values:
+        simple: '${RandomString},playbook,test'
+      query:
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (?, ? , ?)
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ab8eea8e-df1e-4081-85d2-c91ac1ded195
+    type: regular
+    task:
+      id: ab8eea8e-df1e-4081-85d2-c91ac1ded195
+      version: -1
+      name: Select Query - Get New Entry
+      script: Generic SQL|||sql-command
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+      description: Running a sql query
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query:
+        simple: select * from TestTable where ID=${RandomString}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a36540e6-7995-4ece-8a3b-9392c71a3eef
+    type: regular
+    task:
+      id: a36540e6-7995-4ece-8a3b-9392c71a3eef
+      version: -1
+      name: Delete New Entry
+      script: Generic SQL|||sql-command
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+      description: Running a sql query
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      query:
+        simple: Delete FROM TestTable WHERE ID=${RandomString}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b153fab3-7587-4a05-86f8-2be62862afed
+    type: title
+    task:
+      id: b153fab3-7587-4a05-86f8-2be62862afed
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a299fdce-f468-47f1-878f-d3981a40fc1e
+    type: regular
+    task:
+      id: a299fdce-f468-47f1-878f-d3981a40fc1e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -404,16 +228,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -490
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -421,48 +241,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: b94a9eb8-cb27-4b26-84ee-1ce38695fbb4
-    type: regular
-    task:
-      id: b94a9eb8-cb27-4b26-84ee-1ce38695fbb4
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 465
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: d16c20ce-df54-4d85-8d6d-1cfe0806bbac
+    taskid: a0552dd2-aa96-43d3-8669-087bc5769c07
     type: regular
     task:
-      id: d16c20ce-df54-4d85-8d6d-1cfe0806bbac
+      id: a0552dd2-aa96-43d3-8669-087bc5769c07
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -472,20 +259,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "30"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      keysToKeep:
+        simple: RandomString
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1330
+          "x": 265,
+          "y": 2380
         }
       }
     note: false
@@ -493,12 +278,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6aa761d7-080d-43c8-88eb-8c22d8776268
+    taskid: 0e5259c5-4ab2-4316-842a-9a02dcb6c6be
     type: regular
     task:
-      id: 6aa761d7-080d-43c8-88eb-8c22d8776268
+      id: 0e5259c5-4ab2-4316-842a-9a02dcb6c6be
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -513,8 +301,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1310
+          "x": 695,
+          "y": 2380
         }
       }
     note: false
@@ -522,12 +310,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0099931a-773a-480d-8da3-a77bd049c2f8
+    taskid: 589146e1-5a0c-4714-8796-ae1a9f7b3472
     type: regular
     task:
-      id: 0099931a-773a-480d-8da3-a77bd049c2f8
+      id: 589146e1-5a0c-4714-8796-ae1a9f7b3472
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -542,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1840
+          "x": 50,
+          "y": 2905
         }
       }
     note: false
@@ -551,108 +342,37 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
-    taskid: bf7dfd7c-b552-4272-817d-b73e4864b4c7
-    type: regular
-    task:
-      id: bf7dfd7c-b552-4272-817d-b73e4864b4c7
-      version: -1
-      name: Insert query bind variables - values and names
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      bind_variables_names:
-        simple: x,y
-      bind_variables_values:
-        simple: '"playbook,test"'
-      limit: {}
-      query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x , :y)
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 26b2d550-6abf-4f34-8ee7-377a28da4d35
-    type: regular
-    task:
-      id: 26b2d550-6abf-4f34-8ee7-377a28da4d35
-      version: -1
-      name: Delete query id=11311
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit: {}
-      query:
-        simple: Delete FROM TestTable WHERE ID=11311
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: eb4eaf91-411d-45e4-8b70-a4ba005edc05
+    taskid: 46db3580-32ea-4e74-824c-90dbcfadbd14
     type: regular
     task:
-      id: eb4eaf91-411d-45e4-8b70-a4ba005edc05
+      id: 46db3580-32ea-4e74-824c-90dbcfadbd14
       version: -1
       name: Insert query in mysql/postgresql syntax with bind variables values
-      script: Generic SQL|||query
+      script: Generic SQL|||sql-command
       type: regular
       iscommand: true
       brand: Generic SQL
+      description: Running a sql query
     nexttasks:
       '#none#':
-      - "21"
+      - "32"
     scriptarguments:
-      bind_variables_names: {}
       bind_variables_values:
-        simple: '"playbook,test"'
-      limit: {}
+        simple: '${RandomString},playbook,test'
       query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, %s , %s)
-      skip: {}
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (%s , %s , %s)
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 75
+          "x": 480,
+          "y": 1215
         }
       }
     note: false
@@ -660,69 +380,34 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: cac070fd-abb3-48fa-82df-408961428fc0
+    taskid: 3cc47290-a109-41e0-80e7-9a6ea17406c9
     type: regular
     task:
-      id: cac070fd-abb3-48fa-82df-408961428fc0
+      id: 3cc47290-a109-41e0-80e7-9a6ea17406c9
       version: -1
-      name: Delete query getting back to origin table
-      script: Generic SQL|||query
+      name: Delete New Entry (If was created)
+      script: Generic SQL|||sql-command
       type: regular
       iscommand: true
       brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit: {}
-      query:
-        simple: Delete FROM TestTable WHERE ID=11211
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 81969732-87a1-4f05-8d45-5bc408c34816
-    type: regular
-    task:
-      id: 81969732-87a1-4f05-8d45-5bc408c34816
-      version: -1
-      name: Delete query getting back to origin table
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
+      description: Running a sql query
     nexttasks:
       '#none#':
       - "19"
     scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit: {}
       query:
-        simple: Delete FROM TestTable WHERE ID=11311
-      skip: {}
+        simple: Delete FROM TestTable WHERE ID=${RandomString}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1160
+          "x": 695,
+          "y": 2205
         }
       }
     note: false
@@ -730,37 +415,39 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 70d609dd-6474-4a08-8d87-487504af1951
+    taskid: 8c6f6ddc-8cd1-4a26-8ea9-e5857277268e
     type: regular
     task:
-      id: 70d609dd-6474-4a08-8d87-487504af1951
+      id: 8c6f6ddc-8cd1-4a26-8ea9-e5857277268e
       version: -1
       name: Insert query in oracle syntax with bind variables values
-      script: Generic SQL|||query
+      script: Generic SQL|||sql-command
       type: regular
       iscommand: true
       brand: Generic SQL
+      description: Running a sql query
     nexttasks:
       '#none#':
-      - "21"
+      - "32"
     scriptarguments:
       bind_variables_names:
-        simple: x,y
+        simple: u,x,y
       bind_variables_values:
-        simple: playbook,test
-      limit: {}
+        simple: ${RandomString},playbook,test
       query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, :x , :y)
-      skip: {}
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (:u, :x , :y)
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 75
+          "x": 910,
+          "y": 1215
         }
       }
     note: false
@@ -768,15 +455,446 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 00a33eb3-0aa7-4e24-85f5-896614d4f6e3
+    type: regular
+    task:
+      id: 00a33eb3-0aa7-4e24-85f5-896614d4f6e3
+      version: -1
+      name: Generate Random ID
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "7"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e3e1df5e-f7f6-4f9e-8917-ac5e5bf5d09f
+    type: condition
+    task:
+      id: e3e1df5e-f7f6-4f9e-8917-ac5e5bf5d09f
+      version: -1
+      name: Was New Entry Created?
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result.ID}
+            iscontext: true
+          right:
+            value:
+              simple: ${RandomString}
+        - operator: containsGeneral
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result.id}
+            iscontext: true
+          right:
+            value:
+              simple: ${RandomString}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: e10ce21c-f848-4881-8beb-d6386bc4db49
+    type: condition
+    task:
+      id: e10ce21c-f848-4881-8beb-d6386bc4db49
+      version: -1
+      name: Was New Entry Deleted?
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notIn
+          left:
+            value:
+              simple: ${RandomString}
+          right:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result.ID}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 5d51d13d-84e2-468a-8cae-9a46540c8822
+    type: regular
+    task:
+      id: 5d51d13d-84e2-468a-8cae-9a46540c8822
+      version: -1
+      name: Select query - show all test table
+      description: Running a sql query
+      script: Generic SQL|||sql-command
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "10"
+      query:
+        simple: select * from TestTable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 72ac0a5f-9f42-40af-8e09-50180b173bee
+    type: title
+    task:
+      id: 72ac0a5f-9f42-40af-8e09-50180b173bee
+      version: -1
+      name: 'Insert New Entry '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 07bfb6c0-b1f2-4207-89d8-14f5f20a91c3
+    type: title
+    task:
+      id: 07bfb6c0-b1f2-4207-89d8-14f5f20a91c3
+      version: -1
+      name: Validate New Entry
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ead1f66f-cd04-48c6-8fb0-1348c340cae3
+    type: title
+    task:
+      id: ead1f66f-cd04-48c6-8fb0-1348c340cae3
+      version: -1
+      name: Query Succeeded - Retrieve Table Back To Original State
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 963f1802-10ad-43fc-8383-e03b1773f92c
+    type: title
+    task:
+      id: 963f1802-10ad-43fc-8383-e03b1773f92c
+      version: -1
+      name: Error Creating New Entry
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 5052af1d-3a14-4218-8c9a-9ac2d775a26c
+    type: condition
+    task:
+      id: 5052af1d-3a14-4218-8c9a-9ac2d775a26c
+      version: -1
+      name: Choose proper query syntax based on DB type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      mssql:
+      - "3"
+      oracle:
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: mssql
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.InstanceName}
+          right:
+            value:
+              simple: Microsoft
+    - label: oracle
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.InstanceName}
+          right:
+            value:
+              simple: Oracle
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f8614ec7-5aa8-4e67-8997-5e4c25f3bf8f
+    type: regular
+    task:
+      id: f8614ec7-5aa8-4e67-8997-5e4c25f3bf8f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: RandomString
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 51d245c5-17ee-4cde-8b0b-59ee9c293e87
+    type: regular
+    task:
+      id: 51d245c5-17ee-4cde-8b0b-59ee9c293e87
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RandomString
+      value:
+        simple: 1${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2595,
-        "width": 1780,
-        "x": -460,
-        "y": -660
+        "height": 2950,
+        "width": 1240,
+        "x": 50,
+        "y": 50
       }
     }
   }

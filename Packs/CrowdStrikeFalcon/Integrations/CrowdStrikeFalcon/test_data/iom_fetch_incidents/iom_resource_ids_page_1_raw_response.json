@@ -1,0 +1,18 @@
+{
+    "meta": {
+        "query_time": 4.391834078,
+        "powered_by": "cspm-registration",
+        "trace_id": "dummy",
+        "pagination": {
+            "offset": 0,
+            "limit": 2,
+            "total": 14032,
+            "next_token": "next_token_1"
+        }
+    },
+    "errors": [],
+    "resources": [
+        "resource_1",
+        "resource_2"
+    ]
+}

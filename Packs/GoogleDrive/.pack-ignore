@@ -15,3 +15,6 @@ ignore=BA101
 
 [file:GoogleDrive_1_3.yml]
 ignore=MR108
+
+[known_words]
+corpora

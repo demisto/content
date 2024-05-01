@@ -1,0 +1,341 @@
+id: Prisma Cloud Compute - Get Defender Logs
+version: -1
+name: Prisma Cloud Compute - Get Defender Logs
+description: |-
+  This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook.
+  - Gets defender logs and sets them to layout
+  - Downloads defender logs
+  - Gets defender backups
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15b5975b-d722-4af0-8935-0eebe22e7014
+    type: start
+    task:
+      id: 15b5975b-d722-4af0-8935-0eebe22e7014
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2ecb9f9b-8bc9-4cf7-84f7-a6674384a80b
+    type: regular
+    task:
+      id: 2ecb9f9b-8bc9-4cf7-84f7-a6674384a80b
+      version: -1
+      name: Get Defender Logs
+      description: DefenderLogs returns the last Defender logs.
+      script: '|||prisma-cloud-compute-logs-defender'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      execution-timeout:
+        simple: "120"
+      hostname:
+        complex:
+          root: inputs.Hostname
+      lines:
+        simple: "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: db5d2eb5-22a0-4b52-8d3f-821a9fd06138
+    type: regular
+    task:
+      id: db5d2eb5-22a0-4b52-8d3f-821a9fd06138
+      version: -1
+      name: List Defender Backups
+      description: List returns the available backups.
+      tags:
+      - backups
+      script: '|||prisma-cloud-compute-get-backups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      project:
+        complex:
+          root: inputs.Project
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d38954de-5b85-44d2-84c1-e0be1eccaac7
+    type: regular
+    task:
+      id: d38954de-5b85-44d2-84c1-e0be1eccaac7
+      version: -1
+      name: Download Defender Logs
+      description: DownloadDefenderLogs downloads all defender logs and metadata.
+      script: '|||prisma-cloud-compute-logs-defender-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      hostname:
+        complex:
+          root: inputs.Hostname
+      ignore-outputs:
+        simple: "true"
+      lines:
+        simple: "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9192440f-f7aa-42b9-8ec9-84bb84f7d3cb
+    type: regular
+    task:
+      id: 9192440f-f7aa-42b9-8ec9-84bb84f7d3cb
+      version: -1
+      name: Set Logs to Layout
+      description: Convert an array to a nice table display (usually from the context).
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      data:
+        complex:
+          root: PrismaCloudCompute.Defenders
+          accessor: Logs
+      extend-context:
+        simple: LogsTable=.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Prisma Cloud Compute Defender Logs
+      output:
+        simple: ${LogsTable}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6c4b6aff-1edd-416c-833f-64c5779a4d01
+    type: regular
+    task:
+      id: 6c4b6aff-1edd-416c-833f-64c5779a4d01
+      version: -1
+      name: Create Indicator Table
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: 'Indicators=.={"Value": val.value, "Description": val.CustomFields.description, "CVSS": val.CustomFields.cvss}'
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: id:${incident.id} and type:CVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 360a2324-a6a6-4b9d-8399-e5f4a4366776
+    type: condition
+    task:
+      id: 360a2324-a6a6-4b9d-8399-e5f4a4366776
+      description: ""
+      version: -1
+      name: Any logs found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloudCompute.Defenders
+                accessor: Logs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 25eaab9a-d974-46b1-862c-400a47489106
+    type: title
+    task:
+      id: 25eaab9a-d974-46b1-862c-400a47489106
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_4_yes": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 380,
+        "x": 452.5,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: {}
+  required: false
+  description: The Defender hostname. Can be retrieved from the "prisma-cloud-compute-defenders-list" command.
+  playbookInputQuery:
+- key: Project
+  value: {}
+  required: false
+  description: The project to retrieve the backups from.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

@@ -2,9 +2,7 @@ id: detonate_file_from_url_-_wildfire
 version: -1
 name: Detonate File From URL - WildFire
 description: |-
-  Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types -
-  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+  Deprecated. Use Detonate File From URL - WildFire v2 instead.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -352,94 +350,95 @@ inputs:
   description: The resource type to download. Default is pdf. xml is also possible.
 outputs:
 - contextPath: DBotScore
-  description: The DBotScore object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: File.Size
-  description: File size
+  description: File size.
   type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: MD5 hash of the file.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: SHA1 hash of the file.
   type: string
 - contextPath: File.Type
-  description: File type e.g. "PE"
+  description: File type e.g. "PE".
   type: string
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: SHA256 hash of the file.
   type: string
 - contextPath: File.EntryID
-  description: The Entry ID of the sample
+  description: The Entry ID of the sample.
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that made the decision.
   type: string
 - contextPath: File.Name
-  description: Filename
+  description: Filename.
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+  description: For malicious files, the reason for the vendor to make the decision.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator we tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The type of the indicator.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: IP.Address
-  description: IP's relevant to the sample
+  description: IP's relevant to the sample.
   type: string
 - contextPath: File
-  description: The File object
+  description: The File object.
   type: unknown
 - contextPath: InfoFile
-  description: The report file object
+  description: The report file object.
   type: unknown
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+  description: The EntryID of the report file.
   type: string
 - contextPath: InfoFile.Extension
-  description: The extension of the report file
+  description: The extension of the report file.
   type: string
 - contextPath: InfoFile.Name
-  description: The name of the report file
+  description: The name of the report file.
   type: string
 - contextPath: InfoFile.Info
-  description: The info of the report file
+  description: The info of the report file.
   type: string
 - contextPath: InfoFile.Size
-  description: The size of the report file
+  description: The size of the report file.
   type: number
 - contextPath: InfoFile.Type
-  description: The type of the report file
+  description: The type of the report file.
   type: string
 - contextPath: File.Malicious
-  description: The malicious object
+  description: The malicious object.
   type: unknown
 - contextPath: WildFire.Report
-  description: The submission object
+  description: The submission object.
   type: unknown
 - contextPath: WildFire.Report.MD5
-  description: MD5 of the submission
+  description: MD5 of the submission.
   type: string
 - contextPath: WildFire.Report.SHA256
-  description: SHA256 of the submission
+  description: SHA256 of the submission.
   type: string
 - contextPath: WildFire.Report.FileType
-  description: The type of the submission
+  description: The type of the submission.
   type: string
 - contextPath: WildFire.Report.Status
-  description: The status of the submission
+  description: The status of the submission.
   type: string
 - contextPath: WildFire.Report.Size
-  description: The size of the submission
+  description: The size of the submission.
   type: number
 tests:
-- Wildfire Test
+- No tests (deprecated)
+deprecated: true

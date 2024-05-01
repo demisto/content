@@ -1,0 +1,31 @@
+{
+    "id": "indicator_signatureoriginalname",
+    "version": -1,
+    "modified": "2023-12-20T11:51:40.510990647Z",
+    "name": "Signature Original Name",
+    "ownerOnly": false,
+    "cliName": "signatureoriginalname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "File"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

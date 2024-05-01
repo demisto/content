@@ -23,5 +23,6 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "template": "# Network Security (IDS/IPS)\n## Top Use Cases:\n\n- Get/Fetch alerts.\n- Get PCAP file, packet.\n- Get network logs filtered by time range, ip addresses, ports, etc.\n- Create/manage/delete policies and rules.\n- Update signatures from an online source / upload + Get last signature update information.\n- Install policy (if existing).\n\n## Network Security (IPS/IDS) Integration Example: [ProtectWise](https://xsoar.pan.dev/docs/reference/integrations/protect-wise)"
 }

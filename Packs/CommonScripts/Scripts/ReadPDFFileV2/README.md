@@ -1,4 +1,4 @@
-Loads a PDF file's content and metadata into context.
+Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 
 
 ## Script Data
@@ -55,3 +55,5 @@ Loads a PDF file's content and metadata into context.
 | File.UserProperties | Indicates the presence of the structure elements that contain user properties attributes. | String |
 | File.Extension | The file's extension. | String |
 | Account.Email | The email address of the account. | String |
+| Hashes.type | The hash type extracted from the PDF file. | String |
+| Hashes.value | The hash value extracted from the PDF file. | String |

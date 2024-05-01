@@ -1,0 +1,152 @@
+{
+    "incapsula_siemintegration_raw": {
+      "cn1": {
+        "type": "int",
+        "is_array": false
+      },
+      "start": {
+        "type": "int",
+        "is_array": false
+      },      
+        "cpt": {
+        "type": "string",
+        "is_array": false
+      },
+      "spt": {
+        "type": "int",
+        "is_array": false
+      },
+      "in": {
+        "type": "string",
+        "is_array": false
+      },
+      "act": {
+        "type": "string",
+        "is_array": false
+      },
+      "app": {
+        "type": "string",
+        "is_array": false
+      },      
+      "cefSeverity": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs2": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs3": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs4": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs5": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs6": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs7": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs8": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs9": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs10": {
+        "type": "string",
+        "is_array": false
+      },      
+      "end": {
+        "type": "string",
+        "is_array": false
+      },
+      "ref": {
+        "type": "string",
+        "is_array": false
+      },
+      "sip": {
+        "type": "string",
+        "is_array": false
+      },                                      
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "ver": {
+        "type": "string",
+        "is_array": false
+      },
+      "xff": {
+        "type": "string",
+        "is_array": false
+      },
+      "ccode": {
+        "type": "string",
+        "is_array": false
+      },                  
+      "dproc": {
+        "type": "string",
+        "is_array": false
+      },
+      "requestMethod": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceFacility": {
+        "type": "string",
+        "is_array": false
+      },
+      "filePermission": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceExternalId": {
+        "type": "string",
+        "is_array": false
+      },
+      "cicode": {
+        "type": "string",
+        "is_array": false
+      },
+      "fileId": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefName": {
+        "type": "string",
+        "is_array": false
+      },
+      "request": {
+        "type": "string",
+        "is_array": false
+      },
+      "sourceServiceName": {
+        "type": "string",
+        "is_array": false
+      },
+      "requestClientApplication": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs11": {
+        "type": "string",
+        "is_array": false
+      },                
+      "postbody": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

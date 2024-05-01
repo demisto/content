@@ -1,0 +1,9 @@
+varonis-get-threat-models name="Abnormal service behavior*"
+varonis-get-alerts start_time="2023-12-01T09:58:00" end_time="2023-12-07T04:16:00" alert_status="New" alert_severity="High" device_name="intfc35adh" threat_model_name="Deletion: Active Directory containers, Foreign Security Principal, or GPO" extra_fields="Alert.MitreTactic.*"
+varonis-get-alerted-events alert_id="C98A3E72-99E9-4E5C-A560-7D04FA60686E|C83D55F0-EC63-41FC-B8C6-A5A66CB51372" last_days=7 extra_fields="Event.ByAccount.*|Event.Device*"
+varonis-alert-add-note alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E note="This needs to be invested ASAP" 
+varonis-update-alert-status alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E status="Action Required" note="Waiting for feedback from security team"
+varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Inaccurate alert logic"  note="Alert is irrelevant. Closed"
+
+
+

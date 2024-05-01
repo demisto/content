@@ -125,6 +125,8 @@ Gets a single incident from Azure Sentinel.
 | AzureSentinel.Incident.Status | String | The incident status. | 
 | AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
 | AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeObjectID | String | The object ID of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeUPN | String | The user principal name of the incident assignee. | 
 | AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
 | AzureSentinel.Incident.Label.Type | String | The incident label type. | 
 | AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
@@ -716,6 +718,8 @@ Updates a single incident in Azure Sentinel.
 | AzureSentinel.Incident.Status | String | The incident status. | 
 | AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
 | AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeObjectID | String | The object ID of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeUPN | String | The user principal name of the incident assignee. | 
 | AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
 | AzureSentinel.Incident.Label.Type | String | The incident label type. | 
 | AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
@@ -1196,6 +1200,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | AzureSentinel.IncidentAlert.IncidentId | String | The ID of the incident. | 
 | AzureSentinel.IncidentAlert.Kind | String | The kind of the alert. | 
 | AzureSentinel.IncidentAlert.Tactic | Unknown | The tactics of the alert. | 
+| AzureSentinel.IncidentAlert.Techniques | Unknown | The Techniques of the alert. | 
 | AzureSentinel.IncidentAlert.DisplayName | String | The display name of the alert. | 
 | AzureSentinel.IncidentAlert.Description | String | The description of the alert. | 
 | AzureSentinel.IncidentAlert.ConfidenceLevel | String | The confidence level of this alert. | 
@@ -2424,8 +2429,11 @@ There are no input arguments for this command.
 | AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
 
 #### Command example
+
 ```!azure-sentinel-subscriptions-list```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2450,6 +2458,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Azure Sentinel Subscriptions
+
 >|Subscriptionid|Tenantid|Displayname|State|
 >|---|---|---|---|
 >| 0000000000000 | 000000000000000 | Pay-As-You-Go | Enabled |
@@ -2464,6 +2473,7 @@ There are no input arguments for this command.
 | AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
 | AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
 | AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
 ### azure-sentinel-resource-group-list
 
 ***
@@ -2493,8 +2503,11 @@ Lists all resource groups.
 | AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
 
 #### Command example
+
 ```!azure-sentinel-resource-group-list```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2527,6 +2540,7 @@ Lists all resource groups.
 #### Human Readable Output
 
 >### Azure Sentinel Resource Groups
+
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell | eastus |  |

@@ -4,7 +4,9 @@
 set -e
 
 # set local vars
-CONTENT_PIPELINES_API_URL=https://code.pan.run/api/v4/projects/2596/pipelines # disable-secrets-detection
+CI_SERVER_URL=${CI_SERVER_URL:-https://gitlab.xdr.pan.local} # disable-secrets-detection
+CI_PROJECT_ID=${CI_PROJECT_ID:-1061}
+CONTENT_PIPELINES_API_URL=${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/pipelines
 
 if [ -z "$1" ]; then
   echo "No commit branch. Aborting."

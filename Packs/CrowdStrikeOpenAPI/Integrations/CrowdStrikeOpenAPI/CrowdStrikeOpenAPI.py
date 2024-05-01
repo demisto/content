@@ -4,6 +4,7 @@ import urllib3
 
 # flake8: noqa: E501
 
+
 class Client:
     def __init__(self, params: Dict):
         self.cs_client = CrowdStrikeClient(params)
@@ -3252,8 +3253,8 @@ class Client:
         return response
 
     def update_rulesv1_request(self, domain_updaterulerequestv1_filter, domain_updaterulerequestv1_id, domain_updaterulerequestv1_name, domain_updaterulerequestv1_permissions, domain_updaterulerequestv1_priority):
-        data = assign_params(filter=domain_updaterulerequestv1_filter, id=domain_updaterulerequestv1_id, name=domain_updaterulerequestv1_name,
-                             permissions=domain_updaterulerequestv1_permissions, priority=domain_updaterulerequestv1_priority)
+        data = [assign_params(filter=domain_updaterulerequestv1_filter, id=domain_updaterulerequestv1_id, name=domain_updaterulerequestv1_name,
+                              permissions=domain_updaterulerequestv1_permissions, priority=domain_updaterulerequestv1_priority)]
 
         headers = self.cs_client._headers
 
