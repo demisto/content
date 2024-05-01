@@ -102,7 +102,7 @@ def error_handler(res):
 
 
 def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
-    retries = 0 if IS_TIME_SENSITIVE else 10
+    retries = 0 if IS_TIME_SENSITIVE else 3
     status_list_to_retry = None if IS_TIME_SENSITIVE else [429]
     try:
         res = generic_http_request(method=method,
