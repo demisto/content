@@ -55,6 +55,9 @@ class Boto3Client:
 
     def update_group(self):
         pass
+    
+    def get_user_operations_list(self):
+        pass
 
 
 def test_create_user(mocker):
@@ -655,3 +658,44 @@ def test_list_group_memberships(mocker):
     assert {'GroupId': 'GROUP_ID', 'GroupMemberships': [{'MembershipId': 'MEMBERSHIP_ID', 'UserId': 'USER_ID'}],
             'GroupMembershipNextToken': 'NEXT_TOKEN'} in contents.get('EntryContext').values()
     assert 'AWS IAM Identity Center Groups' in contents.get('HumanReadable')
+
+def test_get_user_operations_list_empty_region():
+    """
+    Given:
+        Arguments not including 'region' argument in the input dictionary.
+
+    When:
+        Generating a list of operations to update user information using get_user_operations_list function.
+
+    Then:
+        Ensure that the function handles the empty 'region' argument properly and generates the expected list of operations.
+    """
+    # Input arguments with empty 'region'
+    args = {
+        'userEmailAddressPrimary': 'true',
+        'userEmailAddress': 'test@example.com',
+        'familyName': 'Doe',
+        'givenName': 'John',
+        'displayName': 'John Doe',
+        'userType': 'Employee',
+        'profileUrl': 'https://example.com/profile',
+        'title': 'Software Engineer'
+    }
+
+    # Expected list of operations
+    expected_operations = [
+        {'AttributePath': 'name.familyName', 'AttributeValue': 'Doe'},
+        {'AttributePath': 'name.givenName', 'AttributeValue': 'John'},
+        {'AttributePath': 'emails', 'AttributeValue': [{'value': 'test@example.com', 'primary': True}]},
+        {'AttributePath': 'displayName', 'AttributeValue': 'John Doe'},
+        {'AttributePath': 'userType', 'AttributeValue': 'Employee'},
+        {'AttributePath': 'profileUrl', 'AttributeValue': 'https://example.com/profile'},
+        {'AttributePath': 'title', 'AttributeValue': 'Software Engineer'}
+    ]
+
+    # Call the function to be tested
+    from AWSIAMIdentityCenter import get_user_operations_list
+    result = get_user_operations_list(args)
+
+    # Assert that the result matches the expected list of operations
+    assert result == expected_operations
