@@ -181,26 +181,6 @@ class TestClientRelatedFunctions:
 
         assert client.validate_private_key_syntax(private_key, private_key_type) == expected_result
 
-    def test_client_compartment_id(self, mocker):
-        """
-        Given:
-            - Valid Client object parameters are provided.
-        When:
-            - Initializing a client.
-        Then:
-            - Make sure the compartment_id is as expected.
-        """
-        mocker.patch.object(Client, 'build_audit_base_url', return_value='dummy_audit_base_url')
-        mocker.patch('OracleCloudInfrastructureEventCollector.Signer', return_value='dummy_singer_object')
-        mocker.patch.object(Client, 'validate_private_key_syntax', return_value='dummy_validated_private_key')
-        client = Client(
-            verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
-            compartment_id='dummy_compartment_id', private_key_type='PKCS#8'
-        )
-
-        assert client.compartment_id == 'dummy_compartment_id'
-
 
 class TestEventRelatedFunctions:
     """ Tests for the event related functions. """
@@ -356,6 +336,36 @@ class TestEventRelatedFunctions:
             'endTime': datetime.datetime.now().strftime(DATE_FORMAT),
             'next_page': 'dummy_next_page'
         }
+        assert mocked_http_request.called_with(expected_params)
+
+    @freeze_time('2023-01-01T10:10:10.000Z')
+    def test_audit_log_api_request_check_compartment_id(self, mocker):
+        """
+        Given:
+            - Valid request parameters.
+        When:
+            - Making an audit log API request.
+        Then:
+            - Make sure the request is sent with the correct parameters, especcially the correct compartment_id.
+        """
+        from OracleCloudInfrastructureEventCollector import audit_log_api_request
+        mocker.patch.object(Client, 'build_audit_base_url', return_value='dummy_audit_base_url')
+        mocker.patch('OracleCloudInfrastructureEventCollector.Signer', return_value='dummy_singer_object')
+        mocker.patch.object(Client, 'validate_private_key_syntax', return_value='dummy_validated_private_key')
+        client = Client(
+            verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
+            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+            compartment_id='dummy_compartment_id', private_key_type='PKCS#8'
+        )
+        mocked_http_request = mocker.patch.object(client, '_http_request', return_value={'data': 'dummy_data'})
+        audit_log_api_request(client, start_time='2023-01-01T10:10:10.000Z', next_page='dummy_next_page')
+        expected_params = {
+            'compartmentId': client.compartment_id,
+            'startTime': '2023-01-01T10:10:10.000Z',
+            'endTime': datetime.datetime.now().strftime(DATE_FORMAT),
+            'next_page': 'dummy_next_page'
+        }
+        assert client.compartment_id == 'dummy_compartment_id'
         assert mocked_http_request.called_with(expected_params)
 
     @pytest.mark.parametrize('events', ([{'dummy_data': 'dummy_data'}], []))
