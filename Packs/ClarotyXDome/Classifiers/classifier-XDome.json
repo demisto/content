@@ -2,19 +2,12 @@
     "id": "xDome - Classifier",
     "name": "xDome - Classifier",
     "type": "classification",
-    "description": "Classifies xDome incidents.",
-    "keyTypeMap": {
-        "Custom": "xDome Custom Alert",
-        "Device Changes": "xDome Device Changes Alert",
-        "OT Activity": "xDome OT Activity Alert",
-        "Policy Deviation": "xDome Policy Deviation Alert",
-        "Risk": "xDome Risk Alert",
-        "Segmentation": "xDome Segmentation Alert",
-        "Threat": "xDome Threat Alert"
-    },
+    "description": "Classifies xDome incidents (device-alert-relations) that are fetched via the built in XSOAR fetch mechanism.",
+    "defaultIncidentType": "Claroty xDome Alert",
+    "keyTypeMap": {},
     "transformer": {
         "complex": null,
-        "simple": "alert_category"
+        "simple": ""
     },
     "version": -1,
     "fromVersion": "6.10.0"

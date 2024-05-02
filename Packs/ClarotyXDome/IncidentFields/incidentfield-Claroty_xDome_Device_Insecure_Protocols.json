@@ -20,13 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "xDome Custom Alert",
-        "xDome Device Changes Alert",
-        "xDome OT Activity Alert",
-        "xDome Policy Deviation Alert",
-        "xDome Risk Alert",
-        "xDome Segmentation Alert",
-        "xDome Threat Alert"
+"Claroty xDome Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,
