@@ -64,5 +64,6 @@
         "Active_Directory_Query",
         "CommonTypes",
         "CrowdStrikeFalcon"
-    ]
+    ],
+    "defaultDataSourceName": "Code42 Event Collector"
 }
