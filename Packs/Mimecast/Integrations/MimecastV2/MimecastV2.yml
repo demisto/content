@@ -2665,7 +2665,75 @@ script:
     #   description: The number of results per page
     # - name: limit
     #   description: The maximum number of items to return.
-
+  - name: mimecast-create-address-alteration-policy
+    description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
+    arguments:
+    - name: policy_id
+      description: The Mimecast secure id of the Address Alteration Set (folder) that will be applied by this policy
+      required: true 
+    - name: policy_description
+      description: A description of the policies for future reference.
+      required: true 
+    - name: bidirectional
+      description: Determines if the policy should apply in both directions, where the from and to configurations are reversed.
+      type: boolean
+    - name: comment
+      description: Comment about the policy. This field is not visible within the Administration Console.
+    - name: conditions
+      description: Policy application based on email transmission requirements.
+    - name: enabled
+      description: Determines if the policy should be enabled to process messages. 
+      type: boolean
+      defaultValue: true
+    - name: enforced
+      description: Determines if the policy enforcement option is enabled.
+      type: boolean
+      defaultValue: false
+    - name: from_date
+      description: string (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false.
+    - name: from_eternal
+      description: Specifies if the policy should have no start date.
+      type: boolean
+      defaultValue: true
+    - name: from_part
+      description: Policy from part - envelope_from , header_from, both
+      auto: PREDEFINED
+      predefined:
+      - envelope_from
+      - header_from
+      - both
+    - name: to_date
+      description: Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false.
+    - name: to_eternal
+      description: Specifies if the policy should have no expiration date. 
+      type: boolean
+      defaultValue: true
+    - name: override
+      description: Specifies if the policy should be set as an override, to be considered prior to equally-specific policies.
+      type: boolean
+    - name: from_type
+      description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address.
+      auto: PREDEFINED
+      predefined:
+      - everyone
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - address_attribute_value
+      - individual_email_address
+    - name: to_type
+      description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address.
+      auto: PREDEFINED
+      predefined:
+      - everyone
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - address_attribute_value
+      - individual_email_address
+      
   isfetch: true
   runonce: false
   script: '-'
