@@ -154,7 +154,7 @@ def extract_assistant_message(response: Dict[str, Any], conversation: List[Dict[
     return response_content
 
 
-def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | None, str | None]:
+def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | None, str | None, str | None]:
     """
         Extracts and parses the headers, text body, and HTML body from an .eml file identified by a given entry ID.
 
@@ -183,7 +183,7 @@ def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | N
     headers, text_body, html_body = (email_parser.parsed_email.get('Headers', None),
                                      email_parser.parsed_email.get('Text', None),
                                      email_parser.parsed_email.get('HTML', None))
-    return headers, text_body, html_body
+    return headers, text_body, html_body, file_name
 
 
 def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
@@ -192,20 +192,14 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
         ('CHECK_EMAIL_HEADERS_PROMPT', 'CHECK_EMAIL_BODY_PROMPT') that are sent to the GPT model.
     """
     entry_id: str | None = args.get('entryId', None)
-    email_headers, email_text_body, email_html_body = get_email_parts(entry_id)
+    email_headers, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
     additional_instructions = args.get('additionalInstructions', '')
 
     if email_part == EmailParts.HEADERS:
         demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
         if email_headers:
-            email_headers_formatted = []
-            for header in email_headers:
-                # Each header is represented as follows: {'name': 'From', 'value': 'Example <example@example.com>'},
-                # therefore we want to combine them into a formatted string in order to reduce token's usage in prompts.
-                header_formatted = ': '.join(header.values())
-                email_headers_formatted.append(header_formatted)
-
-            readable_input = '\n'.join(email_headers_formatted)
+            email_headers = {list(header.values())[0]: list(header.values())[1] for header in email_headers}
+            readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers)
             check_email_part_message = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
 
         else:
@@ -216,10 +210,12 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
         if not email_text_body and not email_html_body:
             raise DemistoException("'email_parser' did not extract any email body from the provided file.")
 
-        email_text_body = f'Body/Text: {email_text_body}' if email_text_body else ''
-        email_html_body = f'HTML/Text: {email_html_body}' if email_html_body else ''
+        email_text_body = email_text_body if email_text_body else ''
+        email_html_body = email_html_body if email_html_body else ''
 
-        readable_input = '\n'.join([email_text_body, email_html_body])
+        email_body = {'Body/Text': email_text_body, 'HTML/Text': email_html_body}
+
+        readable_input = tableToMarkdown(name=f'{file_name} body:', t=email_body)
         check_email_part_message = CHECK_EMAIL_BODY_PROMPT.format(additional_instructions, readable_input)
     else:
         raise DemistoException("Invalid email part to check provided.")
@@ -228,7 +224,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
     args.update({'reset_conversation_history': True, 'message': check_email_part_message})
 
     # Displaying the analyzed email part to the war room.
-    return_results(readable_input)
+    return_results(CommandResults(readable_output=readable_input))
     return send_message_command(client, args)
 
 
@@ -290,13 +286,13 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     assistant_message = extract_assistant_message(response, conversation)
 
     usage = response.get('usage', {})
-    verbose_message = (f"Model: {response.get('model', '')} "
-                       f"Usage: prompt-tokens={usage.get('prompt_tokens', '')}, "
-                       f"completion-tokens={usage.get('completion_tokens', '')}, "
-                       f"total-tokens={usage.get('total_tokens', '')}")
 
-    readable_output = assistant_message
-    readable_output += f"\n\n{verbose_message}" if args.get('verbose', False) else ''
+    readable_output = assistant_message + '\n' + tableToMarkdown(name=f'{response.get("model", "")} response:', t={
+        'Prompt tokens': usage.get('prompt_tokens', ''),
+        'Completion tokens': usage.get('completion_tokens', ''),
+        'Total tokens': usage.get('total_tokens', '')
+    }
+)
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
