@@ -581,7 +581,8 @@ def results_to_incidents_timestamp(response, last_fetch):
     current_fetch = last_fetch
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
-        if source := hit.get('_source') is not None:
+        source = hit.get('_source')
+        if source is not None:
             time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD)) if '.' in TIME_FIELD else (
                 source.get(str(TIME_FIELD)))
 
@@ -628,7 +629,8 @@ def results_to_incidents_datetime(response, last_fetch):
     incidents = []
 
     for hit in response.get('hits', {}).get('hits'):
-        if source := hit.get('_source') is not None:
+        source = hit.get('_source')
+        if source is not None:
             time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD)) if '.' in TIME_FIELD else (
                 source.get(str(TIME_FIELD)))
             if time_field_value is not None:
