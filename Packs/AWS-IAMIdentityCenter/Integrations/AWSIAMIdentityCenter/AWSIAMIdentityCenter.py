@@ -540,7 +540,7 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
         IdentityStoreId: The ID of the Identity Store from which groups are listed for the user.
     """
     hr_data = []
-    context_data = {}
+    context_data: Dict[str, Any] = {}
     user_id = get_userId_by_username(args, client, IdentityStoreId)
     kwargs = {
         'IdentityStoreId': IdentityStoreId,
@@ -552,7 +552,7 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     }
     kwargs = remove_empty_elements(kwargs)
     response = client.list_group_memberships_for_member(**kwargs)
-    groups = []
+    groups: list = []
     for group in response.get('GroupMemberships', []):
         hr_data.append({
             'UserID': user_id,
@@ -568,19 +568,19 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     context_data['GroupsUserNextToken'] = response.get('NextToken')
     last_context = demisto.context()
     last_users = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('User', {})
-    last_group_memberships = None
+    last_group_memberships: list = []
     if isinstance(last_users, list):
         for user_data in last_users:
             if user_data.get('UserId') == user_id:
-                last_group_memberships = user_data.get('GroupMemberships')
+                last_group_memberships = user_data.get('GroupMemberships', [])
                 break
 
     else:
         if last_users.get('UserId', '') == user_id:
-            last_group_memberships = last_users.get('GroupMemberships')
+            last_group_memberships = last_users.get('GroupMemberships', [])
 
     if last_group_memberships:
-        combined_groups = last_group_memberships + [g for g in groups if g not in last_group_memberships]
+        combined_groups: list = last_group_memberships + [g for g in groups if g not in last_group_memberships]
         final_groups = combined_groups
     else:
         final_groups = groups
@@ -670,7 +670,7 @@ def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
         IdentityStoreId: The ID of the Identity Store where the group memberships are registered.
     """
     hr_data = []
-    context_data = {}
+    context_data: Dict[str, Any] = {}
     group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
     kwargs = {
         'IdentityStoreId': IdentityStoreId,
@@ -697,7 +697,7 @@ def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
     context_data['GroupMembershipNextToken'] = response.get('NextToken')
     last_context = demisto.context()
     last_groups = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('Group', {})
-    last_group_memberships = None
+    last_group_memberships = []
     if isinstance(last_groups, list):
         for user_data in last_groups:
             if user_data.get('GroupId') == group_id:
