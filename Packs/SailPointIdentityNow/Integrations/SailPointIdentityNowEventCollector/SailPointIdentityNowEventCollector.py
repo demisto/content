@@ -90,16 +90,22 @@ class Client(BaseClient):
     
     
 
-    def search_events(self, prev_id: int, limit: int, from_date: str | None = None) -> List[Dict]:  # noqa: E501
+    def search_events(self, prev_id: str, limit: int| None = None, from_date: str | None = None) -> List[Dict]:  # noqa: E501
         """
         """
+        from_date = from_date or '2022-05-19T19:26:03.351Z'
         query = {"indices": ["events"],
         "queryType": "SAILPOINT",
         "queryVersion": "5.2",
         "query":
-        { "query": "type:*" }
+        {"query": f"created: [{from_date} TO now]" },
+        "timeZone": "America/Los_Angeles",
+        "fields": ["created"],
+        "sort": ["+id", "+created"],
+        "searchAfter": [prev_id]
         }
-        return self._http_request(method='POST', url_suffix='/v3/search', data=query)
+        url_suffix = f'/v3/search?limit={limit}' if limit else '/v3/search'
+        return self._http_request(method='POST', url_suffix=url_suffix, data=query)
 
 
 
@@ -124,11 +130,9 @@ def test_module(client: Client, first_fetch_time: str) -> str:
     return 'ok'
 
 
-def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit') or 50
-    from_date = args.get('from_date')
+def get_events(client: Client, limit: int, from_date:str) -> tuple[List[Dict], CommandResults]:
     events = client.search_events(
-        prev_id=0,
+        prev_id="0",
         limit=limit,
         from_date=from_date,
     )
@@ -136,14 +140,14 @@ def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: dict[str, int],
+def fetch_events(client: Client, last_run: dict[str, str],
                  first_fetch_time, max_events_per_fetch: int
                  ) -> tuple[Dict, List[Dict]]:
     """
     """
     prev_id = last_run.get('prev_id', None)
     if not prev_id:
-        prev_id = 0
+        prev_id = "0"
 
     events = client.search_events(
         prev_id=prev_id,
@@ -208,8 +212,11 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == 'identitynow-get-events':
+            limit = args.pop('limit') or 50
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, args=args)
+            time_to_start = arg_to_datetime(args.pop('from_date'))
+            formatted_time_to_start = time_to_start.strftime(DATE_FORMAT)
+            events, results = get_events(client, limit, from_date=formatted_time_to_start)
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
