@@ -2,7 +2,7 @@ from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
 
-VERSION = "v2.3.2"
+VERSION = "v2.4.0"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -862,6 +862,136 @@ def urls_from_ip_output(ip, response):
     return results
 
 
+def user_tags_command(a1000: A1000):
+    action = demisto.getArg("action")
+    sample_hash = demisto.getArg("hash")
+    tags = demisto.getArg("tags")
+
+    try:
+        if action == "GET":
+            resp = a1000.get_user_tags(sample_hash=sample_hash)
+
+        elif action == "CREATE":
+            tags_list = tags.split(",")
+            resp = a1000.post_user_tags(sample_hash=sample_hash, tags=tags_list)
+
+        elif action == "DELETE":
+            tags_list = tags.split(",")
+            resp = a1000.delete_user_tags(sample_hash=sample_hash, tags=tags_list)
+
+        else:
+            return_error("This action is not supported.")
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        raise
+
+    results = user_tags_output(resp=resp, action=action)
+    return results
+
+
+def user_tags_output(resp, action):
+    markdown = f"## ReversingLabs A1000 user tags - {action} tags\n **Tag list**: {resp.text}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_user_tags": resp.json()},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def file_analysis_status_command(a1000: A1000):
+    sample_hashes = demisto.getArg("hashes")
+    hash_list = sample_hashes.split(",")
+
+    analysis_status = demisto.getArg("analysis_status")
+
+    try:
+        resp = a1000.file_analysis_status(sample_hashes=hash_list, sample_status=analysis_status)
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        raise
+
+    results = file_analysis_status_output(resp_json=resp.json(), status=analysis_status)
+    return results
+
+
+def file_analysis_status_output(resp_json, status=None):
+    markdown = f"""## ReversingLabs A1000 file analysis status\n **Hash type**: {resp_json.get("hash_type")}\n"""
+
+    if status:
+        markdown = markdown + f"**Only status**: {status}\n"
+
+    results_table = tableToMarkdown("Analysis status", resp_json.get("results"))
+
+    markdown = markdown + results_table
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_file_analysis_status": resp_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def pdf_report_command(a1000: A1000):
+    sample_hash = demisto.getArg("hash")
+    action = demisto.getArg("action")
+
+    try:
+        if action == "CREATE REPORT":
+            resp = a1000.create_pdf_report(sample_hash=sample_hash).json()
+
+        elif action == "CHECK STATUS":
+            resp = a1000.check_pdf_report_creation(sample_hash=sample_hash).json()
+
+        elif action == "DOWNLOAD REPORT":
+            resp = a1000.download_pdf_report(sample_hash=sample_hash)
+
+        else:
+            return_error("This action is not supported.")
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        raise
+
+    results, file_result = pdf_report_output(resp=resp, action=action, sample_hash=sample_hash)
+    return [results, file_result]
+
+
+def pdf_report_output(resp, action, sample_hash):
+    markdown = f"## ReversingLabs A1000 PDF report - {action}\n"
+
+    file_result = None
+
+    if action == "CREATE REPORT":
+        markdown = markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n **Download endpoint**: {resp.get("download_endpoint")}"""
+        context = resp
+
+    elif action == "CHECK STATUS":
+        markdown = markdown + f"""**Status**: {resp.get("status")}\n **Status message**: {resp.get("status_message")}"""
+        context = resp
+
+    else:
+        file_result = fileResult(sample_hash, resp.content, file_type=EntryType.FILE)
+        context = None
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_pdf_report": context},
+        readable_output=markdown
+    )
+
+    return results, file_result
+
+
 def main():
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
@@ -922,6 +1052,26 @@ def main():
             return_results(get_ip_domain_resolutions(a1000))
         elif demisto.command() == 'reversinglabs-a1000-ip-urls':
             return_results(get_urls_from_ip(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-user-tags':
+            return_results(user_tags_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-file-analysis-status':
+            return_results(file_analysis_status_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-pdf-report':
+            return_results(pdf_report_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-static-analysis-report':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-create-dynamic-analysis-report':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-check-dynamic-analysis-report-status':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-download-dynamic-analysis-report':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-get-sample-classification':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-set-sample-classification':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-delete-sample-classification':
+            pass
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
 

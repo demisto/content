@@ -397,7 +397,60 @@ script:
     - contextPath: ReversingLabs.a1000_ip_urls
       description: A1000 URL-s hosted on an IP address.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.86428
+  - name: reversinglabs-a1000-user-tags
+    description: Perform user tag actions for a sample - Get existing tags, create new tags or delete existing tags.
+    arguments:
+      - name: action
+        description: Which tag action to perform - GET, CREATE or DELETE
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'GET'
+          - 'CREATE'
+          - 'DELETE'
+      - name: hash
+        description: Hash of the desired sample.
+        required: true
+        default: true
+      - name: tags
+        description: Comma-separated list of tags.
+    outputs:
+      - contextPath: ReversingLabs.a1000_user_tags
+        description: Actions for managing user tags on samples.
+        type: Unknown
+  - name: reversinglabs-a1000-file-analysis-status
+    description: Check the analysis status of submitted files.
+    arguments:
+      - name: hashes
+        description: Comma-separated list of file hashes. Should be written without spaces and all hashes should be of the same type.
+        default: true
+        required: true
+      - name: analysis_status
+        description: Check only files with this analysis status. Available values are 'processed' and 'not_found'.
+    outputs:
+      - contextPath: ReversingLabs.a1000_file_analysis_status
+        description: Analysis status of requested files.
+        type: Unknown
+  - name: reversinglabs-a1000-pdf-report
+    description: Perform PDF report actions for a sample - create a report, check the status of a report and download a report.
+    arguments:
+      - name: hash
+        description: Sample hash.
+        default: true
+        required: true
+      - name: action
+        description: Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'CREATE REPORT'
+          - 'CHECK STATUS'
+          - 'DOWNLOAD REPORT'
+    outputs:
+      - contextPath: ReversingLabs.a1000_pdf_report
+        description: Actions for creating and downloading PDF reports.
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.93622
   runonce: false
   script: '-'
   subtype: python3
