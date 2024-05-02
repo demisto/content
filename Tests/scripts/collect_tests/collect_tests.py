@@ -1269,22 +1269,24 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         ])
         logger.info('changed packs drops collected tests, as they are not required')
         if changed_packs:
+            logger.info(f"Collect the following packs to upload: {changed_packs.packs_to_upload=}")
             changed_packs.tests = set()  # todo - without tests - only to upload
-
-        result.append(changed_packs)
+            result.append(changed_packs)
 
         # todo - add playbooks of non api and nightly packs per marketplace + add nightly packs for install
-        nightly_packs = CollectionResult.union([
-            self._collect_packs_nightly(self.conf.nightly_packs),
-            self._id_set_tests_matching_marketplace_value()
-        ])
-        result.append(nightly_packs)
+        if self.marketplace in [MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2]:
+            nightly_packs = CollectionResult.union([
+                self._collect_packs_nightly(self.conf.nightly_packs),
+                self._id_set_tests_matching_marketplace_value()
+            ])
+            result.append(nightly_packs)
 
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
             modeling_rules = CollectionResult.union((
                 self._collect_modeling_rule_packs(),
                 self.sanity_tests_xsiam(),  # XSIAM nightly always collects its sanity test(s)
             ))
+            modeling_rules.packs_to_upload = set()
             result.append(modeling_rules)
         # todo all modeling rules for xsiam
 
@@ -1581,6 +1583,7 @@ def output(result: CollectionResult | None):
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
     modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
+    logger.info(f"Michal - {modeling_rules_to_test=}")
     machines = result.machines if result and result.machines else ()
     packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 

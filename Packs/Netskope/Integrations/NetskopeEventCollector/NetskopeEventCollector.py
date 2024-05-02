@@ -9,7 +9,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS '''
+''' CONSTANTSs '''
 
 ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network']
 MAX_EVENTS_PAGE_SIZE = 10000
