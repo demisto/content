@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def check_phishing_incidents()-> bool:
+def check_phishing_incidents() -> bool:
     """
     Checks for phishing incidents.
 
@@ -16,7 +16,7 @@ def check_phishing_incidents()-> bool:
         return DemistoException(str(e))
 
 
-def is_rapid_breach_response_installed()-> bool:
+def is_rapid_breach_response_installed() -> bool:
     """
     Checks if Rapid Breach Response is installed.
 
@@ -33,7 +33,7 @@ def is_rapid_breach_response_installed()-> bool:
         return DemistoException(str(e))
 
 
-def get_use_cases()-> Dict[str, Any]:
+def get_use_cases() -> Dict[str, Any]:
     """
     Retrieves use cases data based on modules in Demisto.
 
@@ -68,7 +68,8 @@ def get_use_cases()-> Dict[str, Any]:
                 if phishing_incidents:
                     use_cases_in_production.add('Business Email Compromise Coverage')
                 else:
-                    at_risk.append('[Business Email Compromise Coverage](https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging)')
+                    at_risk.append(
+                        '[Business Email Compromise Coverage](https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging)')
             elif category == 'network security':
                 use_cases_in_production.add('Network Security')
             elif category == 'analytics & siem':

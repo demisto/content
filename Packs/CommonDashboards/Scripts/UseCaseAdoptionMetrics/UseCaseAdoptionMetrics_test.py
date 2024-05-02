@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import UseCaseAdoptionMetrics
 
+
 def test_check_phishing_incidents_incidents_not_exists(mocker):
     """
     Given:
@@ -20,7 +21,7 @@ def test_check_phishing_incidents_incidents_not_exists(mocker):
         return_value=[{"Contents": {"data": []}}]
     )
     assert not UseCaseAdoptionMetrics.check_phishing_incidents()
-    
+
 
 def test_check_phishing_incidents(mocker):
     """
@@ -39,8 +40,6 @@ def test_check_phishing_incidents(mocker):
         return_value=[{"Contents": {"data": ['check']}}]
     )
     assert UseCaseAdoptionMetrics.check_phishing_incidents()
-    
-
 
 
 def test_is_rapid_breach_response_installed_packs_not_installed(mocker):
@@ -98,7 +97,7 @@ def test_get_use_cases(mocker):
     """
     from UseCaseAdoptionMetrics import get_use_cases
     # Simulate modules with different categories and states
-    mocker.patch.object(demisto, "getModules", return_value = {
+    mocker.patch.object(demisto, "getModules", return_value={
         '1': {'category': 'case management', 'brand': 'Brand', 'state': 'active'},
         '2': {'category': 'Email', 'brand': 'Brand', 'state': 'active', 'incident_types': ['Phishing']},
         '3': {'category': 'network security', 'brand': 'Brand', 'state': 'active'},
