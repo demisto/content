@@ -21,20 +21,20 @@ configuration:
   section: connect
   defaultvalue: gpt-3.5-turbo
   options:
-    - gpt-3.5-turbo
-    - gpt-3.5-turbo-0125
-    - gpt-3.5-turbo-1106
-    - gpt-3.5-turbo-16k
-    - gpt-4-turbo
-    - gpt-4-turbo-preview
-    - gpt-4-0125-preview
-    - gpt-4-1106-preview
-    - gpt-4-vision-preview
-    - gpt-4-1106-vision-preview
-    - gpt-4
-    - gpt-4-0613
-    - gpt-4-32k
-    - gpt-4-32k-0613
+  - gpt-3.5-turbo
+  - gpt-3.5-turbo-0125
+  - gpt-3.5-turbo-1106
+  - gpt-3.5-turbo-16k
+  - gpt-4-turbo
+  - gpt-4-turbo-preview
+  - gpt-4-0125-preview
+  - gpt-4-1106-preview
+  - gpt-4-vision-preview
+  - gpt-4-1106-vision-preview
+  - gpt-4
+  - gpt-4-0613
+  - gpt-4-32k
+  - gpt-4-32k-0613
 
 - display: Model (Optional - overrides selected choice)
   additionalinfo: 'The model that will process the inputs and generate the completion.'
@@ -79,31 +79,31 @@ script:
   - name: gpt-send-message
     description: Send a plain message to the selected GPT model and receive the generated response.
     arguments:
-      - name: message
-        required: true
-        description: The message that the GPT model will respond to.
+    - name: message
+      required: true
+      description: The message that the GPT model will respond to.
 
-      - name: reset_conversation_history
-        required: false
-        description: Whether to keep previously sent messages in a conversation context or start a new conversation.
-        type: Boolean
+    - name: reset_conversation_history
+      required: false
+      description: Whether to keep previously sent messages in a conversation context or start a new conversation.
+      type: Boolean
 
-      - name: max_tokens
-        required: false
-        description: The maximum number of tokens that can be generated for the response.
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
 
-      - name: temperature
-        required: false
-        description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
 
-      - name: top_p
-        required: false
-        description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    - name: top_p
+      required: false
+      description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
 
-      - name: verbose
-        required: false
-        description: Whether to display token consumption and queried model
-        type: Boolean
+    - name: verbose
+      required: false
+      description: Whether to display token consumption and queried model.
+      type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
@@ -112,30 +112,30 @@ script:
   - name: gpt-check-email-header
     description: Checking email header for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
     arguments:
-      - name: entryId
-        description: Entry ID of an uploaded '.eml' file.
-        required: true
+    - name: entryId
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
 
-      - name: additionalInstructions
-        description: Additional instructions or security issue to focus on.
-        required: false
+    - name: additionalInstructions
+      description: Additional instructions or security issue to focus on.
+      required: false
 
-      - name: max_tokens
-        required: false
-        description: The maximum number of tokens that can be generated for the response.
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
 
-      - name: temperature
-        required: false
-        description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
 
-      - name: top_p
-        required: false
-        description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
 
-      - name: verbose
-        required: false
-        description: Whether to display token consumption and queried model.
-        type: Boolean
+    - name: verbose
+      required: false
+      description: Whether to display token consumption and queried model.
+      type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.  It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
@@ -144,30 +144,30 @@ script:
   - name: gpt-check-email-body
     description: Check email body for possible security issues.
     arguments:
-      - name: entryId
-        description: Entry ID of an uploaded '.eml' file.
-        required: true
+    - name: entryId
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
 
-      - name: additionalInstructions
-        description: Additional instructions or security issue to focus on.
-        required: false
+    - name: additionalInstructions
+      description: Additional instructions or security issue to focus on.
+      required: false
 
-      - name: max_tokens
-        required: false
-        description: The maximum number of tokens that can be generated for the response.
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
 
-      - name: temperature
-        required: false
-        description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
 
-      - name: top_p
-        required: false
-        description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
 
-      - name: verbose
-        required: false
-        description: Whether to display token consumption and queried model
-        type: Boolean
+    - name: verbose
+      required: false
+      description: Whether to display token consumption and queried model.
+      type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
@@ -178,6 +178,6 @@ script:
   subtype: python3
   dockerimage: demisto/parse-emails:1.0.0.92018
 
-fromversion: 6.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
