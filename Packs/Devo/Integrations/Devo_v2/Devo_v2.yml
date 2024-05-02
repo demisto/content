@@ -107,6 +107,10 @@ script:
     - name: items_per_page
       description: Enter the per page value you want to set.
       defaultValue: "50"
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
+      hidden: true
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
@@ -143,6 +147,10 @@ script:
     - name: filters
       description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
       isArray: true
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
+      hidden: true
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
@@ -174,6 +182,10 @@ script:
     - name: limit
       description: Limit of results to return to context. 0 for no limit.
       defaultValue: "50"
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
+      hidden: true
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
