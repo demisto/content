@@ -107,9 +107,6 @@ script:
     - name: items_per_page
       description: Enter the per page value you want to set.
       defaultValue: "50"
-    - name: queryTimeout
-      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-      defaultValue: "60"
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
@@ -118,6 +115,10 @@ script:
     - name: filtered_columns
       description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter.
       isArray: true
+    - name: ip_as_string
+      required: false
+      description: Flag to return IP as string.
+      defaultValue: true
     outputs:
     - contextPath: Devo.QueryResults
       description: List of dictionary alerts from the specified time range.
@@ -142,9 +143,6 @@ script:
     - name: filters
       description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
       isArray: true
-    - name: queryTimeout
-      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-      defaultValue: "60"
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
@@ -176,9 +174,6 @@ script:
     - name: limit
       description: Limit of results to return to context. 0 for no limit.
       defaultValue: "50"
-    - name: queryTimeout
-      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-      defaultValue: "60"
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
@@ -233,7 +228,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.89201
+  dockerimage:  demisto/devo:1.0.0.93142
   isfetch: true
   subtype: python3
 tests:
