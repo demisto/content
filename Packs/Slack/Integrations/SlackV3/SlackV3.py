@@ -3009,7 +3009,7 @@ def main() -> None:
         support_multithreading()
         command_func()  # type: ignore
     except Exception as e:
-        demisto.debug(e)
+        demisto.debug(str(e))
         return_error(str(e))
     finally:
         demisto.info(f'{command_name} completed.')  # type: ignore
