@@ -4,7 +4,6 @@
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
         "Messaging and Conferencing",
@@ -12,17 +11,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ai"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ],
-    "devEmail": [
-        "soar-engineering@nviso.eu",
-        "xsoar-sameh@maskme.us"
-    ],
-    "githubUser": [
-        "wstinkens",
-        "sepaprivate"
     ]
 }
