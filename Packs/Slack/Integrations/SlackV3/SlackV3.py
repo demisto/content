@@ -3032,7 +3032,8 @@ def main() -> None:
         command_func()  # type: ignore
     except Exception as e:
         demisto.debug('in exception block')
-        demisto.error(f'Error occured error: {str(e)}')
+        demisto.error(f'Error occured error: {e}')
+        demisto.error(traceback.format_exc())
         demisto.debug('debugged it')
         return_error(str(e))
 

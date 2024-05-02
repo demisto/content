@@ -4170,6 +4170,7 @@ def test_fail_connect_threads(mocker):
     import SlackV3
     mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'bot_token': '123'})
     mocker.patch.object(demisto, 'args', return_value={'to': 'test', 'message': 'test message'})
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'command', return_value='send-notification')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     for _i in range(8):
