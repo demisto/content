@@ -200,11 +200,11 @@ def test_module(client: Client) -> str:
 
     try:
         test_empty_args: Dict = {}
-        results = client.get_certificates(test_empty_args)
-        if results:
-            return 'ok'
+        client.get_certificates(test_empty_args)
     except DemistoException as e:
         raise e
+
+    return 'ok'
 
 
 def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
