@@ -2,9 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict
 import parse_emails
-# from Packs.CIRCL.Integrations.CirclCVESearch.CirclCVESearch import Client as CveSearchClient, valid_cve_id_format
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -34,9 +32,9 @@ hypothetical problems.
 
 CHECK_EMAIL_BODY_PROMPT = """
 I have this email body that I suspect may contain security risks such as phishing links, suspicious attachments,
-or signs of social engineering. Please analyze the content of this email body, identify any elements that may pose security 
+or signs of social engineering. Please analyze the content of this email body, identify any elements that may pose security
 threats, and explain why these elements are concerning. Also, suggest any steps that could be taken to further verify these risks
-or protect against these threats. 
+or protect against these threats.
 Additional instructions: {}
 
 '''
@@ -72,8 +70,8 @@ class OpenAiClient(BaseClient):
         self.headers = {'Authorization': f'Bearer {self.api_key}', 'Content-Type': 'application/json'}
 
     def get_chat_completions(self,
-                             chat_context: List[Dict[str, str]],
-                             completion_params: Dict[str, str | None]) -> Dict[str, any]:
+                             chat_context: List[dict[str, str]],
+                             completion_params: dict[str, str | None]) -> dict[str, any]:
         """ Gets the response to a chat_completions request using the OpenAI API. """
 
         options = {'model': self.model}
@@ -100,7 +98,7 @@ class OpenAiClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_updated_conversation(reset_conversation_history: bool, message: str) -> List[Dict[str, str]]:
+def get_updated_conversation(reset_conversation_history: bool, message: str) -> List[dict[str, str]]:
     """
     Retrieves the existing chat conversation history from the incident context, if exists.
     If `reset_conversation_history` is True, or if no conversation history exists, it initializes a new conversation list
@@ -129,7 +127,7 @@ def get_updated_conversation(reset_conversation_history: bool, message: str) -> 
     return conversation
 
 
-def extract_assistant_message(response: Dict[str, Any], conversation: List[Dict[str, str]]) -> str:
+def extract_assistant_message(response: dict[str, Any], conversation: List[dict[str, str]]) -> str:
     """
         Extracts the assistant message from a response and updates the conversation history.
         Returns:
@@ -154,7 +152,7 @@ def extract_assistant_message(response: Dict[str, Any], conversation: List[Dict[
     return response_content
 
 
-def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | None, str | None, str | None]:
+def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | None, str | None, str | None]:
     """
         Extracts and parses the headers, text body, and HTML body from an .eml file identified by a given entry ID.
 
@@ -186,7 +184,7 @@ def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | N
     return headers, text_body, html_body, file_name
 
 
-def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     """
         Checks email parts (headers/body) for potential security issues using predefined prompts
         ('CHECK_EMAIL_HEADERS_PROMPT', 'CHECK_EMAIL_BODY_PROMPT') that are sent to the GPT model.
@@ -262,7 +260,7 @@ def test_module(client: OpenAiClient, params: dict) -> str:
     return message
 
 
-def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     """
         Sending a message with conversation context to an OpenAI GPT model and retrieves the generated response.
     """
@@ -270,7 +268,7 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     if not message:
         raise ValueError('Message not provided')
 
-    reset_conversation_history = True if args.get('reset_conversation_history', '').lower() in ['true', 'yes'] else False
+    reset_conversation_history =True if str(args.get('reset_conversation_history', '')).lower() in ['true', 'yes'] else False
     conversation = get_updated_conversation(reset_conversation_history, message)
 
     completion_params = {
@@ -304,11 +302,11 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     )
 
 
-def check_email_headers_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+def check_email_headers_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     return check_email_part(EmailParts.HEADERS, client, args)
 
 
-def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+def check_email_body_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     return check_email_part(EmailParts.BODY, client, args)
 
 

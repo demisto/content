@@ -1,11 +1,10 @@
-import io
 import pytest
 from CommonServerPython import *
 from OpenAIGPT import EmailParts
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -39,6 +38,7 @@ def test_get_email_parts(mocker, entry_id, should_raise_error):
             return {'path': './test_data/attachment_malicious_url.eml', 'name': 'attachment_malicious_url.eml'}
         elif _entry_id == 'INVALID_ENTRY_ID':
             return {'path': './test_data/dummy_file.txt', 'name': 'dummy_file.txt'}
+        return None
 
     mocker.patch.object(demisto, 'getFilePath', side_effect=mock_file)
     if should_raise_error:
@@ -70,25 +70,25 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
 @pytest.mark.parametrize('args, expected_conversation',
                          [
                              ({
-                                  'reset_conversation_history': True,
-                                  'message': "Hi There!",
-                                  'max_tokens': '100',
-                                  'temperature': '0',
-                                  'top_p': '1'
-                              }, [{'content': 'Hi There!', 'role': 'user'},
-                                  {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
+                                 'reset_conversation_history': True,
+                                 'message': "Hi There!",
+                                 'max_tokens': '100',
+                                 'temperature': '0',
+                                 'top_p': '1'
+                             }, [{'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
                              ({
-                                  'reset_conversation_history': True,
-                                  'message': "Hi There!",
-                              }, [{'content': 'Hi There!', 'role': 'user'},
-                                  {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
+                                 'reset_conversation_history': True,
+                                 'message': "Hi There!",
+                             }, [{'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
                              ({
-                                  'reset_conversation_history': False,
-                                  'message': "Hi There!",
-                              }, [{'content': 'Hi There!', 'role': 'user'},
-                                  {'content': 'Hello! How can I assist you today?', 'role': 'assistant'},
-                                  {'content': 'Hi There!', 'role': 'user'},
-                                  {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
+                                 'reset_conversation_history': False,
+                                 'message': "Hi There!",
+                             }, [{'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'},
+                                 {'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
                          ], ids=['test-send-message-with-params', 'test-send-message-no-params', 'test-send-message-no-reset']
                          )
 def test_send_message_command(mocker, args, expected_conversation):
