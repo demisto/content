@@ -258,9 +258,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "30"
       - "32"
       - "41"
+      - "42"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -539,64 +539,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: da7114a1-1910-4f61-8297-e88cbbd7572c
-    type: condition
-    task:
-      id: da7114a1-1910-4f61-8297-e88cbbd7572c
-      version: -1
-      name: Has SHA256
-      description: Are there SHA256 indicators to push into Cortex XDR.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "41"
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: foundIndicators.indicator_type
-            iscontext: true
-          right:
-            value:
-              simple: File
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: foundIndicators.sha256
-            iscontext: true
-          right:
-            value:
-              simple: n/a
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1610,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 3e651b85-01bd-4354-8c43-fdb7cb650d45
+    taskid: f515a7d6-8aef-4727-804b-bc26cee421a3
     type: regular
     task:
-      id: 3e651b85-01bd-4354-8c43-fdb7cb650d45
+      id: f515a7d6-8aef-4727-804b-bc26cee421a3
       version: -1
       name: Set MD5 in context
       description: Set a value in context under the key you entered.
@@ -651,10 +599,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 2c0854f4-1cdd-4091-8309-cfe56b743ef4
+    taskid: 1d919de0-aa10-46ab-817c-31fe7a86f263
     type: condition
     task:
-      id: 2c0854f4-1cdd-4091-8309-cfe56b743ef4
+      id: 1d919de0-aa10-46ab-817c-31fe7a86f263
       version: -1
       name: Has MD5
       description: Are there MD5 indicators to be pushed.
@@ -670,22 +618,30 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: foundIndicators.indicator_type
+              complex:
+                root: foundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.md5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                accessor: value
             iscontext: true
-          right:
-            value:
-              simple: File
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: foundIndicators.md5
-            iscontext: true
-          right:
-            value:
-              simple: n/a
     continueonerrortype: ""
     view: |-
       {
@@ -929,10 +885,69 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 526502b1-eb0e-432e-8862-a364857c2169
+    type: condition
+    task:
+      id: 526502b1-eb0e-432e-8862-a364857c2169
+      version: -1
+      name: Has SHA256
+      description: Are there SHA256 indicators to push into Cortex XDR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.sha256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                accessor: value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "30_29_yes": 0.65,
       "32_31_yes": 0.66
     },
     "paper": {
