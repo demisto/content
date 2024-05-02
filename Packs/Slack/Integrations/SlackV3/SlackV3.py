@@ -2905,7 +2905,8 @@ def parse_common_channels(common_channels: str):
             ret[key.strip()] = val.strip()
     except Exception as e:
         demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
-        raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') from e
+        raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
+            from e
     return ret
 
 
