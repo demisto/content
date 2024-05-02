@@ -5083,6 +5083,8 @@ def test_conversation_history(mocker):
 @pytest.mark.parametrize('raw, output', [
     ("""
     key1:value1
+    
+    
     key2: value2
     
     """, {'key1': 'value1', 'key2': 'value2'}),
