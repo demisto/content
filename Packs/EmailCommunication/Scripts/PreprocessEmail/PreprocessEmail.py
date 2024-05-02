@@ -219,7 +219,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, att
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
 
-    if integration_name in ['EWS v2 dev', 'EWSO365 dev']:
+    if integration_name in ['EWS v2', 'EWSO365']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'item-id': str(message_id), 'attachment-ids': attachment_ids, 'using': instance_name}})
