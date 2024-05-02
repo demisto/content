@@ -149,7 +149,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     headers = {}
     url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
-    if not is_xsiam() or not is_demisto_version_ge(version='8.6.0',build_number='924770'):
+    if not FORWARD_USER_RUN_RBAC:
         api_key = demisto.params().get('apikey')
         api_key_id = demisto.params().get('apikey_id')
         url = demisto.params().get('url')
@@ -185,7 +185,7 @@ def main():  # pragma: no cover
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
-        headers={},
+        headers=headers,
         timeout=timeout
     )
 

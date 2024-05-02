@@ -3920,21 +3920,18 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 def test_http_request_demisto_call(mocker, class_name, function, res):
     """
     Given:
-        - The build number.
-        - request
-    When
-        - Running the http_request command.
-    Then
-        - make sure the correct http_request is being called.
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+    When:
+        - Calling the http_request method.
+    Then:
+        - Make sure demisto._apiCall() is being called and the method returns the expected result.
     """
     from CoreIRApiModule import CoreClient
     import CoreIRApiModule
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=True)
-    mocker.patch.object(CoreIRApiModule, 'is_xsiam', return_value=True)
-    
+    mocker.patch.object(demisto, 'demistoVersion', return_value={"platform": "x2", "version": "8.6.0", "buildNumber": "957366"})
     mocker.patch.object(demisto, "_apiCall" ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                          'status': 200,
                                          'data': '{"reply":[{"container": ["1.1.1.1"]}]'})
@@ -3946,20 +3943,18 @@ def test_http_request_demisto_call(mocker, class_name, function, res):
 def test_http_request_base_client(mocker):
     """
     Given:
-        - The build number.
-        - request
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
     When
-        - Running the http_request command.
+        - Calling the http_request method.
     Then
-        - make sure the correct http_request is being called.
+        - Make sure demisto._apiCall() is being called and the method returns the expected result.
     """
     from CoreIRApiModule import CoreClient
     import CoreIRApiModule
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=False)
-    mocker.patch.object(CoreIRApiModule, 'is_xsiam', return_value=True)
+    mocker.patch.object(demisto, 'demistoVersion', return_value={"platform": "x2", "version": "8.6.0", "buildNumber": "957366"})
     mocker.patch.object(BaseClient, "_http_request" ,return_value={'data':{"reply":[{"container": ["1.1.1.1"]}]}})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")

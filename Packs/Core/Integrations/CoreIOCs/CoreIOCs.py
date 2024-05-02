@@ -49,7 +49,7 @@ class Client(CoreClient):
     }
 
     def __init__(self, params: Dict):
-        if self.forward_user_run_RBAC_validation:
+        if FORWARD_USER_RUN_RBAC:
             url = "/api/webapp/"
         else:
             url = params.get('url')
@@ -61,7 +61,7 @@ class Client(CoreClient):
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
-        if self.forward_user_run_RBAC_validation:
+        if FORWARD_USER_RUN_RBAC:
             return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = dict()
@@ -107,9 +107,9 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(client: Client, _json=None, ) -> Dict:
+def get_requests_kwargs(_json=None, ) -> Dict:
     if _json is not None:
-        return {"request_data": _json} if client.forward_user_run_RBAC_validation else \
+        return {"request_data": _json} if FORWARD_USER_RUN_RBAC else \
             {'data': json.dumps({"request_data": _json})}
     else:
         return {}
