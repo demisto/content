@@ -269,6 +269,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test XDR Playbook general commands
-- Test XDR Playbook
+- Cortex XDR - IOC - Test
+- Cortex XDR - IOC - Test without fetch
 fromversion: 6.10.0
