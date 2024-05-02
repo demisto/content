@@ -2851,7 +2851,7 @@ def init_globals(command_name: str = ''):
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
-    COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(',')) if common_channels else {}
+    COMMON_CHANNELS = parse_common_channels(common_channels)
     DISABLE_CACHING = demisto.params().get('disable_caching', False)
 
     # Formats the error message for the 'Channel Not Found' errors
@@ -2892,6 +2892,21 @@ def init_globals(command_name: str = ''):
         # Pull initial Cached context and set the Expiry
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+
+
+def parse_common_channels(common_channels: str):
+    if not common_channels:
+        return {}
+    try:
+        ret = {}
+        for pair in common_channels.strip().split(','):
+            key, val = pair.strip().split(':')
+            ret[key.strip()] = val.strip()
+    except Exception as e:
+        demisto.error(str(e))
+        raise ValueError('') from e
+
+    return ret
 
 
 def print_thread_dump():
