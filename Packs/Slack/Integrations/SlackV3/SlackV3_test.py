@@ -5095,6 +5095,11 @@ def test_parse_common_channels(raw, output):
     assert parse_common_channels(raw) == output
 
 
+def test_parse_common_channels_error(mocker):
+    with pytest.raises(ValueError) as e:
+        mocker.patch.object(demisto, 'error')
+        parse_common_channels('bad input')
+    assert "Invalid common_channels parameter value." in str(e.value)
 def test_conversation_replies(mocker):
     """
     Given:
