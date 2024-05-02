@@ -49,7 +49,7 @@ args:
   defaultValue: SlackV3
   description: The version of Slack to use. SlackV3 is configured by default.
   name: slackVersion
-comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
+comment: 'Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook. Note: a message maximum length is 3000 characters enforced by Slack API'
 commonfields:
   id: SlackAskV2
   version: -1
