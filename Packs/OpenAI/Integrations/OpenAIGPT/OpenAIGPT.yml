@@ -43,21 +43,21 @@ configuration:
   required: false
   section: connect
 
-- display: `max tokens`
+- display: max tokens
   name: max_tokens
   additionalinfo: "The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption)."
   type: 0
   required: false
   section: config
 
-- display: `temperature`
+- display: temperature
   name: temperature
   additionalinfo: "Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both."
   type: 0
   required: false
   section: config
 
-- display: `top_p`
+- display: top_p
   name: top_p
   additionalinfo: "Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both."
   type: 0
