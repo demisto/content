@@ -2734,7 +2734,7 @@ def fetch_incidents():
                                                                id_field='name',
                                                                date_format=DETECTION_DATE_FORMAT,
                                                                new_offset=detections_offset)
-        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(detections) if detections else 0}")
+        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         incidents_offset: int = current_fetch_info_incidents.get('offset') or 0
