@@ -657,7 +657,7 @@ tasks:
     nexttasks:
       Benign:
       - "30"
-      'Malicious ':
+      'Malicious':
       - "33"
     separatecontext: false
     continueonerrortype: ""
@@ -1257,13 +1257,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: d50b598a-066a-4007-8a8f-5830f1d0ac5c
+    taskid: 89274e70-d15b-4824-8b8b-75e4a705c4d7
     type: condition
     task:
-      id: d50b598a-066a-4007-8a8f-5830f1d0ac5c
+      id: 89274e70-d15b-4824-8b8b-75e4a705c4d7
       version: -1
       name: Check if a malicious Domain was identified
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1342,6 +1341,58 @@ tasks:
                     suffix:
                       value:
                         simple: ${inputs.similarityMaxThreshold}
+            iscontext: true
+        - operator: InRange
+          left:
+            value:
+              complex:
+                root: ImageSimilarity
+                accessor: SSIM
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.similarityMinThreshold
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: ','
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: inputs.similarityMaxThreshold
+                      iscontext: true
+            iscontext: true
+        - operator: InRange
+          left:
+            value:
+              complex:
+                root: ImageSimilarity
+                accessor: MSE
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.similarityMinThreshold
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: ','
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: inputs.similarityMaxThreshold
+                      iscontext: true
             iscontext: true
     continueonerrortype: ""
     view: |-
