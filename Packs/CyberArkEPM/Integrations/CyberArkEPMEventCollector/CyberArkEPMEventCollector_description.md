@@ -1,11 +1,11 @@
 ## CyberArk EPM Help
 
 ### Authentication
-There are two methods to authenticate EPM and SAML.
+There are two methods to authenticate EPM and SAML (currently only via Okta).
 Every method needs different parameters as show in the following:
 
 * EPM authentication
-    - url: `https://<EPM_server>`
+    - url: `https://<EPM_server>` (for example: https://login.epm.cyberark.com/login)
     - username
     - password
     - [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID)

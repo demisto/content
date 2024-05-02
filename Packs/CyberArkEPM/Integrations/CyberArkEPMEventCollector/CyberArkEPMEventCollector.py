@@ -38,10 +38,8 @@ class Client(BaseClient):
         self.application_url = application_url
         if self.authentication_url and self.application_url:
             self.saml_auth_to_cyber_ark()
-        elif self.application_id:
-            self.epm_auth_to_cyber_ark()
         else:
-            return_error('Either the application id or the authentication url and application url is required to authenticate')
+            self.epm_auth_to_cyber_ark()
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
 
@@ -49,9 +47,9 @@ class Client(BaseClient):
         data = {
             "Username": self.username,
             "Password": self.password,
-            "ApplicationID": self.application_id,
+            "ApplicationID": self.application_id or "CyberArkXSOAR",
         }
-        result = self._http_request('POST', url_suffix='/EPM/API/Auth/EPM/Logon', data=data)
+        result = self._http_request('POST', url_suffix='/EPM/API/Auth/EPM/Logon', json_data=data)
         if result.get('IsPasswordExpired'):
             return_error('CyberArk is reporting that the user password is expired. Terminating script.')
         self._base_url = urljoin(result.get('ManagerURL'), '/EPM/API/')
