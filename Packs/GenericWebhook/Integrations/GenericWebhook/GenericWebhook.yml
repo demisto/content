@@ -20,7 +20,7 @@ configuration:
   type: 0
   required: true
   section: Connect
-- additionalinfo: "The username and password is required in XSOAR 8.5 and above"
+- additionalinfo: "The username and password is required in XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work."
   display: Username
   name: credentials
   type: 9
