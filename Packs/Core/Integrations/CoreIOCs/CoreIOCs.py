@@ -107,7 +107,7 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(_json=None, ) -> Dict:
+def get_requests_kwargs(_json=None) -> Dict:
     if _json is not None:
         return {"request_data": _json} if FORWARD_USER_RUN_RBAC else \
             {'data': json.dumps({"request_data": _json})}
@@ -253,7 +253,7 @@ def sync(client: Client):
     try:
         create_file_sync(temp_file_path)
         upload_file_to_bucket(temp_file_path)
-        requests_kwargs = get_requests_kwargs(client=client, _json={"path_to_file": temp_file_path})
+        requests_kwargs = get_requests_kwargs( _json={"path_to_file": temp_file_path})
         client.http_request(url_suffix='sync_tim_iocs', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
@@ -270,7 +270,7 @@ def iocs_to_keep(client: Client):
     try:
         create_file_iocs_to_keep(temp_file_path)
         upload_file_to_bucket(temp_file_path)
-        requests_kwargs = get_requests_kwargs(client=client, _json={"path_to_file": temp_file_path})
+        requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
         client.http_request(url_suffix='iocs_to_keep', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
@@ -320,7 +320,7 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = 'tim_insert_jsons/'
-        requests_kwargs: Dict = get_requests_kwargs(client=client, _json=list(map(lambda ioc: demisto_ioc_to_core(ioc), iocs)))
+        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_core(ioc), iocs)))
         client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs('push done.')
 
@@ -332,7 +332,7 @@ def iocs_command(client: Client):
         path, iocs = prepare_enable_iocs(indicators)
     else:   # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
-    requests_kwargs: Dict = get_requests_kwargs(client=client, _json=iocs)
+    requests_kwargs: Dict = get_requests_kwargs(_json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs(f'indicators {indicators} {command}d.')
 
@@ -358,7 +358,7 @@ def core_expiration_to_demisto(expiration) -> Union[str, None]:
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
-    requests_kwargs: Dict = get_requests_kwargs(client=client, _json=requests_kwargs)
+    requests_kwargs: Dict = get_requests_kwargs( _json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
 

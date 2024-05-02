@@ -190,7 +190,7 @@ class CoreClient(BaseClient):
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
         if not FORWARD_USER_RUN_RBAC:
-            return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=None,
+            return BaseClient._http_request(self, method=method, url_suffix=url_suffix, headers=headers,
                                             json_data=json_data,params=params, data=data, timeout=timeout,
                                             raise_on_status=raise_on_status)
         try:
