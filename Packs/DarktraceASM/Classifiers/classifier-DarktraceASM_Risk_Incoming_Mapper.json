@@ -167,20 +167,6 @@
 						"root": "type",
 						"transformers": []
 					}
-				},
-				"External End Time": {
-					"complex": {
-						"filters": [],
-						"root": "endedAt",
-						"transformers": []
-					}
-				},
-				"External Start Time": {
-					"complex": {
-						"filters": [],
-						"root": "startedAt",
-						"transformers": []
-					}
 				}
 			}
 		},
