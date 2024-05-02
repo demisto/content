@@ -394,7 +394,7 @@ class TestCollector(ABC):
                 reason=CollectionReason.PACK_TEST_DEPENDS_ON,
                 reason_description=f'test {test_id} is saved under pack {pack_id}',
                 content_item_range=test_object.version_range,
-                allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
+                # allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
                 only_to_install=True
             ))
 
@@ -452,8 +452,7 @@ class TestCollector(ABC):
                 result.append(self._collect_pack(
                     pack_id=pack_metadata.pack_id,
                     reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                    reason_description=self.marketplace.value,
-                    allow_incompatible_marketplace=False
+                    reason_description=self.marketplace.value
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
                 logger.debug(str(e))
@@ -466,8 +465,7 @@ class TestCollector(ABC):
                 result.append(self._collect_pack(
                     pack_id=pack_id,
                     reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
-                    reason_description="",
-                    allow_incompatible_marketplace=False,
+                    reason_description=""
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
                 logger.debug(str(e))
@@ -538,7 +536,7 @@ class TestCollector(ABC):
             reason: CollectionReason,
             reason_description: str,
             content_item_range: VersionRange | None = None,
-            allow_incompatible_marketplace: bool = False,
+            # allow_incompatible_marketplace: bool = False,
             only_to_install: bool = False,
     ) -> CollectionResult | None:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
@@ -550,23 +548,23 @@ class TestCollector(ABC):
             # we do want to install packs in this case (tests are not collected in this case anyway)
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
-        except IncompatibleMarketplaceException:
-            is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
-                MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
-
-            # collect only to upload if: TODO - verify
-            # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
-            # 2. allow_incompatible_marketplace=False, if True, then should be also to install
-            # if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
-            #         not allow_incompatible_marketplace:
-            #     collect_only_to_upload = True
-
-            # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
-            # because they have content that IS compatible. # TODO NOT UNDERSTAND allow_incompatible_marketplace
-            # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
-            if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
-                    and not collect_only_to_upload:
-                raise
+        # except IncompatibleMarketplaceException:
+        #     is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
+        #         MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
+        #
+        #     # collect only to upload if: TODO - verify
+        #     # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
+        #     # 2. allow_incompatible_marketplace=False, if True, then should be also to install
+        #     # if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
+        #     #         not allow_incompatible_marketplace:
+        #     #     collect_only_to_upload = True
+        #
+        #     # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
+        #     # because they have content that IS compatible. # TODO NOT UNDERSTAND allow_incompatible_marketplace praisler
+        #     # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
+        #     # if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
+        #     #         and not collect_only_to_upload:
+        #     #     raise
 
         # If changes are done to README files. Upload only. # todo verify if we want to install
         if reason == CollectionReason.README_FILE_CHANGED:
@@ -743,22 +741,8 @@ class TestCollector(ABC):
             logger.debug(f'{content_item_path} has no marketplaces set, '
                          f'using default={DEFAULT_MARKETPLACES_WHEN_MISSING}')
             content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
-
-        match self.marketplace:  # TODO __validate_marketplace_compatibility
-            case MarketplaceVersions.MarketplaceV2:
-                # For XSIAM machines we collect tests that have not xsoar marketplace.
-                # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
-                # will run on xsiam machines only.
-                # However only xsiam component files will be collected anyway in
-                # _collect_xsiam_and_modeling_pack function.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
-                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
-                    raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
-            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
-                if self.marketplace not in content_item_marketplaces:
-                    raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
-            case _:
-                raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
+        if self.marketplace not in content_item_marketplaces:
+            raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
@@ -960,11 +944,11 @@ class BranchTestCollector(TestCollector):
                     }[actual_content_type]
                     tests = tuple(test.name for test in id_to_tests.get(yml.id_, ()))
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
-
-                    if not tests:  # no tests were found in yml nor in id_set
-                        logger.warning(f'{actual_content_type.value} {relative_yml_path} '
-                                       f'has `No Tests` configured, and no tests in id_set')
-                        override_support_level_compatibility = True
+                    #
+                    # if not tests:  # no tests were found in yml nor in id_set
+                    #     logger.warning(f'{actual_content_type.value} {relative_yml_path} '
+                    #                    f'has `No Tests` configured, and no tests in id_set')
+                    #     override_support_level_compatibility = True
             case _:
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
@@ -979,7 +963,7 @@ class BranchTestCollector(TestCollector):
                     reason_description=f'{yml.id_=} ({relative_yml_path})',
                     conf=self.conf,
                     id_set=self.id_set,
-                    skip_support_level_compatibility=override_support_level_compatibility,
+                    # skip_support_level_compatibility=override_support_level_compatibility,
                 ) for test in tests))
         else:
             return self._collect_pack(
@@ -987,7 +971,7 @@ class BranchTestCollector(TestCollector):
                 reason=reason,
                 reason_description='collecting pack only',
                 content_item_range=yml.version_range,
-                allow_incompatible_marketplace=override_support_level_compatibility,
+                # allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
     def _collect_integrations_using_apimodule(self, api_module_id: str) -> CollectionResult | None:
@@ -1369,6 +1353,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     reason_description=self.marketplace.value,
                     version_range=playbook.version_range,
                     conf=self.conf,
+                    only_to_install=True,
                     id_set=self.id_set,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, NonNightlyPackInNightlyBuildException) as e:
