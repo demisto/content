@@ -31,6 +31,7 @@ DEFAULT_SUSPICIOUS_THRESHOLD = 25
 HEADERS = {
     'Content-Type': 'application/json'
 }
+RETRY_COUNT = 2
 
 IOC_ARGS_TO_INDICATOR_KEY_MAP = {
     'domain': {
@@ -192,12 +193,14 @@ class Client(BaseClient):
                      url_suffix, params=None,
                      data=None, headers=None,
                      files=None, json=None,
+                     without_credentials=False,
                      resp_type='json'):
         """
             A wrapper for requests lib to send our requests and handle requests and responses better.
         """
         params = params or {}
-        params.update(self.credentials)
+        if not without_credentials:
+            params.update(self.credentials)
         res = super()._http_request(
             method=method,
             url_suffix=url_suffix,
@@ -208,6 +211,7 @@ class Client(BaseClient):
             files=files,
             resp_type=resp_type,
             error_handler=self.error_handler,
+            retries=RETRY_COUNT,
         )
         return res
 
@@ -2522,7 +2526,7 @@ def get_indicators(client: Client, **kwargs):
         next_page = res.get('meta', {}).get('next', None)
         while len(iocs_context) < limit and next_page:
             next_page = next_page.replace('api/', '')
-            res = client.http_request("GET", next_page)
+            res = client.http_request("GET", next_page, without_credentials=True)
             iocs_list = res.get('objects', None)
             next_page = res.get('meta', {}).get('next', None)
             if iocs_list:
