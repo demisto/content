@@ -199,7 +199,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
         demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
         if email_headers:
             email_headers = {list(header.values())[0]: list(header.values())[1] for header in email_headers}
-            readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers)
+            readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers, sort_headers=False)
             check_email_part_message = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
 
         else:
@@ -215,7 +215,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
 
         email_body = {'Body/Text': email_text_body, 'HTML/Text': email_html_body}
 
-        readable_input = tableToMarkdown(name=f'{file_name} body:', t=email_body)
+        readable_input = tableToMarkdown(name=f'{file_name} body:', t=email_body, sort_headers=False)
         check_email_part_message = CHECK_EMAIL_BODY_PROMPT.format(additional_instructions, readable_input)
     else:
         raise DemistoException("Invalid email part to check provided.")
@@ -270,7 +270,7 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     if not message:
         raise ValueError('Message not provided')
 
-    reset_conversation_history = args.get('reset_conversation_history', False)
+    reset_conversation_history = True if args.get('reset_conversation_history', '').lower() in ['true', 'yes'] else False
     conversation = get_updated_conversation(reset_conversation_history, message)
 
     completion_params = {
@@ -287,12 +287,15 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
 
     usage = response.get('usage', {})
 
-    readable_output = assistant_message + '\n' + tableToMarkdown(name=f'{response.get("model", "")} response:', t={
-        'Prompt tokens': usage.get('prompt_tokens', ''),
-        'Completion tokens': usage.get('completion_tokens', ''),
-        'Total tokens': usage.get('total_tokens', '')
-    }
-)
+    readable_output = assistant_message + '\n' + tableToMarkdown(name=f'{response.get("model", "")} response:',
+                                                                 sort_headers=False,
+                                                                 t={
+                                                                     'Prompt tokens': usage.get('prompt_tokens', ''),
+                                                                     'Completion tokens': usage.get('completion_tokens', ''),
+                                                                     'Total tokens': usage.get('total_tokens', ''),
+                                                                     'Context messages': str(len(conversation))
+                                                                 }
+                                                                 )
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
