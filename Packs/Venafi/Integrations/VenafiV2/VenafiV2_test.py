@@ -18,6 +18,7 @@ def util_load_json(path):
 def mock_client_with_valid_token(mocker) -> Client:
     """
     Establish a connection to the client with a URL and user credentials.
+    This client contains a valid token.
 
     Returns:
         Client: Connection to client.

@@ -79,7 +79,7 @@ class Client(BaseClient):
 
     def create_new_token(self, json_data: dict, is_token_exist: bool) -> str:
         """
-        This method creates a new token.
+        Creation of a new API token.
 
         Args:
             json_data (dict): The data that contain user credentials.
@@ -117,6 +117,7 @@ class Client(BaseClient):
 
         Args:
             token (str): The generated authentication token.
+            refresh_token (str): The generated refresh token.
             expire_in (int): The number of seconds until the token expires.
 
         Returns:
@@ -138,21 +139,21 @@ class Client(BaseClient):
             args (dict): The arguments for the command passed to the request.
 
         Returns:
-            dict: The certificates.
+            dict: The response object.
         """
 
         headers = {
             'Authorization': f'Bearer {self.token}'
         }
 
-        certificates = self._http_request(
+        response = self._http_request(
             method='GET',
             url_suffix='/vedsdk/certificates/',
             headers=headers,
             params=args
         )
 
-        return certificates
+        return response
 
     def get_certificate_details(self, guid: str) -> dict:
         """
@@ -162,21 +163,21 @@ class Client(BaseClient):
             guid (str): The GUID of the certificate.
 
         Returns:
-            dict: The certificate details.
+            dict: The response object.
         """
 
         headers = {
             'Authorization': f'Bearer {self.token}'
         }
-
         url_suffix = f'/vedsdk/certificates/{guid}'
-        certificate_details = self._http_request(
+
+        response = self._http_request(
             method='GET',
             url_suffix=url_suffix,
             headers=headers
         )
 
-        return certificate_details
+        return response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -243,7 +244,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
         client (Client): A Venafi client.
         args (dict): The arguments for the command passed to the request.
     Returns:
-        A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
+        A CommandResult object with an outputs, raw response and readable table, in case of a successful action.
     """
 
     guid = args.get('guid')
@@ -270,9 +271,9 @@ def delete_links_from_response(certificates: list) -> list:
     Delete links list from the response
 
     Args:
-        response (dict): raw response
+        certificates (list): List of certificates
     Returns:
-        response (dict): response without the links list
+        certificates (list): List of certificates without the links list
     """
 
     for certificate in certificates:
