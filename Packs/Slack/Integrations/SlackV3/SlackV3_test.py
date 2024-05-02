@@ -5082,7 +5082,7 @@ def test_conversation_history(mocker):
 @pytest.mark.parametrize('raw, output', [
     ("""
     key1:value1
-    key2: value2 
+    key2: value2
     
     """, {'key1': 'value1', 'key2': 'value2'}),
     ('key1: value1', {'key1': 'value1'}), ("""
@@ -5100,6 +5100,8 @@ def test_parse_common_channels_error(mocker):
         mocker.patch.object(demisto, 'error')
         parse_common_channels('bad input')
     assert "Invalid common_channels parameter value." in str(e.value)
+
+
 def test_conversation_replies(mocker):
     """
     Given:
