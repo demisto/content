@@ -102,8 +102,6 @@ class Client(BaseClient):
                 data=json.dumps(json_data),
             )
         except DemistoException as e:
-            if 'Unauthorized' in str(e):
-                raise DemistoException('Failed to generate a token. Credentials are incorrect.')
             raise e
 
         new_token = access_token_obj.get('access_token', '')
@@ -218,9 +216,8 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
         A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
     """
 
-    outputs: dict[str, Any] = {}
     response = client.get_certificates(args)
-    certificates = outputs.get('Certificates', [])
+    certificates = response.get('Certificates', [])
     readable_certificates = []
     for certificate in certificates:
         readable_certificate_details = certificate.copy()
@@ -228,11 +225,11 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
         readable_certificates.append(readable_certificate_details)
 
     markdown_table = tableToMarkdown('Venafi certificates', readable_certificates,
-                                     headers=['CreatedOn', 'DN', 'Name', 'ParentDN', 'SchemaClass', 'ID'])
+                                     headers=['CreatedOn', 'DN', 'Name', 'ParentDn', 'SchemaClass', 'ID'])
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=delete_links_from_response(response),
+        outputs=delete_links_from_response(certificates),
         raw_response=response,
         readable_output=markdown_table
     )
@@ -255,7 +252,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     readable_certificate_details['ID'] = readable_certificate_details.get('Guid', '').strip('{}')
 
     markdown_table = tableToMarkdown('Venafi certificate details', readable_certificate_details,
-                                     headers=['CreatedOn', 'DN', 'Name', 'ParentDN', 'SchemaClass', 'ID'])
+                                     headers=['CreatedOn', 'DN', 'Name', 'ParentDn', 'SchemaClass', 'ID'])
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
@@ -268,7 +265,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 ''' HELPER FUNCTIONS '''
 
 
-def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
+def delete_links_from_response(certificates: list) -> list:
     """
     Delete links list from the response
 
@@ -278,12 +275,11 @@ def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
         response (dict): response without the links list
     """
 
-    certificates = response.get('Certificates', [])
     for certificate in certificates:
         if certificate.get('_links'):
             del certificate['_links']
 
-    return response
+    return certificates
 
 
 ''' MAIN FUNCTION '''
@@ -319,11 +315,9 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'venafi-get-certificates':
-            command_result = get_certificates_command(client, args)
-            return_results(command_result)
+            return_results(get_certificates_command(client, args))
         elif command == 'venafi-get-certificate-details':
-            command_result = get_certificate_details_command(client, args)
-            return_results(command_result)
+            return_results(get_certificate_details_command(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
