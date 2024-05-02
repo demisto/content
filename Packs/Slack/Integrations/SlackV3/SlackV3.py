@@ -2899,8 +2899,10 @@ def parse_common_channels(common_channels: str):
     try:
         stripped_channels = {}
         for pair in re.split(r',|\n', common_channels):
-            key, val = pair.strip().split(':')
-            stripped_channels[key.strip()] = val.strip()
+            stripped = pair.strip()
+            if stripped:
+                key, val = stripped.split(':')
+                stripped_channels[key.strip()] = val.strip()
     except Exception as e:
         demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
         raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
