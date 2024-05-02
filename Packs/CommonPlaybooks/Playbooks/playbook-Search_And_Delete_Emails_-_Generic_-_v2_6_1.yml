@@ -1373,7 +1373,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to limit the search to the current week. Note that if you are using the LastModifiedTime filter in the O365KQL input, this input will not be taken into consideration.
+  description: Whether to limit the search to the current week.
   playbookInputQuery:
 outputs: []
 tests:
