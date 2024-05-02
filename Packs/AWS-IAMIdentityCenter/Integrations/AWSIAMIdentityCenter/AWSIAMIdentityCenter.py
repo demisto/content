@@ -571,7 +571,7 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     last_group_memberships: list = []
     if not isinstance(last_users, list):
         last_users = [last_users]
-        
+
     for user_data in last_users:
         if user_data.get('UserId') == user_id:
             last_group_memberships = user_data.get('GroupMemberships', [])
@@ -698,7 +698,7 @@ def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
     last_group_memberships = []
     if not isinstance(last_groups, list):
         last_groups = [last_groups]
-        
+
     for user_data in last_groups:
         if user_data.get('GroupId') == group_id:
             last_group_memberships = user_data.get('GroupMemberships')
