@@ -569,15 +569,13 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     last_context = demisto.context()
     last_users = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('User', {})
     last_group_memberships: list = []
-    if isinstance(last_users, list):
-        for user_data in last_users:
-            if user_data.get('UserId') == user_id:
-                last_group_memberships = user_data.get('GroupMemberships', [])
-                break
-
-    else:
-        if last_users.get('UserId', '') == user_id:
-            last_group_memberships = last_users.get('GroupMemberships', [])
+    if not isinstance(last_users, list):
+        last_users = [last_users]
+        
+    for user_data in last_users:
+        if user_data.get('UserId') == user_id:
+            last_group_memberships = user_data.get('GroupMemberships', [])
+            break
 
     if last_group_memberships:
         combined_groups: list = last_group_memberships + [g for g in groups if g not in last_group_memberships]
@@ -698,15 +696,13 @@ def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
     last_context = demisto.context()
     last_groups = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('Group', {})
     last_group_memberships = []
-    if isinstance(last_groups, list):
-        for user_data in last_groups:
-            if user_data.get('GroupId') == group_id:
-                last_group_memberships = user_data.get('GroupMemberships')
-                break
-
-    else:
-        if last_groups.get('GroupId') == group_id:
-            last_group_memberships = last_groups.get('GroupMemberships')
+    if not isinstance(last_groups, list):
+        last_groups = [last_groups]
+        
+    for user_data in last_groups:
+        if user_data.get('GroupId') == group_id:
+            last_group_memberships = user_data.get('GroupMemberships')
+            break
 
     if last_group_memberships:
         combined_memberships = last_group_memberships + [g for g in memberships if g not in last_group_memberships]
