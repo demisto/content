@@ -30,7 +30,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 ***
 Send a message as a prompt to the GPT model
 
-`!gpt-send-message message="MESSAGE"`
+`!gpt-send-message message="<MESSAGE_TEXT>"`
 
 #### Input
 
@@ -49,17 +49,35 @@ Send a message as a prompt to the GPT model
 ***
 Check email body for possible security issues.
 
-`!gpt-send-message message="MESSAGE"`
+`!gpt-check-email-body entryId="<ENTRY_ID_OF_UPLOADED_EML_FILE>"`
 
 #### Input
 
-| **Argument Name**          | **Description**                                                                                                                                             | **Required** |
-|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| message                    | The message to send to the GPT model wrapped with quotes.                                                                                                   | Yes          | 
-| reset_conversation_history | Whether to reset conversation history or keep it as context for the sent message. (Conversation history is not reset by default).                           | No           | 
-| max_tokens                 | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
-| temperature                | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
-| top_p                      | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           | 
-| verbose                    | Overrides text generation setting for the specific message sent. (Defaults to off).                                                                         | No           | 
+| **Argument Name**      | **Description**                                                                                                                                             | **Required** |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entryId                | Entry ID of an uploaded _.eml_ file from context window.                                                                                                    | Yes          | 
+| additionalInstructions | Provide additional instructions for the GPT model when analyzing the email body.                                                                            | No           | 
+| max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
+| temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
+| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           | 
+| verbose                | Overrides text generation setting for the specific message sent. (Defaults to off).                                                                         | No           | 
+
+
+### chatgpt-check-email-header
+***
+Check email body for possible security issues.
+
+`!gpt-check-email-header entryId="<ENTRY_ID_OF_UPLOADED_EML_FILE>"`
+
+#### Input
+
+| **Argument Name**      | **Description**                                                                                                                                             | **Required** |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entryId                | Entry ID of an uploaded _.eml_ file from context window.                                                                                                    | Yes          | 
+| additionalInstructions | Provide additional instructions for the GPT model when analyzing the email headers.                                                                         | No           | 
+| max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
+| temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
+| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           | 
+| verbose                | Overrides text generation setting for the specific message sent. (Defaults to off).                                                                         | No           | 
 
 

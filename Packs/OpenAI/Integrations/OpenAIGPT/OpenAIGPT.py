@@ -363,6 +363,10 @@ def main() -> None:  # pragma: no cover
         elif command == "gpt-check-email-body":
             return_results(check_email_body_command(client=client, args=args))
 
+        # TODO - Implement 'create_soc_email_template':
+        # elif command == "gpt-create-soc-email-template":
+        #     pass
+        #
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
