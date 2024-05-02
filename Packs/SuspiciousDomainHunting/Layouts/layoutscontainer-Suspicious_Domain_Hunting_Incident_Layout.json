@@ -370,7 +370,7 @@
                                 "height": 44,
                                 "id": "cff5b9c0-7956-11ee-98e4-c5340a9b9a3f",
                                 "index": 3,
-                                "name": "Ask For Takedown",
+                                "name": "Send Email for Takedown using EWSO365",
                                 "scriptId": "EWSO365|||send-mail",
                                 "sectionItemType": "button",
                                 "startCol": 0
