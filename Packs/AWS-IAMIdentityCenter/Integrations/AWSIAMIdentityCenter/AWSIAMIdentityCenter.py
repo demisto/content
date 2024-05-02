@@ -568,7 +568,7 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     context_data['GroupsUserNextToken'] = response.get('NextToken')
     last_context = demisto.context()
     last_users = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('User', {})
-    last_group_memberships = []
+    last_group_memberships = None
     if isinstance(last_users, list):
         for user_data in last_users:
             if user_data.get('UserId') == user_id:
