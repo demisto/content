@@ -41,7 +41,6 @@ Send a message as a prompt to the GPT model
 | max_tokens                 | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
 | temperature                | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
 | top_p                      | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           | 
-| verbose                    | Overrides text generation setting for the specific message sent. (Defaults to off).                                                                         | No           | 
 
 
 
@@ -59,9 +58,7 @@ Check email body for possible security issues.
 | additionalInstructions | Provide additional instructions for the GPT model when analyzing the email body.                                                                            | No           | 
 | max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
-| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           | 
-| verbose                | Overrides text generation setting for the specific message sent. (Defaults to off).                                                                         | No           | 
-
+| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
 
 ### chatgpt-check-email-header
 ***
@@ -77,7 +74,5 @@ Check email body for possible security issues.
 | additionalInstructions | Provide additional instructions for the GPT model when analyzing the email headers.                                                                         | No           | 
 | max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
-| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           | 
-| verbose                | Overrides text generation setting for the specific message sent. (Defaults to off).                                                                         | No           | 
-
+| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
 

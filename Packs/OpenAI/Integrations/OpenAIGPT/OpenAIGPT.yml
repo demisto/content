@@ -100,10 +100,6 @@ script:
       required: false
       description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
 
-    - name: verbose
-      required: false
-      description: Whether to display token consumption and queried model.
-      type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
@@ -131,11 +127,6 @@ script:
     - name: top_p
       required: false
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
-
-    - name: verbose
-      required: false
-      description: Whether to display token consumption and queried model.
-      type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.  It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
@@ -163,11 +154,6 @@ script:
     - name: top_p
       required: false
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
-
-    - name: verbose
-      required: false
-      description: Whether to display token consumption and queried model.
-      type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
