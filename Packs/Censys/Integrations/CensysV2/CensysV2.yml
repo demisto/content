@@ -32,7 +32,7 @@ configuration:
   section: Connect
   additionalinfo: |-
     Censys API provides reputation data exclusively to paid subscribers. 
-    When set to True, the integration will use labels to determine IP score. 
+    When set to True, the integration will use labels to determine the IP score. 
 - display: IP Malicious labels
   name: malicious_labels
   type: 16
@@ -328,13 +328,13 @@ script:
       description: How the certificate is validated - Domain validated (DV), Organization Validated (OV), Extended Validation (EV), or unknown.
       type: String
     - contextPath: Censys.View.parsed.validity.end
-      description: Timestamp of when the certificate expires. Timezone is UTC.
+      description: Timestamp of when the certificate expires. Time zone is UTC.
       type: Date
     - contextPath: Censys.View.parsed.validity.length
       description: The length of time, in seconds, that the certificate is valid.
       type: Number
     - contextPath: Censys.View.parsed.validity.start
-      description: Timestamp of when certificate is first valid. Timezone is UTC.
+      description: Timestamp of when certificate is first valid. Time zone is UTC.
       type: Date
     - contextPath: Censys.View.parsed.version
       description: The x.509 certificate version number.
@@ -470,10 +470,10 @@ script:
       description: Distinguished name of the entity that the certificate belongs to.
       type: String
     - contextPath: Censys.Search.parsed.validity.end
-      description: Timestamp of when the certificate expires. Timezone is UTC.
+      description: Timestamp of when the certificate expires. Time zone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.validity.start
-      description: Timestamp of when the certificate is first valid. Timezone is UTC.
+      description: Timestamp of when the certificate is first valid. Time zone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the certificate.
@@ -531,7 +531,7 @@ script:
       description: Country name of the location associated with the IP address.
       type: String
     - contextPath: Censys.IP.location.timezone
-      description: Timezone of the location associated with the IP address.
+      description: Time zone of the location associated with the IP address.
       type: String
     - contextPath: Censys.IP.location.province
       description: Province name of the location associated with the IP address.
@@ -584,7 +584,7 @@ script:
   - name: domain
     arguments:
     - name: domain
-      description: Domain to check.
+      description: A comma-separated list of domains to check.
       required: true
       isArray: true
       default: true
@@ -601,7 +601,7 @@ script:
       description: The country code of the location associated with the domain.
       type: String
     - contextPath: Censys.Domain.location.timezone
-      description: The timezone of the location associated with the domain.
+      description: The time zone of the location associated with the domain.
       type: String
     - contextPath: Censys.Domain.location.country
       description: The country name of the location associated with the domain.
@@ -673,7 +673,7 @@ script:
       description: The entity B type.
       type: string.
     - contextPath: Domain.Relationships.Relationship
-      description: the relationship type.
+      description: The relationship type.
       type: string.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.

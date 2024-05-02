@@ -683,7 +683,7 @@ Runs reputation on IPs.
 ### domain
 
 ***
-Return all related IPs as relationships
+Return all related IPs as relationships.
 
 #### Base Command
 
@@ -702,7 +702,7 @@ Return all related IPs as relationships
 | Censys.Domain.location.postal_code | String | The postal code of the location associated with the domain. |
 | Censys.Domain.location.province | String | The province name of the location associated with the domain. |
 | Censys.Domain.location.country_code | String | The country code of the location associated with the domain. |
-| Censys.Domain.location.timezone | String | The timezone of the location associated with the domain. |
+| Censys.Domain.location.timezone | String | The time zone of the location associated with the domain. |
 | Censys.Domain.location.country | String | The country name of the location associated with the domain. |
 | Censys.Domain.location.coordinates.longitude | Number | The longitude coordinate of the location associated with the domain. |
 | Censys.Domain.location.coordinates.latitude | Number | The latitude coordinate of the location associated with the domain. |
@@ -721,14 +721,14 @@ Return all related IPs as relationships
 | Censys.Domain.last_updated_at | Date | The date and time when the information about the domain was last updated. |
 | Censys.Domain.ip | String | The IP address associated with the domain. |
 | Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
-| Domain.Name | string. | The domain | 
-| Domain.Relationships.EntityA | string. | The domain name | 
-| Domain.Relationships.EntityAType | string. | The entity type | 
-| Domain.Relationships.EntityB | string. | The entity B | 
-| Domain.Relationships.EntityBType | string. | The entity B type | 
-| Domain.Relationships.Relationship | string. | the relationship type | 
+| Domain.Name | string. | The domain. | 
+| Domain.Relationships.EntityA | string. | The domain name. | 
+| Domain.Relationships.EntityAType | string. | The entity type. | 
+| Domain.Relationships.EntityB | string. | The entity B. | 
+| Domain.Relationships.EntityBType | string. | The entity B type. | 
+| Domain.Relationships.Relationship | string. | The relationship type. | 
 | DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | The indicator type | 
+| DBotScore.Type | unknown | The indicator type.| 
 | DBotScore.Score | unknown | The actual score. | 
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
 
