@@ -2895,17 +2895,17 @@ def init_globals(command_name: str = ''):
 
 
 def parse_common_channels(common_channels: str):
+    common_channels = (common_channels or '').strip()
     if not common_channels:
         return {}
     try:
         ret = {}
-        for pair in common_channels.strip().split(','):
+        for pair in re.split(r',|\n', common_channels):
             key, val = pair.strip().split(':')
             ret[key.strip()] = val.strip()
     except Exception as e:
-        demisto.error(str(e))
-        raise ValueError('') from e
-
+        demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
+        raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') from e
     return ret
 
 

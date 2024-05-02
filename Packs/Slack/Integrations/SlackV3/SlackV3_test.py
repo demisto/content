@@ -8,7 +8,7 @@ import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url
+from SlackV3 import get_war_room_url, parse_common_channels
 
 from CommonServerPython import *
 
@@ -5077,6 +5077,22 @@ def test_conversation_history(mocker):
                                                                ' | 1690479887.647239 | 1690479887.647239 | message ' \
                                                                '| U047D5QSZD4 |\n'
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
+
+
+@pytest.mark.parametrize('raw, output', [
+    ("""
+    key1:value1
+    key2: value2 
+    
+    """, {'key1': 'value1', 'key2': 'value2'}),
+    ('key1: value1', {'key1': 'value1'}), ("""
+    
+    
+    """, {})
+
+])
+def test_parse_common_channels(raw, output):
+    assert parse_common_channels(raw) == output
 
 
 def test_conversation_replies(mocker):
