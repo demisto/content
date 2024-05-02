@@ -3644,6 +3644,61 @@ def  mimecast_create_address_alteration_policy_command(args: dict) -> CommandRes
         outputs=response,
         readable_output= 'Address Alteration policy was created successfully'
     )
+    
+    
+def mimecast_update_address_alteration_policy_command(args: dict) -> CommandResults:
+    id = args.get('id') #
+    policy_description = args.get('policy_description')
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
+    comment = args.get('comment')
+    conditions = args.get('conditions')
+    enabled = argToBoolean(args.get('enabled'))
+    enforced = argToBoolean(args.get('enforced'))
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_part = args.get('from_part')
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args.get('to_eternal'))
+    override = args.get('override')
+
+    data = {
+        'id': id,
+        'policy': {
+            'description': policy_description,
+            'enabled': enabled,
+            'enforced': enforced,
+            'from_eternal': from_eternal,
+            'to_eternal': to_eternal,
+            }
+        }
+
+    if comment:
+        data['comment'] = comment
+    if conditions:
+        data['conditions'] = conditions
+    if from_date:
+        data['fromDate'] = from_date
+    if from_part:
+        data['fromPart'] = from_part
+    if to_date:
+        data['toDate'] = to_date
+    if override:
+        data['override'] = override
+    if bidirectional:
+        data['bidirectional'] = bidirectional
+
+    payload = {"data": [data]}
+    api_endpoint = '/api/policy/address-alteration/update-policy'
+    response = http_request('POST', api_endpoint, payload)
+    
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.AddressAlterationPolicy',
+        outputs=response,
+        readable_output= f'{id} has been updated successfully'
+    )
 
 
 def main():
@@ -3757,6 +3812,8 @@ def main():
             return_results(mimecast_update_webwhiteurl_policies_command(args))
         elif command == 'mimecast-create-address-alteration-policy':
             return_results(mimecast_create_address_alteration_policy_command(args))
+        elif command == 'mimecast-update-address-alteration-policy':
+            return_results(mimecast_update_address_alteration_policy_command(args))
 
     except Exception as e:
         return_error(e)
