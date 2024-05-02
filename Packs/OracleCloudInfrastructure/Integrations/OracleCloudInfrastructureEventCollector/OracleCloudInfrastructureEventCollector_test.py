@@ -181,6 +181,26 @@ class TestClientRelatedFunctions:
 
         assert client.validate_private_key_syntax(private_key, private_key_type) == expected_result
 
+    def test_client_compartment_id(self, mocker):
+        """
+        Given:
+            - Valid Client object parameters are provided.
+        When:
+            - Initializing a client.
+        Then:
+            - Make sure the compartment_id is as expected.
+        """
+        mocker.patch.object(Client, 'build_audit_base_url', return_value='dummy_audit_base_url')
+        mocker.patch('OracleCloudInfrastructureEventCollector.Signer', return_value='dummy_singer_object')
+        mocker.patch.object(Client, 'validate_private_key_syntax', return_value='dummy_validated_private_key')
+        client = Client(
+            verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
+            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+            compartment_id='dummy_compartment_id', private_key_type='PKCS#8'
+        )
+
+        assert client.compartment_id == 'dummy_compartment_id'
+
 
 class TestEventRelatedFunctions:
     """ Tests for the event related functions. """
