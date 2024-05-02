@@ -477,7 +477,8 @@ def update_incident_command(client, args):
     add_comment = args.get('add_comment')
 
     if assigned_user_pretty_name and not assigned_user_mail:
-        raise DemistoException('To supply a new value in this field, you must also supply a value for assigned_user_mail.')
+        raise DemistoException('To set a new assigned_user_pretty_name, '
+                               'you must also provide a value for the "assigned_user_mail" argument.')
 
     client.update_incident(
         incident_id=incident_id,
