@@ -340,7 +340,7 @@ script:
     - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. 
+    - description: Number of results to return. Maximum value is 50.
       defaultValue: '50'
       name: limit
       required: false
@@ -486,7 +486,7 @@ script:
     - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. 
+    - description: Number of results to return. Maximum value is 50. 
       defaultValue: '50'
       name: limit
       required: false
@@ -551,7 +551,7 @@ script:
     - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. 
+    - description: Number of results to return. Maximum value is 50. 
       defaultValue: '50'
       name: limit
       required: false
@@ -1015,7 +1015,7 @@ script:
     - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return.
+    - description: Number of results to return. Maximum value is 50.
       defaultValue: '50'
       name: limit
       required: false
