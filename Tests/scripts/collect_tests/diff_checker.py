@@ -14,11 +14,13 @@ class DiffChecker:
         self.service_account = service_account
         self.marketplace = marketplace
 
-    def get_diff_master_bucket(self):
-        # return ['Zoom', 'AHA']  # TODO
-        return []
+    # def get_failed_packs_from_previous_nightly_upload(self):
+    #     logger.info('NIGHTLY: getting failed packs from the previous upload')
+    #     # TODO
+    #     # return ['Zoom', 'AHA']  # TODO
+    #     return []
 
-    def get_git_diff(self) -> FilesToCollect: #TODO ADD rshunim upload_delta_from_last_upload
+    def get_git_diff(self) -> FilesToCollect:  # TODO ADD rshunim upload_delta_from_last_upload
         """
         The method extracts the files based on the diff between the two commits.
 
@@ -32,8 +34,6 @@ class DiffChecker:
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
         if os.getenv('NIGHTLY'):
-            logger.info('NIGHTLY: getting failed packs from the previous upload')
-            # TODO
             logger.info('NIGHTLY: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':

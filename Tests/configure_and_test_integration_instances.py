@@ -31,7 +31,7 @@ from ruamel import yaml
 
 from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    upload_zipped_packs, install_all_content_packs_for_nightly
+    upload_zipped_packs
 from Tests.private_build.upload_packs_private import extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -524,7 +524,7 @@ class Build(ABC):
         failed_tests = set()
         successful_tests = set()
         # Test all module instances (of modified + unchanged integrations) pre-updating content
-        if all_module_instances: # todo - why empty
+        if all_module_instances:  # todo - why empty
             # only print start message if there are instances to configure
             logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
         else:
@@ -640,7 +640,7 @@ class XSOARBuild(Build):
             logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
-    def install_nightly_pack(self) -> bool: # todo
+    def install_nightly_pack(self) -> bool:  # todo
         """
         Installs all existing packs in master
         Collects all existing test playbooks, saves them to test_pack.zip
@@ -788,7 +788,7 @@ class XSOARBuild(Build):
         env_conf = get_env_conf()
         return get_servers(env_conf, ami_env)
 
-    def concurrently_run_function_on_servers( # TODO
+    def concurrently_run_function_on_servers(  # TODO
         self, function=None, pack_path=None, service_account=None, packs_to_install=None
     ) -> tuple[bool, list[Any]]:
         if not function:

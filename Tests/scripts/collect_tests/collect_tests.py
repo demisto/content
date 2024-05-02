@@ -17,10 +17,9 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACES_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
-    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
+    XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES,
     TEST_DATA_PATTERN)
-from Tests.scripts.collect_tests.diff_checker import DiffChecker
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -71,6 +70,7 @@ class CollectionReason(str, Enum):
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
     PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
     PACK_MASTER_BUCKET_DISCREPANCY = "pack version on master is ahead of bucket"
+    NIGHTLY_PACK = "nightly packs are always installed"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -554,21 +554,21 @@ class TestCollector(ABC):
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
                 MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
-            # collect only to upload if:
+            # collect only to upload if: TODO - verify
             # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
-            if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
-                    not allow_incompatible_marketplace:
-                collect_only_to_upload = True
+            # if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
+            #         not allow_incompatible_marketplace:
+            #     collect_only_to_upload = True
 
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
-            # because they have content that IS compatible.
+            # because they have content that IS compatible. # TODO NOT UNDERSTAND allow_incompatible_marketplace
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
                 raise
 
-        # If changes are done to README files. Upload only.
+        # If changes are done to README files. Upload only. # todo verify if we want to install
         if reason == CollectionReason.README_FILE_CHANGED:
             collect_only_to_upload = True
 
@@ -1156,13 +1156,13 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if upload_delta_from_last_upload:  # TODO last upload commit is not good - in cases the specific pack was not uploaded
+        if upload_delta_from_last_upload:
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             current_commit = self.branch_name
 
-        elif os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
-            logger.info('bucket upload: getting last commit from index')
+        elif os.getenv('NIGHTLY'):
+            logger.info('NIGHTLY: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
                 current_commit = os.getenv("CI_COMMIT_SHA", "")
@@ -1271,14 +1271,81 @@ class SpecificPacksTestCollector(TestCollector):
         return result
 
 
-class NightlyTestCollector(TestCollector, ABC):
-    def collect(self) -> CollectionResult | None:
-        result: CollectionResult | None = super().collect()
+class NightlyTestCollector(BranchTestCollector, ABC):
 
-        logger.info('NightlyCollector drops packs to upload, as they don\'t need to be uploaded')
-        if result:
-            result.packs_to_upload = set()
-        return result
+    def _collect(self) -> CollectionResult | None:
+        result = []
+        collect_from = self._get_git_diff()
+
+        changed_packs = CollectionResult.union([
+            self._collect_from_changed_files(collect_from.changed_files),
+            self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
+            self._collect_packs_diff_master_bucket()
+            # todo add collect from json file
+        ])
+        logger.info('changed packs drops collected tests, as they are not required')
+        if changed_packs:
+            changed_packs.tests = set()  # todo - without tests - only to upload
+
+        result.append(changed_packs)
+
+        # todo - add playbooks of non api and nightly packs per marketplace + add nightly packs for install
+        nightly_packs = CollectionResult.union([
+            self._collect_packs_nightly(self.conf.nightly_packs),
+            self._id_set_tests_matching_marketplace_value()
+        ])
+        result.append(nightly_packs)
+
+        if self.marketplace == MarketplaceVersions.MarketplaceV2:
+            modeling_rules = CollectionResult.union((
+                self._collect_modeling_rule_packs(),
+                self.sanity_tests_xsiam(),  # XSIAM nightly always collects its sanity test(s)
+            ))
+            result.append(modeling_rules)
+        # todo all modeling rules for xsiam
+
+        return CollectionResult.union(result)
+
+    def _collect_modeling_rule_packs(self) -> CollectionResult | None:
+        """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
+
+        Returns:
+            Optional[CollectionResult]: pack collection result.
+        """
+        result = []
+        for modeling_rule in self.id_set.modeling_rules:
+            try:
+                logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
+                path = PATHS.content_path / modeling_rule.file_path_str
+                pack_id = modeling_rule.pack_id
+                result.append(self._collect_pack_for_modeling_rule(
+                    pack_id=pack_id,  # type: ignore[arg-type]
+                    changed_file_path=path,
+                    reason=CollectionReason.MODELING_RULE_NIGHTLY,
+                    reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
+                    content_item_range=modeling_rule.version_range
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
+
+        return CollectionResult.union(result)
+
+    def sanity_tests_xsiam(self) -> CollectionResult:
+        return CollectionResult.union(tuple(
+            CollectionResult(
+                test=test,
+                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+                modeling_rule_to_test=None,
+                reason=CollectionReason.SANITY_TESTS,
+                version_range=None,
+                reason_description='XSIAM Nightly sanity',
+                conf=self.conf,
+                id_set=self.id_set,
+                is_sanity=True,
+                only_to_install=True
+            )
+            for test in self.conf['test_marketplacev2']
+        ))  # type: ignore[return-value]
 
     def _id_set_tests_matching_marketplace_value(self) -> CollectionResult | None:
         """
@@ -1322,7 +1389,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     test=None,
                     modeling_rule_to_test=None,
                     pack=pack,
-                    reason=CollectionReason.CHANGED_INSTALLED_PACKS,
+                    reason=CollectionReason.NIGHTLY_PACK,  # TODO
                     reason_description=pack,
                     conf=self.conf,
                     id_set=self.id_set,
@@ -1341,148 +1408,128 @@ class UploadAllCollector(TestCollector):
         return self._collect_all_marketplace_compatible_packs()
 
 
-class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
-
-    def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:  # TODO - NOT CLEAR
-        """
-        :return: all packs whose under which a content item marketplace field contains self.marketplaces
-                (or is equal to, if only_value is True).
-        """
-        result = []
-
-        for item in self.id_set.artifact_iterator:
-            if not item.path or not item.file_path_str:
-                raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
-            path = PATHS.content_path / item.file_path_str
-
-            try:
-                pack_id = find_pack_folder(path).name
-                pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
-                try:
-                    self._validate_id_set_item_compatibility(item, is_integration='Integrations' in path.parts)
-                except NonXsoarSupportedPackException as e:
-                    logger.info(f'{str(e)} - collecting pack anyway')  # todo why?
-                except NothingToCollectException as e:
-                    logger.info(e)
-                    continue
-
-                marketplaces_string = ', '.join(map(str, item.marketplaces or ()))
-                result.append(self._collect_pack(
-                    pack_id=pack_metadata.pack_id,
-                    reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
-                    reason_description=f'{item.file_path_str} ({marketplaces_string})',
-                    content_item_range=item.version_range,
-                    allow_incompatible_marketplace=True
-                ))
-
-            except NotUnderPackException:
-                if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
-                    logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
-                    continue
-        return CollectionResult.union(result)
-
-    def _collect_modeling_rule_packs(self) -> CollectionResult | None:
-        """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
-
-        Returns:
-            Optional[CollectionResult]: pack collection result.
-        """
-        result = []
-        for modeling_rule in self.id_set.modeling_rules:
-            try:
-                logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
-                path = PATHS.content_path / modeling_rule.file_path_str
-                pack_id = modeling_rule.pack_id
-                result.append(self._collect_pack_for_modeling_rule(
-                    pack_id=pack_id,  # type: ignore[arg-type]
-                    changed_file_path=path,
-                    reason=CollectionReason.MODELING_RULE_NIGHTLY,
-                    reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
-                    content_item_range=modeling_rule.version_range
-                ))
-            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
-                logger.debug(str(e))
-
-        return CollectionResult.union(result)
-
-    @property
-    def sanity_tests(self) -> CollectionResult:
-        return CollectionResult.union(tuple(
-            CollectionResult(
-                test=test,
-                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
-                modeling_rule_to_test=None,
-                reason=CollectionReason.SANITY_TESTS,
-                version_range=None,
-                reason_description='XSIAM Nightly sanity',
-                conf=self.conf,
-                id_set=self.id_set,
-                is_sanity=True,
-                only_to_install=True
-            )
-            for test in self.conf['test_marketplacev2']
-        ))  # type: ignore[return-value]
-
-    def _collect(self) -> CollectionResult | None:
-        return CollectionResult.union((
-            self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
-            self._collect_packs_of_content_matching_marketplace_value(),  # TODO why
-            self._collect_modeling_rule_packs(),
-            self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
-        ))
-
-
-class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, service_account: str | None, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR,
-                 graph: bool = False,
-                 branch_name: str = "master"):
-        super().__init__(marketplace, graph=graph)
-        repo_path = PATHS.content_repo
-        self.service_account = service_account
-        self.branch_name = branch_name
-        self.diff_checker = DiffChecker(repo_path, self.branch_name, self.service_account, marketplace)
-
-    def _collect(self) -> CollectionResult | None:
-        changed_packs = self.diff_checker.get_diff_master_bucket()
-        return CollectionResult.union([
-            self._collect_packs_nightly(changed_packs),
-        ])
-
-
-class XSOAR_SAASNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, service_account: str | None, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR,
-                 graph: bool = False,
-                 branch_name: str = "master"):
-        super().__init__(marketplace, graph=graph)
-        repo_path = PATHS.content_repo
-        self.service_account = service_account
-        self.branch_name = branch_name
-        self.diff_checker = DiffChecker(repo_path, self.branch_name, self.service_account, marketplace)
-
-    def _collect(self) -> CollectionResult | None:
-        collect_from = self.diff_checker.get_diff_master_bucket() # todo + file from bucket
-        return CollectionResult.union([
-            # self._collect_from_changed_packs_nightly(collect_from.changed_files),
-            self._collect_packs_nightly(collect_from),
-            self._collect_packs_nightly(self.conf.nightly_packs),
-            # self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from), # todo eyal
-            # self._collect_packs_diff_master_bucket(),
-            self._id_set_tests_matching_marketplace_value()
-        ])
-
-
-
-
-class XPANSENightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.XPANSE, graph=graph)
-
-    def _collect(self) -> CollectionResult | None:
-        logger.info('tests are not currently supported for XPANSE, returning nothing.')
-        return None
+# class XSIAMNightlyTestCollector(NightlyTestCollector):
+#
+#     def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:  # TODO - NOT CLEAR dor
+#         """
+#         :return: all packs whose under which a content item marketplace field contains self.marketplaces
+#                 (or is equal to, if only_value is True).
+#         """
+#         result = []
+#
+#         for item in self.id_set.artifact_iterator:
+#             if not item.path or not item.file_path_str:
+#                 raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
+#             path = PATHS.content_path / item.file_path_str
+#
+#             try:
+#                 pack_id = find_pack_folder(path).name
+#                 pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+#                 try:
+#                     self._validate_id_set_item_compatibility(item, is_integration='Integrations' in path.parts)
+#                 except NonXsoarSupportedPackException as e:
+#                     logger.info(f'{str(e)} - collecting pack anyway')  # todo why?
+#                 except NothingToCollectException as e:
+#                     logger.info(e)
+#                     continue
+#
+#                 marketplaces_string = ', '.join(map(str, item.marketplaces or ()))
+#                 result.append(self._collect_pack(
+#                     pack_id=pack_metadata.pack_id,
+#                     reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
+#                     reason_description=f'{item.file_path_str} ({marketplaces_string})',
+#                     content_item_range=item.version_range,
+#                     allow_incompatible_marketplace=True
+#                 ))
+#
+#             except NotUnderPackException:
+#                 if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+#                     logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
+#                     continue
+#         return CollectionResult.union(result)
+#
+#     def _collect_modeling_rule_packs(self) -> CollectionResult | None:
+#         """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
+#
+#         Returns:
+#             Optional[CollectionResult]: pack collection result.
+#         """
+#         result = []
+#         for modeling_rule in self.id_set.modeling_rules:
+#             try:
+#                 logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
+#                 path = PATHS.content_path / modeling_rule.file_path_str
+#                 pack_id = modeling_rule.pack_id
+#                 result.append(self._collect_pack_for_modeling_rule(
+#                     pack_id=pack_id,  # type: ignore[arg-type]
+#                     changed_file_path=path,
+#                     reason=CollectionReason.MODELING_RULE_NIGHTLY,
+#                     reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
+#                     content_item_range=modeling_rule.version_range
+#                 ))
+#             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+#                 logger.debug(str(e))
+#
+#         return CollectionResult.union(result)
+#
+#     @property
+#     def sanity_tests(self) -> CollectionResult:
+#         return CollectionResult.union(tuple(
+#             CollectionResult(
+#                 test=test,
+#                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+#                 modeling_rule_to_test=None,
+#                 reason=CollectionReason.SANITY_TESTS,
+#                 version_range=None,
+#                 reason_description='XSIAM Nightly sanity',
+#                 conf=self.conf,
+#                 id_set=self.id_set,
+#                 is_sanity=True,
+#                 only_to_install=True
+#             )
+#             for test in self.conf['test_marketplacev2']
+#         ))  # type: ignore[return-value]
+#
+#     def _collect(self) -> CollectionResult | None:
+#         return CollectionResult.union((
+#             self._id_set_tests_matching_marketplace_value(),
+#             self._collect_all_marketplace_compatible_packs(),
+#             self._collect_packs_of_content_matching_marketplace_value(),  # TODO why
+#             self._collect_modeling_rule_packs(),
+#             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
+#         ))
+#
+#
+# class XSOARNightlyTestCollector(NightlyTestCollector):
+#
+#     def _collect(self) -> CollectionResult | None:
+#         changed_packs = self.diff_checker.get_diff_master_bucket()
+#         return CollectionResult.union([
+#             self._collect_packs_nightly(changed_packs),
+#         ])
+#
+#
+# class XSOAR_SAASNightlyTestCollector(NightlyTestCollector):
+#
+#     def _collect(self) -> CollectionResult | None:
+#         collect_from = self.diff_checker.get_git_diff()
+#         return CollectionResult.union([
+#             # self._collect_from_changed_packs_nightly(collect_from.changed_files),
+#             self._collect_packs_nightly(collect_from),
+#             self._collect_packs_nightly(self.conf.nightly_packs),
+#             # self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from), # todo eyal
+#             # self._collect_packs_diff_master_bucket(),
+#             self._id_set_tests_matching_marketplace_value()
+#         ])
+#
+#
+# class XPANSENightlyTestCollector(NightlyTestCollector):
+#     def __init__(self, graph: bool = False):
+#         super().__init__(MarketplaceVersions.XPANSE, graph=graph)
+#
+#     def _collect(self) -> CollectionResult | None:
+#         logger.info('tests are not currently supported for XPANSE, returning nothing.')
+#         return None
 
 
 class SDKNightlyTestCollector(TestCollector):
@@ -1615,7 +1662,7 @@ if __name__ == '__main__':
     if args.changed_pack_path:
         collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
-    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':  # todo adapt to the new design
         if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:
@@ -1627,17 +1674,21 @@ if __name__ == '__main__':
         collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
 
     elif nightly:
-        match marketplace:
-            case MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph,
-                                                      service_account=service_account, branch_name=branch_name)
-            case MarketplaceVersions.XSOAR_SAAS:
-                collector = XSOAR_SAASNightlyTestCollector(marketplace=marketplace, graph=graph,
-                                                           service_account=service_account, branch_name=branch_name)
-            case MarketplaceVersions.MarketplaceV2:
-                collector = XSIAMNightlyTestCollector(graph=graph)
-            case MarketplaceVersions.XPANSE:
-                collector = XPANSENightlyTestCollector(graph=graph)
+        collector = NightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
+                                         graph=graph)
+        # match marketplace:
+        #     case MarketplaceVersions.XSOAR:
+        #         collector = XSOARNightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
+        #                                               graph=graph)
+        #     case MarketplaceVersions.XSOAR_SAAS:
+        #         collector = XSOAR_SAASNightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
+        #                                               graph=graph)
+        #     case MarketplaceVersions.MarketplaceV2:
+        #         collector = XSIAMNightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
+        #                                               graph=graph)
+        #     case MarketplaceVersions.XPANSE:
+        #         collector = XPANSENightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
+        #                                               graph=graph)
     else:
         collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
 
