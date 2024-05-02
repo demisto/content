@@ -3,6 +3,7 @@ from CommonServerPython import entryTypes
 from Ping import main
 import re
 import pytest
+import os
 
 # To run the tests in an editor see: test_data/ping
 
@@ -11,6 +12,8 @@ RETURN_ERROR_TARGET = 'Ping.return_error'
 
 @pytest.mark.parametrize('address', ['google.com', '8.8.8.8'])
 def test_ping(mocker, address):
+    if os.getenv("GITHUB_ACTIONS"):
+        pytest.skip("Ping cannot be executed from github actions because they block ICMP packets")
     mocker.patch.object(demisto, 'args', return_value={'address': address})
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
