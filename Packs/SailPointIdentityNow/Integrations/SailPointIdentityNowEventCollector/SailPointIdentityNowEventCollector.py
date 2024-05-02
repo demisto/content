@@ -90,17 +90,16 @@ class Client(BaseClient):
     
     
 
-    def search_events(self, prev_id: str, limit: int| None = None, from_date: str | None = None) -> List[Dict]:  # noqa: E501
+    def search_events(self, prev_id: str, limit: int| None = None, from_date: str | None = None) -> List[Dict]:
         """
         """
-        from_date = from_date or '2022-05-19T19:26:03.351Z'
+        from_date = from_date
         query = {"indices": ["events"],
         "queryType": "SAILPOINT",
         "queryVersion": "5.2",
         "query":
-        {"query": f"created: [{from_date} TO now]" },
+        {"query": f"type:* AND created: [{from_date} TO now]"},
         "timeZone": "America/Los_Angeles",
-        "fields": ["created"],
         "sort": ["+id", "+created"],
         "searchAfter": [prev_id]
         }
