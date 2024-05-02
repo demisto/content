@@ -45,10 +45,10 @@ tasks:
       version: -1
       name: Search And Delete Emails - EWS
       description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
+      playbookName: Search And Delete Emails - EWS
       type: playbook
       iscommand: false
       brand: ""
-      playbookName: Search And Delete Emails - EWS
     nexttasks:
       '#none#':
       - "2"
@@ -77,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 515
+          "x": 1710,
+          "y": 1740
         }
       }
     note: false
@@ -105,7 +105,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2015,
+          "x": 1135,
           "y": 1910
         }
       }
@@ -172,7 +172,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 490,
           "y": 1740
         }
       }
@@ -638,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 515
+          "x": 500,
+          "y": 510
         }
       }
     note: false
@@ -671,8 +671,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 690
+          "x": 500,
+          "y": 710
         }
       }
     note: false
@@ -708,8 +708,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 865
+          "x": 180,
+          "y": 880
         }
       }
     note: false
@@ -754,8 +754,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1515,
-          "y": 865
+          "x": 820,
+          "y": 880
         }
       }
     note: false
@@ -785,7 +785,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1955,
           "y": 370
         }
       }
@@ -816,7 +816,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1460,
           "y": 370
         }
       }
@@ -847,7 +847,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 820,
           "y": 370
         }
       }
@@ -878,7 +878,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 210,
           "y": 370
         }
       }
@@ -909,8 +909,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2015,
-          "y": 1580
+          "x": -275,
+          "y": 370
         }
       }
     note: false
@@ -963,7 +963,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2015,
+          "x": -275,
           "y": 1740
         }
       }
@@ -995,7 +995,7 @@ tasks:
       {
         "position": {
           "x": 2445,
-          "y": 1580
+          "y": 370
         }
       }
     note: false
@@ -1083,8 +1083,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1215
+          "x": 180,
+          "y": 1230
         }
       }
   "18":
@@ -1120,8 +1120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1565
+          "x": 180,
+          "y": 1570
         }
       }
   "19":
@@ -1172,8 +1172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1040
+          "x": 500,
+          "y": 1050
         }
       }
   "20":
@@ -1197,20 +1197,20 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 488ba512-437e-4bc1-81f8-0ef84aa353ae
+      id: 5cbef4d7-8839-469e-8021-6e1d73ffa07e
       iscommand: false
       name: Set the non-modified KQL query
       script: Set
       type: regular
       version: -1
-    taskid: 488ba512-437e-4bc1-81f8-0ef84aa353ae
+    taskid: 5cbef4d7-8839-469e-8021-6e1d73ffa07e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 1565
+          "x": 820,
+          "y": 1220
         }
       }
   "21":
@@ -1249,8 +1249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1390
+          "x": 180,
+          "y": 1385
         }
       }
   "22":
@@ -1286,26 +1286,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
-          "y": 1565
+          "x": 820,
+          "y": 1555
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
+      "21_22_#default#": 0.41,
       "4_13_Gmail": 0.81,
       "4_15_Agari Phishing Defense": 0.86,
       "4_2_#default#": 0.9,
-      "5_7_All Mailboxes": 0.62,
-      "5_8_Recipient's Mailbox": 0.36,
+      "5_7_All Mailboxes": 0.71,
+      "5_8_Recipient's Mailbox": 0.73,
       "6_7_All Mailboxes": 0.37,
       "6_8_Recipients Mailbox": 0.63
     },
     "paper": {
       "dimensions": {
         "height": 1925,
-        "width": 2775,
-        "x": 50,
+        "width": 3100,
+        "x": -275,
         "y": 50
       }
     }
@@ -1379,3 +1380,21 @@ outputs: []
 tests:
 - No tests
 fromversion: 6.1.0
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - From
+  - Subject
+  - AttachmentName
+  - SearchAndDeleteIntegration
+  - O365ExchangeLocation
+  - O365KQL
+  - O365AllowNotFoundExchangeLocations
+  - O365DeleteType
+  - O365ExchangeLocationExclusion
+  - SearchThisWeek
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
