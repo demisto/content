@@ -118,8 +118,7 @@ def test_get_certificates_command(mocker, mock_client_with_valid_token):
     raw_response = util_load_json("test_data/raw_certificates.json")
     mocker.patch.object(Client, '_http_request', return_value=raw_response)
     command_result = get_certificates_command(mock_client_with_valid_token, {})
-    outputs = command_result.outputs
-    certificates = outputs.get('Certificates', [])
+    certificates = command_result.outputs
 
     assert len(certificates) == 2
     assert certificates == raw_response.get('Certificates', [])
