@@ -1199,7 +1199,7 @@ tasks:
       description: Set a value in context under the key you entered.
       id: 488ba512-437e-4bc1-81f8-0ef84aa353ae
       iscommand: false
-      name: Create KQL query - search all time
+      name: Set the non-modified KQL query
       script: Set
       type: regular
       version: -1
