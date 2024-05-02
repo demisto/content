@@ -1,5 +1,6 @@
 import email
 import hashlib
+import subprocess
 from multiprocessing import Process
 
 import dateparser  # type: ignore
@@ -20,7 +21,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed, ErrorAccessDenied)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol, NoVerifyHTTPAdapter
+from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
@@ -48,7 +49,7 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):
+class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
@@ -59,8 +60,6 @@ class exchangelibSSLAdapter(SSLAdapter):
 warnings.filterwarnings("ignore")
 
 MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
-SESSION = requests.Session()
-SESSION.mount(prefix='https://', adapter=SSLAdapter(verify=False))
 
 # consts
 VERSIONS = {
@@ -126,6 +125,7 @@ MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
+
 
 # initialized in main()
 EWS_SERVER = ''
@@ -207,12 +207,15 @@ def prepare_context(credentials):  # pragma: no cover
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
- 
+
 
 def prepare():  # pragma: no cover
-    global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+    else:
+        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
+
+    global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)
@@ -230,6 +233,7 @@ def prepare():  # pragma: no cover
                 AUTH_METHOD_STR = 'ntlm'
             if not VERSION_STR:
                 return_error('Exchange Server Version is required for on-premise Exchange Servers.')
+
         version = get_version(VERSION_STR)
         credentials = Credentials(username=USERNAME, password=PASSWORD)
         config_args = {
@@ -1800,6 +1804,7 @@ def get_cs_status(search_name, status):  # pragma: no cover
     }
 
 
+
 def get_autodiscovery_config():  # pragma: no cover
     config_dict = demisto.getIntegrationContext()
     return {
@@ -2069,22 +2074,6 @@ def get_protocol():  # pragma: no cover
 def encode_and_submit_results(obj):  # pragma: no cover
     demisto.results(obj)
 
-class Client(BaseClient):
-
-    def get_test(self) -> Dict[str, Any]:
-        return self._http_request(
-            method='GET',
-            url_suffix='/',
-        )
-
-
-def main_(verify=True):
-    client = Client(
-        base_url='https://ec2-34-246-53-163.eu-west-1.compute.amazonaws.com',
-        verify=verify,
-    )
-    res = client.get_test()
-    print(res)
 
 def sub_main():  # pragma: no cover
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
@@ -2095,7 +2084,7 @@ def sub_main():  # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
-    #BaseClient._http_request()
+
     fix_2010()
     try:
         protocol = get_protocol()
