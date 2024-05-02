@@ -59,15 +59,26 @@ def create_email_html(email_html='', entry_id_list=None):
     Returns:
         str. Email Html.
     """
+    demisto.debug(f"{email_html=}")
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
-        if re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
+        demisto.debug(f"{image_name=}")
+        content_id = image_name.split('-')[1]
+        demisto.debug(f"{content_id=}")
+        matches = re.findall(rf'(src="cid:{content_id}")', email_html)
+        demisto.debug(f"{matches=}")
+        if re.search(rf'(src="cid:{content_id}")', email_html):
+            demisto.debug("i am here")
+            email_html = re.sub(f'src="cid:{content_id}"', f'src=entry/download/{image_entry_id}',
+                    email_html)
+        elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
             email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
                                 email_html)
         # Handling inline attachments from Outlook mailboxes
         # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
         # special validation that the right src was being replaced.
         else:
+            demisto.debug("i am in the else")
             email_html = re.sub('(src="cid(.*?"))', f'src=entry/download/{image_entry_id}', email_html, count=1, )
     return email_html
 
@@ -85,10 +96,12 @@ def get_entry_id_list(attachments, files):
 
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
+    demisto.debug(f"{files=}")
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
         for file in files:
-            if attachment_name == file.get('Name') and attachment.get('description', '') != FileAttachmentType.ATTACHED:
+            is_file_attached = attachment.get('description', '').split('-')[0]
+            if attachment_name == file.get('Name') and is_file_attached != FileAttachmentType.ATTACHED:
                 entry_id_list.append((attachment_name, file.get('EntryID')))
 
     return entry_id_list
@@ -206,7 +219,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, att
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
 
-    if integration_name in ['EWS v2', 'EWSO365 dev']:
+    if integration_name in ['EWS v2 dev', 'EWSO365 dev']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'item-id': str(message_id), 'attachment-ids': attachment_ids, 'using': instance_name}})
@@ -224,6 +237,28 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, att
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
+
+def find_attachments_to_download(attachments, email_html):
+    """ Filter only new attachment.
+
+    Args:
+        attachments (Attachment): All attachments from the current thread mail
+        email_html (str): email html for the newest message
+    """
+    new_attachment_ids_list = []
+    new_attachments = []
+    for attachment in attachments:
+        demisto.debug(f"this_is_the_email {email_html}")
+        attachment_id = attachment.get('description', '').split('-')[1]
+        demisto.debug(f"this_is_the_id {attachment_id}")
+        content_id = attachment.get('name', '').split('-')[1]
+        demisto.debug(f"this_is_the_content {content_id}")
+        if re.search(rf'(src="cid:{content_id}")', email_html):
+            demisto.debug("i_am_in_the_if!!!!")
+            new_attachment_ids_list.append(attachment_id)
+            new_attachments.append(attachment)
+    demisto.debug(f"this_is_the_attachment_ids {new_attachment_ids_list}")
+    return ",".join(new_attachment_ids_list), new_attachments
 
 
 def get_incident_related_files(incident_id):
@@ -400,7 +435,8 @@ def main():
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
-        demisto.debug(f"this_is_the_attachment_before{attachments[0]}")
+        demisto.debug("hiiiii")
+        demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
         email_original_subject = email_subject.split('<')[-1].split('>')[1].strip()
 
@@ -415,12 +451,9 @@ def main():
         email_html = remove_html_conversation_history(email_html)
 
         #Count how many images needs to be replaced
-        matches = re.findall('(src="cid(.*?))"', email_html) or []
-        number_of_matches = len(matches)
-        demisto.debug(f"{number_of_matches=}")
-        demisto.debug(f"{attachments[0]['name'].split('_')[1]}")
-        attachment_ids_array = [attachment['name'].split('_')[1] for attachment in attachments[-number_of_matches:]]
-        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, ",".join(attachment_ids_array))
+        attachment_ids_array, attachments = find_attachments_to_download(attachments, email_html)
+        demisto.debug(f"{attachment_ids_array=}")
+        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_ids_array)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(45)
@@ -428,7 +461,6 @@ def main():
         demisto.debug(f"{files=}")
         demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
         entry_id_list = get_entry_id_list(attachments, files)
-        entry_id_list = entry_id_list[-number_of_matches:]
         demisto.debug(f"{entry_id_list=}")
         html_body = create_email_html(email_html, entry_id_list)
 
