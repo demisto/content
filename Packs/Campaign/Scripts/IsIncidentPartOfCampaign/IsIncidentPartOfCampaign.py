@@ -1,22 +1,26 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from collections.abc import Iterable
 
 
 ''' STANDALONE FUNCTION '''
 
 
-def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
+def get_incidents_ids_by_type(incident_type: str, incident_status: str) -> Iterable[str]:
     """
-    Get list of incidents ids with the given type.
+    Get list of incidents ids with the given type and status.
     Args:
         Incident_type(str): the incident type name.
+        Incident_status(str): the incident status.
+
 
     Returns:
         List of ids as strings.
     """
     search_args = {
-        'query': f'type:"{incident_type}"',
+        'query': f'type:"{incident_type}" and status:{incident_status}',
         'sort': {
             'field': 'occurred',
             'asc': False,
@@ -69,10 +73,11 @@ def main():
     try:
         args = demisto.args()
         campaign_type = args.get('CampaignIncidentType', 'Phishing Campaign')
+        incident_status = args.get('IncidentStatus')
         incidents_ids_set = set(argToList(args.get('IncidentIDs', '')))
         campaign_id = None
 
-        campaigns_ids_list = get_incidents_ids_by_type(campaign_type)
+        campaigns_ids_list = get_incidents_ids_by_type(campaign_type, incident_status)
 
         for campaign_id in campaigns_ids_list:
             if check_incidents_ids_in_campaign(campaign_id, incidents_ids_set):
