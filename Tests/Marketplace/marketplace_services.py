@@ -129,8 +129,7 @@ class Pack:
         self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
-        self._default_data_source_name = None  # initialized in load_pack_metadata function, prior to setting _data_source_name
-        self._data_source_name = None  # initialized in collect_content_items function
+        self._default_data_source_name = None  # initialized in load_pack_metadata function
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -189,11 +188,11 @@ class Pack:
         self._is_siem = is_siem
 
     @property
-    def data_source_name(self):
+    def default_data_source_name(self):
         """
         str: the pack data source name, if the pack has a data source
         """
-        return self._data_source_name
+        return self._default_data_source_name
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -455,8 +454,8 @@ class Pack:
 
         # data source should be first in the list
         data_source_integration = ([integration
-                                   for integration in pack_integration_images
-                                   if integration.get('name') == default_data_source_name]
+                                    for integration in pack_integration_images
+                                    if integration.get('name') == default_data_source_name]
                                    if default_data_source_name else [])
         if data_source_integration:
             pack_integration_images.remove(data_source_integration[0])
@@ -1758,8 +1757,6 @@ class Pack:
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
-            self._default_data_source_name = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE_NAME)
-
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
 
@@ -2112,21 +2109,10 @@ class Pack:
             list[dict]: List of objects with the integration image data
         """
         integration_images_data = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
-        integration_images_metadata = [{'name': self.remove_contrib_suffix_from_name(image_data.get('display_name')),
-                                        'imagePath': urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name,
-                                                                                     os.path.basename(image_data.get('image_path'))))}
+        return [{'name': self.remove_contrib_suffix_from_name(image_data.get('display_name')),
+                 'imagePath': urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name,
+                                                              os.path.basename(image_data.get('image_path'))))}
                 for image_data in integration_images_data]
-
-        if self._default_data_source_name:
-            data_source_integration = [integration
-                                       for integration in integration_images_metadata
-                                       if integration.get('name') == self._default_data_source_name]
-            if data_source_integration:
-                integration_images_metadata.remove(data_source_integration[0])
-                integration_images_metadata.insert(0, data_source_integration[0])
-
-        return integration_images_metadata
-
 
     def upload_integration_images(self, storage_bucket, storage_base_path):
         """Searches for integration images and uploads them to gcs.

@@ -127,8 +127,6 @@ class Pack:
         self._is_modified = is_modified
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
-        self._default_data_source_name = None  # initialized in load_user_metadata function, prior to setting _data_source_name
-        self._data_source_name = None  # initialized in collect_content_items function
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -200,12 +198,6 @@ class Pack:
         """
         self._is_siem = is_siem
 
-    @property
-    def data_source_name(self):
-        """
-        str: the pack data source name, if the pack has a data source
-        """
-        return self._data_source_name
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -440,7 +432,7 @@ class Pack:
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
-                                    pack_dependencies_by_download_count: list, data_source_name: str | None):
+                                    pack_dependencies_by_download_count: list):
         """ By Issue #32038
         1. Sort pack integration images by alphabetical order
         2. Sort pack dependencies by download count
@@ -462,16 +454,8 @@ class Pack:
         # sort packs integration images
         pack_integration_images = sorted(pack_integration_images, key=sort_by_name)
 
-        # data source should be first in the list
-        data_source_integration = ([integration
-                                    for integration in pack_integration_images
-                                    if integration.get('name') == data_source_name]
-                                   if data_source_name else [])
-        if data_source_integration:
-            pack_integration_images.remove(data_source_integration[0])
-
         # sort pack dependencies integration images
-        all_dep_int_imgs = data_source_integration + pack_integration_images
+        all_dep_int_imgs = pack_integration_images
         for dep_pack_name in pack_dependencies_by_download_count:
             if dep_pack_name in pack_dependencies_integration_images_dict:
                 logging.info(f'Adding {dep_pack_name} to deps int imgs')
@@ -485,7 +469,7 @@ class Pack:
     @staticmethod
     def _get_all_pack_images(pack_integration_images: list, display_dependencies_images: list,
                              dependencies_metadata: dict,
-                             pack_dependencies_by_download_count, data_source_name):
+                             pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
 
@@ -520,42 +504,13 @@ class Pack:
                         dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
 
         return Pack.organize_integration_images(
-            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count, data_source_name
+            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
-    def get_data_source_for_pack(self, yaml_content):
-        """
-        Checks if the pack is a data source, by verifying:
-            1. The pack is in XSIAM
-            2. The pack has a default dara source selected, or has a single fetching integration
-
-        Returns the data source integration name in case there is such, or False in case the pack is not a data source.
-        """
-        if self._default_data_source_name and XSIAM_MP in self.marketplaces:
-            logging.info(f"The pack has a default Data Source: {self._default_data_source_name}")
-            return self._default_data_source_name
-
-        # this's the first integration in the pack, and the pack is in xsiam
-        if self._single_integration and XSIAM_MP in self.marketplaces:
-
-            # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
-            if yaml_content.get('script', {}).get('isfetchevents', False) or \
-                    yaml_content.get('script', {}).get('isfetch', False) is True:
-                logging.info(f"{yaml_content.get('name')} makes the pack a Data Source potential")
-                return yaml_content.get('name')
-        # already has the pack as data source
-        elif not self._single_integration and self._data_source_name:
-
-            # found a second integration in the pack
-            logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-            return False
-
-        return self._data_source_name
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
         Checks if a pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
-        Also, checks if the pack is data source and updated Pack._is_data_source
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
             yaml_type: The type of object to check.
@@ -569,8 +524,6 @@ class Pack:
                 self._is_feed = True
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
-
-            self._data_source_name = self.get_data_source_for_pack(yaml_content)
 
             # already found the first integration in the pack,
             self._single_integration = False
@@ -737,7 +690,6 @@ class Pack:
             Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
-            Metadata.DEFAULT_DATA_SOURCE_NAME: self._data_source_name,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
@@ -2415,7 +2367,6 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
-            self._default_data_source_name = user_metadata.get(Metadata.DEFAULT_DATA_SOURCE_NAME)
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
@@ -2436,7 +2387,6 @@ class Pack:
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if bool(self._data_source_name) and marketplace == XSIAM_MP else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -2535,7 +2485,7 @@ class Pack:
         )
         self._related_integration_images = self._get_all_pack_images(
             self._displayed_integration_images, self._displayed_images_dependent_on_packs, dependencies_metadata_dict,
-            pack_dependencies_by_download_count, self._data_source_name
+            pack_dependencies_by_download_count
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,

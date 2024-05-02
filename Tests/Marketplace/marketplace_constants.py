@@ -209,10 +209,10 @@ class Metadata:
     DOWNLOADS = 'downloads'
     TAGS = 'tags'
     CATEGORIES = 'categories'
-    CONTENT_ITEMS = 'contentItems'  # todo order
+    CONTENT_ITEMS = 'contentItems'
     CONTENT_DISPLAYS = 'contentDisplays'
     SEARCH_RANK = 'searchRank'
-    INTEGRATIONS = 'integrations'  # todo order
+    INTEGRATIONS = 'integrations'
     USE_CASES = 'useCases'
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
