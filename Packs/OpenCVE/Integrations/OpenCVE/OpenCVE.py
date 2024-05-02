@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 from datetime import datetime, timedelta
 
 
@@ -443,10 +444,10 @@ def parse_cve(ocve: OpenCVE, cve: dict):
     cvssV2 = None
     cvssV3 = None
 
-    impact = cve.get('raw_nvd_data', {}).get('impact', '')
-    if impact:
+    metrics = cve.get('raw_nvd_data', {}).get('metrics', '')
+    if metrics:
         if cvss_version == 3:
-            cvssV3 = cve['raw_nvd_data']['impact']['baseMetricV3']['cvssV3']
+            cvssV3 = cve['raw_nvd_data']['metrics']['cvssMetricV31'][0]['cvssData']
 
             # Set the cvss v3 fields
             parsed_cve['fields']['cvssscore'] = cvssV3.get('baseScore')
@@ -466,7 +467,7 @@ def parse_cve(ocve: OpenCVE, cve: dict):
                 parsed_cve['fields']['cvssversion'] = cvss_version_regex.group("version")
 
         elif cvss_version == 2:
-            cvssV2 = cve['raw_nvd_data']['impact']['baseMetricV2']['cvssV2']
+            cvssV2 = cve['raw_nvd_data']['metrics']['cvssMetricV2'][0]['cvssData']
 
             # Set the cvss v2 fields
             parsed_cve['fields']['cvssscore'] = cvssV2.get('baseScore')

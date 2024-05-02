@@ -143,10 +143,8 @@ script:
   - arguments:
     - description: Report ID.
       name: report_id
-      required: false
     - description: Specific page to start from.
       name: page
-      required: false
     description: List the reports of the authenticated user or get a specific report.
     name: opencve-get-reports
     outputs:
@@ -155,13 +153,10 @@ script:
   - arguments:
     - description: The report ID.
       name: report_id
-      required: false
     - description: Specific page to start from.
       name: page
-      required: false
     - description: The Alert ID.
       name: alert_id
-      required: false
     description: List the alerts of a report or get the details of a specific alert.
     name: opencve-get-alerts
     outputs:
@@ -173,13 +168,10 @@ script:
       required: true
     - description: Product name.
       name: product_name
-      required: false
     - description: Filter the search by a keyword.
       name: search
-      required: false
     - description: Specific page to start from.
       name: page
-      required: false
     description: List the products associated to a vendor or get a specific one.
     name: opencve-get-products
     outputs:
@@ -188,23 +180,18 @@ script:
   - arguments:
     - description: Vendor name.
       name: vendor_name
-      required: false
     - description: Filter the search by a keyword.
       name: search
-      required: false
     - description: Specific page to start from.
       name: page
-      required: false
     - description: Filter by the first letter.
       name: letter
-      required: false
     description: List the products associated to a vendor or get a specific product of a vendor by specifying its name.
     name: opencve-get-vendors
     outputs:
     - contextPath: vendors
       description: Vendors.
-  dockerimage: demisto/python3:3.10.13.84405
-  feed: false
+  dockerimage: demisto/python3:3.10.14.92207
   isFetchSamples: true
   runonce: false
   script: ''

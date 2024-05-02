@@ -185,6 +185,7 @@ List the reports of the authenticated user or get a specific report.
 | --- | --- | --- |
 | reports | unknown | Reports. | 
 
+
 ### opencve-get-alerts
 
 ***
@@ -207,6 +208,7 @@ List the alerts of a report or get the details of a specific alert.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | alerts | unknown | The Alerts from the provided Report ID. | 
+
 
 ### opencve-get-products
 
@@ -231,6 +233,7 @@ List the products associated to a vendor or get a specific one.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | products | unknown | Products. | 
+
 
 ### opencve-get-vendors
 
