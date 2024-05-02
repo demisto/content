@@ -22,7 +22,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.token = self._login(client_id, username, password)
+        self.token = self.login(client_id, username, password)
 
     def login(self, client_id: str, username: str, password: str) -> str:
         """
@@ -44,7 +44,7 @@ class Client(BaseClient):
         integration_context = get_integration_context()
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
-            if expires_date and not self._is_token_expired(expires_date):
+            if expires_date and not self.is_token_expired(expires_date):
                 return token
             else:
                 refresh_token = integration_context.get('refresh_token')
@@ -52,7 +52,7 @@ class Client(BaseClient):
                     'client_id': client_id,
                     'refresh_token': refresh_token
                 }
-                return self._create_new_token(json_data, is_token_exist=True)
+                return self.create_new_token(json_data, is_token_exist=True)
 
         json_data = {
             'username': username,
@@ -60,7 +60,7 @@ class Client(BaseClient):
             'client_id': client_id,
             'scope': 'certificate'
         }
-        return self._create_new_token(json_data, is_token_exist=False)
+        return self.create_new_token(json_data, is_token_exist=False)
 
     def is_token_expired(self, expires_date: str) -> bool:
         """
@@ -109,7 +109,7 @@ class Client(BaseClient):
         new_token = access_token_obj.get('access_token', '')
         expire_in = arg_to_number(access_token_obj.get('expires_in')) or 1
         refresh_token = access_token_obj.get('refresh_token', '')
-        self._store_token_in_context(new_token, refresh_token, expire_in)
+        self.store_token_in_context(new_token, refresh_token, expire_in)
 
         return new_token
 
@@ -192,7 +192,7 @@ def test_module(client: Client) -> str:
     Raises exceptions if something goes wrong.
 
     :type client: ``Client``
-    :param Client: client to use
+    :param client: client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -204,10 +204,7 @@ def test_module(client: Client) -> str:
         if results:
             return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+        raise e
 
 
 def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -223,20 +220,19 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
 
     outputs: dict[str, Any] = {}
     response = client.get_certificates(args)
-    if response:
-        outputs = delete_links_from_response(response)
-
-    human_readable = []
     certificates = outputs.get('Certificates', [])
+    readable_certificates = []
     for certificate in certificates:
-        certificate_details = get_human_readable_object(certificate)
-        human_readable.append(certificate_details)
+        readable_certificate_details = certificate.copy()
+        readable_certificate_details['ID'] = readable_certificate_details.get('Guid', '').strip('{}')
+        readable_certificates.append(readable_certificate_details)
 
-    markdown_table = tableToMarkdown('Venafi certificates', human_readable)
+    markdown_table = tableToMarkdown('Venafi certificates', readable_certificates,
+                                     headers=['CreatedOn', 'DN', 'Name', 'ParentDN', 'SchemaClass', 'ID'])
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=outputs,
+        outputs=delete_links_from_response(response),
         raw_response=response,
         readable_output=markdown_table
     )
@@ -253,48 +249,23 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
         A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
     """
 
-    outputs: dict[str, Any] = {}
-    guid = args.get('guid', '')
+    guid = args.get('guid')
     response = client.get_certificate_details(guid)
-    human_readable = []
-    certificate_details = get_human_readable_object(outputs)
-    human_readable.append(certificate_details)
+    readable_certificate_details = response.copy()
+    readable_certificate_details['ID'] = readable_certificate_details.get('Guid', '').strip('{}')
 
-    markdown_table = tableToMarkdown('Venafi certificate details', human_readable)
+    markdown_table = tableToMarkdown('Venafi certificate details', readable_certificate_details,
+                                     headers=['CreatedOn', 'DN', 'Name', 'ParentDN', 'SchemaClass', 'ID'])
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=outputs,
+        outputs=response,
         raw_response=response if response else {},
         readable_output=markdown_table
     )
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def get_human_readable_object(certificate: dict[str, Any]) -> Dict[str, Any]:
-    """
-    Create a human readable object.
-
-    Args:
-        certificate (dict): An object that contains the certificate information.
-    Returns:
-        certificate_details (dict): Certificate details dictionary.
-    """
-
-    certificate_guid = certificate.get('Guid', '')
-    certificate_id = certificate_guid[1:-1]  # Guid represented as {guid}
-    certificate_details = {
-        'CreatedOn': certificate.get('CreatedOn'),
-        'DN': certificate.get('DN'),
-        'Name': certificate.get('Name'),
-        'ParentDN': certificate.get('ParentDn'),
-        'SchemaClass': certificate.get('SchemaClass'),
-        'ID': certificate_id
-    }
-
-    return certificate_details
 
 
 def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
@@ -357,7 +328,10 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            return_error('Authorization Error: make sure API Key is correctly set')
+        else:
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

@@ -1,15 +1,41 @@
 import json
+import pytest
 from freezegun import freeze_time
+from VenafiV2 import Client
 
-MOCK_BASEURL = "https://test.com"
-MOCK_CLIENT_ID = "example_client_id"
-MOCK_CLIENT_PASSWORD = "example_password"
-MOCK_USERNAME = "example_username"
+MOCK_BASEURL = "https://mock.api.url.com"
+MOCK_CLIENT_ID = "mock_client_id"
+MOCK_CLIENT_PASSWORD = "mock_password"
+MOCK_USERNAME = "mock_username"
 
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+@pytest.fixture(autouse=True)
+def mock_client_with_valid_token(mocker) -> Client:
+    """
+    Establish a connection to the client with a URL and user credentials.
+
+    Returns:
+        Client: Connection to client.
+    """
+
+    mocker.patch("VenafiV2.get_integration_context", return_value={
+        "token": "access_token",
+        "expires": "1715032135"
+    })
+
+    return Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        username=MOCK_USERNAME,
+        password=MOCK_CLIENT_PASSWORD,
+        client_id=MOCK_CLIENT_ID,
+        proxy=False
+    )
 
 
 """*****TEST LOGIN****"""
@@ -22,23 +48,13 @@ def test_login_first_time_token_creation(mocker):
     Then: Create a new token and save it to the integration context
     """
 
-    from VenafiV2 import Client
-
+    mock_response = util_load_json("test_data/mock_response_login_first_time_token_creation.json")
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
     mocker.patch("VenafiV2.get_integration_context", return_value={})
-    mocker.patch.object(Client, '_http_request', return_value={
-        "access_token": "access_token",
-        "refresh_token": "refresh_token",
-        "expires_in": 7775999,
-        "expires": 1721806543,
-        "token_type": "Bearer",
-        "scope": "certificate",
-        "identity": "local:{identity}",
-        "refresh_until": 1745566543
-    })
 
     client = Client(
         base_url=MOCK_BASEURL,
-        verify=True,
+        verify=False,
         username=MOCK_USERNAME,
         password=MOCK_CLIENT_PASSWORD,
         client_id=MOCK_CLIENT_ID,
@@ -49,30 +65,14 @@ def test_login_first_time_token_creation(mocker):
 
 
 @freeze_time("2024-04-25 00:00:00")
-def test_login_with_valid_token(mocker):
+def test_login_with_valid_token(mock_client_with_valid_token):
     """
     Given: A token in the integration context with a valid expiration time
     When: Login is called with a valid token
     Then: Fetch the token from the integration context and log in
     """
 
-    from VenafiV2 import Client
-
-    mocker.patch("VenafiV2.get_integration_context", return_value={
-        "token": "access_token",
-        "expires": "1715032135"
-    })
-
-    client = Client(
-        base_url=MOCK_BASEURL,
-        verify=True,
-        username=MOCK_USERNAME,
-        password=MOCK_CLIENT_PASSWORD,
-        client_id=MOCK_CLIENT_ID,
-        proxy=False
-    )
-
-    assert client.token == "access_token"
+    assert mock_client_with_valid_token.token == "access_token"
 
 
 @freeze_time("2024-04-25 00:00:00")
@@ -83,28 +83,18 @@ def test_login_with_invalid_token_refresh_required(mocker):
     Then: Request a refresh token and save it to the integration context
     """
 
-    from VenafiV2 import Client
-
     mocker.patch("VenafiV2.get_integration_context", return_value={
         "token": "access_token",
         "expires": "1615032135",
         "refresh_token": "refresh_token"
     })
 
-    mocker.patch.object(Client, '_http_request', return_value={
-        "access_token": "access_token",
-        "refresh_token": "refresh_token",
-        "expires_in": 7775999,
-        "expires": 1721806543,
-        "token_type": "Bearer",
-        "scope": "certificate",
-        "identity": "local:{identity}",
-        "refresh_until": 1745566543
-    })
+    mock_response = util_load_json("test_data/mock_response_login_without_valid_token.json")
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
 
     client = Client(
         base_url=MOCK_BASEURL,
-        verify=True,
+        verify=False,
         username=MOCK_USERNAME,
         password=MOCK_CLIENT_PASSWORD,
         client_id=MOCK_CLIENT_ID,
@@ -114,32 +104,22 @@ def test_login_with_invalid_token_refresh_required(mocker):
     assert client.token == "access_token"
 
 
-def test_get_certificates_command(mocker):
+@freeze_time("2024-04-25 00:00:00")
+def test_get_certificates_command(mocker, mock_client_with_valid_token):
     """
     Given: Client details
     When: The "Get certificates" command is called
     Then: Retrieve the user's certificates
     """
 
-    from VenafiV2 import Client
     from VenafiV2 import get_certificates_command
-    mocker.patch.object(Client, '_login', return_value="access_token")
-
-    client = Client(
-        base_url=MOCK_BASEURL,
-        verify=True,
-        username=MOCK_USERNAME,
-        password=MOCK_CLIENT_PASSWORD,
-        client_id=MOCK_CLIENT_ID,
-        proxy=False
-    )
 
     raw_response = util_load_json("test_data/raw_certificates.json")
     mocker.patch.object(Client, '_http_request', return_value=raw_response)
-
-    command_result = get_certificates_command(client, {})
+    command_result = get_certificates_command(mock_client_with_valid_token, {})
     outputs = command_result.outputs
     certificates = outputs.get('Certificates', [])
+
     assert len(certificates) == 2
     assert certificates == raw_response.get('Certificates', [])
     assert certificates[0].get('Guid') == "{first_guid}"
@@ -147,29 +127,19 @@ def test_get_certificates_command(mocker):
     assert certificates[0].get('_links') is None
 
 
-def test_get_certificate_details_command(mocker):
+@freeze_time("2024-04-25 00:00:00")
+def test_get_certificate_details_command(mocker, mock_client_with_valid_token):
     """
     Given: Client details
     When: The "Get certificate details" command is called
     Then: Retrieve details of a specific certificate
     """
 
-    from VenafiV2 import Client
     from VenafiV2 import get_certificate_details_command
-    mocker.patch.object(Client, '_login', return_value="access_token")
-
-    client = Client(
-        base_url=MOCK_BASEURL,
-        verify=True,
-        username=MOCK_USERNAME,
-        password=MOCK_CLIENT_PASSWORD,
-        client_id=MOCK_CLIENT_ID,
-        proxy=False
-    )
 
     raw_response = util_load_json("test_data/raw_certificate_details.json")
     mocker.patch.object(Client, '_http_request', return_value=raw_response)
-    command_result = get_certificate_details_command(client, {})
+    command_result = get_certificate_details_command(mock_client_with_valid_token, {"guid": "guid"})
     certificate_details = command_result.outputs
 
     assert certificate_details == raw_response
