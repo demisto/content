@@ -77,17 +77,17 @@ class OpenAiClient(BaseClient):
         options = {'model': self.model}
         max_tokens = completion_params.get('max_tokens', None)
         if max_tokens:
-            options['max_tokens'] = int(max_tokens)
+            options['max_tokens']: int = int(max_tokens)
 
         temperature = completion_params.get('temperature', None)
         if temperature:
-            options['temperature'] = float(temperature)
+            options['temperature']: float = float(temperature)
 
         top_p = completion_params.get('top_p', None)
         if top_p:
-            options['top_p'] = float(top_p)
+            options['top_p']: float = float(top_p)
 
-        options['messages'] = chat_context
+        options['messages']: List[dict[str, str]] = chat_context
         demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
         return self._http_request(method='POST',
                                   full_url=OpenAiClient.CHAT_COMPLETIONS_URL,
@@ -189,15 +189,15 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
         Checks email parts (headers/body) for potential security issues using predefined prompts
         ('CHECK_EMAIL_HEADERS_PROMPT', 'CHECK_EMAIL_BODY_PROMPT') that are sent to the GPT model.
     """
-    entry_id: str | None = args.get('entryId', None)
+    entry_id: str = args.get('entryId', '')
     email_headers, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
     additional_instructions = args.get('additionalInstructions', '')
 
     if email_part == EmailParts.HEADERS:
         demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
         if email_headers:
-            email_headers = {list(header.values())[0]: list(header.values())[1] for header in email_headers}
-            readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers, sort_headers=False)
+            email_headers_formatted = {list(header.values())[0]: list(header.values())[1] for header in email_headers}
+            readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers_formatted, sort_headers=False)
             check_email_part_message = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
 
         else:
@@ -283,7 +283,7 @@ def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> CommandR
     # Also updating the conversation history with the extracted message from the response.
     assistant_message = extract_assistant_message(response, conversation)
 
-    usage = response.get('usage', {})
+    usage: dict[str, str] = response.get('usage', {})
 
     readable_output = assistant_message + '\n' + tableToMarkdown(name=f'{response.get("model", "")} response:',
                                                                  sort_headers=False,
