@@ -1,1 +1,0 @@
-This is README file for TestUploadFlowXSOARSaaS Pack
