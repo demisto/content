@@ -1,8 +1,6 @@
-## BaseIntegration Help
+To access the Venafi TLS Protect service, you need to provide:
 
-Markdown file for integration configuration  help snippet. In this file add:
+- Your Venafi TLS Protect server URL. For example: "https://example.ven-eco.com".
+- The Client ID, username, and password as parameters for the integration.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+To better understand the API, visit the [Venafi TLS Protect Introduction](https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/Products/c-tls-protect-landing.htm?tocpath=TLS%20Protect%7CCertificate%20Management%20Guide%7C_____0)
