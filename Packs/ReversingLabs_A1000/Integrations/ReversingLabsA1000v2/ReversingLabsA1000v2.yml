@@ -450,6 +450,44 @@ script:
       - contextPath: ReversingLabs.a1000_pdf_report
         description: Actions for creating and downloading PDF reports.
         type: Unknown
+  - name: reversinglabs-a1000-static-analysis-report
+    description: Retrieve the static analysis report for a local sample.
+    arguments:
+      - name: hash
+        description: Sample hash.
+        default: true
+        required: true
+    outputs:
+      - contextPath: ReversingLabs.a1000_static_analysis_report
+        description: The static analysis report.
+        type: Unknown
+  - name: reversinglabs-a1000-dynamic-analysis-report
+    description: Perform dynamic analysis report actions for a sample - create a report, check the status of a report and download a report.
+    arguments:
+      - name: hash
+        description: Sample hash.
+        default: true
+        required: true
+      - name: action
+        description: Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'CREATE REPORT'
+          - 'CHECK STATUS'
+          - 'DOWNLOAD REPORT'
+      - name: report_format
+        description: Dynamic analysis report format.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'pdf'
+          - 'html'
+        defaultValue: 'pdf'
+    outputs:
+      - contextPath: ReversingLabs.a1000_dynamic_analysis_report
+        description: Actions for creating and downloading dynamic analysis reports.
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.93622
   runonce: false
   script: '-'

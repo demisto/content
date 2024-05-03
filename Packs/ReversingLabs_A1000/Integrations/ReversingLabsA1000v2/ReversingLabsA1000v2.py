@@ -885,7 +885,8 @@ def user_tags_command(a1000: A1000):
     except Exception as e:
         if hasattr(e, "response_object"):
             return_error(e.response_object.content)
-        raise
+        else:
+            raise
 
     results = user_tags_output(resp=resp, action=action)
     return results
@@ -915,7 +916,8 @@ def file_analysis_status_command(a1000: A1000):
     except Exception as e:
         if hasattr(e, "response_object"):
             return_error(e.response_object.content)
-        raise
+        else:
+            raise
 
     results = file_analysis_status_output(resp_json=resp.json(), status=analysis_status)
     return results
@@ -960,10 +962,14 @@ def pdf_report_command(a1000: A1000):
     except Exception as e:
         if hasattr(e, "response_object"):
             return_error(e.response_object.content)
-        raise
+        else:
+            raise
 
     results, file_result = pdf_report_output(resp=resp, action=action, sample_hash=sample_hash)
-    return [results, file_result]
+    if file_result:
+        return [results, file_result]
+    else:
+        return results
 
 
 def pdf_report_output(resp, action, sample_hash):
@@ -980,7 +986,8 @@ def pdf_report_output(resp, action, sample_hash):
         context = resp
 
     else:
-        file_result = fileResult(sample_hash, resp.content, file_type=EntryType.FILE)
+        markdown = markdown + "The PDF report is returned as a downloadable file below."
+        file_result = fileResult(f"{sample_hash}.pdf", resp.content, file_type=EntryType.FILE)
         context = None
 
     results = CommandResults(
@@ -990,6 +997,128 @@ def pdf_report_output(resp, action, sample_hash):
     )
 
     return results, file_result
+
+
+def static_analysis_report_command(a1000: A1000):
+    sample_hash = demisto.getArg("hash")
+
+    try:
+        resp = a1000.get_titanium_core_report_v2(sample_hash=sample_hash)
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        else:
+            raise
+
+    results = static_analysis_report_output(resp_json=resp.json(), sample_hash=sample_hash)
+    return results
+
+
+def static_analysis_report_output(resp_json, sample_hash):
+    classification_obj = resp_json.get("classification")
+    indicators_table = tableToMarkdown("Indicators", resp_json.get("indicators"))
+    tags_table = tableToMarkdown("Tags", resp_json.get("tags"))
+
+    markdown = f"""## ReversingLabs A1000 static analysis report for {sample_hash}\n **Classification**: {classification_obj.get("classification")}
+    **Factor**: {classification_obj.get("factor")}
+    **Result**: {classification_obj.get("result")}
+    **SHA-1**: {resp_json.get("sha1")}
+    **MD5**: {resp_json.get("md5")}
+    **SHA-256**: {resp_json.get("sha256")}
+    **SHA-512**: {resp_json.get("sha512")}
+    **Story**: {resp_json.get("story")}\n {indicators_table} {tags_table}
+    """
+
+    dbot_score = Common.DBotScore(
+        indicator=sample_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='ReversingLabs A1000 v2',
+        score=classification_obj.get("classification"),
+        malicious_description=classification_obj.get("result"),
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.File(
+        md5=resp_json.get("md5"),
+        sha1=resp_json.get("sha1"),
+        sha256=resp_json.get("sha256"),
+        dbot_score=dbot_score
+    )
+
+    command_results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_static_analysis_report": resp_json},
+        indicator=indicator,
+        readable_output=markdown
+    )
+
+    return command_results
+
+
+def dynamic_analysis_report_command(a1000: A1000):
+    sample_hash = demisto.getArg("hash")
+    action = demisto.getArg("action")
+    report_format = demisto.getArg("report_format")
+
+    try:
+        if action == "CREATE REPORT":
+            resp = a1000.create_dynamic_analysis_report(sample_hash=sample_hash, report_format=report_format).json()
+
+        elif action == "CHECK STATUS":
+            resp = a1000.check_dynamic_analysis_report_status(sample_hash=sample_hash, report_format=report_format).json()
+
+        elif action == "DOWNLOAD REPORT":
+            resp = a1000.download_dynamic_analysis_report(sample_hash=sample_hash, report_format=report_format)
+
+        else:
+            return_error("This action is not supported.")
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        else:
+            raise
+
+    results, file_result = dynamic_analysis_report_output(
+        resp=resp,
+        action=action,
+        sample_hash=sample_hash,
+        report_format=report_format
+    )
+    if file_result:
+        return [results, file_result]
+    else:
+        return results
+
+
+def dynamic_analysis_report_output(resp, action, sample_hash, report_format):
+    markdown = f"## ReversingLabs A1000 dynamic analysis report - {action}\n"
+
+    file_result = None
+
+    if action == "CREATE REPORT":
+        markdown = markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n **Download endpoint**: {resp.get("download_endpoint")}"""
+        context = resp
+
+    elif action == "CHECK STATUS":
+        markdown = markdown + f"""**Status**: {resp.get("status")}\n **Status message**: {resp.get("message")}"""
+        context = resp
+
+    else:
+        markdown = markdown + "The dynamic analysis report is returned as downloadable file below."
+        file_result = fileResult(f"{sample_hash}.{report_format}", resp.content, file_type=EntryType.FILE)
+        context = None
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_dynamic_analysis_report": context},
+        readable_output=markdown
+    )
+
+    return results, file_result
+
+
 
 
 def main():
@@ -1059,13 +1188,9 @@ def main():
         elif demisto.command() == 'reversinglabs-a1000-pdf-report':
             return_results(pdf_report_command(a1000))
         elif demisto.command() == 'reversinglabs-a1000-static-analysis-report':
-            pass
-        elif demisto.command() == 'reversinglabs-a1000-create-dynamic-analysis-report':
-            pass
-        elif demisto.command() == 'reversinglabs-a1000-check-dynamic-analysis-report-status':
-            pass
-        elif demisto.command() == 'reversinglabs-a1000-download-dynamic-analysis-report':
-            pass
+            return_results(static_analysis_report_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-dynamic-analysis-report':
+            return_results(dynamic_analysis_report_command(a1000))
         elif demisto.command() == 'reversinglabs-a1000-get-sample-classification':
             pass
         elif demisto.command() == 'reversinglabs-a1000-set-sample-classification':
