@@ -49,7 +49,7 @@ configuration:
   required: false
 - display: First fetch time
   name: first_fetch
-  defaultvalue: 3 days
+  defaultvalue: "2024-01-01"
   type: 0
   required: false
 - display: ' Maximum number of alerts per fetch'
@@ -60,13 +60,13 @@ configuration:
 script:
   type: python
   commands:
-  - name: jizo-protocols
+  - name: jizo-protocols-get
     arguments:
     - name: ip_src
-      description: ip adress of source machine
+      description: ip address of source machine
       type: textArea
     - name: ip_dest
-      description: ip adress of destination machine
+      description: ip address of destination machine
       type: textArea
     - name: datetime_from
       description: default -7 days
@@ -84,34 +84,14 @@ script:
     - name: limit
       description: maximum number of protocols to display per alert
       type: keyValue
-    outputs:
-    - contextPath: JizoNDR.Protocols.alerts_flows.count
-      description: ""
-      type: number
-    - contextPath: JizoNDR.Protocols.alerts_flows.data
-      type: unknown
-    - contextPath: JizoNDR.Protocols.alerts_flows.total.total
-      type: number
-    - contextPath: JizoNDR.Protocols.alerts_files.count
-      type: number
-    - contextPath: JizoNDR.Protocols.alerts_files.data
-      description: ""
-      type: string
-    - contextPath: JizoNDR.Protocols.alerts_files.total.total
-      type: number
-    - contextPath: JizoNDR.Protocols.alerts_usecase.count
-      type: number
-    - contextPath: JizoNDR.Protocols.alerts_usecase.data
-    - contextPath: JizoNDR.Protocols.alerts_usecase.total.total
-      type: number
     description: Get jizo protocols
-  - name: jizo-peers
+  - name: jizo-peers-get
     arguments:
     - name: ip_src
-      description: ip adress of source machine
+      description: ip address of source machine
       type: textArea
     - name: ip_dest
-      description: ip adress of destination machine
+      description: ip address of destination machine
       type: textArea
     - name: datetime_from
       description: default-7 days
@@ -130,13 +110,13 @@ script:
       description: maximum number of samples to display per alert
       type: keyValue
     description: Get jizo peers
-  - name: jizo-query-records
+  - name: jizo-query-records-get
     arguments:
     - name: ip_src
-      description: ip adress of source machine
+      description: ip address of source machine
       type: textArea
     - name: ip_dest
-      description: ip adress of destination machine
+      description: ip address of destination machine
       type: textArea
     - name: proto
       description: protocol
@@ -172,7 +152,7 @@ script:
       description: maximum number of samples to display per alert
       type: keyValue
     description: Get jizo query records
-  - name: jizo-alert-rules
+  - name: jizo-alert-rules-get
     arguments:
     - name: flow_id
       type: textArea
@@ -203,7 +183,7 @@ script:
       description: maximum number of samples to display per alert
       type: keyValue
     description: Get jizo alerts rules
-  - name: jizo-device-records
+  - name: jizo-device-records-get
     arguments:
     - name: flow_id
       type: textArea
@@ -230,13 +210,13 @@ script:
       description: maximum number of samples to display per alert
       type: keyValue
     description: Get jizo device records
-  - name: jizo-device-alerts
+  - name: jizo-device-alerts-get
     arguments:
     - name: ip_src
-      description: ip adress of source machine
+      description: ip address of source machine
       type: textArea
     - name: ip_dest
-      description: ip adress of destination machine
+      description: ip address of destination machine
       type: textArea
     - name: port_src
       type: textArea
