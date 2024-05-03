@@ -27,7 +27,7 @@ Get jizo device alerts
 
 #### Base Command
 
-`jizo-device-alerts`
+`jizo-device-alerts-get`
 
 #### Input
 
