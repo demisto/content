@@ -17,17 +17,19 @@ This integration was integrated and tested with version 6.7.4 of LogPoint.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | LogPoint URL | True |
-    | username | LogPoint Username | True |
-    | apikey | API Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | first_fetch | First fetch timestamp  (\<number\> \<time unit\>, e.g., 6 hours, 1 day) | False |
-    | incidentType | Incident type | False |
-    | isFetch | Fetch incidents | False |
-    | max_fetch | Fetch limit \(Max value is 200, Recommended value is 50 or less\) | False |
+    | LogPoint URL |  | True |
+    | LogPoint Username |  | True |
+    | API Key | User's secret key | True |
+    | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
+    | Use system proxy settings | Whether to use XSOAR’s system proxy settings to connect to the API | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 6 hours, 1 day) | If it is not provided, incidents from past 24 hours will be fetched by default. | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | Fetch limit (Max value is 200, Recommended value is 50 or less) | If this is left blank, maximum 50 incidents will be fetched at a time. | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -700,16 +702,18 @@ Re-opens the closed incidents
 >### Incidents reopened
 
 ### lp-get-users
+
 ***
 Gets Incident users and user groups.
-
 
 #### Base Command
 
 `lp-get-users`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -718,6 +722,7 @@ There are no input arguments for this command.
 | LogPoint.Incidents.users.id | String | LogPoint Incidents Users Id | 
 | LogPoint.Incidents.users.name | String | LogPoint Incidents Users Name | 
 | LogPoint.Incidents.users.usergroups | String | LogPoint Incidents Users Usergroups | 
+
 
 
 #### Command Example
@@ -768,16 +773,18 @@ There are no input arguments for this command.
 >| 5fd9d95769d3a4ea5684fccf | sbs | {'id': '5bebd9fdd8aaa42840edc850', 'name': 'User Account Administrator'},<br/>{'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
 
 ### lp-get-users-preference
+
 ***
 Gets LogPoint user's preference such as timezone, date format, etc.
-
 
 #### Base Command
 
 `lp-get-users-preference`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -786,6 +793,7 @@ There are no input arguments for this command.
 | LogPoint.User.Preference.timezone | String | LogPoint user's timezone. | 
 | LogPoint.User.Preference.date_format | String | LogPoint user's date format. | 
 | LogPoint.User.Preference.hour_format | String | LogPoint user's hour format. | 
+
 
 
 #### Command Example
@@ -815,16 +823,18 @@ There are no input arguments for this command.
 
 
 ### lp-get-logpoints
+
 ***
 Gets user's LogPoints.
-
 
 #### Base Command
 
 `lp-get-logpoints`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -832,6 +842,7 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | LogPoint.LogPoints.name | String | LogPoint name. | 
 | LogPoint.LogPoints.ip | String | LogPoint's IP address. | 
+
 
 
 #### Command Example
@@ -858,16 +869,18 @@ There are no input arguments for this command.
 
 
 ### lp-get-repos
+
 ***
 Gets the list of LogPoint repos that can be accessed by the user.
-
 
 #### Base Command
 
 `lp-get-repos`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -875,6 +888,7 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | LogPoint.Repos.repo | String | LogPoint repo name. | 
 | LogPoint.Repos.address | String | LogPoint repo address. | 
+
 
 
 #### Command Example
@@ -909,16 +923,18 @@ There are no input arguments for this command.
 
 
 ### lp-get-devices
+
 ***
 Gets devices associated with LogPoint.
-
 
 #### Base Command
 
 `lp-get-devices`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -926,6 +942,7 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | LogPoint.Devices.name | String | Device name. | 
 | LogPoint.Devices.address | String | Device IP address. | 
+
 
 
 #### Command Example
@@ -964,16 +981,18 @@ There are no input arguments for this command.
 
 
 ### lp-get-livesearches
+
 ***
 Gets live search results of the alerts and dashboards.
-
 
 #### Base Command
 
 `lp-get-livesearches`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -983,6 +1002,7 @@ There are no input arguments for this command.
 | LogPoint.LiveSearches.searchname | String | The name of the live search. | 
 | LogPoint.LiveSearches.description | String | A description of the live search. | 
 | LogPoint.LiveSearches.query | String | The live search query. | 
+
 
 
 #### Command Example
@@ -1035,28 +1055,30 @@ There are no input arguments for this command.
 
 
 ### lp-get-searchid
+
 ***
 Gets the search ID based on the provided search parameters.
-
 
 #### Base Command
 
 `lp-get-searchid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | LogPoint search query. | Required | 
-| time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use 'Last 5 minutes' as the time range by default. Default is Last 5 minutes. | Optional | 
-| limit | Number of logs to fetch. If not provided, first 100 logs will be displayed. Default is 100. | Optional | 
-| repos | Comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional | 
-
+| query | LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI. | Required | 
+| time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use "Last 5 minutes" as the time range by default. Default is Last 5 minutes. | Optional | 
+| limit | Number of logs to fetch. If not provided, the first 100 logs will be displayed. Default is 100. | Optional | 
+| repos | A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional | 
+| timeout | None Default is 60. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | LogPoint.search_id | String | Search ID. Use this ID in the lp-search-logs command to get the search result. | 
+
 
 
 #### Command Example
@@ -1137,5 +1159,3 @@ Gets LogPoint search result. Uses the value of search_id as an argument.
 >|---|---|---|---|---|---|
 >| office365 |  |  count() |  col_type count() | office365 | 312 |
 >| filesystem |  |  count() |  col_type count() | filesystem | 3658 |
-
-
