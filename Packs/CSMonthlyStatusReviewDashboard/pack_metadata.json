@@ -1,0 +1,21 @@
+{
+    "name": "CS Monthly Status Review Dashboard",
+    "description": "The CS XSOAR Monthly Status Review Content Pack automatically reviews the current server and content for the current status. The pack goal is to review all the content and system status and bring them under a single pane of dashboard.\n\nThe dashboard then should be exported as a Report in a Landscape Orientation on a monthly basis and to be shared with the CS team to keep track of overall system status.\n\n\n##Prerequisites:\n#Single Server Deployment\n1. Configure “Core REST API” Integration Instance with Admin user\n\n#Multi-Tenants Deployment\n1. Create API Key on Main Tenant\n2. Create Core REST API integration on Main Tenant and use the API Key you created in previous step.\nOn instance settings define in URL field https://127.0.0.1\nmake sure not to set the tenant name in the URL.\n3. Propagate Core REST API instance to All tenants or to the required tenant using propagation labels.\n\n##How To:\n1. Once the pack is installed successfully, if you are on XSOAR version 6.x use 'Monthly Status Review Dashboard v6' dashboard else use  'Monthly Status Review Dashboard v8'\n2. Create a report, change the Orientation to Landscape and export it in pdf format and share it with the CS team.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Sharat Patil",
+    "url": "",
+    "email": "",
+    "created": "2024-05-03T02:00:58Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "sharatpatil7"
+    ]
+}
