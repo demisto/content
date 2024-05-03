@@ -581,4 +581,3 @@ def test_invalid_json_response(mocker, requests_mock):
 
     results = demisto.results.call_args[0][0]
     assert results['Contents']  # assert that the response was parsed successfully
-
