@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 """ IMPORTS """
 import urllib3
 import csv
+import datapraser
 from typing import Generator, Tuple, Optional, List
 
 # disable insecure warnings
@@ -116,8 +117,8 @@ class Client(BaseClient):
             "fields": {
                 "tags": tags,
                 "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
-                "firstseenbysource": item.get("first_seen", ""),
-                "lastseenbysource": item.get("last_seen", ""),
+                "firstseenbysource": datapraser.parse(item.get("first_seen", "")).isoformat(),
+                "lastseenbysource": datapraser.parse(item.get("last_seen", "")).isoformat(),
                 "threattypes": {
                     "threatcategory": item.get("category_name", ""),
                     "threatcategoryconfidence": item.get("score", "")
