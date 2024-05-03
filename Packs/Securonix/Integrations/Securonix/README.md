@@ -652,6 +652,7 @@ Gets a list of activity data for the specified resource group.
 | Securonix.Activity.totalDocuments | Number | Total number of events. | 
 | Securonix.Activity.message | String | Message from the API. | 
 | Securonix.Activity.queryId | String | Query Id for the pagination. | 
+| Securonix.Activity.command_name | String | The command name. | 
 
 ##### Command example
 ```!securonix-list-activity-data from="01/12/2024 10:00:00" to="01/15/2024 12:01:00"```
@@ -661,7 +662,8 @@ Gets a list of activity data for the specified resource group.
     "Securonix": {
         "Activity": {
             "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
-            "totalDocuments": 1182
+            "totalDocuments": 1182,
+            "command_name": "securonix-list-activity-data"
         },
         "ActivityData": [
             {

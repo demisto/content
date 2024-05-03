@@ -346,9 +346,10 @@ EXPECTED_LIST_VIOLATION_DATA_6_4 = [
 ]
 
 EXPECTED_LIST_ACTIVITY = {
-    "Securonix.Activity(val.id === obj.id)": {
+    "Securonix.Activity(val.command_name === obj.command_name)": {
         "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
-        "totalDocuments": 4
+        "totalDocuments": 4,
+        "command_name": "securonix-list-activity-data"
     },
     "Securonix.ActivityData(val.EventID === obj.EventID)": [
         {
@@ -405,10 +406,11 @@ EXPECTED_LIST_ACTIVITY = {
 }
 
 EXPECTED_LIST_ACTIVITY_NO_DATA = {
-    "Securonix.Activity(val.id === obj.id)": {
+    "Securonix.Activity(val.command_name === obj.command_name)": {
         "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
         "totalDocuments": 4,
         "message": "All records have been retrieved. No more results to be fetched.",
+        "command_name": "securonix-list-activity-data"
     }
 }
 

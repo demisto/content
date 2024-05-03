@@ -1675,11 +1675,12 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     pagination_data = {
         "totalDocuments": activity_data.get('totalDocuments'),
         "message": activity_data.get('message'),
-        "queryId": activity_data.get('queryId')
+        "queryId": activity_data.get('queryId'),
+        "command_name": 'securonix-list-activity-data'
     }
 
     entry_context = {
-        'Securonix.Activity(val.id === obj.id)': remove_empty_elements(pagination_data)
+        'Securonix.Activity(val.command_name === obj.command_name)': remove_empty_elements(pagination_data)
     }
 
     activity_outputs = remove_empty_elements(activity_outputs)

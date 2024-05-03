@@ -405,6 +405,9 @@ script:
     - contextPath: Securonix.Activity.queryId
       description: Query Id for the pagination.
       type: String
+    - contextPath: Securonix.Activity.command_name
+      description: The command name.
+      type: String
   - arguments:
     - description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: from
