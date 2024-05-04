@@ -175,9 +175,25 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            #create_time = arg_to_datetime(arg=event.get('created_time'))
+            #event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None #TODO  ??
+            
 
+def add_entry_status_to_events(events: List[Dict] | None):
+    """
+    """
+    if events:
+        for event in events:
+            created = event.get('created')
+            if created:
+                created = datetime.fromisoformat(created)
+
+            modified = event.get('modified')
+            if modified:
+                modified = datetime.fromisoformat(modified)
+
+            event["_ENTRY_STATUS"] = "modified" if modified and created and modified < created else "new"
+            
 
 def main() -> None:  # pragma: no cover
     """
@@ -196,7 +212,7 @@ def main() -> None:  # pragma: no cover
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now()
     formatted_first_fetch_time= first_fetch_time.strftime(DATE_FORMAT)
-    max_events_per_fetch = params.get('max_events_per_fetch') or 50000      #TODO: change this to 10,000 as docs?
+    max_events_per_fetch = params.get('max_events_per_fetch') or 50000      #TODO: max per call is 10,000, so how to handle this?
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -221,6 +237,7 @@ def main() -> None:  # pragma: no cover
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
+                add_entry_status_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -237,6 +254,7 @@ def main() -> None:  # pragma: no cover
             )
 
             #add_time_to_events(events)
+            add_entry_status_to_events(events)
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,
