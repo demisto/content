@@ -52,7 +52,7 @@ script:
       defaultValue: 50
     - default: false
       description: Date from which to get events in the format of %Y-%m-%dT%H:%M:%S.
-        If not provided, the default is #TODO
+        If not provided, the default is 1 hour ago.
       name: from_date
     deprecated: false
     description: Gets events from SailPoint IdentityNow.

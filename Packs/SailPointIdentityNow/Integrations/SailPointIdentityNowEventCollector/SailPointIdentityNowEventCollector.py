@@ -1,4 +1,4 @@
-import uuid
+from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -153,17 +153,18 @@ def fetch_events(client: Client, last_run: dict[str, str],
         limit=max_events_per_fetch,
         from_date=first_fetch_time,
     )
-    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
+    last_fetched_id = events[-1].get('id')
+    demisto.debug(f'Fetched event with id: {last_fetched_id}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
+    next_run = {'prev_id': last_fetched_id}
     demisto.debug(f'Setting next run {next_run}.')
     return next_run, events
 
 
 ''' MAIN FUNCTION '''
 
-
+#TODO do I need this?
 def add_time_to_events(events: List[Dict] | None):
     """
     Adds the _time key to the events.
@@ -193,8 +194,9 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
-    max_events_per_fetch = params.get('max_events_per_fetch') or 50000
+    first_fetch_time = datetime.now()
+    formatted_first_fetch_time= first_fetch_time.strftime(DATE_FORMAT)
+    max_events_per_fetch = params.get('max_events_per_fetch') or 50000      #TODO: change this to 10,000 as docs?
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -207,13 +209,13 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_time)
+            result = test_module(client, formatted_first_fetch_time)
             return_results(result)
 
         elif command == 'identitynow-get-events':
-            limit = args.pop('limit') or 50
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            time_to_start = arg_to_datetime(args.pop('from_date'))
+            limit = args.get('limit') or 50
+            should_push_events = argToBoolean(args.get('should_push_events'))
+            time_to_start = arg_to_datetime(args.get('from_date')) or datetime.now() - timedelta(hours=1)
             formatted_time_to_start = time_to_start.strftime(DATE_FORMAT)
             events, results = get_events(client, limit, from_date=formatted_time_to_start)
             return_results(results)
@@ -230,11 +232,11 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=formatted_first_fetch_time,
                 max_events_per_fetch=max_events_per_fetch,
             )
 
-            add_time_to_events(events)
+            #add_time_to_events(events)
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,
