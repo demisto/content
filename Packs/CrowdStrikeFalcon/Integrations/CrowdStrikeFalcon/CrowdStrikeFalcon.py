@@ -363,7 +363,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
-        demisto.debug(f'In http_request the last 4 chars: {token[-4:]}')
 
     headers['User-Agent'] = 'PANW-XSOAR'
     int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
@@ -408,7 +407,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
-                demisto.debug(f'The last 4 chars of new is: {token[-4:]}')
                 demisto.debug('calling generic_http_request with retries=5 and status_list_to_retry=[429]')
                 res = generic_http_request(
                     method=method,
@@ -1272,7 +1270,6 @@ def get_token(new_token=False):
         demisto.debug('there is no token')
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
-    demisto.debug(f'The last 4 chars: {auth_token[-4:]}')
     return auth_token
 
 
