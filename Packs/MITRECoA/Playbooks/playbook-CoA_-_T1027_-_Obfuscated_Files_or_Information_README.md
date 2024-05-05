@@ -52,4 +52,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1027 - Obfuscated Files or Information](../doc_files/MITRE_ATT&CK_CoA_-_T1027_-_Obfuscated_Files_or_Information.png)
+![MITRE ATT&CK CoA - T1027 - Obfuscated Files or Information](../doc_files/MITRE_ATTandCK_CoA_-_T1027_-_Obfuscated_Files_or_Information.png)
