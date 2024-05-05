@@ -54,6 +54,16 @@ def get_use_cases() -> Dict[str, Any]:
         'Case Management': 'https://cortex.marketplace.pan.dev/marketplace/?category=Case+Management',
         'Rapid Breach Response': 'https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/'
     }
+    
+    catagories = {
+        'network security': 'Network Security',
+        'analytics & siem': 'Analytics & SIEM',
+        'data enrichment & threat intelligence': 'Data Enrichment & Threat Intelligence',
+        'vulnerability management': 'Vulnerability Management',
+        'case management': 'Case Management',
+        'forensic & malware analysis': 'Ransomware & Malware Coverage',
+        'endpoint': 'Ransomware & Malware Coverage'
+    }
 
     for _, details in demisto.getModules().items():
         category = details.get('category', '').lower()
@@ -62,24 +72,14 @@ def get_use_cases() -> Dict[str, Any]:
         incident_types = details.get('incident_types', [])
 
         if brand != 'builtin' and state == 'active' and category != 'utilities':
-            if category in ['forensic & malware analysis', 'endpoint']:
-                use_cases_in_production.add('Ransomware & Malware Coverage')
-            elif category in ['email', 'messaging', 'messaging and conferencing'] and 'phishing' in incident_types:
+            if category in ['email', 'messaging', 'messaging and conferencing'] and 'phishing' in incident_types:
                 if phishing_incidents:
                     use_cases_in_production.add('Business Email Compromise Coverage')
                 else:
                     at_risk.append(
                         '[Business Email Compromise Coverage](https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging)')
-            elif category == 'network security':
-                use_cases_in_production.add('Network Security')
-            elif category == 'analytics & siem':
-                use_cases_in_production.add('Analytics & SIEM')
-            elif category == 'data enrichment & threat intelligence':
-                use_cases_in_production.add('Data Enrichment & Threat Intelligence')
-            elif category == 'vulnerability management':
-                use_cases_in_production.add('Vulnerability Management')
-            elif category == 'case management':
-                use_cases_in_production.add('Case Management')
+            elif category in catagories:
+                use_cases_in_production.add(catagories[category])
 
     if is_rapid_breach_response_installed():
         use_cases_in_production.add('Rapid Breach Response')

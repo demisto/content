@@ -1,85 +1,64 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import UseCaseAdoptionMetrics
+import pytest
 
+CASES_CHECK_PHISHING = [
+    ([], False), # incidents_not_exists
+    (["Phishing"], True # phishing incident found
+    )
+]
 
-def test_check_phishing_incidents_incidents_not_exists(mocker):
+@pytest.mark.parametrize('data, expected_result', CASES_CHECK_PHISHING)
+def test_check_phishing_incidents(mocker, data, expected_result):
     """
     Given:
-        - No incidents fetched from Demisto.
+        case1 = No incidents fetched from Demisto.
+        case2 = Phishing incident found in fetched incidents.
 
     When:
         - Checking for phishing incidents.
 
     Then:
-        - No incidents are found.
+        - Assert the result returned is as expected.
     """
     # Simulate no incidents fetched
     mocker.patch.object(
         demisto,
         "executeCommand",
-        return_value=[{"Contents": {"data": []}}]
+        return_value=[{"Contents": {"data": data}}]
     )
-    assert not UseCaseAdoptionMetrics.check_phishing_incidents()
+    assert UseCaseAdoptionMetrics.check_phishing_incidents() == expected_result
 
 
-def test_check_phishing_incidents(mocker):
+CASES_RAPID_BREACH_RESPONSE = [
+    ([{"Contents": {"response": []}}], False), # No content packs are installed.
+    ([{"Contents": {"response": [{"name": "Rapid Breach Response"}]}}], True # content packs are installed.
+    )
+]
+
+
+@pytest.mark.parametrize('return_value, expected_result', CASES_RAPID_BREACH_RESPONSE)
+def test_is_rapid_breach_response_installed(mocker, return_value, expected_result):
     """
     Given:
-        - Incidents fetched from Demisto.
-
-    When:
-        - Checking for phishing incidents.
-
-    Then:
-        - Returns True.
-    """
-    mocker.patch.object(
-        demisto,
-        "executeCommand",
-        return_value=[{"Contents": {"data": ['check']}}]
-    )
-    assert UseCaseAdoptionMetrics.check_phishing_incidents()
-
-
-def test_is_rapid_breach_response_installed_packs_not_installed(mocker):
-    """
-    Given:
-        - No content packs are installed.
+        case1 = No content packs are installed.
+        case2 = content packs are installed.
 
     When:
         - Checking if Rapid Breach Response is installed.
 
     Then:
-        - Returns False.
+        - Assert the result returned is as expected
     """
     # Simulate no content packs installed
     mocker.patch.object(
         demisto,
         "executeCommand",
-        return_value=[{"Contents": {"response": []}}]
+        return_value=return_value
     )
 
-    assert not UseCaseAdoptionMetrics.is_rapid_breach_response_installed()
-
-
-def test_is_rapid_breach_response_installed(mocker):
-    """
-    Given:
-        - No content packs are installed.
-
-    When:
-        - Checking if Rapid Breach Response is installed.
-
-    Then:
-        - Returns True.
-    """
-    mocker.patch.object(
-        demisto,
-        "executeCommand",
-        return_value=[{"Contents": {"response": [{"name": "Rapid Breach Response"}]}}]
-    )
-    assert UseCaseAdoptionMetrics.is_rapid_breach_response_installed()
+    assert UseCaseAdoptionMetrics.is_rapid_breach_response_installed() == expected_result
 
 
 def test_get_use_cases(mocker):
