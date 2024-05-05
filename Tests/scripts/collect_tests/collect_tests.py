@@ -170,7 +170,7 @@ class CollectionResult:
             if only_to_upload == only_to_install:
 
                 if only_to_upload and only_to_install:
-                    raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
+                    raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}") # todo praisler why error
 
                 self.packs_to_install = {pack}
                 self.packs_to_upload = {pack}  # TODO WHY praisler
@@ -373,9 +373,9 @@ class TestCollector(ABC):
 
         self._validate_tests_in_id_set(result.tests)  # type: ignore[union-attr]
         if result.packs_to_install:
-            result += self._always_installed_packs  # type: ignore[operator] # TODO
+            result += self._always_installed_packs  # type: ignore[operator]
         result += self._collect_test_dependencies(result.tests if result else ())  # type: ignore[union-attr]
-        result.machines = Machine.get_suitable_machines(result.version_range)  # type: ignore[union-attr] # TODO
+        result.machines = Machine.get_suitable_machines(result.version_range)  # type: ignore[union-attr] # TODO MACHINES
 
         return result
 
@@ -384,7 +384,6 @@ class TestCollector(ABC):
 
         for test_id in test_ids:
             if not (test_object := self.conf.get_test(test_id)):
-                # todo prevent this case, see CIAC-4006
                 continue
 
             # collect the pack containing the test playbook
@@ -479,7 +478,7 @@ class TestCollector(ABC):
             path: Path,
             version_range: VersionRange | None,
             is_integration: bool,
-    ):  # TODO
+    ):
         # exception order matters: important tests come first.
         """
         NOTE:
@@ -516,7 +515,7 @@ class TestCollector(ABC):
             is_integration=is_integration,
         )
 
-    def _validate_id_set_item_compatibility(self, id_set_item: IdSetItem, is_integration: bool) -> None:  # TODO
+    def _validate_id_set_item_compatibility(self, id_set_item: IdSetItem, is_integration: bool) -> None:
         if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):  # type: ignore[arg-type]
             raise RuntimeError(f'could not find pack of {id_set_item.name}')
         object_id = id_set_item.id_
@@ -541,7 +540,6 @@ class TestCollector(ABC):
     ) -> CollectionResult | None:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
         collect_only_to_upload: bool = False
-        # TODO COLLECT PACK
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
         except NonXsoarSupportedPackException as e:
@@ -735,7 +733,7 @@ class TestCollector(ABC):
 
     def __validate_marketplace_compatibility(self,
                                              content_item_marketplaces: tuple[MarketplaceVersions, ...],
-                                             content_item_path: Path) -> None:
+                                             content_item_path: Path) -> None: # TODO CHECK CIAC-9470
         # intended to only be called from __validate_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
@@ -781,7 +779,7 @@ class BranchTestCollector(TestCollector):
         collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
                                       pack_ids_files_were_removed_from=()) \
             if self.private_pack_path \
-            else self._get_git_diff()  # todo private packs
+            else self._get_git_diff()
 
         return CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
@@ -1265,7 +1263,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         changed_packs = CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            self._collect_packs_diff_master_bucket(),
+            self._collect_packs_diff_master_bucket(), # todo verify praisler
             self._collect_failed_packs_from_prev_upload() # todo add collect from json file
         ])
         if changed_packs:
@@ -1353,7 +1351,6 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     or playbook.id_ in self.conf.non_api_tests
                 ):
                     raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
-                logger.info(f'MICHAL - test - {playbook.id_=}')
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
                 result.append(CollectionResult(
                     test=playbook.id_,
@@ -1367,7 +1364,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     id_set=self.id_set,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, NonNightlyPackInNightlyBuildException) as e:
-                logger.info(str(e)) # todo revert
+                logger.debug(f"{playbook.id} - {str(e)}")
         logger.info(f'Michal, _id_set_tests_matching_marketplace_value {len(result)=}')
 
         return CollectionResult.union(result)
@@ -1378,21 +1375,21 @@ class NightlyTestCollector(BranchTestCollector, ABC):
             try:
                 pack_metadata = PACK_MANAGER.get_pack_metadata(pack)
 
-                self._validate_content_item_compatibility(pack_metadata, is_integration=False)  # todo is_integration
+                self._validate_content_item_compatibility(pack_metadata, is_integration=False)
 
                 result.append(CollectionResult(
                     test=None,
                     modeling_rule_to_test=None,
                     pack=pack,
-                    reason=CollectionReason.NIGHTLY_PACK,  # TODO
+                    reason=CollectionReason.NIGHTLY_PACK,
                     reason_description=pack,
                     conf=self.conf,
                     id_set=self.id_set,
                     only_to_install=True,
-                    version_range=pack_metadata.version_range  # todo dor - not sure
+                    version_range=pack_metadata.version_range
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
-                logger.info(str(e)) # TODO REVERT
+                logger.debug(f"{pack} - {str(e)}")
         logger.info(f'Michal, _collect_from_changed_packs_nightl, {len(result)=}')
 
         return CollectionResult.union(result)

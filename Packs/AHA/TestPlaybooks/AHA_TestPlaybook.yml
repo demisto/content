@@ -541,4 +541,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+marketplaces: ["marketplacev2"]
 fromversion: 6.5.0
