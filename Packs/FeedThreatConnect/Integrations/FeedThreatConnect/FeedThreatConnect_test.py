@@ -179,7 +179,7 @@ def test_create_indicator_fields_registry_key():
                  'summary': 'name'}
     
     result = create_indicator_fields(indicator, 'Registry Key')
-    
+
     assert 'Key Value' in result
-    assert 'name' in result.get('Key Value')
-    assert 'key name' == result.get('Key Value').get('name')
+    assert 'name' in result.get('Key Value')[0]
+    assert 'key name' == result.get('Key Value')[0].get('name')

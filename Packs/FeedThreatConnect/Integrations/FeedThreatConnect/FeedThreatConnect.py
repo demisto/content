@@ -236,10 +236,10 @@ def create_rk_grid_field(indicator: dict):
     Args:
         indicator (dict): The data of the indicator
     """
-    key_value = {'name': indicator.get('Key Name'),
+    key_value = [{'name': indicator.get('Key Name'),
                  'type': indicator.get('Value Name'),
                  'data': indicator.get('Key Type')
-    }
+    }]
     return key_value
 
 
