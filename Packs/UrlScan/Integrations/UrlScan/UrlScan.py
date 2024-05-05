@@ -23,7 +23,6 @@ BLACKLISTED_URL_ERROR_MESSAGES = [
     'The submitted domain is on our blacklist, we will not scan it.'
 ]
 BRAND = 'urlscan.io'
-IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 DEFAULT_LIMIT = 20
 MAX_WORKERS = 5
 
@@ -848,7 +847,7 @@ def main():
     )
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    demisto.info(f'Is time sensitive: {IS_TIME_SENSITIVE}')
+    demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
 
     try:
         handle_proxy()
