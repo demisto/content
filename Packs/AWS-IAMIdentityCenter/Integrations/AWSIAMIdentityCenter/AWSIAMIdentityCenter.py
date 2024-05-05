@@ -155,6 +155,25 @@ def get_group_memberships_for_member(args: dict, client, IdentityStoreId: str) -
     return memberships_of_member
 
 
+def update_groups_and_memberships(last_data, current_data, key, id_value, new_data):
+    updated_list = []
+    if not isinstance(last_data, list):
+        last_data = [last_data]
+
+    for item_data in last_data:
+        if item_data.get(key) == id_value:
+            updated_list = item_data.get(new_data, [])
+            break
+
+    if updated_list:
+        combined_data = updated_list + [g for g in current_data if g not in updated_list]
+        final_data = combined_data
+    else:
+        final_data = current_data
+
+    return final_data
+
+
 def create_user(args: dict, client, IdentityStoreId: str) -> None:
     """
     Creates a user with the provided arguments.
@@ -568,21 +587,8 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     context_data['GroupsUserNextToken'] = response.get('NextToken')
     last_context = demisto.context()
     last_users = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('User', {})
-    last_group_memberships: list = []
-    if not isinstance(last_users, list):
-        last_users = [last_users]
 
-    for user_data in last_users:
-        if user_data.get('UserId') == user_id:
-            last_group_memberships = user_data.get('GroupMemberships', [])
-            break
-
-    if last_group_memberships:
-        combined_groups: list = last_group_memberships + [g for g in groups if g not in last_group_memberships]
-        final_groups = combined_groups
-    else:
-        final_groups = groups
-
+    final_groups = update_groups_and_memberships(last_users, groups, 'UserId', user_id, 'GroupMemberships')
     context_data['GroupMemberships'] = final_groups
 
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
@@ -643,6 +649,7 @@ def delete_group_membership(args: dict, client, IdentityStoreId: str) -> None:
             return_error('User is not member of any group.')
     else:
         return_error('userName or membershipId must be provided.')
+
     for member in memberships_to_delete:
         client.delete_group_membership(
             IdentityStoreId=IdentityStoreId,
@@ -695,20 +702,8 @@ def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
     context_data['GroupMembershipNextToken'] = response.get('NextToken')
     last_context = demisto.context()
     last_groups = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('Group', {})
-    last_group_memberships = []
-    if not isinstance(last_groups, list):
-        last_groups = [last_groups]
 
-    for user_data in last_groups:
-        if user_data.get('GroupId') == group_id:
-            last_group_memberships = user_data.get('GroupMemberships')
-            break
-
-    if last_group_memberships:
-        combined_memberships = last_group_memberships + [g for g in memberships if g not in last_group_memberships]
-        final_memberships = combined_memberships
-    else:
-        final_memberships = memberships
+    final_memberships = update_groups_and_memberships(last_groups, memberships, 'GroupId', group_id, 'GroupMemberships')
 
     context_data['GroupMemberships'] = final_memberships
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
@@ -730,7 +725,7 @@ def test_module(args: dict, client, IdentityStoreId: str) -> None:    # pragma: 
     client.list_users(
         IdentityStoreId=IdentityStoreId,
     )
-    demisto.results('ok')
+    return_results('ok')
 
 
 def main():     # pragma: no cover

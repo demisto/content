@@ -522,10 +522,10 @@ def test_list_groups_for_user(mocker):
     assert 'AWS IAM Identity Center Groups' in contents.get('HumanReadable')
 
 
-def test_delete_group_membership(mocker):  # add more inputs! empty memberships and membershipId
+def test_delete_group_membership(mocker):
     """
     Given:
-        Arguments for deleting a group membership
+        Username for deleting a group membership
 
     When:
         Deleting a group membership using the delete-group-membership command
@@ -556,6 +556,33 @@ def test_delete_group_membership(mocker):  # add more inputs! empty memberships 
     from AWSIAMIdentityCenter import delete_group_membership
     mocker.patch.object(AWSIAMIdentityCenter, "get_userId_by_username", return_value=RESPONSE_USER_ID)
     mocker.patch.object(Boto3Client, "list_group_memberships_for_member", return_value=res)
+    mocker.patch.object(Boto3Client, "delete_group_membership", return_value=RESPONSE_DELETE)
+    mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    delete_group_membership(args, client, IDENTITY_STORE_ID)
+    contents = demisto.results.call_args[0][0]
+
+    assert "The membership with ids ['MEMBERSHIP_ID', 'MEMBERSHIP_ID123'] have been deleted." in contents.get('HumanReadable')
+
+
+def test_delete_group_memberships_by_membershipId(mocker):
+    """
+    Given:
+        List of group memberships
+
+    When:
+        Deleting a group membership using the delete-group-membership command
+
+    Then:
+        Verify that the correct group membership is deleted
+    """
+    args = {
+        'membershipId': 'MEMBERSHIP_ID, MEMBERSHIP_ID123'
+    }
+
+    from AWSIAMIdentityCenter import delete_group_membership
+    mocker.patch.object(AWSIAMIdentityCenter, "get_userId_by_username", return_value=RESPONSE_USER_ID)
     mocker.patch.object(Boto3Client, "delete_group_membership", return_value=RESPONSE_DELETE)
     mocker.patch.object(demisto, 'results')
 
@@ -699,3 +726,73 @@ def test_get_user_operations_list_empty_region():
 
     # Assert that the result matches the expected list of operations
     assert result == expected_operations
+
+
+def test_update_groups_and_memberships(mocker):
+    """
+    Given:
+        Arguments for updating groups and memberships
+
+    When:
+        Updating groups and memberships using the update_groups_and_memberships function
+
+    Then:
+        Verify that the correct groups and memberships are updated with the correct details
+    """
+    last_data = [
+        {
+            "id": 1, "groups": [{
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'A'
+            },
+                {
+                'GroupId': 'GROUP_2',
+                'MembershipId': 'B'
+            }]},
+        {
+            "id": 2, "groups": [{
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'C'
+            },
+                {
+                'GroupId': 'GROUP_3',
+                'MembershipId': 'D'
+            }]}
+    ]
+    current_data = [
+        {
+            'GroupId': 'GROUP_1',
+            'MembershipId': 'C'
+        },
+        {
+            'GroupId': 'GROUP_3',
+            'MembershipId': 'D'
+        },
+        {
+            'GroupId': 'GROUP_4',
+            'MembershipId': 'F'
+        }
+    ]
+    key = "id"
+    id_value = 2
+    new_data = "groups"
+
+    from AWSIAMIdentityCenter import update_groups_and_memberships
+    mocker.patch.object(AWSIAMIdentityCenter, "update_groups_and_memberships")
+
+    updated_data = update_groups_and_memberships(last_data, current_data, key, id_value, new_data)
+
+    assert updated_data == [
+        {
+            'GroupId': 'GROUP_1',
+            'MembershipId': 'C'
+        },
+        {
+            'GroupId': 'GROUP_3',
+            'MembershipId': 'D'
+        },
+        {
+            'GroupId': 'GROUP_4',
+            'MembershipId': 'F'
+        }
+    ]
