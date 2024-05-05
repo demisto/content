@@ -53,8 +53,6 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
-# This flag will indicate whether the command reputation (auto-enrichment) is called as auto-extract=inline.
-IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -11995,6 +11993,18 @@ def safe_sleep(duration_seconds):
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
     time.sleep(duration_seconds)
+
+
+def is_time_sensitive():
+    """
+    Checks if the command reputation (auto-enrichment) is called as auto-extract=inline.
+
+    This function checks if the 'isTimeSensitive' attribute exists in the 'demisto' object and if it's set to True.
+
+    Returns:
+        bool: True if 'isTimeSensitive' attribute exists and is set to True, False otherwise.
+    """
+    return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
 
 ###########################################
