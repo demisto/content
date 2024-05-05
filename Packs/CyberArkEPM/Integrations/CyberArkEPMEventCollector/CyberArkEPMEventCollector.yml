@@ -164,7 +164,7 @@ script:
     description: Gets events from Cyber Ark EPM.
     execution: false
     name: cyberarkepm-get-events
-  dockerimage: demisto/btfl-soup:1.0.1.83338
+  dockerimage: demisto/btfl-soup:1.0.1.92713
   isfetchevents: true
   runonce: false
   script: ''
