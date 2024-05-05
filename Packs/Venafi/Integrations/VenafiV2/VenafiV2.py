@@ -251,8 +251,11 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     response = client.get_certificate_details(guid)
     readable_certificate_details = response.copy()
     readable_certificate_details['ID'] = readable_certificate_details.get('Guid', '').strip('{}')
-
-    markdown_table = tableToMarkdown('Venafi certificate details', readable_certificate_details,
+    if not readable_certificate_details['ID']:
+        entries = []
+    else:
+        entries = [readable_certificate_details]
+    markdown_table = tableToMarkdown('Venafi certificate details', entries,
                                      headers=['CreatedOn', 'DN', 'Name', 'ParentDn', 'SchemaClass', 'ID'])
 
     return CommandResults(
