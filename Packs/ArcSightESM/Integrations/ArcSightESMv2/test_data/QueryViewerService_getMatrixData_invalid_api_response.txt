@@ -270,7 +270,7 @@
 			},
 			"startTime": 1708550478431,
 			"ttl": 10,
-			"type": "BASE"
+			"type": "\\\BASE"
 		}
 	}
 }
