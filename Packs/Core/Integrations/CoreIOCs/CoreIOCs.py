@@ -283,7 +283,7 @@ def create_last_iocs_query(from_date, to_date):
 def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: Dict = get_integration_context()
-    query = create_last_iocs_query(from_date=last_run.get('time'), to_date=current_run)
+    query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     total_size = get_iocs_size(query)
     iocs: List = []
     for i in range(0, ceil(total_size / batch_size)):
