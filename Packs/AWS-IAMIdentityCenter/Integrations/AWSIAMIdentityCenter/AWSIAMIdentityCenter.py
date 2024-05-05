@@ -155,7 +155,7 @@ def get_group_memberships_for_member(args: dict, client, IdentityStoreId: str) -
     return memberships_of_member
 
 
-def update_groups_and_memberships(last_data, current_data:list, key:str, id_value:Any, new_data:str):
+def update_groups_and_memberships(last_data, current_data: list, key: str, id_value: Any, new_data: str):
     """
     Update groups and memberships based on the provided parameters.
 
