@@ -15,25 +15,22 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * HttpV2
-* imagecompare
-* IsIntegrationAvailable
 * HtmlDifflibCheck
+* Set
+* SetAndHandleEmpty
+* IsIntegrationAvailable
+* imagecompare
 
 ### Commands
 
-* whois
-* expireIndicators
-* url
 * domain
-* setIndicators
-* rasterize
 * expireIndicators
 * whois
-* closeInvestigation
 * url
+* rasterize
 * setIndicators
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -43,6 +40,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | similarityMaxThreshold | The minimum threshold value for malicious verdict | 0.5 | Optional |
 | similarityMinThreshold | The minimum threshold value for suspicious verdict | 0.2 | Optional |
+| contactEmail | Email address to be used as contact email when sending a takedown request email |  | Optional |
 
 ## Playbook Outputs
 

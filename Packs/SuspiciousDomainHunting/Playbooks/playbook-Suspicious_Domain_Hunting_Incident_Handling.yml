@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4b0d998d-7bbd-43de-8411-c263ee3515ef
+    taskid: f7a076c9-aaff-4332-82f5-a1a050443296
     type: start
     task:
-      id: 4b0d998d-7bbd-43de-8411-c263ee3515ef
+      id: f7a076c9-aaff-4332-82f5-a1a050443296
       version: -1
       name: ""
       iscommand: false
@@ -19,16 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "16"
-      - "29"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 817.5,
-          "y": -890
+          "y": -1050
         }
       }
     note: false
@@ -40,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ba6d736f-3181-44ff-8816-6952dfefb683
+    taskid: 8e62418e-068b-4fca-803a-bb906d5642e4
     type: regular
     task:
-      id: ba6d736f-3181-44ff-8816-6952dfefb683
+      id: 8e62418e-068b-4fca-803a-bb906d5642e4
       version: -1
       name: Check Reputation on the Domain
       description: Checks the reputation of a domain in AutoFocus.
@@ -81,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 05e04ead-7986-421d-80fd-df82f4afef6a
+    taskid: 65c1cd75-7dc1-4f6a-8acb-d32131bd6238
     type: regular
     task:
-      id: 05e04ead-7986-421d-80fd-df82f4afef6a
+      id: 65c1cd75-7dc1-4f6a-8acb-d32131bd6238
       version: -1
       name: Rasterize Suspicious Webpage
       description: Converts the contents of a URL to an image file or a PDF file.
@@ -127,10 +125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: dbea199a-78a8-4791-8f36-46119781e393
+    taskid: 6e1304e8-b341-48a5-849b-957f10e64fda
     type: title
     task:
-      id: dbea199a-78a8-4791-8f36-46119781e393
+      id: 6e1304e8-b341-48a5-849b-957f10e64fda
       version: -1
       name: Handle True Positive
       type: title
@@ -161,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 20e15bf6-030e-4893-8aa4-69005f06a250
+    taskid: 77ccbb96-5402-40fd-88fa-d6cbdf1e3638
     type: playbook
     task:
-      id: 20e15bf6-030e-4893-8aa4-69005f06a250
+      id: 77ccbb96-5402-40fd-88fa-d6cbdf1e3638
       version: -1
       name: Block Domain - Generic v2
       playbookName: Block Domain - Generic v2
@@ -201,10 +199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0e1404ee-5012-4f66-8720-f9c8ec6b2caf
+    taskid: 8d75a2f2-9e0f-4ff6-83ca-ee0804a8f76a
     type: playbook
     task:
-      id: 0e1404ee-5012-4f66-8720-f9c8ec6b2caf
+      id: 8d75a2f2-9e0f-4ff6-83ca-ee0804a8f76a
       version: -1
       name: Threat Hunting - Generic
       playbookName: Threat Hunting - Generic
@@ -251,10 +249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5b1718fe-48c6-4424-8c4f-f3c221b6663e
+    taskid: 048ce983-3805-41fe-822c-f57e0c24410c
     type: title
     task:
-      id: 5b1718fe-48c6-4424-8c4f-f3c221b6663e
+      id: 048ce983-3805-41fe-822c-f57e0c24410c
       version: -1
       name: Done
       type: title
@@ -279,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: fcc73778-01ca-4048-83ed-881eb14ef9fc
+    taskid: 206a7b21-6488-43ed-8a79-f731f2202a80
     type: regular
     task:
-      id: fcc73778-01ca-4048-83ed-881eb14ef9fc
+      id: 206a7b21-6488-43ed-8a79-f731f2202a80
       version: -1
       name: Get the suspicious HTMLcontent
       description: Sends a HTTP request with advanced capabilities
@@ -334,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 25b2ccb1-412d-42c1-83fd-9f526b8a1963
+    taskid: e505d58a-2b2d-4d93-8c58-9ce5610e76d5
     type: regular
     task:
-      id: 25b2ccb1-412d-42c1-83fd-9f526b8a1963
+      id: e505d58a-2b2d-4d93-8c58-9ce5610e76d5
       version: -1
       name: Check the Reputation of the URL
       description: Submits a URL to scan.
@@ -375,10 +373,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 05b04ed0-7ed3-4b7b-8e93-fed883055a66
+    taskid: 67c814d9-bd99-479e-8952-4fbae907d58d
     type: regular
     task:
-      id: 05b04ed0-7ed3-4b7b-8e93-fed883055a66
+      id: 67c814d9-bd99-479e-8952-4fbae907d58d
       version: -1
       name: Set the certificate's verdict to malicious
       description: commands.local.cmd.set.indicators
@@ -414,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e27fbb2a-8599-47d1-8bcb-532c474f2259
+    taskid: d5443f7f-077c-4278-8a99-6c97ca3d6004
     type: regular
     task:
-      id: e27fbb2a-8599-47d1-8bcb-532c474f2259
+      id: d5443f7f-077c-4278-8a99-6c97ca3d6004
       version: -1
       name: Set the Domain's verdict to malicious
       description: commands.local.cmd.set.indicators
@@ -465,10 +463,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 90bdfbe7-6aaa-48dc-85c8-342cc31e378a
+    taskid: 1fd9137e-8e49-4b15-84f2-3a6666e67ac3
     type: regular
     task:
-      id: 90bdfbe7-6aaa-48dc-85c8-342cc31e378a
+      id: 1fd9137e-8e49-4b15-84f2-3a6666e67ac3
       version: -1
       name: Get original HTML content
       description: Sends a HTTP request with advanced capabilities
@@ -512,10 +510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 7c9126b4-36f7-4c0d-8573-a03496ea0db3
+    taskid: 52559d8e-ee87-41d3-890f-f388e2ea426e
     type: regular
     task:
-      id: 7c9126b4-36f7-4c0d-8573-a03496ea0db3
+      id: 52559d8e-ee87-41d3-890f-f388e2ea426e
       version: -1
       name: Calculate Diff of Website Content
       description: Diff of original and suspicious website html content, result value is a percentage of similarity.
@@ -553,10 +551,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 54aaf2ea-754c-48ad-80ee-2a0434b60fb0
+    taskid: 859cbb2f-0563-43fa-8dae-2a89ea0ccf14
     type: regular
     task:
-      id: 54aaf2ea-754c-48ad-80ee-2a0434b60fb0
+      id: 859cbb2f-0563-43fa-8dae-2a89ea0ccf14
       version: -1
       name: Whois - Domain
       description: Provides data enrichment for domains using free resources. Availability of those services may be limited.
@@ -644,10 +642,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 34ad8ab8-c7bd-460a-81c3-8061d2cf25bd
+    taskid: 0193dac9-0760-4462-8b97-4d2a40248b5e
     type: condition
     task:
-      id: 34ad8ab8-c7bd-460a-81c3-8061d2cf25bd
+      id: 0193dac9-0760-4462-8b97-4d2a40248b5e
       version: -1
       name: Analyst desicion
       description: ""
@@ -689,7 +687,7 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - 'Malicious '
+      - Malicious
       - Benign
     skipunavailable: false
     quietmode: 0
@@ -697,10 +695,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 42a7fe90-7170-4596-859c-78e30c23fe54
+    taskid: 582541f6-2de3-48e8-87a1-0ea5d7b863ee
     type: regular
     task:
-      id: 42a7fe90-7170-4596-859c-78e30c23fe54
+      id: 582541f6-2de3-48e8-87a1-0ea5d7b863ee
       version: -1
       name: Close this Investigation as Benign
       description: commands.local.cmd.close.inv
@@ -734,10 +732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: df38228f-d5ee-4149-8c2d-9fa599f43923
+    taskid: b9019f16-6c7f-4d7f-83ca-2301069d1082
     type: regular
     task:
-      id: df38228f-d5ee-4149-8c2d-9fa599f43923
+      id: b9019f16-6c7f-4d7f-83ca-2301069d1082
       version: -1
       name: Compare Images
       description: |-
@@ -785,7 +783,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
+          "x": 387.5,
           "y": 75
         }
       }
@@ -798,10 +796,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: cb4b34c1-e6e4-49c9-8bdb-53980ea286d4
+    taskid: 0e67f414-0c1c-4cf2-87bb-ff1e15bb0321
     type: title
     task:
-      id: cb4b34c1-e6e4-49c9-8bdb-53980ea286d4
+      id: 0e67f414-0c1c-4cf2-87bb-ff1e15bb0321
       version: -1
       name: Analysis
       type: title
@@ -810,8 +808,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "36"
       - "37"
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -830,10 +828,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: da43876b-7950-4fd1-8315-38873ae10f08
+    taskid: 1260c42b-c998-4c78-8554-63da9a92bf08
     type: regular
     task:
-      id: da43876b-7950-4fd1-8315-38873ae10f08
+      id: 1260c42b-c998-4c78-8554-63da9a92bf08
       version: -1
       name: Rasterize Original Webpage
       description: Converts the contents of a URL to an image file or a PDF file.
@@ -871,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 46d3f3e6-cd12-4a2b-85ce-963cb81980ca
+    taskid: 017afe53-601b-4a9f-842f-fe2d246e3aea
     type: condition
     task:
-      id: 46d3f3e6-cd12-4a2b-85ce-963cb81980ca
+      id: 017afe53-601b-4a9f-842f-fe2d246e3aea
       version: -1
       name: Is whois Integration Available?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -908,10 +906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 5427a6cc-5b86-45d7-8f45-bc1d7381baa7
+    taskid: 6d03ee7b-a9af-4c57-85e1-b5d8c2f5d9d5
     type: title
     task:
-      id: 5427a6cc-5b86-45d7-8f45-bc1d7381baa7
+      id: 6d03ee7b-a9af-4c57-85e1-b5d8c2f5d9d5
       version: -1
       name: Benign
       type: title
@@ -939,10 +937,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 40e18766-2b82-438f-844a-cf89fab9ad8d
+    taskid: 5e34b305-3e0d-4a5d-8d95-8d4b5363e128
     type: regular
     task:
-      id: 40e18766-2b82-438f-844a-cf89fab9ad8d
+      id: 5e34b305-3e0d-4a5d-8d95-8d4b5363e128
       version: -1
       name: Set closing reason as Benign
       description: Set a value in context under the key you entered.
@@ -976,10 +974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b713369b-00eb-47e7-8fbd-eebd5c3bd93b
+    taskid: 5fad9165-d03a-44e6-891f-6ce6d107ffeb
     type: regular
     task:
-      id: b713369b-00eb-47e7-8fbd-eebd5c3bd93b
+      id: 5fad9165-d03a-44e6-891f-6ce6d107ffeb
       version: -1
       name: Set Verdict to Context
       description: Set a value in context under the key you entered.
@@ -1013,10 +1011,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 8e82d80f-8072-42a7-8953-65b1cb79a40c
+    taskid: c7059100-a0c7-4098-8184-eab65321b30b
     type: title
     task:
-      id: 8e82d80f-8072-42a7-8953-65b1cb79a40c
+      id: c7059100-a0c7-4098-8184-eab65321b30b
       version: -1
       name: Malicious
       type: title
@@ -1044,10 +1042,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 4140dcb4-b63a-4be6-88e1-30189e6a6b39
+    taskid: 2a1c8cbf-d472-4c87-87fe-7b5e50bb3ad4
     type: regular
     task:
-      id: 4140dcb4-b63a-4be6-88e1-30189e6a6b39
+      id: 2a1c8cbf-d472-4c87-87fe-7b5e50bb3ad4
       version: -1
       name: Expire certificate indicator
       description: commands.server.cmd.expireIndicators
@@ -1081,10 +1079,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 94a2f9b5-d6ba-4301-8fbc-812f1c9daa24
+    taskid: 9cca1b51-43f6-4b9d-8c2a-2edbc3a77a19
     type: condition
     task:
-      id: 94a2f9b5-d6ba-4301-8fbc-812f1c9daa24
+      id: 9cca1b51-43f6-4b9d-8c2a-2edbc3a77a19
       version: -1
       name: Does the http request body exist?
       description: ""
@@ -1131,10 +1129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 69380e55-e551-4cf0-817e-f2e19dd29da8
+    taskid: 09de6a7c-4e21-460e-8314-516600dbd05f
     type: title
     task:
-      id: 69380e55-e551-4cf0-817e-f2e19dd29da8
+      id: 09de6a7c-4e21-460e-8314-516600dbd05f
       version: -1
       name: Rasterize & Compare Webpage Image
       type: title
@@ -1163,10 +1161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: e724e385-4145-44dd-889a-1a30e5d6ec57
+    taskid: 76cd0800-eea5-4cb0-83e7-fdb1d00ff6f1
     type: title
     task:
-      id: e724e385-4145-44dd-889a-1a30e5d6ec57
+      id: 76cd0800-eea5-4cb0-83e7-fdb1d00ff6f1
       version: -1
       name: Compare HTML Content using Diff
       type: title
@@ -1195,10 +1193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 9375acf8-1758-476f-8a18-3c204edcc17c
+    taskid: d8e7f559-d121-48f3-8641-8ae9bf330773
     type: title
     task:
-      id: 9375acf8-1758-476f-8a18-3c204edcc17c
+      id: d8e7f559-d121-48f3-8641-8ae9bf330773
       version: -1
       name: Verdict
       type: title
@@ -1226,10 +1224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 540bf0f2-488b-4206-85d6-45c34054be5c
+    taskid: 94733ceb-546d-490a-898f-2637b5a11e7d
     type: title
     task:
-      id: 540bf0f2-488b-4206-85d6-45c34054be5c
+      id: 94733ceb-546d-490a-898f-2637b5a11e7d
       version: -1
       name: Suspicious
       description: Set a value in context under the key you entered.
@@ -1257,12 +1255,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 89274e70-d15b-4824-8b8b-75e4a705c4d7
+    taskid: 49f457ae-710b-40ea-84c2-75b69b85b8f2
     type: condition
     task:
-      id: 89274e70-d15b-4824-8b8b-75e4a705c4d7
+      id: 49f457ae-710b-40ea-84c2-75b69b85b8f2
       version: -1
       name: Check if a malicious Domain was identified
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1409,21 +1408,64 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9eb8a068-31c6-4f4c-8890-db4651b70082
+    type: regular
+    task:
+      id: 9eb8a068-31c6-4f4c-8890-db4651b70082
+      version: -1
+      name: Set Contact Email to context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "16"
+      - "1"
+    scriptarguments:
+      key:
+        simple: ContactEmail
+      value:
+        complex:
+          root: inputs.contactEmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": -920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "14_24_#error#": 0.12,
       "24_30_Benign": 0.49,
       "29_22_yes": 0.44,
-      "2_24_#error#": 0.24,
       "35_21_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 2730,
+        "height": 2890,
         "width": 2285,
         "x": -427.5,
-        "y": -890
+        "y": -1050
       }
     }
   }
@@ -1439,6 +1481,11 @@ inputs:
     simple: "0.2"
   required: false
   description: The minimum threshold value for suspicious verdict
+  playbookInputQuery:
+- key: contactEmail
+  value: {}
+  required: false
+  description: Email address to be used as contact email when sending a takedown request email
   playbookInputQuery:
 outputs: []
 tests:

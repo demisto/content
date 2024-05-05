@@ -312,7 +312,7 @@
 							{
 								"args": {
 									"body": {
-										"simple": "To whom it may concern,\n\nI am writing to report abusive activity on the domain ${incident.domainname}. \nThis activity violates your terms of service or acceptable use policy.\nI kindly request your prompt investigation and necessary action to address this abuse, which may include suspending the domain.\n\nYour swift response and cooperation in resolving this matter are greatly appreciated.\n\nSincerely,\n${inputs.contactEmail}",
+										"simple": "To whom it may concern,\n\nI am writing to report abusive activity on the domain ${incident.domainname}. \nThis activity violates your terms of service or acceptable use policy.\nI kindly request your prompt investigation and necessary action to address this abuse, which may include suspending the domain.\n\nYour swift response and cooperation in resolving this matter are greatly appreciated.\n\nSincerely,\n${ContactEmail}",
 										"userMarkedRequired": true
 									},
 									"subject": {
