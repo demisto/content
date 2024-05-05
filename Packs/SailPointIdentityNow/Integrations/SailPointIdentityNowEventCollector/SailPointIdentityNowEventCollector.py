@@ -12,6 +12,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'sailpoint'
 PRODUCT = 'identitynow'
+# Default lookback is 1 hour from current time
+DEFAULT_LOOKBACK = (datetime.now() - timedelta(hours=1)).strftime(DATE_FORMAT)
 
 ''' CLIENT CLASS '''
 
@@ -53,7 +55,7 @@ class Client(BaseClient):
         )
 
         token = resp.get('access_token')
-        now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
+        now_timestamp = arg_to_datetime('now').timestamp()  
         expiration_time = now_timestamp + resp.get('expires_in')
 
         integration_context = get_integration_context()
@@ -88,27 +90,24 @@ class Client(BaseClient):
 
         return token
     
-    
 
-    def search_events(self, prev_id: str, limit: int| None = None, from_date: str | None = None) -> List[Dict]:
+    def search_events(self, prev_id: str, from_date: str, limit: int| None = None) -> List[Dict]:
         """
         """
-        from_date = from_date
         query = {"indices": ["events"],
         "queryType": "SAILPOINT",
         "queryVersion": "5.2",
         "query":
         {"query": f"type:* AND created: [{from_date} TO now]"},
         "timeZone": "America/Los_Angeles",
-        "sort": ["+id", "+created"],
-        "searchAfter": [prev_id]
+        "sort": ["+id"],
+        "searchAfter": [prev_id]    #add the date - 1 hour
         }
         url_suffix = f'/v3/search?limit={limit}' if limit else '/v3/search'
         return self._http_request(method='POST', url_suffix=url_suffix, data=query)
 
 
-
-def test_module(client: Client, first_fetch_time: str) -> str:
+def test_module(client: Client) -> str:
     """
     """
 
@@ -116,7 +115,6 @@ def test_module(client: Client, first_fetch_time: str) -> str:
         fetch_events(
             client=client,
             last_run={},
-            first_fetch_time=first_fetch_time,
             max_events_per_fetch=1,
         )
 
@@ -132,58 +130,44 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 def get_events(client: Client, limit: int, from_date:str) -> tuple[List[Dict], CommandResults]:
     events = client.search_events(
         prev_id="0",
-        limit=limit,
         from_date=from_date,
+        limit=limit,
     )
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
 
 def fetch_events(client: Client, last_run: dict[str, str],
-                 first_fetch_time, max_events_per_fetch: int
+                max_events_per_fetch: int
                  ) -> tuple[Dict, List[Dict]]:
     """
     """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = "0"
+    prev_id = last_run.get('prev_id', "0")
+    prev_date = last_run.get('prev_date', DEFAULT_LOOKBACK)
 
     events = client.search_events(
         prev_id=prev_id,
+        from_date=prev_date,
         limit=max_events_per_fetch,
-        from_date=first_fetch_time,
     )
     last_fetched_id = events[-1].get('id')
-    demisto.debug(f'Fetched event with id: {last_fetched_id}.')
+    last_fetched_creation_date = events[-1].get('created')
+    demisto.debug(f'Fetched event with id: {last_fetched_id} and creation date: {last_fetched_creation_date}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': last_fetched_id}
+    next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
     demisto.debug(f'Setting next run {next_run}.')
     return next_run, events
 
 
 ''' MAIN FUNCTION '''
-
-#TODO do I need this?
-def add_time_to_events(events: List[Dict] | None):
-    """
-    Adds the _time key to the events.
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    if events:
-        for event in events:
-            #create_time = arg_to_datetime(arg=event.get('created_time'))
-            #event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None #TODO  ??
             
 
-def add_entry_status_to_events(events: List[Dict] | None):
+def add_time_and_status_to_events(events: List[Dict] | None):
     """
     """
     if events:
-        for event in events:
+         for event in events:
             created = event.get('created')
             if created:
                 created = datetime.fromisoformat(created)
@@ -193,9 +177,15 @@ def add_entry_status_to_events(events: List[Dict] | None):
                 modified = datetime.fromisoformat(modified)
 
             event["_ENTRY_STATUS"] = "modified" if modified and created and modified < created else "new"
-            
+            if created and modified and modified > created:
+                event['_time'] = modified.strftime(DATE_FORMAT)
+            elif created:
+                event['_time'] = created.strftime(DATE_FORMAT)
+            else:
+                event['_time'] = None
 
-def main() -> None:  # pragma: no cover
+
+def main() -> None:
     """
     main function, parses params and runs command functions
     """
@@ -208,10 +198,6 @@ def main() -> None:  # pragma: no cover
     base_url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now()
-    formatted_first_fetch_time= first_fetch_time.strftime(DATE_FORMAT)
     max_events_per_fetch = params.get('max_events_per_fetch') or 50000      #TODO: max per call is 10,000, so how to handle this?
 
     demisto.debug(f'Command being called is {command}')
@@ -224,20 +210,18 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, formatted_first_fetch_time)
+            result = test_module(client)
             return_results(result)
 
         elif command == 'identitynow-get-events':
-            limit = args.get('limit') or 50
+            limit = arg_to_number(args.get('limit')) or 50
             should_push_events = argToBoolean(args.get('should_push_events'))
-            time_to_start = arg_to_datetime(args.get('from_date')) or datetime.now() - timedelta(hours=1)
-            formatted_time_to_start = time_to_start.strftime(DATE_FORMAT)
+            time_to_start = arg_to_datetime(args.get('from_date'))
+            formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else DEFAULT_LOOKBACK
             events, results = get_events(client, limit, from_date=formatted_time_to_start)
             return_results(results)
             if should_push_events:
-                add_time_to_events(events)
-                add_entry_status_to_events(events)
+                add_time_and_status_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -249,12 +233,10 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                first_fetch_time=formatted_first_fetch_time,
                 max_events_per_fetch=max_events_per_fetch,
             )
 
-            #add_time_to_events(events)
-            add_entry_status_to_events(events)
+            add_time_and_status_to_events(events)
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,
