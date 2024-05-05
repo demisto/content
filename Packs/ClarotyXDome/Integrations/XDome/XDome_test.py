@@ -87,7 +87,9 @@ DEVICE_ALERT_SUCCESS_RESPONSE = {
             "device_site_name": "New York General Hospital",
             "device_subcategory": "Patient Devices",
             "device_type": "Patient Monitor",
-            "device_uid": "f342efb7-4f4a-4ac0-8045-0711fb2c5528"
+            "device_uid": "f342efb7-4f4a-4ac0-8045-0711fb2c5528",
+            "alert_name": "alert name here",
+            "device_name": "device name here",
         }
     ]
 }
@@ -290,3 +292,22 @@ def test_resolve_device_alert_relations(xdome_client_mock):
     cmd_res = set_device_alert_relations_command(xdome_client_mock(), RESOLVE_DEVICE_ALERT_VALID_RAW_ARGS)
     assert cmd_res.raw_response == "success"
     assert cmd_res.readable_output == "success"
+
+
+def test_fetch_incidents(xdome_client_mock):
+    from XDome import fetch_incidents
+
+    next_run, incidents = fetch_incidents(
+        xdome_client_mock(), last_run={}, initial_fetch_time="1 day", alert_types=None, fetch_only_unresolved=True
+    )
+
+    mock_pair = DEVICE_ALERT_SUCCESS_RESPONSE["devices_alerts"][0]
+
+    incident = incidents[0]
+    assert incident == {
+        "dbotMirrorId": f"{mock_pair['alert_id']}↔{mock_pair['device_uid']}",
+        "name": f"Alert “{mock_pair['alert_name']}” on Device “{mock_pair['device_name']}”",
+        "occurred": mock_pair["device_alert_updated_time"],
+        "rawJSON": json.dumps(mock_pair),
+    }
+    assert next_run == {"last_fetch": incident["occurred"], "latest_ids": [incident["dbotMirrorId"]]}
