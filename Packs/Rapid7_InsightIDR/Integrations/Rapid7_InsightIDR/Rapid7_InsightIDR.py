@@ -1745,7 +1745,7 @@ def main():
     params = demisto.params()
     region = params.get("region", {})
     api_key = params.get("apikey_creds", {}).get("password") or params.get("apiKey", {})
-    is_multi_customer = argToBoolean(params["is_multi_customer"])
+    is_multi_customer = argToBoolean(params.get("is_multi_customer", "false"))
     max_fetch = params.get("max_fetch", "50")
 
     base_url = f"https://{region}.api.insight.rapid7.com/"
@@ -1774,7 +1774,7 @@ def main():
         elif demisto.args().get("api_version") == API_V2:
             api_version = API_V2
         else:
-            api_version = API_V2 if argToBoolean(demisto.params().get("is_v2")) else API_V1
+            api_version = API_V2 if argToBoolean(demisto.params().get("is_v2", "false")) else API_V1
 
         api_version_constants: Constants = {
             API_V1: ConstantsV1,
