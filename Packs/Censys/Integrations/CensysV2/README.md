@@ -112,9 +112,9 @@ Returns detailed information for an IP address or SHA256 within the specified in
 | Censys.View.parsed.tbs_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate. | 
 | Censys.View.parsed.tbs_noct_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted. | 
 | Censys.View.parsed.validation_level | String | How the certificate is validated - Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. | 
-| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Timezone is UTC. | 
+| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. | 
 | Censys.View.parsed.validity.length | Number | The length of time, in seconds, that the certificate is valid. | 
-| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Timezone is UTC. | 
+| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Time zone is UTC. | 
 | Censys.View.parsed.version | Number | The x.509 certificate version number. | 
 | Censys.View.precert | Boolean | Whether the certificate is pre-cert. | 
 | Censys.View.raw | String | The raw certificate. | 
@@ -500,8 +500,8 @@ Returns previews of hosts matching a specified search query, or a list of certif
 | Censys.Search.parsed.issuer.organization | Unknown | The organization name. | 
 | Censys.Search.parsed.names | Unknown | Common names for the entity. | 
 | Censys.Search.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. | 
-| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Timezone is UTC. | 
-| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Timezone is UTC. | 
+| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. | 
+| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Time zone is UTC. | 
 | Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. | 
 
 
@@ -582,7 +582,7 @@ Runs reputation on IPs.
 | Censys.IP.autonomous_system.asn | Number | Autonomous System Number (ASN) of the autonomous system associated with the IP address. |
 | Censys.IP.ip | String | The IP address. |
 | Censys.IP.location.country | String | Country name of the location associated with the IP address. |
-| Censys.IP.location.timezone | String | Timezone of the location associated with the IP address. |
+| Censys.IP.location.timezone | String | Time zone of the location associated with the IP address. |
 | Censys.IP.location.province | String | Province name of the location associated with the IP address. |
 | Censys.IP.location.coordinates.latitude | Number | Latitude coordinate of the location associated with the IP address. |
 | Censys.IP.location.coordinates.longitude | Number | Longitude coordinate of the location associated with the IP address. |
