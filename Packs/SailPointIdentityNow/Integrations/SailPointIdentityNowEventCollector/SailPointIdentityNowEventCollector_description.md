@@ -1,6 +1,8 @@
 ## SailPoint IdentityNowEventCollector
 
-follow this link to find out the tenant name: https://developer.sailpoint.com/docs/api/getting-started/#find-your-tenant-name
+**IdentityNow Server URL**:
+follow this link [link](https://developer.sailpoint.com/docs/api/getting-started/#find-your-tenant-name) to find out the tenant name.
 
-follow this link for more information of how to generate client id and client secret:
-https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token
+**Client ID and Client Secret**:
+follow this [link]
+(https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token) for more information of how to generate client id and client secret.
