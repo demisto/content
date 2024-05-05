@@ -107,3 +107,10 @@ def test_send_message_command(mocker, args, expected_conversation):
     res = send_message_command(client=client, args=args)
 
     assert res.outputs == expected_conversation
+
+
+def test_create_soc_email_template_command(mocker):
+    from OpenAIGPT import OpenAiClient, create_soc_email_template
+    mocker.patch.object(OpenAiClient, '_http_request', return_value=util_load_json('test_data/mock_response.json'))
+    client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
+    create_soc_email_template(client, args={})
