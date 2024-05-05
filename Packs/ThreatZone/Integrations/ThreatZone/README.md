@@ -70,8 +70,8 @@ Submits a sample to ThreatZone for static analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required | 
-| private | If this is true then everyone can see the submisison. If this is false then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional | 
-| extensionCheck | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional | 
+| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional | 
+| extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
@@ -97,8 +97,8 @@ Submits a sample to ThreatZone for CDR.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required | 
-| private | If this is true then everyone can see the submisison. If this is false then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional | 
-| extensionCheck | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional | 
+| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional | 
+| extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
