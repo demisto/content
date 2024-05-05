@@ -202,7 +202,8 @@ negative_initialization = \
         'replace_emails': False,
         'replace_numbers': False,
         'lemma': False,
-        'replace_urls': False
+        'replace_urls': False,
+        "test": 1
     }
 
 
