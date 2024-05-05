@@ -1,5 +1,5 @@
 {
-    "name": "OpenAI - Demo",
+    "name": "OpenAI",
     "description": "The OpenAI API can be applied to virtually any task that involves understanding or generating natural language or code.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
