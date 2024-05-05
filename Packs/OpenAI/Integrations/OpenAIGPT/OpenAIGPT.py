@@ -268,7 +268,7 @@ def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> CommandR
     if not message:
         raise ValueError('Message not provided')
 
-    reset_conversation_history =True if str(args.get('reset_conversation_history', '')).lower() in ['true', 'yes'] else False
+    reset_conversation_history = True if str(args.get('reset_conversation_history', '')).lower() in ['true', 'yes'] else False
     conversation = get_updated_conversation(reset_conversation_history, message)
 
     completion_params = {
