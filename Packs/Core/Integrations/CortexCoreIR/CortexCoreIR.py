@@ -153,7 +153,6 @@ def main():  # pragma: no cover
         api_key = demisto.params().get('apikey')
         api_key_id = demisto.params().get('apikey_id')
         url = demisto.params().get('url')
-        
 
         if not api_key or not api_key_id or not url:
             headers = {

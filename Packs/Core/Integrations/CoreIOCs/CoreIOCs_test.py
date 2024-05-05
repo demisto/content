@@ -80,7 +80,7 @@ class TestGetRequestsKwargs:
             Then:
                 - the json ready to send
         """
-        client = Client(params= {})
+        client = Client(params={})
         _json = {'test': 'test'}
         output = get_requests_kwargs(client, _json=_json)
         expected_output = {'data': '{"request_data": {"test": "test"}}'}
