@@ -1589,10 +1589,7 @@ if __name__ == '__main__':
     pack_to_upload = args.pack_names
     collector: TestCollector
 
-    if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, graph=graph)
-
-    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+    if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:
