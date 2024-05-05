@@ -230,7 +230,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=delete_links_from_response(certificates),
+        outputs=edit_response(certificates),
         raw_response=response,
         readable_output=markdown_table
     )
@@ -269,17 +269,18 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 ''' HELPER FUNCTIONS '''
 
 
-def delete_links_from_response(certificates: list) -> list:
+def edit_response(certificates: list) -> list:
     """
-    Delete links list from the response
+    Delete links list from the response and add ID entry.
 
     Args:
         certificates (list): List of certificates
     Returns:
-        certificates (list): List of certificates without the links list
+        certificates (list): List of certificates without the links list and with ID entry.
     """
 
     for certificate in certificates:
+        certificate['ID'] = certificate.get('Guid', '').strip('{}')
         if certificate.get('_links'):
             del certificate['_links']
 
