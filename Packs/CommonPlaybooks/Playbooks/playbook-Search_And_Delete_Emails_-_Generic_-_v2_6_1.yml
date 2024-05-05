@@ -1240,6 +1240,7 @@ tasks:
       brand: ""
       id: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
       iscommand: false
+      description: Checks whether a KQL query is provided or not.
       name: KQL query provided?
       type: condition
       version: -1
