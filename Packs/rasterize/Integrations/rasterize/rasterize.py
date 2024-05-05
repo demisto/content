@@ -334,9 +334,14 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
 
         default_chrome_options = CHROME_OPTIONS
         default_chrome_options.append(f"--remote-debugging-port={chrome_port}")
-        subprocess_options = [chrome_binary]
+        if argToBoolean(demisto.params().get('full_screen', False)):
+            default_chrome_options.append(f"--proxy-auto-detect")
+
         user_chrome_options = demisto.params().get('chrome_options', "")
-        subprocess_options.extend(get_chrome_options(default_chrome_options, user_chrome_options))
+        chrome_options = get_chrome_options(default_chrome_options, user_chrome_options)
+
+        subprocess_options = [chrome_binary]
+        subprocess_options.extend(chrome_options)
         demisto.debug(f"Starting Chrome with {subprocess_options=}")
 
         process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
