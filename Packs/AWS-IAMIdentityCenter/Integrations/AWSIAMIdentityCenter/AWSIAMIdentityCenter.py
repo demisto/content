@@ -156,6 +156,19 @@ def get_group_memberships_for_member(args: dict, client, IdentityStoreId: str) -
 
 
 def update_groups_and_memberships(last_data, current_data, key, id_value, new_data):
+    """
+    Update groups and memberships based on the provided parameters.
+
+    Args:
+        last_data (dict or list): The previous data containing group memberships.
+        current_data (list): The current data containing group memberships.
+        key (str): The key to identify the item in the data (e.g., 'id').
+        id_value (any): The value of the key to match against (e.g., user ID).
+        new_data (str): The key representing the updated data (e.g., 'groups').
+
+    Returns:
+        list: The updated list of group memberships.
+    """
     updated_list = []
     if not isinstance(last_data, list):
         last_data = [last_data]
