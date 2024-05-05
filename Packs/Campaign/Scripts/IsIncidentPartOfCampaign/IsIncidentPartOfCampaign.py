@@ -8,7 +8,7 @@ from collections.abc import Iterable
 ''' STANDALONE FUNCTION '''
 
 
-def get_incidents_ids_by_type(incident_type: str, incident_status: str) -> Iterable[str]:
+def get_incidents_ids_by_type(incident_type: str, incident_status: str = '') -> Iterable[str]:
     """
     Get list of incidents ids with the given type and status.
     Args:
@@ -19,8 +19,9 @@ def get_incidents_ids_by_type(incident_type: str, incident_status: str) -> Itera
     Returns:
         List of ids as strings.
     """
+    query = f'type:"{incident_type}" and status:{incident_status}' if incident_status else f'type:"{incident_type}"'
     search_args = {
-        'query': f'type:"{incident_type}" and status:{incident_status}',
+        'query': query,
         'sort': {
             'field': 'occurred',
             'asc': False,
@@ -73,7 +74,7 @@ def main():
     try:
         args = demisto.args()
         campaign_type = args.get('CampaignIncidentType', 'Phishing Campaign')
-        incident_status = args.get('IncidentStatus')
+        incident_status = args.get('IncidentStatus', '')
         incidents_ids_set = set(argToList(args.get('IncidentIDs', '')))
         campaign_id = None
 
