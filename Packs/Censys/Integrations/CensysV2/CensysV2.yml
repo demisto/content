@@ -59,7 +59,7 @@ configuration:
     Used only when `Determine IP score by labels` is set. 
     Labels to classify IP as Malicious. 
     Input can be an array or comma-separated values.
-  section: Collect-  advanced
+  section: Collect
 - display: IP Suspicious labels
   name: suspicious_labels
   type: 16
@@ -86,19 +86,19 @@ configuration:
     Used when `Determine IP score by labels` is set.
     Labels to classify IP as Suspicious.
     Input can be an array or comma-separated values.
-  section: Collect-  advanced
+  section: Collect
 - display: Malicious labels threshold
   name: malicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as malicious for IP.
-  section: Collect-  advanced
+  section: Collect
 - display: Suspicious labels threshold
   name: suspicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as suspicious for IP.
-  section: Collect-  advanced
+  section: Collect
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: C - Fairly reliable
