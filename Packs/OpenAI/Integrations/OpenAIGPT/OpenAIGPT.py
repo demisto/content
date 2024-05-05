@@ -35,8 +35,7 @@ I have this email body that I suspect may contain security risks such as phishin
 or signs of social engineering. Please analyze the content of this email body, identify any elements that may pose security
 threats, and explain why these elements are concerning. Also, suggest any steps that could be taken to further verify these risks
 or protect against these threats.
-Additional instructions: {}
-
+{}
 '''
 {}
 '''
@@ -44,6 +43,15 @@ Additional instructions: {}
 Highlight potential security risks, and explain the implications of such risks.
 Make you answer very concise and easily readable, with references to the email body if there are, otherwise do not refer to \
 hypothetical problems.
+"""
+
+CREATE_SOC_EMAIL_TEMPLATE_PROMPT = """
+Based on the details provided in our conversation and any specific instructions you have been given,
+create a professional email template suitable for a Security Operations Center (SOC).
+The template should be adaptable, clearly structured, and include placeholders for specific incident details,
+recommendations for action, and any necessary escalation points.
+Please ensure the tone is appropriate for communication within a cybersecurity context.
+{}
 """
 
 
@@ -191,7 +199,8 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     """
     entry_id: str = args.get('entryId', '')
     email_headers, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
-    additional_instructions = args.get('additionalInstructions', '')
+    additional_instructions = f'Additional instructions: {args.get("additionalInstructions")}\n'\
+        if args.get("additionalInstructions", "") else ''
 
     if email_part == EmailParts.HEADERS:
         demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
@@ -310,6 +319,14 @@ def check_email_body_command(client: OpenAiClient, args: dict[str, Any]) -> Comm
     return check_email_part(EmailParts.BODY, client, args)
 
 
+def create_soc_email_template(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+    additional_instructions = f'Additional instructions: {args.get("additionalInstructions")}\n'\
+        if args.get("additionalInstructions", "") else ''
+    create_soc_email_template_message = CREATE_SOC_EMAIL_TEMPLATE_PROMPT.format(additional_instructions)
+    args.update({'message': create_soc_email_template_message})
+    return send_message_command(client, args)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -359,6 +376,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == "gpt-check-email-body":
             return_results(check_email_body_command(client=client, args=args))
+
+        elif command == "gpt-create-soc-email-template":
+            return_results(create_soc_email_template(client=client, args=args))
 
         # TODO - Implement 'create_soc_email_template':
         # elif command == "gpt-create-soc-email-template":
