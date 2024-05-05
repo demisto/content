@@ -662,7 +662,6 @@ def test_score_file_report_response(mocker, response, expected_output):
     command_results, status = wildfire_get_report_command(
         {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
          'format': 'xml'})
-    # print(command_results[0].indicator.dbot_score.score)
     assert command_results[0].indicator.dbot_score.score == expected_output
 
 
