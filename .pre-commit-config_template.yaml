@@ -16,20 +16,12 @@ repos:
     min_py_version: '3.7'
     files: .+_test.py$
 - repo: https://github.com/python-poetry/poetry
-  rev: 1.6.1
+  rev: 1.8.2
   hooks:
   - id: poetry-check
-  - id: poetry-lock
     args:
-    - --check
+    - --lock
     files: ^pyproject.toml$
-  - id: poetry-export
-    args:
-    - --with
-    - dev,typing
-    - --without-hashes
-    - -o
-    - requirements.txt
 - repo: https://github.com/hadialqattan/pycln
   rev: v2.1.2
   hooks:
@@ -41,6 +33,7 @@ repos:
   rev: v0.0.272
   hooks:
   - id: ruff
+    parallel: false
     min_py_version: '3.7'
     args:
     - --fix
@@ -81,11 +74,13 @@ repos:
     exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
     require_serial: true
     language: system
+    # skip nightly since we don't care about warnings in nightly
+    skip:nightly: true
 
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
@@ -109,7 +104,7 @@ repos:
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
@@ -117,7 +112,7 @@ repos:
     language: docker
     files: Packs\/.*_test\.py$
     # The exclude list includes the list of all integration/scripts which require network for testing
-    exclude: test_data|Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -144,13 +139,13 @@ repos:
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
     entry: coverage
     language: docker
-    files: Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    files: Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -182,18 +177,30 @@ repos:
     - Packs
     - Tests
     - Utils
+
   - id: validate-content-paths
     name: validate-content-paths
     entry: validate-content-path
     language: system
+    require_serial: true
     args:
     -  validate
     -  --skip-depth-one-file
     -  --skip-depth-one-folder
-    -  --skip-depth-zero-file
     -  --skip-integration-script-file-name
     -  --skip-markdown
     -  --skip-suffix
+
+
+  - id: validate-conf-json
+    name: validate-conf-json
+    description: validate conf.json
+    files: Tests/conf.json
+    skip:commit: true
+    skip:nightly: true
+    entry: validate-conf-json
+    pass_filenames: false
+    language: system
 
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker

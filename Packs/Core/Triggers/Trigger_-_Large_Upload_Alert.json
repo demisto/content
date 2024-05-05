@@ -1,0 +1,24 @@
+{
+  "trigger_id": "770cf66716cb3206fb3c07a5f010f8f8",
+  "playbook_id": "Large Upload Alert",
+  "suggestion_reason": "Recommended for large upload alerts",
+  "description": "This trigger is responsible for handling \"core - Large Upload\" alerts",
+  "trigger_name": "Large Upload Alert",
+  "fromVersion": "6.10.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Large Upload"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "MAGNIFIER"
+        }
+      ]
+    }
+  }
+}
