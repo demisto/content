@@ -7,7 +7,6 @@ import abc
 import dateparser
 from datetime import datetime, timedelta
 from typing import Dict, Any, Collection, Set, Optional, Tuple, Union, Callable
-from typing_extensions import TypeAlias
 import urllib3
 
 # Disable insecure warnings
@@ -248,7 +247,7 @@ DEVICE_VULNERABILITY_FIELDS = {
 
 INCIDENT_TIMESTAMP_FIELD = "device_alert_updated_time"
 
-QueryFilterType: TypeAlias = Dict[str, Any]
+QueryFilterType = Dict[str, Any]
 
 
 ''' CLIENT CLASS '''
