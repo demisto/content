@@ -90,7 +90,7 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
     return 0
 
 
-def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
+def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have been assigned to a user
     for each potential reviewer and returns the user with the smallest amount.
     If all the reviewers have the same amount, it will select one randomly.
@@ -277,7 +277,7 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
-def get_user_from_ui_pr(pr) -> str:
+def get_user_from_pr_body(pr: dict) -> str:
     """
     Get user from PR that was opened from XSOAR UI by searching for the substring "Contribytor\n@" in the body of the PR
     Arguments:
@@ -287,10 +287,13 @@ def get_user_from_ui_pr(pr) -> str:
     - Found User
     """
     body = pr.body
-    index_of_user = body.find("Contributor\n@")
-    substring_user = body[index_of_user + len("Contributor\n@"):]
-    user_in_list = substring_user.split("\n")[0]
-    return user_in_list
+    #index_of_user = body.find("Contributor\n@")
+    #substring_user = body[index_of_user + len("Contributor\n@"):]
+    #user_in_list = substring_user.split("\n")[0]
+    #return user_in_list
+    PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
+    matcher = re.search(PR_AUTHOR_PATTERN, body)
+    return matcher.groups()[0]
 
 
 def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
@@ -310,19 +313,23 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
-        if pr.user.login == "xsoar-bot":
-            pr_creator_from_body = get_user_from_ui_pr(pr)
-            if pr_creator_from_body == pr_creator:
-                similar_prs.append(pr)
-        elif pr.user.login == pr_creator:
+        #if pr.user.login == "xsoar-bot":
+        #    pr_creator_from_body = get_user_from_pr_body(pr)
+        #    print(f'pr creator from ui: {pr_creator_from_body}')
+        #    if pr_creator_from_body == pr_creator:
+        #        similar_prs.append(pr)
+        #elif pr.user.login == pr_creator:
+        #    similar_prs.append(pr)
+        #else:
+        #    continue
+        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
+        if existing_pr_author == pr_creator:
             similar_prs.append(pr)
-        else:
-            continue
     print(f'similar prs are: {similar_prs}')
     return similar_prs
 
 
-def reviewer_of_prs_from_current_round(other_prs_by_same_user) -> str:
+def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_reviewers: list[str]) -> str:
     """
     Get all PR's that are currently open from the same author, filter the list and return reviewer if reviewer is part
     of the current contribution round
@@ -332,22 +339,24 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user) -> str:
     Returns:
     - Reviewer of the found pr's
     """
-    content_roles = load_json(CONTENT_ROLES_PATH)
-    content_reviewers, __, _ = get_content_reviewers(content_roles)
     reviewers = []
     relevant_reviewer = ''
     for pr in other_prs_by_same_user:
-        for reviewer in pr.requested_reviewers:
-            print(f'reviewer of the pr is: {reviewer.login}')
-            reviewers.append(reviewer.login)
-        for reviewer in reviewers:
-            if reviewer in content_reviewers:
-                relevant_reviewer = reviewer
-                break
-    return relevant_reviewer
+        existing_reviewer = content_reviewers.intersect(set(pr.requested_reviewers))
+        if existing_reviewer:
+            return existing_reviewer
+        #for reviewer in pr.requested_reviewers:
+        #    print(f'reviewer of pr {pr.number} is: {reviewer.login}')
+        #    reviewers.append(reviewer.login)
+        #for reviewer in reviewers:
+        #    if reviewer in content_reviewers:
+        #        relevant_reviewer = reviewer
+        #        break
+    #return relevant_reviewer
+    return {}
 
 
-def find_reviewer_to_assign(content_repo, pr, pr_number):
+def find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers):
     """
     Gets the content repo, PR and pr_number. Will return reviewer to assign
     Argument:
@@ -359,13 +368,20 @@ def find_reviewer_to_assign(content_repo, pr, pr_number):
     - Reviewer to assign
     """
     if pr.user.login == "xsoar-bot":
-        pr_creator = get_user_from_ui_pr(pr)
+        pr_creator = get_user_from_pr_body(pr)
     else:
         pr_creator = pr.user.login
 
     other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
-    reviewers_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user)
-    return reviewers_to_assign
+
+    reviewers_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
+    if reviewers_to_assign:
+        print(f'found reviewer from other PR\'s by similar author is: {reviewers_to_assign}')
+        content_reviewer = reviewers_to_assign
+    else:
+        content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
+        print(f'determined reviewer is: {content_reviewer}')
+    return content_reviewer
 
 
 def main():
@@ -449,14 +465,7 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    found_reviewer = find_reviewer_to_assign(content_repo, pr, pr_number)
-
-    if found_reviewer:
-        print(f'found reviewer from other PR\'s by similar author is: {found_reviewer}')
-        content_reviewer = found_reviewer
-    else:
-        content_reviewer = determine_reviewer(content_reviewers, content_repo)
-        print(f'determined reviewer is: {content_reviewer}')
+    content_reviewer = find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers)
 
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
