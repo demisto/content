@@ -1,0 +1,49 @@
+This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
+This integration was integrated and tested with version xx of SailPointIdentityNowEventCollector.
+
+## Configure SailPoint IdentityNow Event Collector on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for SailPoint IdentityNow Event Collector.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | IdentityNow Server URL (e.g. https://{tenant}.api.identitynow.com) | True |
+    | Client ID | True |
+    | Client Secret | True |
+    | Max number of events per fetch | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### identitynow-get-events
+
+***
+Gets events from SailPoint IdentityNow.
+
+#### Base Command
+
+`identitynow-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| from_date | Date from which to get events in the format of %Y-%m-%dT%H:%M:%S. If not provided, the default is 1 hour ago. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Additional Information:
+The default maximum number of events per fetch is 50,000.
+When initiating a fetch, the starting time for the first fetch is one hour ago.
