@@ -559,7 +559,7 @@ def urlscan_submit_command(client):
     rate_limit_reset_after: int = 60
 
     urls = argToList(demisto.args().get('url'))
-    if IS_TIME_SENSITIVE:
+    if is_time_sensitive():
         args = ((client, url, command_results, execution_metrics) for url in urls)
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             executor.map(lambda p: urlscan_search_only(*p), args)
@@ -847,7 +847,7 @@ def main():
     )
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
+    demisto.debug(f'Is time sensitive: {is_time_sensitive()}')
 
     try:
         handle_proxy()
