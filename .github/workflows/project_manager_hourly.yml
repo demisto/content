@@ -19,6 +19,7 @@ permissions:
   repository-projects: write
   security-events: write
   statuses: write
+  metadata: read
 
 jobs:
   manage_project_board:
