@@ -209,7 +209,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, att
     """
     message_id = ''
     instance_name = ''
-    integration_name = '' 
+    integration_name = ''
 
     for label in labels:
         if label.get('type') == 'Email/ID':
