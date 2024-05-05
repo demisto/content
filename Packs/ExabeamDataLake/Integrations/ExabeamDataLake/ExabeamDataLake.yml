@@ -8,10 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- name: credentials
-  required: true
-  display: User Name
+# - name: credentials
+#   required: true
+#   display: User Name
+#   type: 9
+- display: Access Key
+  name: credentials
+  required: false
+  section: Connect
   type: 9
+  displaypassword: Secret Key
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

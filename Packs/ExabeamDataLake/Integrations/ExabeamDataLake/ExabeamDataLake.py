@@ -204,7 +204,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    username = params["credentials"]["identifier"] or params.get('userName')
+    username = params["credentials"]["identifier"]
     password = params["credentials"]["password"]
     base_url = params["url"].rstrip("/")
 
