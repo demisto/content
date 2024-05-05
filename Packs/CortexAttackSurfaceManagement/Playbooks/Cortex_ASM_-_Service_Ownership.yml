@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 91e4b9c9-2fe6-4cb4-8d55-f944a89e083b
+    taskid: db89a5a4-9e07-4949-8d36-184fecb073e7
     type: regular
     task:
-      id: 91e4b9c9-2fe6-4cb4-8d55-f944a89e083b
+      id: db89a5a4-9e07-4949-8d36-184fecb073e7
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -54,6 +54,15 @@ tasks:
       owners:
         complex:
           root: alert.asmserviceownerunrankedraw
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: SERVICE-ACCOUNT
       asmsystemids:
         complex:
           root: alert.asmsystemids
