@@ -71,7 +71,7 @@ switch (command) {
                     Type: entryTypes.note,
                     Contents: 'Lock was not acquired, Polling.',
                     PollingCommand: 'demisto-lock-get',
-                    NextRun: '5',
+                    NextRun: '30',
                     PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, guid: guid, timeout_err_msg: timeout_err_msg },
                     Timeout: String(lockTimeout)
                 }
