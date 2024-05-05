@@ -15,7 +15,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
         self.api_key = api_key
         self.reliability = reliability
-        self.timeout = 2 if IS_TIME_SENSITIVE else 20
+        self.timeout = 2 if is_time_sensitive() else 20
 
     def ipinfo_ip(self, ip: str) -> dict[str, Any]:
         return self.http_request(ip)
