@@ -1348,10 +1348,3 @@ def setAssetsLastRun(obj):
 
 def getAssetsLastRun():
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
-
-
-def isTimeSensitive():
-    """
-    Returns whether the current execution is time sensitive or not.
-    """
-    return False

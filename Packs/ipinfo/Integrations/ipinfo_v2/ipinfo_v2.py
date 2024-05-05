@@ -5,8 +5,6 @@ import traceback
 from typing import Any
 
 BRAND_NAME = "IPinfo"  # matches context output path for faster caching
-IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
-demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
 
 
 class Client(BaseClient):
