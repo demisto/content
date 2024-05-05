@@ -12,12 +12,12 @@ configuration:
 #   required: true
 #   display: User Name
 #   type: 9
-- display: Access Key
+- display: User Name
   name: credentials
   required: false
   section: Connect
   type: 9
-  displaypassword: Secret Key
+  displaypassword: Password
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

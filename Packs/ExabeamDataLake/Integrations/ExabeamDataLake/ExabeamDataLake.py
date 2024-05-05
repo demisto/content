@@ -30,7 +30,7 @@ class Client(BaseClient):
         # )
         
         super().__init__(
-            base_url=base_url
+            base_url=base_url, headers=HEADERS
         )
         
         self.username = username
@@ -48,23 +48,29 @@ class Client(BaseClient):
         Note: the session is automatically closed in BaseClient's __del__
         """
         headers = {"Csrf-Token": "nocheck"}
-        data = {"username": self.username, "password": self.password}
+        print(self._base_url)
+        self._http_request('POST', full_url=f'{self._base_url}/api/auth/login', data={
+            'username': self.username,
+            'password': self.password
+        },
+        headers=headers)
         
-        self._http_request(
-            "POST",
-            full_url=f"{self._base_url}/api/auth/login",
-            headers=headers,
-            data=data,
-        )
+        # data = {"username": self.username, "password": self.password}
+        
+        # self._http_request(
+        #     "POST",
+        #     full_url=f"{self._base_url}/api/auth/login",
+        #     headers=headers,
+        #     data=data,
+        # )
 
 
     def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
-        return self._http_request(
-            "GET", full_url=f"{self._base_url}/api/auth/check", resp_type="text"
-        )
+        print(self._base_url)
+        self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
     def query_datalake_request(self, search_query: dict) -> dict:
         return self._http_request(
@@ -193,7 +199,7 @@ def test_module(client: Client):
         ok if successful
     """
     client.test_module_request()
-    return "ok"
+    return 'ok'
 
 
 """ MAIN FUNCTION """
@@ -204,20 +210,21 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    username = params["credentials"]["identifier"]
-    password = params["credentials"]["password"]
-    base_url = params["url"].rstrip("/")
+    credentials = params.get('credentials', {})
+    username = credentials.get('identifier')
+    password = credentials.get('password')
+    base_url = params.get('url', '')
 
-    verify_certificate = not params.get("insecure", False)
+    # verify_certificate = not params.get("insecure", False)
 
-    proxy = params.get("proxy", False)
+    # proxy = params.get("proxy", False)
 
     try:
         client = Client(
-            base_url,
+            base_url.rstrip('/'),
             # verify=verify_certificate,
             username=username,
-            password=password,
+            password=password
             # proxy=proxy,
         )
 
