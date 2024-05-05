@@ -1258,9 +1258,6 @@ class SpecificPacksTestCollector(TestCollector):
 class NightlyTestCollector(BranchTestCollector, ABC):
 
     def _collect(self) -> CollectionResult | None:
-        if self.marketplace == MarketplaceVersions.XPANSE:
-            logger.info('tests are not currently supported for XPANSE, returning nothing.')
-            return None
 
         result = []
         collect_from = self._get_git_diff() # TODO - OR - SpecificPacksTestCollector/UploadAllCollector
@@ -1271,10 +1268,10 @@ class NightlyTestCollector(BranchTestCollector, ABC):
             self._collect_packs_diff_master_bucket(),
             self._collect_failed_packs_from_prev_upload() # todo add collect from json file
         ])
-        logger.info('changed packs drops collected tests, as they are not required')
         if changed_packs:
             logger.info(f"Collect the following packs to upload: {changed_packs.packs_to_upload=}")
             changed_packs.tests = set()  # todo - without tests - only to upload
+            logger.info('changed packs drops collected tests, as they are not required')
             result.append(changed_packs)
 
         # todo - add playbooks of non api and nightly packs per marketplace + add nightly packs for install
@@ -1594,7 +1591,6 @@ def output(result: CollectionResult | None):
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
     modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
-    logger.info(f"Michal - {modeling_rules_to_test=}")
     machines = result.machines if result and result.machines else ()
     packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 
@@ -1617,7 +1613,6 @@ def output(result: CollectionResult | None):
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
-    PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
     PATHS.output_packs_to_upload_file.write_text(json.dumps({'packs_to_upload': packs_to_upload,
                                                              'packs_to_update_metadata': packs_to_update_metadata}))
     PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)

@@ -3393,7 +3393,7 @@ def get_failed_packs_from_previous_upload(service_account, marketplace=Marketpla
     # index_string = index_blob.download_as_string()
     # index_json = json.loads(index_string)
     # return index_json.get('failed_packs') # TODO change name
-    return {"Aha"}
+    return {"AHA"}
 
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
