@@ -95,15 +95,21 @@ class Client(BaseClient):
 
     def get_policy_audits(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT, next_cursor: str = 'start') -> dict:
         url_suffix = f'Sets/{set_id}/policyaudits/search?nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}'
+        filter_params = f'arrivalTime GE {from_date}'
+        if self.policy_audits_event_type:
+            filter_params += f'{filter_params} AND eventType IN {",".join(self.policy_audits_event_type)}'
         data = assign_params(
-            filter=f'arrivalTime GE {from_date} AND eventType IN {",".join(self.policy_audits_event_type)}',
+            filter=filter_params,
         )
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
     def get_events(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT, next_cursor: str = 'start') -> dict:
         url_suffix = f'Sets/{set_id}/Events/Search?nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}'
+        filter_params = f'arrivalTime GE {from_date}'
+        if self.raw_events_event_type:
+            filter_params += f'{filter_params} AND eventType IN {",".join(self.raw_events_event_type)}'
         data = assign_params(
-            filter=f'arrivalTime GE {from_date} AND eventType IN {",".join(self.raw_events_event_type)}',
+            filter=filter_params,
         )
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 

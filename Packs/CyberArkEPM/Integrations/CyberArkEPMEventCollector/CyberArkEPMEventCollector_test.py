@@ -48,6 +48,7 @@ def mocked_client(requests_mock):
         'test',
         '123456',
         '1',
+        policy_audits_event_type=['a', 'b', 'c']
     )
 
 
