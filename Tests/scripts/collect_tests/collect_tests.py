@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions,
 from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 from demisto_sdk.commands.common.git_util import GitUtil
 
-from Tests.Marketplace.marketplace_services import get_last_commit_from_index
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index, get_failed_packs_from_previous_upload
 from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACES_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
@@ -467,7 +467,7 @@ class TestCollector(ABC):
                     reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
                     reason_description=""
                 ))
-            except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
+            except (NothingToCollectException, IncompatibleMarketplaceException) as e:
                 logger.debug(str(e))
         return CollectionResult.union(result)
 
@@ -567,8 +567,8 @@ class TestCollector(ABC):
         #     #     raise
 
         # If changes are done to README files. Upload only. # todo verify if we want to install
-        if reason == CollectionReason.README_FILE_CHANGED:
-            collect_only_to_upload = True
+        # if reason == CollectionReason.README_FILE_CHANGED:
+        #     collect_only_to_upload = True
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
@@ -583,7 +583,7 @@ class TestCollector(ABC):
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
-            only_to_upload=collect_only_to_upload,
+            # only_to_upload=collect_only_to_upload,
             only_to_install=only_to_install
         )
 
@@ -895,7 +895,6 @@ class BranchTestCollector(TestCollector):
                 if yml.id_ in self.conf.test_id_to_test:
                     tests = yml.id_,
                 else:
-                    # todo fix in CIAC-4006
                     logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
                     tests = ()
                 reason = CollectionReason.TEST_PLAYBOOK_CHANGED
@@ -1148,6 +1147,7 @@ class BranchTestCollector(TestCollector):
         elif os.getenv('NIGHTLY'):
             logger.info('NIGHTLY: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+            logger.info(f"Michall - {previous_commit=}")
             if self.branch_name == 'master':
                 current_commit = os.getenv("CI_COMMIT_SHA", "")
 
@@ -1231,7 +1231,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     return old_pack
 
 
-class UploadBranchCollector(BranchTestCollector):
+class UploadBranchCollector(BranchTestCollector): # TODO - will not need anymore
     def _collect(self) -> CollectionResult | None:
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
@@ -1258,14 +1258,18 @@ class SpecificPacksTestCollector(TestCollector):
 class NightlyTestCollector(BranchTestCollector, ABC):
 
     def _collect(self) -> CollectionResult | None:
+        if self.marketplace == MarketplaceVersions.XPANSE:
+            logger.info('tests are not currently supported for XPANSE, returning nothing.')
+            return None
+
         result = []
-        collect_from = self._get_git_diff()
+        collect_from = self._get_git_diff() # TODO - OR - SpecificPacksTestCollector/UploadAllCollector
 
         changed_packs = CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            self._collect_packs_diff_master_bucket()
-            # todo add collect from json file
+            self._collect_packs_diff_master_bucket(),
+            self._collect_failed_packs_from_prev_upload() # todo add collect from json file
         ])
         logger.info('changed packs drops collected tests, as they are not required')
         if changed_packs:
@@ -1287,10 +1291,16 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 self.sanity_tests_xsiam(),  # XSIAM nightly always collects its sanity test(s)
             ))
             modeling_rules.packs_to_upload = set()
+            modeling_rules.packs_to_reinstall = set()
             result.append(modeling_rules)
         # todo all modeling rules for xsiam
 
         return CollectionResult.union(result)
+
+
+    def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
+        failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.marketplace)
+        return self._collect_specific_marketplace_compatible_packs(failed_packs)
 
     def _collect_modeling_rule_packs(self) -> CollectionResult | None:
         """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
@@ -1346,6 +1356,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     or playbook.id_ in self.conf.non_api_tests
                 ):
                     raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
+                logger.info(f'MICHAL - test - {playbook.id_=}')
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
                 result.append(CollectionResult(
                     test=playbook.id_,
@@ -1359,7 +1370,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     id_set=self.id_set,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, NonNightlyPackInNightlyBuildException) as e:
-                logger.debug(str(e))
+                logger.info(str(e)) # todo revert
         logger.info(f'Michal, _id_set_tests_matching_marketplace_value {len(result)=}')
 
         return CollectionResult.union(result)
@@ -1383,8 +1394,8 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     only_to_install=True,
                     version_range=pack_metadata.version_range  # todo dor - not sure
                 ))
-            except (NothingToCollectException, NonXsoarSupportedPackException, NonNightlyPackInNightlyBuildException) as e:
-                logger.debug(str(e))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.info(str(e)) # TODO REVERT
         logger.info(f'Michal, _collect_from_changed_packs_nightl, {len(result)=}')
 
         return CollectionResult.union(result)
