@@ -2452,6 +2452,7 @@ def fetch_last_emails(
     demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
+        demisto.debug(f"current item is {item}, type is {type(item)}")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
