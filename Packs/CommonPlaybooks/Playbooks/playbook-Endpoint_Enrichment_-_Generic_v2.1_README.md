@@ -105,4 +105,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1.png)
+![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2_1.png)

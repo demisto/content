@@ -270,7 +270,7 @@ A playbook that given the IP address enriches Splunk information relevant to ASM
 
 A playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
 
-![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
+![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable_io_Enrichment.png)
 
 ### Automation Scripts
 
