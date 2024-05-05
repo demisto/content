@@ -424,6 +424,7 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
+        demisto.debug(f'incidents replay {reply} fetched')
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
@@ -539,10 +540,13 @@ def sort_incident_data(raw_incident):
             - file artifact
             - network artifacts.
     """
+    
     incident = raw_incident.get('incident', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data', None)
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    demisto.debug(f'file_artifacts: {file_artifacts}')
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
+    demisto.debug(f'network_artifacts: {network_artifacts}')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     if context_alerts:
         for alert in context_alerts:
@@ -569,7 +573,7 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id])
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], fields_to_exclude=False)
     if not raw_incident:
         raise DemistoException(f'Incident {incident_id} is not found')
     if isinstance(raw_incident, list):
@@ -1192,7 +1196,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    fields_to_exclude = params.get('exclude_fields', True)
+    fields_to_exclude = argToBoolean(params.get('exclude_fields'))
 
     try:
         timeout = int(params.get('timeout', 120))
