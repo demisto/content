@@ -12,7 +12,7 @@ Every method needs different parameters as show in the following:
     - set name (comma separated value)
 
 
-* SAML authentication (advanced settings)
+* SAML authentication (advanced settings) currently supported only via Okta.
     - url: `https://login.epm.cyberark.com/SAML/Logon`
     - username
     - password
