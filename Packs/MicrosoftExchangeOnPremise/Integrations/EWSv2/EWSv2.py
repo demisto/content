@@ -1,6 +1,5 @@
 import email
 import hashlib
-import subprocess
 from multiprocessing import Process
 
 import dateparser  # type: ignore
@@ -1802,7 +1801,6 @@ def get_cs_status(search_name, status):  # pragma: no cover
             'EWS.ComplianceSearch(val.Name === obj.Name)': {'Name': search_name, 'Status': status}
         }
     }
-
 
 
 def get_autodiscovery_config():  # pragma: no cover
