@@ -7,6 +7,7 @@ import abc
 import dateparser
 from datetime import datetime, timedelta
 from typing import Dict, Any, Collection, Set, Optional, Tuple, Union, Callable
+from typing_extensions import TypeAlias
 import urllib3
 
 # Disable insecure warnings
@@ -247,6 +248,8 @@ DEVICE_VULNERABILITY_FIELDS = {
 
 INCIDENT_TIMESTAMP_FIELD = "device_alert_updated_time"
 
+QueryFilterType: TypeAlias = Dict[str, Any]
+
 
 ''' CLIENT CLASS '''
 
@@ -266,7 +269,7 @@ class Client(BaseClient):
         paginated_getter_func: Callable,
         items_name: str,
         fields: Collection[str],
-        filter_by: Optional[Dict[str, Any]] = None,
+        filter_by: Optional[QueryFilterType] = None,
         sort_by: Optional[List[Dict]] = None,
         stop_after: Optional[int] = None,
         start_from: Optional[int] = None,
@@ -291,7 +294,7 @@ class Client(BaseClient):
     def get_device_alert_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[Dict[str, Any]] = None,
+        filter_by: Optional[QueryFilterType] = None,
         offset: int = 0,
         limit: int = DEFAULT_REQUEST_LIMIT,
         sort_by: Optional[List[Dict]] = None,
@@ -307,7 +310,7 @@ class Client(BaseClient):
     def get_device_vulnerability_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[Dict[str, Any]] = None,
+        filter_by: Optional[QueryFilterType] = None,
         offset: int = 0,
         limit: int = DEFAULT_REQUEST_LIMIT,
         sort_by: Optional[List[Dict]] = None,
@@ -323,7 +326,7 @@ class Client(BaseClient):
     def force_get_all_device_vulnerability_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[Dict[str, Any]] = None,
+        filter_by: Optional[QueryFilterType] = None,
         sort_by: Optional[List[Dict]] = None,
         stop_after: Optional[int] = None,
         start_from: Optional[int] = None,
@@ -341,7 +344,7 @@ class Client(BaseClient):
     def force_get_all_device_alert_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[Dict[str, Any]] = None,
+        filter_by: Optional[QueryFilterType] = None,
         sort_by: Optional[List[Dict]] = None,
         stop_after: Optional[int] = None,
         start_from: Optional[int] = None,
@@ -398,20 +401,20 @@ def _simple_filter(field: str, operation: str, value: Any):
     return {"field": field, "operation": operation, "value": value}
 
 
-def _build_alert_types_filter(alert_types: List[str]) -> Dict[str, Any]:
+def _build_alert_types_filter(alert_types: List[str]) -> QueryFilterType:
     return _simple_filter("alert_type_name", "in", [at.strip() for at in alert_types])
 
 
-def _compound_filter(op: str, *filters: Optional[Dict]) -> Optional[Dict[str, Any]]:
+def _compound_filter(op: str, *filters: Optional[Dict]) -> Optional[QueryFilterType]:
     filters = [f for f in filters if f]
     return None if not filters else filters[0] if len(filters) == 1 else {"operation": op, "operands": filters}
 
 
-def _and(*filters: Optional[Dict]) -> Optional[Dict[str, Any]]:
+def _and(*filters: Optional[Dict]) -> Optional[QueryFilterType]:
     return _compound_filter("and", *filters)
 
 
-def _or(*filters: Optional[Dict]) -> Optional[Dict[str, Any]]:
+def _or(*filters: Optional[Dict]) -> Optional[QueryFilterType]:
     return _compound_filter("or", *filters)
 
 
@@ -470,6 +473,10 @@ class XDomeCommand(abc.ABC):
         ...
 
     @classmethod
+    def _constant_filter(cls) -> Optional[QueryFilterType]:
+        return None
+
+    @classmethod
     def exclude_retired_filter(cls):
         return _simple_filter(cls.retired_field_name, "in", [False])
 
@@ -497,11 +504,11 @@ class XDomeCommand(abc.ABC):
         parsed_fields = [field.strip() for field in raw_fields.split(",")]
         return self.all_fields() if "all" in parsed_fields else parsed_fields
 
-    def _parse_filter_by(self, raw_filter_by: Optional[str]) -> Dict[str, Any]:
+    def _parse_filter_by(self, raw_filter_by: Optional[str]) -> QueryFilterType:
         """parse the raw filter input and make sure to always exclude retired devices"""
         if raw_filter_by:
             filter_by = json.loads(raw_filter_by)
-            filter_by = _and(filter_by, self.exclude_retired_filter())
+            filter_by = _and(filter_by, self.exclude_retired_filter(), self._constant_filter())
             assert filter_by
             return filter_by
         else:
@@ -552,6 +559,10 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
     @classmethod
     def all_fields(cls) -> Set[str]:
         return DEVICE_VULNERABILITY_FIELDS
+
+    @classmethod
+    def _constant_filter(cls) -> Optional[QueryFilterType]:
+        return _simple_filter("vulnerability_relevance", "in", ["Confirmed", "Potentially Relevant"])
 
     def _get_data(self) -> List:
         return self._client.force_get_all_device_vulnerability_relations(
