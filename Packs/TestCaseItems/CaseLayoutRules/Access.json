@@ -3,7 +3,7 @@
   "layout_id": "Access",
   "description": "",
   "rule_name": "Access Layout Rule",
-  "alerts_filter": {
+  "incidents_filter": {
     "filter": {
       "AND": [
         {
