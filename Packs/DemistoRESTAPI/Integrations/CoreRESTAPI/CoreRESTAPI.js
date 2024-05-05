@@ -121,6 +121,7 @@ sendMultipart = function (uri, entryID, body) {
         );
         tries++;
     } while (tries < 3 && res.Status.startsWith('timeout while waiting for answer'));
+    logDebug("Ran httpMultipart() " + tries + " time(s)")
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
         throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
