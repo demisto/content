@@ -14,10 +14,7 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {},
-    "githubUser": [
-        "matslofva",
-        "duchatran"
-    ],
+    "githubUser": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
