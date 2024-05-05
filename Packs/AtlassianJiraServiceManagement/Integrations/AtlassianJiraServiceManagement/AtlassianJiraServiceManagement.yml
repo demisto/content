@@ -208,6 +208,62 @@ script:
       - contextPath: JiraAsset.Attribute.Position
         description: The position of the attribute in relation to other object attributes.
         type: Number
+  - arguments:
+      - description: The object type for which a new object will be created.
+        name: object_type_id
+        required: true
+      - description: 'PROVIDE THIS FIELD IF attributes_json IS NOT PROVIDED. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can the command `jira-asset-object-type-attribute-list` to retrieve the list of available attributes.'
+        name: attributes
+      - description: PROVIDE THIS FIELD IF attributes IS NOT PROVIDED. A json string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the command `jira-asset-object-type-attribute-list` to retrieve the list of available attributes.
+        name: attributes_json
+    name: jira-asset-object-create
+    description: Create a new object with the specified object type id. Either attributes or attributes_json must be provided.
+    outputs:
+      - contextPath: JiraAsset.Object.ID
+        description: Id of the newly created object
+        type: Number
+      - contextPath: JiraAsset.Object.Label
+        description: The value of the attribute that is marked as Label for this object type
+        type: String
+      - contextPath: JiraAsset.Object.ObjectKey
+        description: The auto-generated object key.
+        type: String
+      - contextPath: JiraAsset.Object.Avatar.url16
+        description: The icon for the new object in size 16.
+        type: String
+      - contextPath: JiraAsset.Object.Avatar.url48
+        description: The icon for the new object in size 48.
+        type: String
+      - contextPath: JiraAsset.Object.Avatar.url72
+        description: The icon for the new object in size 72.
+        type: String
+      - contextPath: JiraAsset.Object.Avatar.url144
+        description: The icon for the new object in size 144.
+        type: String
+      - contextPath: JiraAsset.Object.Avatar.url288
+        description: The icon for the new object in size 288.
+        type: String
+      - contextPath: JiraAsset.Object.Avatar.objectId
+        description: Id of the newly created object.
+        type: Number
+      - contextPath: JiraAsset.Object.Created
+        description: The date in which this object was created.
+        type: Date
+      - contextPath: JiraAsset.Object.Updated
+        description: The date in which this object was last updated.
+        type: Date
+      - contextPath: JiraAsset.Object.HasAvatar
+        description: Does this object has an Avatar.
+        type: Boolean
+      - contextPath: JiraAsset.Object.Timestamp
+        description: Epoch version of the object's creation date.
+        type: Date
+      - contextPath: JiraAsset.Object.Links.self
+        description: The link to view this object in Jira  web app.
+        type: String
+      - contextPath: JiraAsset.Object.Name
+        description: The name of the newly created object.
+        type: String
   runonce: false
   script: '-'
   type: python

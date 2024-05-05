@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -52,6 +54,13 @@ class Client(BaseClient):
             method='GET',
             url_suffix=url_suffix,
             params=params
+        )
+
+    def create_object(self, json_data):
+        return self._http_request(
+            method='POST',
+            url_suffix='/object/create',
+            json_data=json_data
         )
 
     def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
@@ -129,6 +138,18 @@ def clean_object_attributes(attributes: List[Dict[str, any]]) -> List[Dict[str, 
     return [{k: v for k, v in attribute.items() if k != 'ObjectType'} for attribute in string_typed_attributes]
 
 
+def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]:
+    result = []
+    for attribute_id, values in attributes.items():
+        attribute_dict = {
+            "objectTypeAttributeId": attribute_id,
+            "objectAttributeValues": [{"value": value} for value in values]
+        }
+        result.append(attribute_dict)
+    return result
+
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -172,23 +193,11 @@ def jira_asset_get_workspace_command(args: dict[str, Any], params: dict[str, Any
 
 
 def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    # page = args.get('page')
-    # page_size = int(args.get('page_size', 50))
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
     res = client.http_get('objectschema/list')
     object_schemas = res.get('objectschemas', [])
     key_mapping = {'id': 'ID', 'objectSchemaKey': 'Key'}
-
-    # if page:
-    #     page = int(page)
-    #     if page < 1 or (page - 1) * page_size >= len(object_schemas):
-    #         raise ValueError("Invalid page_number. Page does not exist.")
-    #     start_index = (page - 1) * page_size
-    #     end_index = min(start_index + page_size, len(object_schemas))
-    #
-    #     # Retrieve elements for the specified page
-    #     object_schemas = object_schemas[start_index:end_index]
 
     if not all_results:
         limit = int(limit)
@@ -271,6 +280,35 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
         readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers)
     )
 
+def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_type_id = args.get('object_type_id')
+    attributes = args.get('attributes')
+    attributes_json = args.get('attributes_json')
+
+    if not attributes and not attributes_json:
+        raise ValueError('Either attributes or attributes_json must be provided.')
+    elif attributes and attributes_json:
+        raise ValueError('Only one of attributes or attributes_json must be provided.')
+
+    if attributes:
+        converted_attributes = convert_attributes(json.loads(attributes))
+    else:
+        converted_attributes = json.loads(attributes_json).get('attributes')
+
+    json_data = {
+        'objectTypeId': object_type_id,
+        'attributes': converted_attributes
+    }
+    res = client.create_object(json_data)
+    created_object = convert_keys_to_pascal([res], {'id': 'ID'})
+    outputs = [{k: v for k, v in obj_field.items() if k != 'ObjectType'} for obj_field in created_object]
+    object_id = res.get('id')
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
+        readable_output=f'Object created successfully with ID: {object_id}'
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -316,6 +354,10 @@ def main() -> None:
 
         if command == 'jira-asset-object-type-attribute-list':
             result = jira_asset_object_type_attribute_list_command(client, args)
+            return_results(result)
+
+        if command == 'jira-asset-object-create':
+            result = jira_asset_object_create_command(client, args)
             return_results(result)
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
