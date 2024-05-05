@@ -11,7 +11,7 @@ There are two application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-In order to use Cortex XSOAR application and allow us access to O365 Outlook Mail Single User, you need to approve our app, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-mail-listener).
+To use the **Cortex XSOAR application** and allow Cortex XSOAR access to O365 Outlook Mail Single User, an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-mail-listener)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 
 ### Authentication Based on Azure Managed Identities

@@ -253,7 +253,44 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[Any] | None:
+    """"
+    Parsing xsoar fields to xdr from multiple fields value or a single value.
+    Args:
+        ioc (dict): the IOC dict.
+        comment_field_name (list[str] | str): the name of the comment field(s) to parse.
+        comments_as_tags (bool): whether to return comments as XDR tags rather than notes.
+
+    Returns:
+        A list with the parsed comment(s) joined by commas if multiple comment fields were provided,
+        otherwise the parsed comment from the single provided field.
+        Returns None if no comments were found.
+    """
+    # parse comments from multiple fields if specified as list
+    if isinstance(comment_field_name, list):
+        comments = []
+        for field in comment_field_name:
+            parsing = parse_demisto_single_comments(ioc, field, comments_as_tags)
+            if parsing:
+                comments.extend(parsing)
+        return [', '.join(comments)]
+
+    # else return single field
+    return parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
+
+
+def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[str] | None:
+    """"
+    Parsing xsoar fields to xdr from a single value.
+    Args:
+        ioc (dict): the IOC dict.
+        comment_field_name (list[str] | str): the name of the comment field(s) to parse.
+        comments_as_tags (bool): whether to return comments as XDR tags rather than notes.
+
+    Returns:
+        The parsed comment from the single provided field.
+        Returns None if no comments were found.
+    """
     if comment_field_name == 'comments':
         if comments_as_tags:
             raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
@@ -266,6 +303,12 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
         if not last_comment_dict or not (comment := last_comment_dict.get('content')):
             return None
         return [comment]
+
+    elif comment_field_name == 'indicator_link':
+        # parse indicator link into comments field
+        if is_xsoar_saas():
+            return [f'{demisto.demistoUrls().get("server")}/indicator/{ioc.get("id")}']
+        return [f'{demisto.demistoUrls().get("server")}/#/indicator/{ioc.get("id")}']
 
     else:  # custom comments field
         if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
@@ -291,8 +334,9 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
             xdr_ioc['reliability'] = aggregated_reliability[0]
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
-        if (comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
-                                               comments_as_tags=Client.comments_as_tags)):
+
+        if comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
+                                              comments_as_tags=Client.comments_as_tags):
             xdr_ioc['comment'] = comment
 
         custom_fields = ioc.get('CustomFields', {})

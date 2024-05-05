@@ -286,7 +286,7 @@ def base_dn_verified(base_dn):
     # search AD with a simple query to test base DN is configured correctly
     try:
         search(
-            "(objectClass=user)",
+            "(objectClass=*)",
             base_dn,
             size_limit=1
         )
@@ -399,7 +399,11 @@ def get_user_dn_by_email(default_base_dn, email):
 
 def modify_user_ou(dn, new_ou):
     assert connection is not None
-    cn = dn.split(',', 1)[0]
+    cn = dn.split(',OU=', 1)[0]
+    cn = cn.split(',DC=', 1)[0]
+    # removing // to fix customers bug
+    cn = cn.replace('\\', '')
+    dn = dn.replace('\\', '')
 
     success = connection.modify_dn(dn, cn, new_superior=new_ou)
     return success
@@ -1593,7 +1597,7 @@ def add_member_to_group(default_base_dn):
     if not success:
         raise Exception("Failed to add {} to group {}".format(
             args.get('username') or args.get('computer-name'),
-            args.get('group_name')
+            args.get('group-cn')
         ))
 
     demisto_entry = {
@@ -1630,7 +1634,7 @@ def remove_member_from_group(default_base_dn):
     if not success:
         raise Exception("Failed to remove {} from group {}".format(
             args.get('username') or args.get('computer-name'),
-            args.get('group_name')
+            args.get('group-cn')
         ))
 
     demisto_entry = {

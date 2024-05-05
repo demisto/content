@@ -43,6 +43,8 @@ args:
   description: The GUID of the scheduled entry that runs the polling command.
 - name: endTime
   description: The time to end the polling.
+- name: extractMode
+  description: Extraction mode for subsequent runs of the command.
 scripttarget: 0
 tests:
 - Generic Polling Test

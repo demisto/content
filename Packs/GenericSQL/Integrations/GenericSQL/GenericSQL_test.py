@@ -239,6 +239,46 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
+@pytest.mark.parametrize('use_ldap, expected_url', [
+    pytest.param(True, "teradatasql://username:password@host:/?logmech=LDAP", id="LDAP"),
+    pytest.param(False, "teradatasql://host:/?user=username&password=password", id="Username & Password"),
+])
+def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    - The use_ldap parameter
+    When
+    - Executing _create_engine_url_for_teradata client's method
+    Then
+    - Ensure the engine url is generated correctly according to use_ldap
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
+           database='', ssl_connect=False, use_ldap=use_ldap)
+    assert mock_create_engine.mock_calls[0][1][0] == expected_url
+
+
+@pytest.mark.parametrize('dialect, expected_port', [
+    ("Microsoft SQL Server", "1433"),
+    ("ODBC Driver 18 for SQL Server", "1433"),
+    ("Teradata", "1025"),
+    ("DB_NOT_EXIST", None),
+])
+def test_generate_default_port_by_dialect(dialect: str, expected_port: str):
+    """
+    Given
+    - a dialect (DB)
+    When
+    - Executing generate_default_port_by_dialect() function
+    Then
+    - Ensure the right port is generated or None in case of DB not found
+    """
+
+    assert generate_default_port_by_dialect(dialect) == expected_port
+
+
 def test_sql_queries_with_empty_table(mocker):
     """Unit test
     Given
@@ -255,6 +295,7 @@ def test_sql_queries_with_empty_table(mocker):
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = sql_query_execute(client, ARGS3)
     assert result[1] == EMPTY_OUTPUT  # entry context is found in the 2nd place in the result of the command
+    assert result[2] == []  # just ensuring a valid table is returned
 
 
 def test_mysql_integration():
@@ -272,7 +313,9 @@ def test_mysql_integration():
     if not host:
         pytest.skip('Skipping mysql integration test as MYSQL_HOST is not set')
     dialect = 'MySQL'
-    client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False, True)
+    port = generate_default_port_by_dialect(dialect)
+    assert port is not None
+    client = Client(dialect, host, 'root', 'password', port, 'mysql', "", False, True)
     res = client.sql_query_execute_request('show processlist', {})
     assert len(res) >= 1
 

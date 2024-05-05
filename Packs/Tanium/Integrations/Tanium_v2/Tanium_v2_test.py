@@ -4,7 +4,7 @@ import json
 
 
 def get_fetch_data():
-    with open('test_data/action_results.json', 'r') as f:
+    with open('test_data/action_results.json') as f:
         return json.loads(f.read())
 
 

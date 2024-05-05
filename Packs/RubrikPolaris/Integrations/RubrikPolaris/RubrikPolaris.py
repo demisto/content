@@ -20,6 +20,7 @@ INTEGRATION_NAME = "Rubrik Radar"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 HUMAN_READABLE_DATE_TIME_FORMAT = "%b %d, %Y at %I:%M:%S %p"
+USER_ACCESS_HYPERLINK = "{}sonar/user_intelligence?redirected_user_id={}"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
@@ -42,7 +43,7 @@ DEFAULT_EVENT_SORT_ORDER = "DESC"
 DEFAULT_SHOW_CLUSTER_SLA_ONLY = "True"
 DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
-DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version(pack_name='Rubrik Polaris') or '1.2.0'}"
+DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version(pack_name='') or '1.2.0'}"
 DEFAULT_PRINCIPAL_SUMMARY_CATEGORY = "USERS_WITH_SENSITIVE_ACCESS"
 SCAN_ID = "Scan ID"
 SNAPSHOT_ID = "Snapshot ID"
@@ -55,6 +56,8 @@ FREE_SPACE = "Free Space"
 SLA_DOMAIN_NAME = "SLA Domain Name"
 SNAPSHOT_IDS = "Snapshot IDs"
 OBJECT_TYPE = "Object Type"
+FILESET_OBJECT_TYPE = "FILESET"
+VOLUME_GROUP_OBJECT_TYPE = "VOLUMEGROUP"
 CLUSTER_NAME = "Cluster Name"
 SNAPPABLE_ID = "Snappable ID"
 SLA_DOMAIN = "SLA Domain"
@@ -63,6 +66,19 @@ OBJECT_ID = "Object ID"
 FILE_NAME = "File Name"
 FILE_SIZE = "File Size in Bytes"
 FILE_PATH = "File Path"
+SUSPICIOUS_ACTIVITY = "Suspicious Activity"
+ANOMALY_ID = "Anomaly ID"
+IS_ANOMALY = "Is Anomaly"
+ANOMALY_PROBABILITY = "Anomaly Probability"
+SEVERITY = "Severity"
+ENCRYPTION = "Encryption"
+ANOMALY_TYPE = "Anomaly Type"
+TOTAL_SUSPICIOUS_FILES = "Total Suspicious Files"
+TOTAL_RANSOMEWARE_NOTE = "Total Ransomware Note"
+DETECTION_TIME = "Detection Time"
+SNAPSHOT_TIME = "Snapshot Time"
+RANSOMEWARE_NOTE = "Ransomware Note"
+RANSOMEWARE_ENCRYPTION = "Ransomware Encryption"
 ACCESS_TYPE = "Access Type"
 USER_ID = "User ID"
 USER_FULL_NAME = "User Full Name"
@@ -92,6 +108,7 @@ MAXIMUM_PAGINATION_LIMIT = 1000
 
 MESSAGES = {
     'NO_RECORDS_FOUND': "No {} were found for the given argument(s).",
+    'NO_RECORD_FOUND': "No {} was found for the given argument(s).",
     'NEXT_RECORD': "Note: To retrieve the next set of results use, \"next_page_token\" =",
     'NEXT_PAGE_TOKEN': ('Note: To retrieve the next set of results, use **next_page_token** = "{}".'
                         '\nIf **next_page_token** is provided, then it will reset the record numbers. '
@@ -134,6 +151,7 @@ OUTPUT_PREFIX = {
     "PAGE_TOKEN_USER_ACCESS": "RubrikPolaris.PageToken.UserAccess",
     "FILE_CONTEXT": "RubrikPolaris.FileContext",
     "PAGE_TOKEN_FILE_CONTEXT": "RubrikPolaris.PageToken.FileContext",
+    "SUSPICIOUS_FILE": "RubrikPolaris.SuspiciousFile",
 }
 
 ERROR_MESSAGES = {
@@ -524,6 +542,104 @@ fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
   }
   __typename
 }"""
+
+SNAPPABLE_INVESTIGATIONS_QUERY = """query SnappableInvestigationsQuery($id: UUID!) {
+  snapshot(snapshotFid: $id) {
+    date
+    cluster {
+      id
+      defaultAddress
+      systemStatusAffectedNodes {
+        ipAddress
+      }
+      name
+      version
+      status
+      __typename
+    }
+    snappableNew {
+      objectType
+    }
+    cdmId
+    isQuarantined
+    __typename
+  }
+}"""
+
+ANOMALY_RESULT_QUERY = """query AnomalyResultQuery(
+    $clusterUuid: UUID!, $snapshotId: String!) {
+  anomalyResultOpt(clusterUuid: $clusterUuid, snapshotId: $snapshotId) {
+    id
+    snapshotFid
+    managedId
+    anomalyProbability
+    workloadId
+    location
+    isAnomaly
+    objectType
+    severity
+    detectionTime
+    snapshotDate
+    encryption
+    anomalyInfo {
+      strainAnalysisInfo {
+        strainId
+        totalAffectedFiles
+        totalRansomwareNotes
+        sampleAffectedFilesInfo {
+          filePath
+          lastModified
+          fileSizeBytes
+          __typename
+        }
+        sampleRansomwareNoteFilesInfo {
+          filePath
+          lastModified
+          fileSizeBytes
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+FILESET_DOWNLOAD_SNAPSHOT_FILES_MUTATION = """mutation PhysicalHostDownloadSnapshotFilesMutation(
+    $config: FilesetDownloadFilesJobConfigInput!,
+    $id: String!, $deltaTypeFilter: [DeltaType!],
+    $nextSnapshotFid: UUID,
+    $userNote: String) {
+  filesetDownloadSnapshotFiles(
+    input: {config: $config, id: $id, deltaTypeFilter: $deltaTypeFilter, nextSnapshotFid: $nextSnapshotFid, userNote: $userNote}
+  ) {
+    id
+    status
+    links {
+      href
+      rel
+      __typename
+    }
+    __typename
+  }
+}"""
+
+VOLUME_GROUP_DOWNLOAD_SNAPSHOT_FILES_MUTATION = """mutation RadarInvestigationVGDownloadFilesMutation(
+    $input: DownloadVolumeGroupSnapshotFilesInput!) {
+  downloadVolumeGroupSnapshotFiles(input: $input) {
+    id
+    status
+    links {
+      href
+      rel
+      __typename
+    }
+    __typename
+  }
+}
+"""
 
 
 class MyClient(PolarisClient):
@@ -1441,8 +1557,8 @@ def prepare_context_hr_async_result(response, request_id, ip_address):
         link = data.get('href', '')
         rel = data.get('rel', '')
         if "DOWNLOAD_SNAPPABLE_FILE" in request_id and response.get('status') == "SUCCEEDED" and rel == "result":
-            link = f"https://{ip_address}/" + link
-        hyper_link += f"[{rel}]({link})\n"
+            link = urljoin(f"https://{ip_address}", link)
+        hyper_link += f"[{rel}]({urllib3.util.parse_url(link)})\n"
     hr = {
         "ID": response.get("id"),
         "Status": response.get('status'),
@@ -1662,7 +1778,7 @@ def prepare_context_hr_ioc_scan_list(data: list):
 
 
 def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results: bool, user_email: str,
-                                        page_number: int = 1, limit: int = DEFAULT_LIMIT
+                                        base_url: str, page_number: int = 1, limit: int = DEFAULT_LIMIT
                                         ) -> tuple[list[dict], str, int, set[str]]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-list command.
@@ -1675,6 +1791,9 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
 
     :type user_email: ``str``
     :param user_email: User email or user principal name.
+
+    :type base_url: ``str``
+    :param base_url: Base URL of the platform.
 
     :type page_number: ``int``
     :param page_number: The current page number.
@@ -1722,8 +1841,9 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
             if isinstance(file_count, dict):
                 total_sensitive_files += file_count.get(sensitive_files_key) or 0
 
+        user_id = node.get('principalId')
         hr_content.append({
-            USER_ID: node.get('principalId'),
+            USER_ID: f"[{user_id}]({USER_ACCESS_HYPERLINK.format(base_url, user_id)})",
             USER_FULL_NAME: node.get('fullName'),
             USER_PRINCIPAL_NAME: re.escape(node.get('upn') or ''),
             RISK_LEVEL: node.get('riskLevel'),
@@ -1750,7 +1870,7 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
     return context, hr, pages, risk_levels
 
 
-def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list,
+def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list, base_url: str,
                                        include_whitelisted_results: bool) -> tuple[list, str, str]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-get command.
@@ -1760,6 +1880,9 @@ def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_cont
 
     :type policy_hits_context: ``list``
     :param policy_hits_context: Summary of the policy hits for the user.
+
+    :type base_url: ``str``
+    :param base_url: Base URL of the platform.
 
     :type include_whitelisted_results: ``bool``
     :param include_whitelisted_results: Include whitelisted results in the API response.
@@ -1792,8 +1915,9 @@ def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_cont
     access_risk_reasons = principal_summary.get('riskReasons', {}).get('accessRiskReasons', [])
     insecure_reasons = principal_summary.get('riskReasons', {}).get('insecureReasons', [])
 
+    user_id = principal_summary.get('principalId')
     access_hr_content.append({
-        USER_ID: principal_summary.get('principalId'),
+        USER_ID: f"[{user_id}]({USER_ACCESS_HYPERLINK.format(base_url, user_id)})",
         USER_FULL_NAME: principal_summary.get('fullName'),
         USER_PRINCIPAL_NAME: re.escape(principal_summary.get('upn') or ''),
         RISK_LEVEL: principal_summary.get('riskLevel'),
@@ -1883,6 +2007,89 @@ def prepare_context_hr_file_context_list(edges: list, include_whitelisted_result
         removeNull=True)
 
     return context, hr
+
+
+def prepare_context_hr_suspicious_file_list(snappable_investigations_data: dict, suspicious_file_data: dict) -> \
+        tuple[dict, str]:
+    """
+    Prepare context output and human-readable response for rubrik-radar-suspicious-file-list command.
+
+    :type snappable_investigations_data: ``dict``
+    :param snappable_investigations_data: Snappable investigations response received from the API.
+
+    :type suspicious_file_data: ``dict``
+    :param suspicious_file_data: Suspicious file data response received from the API.
+
+    :return: Context output and human-readable for the command.
+    """
+    context = {}
+    anomaly_information_hr_content = []
+    suspicious_file_hr_content = []
+    snappable_investigations_data = remove_empty_elements(snappable_investigations_data)
+    suspicious_file_data = remove_empty_elements(suspicious_file_data)
+    context.update(suspicious_file_data)
+    cluster_data = snappable_investigations_data.get("cluster", {})
+    if cluster_data:
+        context["cluster"] = cluster_data
+    snapshot_cdm_id = snappable_investigations_data.get("cdmId")
+    if snapshot_cdm_id:
+        context["cdmId"] = snapshot_cdm_id
+    snappable_new = snappable_investigations_data.get("snappableNew", {})
+    if snappable_new:
+        context["snappableNew"] = snappable_new
+
+    anomaly_information = {
+        ANOMALY_ID: context.get("id"),
+        IS_ANOMALY: context.get("isAnomaly"),
+        ANOMALY_PROBABILITY: context.get("anomalyProbability"),
+        SEVERITY: context.get("severity"),
+        ENCRYPTION: context.get("encryption"),
+        DETECTION_TIME: context.get("detectionTime"),
+        SNAPSHOT_TIME: context.get("snapshotDate")
+    }
+
+    anomaly_info_list: list = context.get("anomalyInfo", {}).get("strainAnalysisInfo", [])
+    if not anomaly_info_list or not isinstance(anomaly_info_list, list):
+        anomaly_information_hr_content.append(anomaly_information)
+    else:
+        anomaly_info: dict = anomaly_info_list[0]
+        anomaly_information.update({
+            ANOMALY_TYPE: anomaly_info.get("strainId"),
+            TOTAL_SUSPICIOUS_FILES: anomaly_info.get("totalAffectedFiles"),
+            TOTAL_RANSOMEWARE_NOTE: anomaly_info.get("totalRansomwareNotes"),
+        })
+        anomaly_information_hr_content.append(anomaly_information)
+        affected_files: list = anomaly_info.get("sampleAffectedFilesInfo", [])
+        ransomeware_note_files: list = anomaly_info.get("sampleRansomwareNoteFilesInfo", [])
+        if affected_files and isinstance(affected_files, list):
+            for affected_file in affected_files:
+                suspicious_file = {
+                    FILE_PATH: affected_file.get("filePath"),
+                    SUSPICIOUS_ACTIVITY: RANSOMEWARE_ENCRYPTION,
+                    FILE_SIZE: affected_file.get("fileSizeBytes"),
+                    LAST_MODIFIED_TIME: affected_file.get("lastModified"),
+                }
+                suspicious_file_hr_content.append(suspicious_file)
+        if ransomeware_note_files and isinstance(ransomeware_note_files, list):
+            for ransomeware_note_file in ransomeware_note_files:
+                suspicious_file = {
+                    FILE_PATH: ransomeware_note_file.get("filePath"),
+                    SUSPICIOUS_ACTIVITY: RANSOMEWARE_NOTE,
+                    FILE_SIZE: ransomeware_note_file.get("fileSizeBytes"),
+                    LAST_MODIFIED_TIME: ransomeware_note_file.get("lastModified"),
+                }
+                suspicious_file_hr_content.append(suspicious_file)
+
+    anomaly_hr = tableToMarkdown("Anomaly Information", anomaly_information_hr_content,
+                                 headers=[ANOMALY_ID, IS_ANOMALY, ANOMALY_PROBABILITY, SEVERITY, ENCRYPTION,
+                                          ANOMALY_TYPE, TOTAL_SUSPICIOUS_FILES, TOTAL_RANSOMEWARE_NOTE, DETECTION_TIME,
+                                          SNAPSHOT_TIME], removeNull=True)
+
+    suspicious_file_hr = tableToMarkdown(
+        "Suspicious Files", suspicious_file_hr_content,
+        headers=[FILE_PATH, SUSPICIOUS_ACTIVITY, FILE_SIZE, LAST_MODIFIED_TIME], removeNull=True)
+
+    return context, f"{anomaly_hr}\n\n{suspicious_file_hr}"
 
 
 ''' COMMAND FUNCTIONS '''
@@ -2877,11 +3084,38 @@ def rubrik_gps_snapshot_files_download_command(client: PolarisClient, args: Dict
     :return: CommandResult object
     """
     snapshot_id = validate_required_arg("snapshot_id", args.get('snapshot_id'))
-    file_path = validate_required_arg("file_path", args.get('file_path'))
+    file_path = argToList(validate_required_arg("file_path", args.get('file_path')))
+    object_type: str = args.get('object_type', 'VmwareVm')
 
-    response = client.request_download_snapshot_files(snapshot_id=snapshot_id, paths=file_path)
+    parsed_object_type: str = object_type.upper().replace("_", "")
+    if parsed_object_type.find(FILESET_OBJECT_TYPE) != -1:
+        download_file_filters = {
+            "config": {
+                "sourceDirs": file_path
+            },
+            "id": snapshot_id
+        }
+        response = client._query_raw(raw_query=FILESET_DOWNLOAD_SNAPSHOT_FILES_MUTATION,
+                                     operation_name="PhysicalHostDownloadSnapshotFilesMutation",
+                                     variables=download_file_filters, timeout=60)
+        data = response.get('data', {}).get('filesetDownloadSnapshotFiles', {})
+    elif parsed_object_type.find(VOLUME_GROUP_OBJECT_TYPE) != -1:
+        download_file_filters = {
+            "input": {
+                "config": {
+                    "paths": file_path
+                },
+                "id": snapshot_id
+            }
+        }
+        response = client._query_raw(raw_query=VOLUME_GROUP_DOWNLOAD_SNAPSHOT_FILES_MUTATION,
+                                     operation_name="RadarInvestigationVGDownloadFilesMutation",
+                                     variables=download_file_filters, timeout=60)
+        data = response.get('data', {}).get('downloadVolumeGroupSnapshotFiles', {})
+    else:
+        response = client.request_download_snapshot_files(snapshot_id=snapshot_id, paths=file_path)
+        data = response.get('data', {}).get('vsphereVmDownloadSnapshotFiles', {})
 
-    data = response.get('data', {}).get('vsphereVMDownloadSnapshotFiles', {})
     if not data:
         return CommandResults(readable_output=MESSAGES["NO_RESPONSE"])
 
@@ -3556,8 +3790,9 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
         return CommandResults(outputs=outputs, raw_response=response,
                               readable_output=MESSAGES["NO_RECORDS_FOUND"].format("user accesses"))
 
+    base_url = str(client._baseurl).removesuffix('api')
     context, hr, pages, risk_levels = prepare_context_hr_user_access_list(
-        edges, include_whitelisted_results, user_email, page_number, limit)  # type: ignore
+        edges, include_whitelisted_results, user_email, base_url, page_number, limit)  # type: ignore
 
     response["xsoar_risk_levels"] = list(risk_levels)
 
@@ -3641,8 +3876,9 @@ def rubrik_sonar_user_access_get_command(client: PolarisClient, args: Dict[str, 
     else:
         policy_hits_context: list = deepcopy(policy_hits_summaries[0].get('summary') or [])  # type: ignore
 
+    base_url = str(client._baseurl).removesuffix('api')
     access_context, access_hr, policy_hr = prepare_context_hr_user_access_get(principal_summary, policy_hits_context,
-                                                                              include_whitelisted_results)
+                                                                              base_url, include_whitelisted_results)
     outputs = {f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)": access_context}
 
     return CommandResults(outputs=outputs, raw_response=access_response, readable_output=f'{access_hr}\n\n{policy_hr}')
@@ -3723,6 +3959,57 @@ def rubrik_sonar_file_context_list_command(client: PolarisClient, args: Dict[str
     }
 
     return CommandResults(outputs=outputs, raw_response=response, readable_output=hr)
+
+
+def rubrik_radar_suspicious_file_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of suspicious files, based on the provided filters.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``dict``
+    :param args: Arguments for the command.
+
+    :return: CommandResult object.
+    """
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+
+    # Prepare filter for the SNAPPABLE_INVESTIGATIONS_QUERY.
+    snappable_investigations_filters = {"id": snapshot_id}
+
+    snappable_investigations_response = client._query_raw(raw_query=SNAPPABLE_INVESTIGATIONS_QUERY,
+                                                          operation_name="SnappableInvestigationsQuery",
+                                                          variables=snappable_investigations_filters, timeout=60)
+
+    snappable_investigations_data = snappable_investigations_response.get('data', {}).get('snapshot', {})
+    raw_response = deepcopy(snappable_investigations_response)
+    if not snappable_investigations_data:
+        return CommandResults(readable_output=MESSAGES["NO_RECORD_FOUND"].format("snapshot"),
+                              raw_response=snappable_investigations_response)
+
+    snapshot_cdm_id = snappable_investigations_data.get("cdmId", "")
+    cluster_id = snappable_investigations_data.get("cluster", {}).get("id", "")
+    if not snapshot_cdm_id or not cluster_id:
+        return CommandResults(readable_output=MESSAGES["NO_RECORD_FOUND"].format("snapshot"),
+                              raw_response=snappable_investigations_response)
+
+    # Prepare filter for the ANOMALY_RESULT_QUERY.
+    suspicious_file_filters = {"snapshotId": snapshot_cdm_id, "clusterUuid": cluster_id}
+
+    suspicious_file_response = client._query_raw(raw_query=ANOMALY_RESULT_QUERY, operation_name="AnomalyResultQuery",
+                                                 variables=suspicious_file_filters, timeout=60)
+    suspicious_file_data = suspicious_file_response.get('data', {}).get('anomalyResultOpt', {})
+    raw_response["data"]["anomalyResultOpt"] = deepcopy(suspicious_file_data)
+    if not suspicious_file_data:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("suspicious files"),
+                              raw_response=raw_response)
+
+    context, hr = prepare_context_hr_suspicious_file_list(snappable_investigations_data, suspicious_file_data)
+
+    outputs = {f"{OUTPUT_PREFIX['SUSPICIOUS_FILE']}(val.id == obj.id)": remove_empty_elements(context)}
+
+    return CommandResults(outputs=outputs, raw_response=raw_response, readable_output=hr)
 
 
 def trim_spaces_from_args(args):
@@ -3852,6 +4139,7 @@ def main() -> None:
                 "rubrik-sonar-user-access-list": rubrik_sonar_user_access_list_command,
                 "rubrik-sonar-user-access-get": rubrik_sonar_user_access_get_command,
                 "rubrik-sonar-file-context-list": rubrik_sonar_file_context_list_command,
+                "rubrik-radar-suspicious-file-list": rubrik_radar_suspicious_file_list_command,
             }
             if COMMAND_TO_FUNCTION.get(demisto.command()):
                 args = demisto.args()

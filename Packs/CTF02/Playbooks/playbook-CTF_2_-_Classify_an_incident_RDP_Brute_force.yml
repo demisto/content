@@ -503,7 +503,7 @@ tasks:
         label: ""
         labelarg:
           simple: |-
-            Based on the Campaign's Report Description, what was the year when this campaign was first seen?
+            Based on the Campaign's Report Description, what was the year when a banking trojan malware associated with this campaign was first seen?
             To answer - search for the report indicator type associated with that campaign
         required: false
         gridcolumns: []
