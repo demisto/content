@@ -249,8 +249,8 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 
     guid = args.get('guid')
     response = client.get_certificate_details(guid)
+    response['ID'] = response.get('Guid', '').strip('{}')  # add ID to response for backward compatible with V1
     readable_certificate_details = response.copy()
-    readable_certificate_details['ID'] = readable_certificate_details.get('Guid', '').strip('{}')
     if not readable_certificate_details['ID']:
         entries = []
     else:
