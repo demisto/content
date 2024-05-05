@@ -21,18 +21,23 @@ class Client(BaseClient):
         self,
         base_url: str,
         username: str,
-        password: str,
-        verify: bool,
-        proxy: bool,
+        password: str
+        # verify: bool,
+        # proxy: bool,
     ):
+        # super().__init__(
+        #     base_url=base_url, headers=HEADERS, verify=verify, proxy=proxy
+        # )
+        
         super().__init__(
-            base_url=base_url, headers=HEADERS, verify=verify, proxy=proxy
+            base_url=base_url
         )
+        
         self.username = username
         self.password = password
 
-        if not proxy:
-            self._session.trust_env = False  # TODO - need to check what this does
+        # if not proxy:
+        #     self._session.trust_env = False  # TODO - need to check what this does
 
         self._login()
 
@@ -42,11 +47,16 @@ class Client(BaseClient):
         This function must be called before any other API calls.
         Note: the session is automatically closed in BaseClient's __del__
         """
+        headers = {"Csrf-Token": "nocheck"}
+        data = {"username": self.username, "password": self.password}
+        
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
-            data={"username": self.username, "password": self.password},
+            headers=headers,
+            data=data,
         )
+
 
     def test_module_request(self):
         """
@@ -194,7 +204,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    username = params["credentials"]["identifier"]
+    username = params["credentials"]["identifier"] or params.get('userName')
     password = params["credentials"]["password"]
     base_url = params["url"].rstrip("/")
 
@@ -205,10 +215,10 @@ def main() -> None:
     try:
         client = Client(
             base_url,
-            verify=verify_certificate,
+            # verify=verify_certificate,
             username=username,
             password=password,
-            proxy=proxy,
+            # proxy=proxy,
         )
 
         demisto.debug(f"Command being called is {command}")
