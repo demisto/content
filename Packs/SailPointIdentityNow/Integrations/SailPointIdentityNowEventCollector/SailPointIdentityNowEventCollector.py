@@ -173,7 +173,7 @@ def fetch_events(client: Client, last_run: dict[str, str],
         Tuple with the next run data and the list of events fetched
     """
     all_events = []
-    while len(events) < max_events_per_fetch:
+    while max_events_per_fetch > 0:
         events = client.search_events(
             prev_id=last_run.get('prev_id', "0"),
             from_date=last_run.get('prev_date', DEFAULT_LOOKBACK),
@@ -189,7 +189,7 @@ def fetch_events(client: Client, last_run: dict[str, str],
         last_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
         max_events_per_fetch -= len(events)
         all_events.extend(events)
-        
+
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
     demisto.debug(f'Setting next run {next_run}.')
     return next_run, all_events
@@ -216,7 +216,7 @@ def add_time_and_status_to_events(events: List[Dict] | None)-> None:
             if modified:
                 modified = datetime.fromisoformat(modified)
 
-            event["_ENTRY_STATUS"] = "modified" if modified and created and modified < created else "new"
+            event["_ENTRY_STATUS"] = "modified" if modified and created and modified > created else "new"
             if created and modified and modified > created:
                 event['_time'] = modified.strftime(DATE_FORMAT)
             elif created:
