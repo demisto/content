@@ -1086,32 +1086,6 @@ def get_policy_request(policy_type='blockedsenders', policy_id=None):
     return response.get('data')
 
 
-# def list_policies_request(policy_type='blockedsenders'):
-#     # Setup required variables
-#     api_endpoints = {
-#         'blockedsenders': 'blockedsenders/get-policy',
-#         'antispoofing-bypass': 'antispoofing-bypass/get-policy',
-#         'address-alteration': 'address-alteration/get-policy',
-#     }
-#     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
-
-#     # data = []
-#     # if policy_id:
-#     #     data.append({
-#     #         'id': policy_id
-#     #     })
-#     # payload = {
-#     #     'data': data
-#     # }
-
-#     request_with_pagination_api2(api_endpoint)
-    
-#     response = http_request('POST', api_endpoint)
-#     if response.get('fail'):
-#         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
-#     return response.get('data')
-
-
 def get_arguments_for_policy_command(args):
     # type: (dict) -> tuple[dict, str]
     """

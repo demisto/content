@@ -260,9 +260,7 @@ script:
       required: true
     - description: According to this argument an endpoint is selected.
       name: policyType
-      required: true
       defaultValue: blockedsenders
-      type: string
       auto: PREDEFINED
       predefined:
       - blockedsenders
@@ -2337,9 +2335,7 @@ script:
     arguments:
     - name: policyType
       description: According to this argument an endpoint is selected.
-      required: true
       defaultValue: blockedsenders
-      # type: string
       auto: PREDEFINED
       predefined:
       - blockedsenders
