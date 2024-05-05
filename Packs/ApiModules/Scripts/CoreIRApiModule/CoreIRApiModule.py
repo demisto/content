@@ -154,7 +154,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
 
     
-    def _http_request(self, method, url_suffix='',  headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None,  headers=None, json_data=None,
                 params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                 error_handler=None, with_metrics=False, resp_type='json'):
         '''
@@ -165,7 +165,12 @@ class CoreClient(BaseClient):
 
             :type url_suffix: ``str``
             :param url_suffix: The API endpoint.
-
+            
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
 
             :type headers: ``dict``
             :param headers: Headers to send in the request. If None, will use self._headers.
@@ -190,7 +195,7 @@ class CoreClient(BaseClient):
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
         if not FORWARD_USER_RUN_RBAC:
-            return BaseClient._http_request(self, method=method, url_suffix=url_suffix, headers=headers,
+            return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                             json_data=json_data,params=params, data=data, timeout=timeout,
                                             raise_on_status=raise_on_status)
         try:
@@ -198,6 +203,7 @@ class CoreClient(BaseClient):
             address = urljoin(self._base_url, url_suffix)
             headers = headers if headers else self._headers
             data = json.dumps(json_data) if json_data else data
+            address = full_url if full_url else urljoin(self._base_url, url_suffix)
             response = demisto._apiCall(
                         method=method,
                         path=address,
