@@ -53,6 +53,8 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
+# This flag will indicate whether the command reputation (auto-enrichment) is called as auto-extract=inline.
+IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """

@@ -1348,3 +1348,11 @@ def setAssetsLastRun(obj):
 
 def getAssetsLastRun():
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
+
+
+def isTimeSensitive():
+    """
+    This function will indicate whether the command reputation (auto-enrichment) is called as auto-extract=inline.
+    So for default the function return False.
+    """
+    return False
