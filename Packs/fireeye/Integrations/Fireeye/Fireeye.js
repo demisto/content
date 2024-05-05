@@ -1,4 +1,3 @@
-
 server = params.server.replace(/[\/]+$/, '') + '/wsapis/v' + params.version + '/';
 
 commandDictionary = {
