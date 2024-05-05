@@ -41,6 +41,8 @@ class Client(BaseClient):
     def generate_token(self) -> str:
         """
         Generates an OAuth 2.0 token using client credentials.
+        Returns:
+            str: token
         """
         url = urljoin(self._base_url, "oauth/token")
         resp = self._http_request(
@@ -55,7 +57,7 @@ class Client(BaseClient):
         )
 
         token = resp.get('access_token')
-        now_timestamp = arg_to_datetime('now').timestamp()  
+        now_timestamp = arg_to_datetime('now').timestamp()
         expiration_time = now_timestamp + resp.get('expires_in')
 
         integration_context = get_integration_context()
@@ -93,6 +95,13 @@ class Client(BaseClient):
 
     def search_events(self, prev_id: str, from_date: str, limit: int| None = None) -> List[Dict]:
         """
+        Searches for events in SailPoint IdentityNow
+        Args:
+            prev_id: The id of the last event fetched
+            from_date: The date from which to fetch events
+            limit: Maximum number of events to fetch
+        Returns:
+            List of events
         """
         query = {"indices": ["events"],
         "queryType": "SAILPOINT",
@@ -109,6 +118,11 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     """
+    Tests API connectivity and authentication
+    Args:
+        client: Client object with the API client
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
 
     try:
@@ -128,6 +142,15 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client: Client, limit: int, from_date:str) -> tuple[List[Dict], CommandResults]:
+    """
+    Gets events from the SailPoint IdentityNow API
+    Args:
+        client: Client object with the API client
+        limit: Maximum number of events to fetch
+        from_date: The date from which to fetch events
+    Returns:
+        List of events and CommandResults object
+    """
     events = client.search_events(
         prev_id="0",
         from_date=from_date,
@@ -141,30 +164,46 @@ def fetch_events(client: Client, last_run: dict[str, str],
                 max_events_per_fetch: int
                  ) -> tuple[Dict, List[Dict]]:
     """
+    Fetches events from the SailPoint IdentityNow API
+    Args:
+        client: Client object with the API client
+        last_run: Dict containing the last run data
+        max_events_per_fetch: Maximum number of events to fetch per call
+    Returns:
+        Tuple with the next run data and the list of events fetched
     """
-    prev_id = last_run.get('prev_id', "0")
-    prev_date = last_run.get('prev_date', DEFAULT_LOOKBACK)
+    all_events = []
+    while len(events) < max_events_per_fetch:
+        events = client.search_events(
+            prev_id=last_run.get('prev_id', "0"),
+            from_date=last_run.get('prev_date', DEFAULT_LOOKBACK),
+            limit=max_events_per_fetch,
+        )
+        if not events:
+            break
+        last_fetched_id = events[-1].get('id')
+        last_fetched_creation_date = events[-1].get('created')
+        demisto.debug(f'Fetched event with id: {last_fetched_id} and creation date: {last_fetched_creation_date}.')
 
-    events = client.search_events(
-        prev_id=prev_id,
-        from_date=prev_date,
-        limit=max_events_per_fetch,
-    )
-    last_fetched_id = events[-1].get('id')
-    last_fetched_creation_date = events[-1].get('created')
-    demisto.debug(f'Fetched event with id: {last_fetched_id} and creation date: {last_fetched_creation_date}.')
-
-    # Save the next_run as a dict with the last_fetch key to be stored
+        last_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
+        max_events_per_fetch -= len(events)
+        all_events.extend(events)
+        
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
     demisto.debug(f'Setting next run {next_run}.')
-    return next_run, events
+    return next_run, all_events
 
 
 ''' MAIN FUNCTION '''
             
 
-def add_time_and_status_to_events(events: List[Dict] | None):
+def add_time_and_status_to_events(events: List[Dict] | None)-> None:
     """
+    Adds _time and _ENTRY_STATUS fields to events
+    Args:
+        events: List of events
+    Returns:
+        None
     """
     if events:
          for event in events:
@@ -198,7 +237,7 @@ def main() -> None:
     base_url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_events_per_fetch = params.get('max_events_per_fetch') or 50000      #TODO: max per call is 10,000, so how to handle this?
+    max_events_per_fetch = params.get('max_events_per_fetch') or 50000
 
     demisto.debug(f'Command being called is {command}')
     try:
