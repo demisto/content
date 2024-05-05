@@ -181,8 +181,9 @@ def fetch_events(client: Client, last_run: dict[str, str],
         )
         if not events:
             break
-        last_fetched_id = events[-1].get('id')
-        last_fetched_creation_date = events[-1].get('created')
+        last_fetched_event = events[-1]
+        last_fetched_id = last_fetched_event.get('id')
+        last_fetched_creation_date = last_fetched_event.get('created')
         demisto.debug(f'Fetched event with id: {last_fetched_id} and creation date: {last_fetched_creation_date}.')
 
         last_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
