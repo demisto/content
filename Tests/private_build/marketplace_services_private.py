@@ -198,7 +198,6 @@ class Pack:
         """
         self._is_siem = is_siem
 
-
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
         """ setter of pack current status.
@@ -506,7 +505,6 @@ class Pack:
         return Pack.organize_integration_images(
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
-
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
