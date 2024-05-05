@@ -26,7 +26,7 @@
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 
-### chatgpt-send-message
+### gpt-send-message
 ***
 Send a message as a prompt to the GPT model
 
@@ -44,7 +44,7 @@ Send a message as a prompt to the GPT model
 
 
 
-### chatgpt-check-email-body
+### gpt-check-email-body
 ***
 Check email body for possible security issues.
 
@@ -60,7 +60,7 @@ Check email body for possible security issues.
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
 | top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
 
-### chatgpt-check-email-header
+### gpt-check-email-header
 ***
 Check email body for possible security issues.
 
@@ -71,6 +71,22 @@ Check email body for possible security issues.
 | **Argument Name**      | **Description**                                                                                                                                             | **Required** |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | entryId                | Entry ID of an uploaded _.eml_ file from context window.                                                                                                    | Yes          | 
+| additionalInstructions | Provide additional instructions for the GPT model when analyzing the email headers.                                                                         | No           | 
+| max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
+| temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
+| top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
+
+
+### gpt-create-soc-email-template
+***
+Create an email template out of the conversation context to be sent from the SOC.
+
+`!gpt-create-soc-email-template`
+
+#### Input
+
+| **Argument Name**      | **Description**                                                                                                                                             | **Required** |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | additionalInstructions | Provide additional instructions for the GPT model when analyzing the email headers.                                                                         | No           | 
 | max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
