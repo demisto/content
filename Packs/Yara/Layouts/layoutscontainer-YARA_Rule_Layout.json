@@ -74,7 +74,7 @@
         ]
     },
     "group": "indicator",
-    "id": "YARA Rule Layout",
+    "id": "YARA Rule Layout_copy",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -192,7 +192,7 @@
                                 "endCol": 1,
                                 "height": 44,
                                 "id": "24524e01-e542-11ee-a45c-d1e6a9d22f67",
-                                "index": 7,
+                                "index": 8,
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
                                 "sectionItemType": "button",
@@ -208,7 +208,7 @@
                                 "endCol": 2,
                                 "height": 44,
                                 "id": "26319553-e542-11ee-a45c-d1e6a9d22f67",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
@@ -221,7 +221,7 @@
                         "name": "Basic Information",
                         "static": false,
                         "w": 1,
-                        "x": 1,
+                        "x": 0,
                         "y": 0
                     },
                     {
@@ -251,7 +251,7 @@
                     },
                     {
                         "displayType": "CARD",
-                        "h": 3,
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "default-main-3e678d00-e542-11ee-a45c-d1e6a9d22f67",
@@ -259,8 +259,8 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "description",
-                                "height": 106,
-                                "id": "4d9c5f80-e542-11ee-a45c-d1e6a9d22f67",
+                                "height": 22,
+                                "id": "5425e860-0aba-11ef-9a97-2be2aad58de7",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -272,18 +272,46 @@
                         "name": "Description",
                         "static": false,
                         "w": 1,
-                        "x": 0,
+                        "x": 1,
                         "y": 0
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideItemTitleOnlyOne": true,
+                        "columns": [
+                            {
+                                "displayName": "index",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "index",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 147
+                            },
+                            {
+                                "displayName": "String",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "string",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 150
+                            }
+                        ],
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": false,
                         "hideName": false,
                         "i": "default-main-5331d100-e542-11ee-a45c-d1e6a9d22f67",
                         "items": [
                             {
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "rulestrings",
                                 "height": 106,
                                 "id": "72750d20-e542-11ee-a45c-d1e6a9d22f67",
@@ -298,45 +326,20 @@
                         "name": "Strings",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "default-main-55347ed0-e542-11ee-a45c-d1e6a9d22f67",
-                        "items": [
-                            {
-                                "endCol": 4,
-                                "fieldId": "rulecondition",
-                                "height": 106,
-                                "id": "144977c0-e544-11ee-a45c-d1e6a9d22f67",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Condition",
-                        "static": false,
-                        "w": 2,
+                        "wrapLabels": true,
                         "x": 1,
-                        "y": 3
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 7,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "default-main-9d70c640-e542-11ee-a45c-d1e6a9d22f67",
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "rawrule",
                                 "height": 106,
                                 "id": "b02570b0-e542-11ee-a45c-d1e6a9d22f67",
@@ -351,9 +354,35 @@
                         "moved": false,
                         "name": "Raw",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-11085bd0-0aba-11ef-9a97-2be2aad58de7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "rulecondition",
+                                "height": 22,
+                                "id": "1d396430-0aba-11ef-9a97-2be2aad58de7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Rule Condition",
+                        "static": false,
+                        "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 6
                     }
                 ],
                 "type": "custom"
