@@ -17,7 +17,7 @@ metadata:
 EOF
 ```
 
-2. Create secret for the above service account
+2. Create secret for the above service account.
 ```
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -49,12 +49,12 @@ subjects:
 EOF
 ```
 
-4. Generate the service account token
+4. Generate the service account token.
 ```
 kubectl create token xsoar -n kube-system
 ```
 
-5. Copy the output token and paste it into the API field
+5. Copy the output token and paste it into the API field.
 
 ## Configure Ansible Kubernetes on Cortex XSOAR
 
