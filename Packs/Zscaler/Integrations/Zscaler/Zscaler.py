@@ -58,9 +58,6 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
     "zscaler-delete-ip-destination-groups",
 )
 
-IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
-demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
-
 """ HANDLE PROXY """
 # Remove proxy if not set to true in params
 handle_proxy()
