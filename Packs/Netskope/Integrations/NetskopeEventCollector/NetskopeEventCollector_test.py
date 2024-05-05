@@ -74,7 +74,8 @@ def test_get_all_events(requests_mock):
                     proxy=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     url_matcher = re.compile('https://netskope[.]example[.]com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
-    events, new_last_run = get_all_events(client, FIRST_LAST_RUN)
+    events = []
+    new_last_run = get_all_events(client, FIRST_LAST_RUN, all_event_types=events)
     assert len(events) == 25
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
