@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Annotated
 from zipfile import ZipFile
 import requests
+from requests import HTTPError
 import typer
 from urllib3 import disable_warnings
 
@@ -50,6 +51,17 @@ class GitHubClient:
             "accept": "application/vnd.github+json",
         }
 
+    @staticmethod
+    def raise_for_status(response: requests.Response) -> None:
+        """GitHub responses put the real error message under 'message'"""
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            try:
+                raise HTTPError(response.json()["message"]) from e
+            except Exception:
+                raise HTTPError(response.content) from e
+
     @property
     def base_url(self) -> str:
         return f"{REPOS_API_PREFIX}/{self.organization}/{self.repo}"
@@ -59,7 +71,7 @@ class GitHubClient:
             f"{self.base_url}/contents/{path!s}",
             headers=self.headers,
         )
-        res.raise_for_status()
+        GitHubClient.raise_for_status(res)
         return res.json()
 
     def create_branch(self) -> None:
@@ -68,19 +80,12 @@ class GitHubClient:
             headers=self.headers,
         ).json()["commit"]["sha"]
 
-        try:
-            res = requests.post(
-                f"{self.base_url}/git/refs",
-                headers=self.headers,
-                json={"ref": f"refs/heads/{self.branch}", "sha": sha},
-            )
-            res.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            if (
-                res.status_code == 422
-                and res.json()["message"] == "Reference alreay exists"
-            ):
-                raise ValueError("branch alredy exists") from e
+        res = requests.post(
+            f"{self.base_url}/git/refs",
+            headers=self.headers,
+            json={"ref": f"refs/heads/{self.branch}", "sha": sha},
+        )
+        GitHubClient.raise_for_status(res)
 
     def commit_file(self, path_in_repo: Path, content: str, commit_message: str):
         res = requests.put(
@@ -95,7 +100,7 @@ class GitHubClient:
             },
             headers=self.headers,
         )
-        res.raise_for_status()
+        GitHubClient.raise_for_status(res)
 
     def create_pr(self, title: str, body: str, reviewer: str) -> int:
         create_res = requests.post(
@@ -109,15 +114,15 @@ class GitHubClient:
             },
             headers=self.headers,
         )
-        create_res.raise_for_status()
-        pr_number = create_res.json()["number"]
+        GitHubClient.raise_for_status(create_res)
 
+        pr_number = create_res.json()["number"]
         assign_res = requests.post(
             f"{self.base_url}/pulls/{pr_number}/requested_reviewers",
             json={"reviewers": [reviewer]},
             headers=self.headers,
         )
-        assign_res.raise_for_status()
+        GitHubClient.raise_for_status(assign_res)
         return pr_number
 
     def get_most_recent_workflow_run_id(self, workflow_name: str) -> int:
@@ -125,7 +130,7 @@ class GitHubClient:
             url=f"{self.base_url}/actions/runs",
             params={"branch": self.branch},
         )
-        res.raise_for_status()
+        GitHubClient.raise_for_status(res)
         if res.json()["total_count"] == 0:
             raise CannotFindWorkflowError(
                 f"Could not find workflows with {workflow_name=} for {self.branch=}"
@@ -153,7 +158,7 @@ class GitHubClient:
         res = requests.get(
             url=f"{self.base_url}/actions/runs/{workflow_id}/artifacts",
         )
-        res.raise_for_status()
+        GitHubClient.raise_for_status(res)
         if not res.json()["total_count"]:
             raise CannotFindArtifactError(
                 f"Counld not find any artifacts for {workflow_id=}"
@@ -169,7 +174,7 @@ class GitHubClient:
             url=matching_name[0]["archive_download_url"],
             headers=self.headers,
         )
-        file.raise_for_status()
+        GitHubClient.raise_for_status(file)
         return ZipFile(BytesIO(file.content))
 
 
@@ -197,7 +202,13 @@ def main(
     branch_name: Annotated[str, typer.Option("-b", "--branch-name")],
     release_owner: Annotated[str, typer.Option("-r", "--reviewer")],
     artifact_folder: Annotated[Path, typer.Option("-f", "--artifact-folder")],
-    _is_draft: Annotated[str, typer.Option("-d", "--draft",)] = 'False',
+    _is_draft: Annotated[
+        str,
+        typer.Option(
+            "-d",
+            "--draft",
+        ),
+    ] = "False",
 ) -> None:
     is_draft = bool(_is_draft and (_is_draft.lower() == "true"))
     # Get generated `validate` docs from the branch workflow
