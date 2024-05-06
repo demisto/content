@@ -51,13 +51,6 @@ class Client(BaseClient):
         })
         return response
 
-    def copy_model(self, model_name, new_model_name):
-        response = self._http_request('POST', 'copy', json_data={
-            'source': model_name,
-            'destination': new_model_name
-        })
-        return response
-
     def generate(self, model_name, message):
         response = self._http_request('POST', 'generate', json_data={
             'model': model_name,
@@ -93,18 +86,19 @@ def convert_size(size_bytes):
 
 def test_module(client: Client, params) -> str:
     try:
-        result = client.list_local_models()
-
+        client.list_local_models()
+        return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-
-    return 'ok'
+        return DemistoException("str(e)")
 
 
 def list_local_models_command(client):
+    '''
+    List models that are available locally.
+    '''
+
     response = client.list_local_models()
 
     results = []
@@ -114,19 +108,22 @@ def list_local_models_command(client):
             'Size': convert_size(item['size'])
         }
         results.append(new_item)
-    readable = tableToMarkdown('results', results)
 
-    return [CommandResults(
+    readable = tableToMarkdown(name='List Local Models', t=results,
+                               metadata='Click here to access the models available for download: [https://ollama.com/library](https://ollama.com/library).', removeNull=True)
+    return CommandResults(
         readable_output=readable,
         outputs_prefix='ollama.models',
         outputs_key_field='ollama.models',
         outputs=response
-    ), CommandResults(
-        readable_output='Click here to access the available model names for downloading: https://ollama.com/library.'
-    )]
+    )
 
 
 def pull_model_command(client, model_name):
+    '''
+    Download a model from the ollama library. Cancelled pulls are resumed from where they left off, and multiple calls will share the same download progress.
+    '''
+
     response = client.pull_model(model_name)
 
     if response['status'] == 'success':
@@ -149,6 +146,10 @@ def pull_model_command(client, model_name):
 
 
 def show_model_info_command(client, model_name):
+    '''
+    Show information about a model including details, modelfile, template, parameters, license, and system prompt.
+    '''
+
     response = client.show_model_info(model_name)
 
     # return json.dumps(response, indent=4)
@@ -164,6 +165,10 @@ def show_model_info_command(client, model_name):
 
 
 def delete_model_command(client, model_name):
+    '''
+    Delete a model and its data.
+    '''
+
     response = client.delete_model(model_name)
 
     if response is None:
@@ -186,6 +191,10 @@ def delete_model_command(client, model_name):
 
 
 def create_model_command(client, model_name, model_file):
+    '''
+    Create a model from a Modelfile.
+    '''
+
     response = client.create(model_name, model_file)
 
     readable = f"Successfully created **{model_name}**"
@@ -198,7 +207,27 @@ def create_model_command(client, model_name, model_file):
     )
 
 
-def chat_command(client, model_name, message, history):
+def generate_command(client, model_name, message):
+    '''
+    Generate a response for a given prompt with a provided model.
+    '''
+
+    response = client.generate(model_name, message)
+    readable = f"`{model_name}`: {response['response']}"
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix='ollama.generate',
+        outputs_key_field='ollama.generate',
+        outputs=response['response']
+    )
+
+
+def conversation_command(client, model_name, message, history):
+    '''
+    Generate the next message in a chat with a provided model.
+    '''
+
     if history == {}:
         response = client.generate(model_name, message)
         readable = f"`{model_name}`: {response['response']}"
@@ -301,14 +330,15 @@ def main() -> None:  # pragma: no cover
             result = show_model_info_command(client, model_name)
             return_results(result)
 
-        elif command == 'ollama-models-copy':
-            result = list_local_models_command(client)
+        elif command == 'ollama-generate':
+            message = args.get('message', None)
+            result = generate_command(client, model_name, message)
             return_results(result)
 
-        elif command == 'ollama':
+        elif command == 'ollama-conversation':
             message = args.get('message', None)
             history = context.get('ollama', {}).get('history', {})
-            result = chat_command(client, model_name, message, history)
+            result = conversation_command(client, model_name, message, history)
             return_results(result)
 
         else:

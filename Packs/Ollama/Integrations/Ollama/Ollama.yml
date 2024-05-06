@@ -61,7 +61,7 @@ configuration:
   name: default_model
   required: false
   type: 0
-description: Get up and running with large language models locally.
+description: Integrate with open source LLMs using Ollama. With an instance of Ollama running locally you can use this integration to have a conversation in an Incident, download models, and create new models.
 display: Ollama
 name: Ollama
 script:
@@ -95,7 +95,7 @@ script:
       name: message
       required: true
     description: General chat command that tracks the conversation history in the Incident.
-    name: ollama
+    name: ollama-conversation
     outputs:
     - contextPath: ollama.history
       description: Output of the command.
@@ -118,6 +118,16 @@ script:
     name: ollama-model-create
     outputs:
     - contextPath: ollama.create
+      description: Output of the command.
+  - arguments:
+    - description: The model name.
+      name: model
+    - description: The message to be sent.
+      name: message
+    description: Generate a response for a given prompt with a provided model. Conversation history IS NOT tracked.
+    name: ollama-generate
+    outputs:
+    - contextPath: ollama.generate
       description: Output of the command.
   dockerimage: demisto/python3:3.10.14.92207
   runonce: false

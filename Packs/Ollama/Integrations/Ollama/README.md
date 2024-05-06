@@ -1,4 +1,4 @@
-Get up and running with large language models locally.
+Integrate with open source LLMs using Ollama. With an instance of Ollama running locally you can use this integration to have a conversation in an Incident, download models, and create new models.
 ## Configure Ollama on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -86,14 +86,14 @@ Delete a model
 | --- | --- | --- |
 | ollama.delete | unknown | Output of the command | 
 
-### ollama
+### ollama-conversation
 
 ***
 General chat command that tracks the conversation history in the Incident.
 
 #### Base Command
 
-`ollama`
+`ollama-conversation`
 
 #### Input
 
@@ -150,3 +150,25 @@ Create a new model from a Modelfile.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ollama.create | unknown | Output of the command | 
+
+### ollama-generate
+
+***
+Generate a response for a given prompt with a provided model. Conversation history IS NOT tracked.
+
+#### Base Command
+
+`ollama-generate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| model | The model name. | Optional | 
+| message | The message to be sent. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ollama.generate | unknown | Output of the command | 
