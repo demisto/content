@@ -13,6 +13,7 @@ MALWARE_FAMILY_URL = 'https://intelgraph.idefense.com/#/node/malware_family/view
 THREAT_ACTOR_URL = 'https://intelgraph.idefense.com/#/node/threat_actor/view/'
 THREAT_GROUP_URL = 'https://intelgraph.idefense.com/#/node/threat_group/view/'
 THREAT_CAMPAIGN_URL = 'https://intelgraph.idefense.com/#/node/threat_campaign/view/'
+j=24
 ENDPOINTS = {
     'threatindicator': '/rest/threatindicator',
     'document': '/rest/document',
