@@ -10,9 +10,9 @@ XSOAR6
 * Another option is via engine. 
    
 Configuring the subscriber on AWS-SNS UI is straightforward:
-http/https://<instance-name_or_IP>:<port>/<endpoint_configured>
+```http/https://<instance-name_or_IP>:<port>/<endpoint_configured>```
 For more general information on long running integrations on XSOAR6:
-https://xsoar.pan.dev/docs/reference/articles/long-running-invoke
+[XSOAR6 Long Running](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke)
 
 XSOAR8 or XSIAM:
 
@@ -22,11 +22,10 @@ XSOAR8 or XSIAM:
 * or local for this integration only.
    
 Configuring the subscriber on AWS-SNS UI:
-https://<username:password>@ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>
+```https://<username:password>@ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>```
 
 example:
-https://user:pass@ext-myxsoar-address/xsoar/instance/execute/My-AWS-SNS-Listener/sns_ep
+```https://user:pass@ext-myxsoar-address/xsoar/instance/execute/My-AWS-SNS-Listener/sns_ep```
 
 For more info on long running integrations on XSOAR8 or XSIAM:
-https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations
-
+[XSOAR8 or XSIAM Long Running](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations)
