@@ -59,7 +59,7 @@ class Client(BaseClient):
         token = resp.get('access_token')
         now_timestamp = arg_to_datetime('now').timestamp()
         expiration_time = now_timestamp + resp.get('expires_in')
-
+        demisto.debug(f'in generate_token - Generated token that expires at: {expiration_time}.')
         integration_context = get_integration_context()
         integration_context.update({'token': token})
         # Subtract 60 seconds from the expiration time to make sure the token is still valid
@@ -85,10 +85,12 @@ class Client(BaseClient):
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
         if token and valid_until and now_timestamp < valid_until:
+            demisto.debug(f'in get_token - Using existing token that expires at: {valid_until}.')
             return token
 
         # else generate a token and update the integration context accordingly
         token = self.generate_token()
+        demisto.debug('in get_token - Generated new token.')
 
         return token
     
@@ -113,6 +115,7 @@ class Client(BaseClient):
         "searchAfter": [prev_id]    #add the date - 1 hour
         }
         url_suffix = f'/v3/search?limit={limit}' if limit else '/v3/search'
+        demisto.debug(f'in search_events - Searching for events with query: {query}.')
         return self._http_request(method='POST', url_suffix=url_suffix, data=query)
 
 
@@ -174,12 +177,14 @@ def fetch_events(client: Client, last_run: dict[str, str],
     """
     all_events = []
     while max_events_per_fetch > 0:
+        demisto.debug(f'in fetch_events - Fetching events with max_events_per_fetch: {max_events_per_fetch}.')
         events = client.search_events(
             prev_id=last_run.get('prev_id', "0"),
             from_date=last_run.get('prev_date', DEFAULT_LOOKBACK),
             limit=max_events_per_fetch,
         )
         if not events:
+            demisto.debug('in fetch_events - No more events to fetch.')
             break
         last_fetched_event = events[-1]
         last_fetched_id = last_fetched_event.get('id')
