@@ -1346,15 +1346,14 @@ def delete_policy():
 def delete_policy_request(policy_type, policy_id=None):
     # Setup required variables
     api_endpoints = {
-        'blockedsenders': 'blockedsenders/get-policy',
-        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
-        'address-alteration': 'address-alteration/get-address-alteration-set',
-        'webwhiteurl': 'webwhiteurl/get-policy-with-targets',
+        'blockedsenders': 'blockedsenders/delete-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/delete-policy',
+        'address-alteration': 'address-alteration/delete-policy',
+        'webwhiteurl': 'webwhiteurl/delete-policy-with-targets',
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+    id_field_name = 'id'
     
-    id_field_name = 'id' if policy_type != 'address-alteration' else 'folderId'
-
     data = [{
         id_field_name: policy_id
     }]
