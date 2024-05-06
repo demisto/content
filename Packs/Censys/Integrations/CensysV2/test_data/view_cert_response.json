@@ -1,248 +1,424 @@
 {
-    "ct": {
-        "digicert_ct1": {
-            "added_to_ct_at": "2015-09-29T19:55:46.232Z",
-            "ct_to_censys_at": "2018-07-30T04:49:40.404877527Z",
-            "index": 165790
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "_encoding": {
+        "fingerprint_sha256": "DISPLAY_HEX",
+        "fingerprint_sha1": "DISPLAY_HEX",
+        "fingerprint_md5": "DISPLAY_HEX",
+        "tbs_fingerprint_sha256": "DISPLAY_HEX",
+        "tbs_no_ct_fingerprint_sha256": "DISPLAY_HEX",
+        "spki_fingerprint_sha256": "DISPLAY_HEX",
+        "parent_spki_fingerprint_sha256": "DISPLAY_HEX",
+        "raw": "DISPLAY_BASE64",
+        "spki_subject_fingerprint_sha256": "DISPLAY_HEX",
+        "parent_spki_subject_fingerprint_sha256": "DISPLAY_HEX"
+      },
+      "fingerprint_sha256": "XXXXXX",
+      "fingerprint_sha1": "XXXXXXX",
+      "fingerprint_md5": "XXXXXXX",
+      "tbs_fingerprint_sha256": "XXXXXXX",
+      "tbs_no_ct_fingerprint_sha256": "XXXXXX",
+      "spki_fingerprint_sha256": "XXXXXXX",
+      "parent_spki_fingerprint_sha256": "XXXXXXX",
+      "parsed": {
+        "version": 3,
+        "serial_number": "190655745167071791176803125260949407349",
+        "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS CA 1C3",
+        "issuer": {
+          "common_name": [
+            "GTS CA 1C3"
+          ],
+          "country": [
+            "US"
+          ],
+          "organization": [
+            "Google Trust Services LLC"
+          ]
         },
-        "google_aviator": {
-            "added_to_ct_at": "1970-01-01T00:00:00Z",
-            "ct_to_censys_at": "1970-01-01T00:00:00Z",
-            "index": 8713649
+        "subject_dn": "CN=dns.google",
+        "subject": {
+          "common_name": [
+            "dns.google"
+          ]
         },
-        "google_pilot": {
-            "added_to_ct_at": "2015-09-29T19:55:45.785Z",
-            "ct_to_censys_at": "2018-07-30T15:23:48.617288146Z",
-            "index": 9498499
+        "subject_key_info": {
+          "key_algorithm": {
+            "name": "RSA",
+            "oid": "1.2.840.113549.1.1.1"
+          },
+          "rsa": {
+            "exponent": 65537,
+            "_encoding": {
+              "modulus": "DISPLAY_HEX"
+            },
+            "modulus": "aeddd3fdd3529e2d2ad2718a63c37e589b0df49c89528676fd961ac4f6c0d9ebea6fd97aaf1dd351d666ff731400e3923b886b25d1dbfce0cae6349fba4c576ef2b788f7dab079f0903db2602f23decddde8d403ca5367589207c20593d858546a27e2d6343d8dc85c88d303f9c9722cd150948e7493117e7691e25d6ed7c8339c2864620bdceb41e6a79a6e817376936235489241f3e5938534741ceb17a0aaeb8a1bd15eba2980337ea9b660139fa4f386ab6620265344258c65a924b4b4bbb2542a96800ec7a6e461ec1e9c89351830f123a89087c0905aa6e08baf77dacf205183ba497483d9096e2eb648e99007c92dae32c68ca41004eca30b61ff3f97",
+            "length": 2048
+          },
+          "_encoding": {
+            "fingerprint_sha256": "DISPLAY_HEX"
+          },
+          "fingerprint_sha256": "XXXXXX",
+          "_key": "rsa"
         },
-        "google_rocketeer": {
-            "added_to_ct_at": "2015-09-29T19:55:45.704Z",
-            "ct_to_censys_at": "2018-07-30T15:17:12.304312851Z",
-            "index": 6663198
+        "validity_period": {
+          "not_before": "2023-02-08T04:36:32Z",
+          "not_after": "2023-05-03T04:36:31Z",
+          "length_seconds": 7257599
         },
-        "nordu_ct_plausible": {
-            "added_to_ct_at": "2015-10-19T23:17:33.123Z",
-            "ct_to_censys_at": "2018-07-30T19:53:59.431410229Z",
-            "index": 5744025
+        "signature": {
+          "signature_algorithm": {
+            "name": "SHA256-RSA",
+            "oid": "1.2.840.113549.1.1.11"
+          },
+          "_encoding": {
+            "value": "DISPLAY_HEX"
+          },
+          "value": "d86194d2afb08af2b382af951338b39a55a5ffc0ebbe679d9f72e7972107616a0f4a66157d3fa82463355b6b8b311e52b628ab40f88aa7ba6e51f3c8ae7af380f7c27b23e4145f8d1079d670b147217f5dad90f8d4c698b11062764041819b5369c62020377444fdbf46e3b6b27f8f0e37026f65a9597abf5414a66ba4e19d46f924bef660ab86bdc5a1fb99976600816be0f909b943c1fa33288a1b75ec0b5b32bda0eaa455ea2e7c83a6238ed737697db80de6672ca5856e53fbf0f74fb99b79920404a85f923888cce29ea41a244cf77cbce2fcf098ef77a5c87c6860fb8b5df54aa71111acd22170bcbeabb4dd4bd7e9e6be3430505035ca4e2751142665",
+          "valid": true,
+          "self_signed": false
         },
-        "symantec_ws_ct": {
-            "added_to_ct_at": "2015-09-29T19:55:46.004Z",
-            "ct_to_censys_at": "2018-07-30T04:22:53.736190633Z",
-            "index": 6913
-        }
-    },
-    "fingerprint_sha256": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f612345",
-    "metadata": {
-        "added_at": "1970-01-01T00:00:00Z",
-        "parse_status": "success",
-        "parse_version": 1,
-        "post_processed": true,
-        "post_processed_at": "2021-06-22T01:40:32Z",
-        "seen_in_scan": true,
-        "source": "scan",
-        "updated_at": "2021-06-22T03:28:34Z"
-    },
-    "parent_spki_subject_fingerprint": "ec0c72ce7689150e4f62d04f51f0f19713f77cf27ff43cab4035e9e54e812345",
-    "parsed": {
         "extensions": {
-            "authority_info_access": {
-                "issuer_urls": [
-                    "http://pki.google.com/GIAG2.crt"
-                ],
-                "ocsp_urls": [
-                    "http://clients1.google.com/ocsp"
-                ]
-            },
-            "authority_key_id": "4add06161bbcf668b576f581b6bb621aba5a1234",
-            "basic_constraints": {
-                "is_ca": false
-            },
-            "certificate_policies": [
-                {
-                    "id": "1.2.3.4.4.1.11129.2.5.1"
-                },
-                {
-                    "id": "2.3.4.1.2.2"
-                }
+          "key_usage": {
+            "digital_signature": true,
+            "key_encipherment": true,
+            "value": 5,
+            "content_commitment": false,
+            "data_encipherment": false,
+            "key_agreement": false,
+            "certificate_sign": false,
+            "crl_sign": false,
+            "encipher_only": false,
+            "decipher_only": false
+          },
+          "basic_constraints": {
+            "is_ca": false
+          },
+          "subject_alt_name": {
+            "dns_names": [
+              "dns.google",
+              "dns.google.com",
+              "*.dns.google.com",
+              "8888.google",
+              "dns64.dns.google"
             ],
-            "crl_distribution_points": [
-                "http://pki.google.com/GIAG2.crl"
-            ],
-            "extended_key_usage": {
-                "client_auth": true,
-                "server_auth": true
+            "ip_addresses": [
+              "8.8.8.8",
+              "8.8.4.4",
+              "1.1.1.1",
+              "1.1.1.1",
+              "1.1.1.1",
+              "1.1.1.1"
+            ]
+          },
+          "crl_distribution_points": [
+            "XXXXXX"
+          ],
+          "_encoding": {
+            "authority_key_id": "DISPLAY_HEX",
+            "subject_key_id": "DISPLAY_HEX"
+          },
+          "authority_key_id": "XXXXXX",
+          "subject_key_id": "XXXXXXX",
+          "extended_key_usage": {
+            "server_auth": true,
+            "apple_code_signing": false,
+            "apple_code_signing_development": false,
+            "apple_software_update_signing": false,
+            "apple_code_signing_third_party": false,
+            "apple_resource_signing": false,
+            "apple_ichat_signing": false,
+            "apple_ichat_encryption": false,
+            "apple_system_identity": false,
+            "apple_crypto_env": false,
+            "apple_crypto_production_env": false,
+            "apple_crypto_maintenance_env": false,
+            "apple_crypto_test_env": false,
+            "apple_crypto_development_env": false,
+            "apple_crypto_qos": false,
+            "apple_crypto_tier0_qos": false,
+            "apple_crypto_tier1_qos": false,
+            "apple_crypto_tier2_qos": false,
+            "apple_crypto_tier3_qos": false,
+            "microsoft_cert_trust_list_signing": false,
+            "microsoft_qualified_subordinate": false,
+            "microsoft_key_recovery_3": false,
+            "microsoft_document_signing": false,
+            "microsoft_lifetime_signing": false,
+            "microsoft_mobile_device_software": false,
+            "microsoft_smart_display": false,
+            "microsoft_csp_signature": false,
+            "microsoft_timestamp_signing": false,
+            "microsoft_server_gated_crypto": false,
+            "microsoft_sgc_serialized": false,
+            "microsoft_encrypted_file_system": false,
+            "microsoft_efs_recovery": false,
+            "microsoft_whql_crypto": false,
+            "microsoft_nt5_crypto": false,
+            "microsoft_oem_whql_crypto": false,
+            "microsoft_embedded_nt_crypto": false,
+            "microsoft_root_list_signer": false,
+            "microsoft_drm": false,
+            "microsoft_drm_individualization": false,
+            "microsoft_licenses": false,
+            "microsoft_license_server": false,
+            "microsoft_enrollment_agent": false,
+            "microsoft_smartcard_logon": false,
+            "microsoft_ca_exchange": false,
+            "microsoft_key_recovery_21": false,
+            "microsoft_system_health": false,
+            "microsoft_system_health_loophole": false,
+            "microsoft_kernel_mode_code_signing": false,
+            "dvcs": false,
+            "sbgp_cert_aa_service_auth": false,
+            "eap_over_ppp": false,
+            "eap_over_lan": false,
+            "client_auth": false,
+            "code_signing": false,
+            "email_protection": false,
+            "ipsec_end_system": false,
+            "ipsec_tunnel": false,
+            "ipsec_user": false,
+            "time_stamping": false,
+            "ocsp_signing": false,
+            "ipsec_intermediate_system_usage": false,
+            "netscape_server_gated_crypto": false,
+            "any": false
+          },
+          "certificate_policies": [
+            {
+              "id": "1.2.3.4.5"
             },
-            "key_usage": {
-                "digital_signature": true,
-                "value": 1
-            },
-            "subject_alt_name": {
-                "dns_names": [
-                    "*.google.com",
-                    "*.android.com"
-                ],
-                "redacted": false,
-                "serial_number": "5878999135690490607",
-                "signature": {
-                    "self_signed": false,
-                    "signature_algorithm": {
-                        "name": "SHA256-RSA",
-                        "oid": "1.2.840.113549.1.1.11"
-                    },
-                    "valid": false,
-                    "value": "Value"
-                },
-                "signature_algorithm": {
-                    "name": "SHA256-RSA",
-                    "oid": "1.2.840.113549.1.1.11"
-                },
-                "spki_subject_fingerprint": "5eb06b1c29ced84998d3d35a80fa17d3d39e4de96d25539485aecd6360f12345",
-                "subject": {
-                    "common_name": [
-                        "*.google.com"
-                    ],
-                    "country": [
-                        "US"
-                    ],
-                    "locality": [
-                        "Mountain View"
-                    ],
-                    "organization": [
-                        "Google Inc"
-                    ],
-                    "province": [
-                        "California"
-                    ]
-                },
-                "subject_dn": "C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.google.com",
-                "subject_key_info": {
-                    "ecdsa_public_key": {},
-                    "fingerprint_sha256": "3d4a4bd778be7965e90a13ac361e1ed7836d24c15cd5c093f9cc7e7857f51234",
-                    "key_algorithm": {
-                        "name": "ECDSA"
-                    }
-                },
-                "tbs_fingerprint": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd11234",
-                "tbs_noct_fingerprint": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd11234",
-                "validation_level": "OV",
-                "validity": {
-                    "end": "2015-12-28T00:00:00Z",
-                    "length": 7708840,
-                    "start": "2015-09-29T18:39:20Z"
-                },
-                "version": 3
-            },
-            "precert": false,
-            "raw": "veryLongString",
-            "tags": [
-                "ct",
-                "expired",
-                "was-trusted",
-                "ov"
-            ],
-            "validation": {
-                "apple": {
-                    "blacklisted": false,
-                    "had_trusted_path": true,
-                    "in_revocation_set": false,
-                    "parents": [
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc"
-                    ],
-                    "paths": [
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ],
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ]
-                    ],
-                    "trusted_path": false,
-                    "type": "leaf",
-                    "valid": false,
-                    "was_valid": true,
-                    "whitelisted": false
-                },
-                "google_ct_primary": {
-                    "blacklisted": false,
-                    "had_trusted_path": true,
-                    "in_revocation_set": false,
-                    "parents": [
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc"
-                    ],
-                    "paths": [
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ],
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ]
-                    ],
-                    "trusted_path": false,
-                    "type": "leaf",
-                    "valid": false,
-                    "was_valid": true,
-                    "whitelisted": false
-                },
-                "microsoft": {
-                    "blacklisted": false,
-                    "had_trusted_path": true,
-                    "in_revocation_set": false,
-                    "parents": [
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc"
-                    ],
-                    "paths": [
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ],
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ]
-                    ],
-                    "trusted_path": false,
-                    "type": "leaf",
-                    "valid": false,
-                    "was_valid": true,
-                    "whitelisted": false
-                },
-                "nss": {
-                    "blacklisted": false,
-                    "had_trusted_path": false,
-                    "in_revocation_set": false,
-                    "paths": [],
-                    "trusted_path": false,
-                    "type": "unknown",
-                    "valid": false,
-                    "was_valid": false,
-                    "whitelisted": false
-                },
-                "revoked": false
-            },
-            "zlint": {
-                "errors_present": false,
-                "fatals_present": false,
-                "lints": {
-                    "n_subject_common_name_included": true,
-                    "w_ext_key_usage_not_critical": true
-                },
-                "notices_present": true,
-                "version": 3,
-                "warnings_present": true
+            {
+              "id": "1.2.3.4.5"
             }
+          ],
+          "authority_info_access": {
+            "ocsp_urls": [
+              "XXXXXX"
+            ],
+            "issuer_urls": [
+              "XXXXXX"
+            ]
+          },
+          "signed_certificate_timestamps": [
+            {
+              "_encoding": {
+                "log_id": "DISPLAY_HEX"
+              },
+              "log_id": "XXXXXX",
+              "timestamp": "2023-02-08T05:36:33Z",
+              "signature": {
+                "hash_algorithm": "SHA256",
+                "signature_algorithm": "ECDSA",
+                "_encoding": {
+                  "signature": "DISPLAY_HEX"
+                },
+                "signature": "XXXXXXXX"
+              },
+              "version": 0
+            },
+            {
+              "_encoding": {
+                "log_id": "DISPLAY_HEX"
+              },
+              "log_id": "XXXXXX",
+              "timestamp": "2023-02-08T05:36:33Z",
+              "signature": {
+                "hash_algorithm": "SHA256",
+                "signature_algorithm": "ECDSA",
+                "_encoding": {
+                  "signature": "DISPLAY_HEX"
+                },
+                "signature": "XXXXXXXX"
+              },
+              "version": 0
+            }
+          ],
+          "ct_poison": false
+        },
+        "serial_number_hex": "8f6ef5fb7d4463d21249a8dea5284675",
+        "redacted": false
+      },
+      "names": [
+        "*.dns.google.com",
+        "8.8.4.4",
+        "8.8.8.8",
+        "8888.google",
+        "dns.google",
+        "dns.google.com",
+        "dns64.dns.google"
+      ],
+      "validation_level": "DV",
+      "validation": {
+        "nss": {
+          "ever_valid": true,
+          "had_trusted_path": true,
+          "chains": [
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            },
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            }
+          ],
+          "_encoding": {
+            "parents": "DISPLAY_HEX"
+          },
+          "parents": [
+            "XXXXXXX"
+          ],
+          "type": "LEAF",
+          "is_valid": false,
+          "has_trusted_path": false,
+          "in_revocation_set": false
+        },
+        "microsoft": {
+          "ever_valid": true,
+          "had_trusted_path": true,
+          "chains": [
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            },
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXXX",
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            }
+          ],
+          "_encoding": {
+            "parents": "DISPLAY_HEX"
+          },
+          "parents": [
+            "XXXXXXX"
+          ],
+          "type": "LEAF",
+          "is_valid": false,
+          "has_trusted_path": false,
+          "in_revocation_set": false
+        },
+        "apple": {
+          "ever_valid": true,
+          "had_trusted_path": true,
+          "chains": [
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            },
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXXX",
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            }
+          ],
+          "_encoding": {
+            "parents": "DISPLAY_HEX"
+          },
+          "parents": [
+            "XXXXXXX"
+          ],
+          "type": "LEAF",
+          "is_valid": false,
+          "has_trusted_path": false,
+          "in_revocation_set": false
+        },
+        "chrome": {
+          "ever_valid": true,
+          "had_trusted_path": true,
+          "chains": [
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
+                "d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf"
+              ]
+            },
+            {
+              "_encoding": {
+                "sha256fp": "DISPLAY_HEX"
+              },
+              "sha256fp": [
+                "XXXXXX",
+                "XXXXXXX",
+                "XXXXXXX"
+              ]
+            }
+          ],
+          "_encoding": {
+            "parents": "DISPLAY_HEX"
+          },
+          "parents": [
+            "XXXXXXX"
+          ],
+          "type": "LEAF",
+          "is_valid": false,
+          "has_trusted_path": false,
+          "in_revocation_set": false
         }
+      },
+      "ever_seen_in_scan": true,
+      "raw": "XXXXXXX",
+      "added_at": "2023-02-21T23:10:55Z",
+      "modified_at": "2024-01-23T14:45:42Z",
+      "validated_at": "2023-09-09T02:28:49Z",
+      "parse_status": "CERTIFICATE_PARSE_STATUS_SUCCESS",
+      "zlint": {
+        "version": 3,
+        "timestamp": "2023-09-09T02:28:49Z",
+        "notices_present": true,
+        "failed_lints": [
+          "n_subject_common_name_included"
+        ],
+        "warnings_present": false,
+        "errors_present": false,
+        "fatals_present": false
+      },
+      "spki_subject_fingerprint_sha256": "XXXXXX",
+      "parent_spki_subject_fingerprint_sha256": "XXXXXX",
+      "precert": false,
+      "revoked": false,
+      "labels": [
+        "was-trusted",
+        "dv",
+        "ever-trusted",
+        "expired",
+        "leaf",
+        "untrusted"
+      ]
     }
-}
+  }
