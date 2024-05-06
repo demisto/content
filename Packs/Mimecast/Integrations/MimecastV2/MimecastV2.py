@@ -3248,7 +3248,7 @@ def mimecast_get_view_logs_command(args: dict) -> CommandResults:
     if end:
         data[0]['end'] = end
 
-    response = request_with_pagination_api2('/api/archive/get-view-logs', data, limit, page, page_size)  # type: ignore
+    response = request_with_pagination_api2('/api/archive/get-view-logs', limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.ViewLog',
@@ -3279,7 +3279,7 @@ def mimecast_list_account_command(args: dict) -> CommandResults:
     if user_count:
         data[0]['userCount'] = user_count
 
-    response = request_with_pagination_api2('/api/account/get-account', data, limit, page, page_size)  # type: ignore
+    response = request_with_pagination_api2('/api/account/get-account',limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.Account',
@@ -3325,17 +3325,27 @@ def mimecast_create_antispoofing_bypass_policy_command(args: dict) -> CommandRes
     to_date = args.get('to_date')
     to_eternal = argToBoolean(args['to_eternal'])
     override = argToBoolean(args.get('override')) if args.get('override') else None
+    from_type = args.get('from_type')
+    to_type = args.get('to_type')
+    
 
-    data = {'policy': {}}
+    data = {
+      "option": option,
+      "policy": {
+        "to": {
+          "type": to_type
+        },
+        "from": {
+          "type": from_type
+        },
+        "description": description
+      }
+    }
 
-    if option:
-        data['option'] = option
     if bidirectional:
         data['policy']['bidirectional'] = bidirectional
     if comment:
         data['policy']['comment'] = comment
-    if description:
-        data['policy']['description'] = description
     if enabled:
         data['policy']['enabled'] = enabled
     if enforced:
@@ -3436,21 +3446,28 @@ def  mimecast_create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     if args.get('bidirectional'):
         bidirectional = argToBoolean(args.get('bidirectional'))
     from_date = args.get('from_date')
-    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_eternal = argToBoolean(args.get('from_eternal')) # default value
     from_part = args.get('from_part')
     to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal'))
-    action = args.get('action')
+    to_eternal = argToBoolean(args.get('to_eternal')) # default value
+    action = args.get('action') # default value
     id = args.get('id')
-    urls_type = args.get('type')
+    urls_type = args.get('type') # default value
     urls_value = args.get('value')
-
+    from_type = args.get('from_type')
+    to_type = args.get('to_type')
     
     data = {
         'description': description,
         'policies': [{
             'fromEternal': from_eternal,
-            'description': description
+            'description': description,
+            'from': {
+                'type': from_type
+          },
+            'to': {
+                'type': to_type
+          }
         }],
         'urls':
                 [
