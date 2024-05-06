@@ -199,7 +199,8 @@ def test_module(client: Client) -> str:
 
     try:
         test_empty_args: Dict = {}
-        client.get_certificates(test_empty_args)
+        response = client.get_certificates(test_empty_args)
+        certificates = response['Certificates']
     except DemistoException as e:
         raise e
 
@@ -232,7 +233,8 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
         outputs=edit_response(certificates),
         raw_response=response,
-        readable_output=markdown_table
+        readable_output=markdown_table,
+        outputs_key_field='ID'
     )
 
 
@@ -263,7 +265,8 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
         outputs=response,
         raw_response=response if response else {},
-        readable_output=markdown_table
+        readable_output=markdown_table,
+        outputs_key_field='ID'
     )
 
 
@@ -305,7 +308,7 @@ def main() -> None:  # pragma: no cover
     username = demisto_params.get('credentials', {}).get('identifier')
     password = demisto_params.get('credentials', {}).get('password')
     client_id = demisto_params.get('client_id')
-    verify_certificate = not demisto_params.get('insecure', False)
+    verify_certificate = demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
