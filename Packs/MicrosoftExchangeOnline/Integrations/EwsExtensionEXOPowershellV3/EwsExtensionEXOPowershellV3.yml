@@ -313,6 +313,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to add items to.
       defaultValue: Tenant
     - name: action
@@ -398,6 +399,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to retrieve items from.
       defaultValue: Tenant
     - name: action
@@ -481,6 +483,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to retrieve items from.
       defaultValue: Tenant
     outputs:
@@ -2003,6 +2006,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to remove items from.
       defaultValue: Tenant
     outputs:
@@ -2119,7 +2123,7 @@ script:
     description: Remove an Inbox rule.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.80547
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
 fromversion: 5.5.0
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V3-Test

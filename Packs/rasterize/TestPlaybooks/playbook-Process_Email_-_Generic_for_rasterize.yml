@@ -6,14 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ccd00127-175c-4a93-8edb-14e71f7d47ea
+    taskid: 9662860e-93bf-4e61-8cfa-fc2e0464e923
     type: start
     task:
-      id: ccd00127-175c-4a93-8edb-14e71f7d47ea
+      id: 9662860e-93bf-4e61-8cfa-fc2e0464e923
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -28,12 +29,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
+    taskid: 0e6b4935-34bf-4cf3-82c8-e649ae20d08b
     type: condition
     task:
-      id: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
+      id: 0e6b4935-34bf-4cf3-82c8-e649ae20d08b
       version: -1
       name: Do we have original emails attached?
       description: Check if we have any attachments with relevant attachment types like eml or rfc822
@@ -61,12 +67,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0dd910be-f198-4b5d-8dbb-8d7170049463
+    taskid: afe8d0d3-11f3-43f0-8e7f-b9c8fc0290d4
     type: regular
     task:
-      id: 0dd910be-f198-4b5d-8dbb-8d7170049463
+      id: afe8d0d3-11f3-43f0-8e7f-b9c8fc0290d4
       version: -1
       name: Add original email details to context
       scriptName: Set
@@ -77,7 +88,6 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      append: {}
       key:
         simple: Email
       value:
@@ -94,12 +104,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4ac2b332-b76d-463e-824e-717895c5b644
+    taskid: 556e374e-37e4-4139-88c7-5e0ba32fb375
     type: regular
     task:
-      id: 4ac2b332-b76d-463e-824e-717895c5b644
+      id: 556e374e-37e4-4139-88c7-5e0ba32fb375
       version: -1
       name: Add original email attachments to context
       description: Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages.
@@ -127,12 +142,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: be6f6daf-0497-423e-8a48-d669ccad567f
+    taskid: d063aee7-bd5b-438d-8a4a-94cc1edb1c59
     type: condition
     task:
-      id: be6f6daf-0497-423e-8a48-d669ccad567f
+      id: d063aee7-bd5b-438d-8a4a-94cc1edb1c59
       version: -1
       name: Is there an HTML label in the email?
       type: condition
@@ -164,12 +184,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c18ef7a3-f278-4255-86ac-5b127f991302
+    taskid: 0b6e72c6-20d3-4d15-8b5e-a987bd78566b
     type: regular
     task:
-      id: c18ef7a3-f278-4255-86ac-5b127f991302
+      id: 0b6e72c6-20d3-4d15-8b5e-a987bd78566b
       version: -1
       name: Render HTML to an image
       tags:
@@ -178,30 +203,15 @@ tasks:
       type: regular
       iscommand: true
       brand: Rasterize
+      description: Converts the body of an email to an image file or a PDF file.
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      height: {}
       htmlBody:
         complex:
           root: Email
           accessor: HTML
-      type: {}
-      using:
-        complex:
-          root: modules
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: modules.name
-                iscontext: true
-              right:
-                value:
-                  simple: Rasterize_test
-          accessor: name
-      width: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -214,17 +224,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dd0d5106-965e-4a81-8e67-79392ea47d7f
+    taskid: 70a11d5a-e9c2-4730-8b2e-098e4e99002a
     type: title
     task:
-      id: dd0d5106-965e-4a81-8e67-79392ea47d7f
+      id: 70a11d5a-e9c2-4730-8b2e-098e4e99002a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -236,17 +252,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 104966c4-8595-4a5a-8c75-c84f55e51c84
+    taskid: 91d48bc0-6e0d-4056-8c8d-fbd7eeaeedf1
     type: title
     task:
-      id: 104966c4-8595-4a5a-8c75-c84f55e51c84
+      id: 91d48bc0-6e0d-4056-8c8d-fbd7eeaeedf1
       version: -1
       name: Advance features
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -261,12 +283,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 9d6defc4-5ef1-4523-8136-08372aa15544
+    taskid: 9c0334f7-5887-443a-8ec1-ac90fe9c930f
     type: regular
     task:
-      id: 9d6defc4-5ef1-4523-8136-08372aa15544
+      id: 9c0334f7-5887-443a-8ec1-ac90fe9c930f
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message.
@@ -278,18 +305,6 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      1longtexttest: {}
-      aaaa: {}
-      addLabels: {}
-      adgroupname: {}
-      alertlevel: {}
-      amarkdownsection: {}
-      anothernumberpleasejusttomakesure: {}
-      app: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attach: {}
-      attachamenthash: {}
       attachmentcount:
         complex:
           root: Email
@@ -323,40 +338,8 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.Type
-      awsinstancename: {}
-      backupowner: {}
-      bbb: {}
-      blah: {}
-      bool1: {}
-      bool2: {}
-      booleansummary: {}
-      booleantest: {}
-      boolfield: {}
-      booltest: {}
-      bugtraq: {}
-      casenumber: {}
-      ccc: {}
-      ccipaddress: {}
-      cleanname: {}
-      compliance: {}
-      constvalue: {}
-      customFields: {}
-      customfield: {}
-      cve: {}
-      cvss: {}
-      date2: {}
-      datepicker: {}
-      daysbetweenreportcreation: {}
       deleteEmptyField:
         simple: "True"
-      department: {}
-      departmentadmin: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      dstip: {}
-      duration: {}
       emailbcc:
         complex:
           root: Email
@@ -466,132 +449,6 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
-      enisacategory: {}
-      escalationdate: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      field1: {}
-      field2: {}
-      field3: {}
-      field4: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      fwlogs: {}
-      gatenumber: {}
-      hash: {}
-      hjhj: {}
-      host: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      htmltypefield: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      infectedhost: {}
-      intelblockcomment: {}
-      intelblockurl: {}
-      internalemail: {}
-      internalusage: {}
-      itaytestfield: {}
-      jiraticketid: {}
-      killchain: {}
-      labels: {}
-      lob: {}
-      longtextone: {}
-      longtexttoo: {}
-      mailbody: {}
-      malwarefamily: {}
-      mdtest: {}
-      mitigated: {}
-      mttd: {}
-      multilinetext: {}
-      mydate: {}
-      myfield: {}
-      myname: {}
-      myseverity: {}
-      name: {}
-      newmarkdownfield: {}
-      newtextfield: {}
-      noatext: {}
-      numberplease: {}
-      objecttype: {}
-      occurred: {}
-      originalhtml: {}
-      oriwithspace: {}
-      owner: {}
-      phase: {}
-      phishingsender: {}
-      phishingsenderdomain: {}
-      priority: {}
-      qradaroffenceid: {}
-      queues: {}
-      relatedincidentssummary: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      riskmitigationactionrequirements: {}
-      riskscore: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      selector: {}
-      sender: {}
-      sensitive: {}
-      severity: {}
-      shift: {}
-      shiftnotes: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sla: {}
-      source: {}
-      sourceip: {}
-      sourceip1: {}
-      src: {}
-      srcip: {}
-      srcntdomain: {}
-      srcuser: {}
-      subcat: {}
-      subcategory: {}
-      summary: {}
-      systems: {}
-      targethostname: {}
-      team: {}
-      telefield: {}
-      teleselect: {}
-      test: {}
-      test2: {}
-      test111: {}
-      testassociationdumpme: {}
-      testfield: {}
-      testguy: {}
-      testhtml: {}
-      thisismysuperlongfield: {}
-      tier2owner: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      timetomitigate: {}
-      timetotriage: {}
-      tldr: {}
-      tlp: {}
-      tttttt: {}
-      type: {}
-      uniquefiled: {}
-      user: {}
-      useremail: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      vvvv: {}
-      zattachmentsgeneric: {}
-      zmaltegoimage: {}
-      zvtfirstseen: {}
-      zvtother: {}
-      zvtvendorcount: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -604,12 +461,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bc0dd5a2-6073-4f44-8abc-9bc48e3e08c1
+    taskid: 60f67981-7615-4864-80bb-eae7da76cab7
     type: condition
     task:
-      id: bc0dd5a2-6073-4f44-8abc-9bc48e3e08c1
+      id: 60f67981-7615-4864-80bb-eae7da76cab7
       version: -1
       name: Should retrieve the original email?
       description: If True, retrieve the original email in the thread
@@ -644,12 +506,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e6915e5d-bdca-4d59-8636-2e65b2e680e1
+    taskid: 0fc34082-2223-41f1-8672-16a74fce0431
     type: playbook
     task:
-      id: e6915e5d-bdca-4d59-8636-2e65b2e680e1
+      id: 0fc34082-2223-41f1-8672-16a74fce0431
       version: -1
       name: Get Original Email - Generic v2
       description: |-
@@ -683,12 +550,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 9a505e0b-27c1-424a-880a-253135d80683
+    taskid: 345093db-d1cc-4bcb-843d-e7a302bb9d79
     type: condition
     task:
-      id: 9a505e0b-27c1-424a-880a-253135d80683
+      id: 345093db-d1cc-4bcb-843d-e7a302bb9d79
       version: -1
       name: Was the original email retrieved?
       description: Is there an email object in the context?
@@ -719,12 +591,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 040c1852-c639-4322-80d0-e10d0dfc9b09
+    taskid: b7582ae5-f7cd-4a41-80e2-f54f92bb308c
     type: regular
     task:
-      id: 040c1852-c639-4322-80d0-e10d0dfc9b09
+      id: b7582ae5-f7cd-4a41-80e2-f54f92bb308c
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -736,18 +613,6 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      1longtexttest: {}
-      aaaa: {}
-      addLabels: {}
-      adgroupname: {}
-      alertlevel: {}
-      amarkdownsection: {}
-      anothernumberpleasejusttomakesure: {}
-      app: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attach: {}
-      attachamenthash: {}
       attachmentcount:
         complex:
           root: Email
@@ -781,42 +646,8 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.Type
-      awsinstancename: {}
-      backupowner: {}
-      bbb: {}
-      blah: {}
-      bool1: {}
-      bool2: {}
-      booleansummary: {}
-      booleantest: {}
-      boolfield: {}
-      booltest: {}
-      bugtraq: {}
-      casenumber: {}
-      ccc: {}
-      ccipaddress: {}
-      cleanname: {}
-      closeNotes: {}
-      closeReason: {}
-      compliance: {}
-      constvalue: {}
-      customFields: {}
-      customfield: {}
-      cve: {}
-      cvss: {}
-      date2: {}
-      datepicker: {}
-      daysbetweenreportcreation: {}
       deleteEmptyField:
         simple: "True"
-      department: {}
-      departmentadmin: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      dstip: {}
-      duration: {}
       emailbcc:
         complex:
           root: Email
@@ -840,7 +671,6 @@ tasks:
           accessor: HTML
           transformers:
           - operator: Stringify
-      emailbodyhtmlraw: {}
       emailcc:
         complex:
           root: Email
@@ -859,7 +689,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailfromdisplayname: {}
       emailimage:
         complex:
           root: Email
@@ -878,7 +707,6 @@ tasks:
           accessor: HeadersMap.Message-ID
           transformers:
           - operator: uniq
-      emailreceived: {}
       emailreplyto:
         complex:
           root: Email
@@ -891,7 +719,6 @@ tasks:
           accessor: HeadersMap.Return-Path
           transformers:
           - operator: uniq
-      emailsenderdomain: {}
       emailsenderip:
         complex:
           root: Email
@@ -917,7 +744,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailsubjectlanguage: {}
       emailto:
         complex:
           root: Email
@@ -934,134 +760,6 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
-      enisacategory: {}
-      escalationdate: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      field1: {}
-      field2: {}
-      field3: {}
-      field4: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      fwlogs: {}
-      gatenumber: {}
-      hash: {}
-      hjhj: {}
-      host: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      htmltypefield: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      infectedhost: {}
-      intelblockcomment: {}
-      intelblockurl: {}
-      internalemail: {}
-      internalusage: {}
-      itaytestfield: {}
-      jiraticketid: {}
-      killchain: {}
-      labels: {}
-      lob: {}
-      longtextone: {}
-      longtexttoo: {}
-      mailbody: {}
-      malwarefamily: {}
-      mdtest: {}
-      mitigated: {}
-      mttd: {}
-      multilinetext: {}
-      mydate: {}
-      myfield: {}
-      myname: {}
-      myseverity: {}
-      name: {}
-      newmarkdownfield: {}
-      newtextfield: {}
-      noatext: {}
-      numberplease: {}
-      objecttype: {}
-      occurred: {}
-      originalhtml: {}
-      oriwithspace: {}
-      owner: {}
-      phase: {}
-      phishingsender: {}
-      phishingsenderdomain: {}
-      priority: {}
-      qradaroffenceid: {}
-      queues: {}
-      relatedincidentssummary: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      riskmitigationactionrequirements: {}
-      riskscore: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      selector: {}
-      sender: {}
-      sensitive: {}
-      severity: {}
-      shift: {}
-      shiftnotes: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      sourceip: {}
-      sourceip1: {}
-      src: {}
-      srcip: {}
-      srcntdomain: {}
-      srcuser: {}
-      subcat: {}
-      subcategory: {}
-      summary: {}
-      systems: {}
-      targethostname: {}
-      team: {}
-      telefield: {}
-      teleselect: {}
-      test: {}
-      test2: {}
-      test111: {}
-      testassociationdumpme: {}
-      testfield: {}
-      testguy: {}
-      testhtml: {}
-      thisismysuperlongfield: {}
-      tier2owner: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      timetomitigate: {}
-      timetotriage: {}
-      tldr: {}
-      tlp: {}
-      tttttt: {}
-      type: {}
-      uniquefiled: {}
-      user: {}
-      useremail: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      vvvv: {}
-      zattachmentsgeneric: {}
-      zmaltegoimage: {}
-      zvtfirstseen: {}
-      zvtother: {}
-      zvtvendorcount: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1074,6 +772,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1098,6 +801,7 @@ inputs:
       root: File
   required: false
   description: An EML or MSG file with
+  playbookInputQuery:
 - key: Email
   value:
     complex:
@@ -1105,6 +809,7 @@ inputs:
       accessor: labels.Email
   required: false
   description: The receiving email address
+  playbookInputQuery:
 - key: Email/cc
   value:
     complex:
@@ -1112,6 +817,7 @@ inputs:
       accessor: labels.CC
   required: false
   description: CC addresses
+  playbookInputQuery:
 - key: Email/from
   value:
     complex:
@@ -1119,6 +825,7 @@ inputs:
       accessor: labels.Email/from
   required: false
   description: The originator of the email
+  playbookInputQuery:
 - key: Email/subject
   value:
     complex:
@@ -1126,6 +833,7 @@ inputs:
       accessor: labels.Email/subject
   required: false
   description: The email’s subject
+  playbookInputQuery:
 - key: Email/text
   value:
     complex:
@@ -1133,6 +841,7 @@ inputs:
       accessor: labels.Email/text
   required: false
   description: The email’s text
+  playbookInputQuery:
 - key: Email/html
   value:
     complex:
@@ -1140,6 +849,7 @@ inputs:
       accessor: labels.Email/html
   required: false
   description: The emai’sl html
+  playbookInputQuery:
 - key: Email/headers
   value:
     complex:
@@ -1147,6 +857,7 @@ inputs:
       accessor: labels.Email/headers
   required: false
   description: The email’s headers
+  playbookInputQuery:
 - key: Email/format
   value:
     complex:
@@ -1154,6 +865,7 @@ inputs:
       accessor: labels.Email/format
   required: false
   description: The email’s format
+  playbookInputQuery:
 - key: GetOriginalEmail
   value:
     simple: "False"
@@ -1165,38 +877,39 @@ inputs:
 
     - EWS: eDiscovery
     - Gmail: Google Apps Domain-Wide Delegation of Authority
+  playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body if exists
+  description: Email 'html' body if exists.
   type: string
 - contextPath: Email
-  description: Email object
+  description: Email object.
   type: unknown
 - contextPath: Email.CC
-  description: Email 'cc' addresses
+  description: Email 'cc' addresses.
   type: string
 - contextPath: Email.From
-  description: Email 'from' sender
+  description: Email 'from' sender.
   type: string
 - contextPath: Email.Subject
-  description: Email subject
+  description: Email subject.
   type: string
 - contextPath: Email.To
-  description: Email 'to' addresses
+  description: Email 'to' addresses.
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body if exists
+  description: Email 'text' body if exists.
   type: string
 - contextPath: Email.Headers
-  description: The full email headers as a single string
+  description: The full email headers as a single string.
   type: string
 - contextPath: Email.Attachments
-  description: The list of attachment names in the email
+  description: The list of attachment names in the email.
   type: string
 - contextPath: Email.Format
-  description: The format of the email if available
+  description: The format of the email if available.
   type: string
 - contextPath: File
-  description: The File object
+  description: The File object.
   type: unknown
 fromversion: 6.0.0

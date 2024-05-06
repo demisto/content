@@ -5,11 +5,10 @@ import os
 from pathlib import Path
 import sys
 import tempfile
-from zipfile import ZipFile
 from packaging.version import Version
 
 from Tests.Marketplace.marketplace_services import init_storage_client
-from Tests.Marketplace.upload_packs import download_and_extract_index
+from Tests.Marketplace.upload_packs import download_and_extract_index, download_and_extract_pack
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -27,6 +26,7 @@ class VerifyMessages(str):
     FAILED_PACK = "verified the commit hash is not updated in the pack metadata in the index.zip"
     MODIFIED_ITEM_PATH = "verified the path of the pack item is modified"
     DEPENDENCY = "verified the new dependency is in the pack metadata"
+    KEYWORDS = "verified the new keyword is in the pack metadata"
     NEW_IMAGE = "verified the new image was uploaded"
     HIDDEN_DEPENDENCY = "verified the hidden dependency pack not in metadata.json"
     PACK_NOT_IN_MARKETPLACE = ("verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT "
@@ -81,22 +81,6 @@ class GCP:
         self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
                                                            self.storage_base_path)
 
-    def download_and_extract_pack(self, pack_id, pack_version):
-        """
-        Downloads and extracts the pack with version zip from the bucket
-        """
-        pack_path = os.path.join(self.storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
-        pack = self.storage_bucket.blob(pack_path)
-        if pack.exists():
-            download_pack_path = os.path.join(self.extracting_destination, f"{pack_id}.zip")
-            pack.download_to_filename(download_pack_path)
-            with ZipFile(download_pack_path, 'r') as pack_zip:
-                pack_zip.extractall(os.path.join(self.extracting_destination, pack_id))
-            return os.path.join(self.extracting_destination, pack_id)
-        else:
-            logging.warning(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
-            return False
-
     def download_image(self, pack_id):
         """
         Downloads the pack image.
@@ -124,10 +108,17 @@ class GCP:
 
     def get_pack_metadata(self, pack_id):
         """
-        Returns the metadata.json of the latest pack version from the pack's zip
+        Returns the metadata.json of the latest pack version from the index.zip
         """
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
+
+    def get_pack_metadata_from_pack_folder(self, pack_id):
+        """
+        Returns the metadata.json of the latest pack version from the pack's zip
+        """
+        metadata_path_pack_folder = os.path.join(self.extracting_destination, pack_id, 'metadata.json')
+        return read_json(metadata_path_pack_folder)
 
     def is_items_in_pack(self, item_file_paths: list, pack_id: str):
         """
@@ -188,7 +179,10 @@ class GCP:
             return f.read()
 
     def check_pack_version_in_index_and_all_pack_items_exist(self, pack_id, pack_items, pack_version):
-        version_exists = [self.is_in_index(pack_id), self.download_and_extract_pack(pack_id, pack_version)]
+        version_exists = [self.is_in_index(pack_id), download_and_extract_pack(pack_id, pack_version,
+                                                                               self.storage_bucket,
+                                                                               self.extracting_destination,
+                                                                               self.storage_base_path)]
         items_exists = [self.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
         return all(version_exists) and all(items_exists)
@@ -218,7 +212,10 @@ class BucketVerifier:
         """
         Verify the new XSOAR pack is NOT in the index, verify version 1.0.0 zip DOES NOT exists under the pack's path
         """
-        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
+        version_exists = [self.gcp.is_in_index(pack_id), download_and_extract_pack(pack_id, '1.0.0',
+                                                                                   self.gcp.storage_bucket,
+                                                                                   self.gcp.extracting_destination,
+                                                                                   self.gcp.storage_base_path)]
         return (not any(version_exists),
                 pack_id,
                 VerifyMessages.PACK_NOT_IN_MARKETPLACE.format(pack_id, marketplace)
@@ -230,7 +227,9 @@ class BucketVerifier:
         Verify the pack's new version is in the index, verify the new version zip exists under the pack's path,
         verify all the new items are present in the pack
         """
-        pack_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        pack_exists = download_and_extract_pack(pack_id, self.versions[pack_id], self.gcp.storage_bucket,
+                                                self.gcp.extracting_destination,
+                                                self.gcp.storage_base_path)
         if not pack_exists:
             return False, pack_id
         changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
@@ -239,11 +238,30 @@ class BucketVerifier:
         return changelog_as_expected and all(items_exists), pack_id, VerifyMessages.MODIFIED_PACK
 
     @logger
+    def verify_metadata_changes(self, pack_id, keyword):
+        """
+        verify that the 'keywords' field has been changed in the bucket, without version bump.
+        """
+        pack_exists = download_and_extract_pack(pack_id, self.versions[pack_id], self.gcp.storage_bucket,
+                                                self.gcp.extracting_destination,
+                                                self.gcp.storage_base_path)
+        if not pack_exists:
+            return False, pack_id
+
+        return ((keyword in self.gcp.get_pack_metadata(pack_id).get('keywords', {})
+                and keyword in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('keywords', {})),
+                pack_id,
+                VerifyMessages.KEYWORDS
+                )
+
+    @logger
     def verify_new_version(self, pack_id, rn):
         """
         Verify a new version exists in the index, verify the rn is parsed correctly to the changelog
         """
-        new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        new_version_exists = download_and_extract_pack(pack_id, self.versions[pack_id], self.gcp.storage_bucket,
+                                                       self.gcp.extracting_destination,
+                                                       self.gcp.storage_base_path)
         if not new_version_exists:
             return False, pack_id
         new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
@@ -272,7 +290,9 @@ class BucketVerifier:
         """
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
-        pack_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        pack_exists = download_and_extract_pack(pack_id, self.versions[pack_id], self.gcp.storage_bucket,
+                                                self.gcp.extracting_destination,
+                                                self.gcp.storage_base_path)
         if not pack_exists:
             return False, pack_id
 
@@ -294,7 +314,10 @@ class BucketVerifier:
         """
         Verify the path of the item is modified
         """
-        pack_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        pack_exists = download_and_extract_pack(pack_id, self.versions[pack_id],
+                                                self.gcp.storage_bucket,
+                                                self.gcp.extracting_destination,
+                                                self.gcp.storage_base_path)
         if not pack_exists:
             return False, pack_id
 
@@ -308,8 +331,16 @@ class BucketVerifier:
         """
         Verify the new dependency is in the metadata
         """
-        # TODO: Should verify the dependency in the pack zip metadata as well - after CIAC-4686 is fixed
-        return (dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}),
+
+        pack_exists = download_and_extract_pack(pack_id, self.versions[pack_id],
+                                                self.gcp.storage_bucket,
+                                                self.gcp.extracting_destination,
+                                                self.gcp.storage_base_path)
+        if not pack_exists:
+            return False, pack_id
+
+        return ((dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {})
+                 and dependency_id in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('dependencies', {})),
                 pack_id,
                 VerifyMessages.DEPENDENCY
                 )
@@ -418,6 +449,9 @@ class BucketVerifier:
 
         if self.bucket_name == XSOAR_SAAS_TESTING_BUCKET:
             self.run_xsoar_saas_bucket_validation()
+
+        # case 15: metadata changes - verify that the permitted fields have been changed in metadata.json without version bump
+        self.verify_metadata_changes('Zoom', 'Mobile')
 
     def is_bucket_valid(self):
         """
