@@ -13,7 +13,10 @@ import urllib
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
-IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+IS_TIME_SENSITIVE = False
+if hasattr(demisto, 'isTimeSensitive'):
+    isTimeSensitive = getattr(demisto, 'isTimeSensitive')
+    IS_TIME_SENSITIVE = isTimeSensitive()
 
 # flake8: noqa
 
