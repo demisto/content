@@ -388,25 +388,6 @@ def bucket_upload_results(bucket_artifact_folder: Path,
             }]
         })
 
-    if successful_private_packs and should_include_private_packs:
-        # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
-        slack_msg_append.append({
-            'fallback': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
-            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
-            'color': 'good',
-        })
-        threaded_messages.append({
-            'fallback': f'Successfully uploaded to {marketplace_name} Private Pack(s): '
-                        f'{", ".join(sorted({*successful_private_packs}, key=lambda s: s.lower()))}',
-            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private packs:',
-            'color': 'good',
-            'fields': [{
-                'title': '',
-                'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
-                'short': False
-            }]
-        })
-
     if failed_packs:
         slack_msg_append.append({
             'fallback': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}',

@@ -1,6 +1,5 @@
 # type: ignore[attr-defined]
 # pylint: disable=no-member
-import copy
 import json
 import os
 
@@ -525,4 +524,3 @@ class TestUpdatedPrivatePacks:
     def get_index_folder_path():
         index_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
         return index_json_path
-

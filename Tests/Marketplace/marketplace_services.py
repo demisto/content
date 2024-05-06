@@ -3154,7 +3154,8 @@ def get_content_git_client(content_repo_path: str):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool, circle_branch: str = "master"):
+def get_recent_commits_data(content_repo: Any, index_folder_path: str,
+                            is_bucket_upload_flow: bool, circle_branch: str = "master"):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -3168,7 +3169,8 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
         str: last commit hash of head.
         str: previous commit depending on the flow the script is running
     """
-    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, circle_branch)
+    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path,
+                                                                is_bucket_upload_flow, circle_branch)
 
 
 def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, circle_branch):
@@ -3189,10 +3191,6 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
     """
     if is_bucket_upload_flow:
         return get_last_upload_commit_hash(content_repo, index_folder_path)
-    elif is_private_build:
-        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.debug(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
-        return previous_master_head_commit
     else:
         if circle_branch == 'master':
             head_str = "HEAD~1"

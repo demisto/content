@@ -6,7 +6,6 @@ import argparse
 import shutil
 import uuid
 import prettytable
-import glob
 import requests
 from datetime import datetime
 from pathlib import Path
@@ -20,7 +19,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES, XSOAR_MP, XSOAR_SAAS_MP
+    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES, XSOAR_MP
 from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
@@ -526,6 +525,7 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
 
     return '\n'.join(table)
 
+
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
                               previous_commit_hash: str, storage_bucket: Any):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
@@ -706,6 +706,7 @@ def get_packs_summary(packs_list):
             failed_packs.append(pack)
 
     return successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs
+
 
 def get_images_data(packs_list: list, markdown_images_dict: dict):
     """ Returns a data structure of all packs that an integration/author image of them was uploaded
@@ -945,7 +946,7 @@ def main():
     packs_objects_list = all_packs_objects_list if is_regular_upload_flow \
         else [p for p in all_packs_objects_list if p.is_modified or p.is_metadata_updated]
     logging.info(f"Packs list is: {[p.name for p in packs_objects_list]}")
-    
+
     if is_regular_upload_flow:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket)
