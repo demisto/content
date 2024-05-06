@@ -247,7 +247,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
         A CommandResult object with an outputs, raw response and readable table, in case of a successful action.
     """
 
-    guid = args.get('guid')
+    guid: str = args.get('guid', '')
     response = client.get_certificate_details(guid)
     response['ID'] = response.get('Guid', '').strip('{}')  # add ID to response for backward compatible with V1
     readable_certificate_details = response.copy()
