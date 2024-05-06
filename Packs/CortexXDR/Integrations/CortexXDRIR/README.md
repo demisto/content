@@ -1,5 +1,5 @@
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
+This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR.
 
 ## Configure Palo Alto Networks Cortex XDR - Investigation and Response on Cortex XSOAR
 
@@ -13,8 +13,8 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Incident type                                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
     | Remove legacy incident fields                                                    | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | False        |
     | Incident Mirroring Direction                                                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Custom close-reason mapping for mirrored **XSOAR -> XDR** incidents.             | Define how to close the mirrored incidents from Cortex XSOAR into XDR with a custom close reason mapping. Enter a comma-separated close-reason mapping (acceptable format {XSOAR close reason}={XDR close reason}) to override the default close reason mapping defined by XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`).                                                               | False        |
-    | Custom close-reason mapping for mirrored **XDR -> XSOAR** incidents.             | Define how to close the mirrored incidents from Cortex XDR into XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {XDR close reason}={XSOAR close reason}) to override the default close reason mapping defined by XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False        |
+    | Custom close-reason mapping for mirrored **XSOAR -> XDR** incidents.             | Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated close-reason mapping (acceptable format {XSOAR close reason}={XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`).                                                               | False        |
+    | Custom close-reason mapping for mirrored **XDR -> XSOAR** incidents.             | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {XDR close reason}={XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False        |
     | Server URL (copy URL from XDR - click ? to see more info.)                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | True         |
     | API Key ID                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
     | API Key                                                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
@@ -62,19 +62,19 @@ For builtin role with less permission but maximum command running abilities, use
 
 #### Cortex XDR Incident Handling
 
-The playbook syncs and updates new XDR alerts that construct the incident.
+The playbook syncs and updates new Cortex XDR alerts that construct the incident.
 It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
 AutoFocus. The incident's severity is then updated based on the indicators reputation
 and an analyst is assigned for manual investigation. If chosen, automated remediation
 with Palo Alto Networks FireWall is initiated. After a manual review by the
-SOC analyst, the XDR incident is closed automatically.
+SOC analyst, the Cortex XDR incident is closed automatically.
 
-To utilize this playbook for handling XDR incidents, the classifier that should be selected is `Cortex XDR - Classifier`.
+To utilize this playbook for handling Cortex XDR incidents, the classifier that should be selected is `Cortex XDR - Classifier`.
 The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 
 #### Cortex XDR Lite - Incident Handling
 
-This playbook is a lite default playbook to handle XDR incidents, and it doesn't require additional integrations to run. The playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident. First, the playbook performs enrichment on the incident’s indicators. Then, the playbook performs investigation and analysis on the command line and searches for related Cortex XDR alerts by Mitre tactics to identify malicious activity performed on the endpoint and by the user. Based on the enrichment and the investigation results, the playbooks sets the verdict of the incident. If malicious indicators are found, the playbook takes action to block these indicators and isolate the affected endpoint to prevent further damage or the spread of threats. If the verdict is not determined, it lets the analyst decide whether to continue to the remediation stage or close the investigation as benign. As part of this playbook, you'll receive a comprehensive layout that presents incident details, analysis, investigation findings, and the final verdict. Additionally, the layout offers convenient remediation buttons for quicker manual actions.
+This playbook is a lite default playbook to handle Cortex XDR incidents, and it doesn't require additional integrations to run. The playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident. First, the playbook performs enrichment on the incident’s indicators. Then, the playbook performs investigation and analysis on the command line and searches for related Cortex XDR alerts by Mitre tactics to identify malicious activity performed on the endpoint and by the user. Based on the enrichment and the investigation results, the playbooks sets the verdict of the incident. If malicious indicators are found, the playbook takes action to block these indicators and isolate the affected endpoint to prevent further damage or the spread of threats. If the verdict is not determined, it lets the analyst decide whether to continue to the remediation stage or close the investigation as benign. As part of this playbook, you'll receive a comprehensive layout that presents incident details, analysis, investigation findings, and the final verdict. Additionally, the layout offers convenient remediation buttons for quicker manual actions.
 
 To utilize this playbook for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
 The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
@@ -83,13 +83,13 @@ The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the select
 
 ---
 
-- Fetch incidents from XDR
-- Enrich incident with alerts and incident from XDR
-- Update incident in XDR
+- Fetch incidents from Cortex XDR
+- Enrich incident with alerts and incident from Cortex XDR
+- Update incident in Cortex XDR
 - Search for endpoints
 - Isolate/unisolate endpoints
-- Insert parsed alerts into XDR
-- Insert CEF alerts into XDR
+- Insert parsed alerts into Cortex XDR
+- Insert CEF alerts into Cortex XDR
 - Query for agent audit reports
 - Query for audit management logs
 - Create distribution
@@ -172,7 +172,7 @@ To setup the mirroring follow these instructions:
 
   **Close-reason default mapping XDR -> XSOAR**: _Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved_
 
-8. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+8. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both Cortex XDR and Cortex XSOAR.
 
    - Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
 
@@ -183,18 +183,18 @@ To setup the mirroring follow these instructions:
 ### XDR Mirroring Notes, limitations and Troubleshooting
 
 - While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
-  If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
-  - I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
+  If we have an incident with two fields (A and B) in Cortex XDR and Cortex XSOAR while *Incoming And Outgoing* mirroring is selected: 
+  - I can mirror field A from Cortex XDR to Cortex XSOAR and field B from Cortex XSOAR to Cortex XDR.
   - I cannot mirror changes from field A in both directions.
 
-  Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
+  Initially all fields are mirrored in from Cortex XDR to Cortex XSOAR. Once they are changed in Cortex XSOAR, they can only be mirrored out.
 - **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
 - When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
   - The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
-  - The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+  - The Cortex XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
   - Mirroring impacts only incidents that were fetched after the mirroring was enabled for this instance. If incidents were fetched with the incorrect mapper, changing the mapper will not affect them. This can be resolved by resetting the last fetch run and re-fetching the incidents. New incidents will be created and the old ones will no longer be relevant.
 
 - The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
@@ -548,7 +548,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 | incident_id | XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command. | Required | 
 | manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). Possible values are: HIGH, MEDIUM, LOW. | Optional | 
 | assigned_user_mail | Email address of the user to assign to the incident. | Optional | 
-| assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
+| assigned_user_pretty_name | Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument. | Optional | 
 | status | Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. Possible values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. | Optional | 
 | resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
 | unassign_user | If true, will remove all assigned users from the incident. Possible values are: true. | Optional | 
@@ -3662,7 +3662,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | List of endpoint IDs. Supports comma separated list. | Optional | 
+| endpoint_ids | List of endpoint IDs. Supports comma-separated list. | Optional | 
 | tag | Tag to add. | Optional | 
 
 

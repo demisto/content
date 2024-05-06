@@ -46,4 +46,5 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1003 - OS Credential Dumping](../doc_files/MITRE_ATT&CK_CoA_-_T1003_-_OS_Credential_Dumping.png)
+![MITRE ATT&CK CoA - T1003 - OS Credential Dumping](../doc_files/MITRE_ATTand
+CK_CoA_-_T1003_-_OS_Credential_Dumping.png)
