@@ -92,4 +92,4 @@ CarbonBlackResponseV2
 
 ---
 
-![Block Endpoint - Carbon Black Response V2.1](../doc_files/Block_Endpoint_-_Carbon_Black_Response_V2.1.png)
+![Block Endpoint - Carbon Black Response V2.1](../doc_files/Block_Endpoint_-_Carbon_Black_Response_V2_1.png)

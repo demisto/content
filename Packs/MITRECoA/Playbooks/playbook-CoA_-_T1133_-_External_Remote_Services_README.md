@@ -52,4 +52,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1133 - External Remote Services](../doc_files/MITRE_ATT&CK_CoA_-_T1133_-_External_Remote_Services.png)
+![MITRE ATT&CK CoA - T1133 - External Remote Services](../doc_files/MITRE_ATTandCK_CoA_-_T1133_-_External_Remote_Services.png)
