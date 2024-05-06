@@ -42,8 +42,7 @@ def http_request(method, url_suffix, json=None):
         except ValueError:
             return None
     except Exception as e:
-        return_error(message='Error occurred on API call: %s. Error is: %s'
-                             % (base_url + api_suffix + url_suffix, str(e)))
+        return_error(message=f'Error occurred on API call: {base_url + api_suffix + url_suffix}. Error is: {str(e)}')
 
 
 def get_specific_device():
@@ -116,7 +115,7 @@ def add_hash_to_blacklist():
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
     comment = demisto.args().get('comment') or ""
-    http_request('POST', '/policies/%s/blacklist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
+    http_request('POST', f'/policies/{str(policy_id)}/blacklist/hashes/{file_hash}', json={"comment": comment})
     demisto.results('ok')
 
 
@@ -127,7 +126,7 @@ def add_hash_to_whitelist():
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
     comment = demisto.args().get('comment') or ""
-    http_request('POST', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
+    http_request('POST', f'/policies/{str(policy_id)}/whitelist/hashes/{file_hash}', json={"comment": comment})
     demisto.results('ok')
 
 
@@ -137,7 +136,7 @@ def remove_hash_from_blacklist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    http_request('DELETE', '/policies/%s/blacklist/hashes/%s' % (str(policy_id), file_hash))
+    http_request('DELETE', f'/policies/{str(policy_id)}/blacklist/hashes/{file_hash}')
     demisto.results('ok')
 
 
@@ -147,7 +146,7 @@ def remove_hash_from_whitelist():
     """
     policy_id = demisto.args().get('policy_id')
     file_hash = demisto.args().get('file_hash')
-    http_request('DELETE', '/policies/%s/whitelist/hashes/%s' % (str(policy_id), file_hash))
+    http_request('DELETE', f'/policies/{str(policy_id)}/whitelist/hashes/{file_hash}')
     demisto.results('ok')
 
 

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 from datetime import timezone
-from typing import List, Dict, Any
+from typing import Any
 
 import json
 
@@ -72,7 +72,7 @@ class Client(BaseClient):
             url_suffix="/decoy/hosts",
             ok_codes=(200,)
         )
-        hosts: List = response["items"]
+        hosts: list = response["items"]
         for h in hosts:
             h["services"] = ", ".join(h["services"])
         return (
@@ -114,7 +114,7 @@ class Client(BaseClient):
             url_suffix="/decoy/hosts",
             ok_codes=(200,)
         )
-        hosts: List = response["items"]
+        hosts: list = response["items"]
         for decoy_host in hosts:
             if host == decoy_host["name"]:
                 return "True", {"IllusionBlack.IsHostDecoy": {"Host": host, "Value": True}}
@@ -132,11 +132,12 @@ class Client(BaseClient):
             url_suffix="/decoy/users",
             ok_codes=(200,)
         )
-        users: List = response["items"]
+        users: list = response["items"]
         for decoy_user in users:
             if user.lower() == decoy_user["user_name"]:
                 return "True", {"IllusionBlack.IsUserDecoy": {"User": user, "Value": True}}
             return "False", {"IllusionBlack.IsUserDecoy": {"User": user, "Value": False}}
+        return None
 
     def is_subdomain_decoy(self, subdomain):
         """
@@ -150,11 +151,12 @@ class Client(BaseClient):
             url_suffix="/decoy/recon",
             ok_codes=(200,)
         )
-        ti_decoys: List = response["items"]
+        ti_decoys: list = response["items"]
         for ti_decoy in ti_decoys:
             if subdomain == ti_decoy["name"]:
                 return "True", {"IllusionBlack.IsSubdomainDecoy": {"Subdomain": subdomain, "Value": True}}
             return "False", {"IllusionBlack.IsSubdomainDecoy": {"Subdomain": subdomain, "Value": False}}
+        return None
 
     def get_events(self, limit=None, query=None, from_time=None, to_time=None):
         """
@@ -174,7 +176,7 @@ class Client(BaseClient):
                 params={"limit": limit, "expfilter": query, "from": from_time, "to": to_time, "offset": offset},
                 ok_codes=(200,)
             )
-            meta: Dict = response["meta"]
+            meta: dict = response["meta"]
             amount = meta["paging"]["amount"]
 
             raw_events.extend(response["events"])
@@ -241,7 +243,7 @@ def process_events(events, threat_parse):
         threat_parse: Raw Threat Parse from IllusionBLACK
     Returns: A list of raw incidents with data pertinent to demisto incident format.
     """
-    raw_incident_data: Dict[str, Any] = {}
+    raw_incident_data: dict[str, Any] = {}
 
     for event in events:
         attacker_id = event.get("attacker.id", "")
@@ -323,7 +325,7 @@ def fetch_incidents(first_fetch, client):
     raw_incidents = process_events(events, all_threat_parse)
     incidents = []
 
-    for incident_id, raw_incident in raw_incidents.items():
+    for _incident_id, raw_incident in raw_incidents.items():
         incidents.append(create_incident(raw_incident))
     demisto.setLastRun({"last_run": to_time})
     return incidents

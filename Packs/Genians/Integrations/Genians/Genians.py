@@ -46,7 +46,7 @@ def http_request(method, url, body=None):
             verify=USE_SSL,
         )
         if result.status_code < 200 or result.status_code >= 300:
-            raise Exception("Error in Genian NAC Integration API Call. Code: {0}".format(str(result.status_code)))
+            raise Exception(f"Error in Genian NAC Integration API Call. Code: {str(result.status_code)}")
 
         json_result = result.json()
 
@@ -98,7 +98,7 @@ def assign_ip_tag_command():
     nodeid = result[0]["nl_nodeid"]
 
     if not nodeid:
-        demisto.results("IP not found. [{0}] is not exist in your network".format(IP))
+        demisto.results(f"IP not found. [{IP}] is not exist in your network")
     else:
         result2 = assign_ip_tag(nodeid)
 
@@ -109,7 +109,7 @@ def assign_ip_tag_command():
                 break
 
         if tag_check == TAG_NAME:
-            hr = "IP : [{0}], [{1}] Tag assign success.".format(IP, TAG_NAME)
+            hr = f"IP : [{IP}], [{TAG_NAME}] Tag assign success."
             assign_tag = {
                 "nodeId": nodeid,
                 "Name": TAG_NAME
@@ -125,7 +125,7 @@ def assign_ip_tag_command():
                 }
             })
         else:
-            raise Exception("IP : [{0}], [{1}] Tag assign fail.".format(IP, TAG_NAME))
+            raise Exception(f"IP : [{IP}], [{TAG_NAME}] Tag assign fail.")
 
 
 def unassign_ip_tag(nodeid: str, data):
@@ -141,7 +141,7 @@ def unassign_ip_tag_command():
     nodeid = result[0]["nl_nodeid"]
 
     if not nodeid:
-        demisto.results("IP not found. [{0}] is not exist in your network".format(IP))
+        demisto.results(f"IP not found. [{IP}] is not exist in your network")
     else:
         result2 = get_tag_list()
 
@@ -156,7 +156,7 @@ def unassign_ip_tag_command():
                 data = "[\"" + str(tag_check) + "\"]"
                 result3 = unassign_ip_tag(nodeid, data)
                 if str(result3) == "[]":
-                    hr = "IP : [{0}], [{1}] Tag unassign success.".format(IP, TAG_NAME)
+                    hr = f"IP : [{IP}], [{TAG_NAME}] Tag unassign success."
                     unassign_tag = {
                         "nodeId": nodeid,
                         "Name": TAG_NAME
@@ -172,18 +172,18 @@ def unassign_ip_tag_command():
                         }
                     })
                 else:
-                    raise Exception("IP : [{0}], [{1}] Tag unassign fail.".format(IP, TAG_NAME))
+                    raise Exception(f"IP : [{IP}], [{TAG_NAME}] Tag unassign fail.")
             else:
-                demisto.results("[{0}] Tag not found.".format(TAG_NAME))
+                demisto.results(f"[{TAG_NAME}] Tag not found.")
         else:
-            demisto.results("[{0}] Tag not found.".format(TAG_NAME))
+            demisto.results(f"[{TAG_NAME}] Tag not found.")
 
 
 def main():
     """Main execution block"""
     try:
 
-        LOG("Command being called is {0}".format(demisto.command()))
+        LOG(f"Command being called is {demisto.command()}")
 
         if demisto.command() == "test-module":
             get_ip_nodeid('8.8.8.8')
@@ -193,7 +193,7 @@ def main():
         elif demisto.command() == 'genians-unassign-ip-tag':
             unassign_ip_tag_command()
         else:
-            raise NotImplementedError("Command {} was not implemented.".format(demisto.command()))
+            raise NotImplementedError(f"Command {demisto.command()} was not implemented.")
 
     except Exception as e:
         return_error(str(e))
