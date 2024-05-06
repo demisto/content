@@ -25,17 +25,12 @@ configuration:
       - "https://app.gem.security/api"
       - "https://eu-west-1.app.gem.security/api"
   - display: Service Account ID
-    additionalinfo: The Service Account ID to use for connection
-    name: client_id
-    type: 0
-    section: Connect
+    name: credentials
+    defaultvalue: ""
+    type: 9
     required: true
-  - display: Service Account Secret
-    additionalinfo: The Service Account Secret to use for connection
-    name: client_secret
-    type: 4
     section: Connect
-    required: true
+    displaypassword: Service Account Secret
   - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
     defaultvalue: 30 days
     name: first_fetch

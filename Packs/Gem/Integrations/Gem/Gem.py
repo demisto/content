@@ -575,8 +575,8 @@ def init_client(params: dict) -> GemClient:
         base_url=params['api_endpoint'],
         verify=True,
         proxy=params.get('proxy', False),
-        client_id=params['client_id'],
-        client_secret=params['client_secret']
+        client_id=demisto.getParam('credentials')['identifier'] if demisto.getParam('credentials') else "",
+        client_secret=demisto.getParam('credentials')['password'] if demisto.getParam('credentials') else ""
     )
 
 
@@ -657,12 +657,8 @@ def get_resource_details(client: GemClient, args: dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: Object containing the resource details for display in Cortex XSOAR.
 
-    Raises:
-        DemistoException: If 'resource_id' is not provided in the arguments.
     """
-    resource_id = args.get('resource_id')
-    if not resource_id:
-        raise DemistoException('Resource ID is a required parameter.')
+    resource_id = args.get('resource_id', "")
 
     result = client.get_resource_details(resource_id)
 
@@ -685,13 +681,10 @@ def get_threat_details(client: GemClient, args: dict[str, Any]) -> CommandResult
     Returns:
         CommandResults: Object containing the threat details for display in Cortex XSOAR.
 
-    Raises:
-        DemistoException: If 'threat_id' is not provided in the arguments.
     """
-    threat_id = args.get('threat_id')
+    threat_id = args.get('threat_id', "")
 
-    if not threat_id:
-        raise DemistoException('Threat ID is a required parameter.')
+    
     result = client.get_threat_details(threat_id=threat_id)
 
     return CommandResults(
@@ -713,13 +706,9 @@ def get_alert_details(client: GemClient, args: dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: Object containing the alert details for display in Cortex XSOAR.
 
-    Raises:
-        DemistoException: If 'alert_id' is not provided in the arguments.
     """
-    alert_id = args.get('alert_id')
+    alert_id = args.get('alert_id', "")
 
-    if not alert_id:
-        raise DemistoException('Alert ID is a required parameter.')
     result = client.get_alert_details(alert_id=alert_id)
     result = _clean_description(result)
 
@@ -773,8 +762,6 @@ def list_threats(client: GemClient, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: Object containing the list of threats for display in Cortex XSOAR.
 
-    Raises:
-        DemistoException: If 'time_start' or 'time_end' is not provided in the arguments.
     """
     time_start = args.get('time_start')
     time_end = args.get('time_end')
@@ -786,12 +773,6 @@ def list_threats(client: GemClient, args: dict[str, Any]) -> CommandResults:
     severity = args.get('severity')
     entity_type = args.get('entity_type')
     cloud_provider = args.get('cloud_provider')
-
-    if not time_start:
-        raise DemistoException('Start time is a required parameter.')
-
-    if not time_end:
-        raise DemistoException('End time is a required parameter.')
 
     result = client.list_threats(time_start=time_start, time_end=time_end, limit=limit,
                                  ordering=ordering, status=status, ttp_id=ttp_id, title=title, severity=severity,
@@ -817,27 +798,12 @@ def _breakdown_validate_params(client: GemClient, args: dict[str, Any]) -> tuple
     Returns:
         tuple: A tuple containing extracted parameters.
 
-    Raises:
-        DemistoException: If any of the required parameters ('entity_id', 'entity_type', 'start_time', 'end_time')
-                          is not provided in the arguments.
     """
     entity_id = args.get('entity_id')
     entity_type = args.get('entity_type')
     read_only = args.get('read_only')
     start_time = args.get('start_time')
     end_time = args.get('end_time')
-
-    if not entity_id:
-        raise DemistoException('Entity ID is a required parameter.')
-
-    if not entity_type:
-        raise DemistoException('Entity Type is a required parameter.')
-
-    if not start_time:
-        raise DemistoException('Start time is a required parameter.')
-
-    if not end_time:
-        raise DemistoException('End time is a required parameter.')
 
     return entity_id, entity_type, read_only, start_time, end_time
 
@@ -1048,37 +1014,22 @@ def update_threat_status(client: GemClient, args: dict[str, Any]):
         client (GemClient): The Gem client object.
         args (dict): Command arguments, must include 'threat_id', 'status', 'verdict', and optionally 'reason'.
 
-    Raises:
-        DemistoException: If 'threat_id' is not provided in the arguments.
     """
-    threat_id = args.get('threat_id')
+    threat_id = args.get('threat_id', "")
     status = args.get('status')
     verdict = args.get('verdict')
     reason = args.get('reason')
 
-    if not threat_id:
-        raise DemistoException('Threat ID is a required parameter.')
     client.update_threat_status(threat_id=threat_id, status=status, verdict=verdict, reason=reason)
 
 
 def run_action_on_entity(client: GemClient, args: dict[str, Any]) -> CommandResults:
 
-    action = args.get('action')
-    entity_id = args.get('entity_id')
-    entity_type = args.get('entity_type')
-    alert_id = args.get('alert_id')
-    resource_id = args.get('resource_id')
-
-    if not action:
-        raise DemistoException('Action is a required parameter.')
-    if not entity_id:
-        raise DemistoException('Entity ID is a required parameter.')
-    if not entity_type:
-        raise DemistoException('Entity type is a required parameter.')
-    if not alert_id:
-        raise DemistoException('Alert ID is a required parameter.')
-    if not resource_id:
-        raise DemistoException('Resource ID is a required parameter.')
+    action = args.get('action', "")
+    entity_id = args.get('entity_id', "")
+    entity_type = args.get('entity_type', "")
+    alert_id = args.get('alert_id', "")
+    resource_id = args.get('resource_id', "")
 
     result = client.run_action_on_entity(action=action, entity_id=entity_id, entity_type=entity_type, alert_id=alert_id,
                                          resource_id=resource_id,)
@@ -1093,13 +1044,8 @@ def run_action_on_entity(client: GemClient, args: dict[str, Any]) -> CommandResu
 
 def add_timeline_event(client: GemClient, args: dict[str, Any]) -> CommandResults:
 
-    threat_id = args.get('threat_id')
-    comment = args.get('comment')
-
-    if not threat_id:
-        raise DemistoException('Threat ID is a required parameter.')
-    if not comment:
-        raise DemistoException('Comment is a required parameter.')
+    threat_id = args.get('threat_id', "")
+    comment = args.get('comment', "")
 
     result = client.add_timeline_event(threat_id=threat_id, comment=comment, timestamp=datetime.now().strftime(DATE_FORMAT))
     return CommandResults(
