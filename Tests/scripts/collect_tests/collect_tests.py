@@ -391,7 +391,6 @@ class TestCollector(ABC):
 
         for test_id in test_ids:
             if not (test_object := self.conf.get_test(test_id)):
-                # todo prevent this case, see CIAC-4006
                 continue
 
             # collect the pack containing the test playbook
@@ -923,7 +922,6 @@ class BranchTestCollector(TestCollector):
                 if yml.id_ in self.conf.test_id_to_test:
                     tests = yml.id_,
                 else:
-                    # todo fix in CIAC-4006
                     logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
                     tests = ()
                 reason = CollectionReason.TEST_PLAYBOOK_CHANGED
@@ -1530,7 +1528,7 @@ def output(result: CollectionResult | None):
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
-    modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
+    modeling_rules_to_test = [x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test]
     machines = result.machines if result and result.machines else ()
     packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 
@@ -1546,14 +1544,12 @@ def output(result: CollectionResult | None):
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
     logger.info(f'collected {len(packs_to_update_metadata)} packs to update:\n{packs_to_update_metadata_str}')
-    num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
-    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
+    logger.info(f'collected {len(modeling_rules_to_test)} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
     logger.info(f'collected {len(packs_to_reinstall_test)} packs to reinstall to test:\n{packs_to_reinstall_test_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
-    PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
     PATHS.output_packs_to_upload_file.write_text(json.dumps({'packs_to_upload': packs_to_upload,
                                                              'packs_to_update_metadata': packs_to_update_metadata}))
     PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
