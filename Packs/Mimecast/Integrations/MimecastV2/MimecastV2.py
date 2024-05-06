@@ -1007,9 +1007,9 @@ def get_policy():
     policies_list = get_policy_request(policy_type, policy_id)
     policies_context = []
     for policy_list in policies_list:
-        policy = policy_list.get('policy')
-        sender = policy.get('from')
-        reciever = policy.get('to')
+        policy = policy_list.get('policy', {})
+        sender = policy.get('from', {})
+        reciever = policy.get('to', {})
         contents.append({
             'Policy ID': policy_list['id'],
             'Sender': {
