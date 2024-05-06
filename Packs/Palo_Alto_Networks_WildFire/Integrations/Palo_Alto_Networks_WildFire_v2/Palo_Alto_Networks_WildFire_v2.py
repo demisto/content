@@ -1216,6 +1216,9 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     if file_info["malware"] == 'yes':
         dbot_score = 3
         tags = ['malware']
+    elif file_info["malware"] == 'grayware':
+        dbot_score = 2
+        tags = []
     else:
         dbot_score = 1
         tags = []
