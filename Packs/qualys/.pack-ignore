@@ -9,3 +9,6 @@ ignore=IM111
 
 [file:QualysCreateIncidentFromReport.yml]
 ignore=SC105
+
+[file:Qualysv2.yml]
+ignore=IN150,IN161

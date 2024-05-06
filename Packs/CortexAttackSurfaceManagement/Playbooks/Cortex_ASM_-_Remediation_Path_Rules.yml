@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - "51"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -1790
+          "x": 490,
+          "y": -2150
         }
       }
     note: false
@@ -230,6 +230,8 @@ tasks:
     nexttasks:
       '#default#':
       - "20"
+      Cortex Endpoint:
+      - "52"
       Unclaimed S3 Bucket:
       - "33"
       "yes":
@@ -253,7 +255,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer
+              simple: remediationattacksurfacerules
+            iscontext: true
       - - operator: inList
           left:
             value:
@@ -264,6 +267,77 @@ tasks:
           right:
             value:
               simple: AWS,GCP,Azure,On Prem
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmserviceowner
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: alert.asmdevcheckdetails
+                accessor: result
+            iscontext: true
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BypassDevCheck
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: Cortex Endpoint
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmattacksurfaceruleid
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+            iscontext: true
+          right:
+            value:
+              simple: remediationattacksurfacerules
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: alert.asmenrichmentstatus
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmenrichmentstatus.source
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CORTEX-ENDPOINT
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmenrichmentstatus.record_exists
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+                  - operator: isTrue
+                    left:
+                      value:
+                        simple: alert.asmenrichmentstatus.record_exists
+                      iscontext: true
+            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
@@ -333,8 +407,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -1660
+          "x": 490,
+          "y": -1830
         }
       }
     note: false
@@ -555,7 +629,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "36"
     scriptarguments:
       key:
         simple: AutoRemediationRequirements
@@ -567,7 +641,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -1195
+          "y": -1210
         }
       }
     note: false
@@ -603,8 +677,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -1480
+          "x": -110,
+          "y": -1475
         }
       }
     note: false
@@ -1027,8 +1101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -1480
+          "x": 1210,
+          "y": -1590
         }
       }
     note: false
@@ -1066,8 +1140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -1480
+          "x": 300,
+          "y": -1475
         }
       }
     note: false
@@ -1105,8 +1179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -1365
+          "x": 1210,
+          "y": -1475
         }
       }
     note: false
@@ -1138,7 +1212,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -865
+          "y": -955
         }
       }
     note: false
@@ -1652,39 +1726,73 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: e8c04311-35a4-4a38-832d-b9d29bc149a3
-    type: playbook
+  "51":
+    id: "51"
+    taskid: 42b54db4-31bd-45e0-8d37-b6e83f853688
+    type: regular
     task:
-      id: e8c04311-35a4-4a38-832d-b9d29bc149a3
+      id: 42b54db4-31bd-45e0-8d37-b6e83f853688
       version: -1
-      name: Cortex ASM - Remediation Objectives
-      description: Playbook that populates remediation objectives field used to display the remediation actions to the end user
-      playbookName: Cortex ASM - Remediation Objectives
-      type: playbook
+      name: Set Attack Surface Rules list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "10"
     scriptarguments:
-      RemotePort:
-        complex:
-          root: alert
-          accessor: remoteport
-    separatecontext: true
+      key:
+        simple: remediationattacksurfacerules
+      value:
+        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack
+    separatecontext: false
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -1030
+          "x": 490,
+          "y": -2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: fd96a27b-b711-488a-8bb9-946f95720fea
+    type: regular
+    task:
+      id: fd96a27b-b711-488a-8bb9-946f95720fea
+      version: -1
+      name: Set remediationoptions context (AR Cortex Endpoint)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: remediationoptions
+      value:
+        simple: Automated remediation by isolating the endpoint on the network
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -1475
         }
       }
     note: false
@@ -1697,14 +1805,17 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "10_33_Unclaimed S3 Bucket": 0.55,
+      "10_34_yes": 0.83,
+      "10_52_Cortex Endpoint": 0.66,
       "16_17_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 3710,
+        "height": 4070,
         "width": 2470,
         "x": -370,
-        "y": -1790
+        "y": -2150
       }
     }
   }
