@@ -17,28 +17,12 @@ class Client(BaseClient):
     Client to use in the Exabeam DataLake integration. Overrides BaseClient
     """
 
-    def __init__(
-        self,
-        base_url: str,
-        username: str,
-        password: str
-        # verify: bool,
-        # proxy: bool,
-    ):
-        # super().__init__(
-        #     base_url=base_url, headers=HEADERS, verify=verify, proxy=proxy
-        # )
-        
-        super().__init__(
-            base_url=base_url, headers=HEADERS
-        )
-        
+    def __init__(self, base_url: str, username: str, password: str, verify: bool,
+                 proxy: bool, headers):
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=False, proxy=proxy)
         self.username = username
         self.password = password
-
-        # if not proxy:
-        #     self._session.trust_env = False  # TODO - need to check what this does
-
+        
         self._login()
 
     def _login(self):
@@ -48,28 +32,24 @@ class Client(BaseClient):
         Note: the session is automatically closed in BaseClient's __del__
         """
         headers = {"Csrf-Token": "nocheck"}
-        print(self._base_url)
-        self._http_request('POST', full_url=f'{self._base_url}/api/auth/login', data={
-            'username': self.username,
-            'password': self.password
-        },
-        headers=headers)
+        data = {"username": self.username, "password": self.password}
+        full_url=f"{self._base_url}/api/auth/login"
+        print(full_url)
+        print(self.username, self.password, self._verify)
+        self._http_request(
+            "POST",
+            full_url=f"{self._base_url}/api/auth/login",
+            headers=headers,
+            data=data,
+        )
         
-        # data = {"username": self.username, "password": self.password}
-        
-        # self._http_request(
-        #     "POST",
-        #     full_url=f"{self._base_url}/api/auth/login",
-        #     headers=headers,
-        #     data=data,
-        # )
-
 
     def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
-        print(self._base_url)
+        full_url = f'{self._base_url}/api/auth/check'
+        
         self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
     def query_datalake_request(self, search_query: dict) -> dict:
@@ -213,7 +193,12 @@ def main() -> None:
     credentials = params.get('credentials', {})
     username = credentials.get('identifier')
     password = credentials.get('password')
-    base_url = params.get('url', '')
+    base_url = params.get('url','')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
+    full_url=f"{base_url}/api/auth/login"
+    print(f'{full_url=}, {username=}, {password=}, {verify_certificate=}')
 
     # verify_certificate = not params.get("insecure", False)
 
@@ -222,10 +207,11 @@ def main() -> None:
     try:
         client = Client(
             base_url.rstrip('/'),
-            # verify=verify_certificate,
+            verify=verify_certificate,
             username=username,
-            password=password
-            # proxy=proxy,
+            password=password,
+            proxy=proxy,
+            headers=headers
         )
 
         demisto.debug(f"Command being called is {command}")
