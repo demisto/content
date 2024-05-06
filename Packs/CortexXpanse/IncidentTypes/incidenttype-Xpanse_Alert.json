@@ -8,7 +8,7 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {},
-        "mode": "Specific"
+        "mode": "All"
     },
     "hours": 0,
     "hoursR": 0,
@@ -16,7 +16,7 @@
     "layout": "Xpanse Alert Layout",
     "locked": false,
     "name": "Xpanse Alert",
-    "onChangeRepAlg": 0,
+    "onChangeRepAlg": 1,
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
