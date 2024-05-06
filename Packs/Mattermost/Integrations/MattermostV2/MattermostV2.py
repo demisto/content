@@ -321,10 +321,11 @@ CLIENT: HTTPClient
 ''' HELPER FUNCTIONS '''
 
 
-def get_war_room_url(url: str) -> str:
+def get_war_room_url(url: str, incident_id: str = '') -> str:
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
     if is_xsiam():
-        incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+        if not incident_id:
+            incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
         incident_url = urlparse(url)
         war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
         # executed from the incident War Room
@@ -609,10 +610,11 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
         channel_object = client.create_direct_channel_request(to, bot_id)
         channel_id = channel_object.get('id', '')
 
-    elif channel_name:  # if channel name provided
+    elif channel_name:  # if channel name provided and the channel was mirrored
         channel_id = get_channel_id_from_context(channel_name, investigation_id)
-    if not channel_id:
-        raise DemistoException(f"Did not find channel with name {channel_name}")
+
+        if not channel_id:
+            raise DemistoException(f"Did not find channel with name {channel_name}")
 
     return channel_id
 
@@ -925,7 +927,8 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
         server_link = server_links.get('server')
         incident_name = created_incident['name']
         incident_id = created_incident['id']
-        data = f'Successfully created incident {incident_name}.\n View it on: {server_link}#/WarRoom/{incident_id}'
+        incident_url = get_war_room_url(f'{server_link}#/WarRoom/{incident_id}', incident_id)
+        data = f'Successfully created incident {incident_name}.\n View it on: {incident_url}'
 
     return data
 
@@ -1016,19 +1019,27 @@ def find_mirror_by_investigation() -> dict:
 def test_module(client: HTTPClient) -> str:  # pragma: no cover
     """Tests connectivity with the client.
     """
-    if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not
-                              client.bot_access_token):
-        raise DemistoException("""Mirroring is enabled, however long running is disabled
-or the necessary bot authentication parameters are missing.
-For mirrors to work correctly, long running must be enabled and you must provide all
-the MatterMost-bot following parameters:
-Bot Access Token""")
+    try:
+        client.get_user_request(user_id='me', bot_user=False)  # Validating the Personal Access Token
+    except Exception as e:
+        demisto.debug(str(e))
+        if 'Invalid or expired session, please login again.' in str(e):
+            raise DemistoException('Invalid or expired session. Make sure the Personal Access Token is configured properly.')
+        else:
+            raise e
 
     try:
-        client.get_user_request(user_id='me', bot_user=False)
-        client.get_user_request(user_id='me', bot_user=True)
+        client.get_user_request(user_id='me', bot_user=True)  # Validating the Bot Access Token
+    except Exception as e:
+        demisto.debug(str(e))
+        if 'Invalid or expired session, please login again.' in str(e):
+            raise DemistoException('Invalid or expired session. Make sure the Bot Access Token is configured properly.')
+        else:
+            raise e
 
+    try:
         if client.notification_channel and client.team_name:
+            # Validating the default team and channel exists
             channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, client.notification_channel)
             client.send_notification_request(channel_details.get('id', ''), 'Hi there! This is a test message from XSOAR.')
 
@@ -1038,8 +1049,6 @@ Bot Access Token""")
             raise DemistoException('Could not find the team, make sure it is valid and/or exists.')
         elif 'Channel does not exist' in str(e):
             raise DemistoException('Channel does not exist.')
-        elif 'Invalid or expired session, please login again.' in str(e):
-            raise DemistoException('Invalid or expired session. Make sure the tokens are configured properly.')
         else:
             raise e
 
@@ -1052,7 +1061,7 @@ def get_team_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults
 
     team_details = client.get_team_request(team_name)
 
-    hr = tableToMarkdown('Team details:', team_details)
+    hr = tableToMarkdown('Team details:', team_details, headers=['name', 'display_name', 'type', 'id'])
     return CommandResults(
         outputs_prefix='Mattermost.Team',
         outputs_key_field='name',
@@ -1120,7 +1129,8 @@ def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandR
                 hr = f"Channel {channel_display_name} already exists."
             except Exception as sec_e:
                 if 'Channel does not exist.' in str(sec_e):
-                    hr = 'Could not create a new channel. An archived channel with the same name may exist in the provided team. Please choose a different name.'  # noqa: E501
+                    hr = 'Could not create a new channel. An archived channel with the same name may exist' \
+                        'in the provided team. Please choose a different name.'
                     raise DemistoException(hr)
                 else:
                     raise sec_e
@@ -1189,6 +1199,15 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
             else:
                 raise e
 
+    try:
+        client.close_channel_request(channel_details.get('id', '') or channel_id)
+        hr = f'The channel {channel_name} was delete successfully.'
+    except Exception as e:
+        if 'Channel does not exist.' in str(e):
+            hr = f'The channel {channel_name} was already deleted.'
+        else:
+            raise e
+
     mirror = find_mirror_by_investigation()
     integration_context = get_integration_context(SYNC_CONTEXT)
     if mirror:
@@ -1203,15 +1222,6 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
                                         mirror['auto_close'])
 
         set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
-    try:
-        client.close_channel_request(channel_details.get('id', '') or channel_id)
-        hr = f'The channel {channel_name} was delete successfully.'
-    except Exception as e:
-        if 'Channel does not exist.' in str(e):
-            hr = f'The channel {channel_name} was already deleted.'
-        else:
-            raise e
 
     return CommandResults(
         readable_output=hr
@@ -1289,11 +1299,10 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     Updates the integration context with a new or existing mirror.
     """
     if not MIRRORING_ENABLED:
-        demisto.error(" couldn't mirror investigation, Mirroring is disabled")
-    if MIRRORING_ENABLED and not LONG_RUNNING:
-        demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
-                      ' long running must be enabled.')
-
+        raise DemistoException("Couldn't mirror investigation, Mirroring is disabled")
+    if not LONG_RUNNING:
+        raise DemistoException('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
+                               ' long running must be enabled.')
     client = client
     mirror_type = args.get('type', 'all')
     direction = args.get('direction', 'Both')
@@ -1307,7 +1316,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     investigation = demisto.investigation()
     investigation_id = str(investigation.get('id'))
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
-        return_error('Sorry, but this action cannot be performed in the playground.')
+        raise DemistoException('This action cannot be performed in the playground.')
 
     integration_context = get_integration_context(SYNC_CONTEXT)
     if not integration_context or not integration_context.get('mirrors', []):
@@ -1388,8 +1397,9 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     if send_first_message:
         server_links = demisto.demistoUrls()
         server_link = server_links.get('server')
+        incident_url = get_war_room_url(f'{server_link}#/WarRoom/{investigation_id}', investigation_id)
         message_to_send = (f'This channel was created to mirror incident {investigation_id}.'
-                           f' \n View it on: {server_link}#/WarRoom/{investigation_id}')
+                           f' \n View it on: {incident_url}')
 
         client.send_notification_request(channel_id, message_to_send)
     if kick_admin:
@@ -1457,16 +1467,13 @@ def send_notification(client: HTTPClient, **args):
         # poll = create_poll(message_to_send)
 
     raw_data = client.send_notification_request(channel_id, message_to_send, props=poll)
-    if raw_data:
-        message_id = raw_data.get("message_id")
-        demisto.debug(f'MM: Got replay from post: {raw_data}')
-        # if entitlement:
-        #     save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
-        return CommandResults(
-            readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}'
-        )
-    else:
-        raise DemistoException('Could not send message to Mattermost.')
+    message_id = raw_data.get("id")
+    demisto.debug(f'MM: Got replay from post: {raw_data}')
+    # if entitlement:
+    #     save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
+    return CommandResults(
+        readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}'
+    )
 
 
 def create_poll(message: str, option_1: str = 'option 1', option_2: str = 'option 2'):  # pragma: no cover
@@ -1576,9 +1583,6 @@ def main():  # pragma: no cover
     handle_global_parameters(params)
 
     command = demisto.command()
-    # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
-    args = {key.replace('-', '_'): val for key, val in args.items()}
-
     try:
         global CLIENT
 
@@ -1598,6 +1602,8 @@ def main():  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'mirror-investigation':
+            return_results(mirror_investigation(client, **args))
+        elif command == 'mattermost-mirror-investigation':
             return_results(mirror_investigation(client, **args))
         elif command == 'send-notification':
             return_results(send_notification(client, **args))
@@ -1622,9 +1628,9 @@ def main():  # pragma: no cover
         elif command == 'mattermost-send-file':
             return_results(send_file_command(client, args))
         else:
-            return_error('Unrecognized command: ' + demisto.command())
+            raise DemistoException('Unrecognized command: ' + demisto.command())
 
-    except DemistoException as e:
+    except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 

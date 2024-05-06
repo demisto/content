@@ -2,9 +2,9 @@ Mattermost is an open-source, self-hostable online chat service with file sharin
 This integration was integrated and tested with version xx of MattermostV2.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-MattermostV2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mattermost-v2).
 
-## Configure MattermostV2 on Cortex XSOAR
+## Configure Mattermost v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for MattermostV2.
@@ -20,7 +20,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Enable Incident Mirroring |  | False |
     | Allow external users to create incidents via DM |  | False |
     | Long running instance. Required for investigation mirroring and direct messages. |  | False |
-    | Listen Port | You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -340,7 +339,7 @@ Lists users.
 | channel_name | The name of the channel to filters users by. If mentioned, a team name must be mentioned as well. | Optional | 
 | page | The page number to retrieve. Should be provided with the page_size argument. | Optional | 
 | page_size | The size of the page to retrieve. Should be provided with the page argument. | Optional | 
-| limit | How many results to retrieve. Default value is 50. | Optional | 
+| limit | How many results to retrieve. Default value is 50. If provided, overrides the page and page_size arguments. | Optional | 
 
 #### Context Output
 
@@ -432,7 +431,7 @@ Lists users.
 ### mattermost-send-file
 
 ***
-Deletes a channel.
+Sends a file.
 
 #### Base Command
 
@@ -465,9 +464,9 @@ Send a message using a chatbot app.
 | --- | --- | --- |
 | message | The message to send. | Required | 
 | channel | The channel name to send the notification to. Default value is the channel config parameter. | Optional | 
-| entry | The entry id of the file to upload with the message. | Optional | 
+| entry | An entry ID to send as a link. | Optional | 
 | to | The username or email of the user to send the message to. | Optional | 
-| ignoreAddURL | Adds the warroom link to the message. | Optional | 
+| ignoreAddURL | Adds the warroom link to the message. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -475,7 +474,7 @@ There is no context output for this command.
 ### mattermost-close-channel
 
 ***
-Deletes a channel.
+Closes a channel.
 
 #### Base Command
 
@@ -485,8 +484,8 @@ Deletes a channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_name | The team name of the channel to delete. Default value is the team in the integration configuration. | Optional | 
-| channel_name | The channel name of the channel to delete. | Required | 
+| team_name | The team name of the channel to close. Default value is the team in the integration configuration. | Optional | 
+| channel_name | The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
 
 #### Context Output
 
@@ -494,7 +493,7 @@ There is no context output for this command.
 ### close-channel
 
 ***
-Deletes a mirrored MatterMost channel.
+Closes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
 
 #### Base Command
 
@@ -505,7 +504,7 @@ Deletes a mirrored MatterMost channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_name | The team name of the channel to delete. Default value is the team in the integration configuration. | Optional | 
-| channel_name | The channel name of the channel to delete. | Required | 
+| channel_name | The channel name of the channel to delete. | Optional | 
 
 #### Context Output
 
@@ -531,3 +530,75 @@ Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
 #### Context Output
 
 There is no context output for this command.
+### close-channel
+
+***
+Closes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
+
+#### Base Command
+
+`close-channel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| team_name | The team name of the channel to delete. Default value is the team in the integration configuration. | Optional | 
+| channel_name | The channel name of the channel to delete. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### mattermost-mirror-investigation
+
+***
+Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+
+#### Base Command
+
+`mattermost-mirror-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
+| autoclose | Whether the channel is auto-closed when an investigation is closed. Possible values are: true, false. Default is true. | Optional | 
+| direction | The mirroring direction. Possible values are: Both, FromDemisto, ToDemisto. Default is Both. | Optional | 
+| channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+## Breaking changes from the previous version of this integration - Mattermost v2
+- New configuration parameters were added: Bot Access Token
+- 
+
+### Commands
+#### The following commands were removed in this version:
+* *commandName* - this command was replaced by XXX.
+* *commandName* - this command was replaced by XXX.
+
+### Arguments
+#### The following arguments were removed in this version:
+
+In the *commandName* command:
+* *argumentName* - this argument was replaced by XXX.
+* *argumentName* - this argument was replaced by XXX.
+
+#### The behavior of the following arguments was changed:
+
+In the *commandName* command:
+* *argumentName* - is now required.
+* *argumentName* - supports now comma separated values.
+
+### Outputs
+#### The following outputs were removed in this version:
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+## Additional Considerations for this version
+%%FILL HERE%%
+* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.

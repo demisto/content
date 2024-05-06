@@ -360,7 +360,7 @@ def test_send_notification_command(http_client, mocker):
     Then -
         Validate that
     """
-    mocker.patch.object(http_client, "send_notification_request", return_value={'message_id': 'message_id'})
+    mocker.patch.object(http_client, "send_notification_request", return_value={'id': 'message_id'})
     result = send_notification(http_client,
                                user_id='user1',
                                message='Hello',
@@ -368,6 +368,8 @@ def test_send_notification_command(http_client, mocker):
                                )
 
     assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
+
+
 ######### async tests #########
 
 

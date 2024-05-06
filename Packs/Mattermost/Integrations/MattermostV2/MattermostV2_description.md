@@ -6,9 +6,4 @@
 
 ### For sending messages using the ChatBot app and mirroring
 
-To enable the integration to communicate directly with Mattermost for mirroring or to send messages by Mattermost chatbot,
-make sure you have the following parameters:
-
-- Long running instance enabled
-- Bot Access Token
-- Enable Incident Mirroring
+To enable a direct communication with Mattermost for mirroring and sending messages by a Mattermost chat bot, make sure both of *Long running instance* and *Enabled Incident Mirroring* parameters are checked.
