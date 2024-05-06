@@ -62,7 +62,7 @@
     "id": "incident_outofftheoffice",
     "isReadOnly": false,
     "locked": false,
-    "name": "Out off the office",
+    "name": "Out of the office",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
