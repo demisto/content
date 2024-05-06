@@ -70,6 +70,12 @@ class Client(BaseClient):
             json_data=json_data
         )
 
+    def delete_object(self, object_id: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/object/{object_id}'
+        )
+
     def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
         return self._http_request(
             auth=(),
@@ -88,7 +94,7 @@ def pascal_case(s: str) -> str:
     return ''.join(word[:1].upper() + word[1:] for word in words)
 
 
-def convert_keys_to_pascal(objects: List[dict[str, Any]], key_mapping: Optional[dict[str, str]] = None) -> List[dict[str, str]]:
+def convert_keys_to_pascal(objects: List[dict[str, Any]], key_mapping: Optional[dict[str, str]] = None) -> List[dict[str, Any]]:
     """
     Convert keys of objects in a list to PascalCase, with optional key mapping.
 
@@ -174,7 +180,7 @@ def get_json_data(object_type_id: str, attributes: str = None, attributes_json: 
     }
 
 
-def get_create_update_outputs(res: Dict[str, any]) -> Dict[str, Any]:
+def parse_object_results(res: Dict[str, any]) -> Dict[str, Any]:
     pascal_res = convert_keys_to_pascal([res], {'id': 'ID'})
     outputs = [{k: v for k, v in obj_field.items() if k != 'ObjectType'} for obj_field in pascal_res]
     object_id = res.get('id')
@@ -319,7 +325,7 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
 
     json_data = get_json_data(object_type_id, attributes, attributes_json)
     res = client.create_object(json_data)
-    outputs, object_id = get_create_update_outputs(res).values()
+    outputs, object_id = parse_object_results(res).values()
 
     return CommandResults(
         outputs=outputs,
@@ -336,9 +342,44 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
 
     json_data = get_json_data(object_type_id, attributes, attributes_json)
     res = client.update_object(object_id, json_data)
-    _, object_id = get_create_update_outputs(res).values()
+    _, object_id = parse_object_results(res).values()
 
     return CommandResults(readable_output=f'Object {object_id} updated successfully')
+
+
+def jira_asset_object_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_id = args.get('object_id')
+
+    try:
+        client.delete_object(object_id)
+    except DemistoException as e:
+        if e.res.status_code == 404:
+            return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
+        else:
+            raise e
+
+    return CommandResults(readable_output=f'Object with id: {object_id} was deleted successfully')
+
+
+def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_id = args.get('object_id')
+
+    res = client.http_get(f'/object/{object_id}')
+    outputs = convert_keys_to_pascal([res], {'id': 'ID'})
+    hr_headers = ['ID', 'Label', 'Type']
+    readable_output = []
+    for output in outputs:
+        obj_type = output['ObjectType']['name']
+        del output['ObjectType']
+        del output['Attributes']
+        readable_output.append({**output, 'Type': obj_type})
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers)
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -375,25 +416,34 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        if command == 'jira-asset-object-schema-list':
+        elif command == 'jira-asset-object-schema-list':
             result = jira_asset_object_schema_list_command(client, args)
             return_results(result)
 
-        if command == 'jira-asset-object-type-list':
+        elif command == 'jira-asset-object-type-list':
             result = jira_asset_object_type_list_command(client, args)
             return_results(result)
 
-        if command == 'jira-asset-object-type-attribute-list':
+        elif command == 'jira-asset-object-type-attribute-list':
             result = jira_asset_object_type_attribute_list_command(client, args)
             return_results(result)
 
-        if command == 'jira-asset-object-create':
+        elif command == 'jira-asset-object-create':
             result = jira_asset_object_create_command(client, args)
             return_results(result)
 
-        if command == 'jira-asset-object-update':
+        elif command == 'jira-asset-object-update':
             result = jira_asset_object_update_command(client, args)
             return_results(result)
+
+        elif command == 'jira-asset-object-delete':
+            result = jira_asset_object_delete_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-object-get':
+            result = jira_asset_object_get_command(client, args)
+            return_results(result)
+
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
