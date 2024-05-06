@@ -1,0 +1,72 @@
+{
+    "code42_code42_raw": {
+        "actorAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorId": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorIpAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorName": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorType": {
+            "type": "string",
+            "is_array": false
+        },
+        "destination": {
+            "type": "string",
+            "is_array": false
+        },
+        "event": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "file": {
+            "type": "string",
+            "is_array": false
+        },
+        "process": {
+            "type": "string",
+            "is_array": false
+        },
+        "responseControls": {
+            "type": "string",
+            "is_array": false
+        },
+        "risk": {
+            "type": "string",
+            "is_array": false
+        },
+        "source": {
+            "type": "string",
+            "is_array": false
+        },
+        "success": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "type_": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

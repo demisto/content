@@ -15,6 +15,8 @@ xsiam
 coreirapimodule
 xdrir
 NGFW
+HTTPS
+SMTP
 
 [file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
 ignore=BA101
