@@ -13,13 +13,12 @@ from typing import Any
 import demisto_client
 
 from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS, \
-    send_api_request_with_retries
+    send_api_request_with_retries, fetch_pack_ids_to_install
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import string_to_bool
-
 
 TEST_DATA_PATTERN = '*_testdata.json'
 DATASET_NOT_FOUND_ERROR_CODE = 599
@@ -44,6 +43,7 @@ def check_if_pack_still_installed(client: demisto_client,
         True if the pack is still installed, False otherwise.
 
     """
+
     def success_handler(response_data):
         installed_packs = ast.literal_eval(response_data)
         installed_packs_ids = [pack.get('id') for pack in installed_packs]
@@ -99,17 +99,21 @@ def get_all_installed_packs(client: demisto_client, non_removable_packs: list):
         return None
 
 
-def uninstall_all_packs_one_by_one(client: demisto_client, hostname, non_removable_packs: list):
+def uninstall_all_packs_one_by_one(client: demisto_client, hostname, non_removable_packs: list, packs_to_be_installed=None):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
         non_removable_packs: list of packs that can't be uninstalled.
+        packs_to_be_installed: set of packs to be installed.
 
     Returns (bool):
         A flag that indicates if the operation succeeded or not.
     """
+
     packs_to_uninstall = get_all_installed_packs(client, non_removable_packs)
+    if packs_to_be_installed is not None and packs_to_uninstall:
+        packs_to_uninstall = set(packs_to_uninstall) - packs_to_be_installed
     logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
                  f'uninstall: {len(packs_to_uninstall)}')
     uninstalled_count = 0
@@ -353,6 +357,7 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
     Returns:
         Boolean - If the operation succeeded.
     """
+
     def should_try_handler(response) -> Any:
         if response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE:
             logging.info("Failed to delete dataset, probably it is not exist on the machine.")
@@ -442,6 +447,8 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('--modeling_rules_to_test_files', help='List of modeling rules test data to check.', required=True)
     parser.add_argument('--reset-core-pack-version', help='Reset the core pack version.', type=string_to_bool)
+    parser.add_argument('--pack_ids_to_install', help='Path to the packs to install file.')
+    parser.add_argument('--only_to_be_installed', help='True if should uninstall only going to be installed packs.')
 
     options = parser.parse_args()
 
@@ -467,11 +474,15 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     if options.reset_core_pack_version:
         success &= reset_core_pack_version(client, non_removable_packs)
     if success:
-        if options.one_by_one:
+        if options.only_to_be_installed:
+            packs_to_install = set(fetch_pack_ids_to_install(options.pack_ids_to_install))
+            logging.info(f'Packs to that are going to be installed: {packs_to_install}')
+            success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs, packs_to_install)
+        elif options.one_by_one:
             success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
         else:
             success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
-                wait_for_uninstallation_to_complete(client, non_removable_packs)
+                      wait_for_uninstallation_to_complete(client, non_removable_packs)
     success &= sync_marketplace(client=client)
     success &= delete_datasets_by_testdata(base_url=base_url,
                                            api_key=api_key,

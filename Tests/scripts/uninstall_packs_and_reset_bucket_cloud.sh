@@ -34,6 +34,14 @@ else
   echo "sleeping 120 seconds"
   sleep 120
 
+  if [ -n "$NIGHTLY" ]; then
+    PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt"
+    echo "Running in nightly environment. PACKS_TO_INSTALL set to: $MY_VAR"
+  else
+    PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.json"
+    echo "Not running in nightly environment. PACKS_TO_INSTALL set to: $MY_VAR"
+  fi
+
   python3 ./Tests/Marketplace/search_and_uninstall_pack.py --cloud_machine "${CLOUD_CHOSEN_MACHINE_IDS}" \
     --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" \
     --non-removable-packs "${NON_REMOVABLE_PACKS}" --one-by-one --build-number "${CI_PIPELINE_ID}" \

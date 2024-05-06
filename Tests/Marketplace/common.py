@@ -113,7 +113,6 @@ def get_updating_status(client: DemistoClient,
                         sleep_interval: int = 60,
                         request_timeout: int = 300,
                         ) -> tuple[bool, bool | None]:
-
     def success_handler(response):
         updating_status = 'true' in str(response).lower()
         logging.info(f"Got updating status: {updating_status}")
@@ -266,3 +265,19 @@ def send_api_request_with_retries(
     except Exception as e:
         logging.exception(f'{exception_message}. Additional info: {str(e)}')
     return False
+
+
+def fetch_pack_ids_to_install(packs_to_install_path: str):
+    """
+    Fetches the test list from the filter.
+
+    :param packs_to_install_path: Path to location of pack IDs to install file.
+    :return: List of Pack IDs if there are any, otherwise empty list.
+    """
+    tests_to_run = []
+    with open(packs_to_install_path) as filter_file:
+        tests_from_file = filter_file.readlines()
+        for test_from_file in tests_from_file:
+            test_clean = test_from_file.rstrip()
+            tests_to_run.append(test_clean)
+    return tests_to_run
