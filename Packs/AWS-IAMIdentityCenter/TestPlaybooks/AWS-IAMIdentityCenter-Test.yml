@@ -1,6 +1,5 @@
 id: AWS-IAMIdentityCenter-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AWS-IAMIdentityCenter-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -122,8 +122,7 @@ tasks:
       id: caa168bc-b412-4d7f-8c21-a4fd44b0e58d
       version: -1
       name: Get User
-      description: Retrieves information about the specified IAM user, including the
-        user creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
       script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-get-user
       type: regular
       iscommand: true
@@ -231,8 +230,7 @@ tasks:
       id: 8f11f8eb-a3cd-406d-8a1b-d0e465dccff0
       version: -1
       name: List Groups For User
-      description: Lists the IAM Identity Center groups that the specified IAM user
-        belongs to.
+      description: Lists the IAM Identity Center groups that the specified IAM user belongs to.
       script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-list-groups-for-user
       type: regular
       iscommand: true
@@ -397,8 +395,7 @@ tasks:
       id: 4cef1817-d067-424b-852f-c8c6b4d92a37
       version: -1
       name: Delete Group Membership
-      description: Deletes a user from all groups if a username is provided, or deletes
-        multiple memberships if a list of memberships is provided.
+      description: Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
       script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-delete-group-membership
       type: regular
       iscommand: true
@@ -511,3 +508,4 @@ inputs: []
 outputs: []
 quiet: true
 description: If the creation of the user or group fails, please ensure to manually delete any existing users or groups that were not properly added.
+fromversion: 6.10.0

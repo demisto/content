@@ -746,7 +746,7 @@ def main():     # pragma: no cover
     args = demisto.args()
     IdentityStoreId: str = args.get('IdentityStoreId', "") or params.get('IdentityStoreId', "")
     aws_default_region = params.get('defaultRegion')
-    aws_role_arn = params.get('roleArn')
+    aws_role_arn = params.get('roleArnCredentials', {}).get('password') or params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')

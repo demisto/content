@@ -7,9 +7,15 @@ sectionOrder:
 configuration:
 - display: Role Arn
   name: roleArn
-  required: false
-  section: Connect
   type: 4
+  section: Connect
+  required: false
+  hidden: true
+- displaypassword: Role Arn
+  name: roleArnCredentials
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Role Session Name
   name: roleSessionName
   required: false
