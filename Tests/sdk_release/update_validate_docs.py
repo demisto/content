@@ -26,12 +26,10 @@ def decode_base64(b64: str) -> str:
     return base64.b64decode(b64).decode("utf-8")
 
 
-class CannotFindWorkflowError(ValueError):
-    ...
+class CannotFindWorkflowError(ValueError): ...
 
 
-class CannotFindArtifactError(ValueError):
-    ...
+class CannotFindArtifactError(ValueError): ...
 
 
 class GitHubClient:
@@ -198,9 +196,10 @@ def main(
     github_token: Annotated[str, typer.Option("-t", "--github-token")],
     branch_name: Annotated[str, typer.Option("-b", "--branch-name")],
     release_owner: Annotated[str, typer.Option("-r", "--reviewer")],
-    is_draft: Annotated[bool, typer.Option("-d", "--draft")],
     artifact_folder: Annotated[Path, typer.Option("-f", "--artifact-folder")],
+    _is_draft: Annotated[str, typer.Option("-d", "--draft",)] = 'False',
 ) -> None:
+    is_draft = bool(_is_draft and (_is_draft.lower() == "true"))
     # Get generated `validate` docs from the branch workflow
     sdk_client = GitHubClient(
         organization=ORG_NAME,
