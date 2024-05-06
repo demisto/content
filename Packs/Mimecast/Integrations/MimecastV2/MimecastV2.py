@@ -3651,13 +3651,13 @@ def mimecast_update_address_alteration_policy_command(args: dict) -> CommandResu
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
     comment = args.get('comment')
     conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled'))
-    enforced = argToBoolean(args.get('enforced'))
+    enabled = argToBoolean(args.get('enabled')) # default value
+    enforced = argToBoolean(args.get('enforced')) # default value
     from_date = args.get('from_date')
-    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_eternal = argToBoolean(args.get('from_eternal'))  # default value
     from_part = args.get('from_part')
     to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal'))
+    to_eternal = argToBoolean(args.get('to_eternal')) # default value
     override = args.get('override')
 
     data = {
