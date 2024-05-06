@@ -742,6 +742,7 @@ class BranchTestCollector(TestCollector):
             service_account: str | None,
             private_pack_path: str | None = None,
             graph: bool = False,
+            build_bucket_path: str | None = None,
     ):
         """
 
@@ -755,6 +756,7 @@ class BranchTestCollector(TestCollector):
         self.branch_name = branch_name
         self.service_account = service_account
         self.private_pack_path: Path | None = Path(private_pack_path) if private_pack_path else None
+        self.build_bucket_path = build_bucket_path
 
     def _get_private_pack_files(self) -> tuple[str, ...]:
         if not self.private_pack_path:
@@ -1271,7 +1273,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         return CollectionResult.union(result)
 
     def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
-        failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.marketplace)
+        failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
         return self._collect_specific_marketplace_compatible_packs(failed_packs)
 
     def _collect_modeling_rule_packs(self) -> CollectionResult | None:
@@ -1609,6 +1611,8 @@ if __name__ == '__main__':
                         required=False)
     parser.add_argument('-up', '--pack_names', help="Packs to upload, will only collect what is related to them", default='',
                         required=False)
+    parser.add_argument('-bb', '--build_bucket', help="The build bucket path", default='',
+                        required=False)
 
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
@@ -1624,6 +1628,7 @@ if __name__ == '__main__':
     service_account = args.service_account
     graph = args.graph
     pack_to_upload = args.pack_names
+    build_bucket_path = args.build_bucket
     collector: TestCollector
 
     if args.changed_pack_path:
@@ -1642,7 +1647,7 @@ if __name__ == '__main__':
 
     elif nightly:
         collector = NightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
-                                         graph=graph)
+                                         graph=graph, build_bucket_path=build_bucket_path)
         # match marketplace:
         #     case MarketplaceVersions.XSOAR:
         #         collector = XSOARNightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,

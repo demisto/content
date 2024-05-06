@@ -212,6 +212,11 @@ validate-content-conf:
         popd
       fi
     - section_end "Replace Cortex XSOAR"
+
+    - section_start "Copy and Prepare Content Packs for Testing"
+    - BUILD_BUCKET_PATH=$(./Tests/scripts/copy_and_prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION")
+    - section_end "Copy and Prepare Content Packs for Testing"
+
     - section_start "Collect Tests" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
@@ -219,13 +224,13 @@ validate-content-conf:
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         [ -n "${DEMISTO_SDK_NIGHTLY}" ] && DEMISTO_SDK_NIGHTLY=true || DEMISTO_SDK_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --sdk-nightly $DEMISTO_SDK_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}"
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --sdk-nightly $DEMISTO_SDK_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}" -bb "${BUILD_BUCKET_PATH}"
       fi
     - section_end "Collect Tests"
 
-    - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
-    - section_end "Prepare Content Packs for Testing"
+    - section_start "Upload Content Packs for Testing"
+    - ./Tests/scripts/upload_content_packs_for_testing.sh "$MARKETPLACE_VERSION"
+    - section_end "Upload Content Packs for Testing"
 
     - section_start "Override and upload core packs versions"
     - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"

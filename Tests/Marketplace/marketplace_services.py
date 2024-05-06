@@ -3375,26 +3375,22 @@ def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.
     return index_json.get('commit')
 
 
-def get_failed_packs_from_previous_upload(service_account, marketplace=MarketplaceVersions.XSOAR):
+def get_failed_packs_from_previous_upload(service_account, build_bucket_path):
     """ Downloading index.json from GCP and extract failed packs.
 
     Args:
         service_account: service account to connect to GCP
-        marketplace:
+        build_bucket_path:
     Returns: failed packs.
 
     """
-    logging.info(f"get_failed_packs_from_previous_upload- {marketplace=}")
-    # bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace) # todo praisler verify all the dev buckets.
-    # storage_client = init_storage_client(service_account)
-    # storage_bucket = storage_client.bucket(bucket_name)
-    # index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
-    # index_blob = storage_bucket.blob(index_storage_path)
-    # index_string = index_blob.download_as_string()
-    # index_json = json.loads(index_string)
-    # return index_json.get('failed_packs') # TODO change name
-    return {"AHA"}
-
+    storage_client = init_storage_client(service_account)
+    build_bucket = storage_client.bucket(GCPConfig.CI_BUILD_BUCKET)
+    index_storage_path = os.path.join(build_bucket_path, 'content/packs/', f"{GCPConfig.INDEX_NAME}.json")
+    index_blob = build_bucket.blob(index_storage_path)
+    index_string = index_blob.download_as_string()
+    index_json = json.loads(index_string)
+    return index_json.get('failed_packs') # TODO change name
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
