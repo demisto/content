@@ -198,24 +198,22 @@ class CoreClient(BaseClient):
             return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                             json_data=json_data,params=params, data=data, timeout=timeout,
                                             raise_on_status=raise_on_status)
-        try:
-            # Replace params if supplied
-            address = urljoin(self._base_url, url_suffix)
-            headers = headers if headers else self._headers
-            data = json.dumps(json_data) if json_data else data
-            address = full_url if full_url else urljoin(self._base_url, url_suffix)
-            response = demisto._apiCall(
-                        method=method,
-                        path=address,
-                        data=data,
-                        headers=self._headers,
-                        timeout=timeout
-                    )
-            if ok_codes and response.get('status') not in ok_codes:
-                    self._handle_error(error_handler, response, with_metrics)
-            return json.loads(response['data'])
-        except Exception as exception:
-            raise DemistoException(exception)
+        # Replace params if supplied
+        address = urljoin(self._base_url, url_suffix)
+        headers = headers if headers else self._headers
+        data = json.dumps(json_data) if json_data else data
+        address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        response = demisto._apiCall(
+                    method=method,
+                    path=address,
+                    data=data,
+                    headers=self._headers,
+                    timeout=timeout
+                )
+        if ok_codes and response.get('status') not in ok_codes:
+                self._handle_error(error_handler, response, with_metrics)
+        return json.loads(response['data'])
+
 
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
