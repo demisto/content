@@ -101,8 +101,8 @@ validation_config.toml @YuvHayun @JudahSchwartz @GuyAfik @anara123 @SamuelFain
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @maimorag
-# /Packs/Core/Integrations/ @
-# /Packs/ApiModules/Scripts/CoreIRApiModule/* @
+/Packs/Core/Integrations/ @maimorag
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @maimorag
 
 # Dependencies
 poetry.lock @dorschw
