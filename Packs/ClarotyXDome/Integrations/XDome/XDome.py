@@ -660,18 +660,22 @@ def fetch_incidents(
     start_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "greater_or_equal", start_time)
     sort_by_update_time = [{"field": INCIDENT_TIMESTAMP_FIELD, "order": "asc"}]
 
-    device_alert_relations = client.force_get_all_device_alert_relations(
-        fields=DEVICE_ALERT_FIELDS,
-        filter_by=_and(
-            XDomeGetDeviceAlertRelationsCommand.exclude_retired_filter(),
-            only_unresolved_filter,
-            alert_types_filter,
-            no_last_run_dups_filter,
-            start_time_filter,
-        ),
-        sort_by=sort_by_update_time,
-        stop_after=MAX_INCIDENTS_PER_INTERVAL,
-    )
+    try:
+        device_alert_relations = client.force_get_all_device_alert_relations(
+            fields=DEVICE_ALERT_FIELDS,
+            filter_by=_and(
+                XDomeGetDeviceAlertRelationsCommand.exclude_retired_filter(),
+                only_unresolved_filter,
+                alert_types_filter,
+                no_last_run_dups_filter,
+                start_time_filter,
+            ),
+            sort_by=sort_by_update_time,
+            stop_after=MAX_INCIDENTS_PER_INTERVAL,
+        )
+    except DemistoException as e:
+        demisto.error(f"An error occurred while fetching xDome incidents:\n{str(e)}")
+        return last_run, []
 
     for dar in device_alert_relations:
         dar[INCIDENT_TIMESTAMP_FIELD] = _format_date(dar[INCIDENT_TIMESTAMP_FIELD])
@@ -710,13 +714,7 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(params['url'], '/api/v1')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not params.get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {command}')

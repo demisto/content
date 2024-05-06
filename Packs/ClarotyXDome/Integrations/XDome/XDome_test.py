@@ -11,13 +11,12 @@ you are implementing with your integration
 """
 
 import json
-import io
 import pytest
 import demistomock as demisto
 from XDome import Client
 
 INTEGRATION_PARAMS = {
-    "url": "https://test.io",
+    "url": "https://not.really.api.claroty.com",
     "credentials": {"password": "some_api_key"},
     "initial_fetch_time": "7 days",
     "alert_types": None,
@@ -31,7 +30,7 @@ def set_mocks(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -69,14 +68,14 @@ DEVICE_ALERT_SUCCESS_RESPONSE = {
                 "2023-10-19T16:32:04.127979+00:00"
             ],
             "device_ip_list": [
-                "10.101.10.27"
+                "1.1.1.1"
             ],
             "device_labels": [],
             "device_last_seen_list": [
                 "2023-10-19T16:32:01+00:00"
             ],
             "device_mac_list": [
-                "00:40:9d:10:15:b7"
+                "1a:2b:3c:d4:e5:f6"
             ],
             "device_network_list": [
                 "Corporate"
@@ -139,18 +138,18 @@ DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
                                                "advisory:\n"
                                                "        - AP12 / AP21 / AP32 / AP33 / AP41 / AP43 / AP61 / AP63 / SRX series",
             "vulnerability_cve_ids": [
-                "CVE-2020-24586",
-                "CVE-2020-24587",
-                "CVE-2020-24588",
-                "CVE-2020-26139",
-                "CVE-2020-26140",
-                "CVE-2020-26141",
-                "CVE-2020-26142",
-                "CVE-2020-26143",
-                "CVE-2020-26144",
-                "CVE-2020-26145",
-                "CVE-2020-26146",
-                "CVE-2020-26147"
+                "CVE-2020-11111",
+                "CVE-2020-22222",
+                "CVE-2020-33333",
+                "CVE-2020-44444",
+                "CVE-2020-55555",
+                "CVE-2020-66666",
+                "CVE-2020-77777",
+                "CVE-2020-88888",
+                "CVE-2020-99999",
+                "CVE-2020-00000",
+                "CVE-2020-12121",
+                "CVE-2020-13131"
             ],
             "vulnerability_cvss_v2_exploitability_subscore": 6.5,
             "vulnerability_cvss_v2_score": 3.3,
@@ -184,31 +183,15 @@ DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
             "vulnerability_last_updated": "2019-08-24T18:56:24.888211+00:00",
             "vulnerability_name": "FragAttacks",
             "vulnerability_published_date": "2021-05-12T00:00:00.485000+00:00",
-            "vulnerability_recommendations": "See the following advisories released by the vendors,\n"
-                                             "which details what mitigation steps should be done:\n"
-                                             "* Aruba - https://www.arubanetworks.com/assets/alert/ARUBA-PSA-2021-011.txt\n"
-                                             "* Arista - https://www.arista.com/en/support/advisories-notices/security-advisories"
-                                             "/12602-security\n"
-                                             "* Canonical (Ubuntu) - https://ubuntu.com/security/CVE-2020-24587\n"
-                                             "* Cisco - https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/"
-                                             "cisco-sa-wifi-faf\n"
-                                             "* Debian - https://security-tracker.debian.org/tracker/CVE-2020-24587\n"
-                                             "* Intel - https://www.intel.com/content/www/us/en/security-center/advisory/"
-                                             "intel-sa-00473.html\n"
-                                             "* Juniper Networks - https://kb.juniper.net/InfoCenter/index?page=content&id="
-                                             "JSA11170&cat=SIRT_1\n"
-                                             "* Lenovo - https://support.lenovo.com/us/en/product_security/LEN-57316\n"
-                                             "* Synology - https://www.synology.com/tr-tr/security/advisory/Synology_SA_21_20\n"
-                                             "* SUSE - https://www.suse.com/support/kb/doc/?id=000020244\n"
-                                             "* Wi-Fi Alliance - https://www.wi-fi.org/security-update-fragmentation",
+            "vulnerability_recommendations": "some vulnerability recommendations",
             "vulnerability_relevance": "Potentially Relevant",
             "vulnerability_relevance_sources": [
                 "Claroty"
             ],
             "vulnerability_sources": [
                 {
-                    "name": "vanhoefm",
-                    "url": "https://www.fragattacks.com/#intro"
+                    "name": "vulnerability source name 1",
+                    "url": "https://not.really.vulnerability.source.url"
                 }
             ],
             "vulnerability_type": "Platform"
