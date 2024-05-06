@@ -24,6 +24,8 @@ jobs:
 
     - name: Merge changes
       run: |
+        git config --global user.email "laurasfo@ext.inditex.com"
+        git config --global user.name "Laura Sangeao Fontán"
         git merge upstream/master  # Replace 'main' with the name of the branch you want to sync with
 
     - name: Push changes
