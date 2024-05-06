@@ -61,6 +61,7 @@ UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 ]
 REGEX_EXTRACT_MACHINE = re.compile(r"qa2-test-\d+")
+BUILD_STATUS_SLACK_CHANNEL = "test_slack_notifier_when_master_is_broken"
 
 
 def options_handler() -> argparse.Namespace:
@@ -679,30 +680,33 @@ def main():
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
                                                                pipeline_to_compare=current_pipeline)
                     if pipeline_changed_status is not None:
-                        # if we already sent a shame message for newer commits, we don't want to send another one for older commits,
-                        # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
+                        computed_slack_channel = BUILD_STATUS_SLACK_CHANNEL
                         if was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
-                            #get the tread id
-                            slack_job_id = get_slack_message_job_id(gitlab_client=gitlab_client,
-                                                                       project_id=project_id,
-                                                                       pipeline_id=current_pipeline.id)
-                            thread_id = get_thread_id_from_job_artifacts(gitlab_client=gitlab_client,
-                                                                       project_id=project_id, job_id=slack_job_id)
-                            if thread_id:
-                                special_message = "whatever"
-                                try:
-                                    response = slack_client.chat_postMessage(text="",
-                                                                            channel="test_slack_notifier_when_master_is_broken",
-                                                                            attachments=special_message,
-                                                                            username=SLACK_USERNAME, link_names=True,
-                                                                            thread_ts=thread_id)
-                                except Exception:
-                                    pass#TODO
-                            
+                            # If a message was already sent for newer pipelines, no need to send another one for older ones
+                            # but if this is a fix message we should send a message to the thread of the breaking message,
+                            # to notify that the issue was resolved.
+                            if pipeline_changed_status:
+                                slack_job_id = get_slack_message_job_id(gitlab_client=gitlab_client,
+                                                                        project_id=project_id,
+                                                                        pipeline_id=current_pipeline.id)
+                                #get the thread id
+                                thread_id = get_thread_id_from_job_artifacts(gitlab_client=gitlab_client,
+                                                                        project_id=project_id, job_id=slack_job_id)
+                                if thread_id:
+                                    special_message = "whatever"
+                                    try:
+                                        response = slack_client.chat_postMessage(text="",
+                                                                                channel=BUILD_STATUS_SLACK_CHANNEL,
+                                                                                attachments=special_message,
+                                                                                username=SLACK_USERNAME, link_names=True,
+                                                                                thread_ts=thread_id)
+                                    except Exception:
+                                        logging.exception(f'Failed to send Slack message \
+                                            to channel {BUILD_STATUS_SLACK_CHANNEL} with thread id {thread_id}')
+                                        pass
                         else:
                             shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
                                                                 options.name_mapping_path)
-                            computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow,
                                                             pipeline_url,
@@ -721,11 +725,12 @@ def main():
             response = slack_client.chat_postMessage(text="",
                 channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
             )
-            #adding the thread_ts to the message that was saved in the artifacts folder
-            data: dict = response.data  # type: ignore[assignment]
-            thread_ts: str = data['ts']
-            with open(output_file, 'a') as f:
-                f.write(f"\n The message above was sent to channel {channel} with thread id: {thread_ts}")
+            if channel == BUILD_STATUS_SLACK_CHANNEL:
+                #adding the thread id to the message that was saved in the artifacts folder
+                data: dict = response.data  # type: ignore[assignment]
+                thread_ts: str = data['ts']
+                with open(output_file, 'a') as f:
+                    f.write(f"\n The message above was sent to channel {channel} with thread id: {thread_ts}")
             
             if threaded_messages:
                 for slack_msg in threaded_messages:
