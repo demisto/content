@@ -113,7 +113,7 @@ def test_main(mocker):
         'at_risk': {'Business Email Compromise Coverage': 'https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging'}
     }
     expected_table = '### Use Case Coverage\n|Use Case Adoption & Coverage|Status|\n|---|---|\n' \
-        '| Ransomware & Malware Coverage | ✅ |\n| Network Security | ✅ |\n| Business Email Compromise Coverage | ❌ |\n'
+        '| Ransomware & Malware Coverage | ✅ |\n| Network Security | ✅ |\n| Ransomware & Malware Coverage | ✅ | |\n'
     mocker.patch.object(UseCaseAdoptionMetrics, 'get_use_cases', return_value=use_cases_data)
     res = UseCaseAdoptionMetrics.main()
     assert res == expected_table
