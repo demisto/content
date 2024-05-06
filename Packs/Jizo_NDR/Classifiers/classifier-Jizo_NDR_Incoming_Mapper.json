@@ -34,11 +34,7 @@
 		},
         "dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"severity": {
-					"simple": "severity"
-				}
-			}
+			"internalMapping": {}
 		}
 	},
 	"name": "Jizo NDR - Incoming Mapper",
