@@ -9,7 +9,7 @@ configuration:
   - section: Connect
     display: 'Server URL (e.g., https://api.zoom.us/v2)'
     name: url
-    defaultvalue: 'https://api.zoom.us/v2'
+    defaultvalue: 'https://api.zoom.us/v2/'
     type: 0
     required: true
   - section: Collect
@@ -34,6 +34,11 @@ configuration:
     name: credentials
     type: 9
     required: true
+  - section: Connect
+    display: Account ID
+    name: account_id
+    type: 0
+    required: true
   - section: Collect
     display: First fetch time
     name: first_fetch
@@ -57,10 +62,6 @@ configuration:
     defaultvalue: "1"
     type: 19
     required: false
-  - display: Account ID
-    name: account_id
-    type: 0
-    required: false
   - display: Fetch Mailbox
     name: fetch_from
     type: 0
@@ -71,11 +72,16 @@ configuration:
     type: 0
     required: false
     additionalinfo: Elastic query to filter messages in the specified inbox.
+  - display: Fetch Labels
+    name: fetch_labels
+    type: 0
+    required: false
+    additionalinfo: Specify the folder that the messages will be fetched from.
 script:
   script: ""
   type: python
   commands:
-    - name: zoom-mail-trash-email
+    - name: zoom-mail-email-move-trash
       arguments:
         - name: email
           required: true
@@ -84,7 +90,7 @@ script:
           description: The message_id of the message to delete
           required: true
       description: Move a message to the trash.
-    - name: zoom-mail-list-emails
+    - name: zoom-mail-email-list
       arguments:
         - name: email
           required: true
@@ -98,7 +104,7 @@ script:
         - name: include_spam_trash
           description: Whether or not to include spam or trash messages in the results.
       description: Lists the messages in the user's mailbox.
-    - name: zoom-mail-get-email-thread
+    - name: zoom-mail-thread-list
       arguments:
         - name: email
           required: true
@@ -121,7 +127,7 @@ script:
         - name: page_token
           description: The token for the next page of results.
       description: Get an email thread.
-    - name: zoom-mail-get-email-attachment
+    - name: zoom-mail-email-attachment-get
       arguments:
         - name: email
           required: true
@@ -160,6 +166,7 @@ script:
           isArray: true
         - name: subject
           description: The subject of the email.
+          required: true
         - name: body
           description: The plain text body of the email.
         - name: html_body
@@ -169,12 +176,12 @@ script:
           isArray: true
       description: Sends an email message with support for plain text, HTML, and
         attachments.
-    - name: zoom-mail-get-mailbox-profile
+    - name: zoom-mail-mailbox-profile-get
       arguments:
         - name: email
           description: The target mailbox.
       description: Retrieves the mailbox profile.
-    - name: zoom-mail-list-users
+    - name: zoom-mail-user-list
       description: Lists the available users.
       arguments:
         - name: status
