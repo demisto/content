@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e0b636e0-7589-4795-84a0-239b759f0a76
+    taskid: 2f6915d9-8bf7-4e82-871e-117bbd305ea1
     type: start
     task:
-      id: e0b636e0-7589-4795-84a0-239b759f0a76
+      id: 2f6915d9-8bf7-4e82-871e-117bbd305ea1
       version: -1
       name: ""
       iscommand: false
@@ -32,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: c3c4c7e0-95d8-49c7-8370-b7fd8af76e7f
+    taskid: db89ebd4-67f4-45a7-8941-62b71fed31a1
     type: regular
     task:
-      id: c3c4c7e0-95d8-49c7-8370-b7fd8af76e7f
+      id: db89ebd4-67f4-45a7-8941-62b71fed31a1
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -66,16 +67,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 9551c808-8e0e-47b4-8865-788625ca916c
+    taskid: f5e8ce3d-463c-47d2-8a5a-46c30df914d0
     type: regular
     task:
-      id: 9551c808-8e0e-47b4-8865-788625ca916c
+      id: f5e8ce3d-463c-47d2-8a5a-46c30df914d0
       version: -1
       name: Censys View Host
-      description: Returns detailed information for an IP address or SHA256 within
-        the specified index.
+      description: Returns detailed information for an IP address or SHA256 within the specified index.
       script: '|||cen-view'
       type: regular
       iscommand: true
@@ -103,12 +104,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 2e3b2466-aec0-4c2a-8665-54499c5fedd7
+    taskid: dc449e1f-418b-4890-8e83-7c727d277a07
     type: condition
     task:
-      id: 2e3b2466-aec0-4c2a-8665-54499c5fedd7
+      id: dc449e1f-418b-4890-8e83-7c727d277a07
       version: -1
       name: Check Outputs
       type: condition
@@ -145,16 +147,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 08cffc3a-c662-48e8-8030-af21aa29fb1d
+    taskid: 2de82fc2-b4cf-442d-8636-caf82109eada
     type: regular
     task:
-      id: 08cffc3a-c662-48e8-8030-af21aa29fb1d
+      id: 2de82fc2-b4cf-442d-8636-caf82109eada
       version: -1
       name: Censys Certs View
-      description: Returns detailed information for an IP address or SHA256 within
-        the specified index.
+      description: Returns detailed information for an IP address or SHA256 within the specified index.
       script: '|||cen-view'
       type: regular
       iscommand: true
@@ -182,12 +184,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 8d2b1a3d-cf1a-4a1b-888b-4990c687f2c1
+    taskid: 0cc15261-56c4-4e23-85d3-7d512e8adbb2
     type: condition
     task:
-      id: 8d2b1a3d-cf1a-4a1b-888b-4990c687f2c1
+      id: 0cc15261-56c4-4e23-85d3-7d512e8adbb2
       version: -1
       name: Check Outputs
       type: condition
@@ -200,19 +203,19 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Censys.View.parsed
-            iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: Censys.View.fingerprint_sha256
+              simple: Censys.View.[1].fingerprint_sha256
             iscontext: true
           right:
             value:
               simple: 9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Censys.View.[1].parsed
+            iscontext: true
     view: |-
       {
         "position": {
@@ -227,16 +230,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 4b941d4f-a3a0-47ff-8eb7-2cdf1d04e7b3
+    taskid: 2a75d0b3-ea92-4489-81e7-ea57931e46e5
     type: regular
     task:
-      id: 4b941d4f-a3a0-47ff-8eb7-2cdf1d04e7b3
+      id: 2a75d0b3-ea92-4489-81e7-ea57931e46e5
       version: -1
       name: Censys search host
-      description: Returns previews of hosts matching a specified search query or
-        a list of certificates that match the given query.
+      description: Returns previews of hosts matching a specified search query or a list of certificates that match the given query.
       script: '|||cen-search'
       type: regular
       iscommand: true
@@ -266,12 +269,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: a8935a5c-f3fe-4c81-8f4d-ea0f4ee4b051
+    taskid: a6ea9caf-a05f-41b3-8910-2201f539cb71
     type: condition
     task:
-      id: a8935a5c-f3fe-4c81-8f4d-ea0f4ee4b051
+      id: a6ea9caf-a05f-41b3-8910-2201f539cb71
       version: -1
       name: Check Outputs
       type: condition
@@ -308,16 +312,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: 5c97bd74-b11c-4e87-8ecc-46372801c63b
+    taskid: 4e9447b6-9b21-4db3-865c-73563cfde116
     type: regular
     task:
-      id: 5c97bd74-b11c-4e87-8ecc-46372801c63b
+      id: 4e9447b6-9b21-4db3-865c-73563cfde116
       version: -1
       name: Censys Certs Search
-      description: Returns previews of hosts matching a specified search query or
-        a list of certificates that match the given query.
+      description: Returns previews of hosts matching a specified search query or a list of certificates that match the given query.
       script: '|||cen-search'
       type: regular
       iscommand: true
@@ -347,12 +351,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 0c33078e-b17e-45d8-884c-0a815af48f11
+    taskid: 2d5a862a-ef3e-477d-86c1-5b52b6175cd8
     type: condition
     task:
-      id: 0c33078e-b17e-45d8-884c-0a815af48f11
+      id: 2d5a862a-ef3e-477d-86c1-5b52b6175cd8
       version: -1
       name: Check Outputs
       type: condition
@@ -360,7 +365,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -384,20 +389,56 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 6425f7d8-9f66-4266-889e-a19e1634c48c
-    type: regular
+    taskid: 0d836439-1f27-4c82-8180-1be3ec39d2b8
+    type: title
     task:
-      id: 6425f7d8-9f66-4266-889e-a19e1634c48c
+      id: 0d836439-1f27-4c82-8180-1be3ec39d2b8
       version: -1
-      name: Close Investigation
+      name: Done
       description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: Builtin
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "11":
+    id: "11"
+    taskid: 97b54730-84dc-40ad-8759-3a46427997bc
+    type: regular
+    task:
+      id: 97b54730-84dc-40ad-8759-3a46427997bc
+      version: -1
+      name: IP
+      description: Runs reputation on IPs
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -412,12 +453,137 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9b6cebfb-20a8-40d2-8ea1-f1c5dabed367
+    type: condition
+    task:
+      id: 9b6cebfb-20a8-40d2-8ea1-f1c5dabed367
+      version: -1
+      name: Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Censys.IP.autonomous_system
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Censys.IP.location
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: dbd5bdf8-d4e4-4d78-8ec9-cb3a4cbb10f2
+    type: regular
+    task:
+      id: dbd5bdf8-d4e4-4d78-8ec9-cb3a4cbb10f2
+      version: -1
+      name: Domain
+      description: Checks the reputation of a domain.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      domain:
+        simple: amazon.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e7192ce9-d537-40e2-81be-45aec0af6b4b
+    type: condition
+    task:
+      id: e7192ce9-d537-40e2-81be-45aec0af6b4b
+      version: -1
+      name: Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Censys.Domain.autonomous_system
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Censys.Domain.location
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1915,
+        "height": 2575,
         "width": 380,
         "x": 450,
         "y": 50
