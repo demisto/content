@@ -685,7 +685,7 @@ def main():
                             # If a message was already sent for newer pipelines, no need to send another one for older ones
                             # but if this is a fix message we should send a message to the thread of the breaking message,
                             # to notify that the issue was resolved.
-                            if pipeline_changed_status:
+                            if not pipeline_changed_status:
                                 slack_job_id = get_slack_message_job_id(gitlab_client=gitlab_client,
                                                                         project_id=project_id,
                                                                         pipeline_id=current_pipeline.id)
