@@ -86,7 +86,7 @@ EXPECTED_LIST_INCIDENT = {
                 'Watchlisted': False,
                 "Policystarttime": 1692950376801,
                 "Policyendtime": 1695613655539,
-                "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+                "Solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
             }
         ]
 }
@@ -115,7 +115,7 @@ EXPECTED_GET_INCIDENT = {
             "Watchlisted": False,
             "Policystarttime": 1692950376801,
             "Policyendtime": 1695613655539,
-            "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+            "Solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
         }
     ]
 }
@@ -168,7 +168,7 @@ EXPECTED_LIST_WATCHLISTS = {
 EXPECTED_GET_WATCHLIST = {
     'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)':
         {
-            'Watchlistname': 'test',
+            'Watchlistname': "Flight RiskUsers",
             'Type': None,
             'TenantID': '1',
             'TenantName': 'Securonix',
@@ -344,6 +344,75 @@ EXPECTED_LIST_VIOLATION_DATA_6_4 = [
         "Resourcecomments": "ingestion_2.0",
     }
 ]
+
+EXPECTED_LIST_ACTIVITY = {
+    "Securonix.Activity(val.command_name === obj.command_name)": {
+        "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+        "totalDocuments": 4,
+        "command_name": "securonix-list-activity-data"
+    },
+    "Securonix.ActivityData(val.EventID === obj.EventID)": [
+        {
+            "Accountname": "ACCOUNT_001",
+            "Accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-1",
+            "Agentfilename": "test.txt",
+            "Categorybehavior": "Account Create",
+            "Categoryobject": "Account Management",
+            "Categoryseverity": "0",
+            "Collectionmethod": "file",
+            "Collectiontimestamp": "1690803374000",
+            "Destinationusername": "TEST134044",
+            "Devicehostname": "HOST.com",
+            "EventID": "00000000-0000-0000-0000-000000000001",
+            "Eventoutcome": "Success",
+            "Filepath": "N/A",
+            "Ingestionnodeid": "CONSOLE",
+            "Jobstarttime": "1690803374000",
+            "Message": "A user account was created.",
+            "Publishedtime": "1690803374572",
+            "Receivedtime": "1690803420706",
+            "Resourcename": "HOST.com",
+            "Sourceusername": "USER",
+            "TenantID": "2",
+            "Tenantname": "Response-Automation",
+            "Timeline": "1670911200000"
+        },
+        {
+            "Accountname": "ACCOUNT_002",
+            "Accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-2",
+            "Agentfilename": "test.txt",
+            "Categorybehavior": "Account Create",
+            "Categoryobject": "Account Management",
+            "Categoryseverity": "0",
+            "Collectionmethod": "file",
+            "Collectiontimestamp": "1690803374000",
+            "Destinationusername": "TEST134044",
+            "Devicehostname": "HOST.com",
+            "EventID": "00000000-0000-0000-0000-000000000002",
+            "Eventoutcome": "Success",
+            "Filepath": "N/A",
+            "Ingestionnodeid": "CONSOLE",
+            "Jobstarttime": "1690803374000",
+            "Message": "A user account was created.",
+            "Publishedtime": "1690803374572",
+            "Receivedtime": "1690803420500",
+            "Resourcename": "HOST.com",
+            "Sourceusername": "USER",
+            "TenantID": "2",
+            "Tenantname": "Response-Automation",
+            "Timeline": "1670911200000"
+        }
+    ]
+}
+
+EXPECTED_LIST_ACTIVITY_NO_DATA = {
+    "Securonix.Activity(val.command_name === obj.command_name)": {
+        "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+        "totalDocuments": 4,
+        "message": "All records have been retrieved. No more results to be fetched.",
+        "command_name": "securonix-list-activity-data"
+    }
+}
 
 EXPECTED_LIST_WHITELISTS_ENTRY = {
     'Securonix.Whitelist(val.WhitelistName === obj.WhitelistName && val.TenantName === obj.TenantName)': [
