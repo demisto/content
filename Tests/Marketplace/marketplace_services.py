@@ -3390,7 +3390,7 @@ def get_failed_packs_from_previous_upload(service_account, build_bucket_path):
     index_blob = build_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
-    return index_json.get('failed_packs') # TODO change name
+    return index_json.get('failed_packs', []) # TODO change name
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
