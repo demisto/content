@@ -82,7 +82,7 @@ class TestGetRequestsKwargs:
         """
         client = Client(params={})
         _json = {'test': 'test'}
-        output = get_requests_kwargs(client, _json=_json)
+        output = get_requests_kwargs(_json=_json)
         expected_output = {'data': '{"request_data": {"test": "test"}}'}
         assert output == expected_output, f'get_requests_kwargs(_json={_json})\n\treturns: {output}\n\t instead: {expected_output}'     # noqa: E501
 
