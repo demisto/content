@@ -609,6 +609,7 @@ def run_query_command(offset, items, ip_as_string):
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
+    query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
@@ -625,6 +626,7 @@ def run_query_command(offset, items, ip_as_string):
     try:
         api = Client(auth={"token": READER_OAUTH_TOKEN},
                      address=READER_ENDPOINT,
+                     timeout=query_timeout,
                      config=ClientConfig(response="json", stream=False))
 
         results = api.query(query=to_query, dates={'from': from_time, 'to': to_time}, ip_as_string=ip_as_string)
@@ -692,6 +694,7 @@ def get_alerts_command(offset, items):
     alert_filters = demisto.args().get("filters", None)
     write_context = demisto.args()["writeToContext"].lower()
     linq_base = demisto.args().get("linqLinkBase", None)
+    query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
     filtered_columns = demisto.args().get("filtered_columns", None)
@@ -727,6 +730,7 @@ def get_alerts_command(offset, items):
 
     api = Client(auth={"token": READER_OAUTH_TOKEN},
                  address=READER_ENDPOINT,
+                 timeout=query_timeout,
                  config=ClientConfig(response="json", stream=False))
 
     results = api.query(query=query, dates={'from': from_time, 'to': to_time, 'timeZone': "UTC"})
@@ -804,6 +808,7 @@ def multi_table_query_command(offset, items):
     tables_to_query = check_type(demisto.args()["tables"], list)
     search_token = demisto.args()["searchToken"]
     timestamp_from = demisto.args()["from"]
+    query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
     filtered_columns = demisto.args().get("filtered_columns", None)
@@ -816,6 +821,7 @@ def multi_table_query_command(offset, items):
 
     api = Client(auth={"token": READER_OAUTH_TOKEN},
                  address=READER_ENDPOINT,
+                 timeout=query_timeout,
                  config=ClientConfig(response="json", stream=False))
 
     api.get_types = partial(get_types, api)
