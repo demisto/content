@@ -37,7 +37,7 @@ echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
 GCS_BUILD_BUCKET="marketplace-ci-build"
-BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX/$MARKETPLACE_TYPE"
+BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/$MARKETPLACE_TYPE"
 BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_CONTENT_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUILD_BUCKET_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
@@ -72,4 +72,3 @@ fi
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to build bucket at target path: gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH"
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/Prepare_Content_Packs_For_Testing_gsutil.log" 2>&1
 echo "Finished copying successfully."
-echo "$BUILD_BUCKET_PATH"

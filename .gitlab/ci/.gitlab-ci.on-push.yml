@@ -213,8 +213,9 @@ validate-content-conf:
       fi
     - section_end "Replace Cortex XSOAR"
 
+    - export BUILD_BUCKET_PATH="content/builds/${CI_COMMIT_BRANCH}/${CI_PIPELINE_ID}/${MARKETPLACE_VERSION}" # TODO USE IT IN THE SCRIPTS
     - section_start "Copy and Prepare Content Packs for Testing"
-    - BUILD_BUCKET_PATH=$(./Tests/scripts/copy_and_prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION")
+    - ./Tests/scripts/copy_and_prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Copy and Prepare Content Packs for Testing"
 
     - section_start "Collect Tests" --collapsed
