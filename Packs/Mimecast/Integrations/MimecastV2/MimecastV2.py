@@ -87,7 +87,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     Creates paging response for relevant commands.
 
     """
-    headers = None
+    headers = {}
     if page and page_size:
         limit = page * page_size
     pagination = {'page_size': limit}
@@ -1072,9 +1072,12 @@ def get_policy_request(policy_type='blockedsenders', policy_id=None):
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = []
+    
+    id_field_name = 'id' if policy_type != 'address-alteration' else 'folderId'
+        
     if policy_id:
         data.append({
-            'id': policy_id
+            id_field_name: policy_id
         })
     payload = {
         'data': data
@@ -1320,7 +1323,7 @@ def delete_policy():
     policy_id = demisto.args().get('policyID')
     policy_type = demisto.args().get('policyType')
 
-    delete_policy_request(policy_id, policy_type)
+    delete_policy_request(policy_type, policy_id)
 
     context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = {
         'ID': policy_id,
@@ -1348,9 +1351,13 @@ def delete_policy_request(policy_type, policy_id=None):
         'webwhiteurl': 'webwhiteurl/get-policy-with-targets',
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+    
+    id_field_name = 'id' if policy_type != 'address-alteration' else 'folderId'
+
     data = [{
-        'id': policy_id
+        id_field_name: policy_id
     }]
+    
     payload = {
         'data': data
     }
