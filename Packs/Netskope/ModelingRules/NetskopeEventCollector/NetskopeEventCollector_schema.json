@@ -1,5 +1,5 @@
 {
-  "netskope_netskope_raw": {
+  "netskope_netskope_test_raw": {
     "action": {
       "type": "string",
       "is_array": false

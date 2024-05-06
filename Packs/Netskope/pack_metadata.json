@@ -1,5 +1,5 @@
 {
-    "name": "Netskope",
+    "name": "Netskope - Test",
     "description": "Cloud access security broker that enables to find, understand, and secure cloud apps.",
     "support": "xsoar",
     "currentVersion": "3.3.10",
