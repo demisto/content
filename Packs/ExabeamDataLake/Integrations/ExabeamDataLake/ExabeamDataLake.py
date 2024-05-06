@@ -197,8 +197,6 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    full_url=f"{base_url}/api/auth/login"
-    print(f'{full_url=}, {username=}, {password=}, {verify_certificate=}')
 
     # verify_certificate = not params.get("insecure", False)
 
