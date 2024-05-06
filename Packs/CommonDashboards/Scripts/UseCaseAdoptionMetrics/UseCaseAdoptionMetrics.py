@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def check_phishing_incidents() -> bool:
+def check_phishing_incidents() -> bool | DemistoException:
     """
     Checks for phishing incidents.
 
@@ -16,7 +16,7 @@ def check_phishing_incidents() -> bool:
         return DemistoException(str(e))
 
 
-def is_rapid_breach_response_installed() -> bool:
+def is_rapid_breach_response_installed() -> bool | DemistoException:
     """
     Checks if Rapid Breach Response is installed.
 
@@ -54,7 +54,7 @@ def get_use_cases() -> Dict[str, Any]:
         'Case Management': 'https://cortex.marketplace.pan.dev/marketplace/?category=Case+Management',
         'Rapid Breach Response': 'https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/'
     }
-    
+
     catagories = {
         'network security': 'Network Security',
         'analytics & siem': 'Analytics & SIEM',

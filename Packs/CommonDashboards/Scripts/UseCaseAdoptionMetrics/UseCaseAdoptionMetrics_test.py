@@ -3,11 +3,12 @@ from CommonServerPython import *  # noqa: F401
 import UseCaseAdoptionMetrics
 import pytest
 
+
 CASES_CHECK_PHISHING = [
-    ([], False), # incidents_not_exists
-    (["Phishing"], True # phishing incident found
-    )
+    ([], False),  # incidents_not_exists
+    (["Phishing"], True)  # phishing incident found
 ]
+
 
 @pytest.mark.parametrize('data, expected_result', CASES_CHECK_PHISHING)
 def test_check_phishing_incidents(mocker, data, expected_result):
@@ -32,9 +33,8 @@ def test_check_phishing_incidents(mocker, data, expected_result):
 
 
 CASES_RAPID_BREACH_RESPONSE = [
-    ([{"Contents": {"response": []}}], False), # No content packs are installed.
-    ([{"Contents": {"response": [{"name": "Rapid Breach Response"}]}}], True # content packs are installed.
-    )
+    ([{"Contents": {"response": []}}], False),  # No content packs are installed.
+    ([{"Contents": {"response": [{"name": "Rapid Breach Response"}]}}], True)  # content packs are installed.
 ]
 
 
@@ -67,10 +67,8 @@ def test_get_use_cases(mocker):
         - Various modules with different categories and states.
         - No phishing incidents fetched.
         - Rapid Breach Response not installed.
-
     When:
         - Retrieving use cases data.
-
     Then:
         - Use cases in production and at risk are returned correctly.
     """
@@ -90,9 +88,12 @@ def test_get_use_cases(mocker):
                    'at_risk': {'Ransomware & Malware Coverage': f'{link}?useCase=Malware',
                                'Business Email Compromise Coverage': f'{link}?useCase=Phishing',
                                'Analytics & SIEM': f'{link}?category=Analytics+%26+SIEM',
-                               'Data Enrichment & Threat Intelligence': f'{link}?category=Data+Enrichment+%26+Threat+Intelligence',
-                               'Vulnerability Management': 'https://xsoar.pan.dev/marketplace/?category=Vulnerability%20Management',
-                               'Rapid Breach Response': f'{link}details/MajorBreachesInvestigationandResponse/'}}
+                               'Data Enrichment & Threat Intelligence':
+                                   f'{link}?category=Data+Enrichment+%26+Threat+Intelligence',
+                               'Vulnerability Management':
+                                   'https://xsoar.pan.dev/marketplace/?category=Vulnerability%20Management',
+                               'Rapid Breach Response':
+                                   f'{link}details/MajorBreachesInvestigationandResponse/'}}
 
 
 def test_main(mocker):
