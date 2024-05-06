@@ -1,17 +1,6 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "dc0f5c7a-063e-4a38-88e9-d94cc827e8bf",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
+	"id": "Jizo NDR - Incoming Mapper",
 	"locked": false,
 	"logicalVersion": 14,
 	"mapping": {
@@ -31,24 +20,15 @@
 					"simple": "alert_type"
 				}
 			}
-		},
-        "dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {}
 		}
 	},
 	"name": "Jizo NDR - Incoming Mapper",
 	"nameRaw": "Jizo NDR - Incoming Mapper",
-	"packID": "",
-	"packName": "",
 	"propagationLabels": [
 		"all"
 	],
-	"sourceClassifierId": "",
 	"system": false,
-	"toServerVersion": "",
 	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }
