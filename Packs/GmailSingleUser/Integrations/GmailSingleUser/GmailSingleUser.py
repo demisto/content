@@ -251,15 +251,23 @@ class Client:
                     body += text
 
             else:
-                if part['body'].get('attachmentId') is not None:
+                if part['body'].get('attachmentId') is not None and part.get('headers'):
+                    content_id = ""
+                    is_inline = False
+                    for header in part['headers']:
+                        if header.get('name') == 'Content-ID':
+                            content_id = header.get('value').strip("<>")
+                        if header.get('name') == 'Content-Disposition':
+                            is_inline = 'inline' in header.get('value')
                     attachments.append({
                         'ID': part['body']['attachmentId'],
-                        'Name': part['filename']
+                        'Name': f"-{content_id}-{part['filename']}",
+                        'is_inline': is_inline
                     })
 
         return body, html, attachments
 
-    def get_attachments(self, user_id, _id):
+    def get_attachments(self, user_id, _id, content_ids=None):
         mail_args = {
             'userId': user_id,
             'id': _id,
@@ -277,10 +285,14 @@ class Client:
         }
         files = []
         for attachment in result['Attachments']:
+            content_ids_array = argToList(content_ids)
+            demisto.debug(f"attachment of id{content_ids_array=}")
             command_args['id'] = attachment['ID']
             result = service.users().messages().attachments().get(**command_args).execute()
-            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-            files.append((attachment['Name'], file_data))
+            if not content_ids_array or attachment['Name'].split("-")[1] in content_ids_array:
+                demisto.debug(f"{attachment['Name']} in {content_ids_array}")
+                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+                files.append((attachment['Name'], file_data))
 
         return files
 
@@ -515,9 +527,11 @@ class Client:
                 demisto.error(file_result['Contents'])
                 raise Exception(file_result['Contents'])
 
+            is_file_attached = FileAttachmentType.ATTACHED if not attachment['is_inline'] else ""
             file_names.append({
                 'path': file_result['FileID'],
                 'name': attachment['Name'],
+                'description': f"{is_file_attached}-{attachment['ID']}",
             })
 
         incident = {

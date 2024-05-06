@@ -346,6 +346,10 @@ script:
     - description: The ID of the message to retrieve.
       name: message-id
       required: true
+    - description: Content IDs of the required attachments.
+      name: content-ids
+      required: false
+      hidden: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
   dockerimage: demisto/google-api-py3:1.0.0.88704

@@ -182,10 +182,18 @@ def parse_mail_parts(parts):
                 body += text
 
         else:
-            if part['body'].get('attachmentId') is not None:
+            if part['body'].get('attachmentId') is not None and part.get('headers'):
+                content_id = ""
+                is_inline = False
+                for header in part['headers']:
+                    if header.get('name') == 'Content-ID':
+                        content_id = header.get('value').strip("<>")
+                    if header.get('name') == 'Content-Disposition':
+                        is_inline = 'inline' in header.get('value')
                 attachments.append({
                     'ID': part['body']['attachmentId'],
-                    'Name': part['filename']
+                    'Name': f"-{content_id}-{part['filename']}",
+                    'is_inline': is_inline
                 })
 
     return body, html, attachments
@@ -345,14 +353,18 @@ def get_date_from_email_header(header: str) -> Optional[datetime]:
 def get_email_context(email_data, mailbox):
     occurred, occurred_is_valid = get_occurred_date(email_data)
     context_headers = email_data.get('payload', {}).get('headers', [])
+    demisto.debug(f"before {context_headers=}")
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
+    demisto.debug(f"after {context_headers=}")
     headers = {h['Name'].lower(): h['Value'] for h in context_headers}
+    demisto.debug(f"{headers=}")
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
     demisto.debug(f"get_email_context {body=} {parsed_body=}")
 
+    # demisto.debug(f"this_is_the_attachments_field {email_data.get('payload', {})}")
     context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
@@ -416,6 +428,8 @@ def get_email_context(email_data, mailbox):
         context_email['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
+    demisto.debug(f"maybe_html: {context_gmail['Html']}")
+    demisto.debug(f"hello11 {context_email['Attachments']=}")
     return context_gmail, headers, context_email, occurred, occurred_is_valid
 
 
@@ -536,8 +550,10 @@ def mail_to_incident(msg, service, user_key):
     }
 
     for attachment in parsed_msg['Attachments']:
+        demisto.debug(f"meeee {attachment['ID']}")
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
+        demisto.debug(f"line_543 {result=}")
         file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
 
         # save the attachment
@@ -547,10 +563,12 @@ def mail_to_incident(msg, service, user_key):
         if file_result['Type'] == entryTypes['error']:
             demisto.error(file_result['Contents'])
             raise Exception(file_result['Contents'])
-
+        
+        is_file_attached = FileAttachmentType.ATTACHED if not attachment['is_inline'] else ""
         file_names.append({
             'path': file_result['FileID'],
             'name': attachment['Name'],
+            'description': f"{is_file_attached}-{attachment['ID']}",
         })
     # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
 
@@ -1519,13 +1537,14 @@ def get_attachments_command():
     args = demisto.args()
     user_id = args.get('user-id')
     _id = args.get('message-id')
+    content_ids = args.get('content-ids')
 
-    attachments = get_attachments(user_id, _id)
+    attachments = get_attachments(user_id, _id, content_ids)
 
     return [fileResult(name, data) for name, data in attachments]
 
 
-def get_attachments(user_id, _id):
+def get_attachments(user_id, _id, content_ids=None):
     mail_args = {
         'userId': user_id,
         'id': _id,
@@ -1545,11 +1564,15 @@ def get_attachments(user_id, _id):
     }
     files = []
     for attachment in result['Attachments']:
+        demisto.debug(f"lets look on the attachment {attachment}")
+        content_ids_array = argToList(content_ids)
+        demisto.debug(f"attachment of id{content_ids_array=}")
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-        files.append((attachment['Name'], file_data))
-
+        if not content_ids_array or attachment['Name'].split("-")[1] in content_ids_array:
+            demisto.debug(f"{attachment['Name']} in {content_ids_array}")
+            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+            files.append((attachment['Name'], file_data))
     return files
 
 
@@ -2581,6 +2604,7 @@ def fetch_incidents():
     params = demisto.params()
     user_key = params.get('queryUserKey')
     user_key = user_key if user_key else ADMIN_EMAIL
+    demisto.debug(f"{user_key=}")
     max_fetch = int(params.get('fetch_limit') or 50)
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()

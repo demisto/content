@@ -60,10 +60,12 @@ def create_email_html(email_html='', entry_id_list=None):
         str. Email Html.
     """
     demisto.debug(f"{email_html=}")
+    content_id = "None"
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         demisto.debug(f"{image_name=}")
-        content_id = image_name.split('-')[1]
+        if len(image_name.split('-'))>1:
+            content_id = image_name.split('-')[1]
         demisto.debug(f"{content_id=}")
         matches = re.findall(rf'(src="cid:{content_id}")', email_html)
         demisto.debug(f"{matches=}")
@@ -95,12 +97,14 @@ def get_entry_id_list(attachments, files):
         return []
 
     entry_id_list = []
+    is_file_attached = ""
     files = [files] if not isinstance(files, list) else files
     demisto.debug(f"{files=}")
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
         for file in files:
-            is_file_attached = attachment.get('description', '').split('-')[0]
+            if attachment.get('description', ''):
+                is_file_attached = attachment.get('description', '').split('-')[0]
             if attachment_name == file.get('Name') and is_file_attached != FileAttachmentType.ATTACHED:
                 entry_id_list.append((attachment_name, file.get('EntryID')))
 
@@ -198,7 +202,7 @@ def check_incident_status(incident_details, email_related_incident):
             raise DemistoException(ERROR_TEMPLATE.format(f'Reopen incident {email_related_incident}', res['Contents']))
 
 
-def get_attachments_using_instance(email_related_incident, labels, email_to, attachment_ids=""):
+def get_attachments_using_instance(email_related_incident, labels, email_to, identifier_ids=""):
     """Use the instance from which the email was received to fetch the attachments.
         Only supported with: EWS V2, Gmail
 
@@ -219,17 +223,17 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, att
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
 
-    if integration_name in ['EWS v2', 'EWSO365']:
+    if integration_name in ['EWS v2 dev', 'EWSO365 dev']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'item-id': str(message_id), 'attachment-ids': attachment_ids, 'using': instance_name}})
+                                'arguments': {'item-id': str(message_id), 'attachment-ids': identifier_ids, 'using': instance_name}})
 
-    elif integration_name in ['Gmail', 'Gmail Single User']:
+    elif integration_name in ['Gmail dev', 'Gmail Single User dev']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
-                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
+                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'content-ids': identifier_ids, 'using': instance_name}})
 
-    elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
+    elif integration_name in ['MicrosoftGraphMail dev', 'Microsoft Graph Mail Single User dev']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'user_id': email_to, 'message_id': str(message_id),
@@ -238,27 +242,40 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, att
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
 
-def find_attachments_to_download(attachments, email_html):
+def find_attachments_to_download(attachments, email_html, labels):
     """ Filter only new attachment.
 
     Args:
         attachments (Attachment): All attachments from the current thread mail
         email_html (str): email html for the newest message
     """
-    new_attachment_ids_list = []
+    integration_name = ""
+    for label in labels:
+        if label.get('type') == 'Brand':
+            integration_name = label.get('value')
+    new_attachment_identifiers_list = []
     new_attachments = []
     for attachment in attachments:
-        demisto.debug(f"this_is_the_email {email_html}")
-        attachment_id = attachment.get('description', '').split('-')[1]
-        demisto.debug(f"this_is_the_id {attachment_id}")
-        content_id = attachment.get('name', '').split('-')[1]
-        demisto.debug(f"this_is_the_content {content_id}")
-        if re.search(rf'(src="cid:{content_id}")', email_html):
-            demisto.debug("i_am_in_the_if!!!!")
-            new_attachment_ids_list.append(attachment_id)
-            new_attachments.append(attachment)
-    demisto.debug(f"this_is_the_attachment_ids {new_attachment_ids_list}")
-    return ",".join(new_attachment_ids_list), new_attachments
+        if attachment.get('description', ''):
+            demisto.debug(f"this_is_the_email {email_html}")
+            demisto.debug(f"this_is_the_description {attachment.get('description', '')}")
+            attachment_id = attachment.get('description', '').split('-', 1)[1]
+            demisto.debug(f"this_is_the_id {attachment_id}")
+            content_id = "None"
+            if len(attachment.get('name', '').split('-')) > 1:
+                content_id = attachment.get('name', '').split('-')[1]
+            demisto.debug(f"this_is_the_content {content_id}")
+            if re.search(rf'(src="cid:{content_id}")', email_html):
+                demisto.debug("i_am_in_the_if!!!!")
+                if integration_name in ['Gmail dev', 'Gmail Single User dev']:
+                    new_attachment_identifiers_list.append(content_id)
+                else:
+                    new_attachment_identifiers_list.append(attachment_id)
+                new_attachments.append(attachment)
+    demisto.debug(f"this_is_the_attachment_ids {new_attachment_identifiers_list}")
+    if not new_attachments:
+        new_attachments = attachments
+    return ",".join(new_attachment_identifiers_list), new_attachments
 
 
 def get_incident_related_files(incident_id):
@@ -435,8 +452,8 @@ def main():
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
-        demisto.debug("hiiiii")
-        demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
+        demisto.debug("testting gmail")
+        demisto.debug(f"first_in_preproccess {attachments[0]}")
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
         email_original_subject = email_subject.split('<')[-1].split('>')[1].strip()
 
@@ -450,16 +467,15 @@ def main():
 
         email_html = remove_html_conversation_history(email_html)
 
-        #Count how many images needs to be replaced
-        attachment_ids_array, attachments = find_attachments_to_download(attachments, email_html)
-        demisto.debug(f"{attachment_ids_array=}")
-        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_ids_array)
+        #Get attachments IDs for new attacments
+        attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, incident.get('labels'))
+        demisto.debug(f"{attachment_identifiers_array=}")
+        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(45)
         files = get_incident_related_files(email_related_incident)
         demisto.debug(f"{files=}")
-        demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
         entry_id_list = get_entry_id_list(attachments, files)
         demisto.debug(f"{entry_id_list=}")
         html_body = create_email_html(email_html, entry_id_list)
