@@ -95,7 +95,6 @@ class CollectionResult:
             is_sanity: bool = False,
             skip_support_level_compatibility: bool = False,
             only_to_install: bool = False,
-            only_to_upload: bool = False,
             pack_to_reinstall: str | None = None,
     ):
         """
@@ -119,7 +118,6 @@ class CollectionResult:
                 whether to install a pack, even if it is not directly compatible.
                 This is used when collecting a pack containing a content item, when their marketplace values differ.
         :param only_to_install: whether to collect the pack only to install it without upload to the bucket.
-        :param only_to_upload: whether to collect the pack only to upload it to the bucket without install.
         :param pack_to_reinstall: pack name to collect for reinstall test
         """
         self.tests: set[str] = set()
@@ -167,20 +165,11 @@ class CollectionResult:
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            if only_to_upload == only_to_install:
-
-                if only_to_upload and only_to_install:
-                    raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}") # todo praisler why error
-
-                self.packs_to_install = {pack}
-                self.packs_to_upload = {pack}  # TODO WHY praisler
-                logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
-
-            elif only_to_install:
+            if only_to_install:
                 self.packs_to_install = {pack}
                 logger.info(f'collected {pack=} only to install, {reason} ({reason_description}, {version_range=})')
-
-            elif only_to_upload:
+            else:
+                self.packs_to_install = {pack}
                 self.packs_to_upload = {pack}
                 logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
 
@@ -535,11 +524,9 @@ class TestCollector(ABC):
             reason: CollectionReason,
             reason_description: str,
             content_item_range: VersionRange | None = None,
-            # allow_incompatible_marketplace: bool = False,
             only_to_install: bool = False,
     ) -> CollectionResult | None:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
-        collect_only_to_upload: bool = False
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
         except NonXsoarSupportedPackException as e:
@@ -581,7 +568,6 @@ class TestCollector(ABC):
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
-            # only_to_upload=collect_only_to_upload,
             only_to_install=only_to_install
         )
 
@@ -810,7 +796,6 @@ class BranchTestCollector(TestCollector):
                     pack_id=find_pack_folder(full_path).name,
                     reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
                     reason_description=file_path,
-                    only_to_install=False
                 ))
             except NothingToCollectException as e:
                 logger.info(e.message)
@@ -1133,21 +1118,13 @@ class BranchTestCollector(TestCollector):
         packs_files_were_removed_from: set[str] = set()
 
         previous_commit = 'origin/master'
-        current_commit = self.branch_name
+        current_commit = os.getenv("CI_COMMIT_SHA", "")
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if upload_delta_from_last_upload:
-            logger.info('bucket upload: getting last commit from index')
+        if upload_delta_from_last_upload or os.getenv('NIGHTLY'):
+            logger.info('Diff between branch to last upload commit: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
-            current_commit = self.branch_name
-
-        elif os.getenv('NIGHTLY'):
-            logger.info('NIGHTLY: getting last commit from index')
-            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
-            logger.info(f"Michall - {previous_commit=}")
-            if self.branch_name == 'master':
-                current_commit = os.getenv("CI_COMMIT_SHA", "")
 
         elif self.branch_name == 'master':
             current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
@@ -1263,12 +1240,11 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         changed_packs = CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            self._collect_packs_diff_master_bucket(), # todo verify praisler
-            self._collect_failed_packs_from_prev_upload() # todo add collect from json file
+            self._collect_failed_packs_from_prev_upload()
         ])
         if changed_packs:
             logger.info(f"Collect the following packs to upload: {changed_packs.packs_to_upload=}")
-            changed_packs.tests = set()  # todo - without tests - only to upload
+            changed_packs.tests = set()
             logger.info('changed packs drops collected tests, as they are not required')
             result.append(changed_packs)
 
@@ -1283,12 +1259,11 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
             modeling_rules = CollectionResult.union((
                 self._collect_modeling_rule_packs(),
-                self.sanity_tests_xsiam(),  # XSIAM nightly always collects its sanity test(s)
+                self.sanity_tests_xsiam(),  # todo XSIAM nightly always collects its sanity test(s)
             ))
             modeling_rules.packs_to_upload = set()
             modeling_rules.packs_to_reinstall = set()
             result.append(modeling_rules)
-        # todo all modeling rules for xsiam
 
         return CollectionResult.union(result)
 
