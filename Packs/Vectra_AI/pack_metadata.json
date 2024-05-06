@@ -30,5 +30,5 @@
     "tags": [],
     "url": "https://support.vectra.ai",
     "useCases": [],
-    "defaultDataSourceName": "VectraAIEventCollector"
+    "defaultDataSourceName": "Vectra AI Event Collector"
 }

@@ -16,5 +16,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "SafewalkManagement"
+    "defaultDataSourceName": "Safewalk Management"
 }

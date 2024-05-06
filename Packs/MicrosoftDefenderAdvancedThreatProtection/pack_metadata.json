@@ -66,5 +66,5 @@
         "CommonPlaybooks",
         "CommonTypes"
     ],
-    "defaultDataSourceName": "Microsoft 365 Defender Event Collector"
+    "defaultDataSourceName": "Microsoft Defender for Endpoint Event Collector"
 }

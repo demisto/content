@@ -46,5 +46,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "QRadar v3"
+    "defaultDataSourceName": "IBM QRadar v3"
 }

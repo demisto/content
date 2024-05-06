@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Salesforce Event Collector"
+    "defaultDataSourceName": "Salesforce IAM"
 }
