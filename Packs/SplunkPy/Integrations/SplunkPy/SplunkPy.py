@@ -386,12 +386,15 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.JSONResultsReader(oneshotsearch_results)
 
+    error_message = ''
     incidents = []
     notables = []
     incident_ids_to_add = []
     num_of_dropped = 0
     for item in reader:
         if handle_message(item):
+            if 'Error' in str(item.message) or 'error' in str(item.message):
+                error_message = f'{error_message}\n{item.message}'
             continue
         extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
         notable_incident = Notable(data=item)
@@ -409,6 +412,8 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             num_of_dropped += 1
             extensive_log(f'[SplunkPy] - Dropped incident {incident_id} due to duplication.')
 
+    if error_message and not incident_ids_to_add:
+        raise DemistoException(f'Failed to fetch incidents, check the provided query in Splunk web search - {error_message}')
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = {'occurred_time': latest_time}
@@ -2396,7 +2401,8 @@ def splunk_submit_event_hec(
     index: str | None,
     source_type: str | None,
     source: str | None,
-    time_: str | None
+    time_: str | None,
+    request_channel: str | None
 ):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
@@ -2420,8 +2426,10 @@ def splunk_submit_event_hec(
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
     }
+    if request_channel:
+        headers['X-Splunk-Request-Channel'] = request_channel
 
     return requests.post(
         f'{baseurl}/services/collector/event',
@@ -2444,13 +2452,19 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     source_type = args.get('source_type')
     source = args.get('source')
     time_ = args.get('time')
+    request_channel = args.get('request_channel')
 
-    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
+    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
+                                            request_channel)
 
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
     else:
-        return_results('The event was sent successfully to Splunk.')
+        response_dict = json.loads(response_info.text)
+        if response_dict and 'ackId' in response_dict:
+            return_results(f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}")
+        else:
+            return_results('The event was sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:

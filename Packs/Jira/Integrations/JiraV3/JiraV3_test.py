@@ -866,6 +866,24 @@ class TestJiraDeleteIssueCommand:
         assert 'Issue deleted successfully' in command_result.to_context().get('HumanReadable')
 
 
+class TestJiraDeleteAttachmentFileCommand:
+    def test_delete_attachment_file_command(self, mocker: MockerFixture):
+        """
+        Given:
+            - A Jira client.
+        When
+            - Calling the delete attachment file command.
+        Then
+            - Validate that the correct readable output is outputted to the user.
+        """
+        from JiraV3 import delete_attachment_file_command
+        attachment_id = "dummy_id"
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'delete_attachment_file', return_value=requests.Response())
+        command_result = delete_attachment_file_command(client=client, args={'attachment_id': attachment_id})
+        assert f'Attachment id {attachment_id} was deleted successfully' in command_result.to_context().get('HumanReadable')
+
+
 class TestJiraGetTransitionsCommand:
     def test_get_transitions_command(self, mocker):
         """
@@ -1478,6 +1496,118 @@ class TestJiraUploadFileCommand:
         mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
         command_results = upload_file_command(client=client, args={'issue_key': 'COMPANYSA-35'})
         assert command_results.to_context()['HumanReadable'] == expected_command_results_context['HumanReadable']
+
+    def test_upload_XSOAR_attachment_to_jira_mime_type_check(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        file_name = 'dummy_file_name.pdf'
+        issue_key = 'COMPANYSA-35'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        upload_file_raw_response = util_load_json('test_data/upload_file_test/raw_response.json')
+        files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        mock_request = mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
+        upload_XSOAR_attachment_to_jira(client=client,
+                                        entry_id='',
+                                        issue_id_or_key=issue_key)
+        mock_request.assert_called_with(issue_id_or_key=issue_key,
+                                        files=files)
+
+    def test_upload_XSOAR_attachment_to_jira_mime_type_fail(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of unsuccessful upload to Jira due to mime type issue,
+            we will try again with the default mime type.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        issue_key = 'COMPANYSA-35'
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=('application/pdf', ''))
+        mocker.patch.object(client, 'upload_attachment', side_effect=DemistoException('failed to upload', res={}))
+        mock_request = mocker.patch.object(client, 'upload_attachment',
+                                           side_effect=[DemistoException('failed to upload', res={}), {}])
+        upload_XSOAR_attachment_to_jira(client=client, entry_id='', issue_id_or_key=issue_key)
+
+        # Validate that we run upload_attachment twice, once with an error, and second time to use default file type
+        assert mock_request.call_count == 2
+        # Validate that the second call uses the default file type (application-type)
+        mock_request.assert_called_with(files={'file': ('dummy_file_name.pdf', b'dummy content', 'application-type')},
+                                        issue_id_or_key=issue_key)
+
+    def test_create_files_to_upload(self, mocker):
+        """
+        Given:
+            - An empty file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file, and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+
+    def test_create_files_to_upload_none_type(self, mocker):
+        """
+        Given:
+            - An empty file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of unsuccessful type guess, the default mime type is given (application-type),
+            and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application-type'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.guess_type', return_value=(None, ''))
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+
+    def test_create_files_to_upload_given_type(self, mocker):
+        """
+        Given:
+            - An application-type file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of a given mime type the function guess_type wasn't called,
+            and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application-type'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mock_guess_type = mocker.patch('JiraV3.guess_type', return_value=(None, ''))
+        result_files, result_mime_type = create_files_to_upload(expected_file_mime_type, file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+        mock_guess_type.assert_not_called()
 
 
 class TestJiraGetIdByAttribute:

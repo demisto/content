@@ -2634,7 +2634,7 @@ def fetch_incidents():
             ignore_list_used = True
             ignore_ids.append(msg_id)
         # update last run only if we trust the occurred timestamp
-        if is_valid_date and occurred > next_last_fetch:
+        if is_valid_date and occurred >= next_last_fetch:
             next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query

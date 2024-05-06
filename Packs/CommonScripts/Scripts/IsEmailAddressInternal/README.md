@@ -5,7 +5,7 @@ Checks if the email address is part of the internal domain.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | javascript |
 | Tags | email |
 
 

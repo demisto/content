@@ -3566,7 +3566,7 @@ def test_get_endpoint_command(requests_mock, mocker):
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    api_query = "filter=device_id:'identifier_numbe',hostname:'falcon-crowdstr'&limit=50&offset=0"
+    api_query = "filter=device_id:'identifier_numbe',hostname:'falcon-crowdstr'&limit=50&offset=0&sort="
     assert unquote(query_mocker.last_request.query) == api_query
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
@@ -4146,7 +4146,8 @@ def test_get_remote_incident_data(mocker):
     incident_entity['status'] = 'New'
     assert mirrored_data == incident_entity
     assert updated_object == {'state': 'closed', 'status': 'New', 'tags': ['Objective/Keep Access'],
-                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident', 'fine_score': 38}
+                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident', 'fine_score': 38,
+                              'incident_id': 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'}
 
 
 def test_get_remote_detection_data(mocker):
@@ -4168,7 +4169,9 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.scenario': 'suspicious_activity',
                               'behaviors.objective': 'Falcon Detection Method',
                               'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR',
-                              'incident_type': 'detection'}
+                              'incident_type': 'detection',
+                              'detection_id': 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668',
+                              'behaviors.display_name': 'SampleTemplateDetection'}
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
@@ -6745,3 +6748,74 @@ def test_get_cve_command(mocker):
 
     results = CrowdStrikeFalcon.get_cve_command(args={'cve': 'CVE-2023-12345'})
     assert len(results) == 2
+
+
+def test_http_request(mocker):
+    """
+    Given:
+        - arguments of a http_request
+    When:
+        - Running any command
+    Then:
+        - Validate that the in case of 429 error code, get_token() will be called again in order to create a new token and
+            generic_http_request will be called again as well.
+    """
+    from requests import Response
+    from CrowdStrikeFalcon import http_request
+    res_429 = Response()
+    res_429.status_code = 429
+    res_200 = Response()
+    res_200.status_code = 200
+    mock_request_get_token = mocker.patch('CrowdStrikeFalcon.get_token', return_value='token')
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request', side_effect=[res_429, res_200])
+    http_request(url_suffix='url_suffix',
+                 method='method',
+                 headers={},
+                 no_json=True)
+    # validate that in a case of 429, we will try again
+    assert mock_request_generic_http_request.call_count == 2
+    assert mock_request_get_token.call_count == 2
+
+
+class ResMocker:
+    def __init__(self, http_response, status_code, reason):
+        self.http_response = http_response
+        self.status_code = status_code
+        self.reason = reason
+        self.ok = False
+
+    def json(self):
+        return self.http_response
+
+
+def test_error_handler():
+    """
+    Given:
+        - A response with an error from the API.
+    When:
+        - Running any command
+    Then:
+        - Validate that the error message contains the correct info
+    """
+    from CrowdStrikeFalcon import error_handler
+    status_code = 429
+    reason = "Too Many Requests API rate limit exceeded."
+    res_json = {
+        "meta": {
+            "query_time": 0.00571046,
+            "pagination": {
+                "offset": 0,
+                "limit": 100,
+                "total": 2
+            },
+            "powered_by": "legacy-detects",
+            "trace_id": "11111111-1111-1111-1111-111111111111"
+        },
+        "errors": [],
+    }
+
+    arg_res = ResMocker(res_json, status_code, reason)
+    try:
+        error_handler(arg_res)
+    except DemistoException as e:
+        assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'

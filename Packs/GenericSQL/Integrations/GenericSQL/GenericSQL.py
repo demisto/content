@@ -326,9 +326,9 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
             params['max_fetch'] = 1
             last_run = initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
             sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
-                                         params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+                                         params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
             bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
-                                                               params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
+                                                               params.get('max_fetch') or FETCH_DEFAULT_LIMIT, last_run)
             result, headers = client.sql_query_execute_request(sql_query, bind_variables, 1)
         except Exception as e:
             raise e
@@ -347,16 +347,13 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def result_to_list_of_dicts(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
+def result_to_list_of_dicts(result: list[dict]) -> list[dict]:
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
-    if client.dialect == TERADATA:
-        # binding the headers with the columns
-        converted_table = [dict(zip(headers, row)) for row in result]
-    else:
-        # converting a sqlalchemy object to a table
-        converted_table = [dict(row) for row in result]
+
+    # converting a sqlalchemy object to a table
+    converted_table = [dict(row) for row in result]
 
     # converting b'' and datetime objects to readable ones
     table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
@@ -381,7 +378,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
-        table = result_to_list_of_dicts(client, result, headers)
+        table = result_to_list_of_dicts(result)
         table = table[skip:skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
@@ -564,11 +561,11 @@ def fetch_incidents(client: Client, params: dict):
     demisto.debug("GenericSQL - Start fetching")
     demisto.debug(f"GenericSQL - Last run: {json.dumps(last_run)}")
     sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
-                                 params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+                                 params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
     demisto.debug(f"GenericSQL - Query sent to the server: {sql_query}")
-    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
     bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
-                                                       params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
+                                                       params.get('max_fetch') or FETCH_DEFAULT_LIMIT, last_run)
     result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
     table = convert_sqlalchemy_to_readable_table(result)
     table = table[:limit_fetch]

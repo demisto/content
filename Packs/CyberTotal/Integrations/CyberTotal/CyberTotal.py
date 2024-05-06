@@ -67,8 +67,20 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/ip/basic/{ip}'
+            url_suffix=f'/_api/search/ip/basic/{ip}',
+            ok_codes=(200, 400),
+            resp_type='response'
         )
+
+        status_code = cybertotal_result.status_code
+        cybertotal_result = cybertotal_result.json()
+
+        if status_code == 400 and cybertotal_result.get('non_field_errors'):
+            return {'non_field_errors': cybertotal_result.get('non_field_errors')}
+
+        if status_code == 400:
+            raise DemistoException(f'Error in API call [{status_code}] - {cybertotal_result}')
+
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
 
@@ -271,6 +283,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     command_results: List[CommandResults] = []
     ip_message_list: List[Dict[str, Any]] = []
+    non_field_errors: List[str] = []
 
     for ip in ips:
         ip_data = client.get_ip_reputation(ip)
@@ -278,6 +291,10 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             task_state = ip_data.get('task_state', 'none')
             demisto.debug(f'search this ip {ip} on cybertotal with status: {task_state}')
             ip_message_list.append({'ip': ip})
+            continue
+
+        if 'non_field_errors' in ip_data:
+            non_field_errors.extend(ip_data['non_field_errors'])
             continue
 
         reputation = int(ip_data.get('positive_detections', 0))
@@ -320,6 +337,16 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     if len(ip_message_list) > 0:
         readable_output = tableToMarkdown('IP search in progress , please try again later', ip_message_list)
+        command_results.append(
+            CommandResults(
+                readable_output=readable_output,
+            )
+        )
+
+    if len(non_field_errors) > 0:
+        readable_output = '### IP search Failures:\n'
+        readable_output += '\n'.join(non_field_errors)
+
         command_results.append(
             CommandResults(
                 readable_output=readable_output,
