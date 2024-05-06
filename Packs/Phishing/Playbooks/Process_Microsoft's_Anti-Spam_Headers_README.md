@@ -41,4 +41,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Process Microsoft's Anti-Spam Headers](../doc_files/Process_Microsoft's_Anti-Spam_Headers.png)
+![Process Microsoft's Anti-Spam Headers](../doc_files/Process_Microsofts_Anti-Spam_Headers.png)
