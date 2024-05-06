@@ -2,7 +2,6 @@ name: Manage Contribution Board - Daily
 on:
   schedule:
     - cron: "0 0 * * *"
-  workflow_dispatch:
 
 jobs:
   manage_project_board:
