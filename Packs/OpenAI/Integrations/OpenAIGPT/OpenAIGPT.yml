@@ -17,7 +17,7 @@ configuration:
   additionalinfo: 'The model that will process the inputs and generate the completion.'
   name: model-select
   type: 15
-  required: true
+  required: false
   section: connect
   defaultvalue: gpt-3.5-turbo
   options:
@@ -48,21 +48,24 @@ configuration:
   additionalinfo: "The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption)."
   type: 0
   required: false
-  section: config
+  section: Collect
+  advance: true
 
 - display: Temperature
   name: temperature
   additionalinfo: "Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both."
   type: 0
   required: false
-  section: config
+  section: Collect
+  advance: true
 
 - display: Top P
   name: top_p
   additionalinfo: "Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both."
   type: 0
   required: false
-  section: config
+  section: Collect
+  advance: true
 
 - display: Trust any certificate (not secure)
   name: insecure
@@ -107,11 +110,11 @@ script:
   - name: gpt-check-email-header
     description: Checking email header for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
     arguments:
-    - name: entryId
+    - name: entry_id
       description: Entry ID of an uploaded '.eml' file.
       required: true
 
-    - name: additionalInstructions
+    - name: additional_instructions
       description: Additional instructions or security issue to focus on.
       required: false
 
@@ -128,17 +131,17 @@ script:
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
     - contextPath: OpenAIGPT.Conversation
-      description: Entire conversation (if not reset) between the user and the GPT model.  It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+      description: Entire conversation (if not reset) between the user and the GPT model. 
       type: Dictionary
 
   - name: gpt-check-email-body
-    description: Check email body for possible security issues.
+    description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
     arguments:
-    - name: entryId
+    - name: entry_id
       description: Entry ID of an uploaded '.eml' file.
       required: true
 
-    - name: additionalInstructions
+    - name: additional_instructions
       description: Additional instructions or security issue to focus on.
       required: false
 
@@ -161,7 +164,7 @@ script:
   - name: gpt-create-soc-email-template
     description: Create an email template out of the conversation context to be sent from the SOC.
     arguments:
-    - name: additionalInstructions
+    - name: additional_instructions
       description: Additional instructions or security issue to focus on.
       required: false
 
