@@ -63,6 +63,13 @@ class Client(BaseClient):
             json_data=json_data
         )
 
+    def update_object(self, object_id: str, json_data: Dict[str, Any]):
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/object/{object_id}',
+            json_data=json_data
+        )
+
     def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
         return self._http_request(
             auth=(),
@@ -148,6 +155,30 @@ def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]
         result.append(attribute_dict)
     return result
 
+
+def get_json_data(object_type_id: str, attributes: str = None, attributes_json: str = None) -> Dict[str, Any]:
+
+    if not attributes and not attributes_json:
+        raise ValueError('Either attributes or attributes_json must be provided.')
+    elif attributes and attributes_json:
+        raise ValueError('Only one of attributes or attributes_json must be provided.')
+
+    if attributes:
+        converted_attributes = convert_attributes(json.loads(attributes))
+    else:
+        converted_attributes = json.loads(attributes_json).get('attributes')
+
+    return {
+        'objectTypeId': object_type_id,
+        'attributes': converted_attributes
+    }
+
+
+def get_create_update_outputs(res: Dict[str, any]) -> Dict[str, Any]:
+    pascal_res = convert_keys_to_pascal([res], {'id': 'ID'})
+    outputs = [{k: v for k, v in obj_field.items() if k != 'ObjectType'} for obj_field in pascal_res]
+    object_id = res.get('id')
+    return {'outputs': outputs, 'objectId': object_id}
 
 
 ''' COMMAND FUNCTIONS '''
@@ -286,24 +317,10 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
 
-    if not attributes and not attributes_json:
-        raise ValueError('Either attributes or attributes_json must be provided.')
-    elif attributes and attributes_json:
-        raise ValueError('Only one of attributes or attributes_json must be provided.')
-
-    if attributes:
-        converted_attributes = convert_attributes(json.loads(attributes))
-    else:
-        converted_attributes = json.loads(attributes_json).get('attributes')
-
-    json_data = {
-        'objectTypeId': object_type_id,
-        'attributes': converted_attributes
-    }
+    json_data = get_json_data(object_type_id, attributes, attributes_json)
     res = client.create_object(json_data)
-    created_object = convert_keys_to_pascal([res], {'id': 'ID'})
-    outputs = [{k: v for k, v in obj_field.items() if k != 'ObjectType'} for obj_field in created_object]
-    object_id = res.get('id')
+    outputs, object_id = get_create_update_outputs(res).values()
+
     return CommandResults(
         outputs=outputs,
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
@@ -317,29 +334,11 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
     attributes_json = args.get('attributes_json')
     object_id = args.get('object_id')
 
-    if not attributes and not attributes_json:
-        raise ValueError('Either attributes or attributes_json must be provided.')
-    elif attributes and attributes_json:
-        raise ValueError('Only one of attributes or attributes_json must be provided.')
+    json_data = get_json_data(object_type_id, attributes, attributes_json)
+    res = client.update_object(object_id, json_data)
+    _, object_id = get_create_update_outputs(res).values()
 
-    if attributes:
-        converted_attributes = convert_attributes(json.loads(attributes))
-    else:
-        converted_attributes = json.loads(attributes_json).get('attributes')
-
-    json_data = {
-        'objectTypeId': object_type_id,
-        'attributes': converted_attributes
-    }
-    res = client.create_object(json_data)
-    created_object = convert_keys_to_pascal([res], {'id': 'ID'})
-    outputs = [{k: v for k, v in obj_field.items() if k != 'ObjectType'} for obj_field in created_object]
-    object_id = res.get('id')
-    return CommandResults(
-        outputs=outputs,
-        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
-        readable_output=f'Object created successfully with ID: {object_id}'
-    )
+    return CommandResults(readable_output=f'Object {object_id} updated successfully')
 
 
 ''' MAIN FUNCTION '''
@@ -390,6 +389,10 @@ def main() -> None:
 
         if command == 'jira-asset-object-create':
             result = jira_asset_object_create_command(client, args)
+            return_results(result)
+
+        if command == 'jira-asset-object-update':
+            result = jira_asset_object_update_command(client, args)
             return_results(result)
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
