@@ -719,7 +719,7 @@ class TestCollector(ABC):
 
     def __validate_marketplace_compatibility(self,
                                              content_item_marketplaces: tuple[MarketplaceVersions, ...],
-                                             content_item_path: Path) -> None: # TODO CHECK CIAC-9470
+                                             content_item_path: Path) -> None:  # TODO CHECK CIAC-9470
         # intended to only be called from __validate_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
@@ -865,7 +865,6 @@ class BranchTestCollector(TestCollector):
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
-        override_support_level_compatibility = False
 
         match actual_content_type:
             case None:
@@ -891,7 +890,6 @@ class BranchTestCollector(TestCollector):
                         suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
 
                     logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
-                    override_support_level_compatibility = True
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
@@ -1206,7 +1204,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     return old_pack
 
 
-class UploadBranchCollector(BranchTestCollector): # TODO - will not need anymore
+class UploadBranchCollector(BranchTestCollector):  # TODO - will not need anymore
     def _collect(self) -> CollectionResult | None:
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
@@ -1235,7 +1233,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
     def _collect(self) -> CollectionResult | None:
 
         result = []
-        collect_from = self._get_git_diff() # TODO - OR - SpecificPacksTestCollector/UploadAllCollector
+        collect_from = self._get_git_diff()  # TODO - OR - SpecificPacksTestCollector/UploadAllCollector
 
         changed_packs = CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
@@ -1254,19 +1252,23 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 self._collect_packs_nightly(self.conf.nightly_packs),
                 self._id_set_tests_matching_marketplace_value()
             ])
-            result.append(nightly_packs)
+            if nightly_packs:
+                logger.info(f"Collect the following nightly packs to install: {nightly_packs.packs_to_install=}")
+                result.append(nightly_packs)
 
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
             modeling_rules = CollectionResult.union((
                 self._collect_modeling_rule_packs(),
                 self.sanity_tests_xsiam(),  # todo XSIAM nightly always collects its sanity test(s)
             ))
+            logger.info(f"michal test {modeling_rules.packs_to_upload=}")
             modeling_rules.packs_to_upload = set()
             modeling_rules.packs_to_reinstall = set()
-            result.append(modeling_rules)
+            if modeling_rules:
+                logger.info(f"Collect the following packs to install modeling rules: {modeling_rules.packs_to_install=}")
+                result.append(modeling_rules)
 
         return CollectionResult.union(result)
-
 
     def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
         failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.marketplace)
@@ -1339,7 +1341,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     id_set=self.id_set,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, NonNightlyPackInNightlyBuildException) as e:
-                logger.debug(f"{playbook.id} - {str(e)}")
+                logger.debug(f"{playbook.id_} - {str(e)}")
         logger.info(f'Michal, _id_set_tests_matching_marketplace_value {len(result)=}')
 
         return CollectionResult.union(result)
