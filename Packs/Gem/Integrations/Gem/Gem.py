@@ -684,7 +684,6 @@ def get_threat_details(client: GemClient, args: dict[str, Any]) -> CommandResult
     """
     threat_id = args.get('threat_id', "")
 
-    
     result = client.get_threat_details(threat_id=threat_id)
 
     return CommandResults(
