@@ -486,7 +486,7 @@ script:
     - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. Maximum value is 50. 
+    - description: Number of results to return. Maximum value is 50.
       defaultValue: '50'
       name: limit
       required: false
@@ -551,7 +551,7 @@ script:
     - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. Maximum value is 50. 
+    - description: Number of results to return. Maximum value is 50.
       defaultValue: '50'
       name: limit
       required: false
@@ -710,8 +710,8 @@ script:
     - description: The email of the user.
       name: emailAddress
       required: true
-    name: aws-iam-identitycenter-get-user-by-email
     description: Retrieves information about the specified IAM user.
+    name: aws-iam-identitycenter-get-user-by-email
     outputs:
     - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
@@ -1152,7 +1152,7 @@ script:
       required: true
     description: Updates an IAM Identity Center group for your AWS account.
     name: aws-iam-identitycenter-update-group
-  dockerimage: demisto/boto3py3:1.0.0.76002
+  dockerimage: demisto/boto3py3:1.0.0.93823
   runonce: false
   script: ''
   subtype: python3
