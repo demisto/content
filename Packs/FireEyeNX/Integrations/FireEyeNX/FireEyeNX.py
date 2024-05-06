@@ -425,7 +425,7 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
         alerts.sort(key=lambda x: x.get("occurred"))
         last_alert_start_time = last_run.get('alerts', {}).get('start_time')
         last_alert_ids = last_run.get('alerts', {}).get('alert_ids', [])
-        next_alert_start_time = alerts[-1].get('occurred', '')
+        next_alert_start_time = alerts[:kwargs['fetch_limit']][-1].get('occurred', '')
 
         for alert in alerts:
             # skip on duplicate incident
@@ -453,6 +453,7 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
                     DATE_FORMAT_WITH_MICROSECOND
                 ),
                 'rawJSON': json.dumps(context_alert),
+                'dbotMirrorId': str(alert.get('id')),
             }
 
             if (
@@ -529,7 +530,7 @@ def get_incidents_for_event(
         events.sort(key=lambda x: x.get("occurred"))
         last_event_start_time = last_run.get('events', {}).get('start_time')
         last_event_ids = last_run.get('events', {}).get('event_ids', [])
-        next_event_start_time = events[-1].get('occurred', '')
+        next_event_start_time = events[:fetch_limit][-1].get('occurred', '')
 
         for event in events:
             # skip on duplicate incident
@@ -553,6 +554,7 @@ def get_incidents_for_event(
                     str(context_event.get('severity', 0)), 0
                 ),
                 'rawJSON': json.dumps(context_event),
+                'dbotMirrorId': str(event_id),
             }
             remove_nulls_from_dictionary(incident)
             incidents.append(incident)
