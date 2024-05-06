@@ -23,8 +23,8 @@ ACCESS_KEY = demisto.params().get('accessKey')
 SECRET_KEY = demisto.params().get('secretKey')
 # SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
 APP_ID = demisto.params().get('appId')
-# APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 APP_KEY = demisto.params().get('appKey')
+# APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = bool(demisto.params().get('proxy'))
@@ -38,8 +38,8 @@ FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 # Used to refresh token / discover available auth types / login
 EMAIL_ADDRESS = demisto.params().get('email')
 # EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-# PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 PASSWORD = demisto.params().get('password')
+# PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
@@ -100,6 +100,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
 
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
+    print('POST', 'api_endpoint:',api_endpoint, 'payload:',payload, 'headers:',headers, 'is_file:',is_file)
     response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
