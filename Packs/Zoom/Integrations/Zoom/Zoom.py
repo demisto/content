@@ -45,7 +45,7 @@ MONTHLY_RECURRING_TYPE_MAPPING = {
 }
 INSTANT = "Instant"
 SCHEDULED = "Scheduled"
-RECURRING_WITH_TIME = "Recurring meeting with fixed time"
+RECURRING_WITH_TIME = "Recurring meeting with fixed time" # TODO TEST RUN TEST MODULE?
 
 MEETING_TYPE_NUM_MAPPING = {
     "Instant": 1,
