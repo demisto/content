@@ -789,7 +789,7 @@ script:
       hidden: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      description: Set this argument to True in order to create vulnerabilities, otherwise the command will only display the vulnerabilities.
       name: should_push_events
       predefined:
       - 'true'
