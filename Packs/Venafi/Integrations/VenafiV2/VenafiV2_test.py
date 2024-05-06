@@ -122,8 +122,10 @@ def test_get_certificates_command(mocker, mock_client_with_valid_token):
 
     assert len(certificates) == 2
     assert certificates == raw_response.get('Certificates', [])
-    assert certificates[0].get('Guid') == "{first_guid}"
-    assert certificates[1].get('Guid') == "{second_guid}"
+    assert certificates[0].get('ID') == "first_guid"
+    assert certificates[1].get('ID') == "second_guid"
+    assert certificates[0].get('Guid') is None
+    assert certificates[1].get('Guid') is None
     assert certificates[0].get('_links') is None
 
 
@@ -143,7 +145,8 @@ def test_get_certificate_details_command(mocker, mock_client_with_valid_token):
     certificate_details = command_result.outputs
 
     assert certificate_details == raw_response
-    assert certificate_details.get('Guid') == '{certificate_details_guid}'
+    assert certificate_details.get('ID') == 'certificate_details_guid'
+    assert certificate_details.get('Guid') is None
     assert certificate_details.get('Name') == 'test.certificates.com'
 
     verbose_certificate_details = certificate_details.get('CertificateDetails')

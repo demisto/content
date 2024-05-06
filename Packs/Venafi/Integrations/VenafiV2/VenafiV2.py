@@ -250,6 +250,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     guid: str = args.get('guid', '')
     response = client.get_certificate_details(guid)
     response['ID'] = response.get('Guid', '').strip('{}')  # add ID to response for backward compatible with V1
+    del response['Guid']  # remove redundant entry since ID entry is the same.
     readable_certificate_details = response.copy()
     if not readable_certificate_details['ID']:
         entries = []
@@ -276,11 +277,12 @@ def edit_response(certificates: list) -> list:
     Args:
         certificates (list): List of certificates
     Returns:
-        certificates (list): List of certificates without the links list and with ID entry.
+        certificates (list): List of certificates with ID entry but without _links and guid entries.
     """
 
     for certificate in certificates:
         certificate['ID'] = certificate.get('Guid', '').strip('{}')
+        del certificate['Guid']
         if certificate.get('_links'):
             del certificate['_links']
 
