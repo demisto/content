@@ -20,8 +20,6 @@ USE_SSL = not demisto.params().get("insecure", False)
 PROXY = demisto.params().get("proxy", True)
 REQUEST_TIMEOUT = int(demisto.params().get("requestTimeout", 15))
 DEFAULT_HEADERS = {"content-type": "application/json"}
-EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 100
 SESSION_ID_KEY = "session_id"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -101,10 +99,11 @@ def error_handler(res):
 def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
     retries = 0 if is_time_sensitive() else 3
     status_list_to_retry = None if is_time_sensitive() else [429]
+    timeout = 2 if is_time_sensitive() else REQUEST_TIMEOUT
     try:
         res = generic_http_request(method=method,
                                    server_url=BASE_URL,
-                                   timeout=REQUEST_TIMEOUT,
+                                   timeout=timeout,
                                    verify=USE_SSL,
                                    proxy=PROXY,
                                    client_headers=DEFAULT_HEADERS,
