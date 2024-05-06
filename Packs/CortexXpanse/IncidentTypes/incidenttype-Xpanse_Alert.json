@@ -8,7 +8,7 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {},
-        "mode": "All"
+        "mode": "Specific"
     },
     "hours": 0,
     "hoursR": 0,
@@ -16,7 +16,7 @@
     "layout": "Xpanse Alert Layout",
     "locked": false,
     "name": "Xpanse Alert",
-    "onChangeRepAlg": 1,
+    "onChangeRepAlg": 0,
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
@@ -24,5 +24,5 @@
     "weeks": 0,
     "weeksR": 0,
     "fromVersion": "6.5.0",
-    "playbookId": "Xpanse - Alert Handler"
+    "toVersion": "6.7.9"
 }
