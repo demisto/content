@@ -1,0 +1,6 @@
+!aws-eks-list-clusters
+!aws-eks-update-cluster-config cluster_name=CLUSTER_NAME logging="{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': false}]}"
+!aws-eks-describe-cluster cluster_name=CLUSTER_NAME
+!aws-eks-create-access-entry cluster_name=CLUSTER_NAME principal_arn=principal_arn
+!aws-eks-associate-access-policy cluster_name=CLUSTER_NAME principal_arn=principal_arn policy_arn=policy_arn type=cluster
+!aws-eks-update-access-entry cluster_name=CLUSTER_NAME principal_arn=principal_arn
