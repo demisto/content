@@ -192,7 +192,7 @@ update-validation-docs:
   script:
     - section_start "Update validation docs" --collapsed
     - sleep-with-progress 60 5 "Sleeping for Generate Validate Docs GitHub worfklow to finish" 30
-    - python3 ./Tests/sdk_release/update_validate_docs.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" -d "${IS_DRAFT}"
+    - python3 ./Tests/sdk_release/update_validate_docs.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" -d "${IS_DRAFT}" -f "${ARTIFACTS_FOLDER}"
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" --allow-failure "true" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}" -f "${ARTIFACTS_FOLDER}/validate_release_notes_message.txt"
     - section_end "Update validation docs"
 
