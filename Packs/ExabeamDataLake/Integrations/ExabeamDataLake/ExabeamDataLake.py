@@ -9,6 +9,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # ISO8601 format with UTC, default in XSOAR
 
 HEADERS = {"Accept": "application/json", "Csrf-Token": "nocheck"}
 
+ISO_8601_FORMAT = "%Y-%m-%d"
+
 """ CLIENT CLASS """
 
 
@@ -33,9 +35,7 @@ class Client(BaseClient):
         """
         headers = {"Csrf-Token": "nocheck"}
         data = {"username": self.username, "password": self.password}
-        full_url=f"{self._base_url}/api/auth/login"
-        print(full_url)
-        print(self.username, self.password, self._verify)
+       
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
@@ -48,8 +48,6 @@ class Client(BaseClient):
         """
         Performs basic get request to check if the server is reachable.
         """
-        full_url = f'{self._base_url}/api/auth/check'
-        
         self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
     def query_datalake_request(self, search_query: dict) -> dict:
@@ -92,7 +90,22 @@ def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
     return query_range
 
 
-def query_datalake_command(client: Client, args: dict) -> CommandResults:
+def dates_in_range(start_time, end_time):
+    # Parse start and end dates
+    start_date = datetime.strptime(start_time, "%Y-%m-%d")
+    end_date = datetime.strptime(end_time, "%Y-%m-%d")
+    
+    # Generate dates within the range
+    dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        dates.append(current_date.strftime("%Y.%m.%d"))
+        current_date += timedelta(days=1)
+    
+    return dates
+
+
+def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandResults:
     """
     Query the datalake command and return the results in a formatted table.
 
@@ -103,6 +116,17 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: The command results object containing outputs and readable output.
     """
+    page = arg_to_number(args.get('page',1))
+    page_size = arg_to_number(args.get('page_size', 50))
+    limit = arg_to_number(args.get('limit', 50))
+    if page is not None:
+        from_param = page * page_size - page_size
+        size_param = page_size
+    else:
+        from_param = 0
+        size_param = limit
+        
+    
 
     def _parse_entry(entry: dict) -> dict:
         """
@@ -120,36 +144,46 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
             "Vendor": source.get("Vendor"),
             "Time": source.get("time"),
             "Product": source.get("Product"),
-            "Event Name": source.get("event_name"),
-            "Action": source.get("action"),
+            "Message": source.get("message")
         }
 
-    limit = arg_to_number(args.get("limit", 50))
-    all_result = argToBoolean(args.get("all_result", False))
-
-    result_size_to_get = 10_000 if all_result else limit
-
     if start_time := args.get("start_time"):
-        start_time = date_to_timestamp(start_time)
-
+        # start_time = date_to_timestamp(start_time)
+        start_time = arg_to_datetime(arg=start_time, arg_name="Start time", required=True)
+        if start_time:
+            start_time = start_time.strftime(ISO_8601_FORMAT)
+            
     if end_time := args.get("end_time"):
-        end_time = date_to_timestamp(end_time)
-
-    search_query = _handle_time_range_query(start_time, end_time) if start_time else {}
+        # end_time = date_to_timestamp(end_time)
+        end_time = arg_to_datetime(arg=end_time, arg_name="End time", required=True)
+        if end_time:
+            end_time = end_time.strftime(ISO_8601_FORMAT)
+            
+            
+    dates = dates_in_range(start_time, end_time)
+    dates_in_format = []
+    for date in dates:
+        date_exabeam = "exabeam-" + date
+        dates_in_format.append(date_exabeam)
+    
+    # search_query = _handle_time_range_query(start_time, end_time) if start_time else {}
+    
+    search_query = {}
 
     search_query.update(
         {
             "sortBy": [
                 {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
             ],  # the response sort by timestamp
-            "query": args["query"],  # can be "VPN" or "*"
-            "size": result_size_to_get,  # the size of the response
+            "query": args.get("query", "*"),
+            "from": from_param,
+            "size": size_param,
             "clusterWithIndices": [
                 {
-                    "clusterName": "local",
-                    "indices": ["exabeam-2023.07.12"],
-                }  # TODO -need to check if this is hardcoded
-            ],
+                    "clusterName": cluster_name,
+                    "indices": dates_in_format,
+                }
+            ]
         }
     )
 
@@ -163,7 +197,7 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
     table_to_markdown = [_parse_entry(entry) for entry in data_response]
 
     return CommandResults(
-        outputs_prefix="ExabeamDataLake.Log",
+        outputs_prefix="ExabeamDataLake.Event",
         outputs=data_response,
         readable_output=tableToMarkdown(name="Logs", t=table_to_markdown),
     )
@@ -197,10 +231,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-
-    # verify_certificate = not params.get("insecure", False)
-
-    # proxy = params.get("proxy", False)
+    cluster_name = params.get('cluster_name', 'local')
 
     try:
         client = Client(
@@ -217,8 +248,8 @@ def main() -> None:
         match command:
             case "test-module":
                 return_results(test_module(client))
-            case "exabeam-data-lake-query":
-                return_results(query_datalake_command(client, args))
+            case "exabeam-data-lake-search":
+                return_results(query_datalake_command(client, args, cluster_name))
             case _:
                 raise NotImplementedError(f"Command {command} is not supported")
 

@@ -8,16 +8,18 @@ configuration:
   name: url
   required: true
   type: 0
-# - name: credentials
-#   required: true
-#   display: User Name
-#   type: 9
 - display: User Name
   name: credentials
-  required: false
+  required: true
   section: Connect
   type: 9
   displaypassword: Password
+- defaultvalue: local
+  display: Cluster Name
+  name: cluster_name
+  type: 0
+  required: true
+  additionalinfo: The default value is usually 'local', suitable for standard setups. For custom cluster deployments, consult Exabeam Support Team.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -32,22 +34,23 @@ script:
   - arguments:
     - description: The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description)
       name: query
+      required: true
     - description: 'The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26".'
       name: start_time
+      required: true
     - description: 'The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26".'
       name: end_time
+      required: true
     - defaultValue: '50'
-      description: The maximal number of results to return, up to 10,000.
+      description: The maximal number of results to return. Maximum value is 3000.
       name: limit
-    - defaultValue: false
-      auto: PREDEFINED
-      description: Retrieve all results from an Exabeam Data Lake query, with a maximum of 10,000 results.
-      name: all_result
-      predefined:
-      - "true"
-      - "false"
+    - description: The page number for pagination.
+      name: page
+    - defaultValue: '50'
+      description: The maximal number of results to return. Maximum value is 3000.
+      name: page_size
     description: Get events from Exabeam Data Lake.
-    name: exabeam-data-lake-query
+    name: exabeam-data-lake-search
   isfetch: false
   runonce: false
   script: '-'
