@@ -20,10 +20,10 @@ from xml.etree import ElementTree
 print('args:', demisto.args())
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
-SECRET_KEY = demisto.params().get('secretKey')
+# SECRET_KEY = demisto.params().get('secretKey')
 # SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
 APP_ID = demisto.params().get('appId')
-APP_KEY = demisto.params().get('appKey')
+# APP_KEY = demisto.params().get('appKey')
 # APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 
 USE_SSL = None  # assigned in determine_ssl_usage
@@ -36,9 +36,9 @@ FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
 FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
 FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email')
+# EMAIL_ADDRESS = demisto.params().get('email')
 # EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-PASSWORD = demisto.params().get('password')
+# PASSWORD = demisto.params().get('password')
 # PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 CLIENT_ID = demisto.params().get('client_id')
@@ -3210,7 +3210,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args['limit'])
+    limit = arg_to_number(args.get('limit'))
 
     data = [{}]
     if query:
@@ -3220,7 +3220,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if end:
         data[0]['end'] = end
 
-    response = request_with_pagination_api2('/api/archive/get-search-logs', data, limit, page, page_size)  # type: ignore
+    response = request_with_pagination_api2('/api/archive/get-search-logs',limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.SearchLog',

@@ -2087,7 +2087,6 @@ script:
       defaultValue: 50
     - name: limit
       type: Number
-      defaultValue: 50
   - name: mimecast-get-search-logs
     description: Retrieves the search logs.
     arguments:
@@ -2109,7 +2108,6 @@ script:
     - name: limit
       description: The maximum number of items to return. Default value is '50'.
       type: Number
-      defaultValue: 50
   - name: mimecast-list-account
     description: This endpoint returns the summary details for an account in Mimecast.
     arguments:
@@ -2717,6 +2715,7 @@ script:
       - profile_group
       - address_attribute_value
       - individual_email_address
+      required: true
     - name: to_type
       description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address.
       auto: PREDEFINED
@@ -2728,6 +2727,7 @@ script:
       - profile_group
       - address_attribute_value
       - individual_email_address
+      required: true
   - name: mimecast-update-address-alteration-policy
     description: This API endpoint can be used to update an existing Address Alteration policy.
     arguments:
