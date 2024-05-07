@@ -1657,21 +1657,13 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root = account.root
-    if is_public:
-        root = account.public_folders_root
+    root = account.public_folders_root if is_public else account.root.tois #account.root
     root_collection = FolderCollection(account=account, folders=[root])
     folders = []
-    for f in root_collection.find_folders():  # pylint: disable=E1101
+    for f in root_collection.find_folders():
         folder = folder_to_context_entry(f)
         folders.append(folder)
-
-    try:
-        readable_output = root.tree()   # pylint: disable=E1101
-
-    except ErrorAccessDenied:   # This is temporarily until the exchangelib version will be bumped
-        readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
-
+    readable_output = tableToMarkdown(t=folders, name='Available folders')
     return {
         'Type': entryTypes['note'],
         'Contents': folders,
