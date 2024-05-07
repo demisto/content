@@ -1712,7 +1712,9 @@ def get_conversation_from_api_paginated(conversation_to_search):
     response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
 
     while True:
+        demisto.debug('extradebuglogs: iterating')
         conversations = response['channels'] if response and response.get('channels') else []
+        demisto.debug(f'conversations in response {len(conversations)=}')
         cursor = response.get('response_metadata', {}).get('next_cursor')  # type: ignore
         conversation_filter = list(filter(lambda c: c.get('name').lower() == conversation_to_search, conversations))
         if conversation_filter:
@@ -1723,6 +1725,7 @@ def get_conversation_from_api_paginated(conversation_to_search):
 
         body = body.copy()  # strictly for unit-test purposes (test_get_conversation_by_name_paging)
         body.update({'cursor': cursor})
+        demisto.debug('extradebuglogs: about to send send_slack_request_sync')
         response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
     if conversation_filter:
         conversation = conversation_filter[0]
@@ -1772,25 +1775,27 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     conversation: dict = {}
     # Checks if the channel is defined in the integration params
     if len(COMMON_CHANNELS) > 0:
-        demisto.debug(f'searching conversation')
+        demisto.debug(f'extradebuglogs: params conversation')
         conversation = search_conversation_in_params(conversation_to_search)
-        demisto.debug(f'{conversation=}')
+        demisto.debug(f'extradebuglogs: params {conversation=}')
 
     if not DISABLE_CACHING:
+        demisto.debug('extradebuglogs: not disable caching')
         # Find conversation in the cache if DISABLE_CACHING is false.
         if not conversation:
-            demisto.debug('conversation not in param, getting conversation from context')
+            demisto.debug('extradebuglogs: conversation not in param, getting conversation from context')
             conversation = search_conversation_in_context(conversation_to_search)
-            demisto.debug(f'got conversation from context {conversation}')
+            demisto.debug(f'extradebuglogs: got conversation from context ')
 
         # Find conversation in the api if DISABLE_CACHING is false.
         if not conversation:
-            demisto.debug('conversation not in context, getting from api')
+            demisto.debug('extradebuglogs: conversation not in context, getting from api')
             conversation = get_conversation_from_api_paginated(conversation_to_search)
-            demisto.debug(f'got from api, saving to context {conversation}')
+            demisto.debug(f'extradebuglogs: got from api, saving to context ')
             # Save conversation to cache
             save_conversation_to_context(conversation)
-
+            demisto.debug(f'extradebuglogs: saved to context')
+    demisto.debug(f'extradebuglogs: returning conversation')
     return conversation
 
 
