@@ -1,6 +1,7 @@
 
 import importlib
 import demistomock as demisto
+import pytest
 
 AWSIAMIdentityCenter = importlib.import_module("AWSIAMIdentityCenter")
 
@@ -728,18 +729,8 @@ def test_get_user_operations_list_empty_region():
     assert result == expected_operations
 
 
-def test_update_groups_and_memberships(mocker):
-    """
-    Given:
-        Arguments for updating groups and memberships
-
-    When:
-        Updating groups and memberships using the update_groups_and_memberships function
-
-    Then:
-        Verify that the correct groups and memberships are updated with the correct details
-    """
-    last_data = [
+@pytest.mark.parametrize('last_data, current_data, expected_results', [
+    ([
         {
             "id": 1, "groups": [{
                 'GroupId': 'GROUP_1',
@@ -758,8 +749,8 @@ def test_update_groups_and_memberships(mocker):
                 'GroupId': 'GROUP_3',
                 'MembershipId': 'D'
             }]}
-    ]
-    current_data = [
+    ],
+        [
         {
             'GroupId': 'GROUP_1',
             'MembershipId': 'C'
@@ -772,7 +763,93 @@ def test_update_groups_and_memberships(mocker):
             'GroupId': 'GROUP_4',
             'MembershipId': 'F'
         }
-    ]
+    ],
+        [
+        {
+            'GroupId': 'GROUP_1',
+            'MembershipId': 'C'
+        },
+        {
+            'GroupId': 'GROUP_3',
+            'MembershipId': 'D'
+        },
+        {
+            'GroupId': 'GROUP_4',
+            'MembershipId': 'F'
+        }
+    ]),
+    (
+        {
+            "id": 2, "groups": [{
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'C'
+            },
+                {
+                'GroupId': 'GROUP_2',
+                'MembershipId': 'B'
+            }]},
+        [
+            {
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'C'
+            },
+            {
+                'GroupId': 'GROUP_3',
+                'MembershipId': 'D'
+            },
+            {
+                'GroupId': 'GROUP_4',
+                'MembershipId': 'F'
+            }
+        ],
+        [
+            {
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'C'
+            },
+            {
+                'GroupId': 'GROUP_2',
+                'MembershipId': 'B'
+            },
+            {
+                'GroupId': 'GROUP_3',
+                'MembershipId': 'D'
+            },
+            {
+                'GroupId': 'GROUP_4',
+                'MembershipId': 'F'
+            }
+        ]
+    ),
+    (
+        [],
+        [
+            {
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'C'
+            }
+        ],
+        [
+            {
+                'GroupId': 'GROUP_1',
+                'MembershipId': 'C'
+            }
+        ]
+    )
+
+])
+def test_update_groups_and_memberships(mocker, last_data, current_data, expected_results):
+    """
+    Given:
+        Arguments for updating groups and memberships
+
+    When:
+        Updating groups and memberships using the update_groups_and_memberships function
+
+    Then:
+        Verify that the correct groups and memberships are updated with the correct details
+    """
+
     key = "id"
     id_value = 2
     new_data = "groups"
@@ -782,17 +859,4 @@ def test_update_groups_and_memberships(mocker):
 
     updated_data = update_groups_and_memberships(last_data, current_data, key, id_value, new_data)
 
-    assert updated_data == [
-        {
-            'GroupId': 'GROUP_1',
-            'MembershipId': 'C'
-        },
-        {
-            'GroupId': 'GROUP_3',
-            'MembershipId': 'D'
-        },
-        {
-            'GroupId': 'GROUP_4',
-            'MembershipId': 'F'
-        }
-    ]
+    assert updated_data == expected_results
