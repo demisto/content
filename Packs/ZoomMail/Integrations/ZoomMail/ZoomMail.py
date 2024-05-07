@@ -450,10 +450,13 @@ def get_email_thread_command(
             f"Email Thread {thread_id} in mailbox {email} has no messages."
         )
 
+    if "pageToken" in response:
+        response.update({"ThreadNextToken": response['pageToken']})
+
     # Return command results
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="ZoomMail.EmailThread",
+        outputs_prefix="ZoomMail.Thread",
         outputs_key_field="id",
         outputs=response,
     )
@@ -499,12 +502,14 @@ def trash_email_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
 
 def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> CommandResults:
     """
-    Lists emails from a specified mailbox using the ZoomMail API based on given criteria.
+    Lists emails from a specified mailbox or retrieves specific email details if 'message_id' is provided,
+    using the ZoomMail API based on given criteria.
 
     Args:
         client (ZoomMailClient): The client used to interact with the ZoomMail API.
-        args (Dict[str, str]): Command arguments, expected to contain:
+        args (Dict[str, str]): Command arguments, which can include:
             - email: The email address of the mailbox.
+            - message_id: Optional, specific message ID to retrieve detailed message.
             - max_results: Maximum number of messages to retrieve (default is '50').
             - page_token: Token for pagination to continue listing emails from a previous request.
             - label_ids: IDs of labels to filter the messages.
@@ -514,7 +519,6 @@ def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
     Returns:
         CommandResults: A CommandResults object that contains the readable output,
                         the API response, and other metadata for use in other parts of the system.
-
     """
     email = args.get("email")
     if not email:
@@ -524,6 +528,9 @@ def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
     page_token = args.get("page_token", "")
     label_ids = args.get("label_ids", "")
     query = args.get("query", "")
+    message_id = args.get("message_id", "")
+    msg_format = args.get("format", "full")
+    metadata_headers = args.get("metadata_headers", "")
     include_spam_trash = args.get("include_spam_trash", "false").lower() in [
         "true",
         "1",
@@ -532,6 +539,31 @@ def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
         "yes",
     ]
 
+    if message_id:
+
+        message = client.get_email_message(email, message_id, msg_format, metadata_headers)
+
+        if "payload" in message:
+            body, html, attachments = parse_mail_parts([message.get("payload")])
+            human_readable = (
+                f"### Email Message {message_id}\n"
+                f"* **From**: {message.get('from')}\n"
+                f"* **To**: {message.get('to')}\n"
+                f"* **Subject**: {message.get('subject')}\n"
+                f"* **Date**: {message.get('date')}\n\n"
+                f"**Body:**\n{body}\n\n"
+                f"**HTML:**\n{html}\n\n"
+                f"**Attachments:**\n{', '.join([att['Name'] for att in attachments])}"
+            )
+        else:
+            human_readable = f"No content found for Email Message {message_id}."
+
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix="ZoomMail.Email",
+            outputs_key_field="id",
+            outputs=message,
+        )
     response = client.list_emails(
         email, max_results, page_token, label_ids, query, include_spam_trash
     )
@@ -545,65 +577,14 @@ def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
     else:
         readable_output = f"No messages found in mailbox {email}."
 
+    if "pageToken" in response:
+        response.update({"EmailNextToken": response['pageToken']})
+
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="ZoomMail.Emails",
+        outputs_prefix="ZoomMail.Email",
         outputs_key_field="id",
         outputs=response,
-    )
-
-
-def get_email_message_command(
-    client: ZoomMailClient, args: Dict[str, str]
-) -> CommandResults:
-    """
-    Retrieves a specific email message and formats a detailed human-readable output.
-
-    Args:
-        client (ZoomMailClient): The client used to interact with the ZoomMail API.
-        args (Dict[str, str]): Command arguments, expected to contain:
-            - email: The email address of the mailbox.
-            - message_id: The identifier of the specific message to retrieve.
-            - format: The format in which to return the message ('full', 'metadata', 'minimal').
-            - metadata_headers: Specific headers to include when format is 'metadata'.
-
-    Returns:
-        CommandResults: A CommandResults object that contains the human-readable output,
-                        the API response, and other metadata for use in other parts of the system.
-
-    Raises:
-        ValueError: If 'email' or 'message_id' are not provided in the command arguments.
-    """
-    email = args.get("email")
-    message_id = args.get("message_id")
-    if not email or not message_id:
-        raise ValueError("Both 'email' and 'message_id' arguments are required.")
-
-    email_format = args.get("format", "full")
-    metadata_headers = args.get("metadata_headers", "")
-
-    message = client.get_email_message(email, message_id, email_format, metadata_headers)
-
-    if "payload" in message:
-        body, html, attachments = parse_mail_parts([message.get("payload")])
-        human_readable = (
-            f"### Email Message {message_id}\n"
-            f"* **From**: {message.get('from')}\n"
-            f"* **To**: {message.get('to')}\n"
-            f"* **Subject**: {message.get('subject')}\n"
-            f"* **Date**: {message.get('date')}\n\n"
-            f"**Body:**\n{body}\n\n"
-            f"**HTML:**\n{html}\n\n"
-            f"**Attachments:**\n{', '.join([att['Name'] for att in attachments])}"
-        )
-    else:
-        human_readable = f"No content found for Email Message {message_id}."
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix="ZoomMail.EmailMessage",
-        outputs_key_field="id",
-        outputs=message,
     )
 
 
@@ -726,11 +707,11 @@ def list_users_command(client: ZoomMailClient, args: Dict[str, str]) -> CommandR
     """
     # Extract and process arguments with defaults
     status = args.get("status", "active")
-    page_size = args.get("page_size", 30)
+    page_size = args.get("limit", 30)
     role_id = args.get("role_id", "")
     page_number = args.get("page_number", "1")
     include_fields = args.get("include_fields", "")
-    next_page_token = args.get("next_page_token", "")
+    next_page_token = args.get("next_token", "")
     zmail_license = args.get("license", "")
 
     # API call to list users
@@ -753,6 +734,9 @@ def list_users_command(client: ZoomMailClient, args: Dict[str, str]) -> CommandR
             headers=["email", "first_name", "last_name", "type", "status"],
         )
     )
+
+    if "pageToken" in response:
+        response.update({"UserNextToken": response['pageToken']})
 
     # Return command results with structured data
     return CommandResults(
@@ -1160,9 +1144,6 @@ def main():
             client, args
         ),
         f"{ZOOM_MAIL_COMMAND_PREFIX}-email-attachment-get": lambda: get_email_attachment_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-get-email-message": lambda: get_email_message_command(
             client, args
         ),
         f"{ZOOM_MAIL_COMMAND_PREFIX}-send-email": lambda: send_email_command(

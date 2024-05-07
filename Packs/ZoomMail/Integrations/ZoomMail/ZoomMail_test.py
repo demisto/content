@@ -6,7 +6,7 @@ import json
 
 from CommonServerPython import CommandResults
 from ZoomMail import ZoomMailClient, the_testing_module, fetch_incidents, get_email_thread_command, trash_email_command, \
-    list_emails_command, get_email_message_command, get_email_attachment_command, get_mailbox_profile_command, list_users_command
+    list_emails_command, get_email_attachment_command, get_mailbox_profile_command, list_users_command
 
 
 def load_test_data(json_path):
@@ -433,100 +433,6 @@ class TestListEmailsCommand(unittest.TestCase):
             mock_list_emails.assert_called_once_with(
                 "user@example.com", "100", "", "INBOX,UNREAD", "subject:urgent", True
             )
-
-
-class TestGetEmailMessageCommand(unittest.TestCase):
-    def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
-        self.client = MagicMock()
-        self.args: Dict[str, str] = {
-            "email": "user@example.com",
-            "message_id": "1001",
-            "format": "full",
-            "metadata_headers": "Subject,Date"
-        }
-
-    @patch("ZoomMail.ZoomMailClient.get_email_message")
-    def test_successful_email_retrieval(self, mock_get_email_message):
-        """Test successful retrieval of an email message."""
-        # Mock API response
-        mock_get_email_message.return_value = {
-            "id": "1001",
-            "from": "sender@example.com",
-            "to": "receiver@example.com",
-            "subject": "Test Email",
-            "date": "2024-05-05T12:34:56Z",
-            "payload": {
-                "headers": [],
-                "body": {
-                    "data": "Hello, world!",
-                    "size": 100
-                }
-            }
-        }
-
-        # Execute command
-        result = get_email_message_command(self.client, self.args)
-
-        # Verify results
-        self.assertIsInstance(result, CommandResults)
-        self.assertIn("Test Email", result.readable_output)
-        self.assertIn("Hello, world!", result.readable_output)
-
-    @patch("ZoomMail.ZoomMailClient.get_email_message")
-    def test_email_not_found(self, mock_get_email_message):
-        """Test handling when the email is not found."""
-        mock_get_email_message.return_value = {}
-
-        # Execute command
-        result = get_email_message_command(self.client, self.args)
-
-        # Verify results
-        self.assertIn("No content found", result.readable_output)
-
-    def test_missing_email_argument(self):
-        """Test response when the required 'email' argument is missing."""
-        del self.args['email']  # Remove the email to simulate the error
-
-        with self.assertRaises(ValueError) as context:
-            get_email_message_command(self.client, self.args)
-
-        self.assertIn("Both 'email' and 'message_id' arguments are required", str(context.exception))
-
-    def test_missing_message_id_argument(self):
-        """Test response when the required 'message_id' argument is missing."""
-        del self.args['message_id']  # Remove the message_id to simulate the error
-
-        with self.assertRaises(ValueError) as context:
-            get_email_message_command(self.client, self.args)
-
-        self.assertIn("Both 'email' and 'message_id' arguments are required", str(context.exception))
-
-    @patch("ZoomMail.ZoomMailClient.get_email_message")
-    def test_various_formats_handled(self, mock_get_email_message):
-        """Test different formats and ensure they are handled correctly."""
-        # Simulate different formats being returned
-        mock_get_email_message.return_value = {
-            "id": "1001",
-            "from": "sender@example.com",
-            "to": "receiver@example.com",
-            "subject": "Formatted Email",
-            "date": "2024-05-05T12:34:56Z",
-            "payload": {
-                "headers": [],
-                "body": {
-                    "data": "<div>Hello, HTML world!</div>",
-                    "size": 200
-                }
-            }
-        }
-        self.args['format'] = "html"  # Simulate HTML format request
-
-        # Execute command
-        result = get_email_message_command(self.client, self.args)
-
-        # Check if HTML is correctly handled in the mock
-        self.assertIn("Hello, HTML world!", result.readable_output)
 
 
 class TestGetEmailAttachmentCommand(unittest.TestCase):

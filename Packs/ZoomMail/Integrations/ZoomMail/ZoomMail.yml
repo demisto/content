@@ -103,6 +103,16 @@ script:
           description: The token for the next page of results.
         - name: include_spam_trash
           description: Whether or not to include spam or trash messages in the results.
+        - name: message_id
+          required: true
+          description: The immutable message ID.
+        - name: format
+          auto: PREDEFINED
+          predefined:
+            - full
+            - metadata
+            - minimal
+          description: The format to return the message with.
       description: Lists the messages in the user's mailbox.
     - name: zoom-mail-thread-list
       arguments:
@@ -139,22 +149,6 @@ script:
           description: The immutable attachment ID.
           required: true
       description: Get an email attachment.
-    - name: zoom-mail-get-email-message
-      arguments:
-        - name: email
-          required: true
-          description: The target mailbox.
-        - name: message_id
-          required: true
-          description: The immutable message ID.
-        - name: format
-          auto: PREDEFINED
-          predefined:
-            - full
-            - metadata
-            - minimal
-          description: The format to return the message with.
-      description: Retrieves the specified email message.
     - name: zoom-mail-send-email
       arguments:
         - name: from
@@ -186,7 +180,7 @@ script:
       arguments:
         - name: status
           description: The status of the User.
-        - name: page_size
+        - name: limit
           description: The max amount of users to return per page.
         - name: role_id
           description: The ID for the role of the User.
@@ -194,7 +188,7 @@ script:
           description: The page number of results.
         - name: include_fields
           description: Indicates whether or not to include fields.
-        - name: next_page_token
+        - name: next_token
           description: The token used to fetch the next page.
         - name: license
           description: Indicates if the user is licensed or not.

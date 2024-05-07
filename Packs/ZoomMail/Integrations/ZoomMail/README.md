@@ -1,5 +1,4 @@
 Enables interaction with the Zoom Mail API.
-This integration was integrated and tested with version xx of Zoom Mail.
 
 ## Configure Zoom Mail on Cortex XSOAR
 
