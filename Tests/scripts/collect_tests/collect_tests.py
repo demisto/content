@@ -1251,7 +1251,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
             result.append(changed_packs)
 
         # todo - add playbooks of non api and nightly packs per marketplace + add nightly packs for install
-        if self.marketplace in [MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2]:
+        if self.marketplace in [MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2]: # todo change to xsoar
             nightly_packs = CollectionResult.union([
                 self._collect_packs_nightly(self.conf.nightly_packs),
                 self._id_set_tests_matching_marketplace_value()
