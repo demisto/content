@@ -23,12 +23,9 @@ ITEM_TEMPLATE = '"id": {id},"name": "Jizo Alert #{id}", "alert_type":"{alert_typ
 ''' CLIENT CLASS '''
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """
+    Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
 
@@ -162,7 +159,7 @@ class Client(BaseClient):
             last_id(int): last incidents id
 
         Returns:
-            list[dict]: data of items as it would return from API.
+            list[dict]: data of formatted items
         """
 
         context_data= self.get_query_records(args={'datetime_from': start_time,'limit':limit})
@@ -214,7 +211,6 @@ def convert_to_demisto_severity(severity: str) -> int:
 
     Args:
         severity (str): severity as returned from the JizoM API.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
 
     Returns:
         int: Cortex XSOAR Severity (1 to 4)
@@ -427,13 +423,9 @@ def main() -> None:  # pragma: no cover
     # get the service API url
     base_url = params.get('url')
 
-    # If your Client class inherits from BaseClient, SSL verification is handled out-of-the-box by it.
-    # Just pass ``verify_certificate`` to the Client constructor
     verify_certificate = not params.get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
+    
     first_fetch_time = arg_to_datetime(
         arg=params.get('first_fetch', '7 days'),
         arg_name='First fetch time',
@@ -443,6 +435,7 @@ def main() -> None:  # pragma: no cover
     headers={
             "Content-Type": "application/json",
         }
+    # get credentials
     username = demisto.params().get('credentials', {}).get('identifier')
     password = demisto.params().get('credentials', {}).get('password')
     demisto.debug(f'Command being called is {command}')
@@ -467,7 +460,6 @@ def main() -> None:  # pragma: no cover
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
         elif command == 'fetch-incidents':
-
             # Convert the argument to an int using helper function or set to MAX_ALERTS_TO_FETCH
             max_results = arg_to_number(
                 arg=params.get('max_fetch'),
