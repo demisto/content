@@ -9,7 +9,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import urllib3
-import contextlib
 from dateparser import parse
 
 # Disable insecure warnings
@@ -55,14 +54,10 @@ class Client(BaseClient):
 
         param_string = self.build_param_string(params)
 
-        try:
-            resp = self._http_request('GET', url_suffix=path, headers=headers, params=param_string, resp_type='json', timeout=300,
-                                      retries=3)
+        demisto.debug(f'Calling NIST NVD with the following parameters {param_string}')
 
-        except Exception as e:
-            demisto.debug(e)
-
-        return resp
+        return self._http_request('GET', url_suffix=path, headers=headers, params=param_string, resp_type='json', timeout=300,
+                                  retries=3)
 
     def build_param_string(self, params: dict) -> str:
         """Builds a string out of the URL parameters to allow duplication of Severity keys.
@@ -78,7 +73,7 @@ class Client(BaseClient):
         param_string = param_string.replace('noRejected=None', 'noRejected')
 
         for value in self.cvssv3severity:
-            param_string += f'&cvssV3Severity={value}'  # type: ignore
+            param_string += f'&cvssV3Severity={value}'
 
         return param_string
 
@@ -222,16 +217,17 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
     for cpe in cpes:
         cpe_split = re.split(r'(?<!\\):', cpe)
 
-        with contextlib.suppress(IndexError):
+        try:
+            parts.add(cpe_parts[cpe_split[2]])
+
             if (vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " ")):
                 vendors.add(vendor)
 
-        with contextlib.suppress(IndexError):
             if (product := cpe_split[4].capitalize().replace("\\", "").replace("_", " ")):
                 products.add(product)
 
-        with contextlib.suppress(IndexError):
-            parts.add(cpe_parts[cpe_split[2]])
+        except IndexError:
+            pass
 
     relationships = [EntityRelationship(name="targets",
                                         entity_a=cve_id,
@@ -244,6 +240,8 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
                                              entity_a_type="cve",
                                              entity_b=product,
                                              entity_b_type="software") for product in products])
+
+    demisto.debug(f'{len(relationships)} relationships found for {cve_id}')
 
     return list(vendors | products | parts), relationships
 
@@ -269,7 +267,7 @@ def cves_to_war_room(raw_cves):
             continue
 
         cve = raw_cve.get("cve")
-        fields = {"description": cve.get('descriptions')[0].get('value')}
+        fields = {"description": cve.get('descriptions', [])[0].get('value')}
         fields["modified"] = cve.get('lastModified')
         fields["published"] = cve.get('published')
         fields["id"] = cve.get('id')
@@ -277,7 +275,8 @@ def cves_to_war_room(raw_cves):
         try:
             fields["cvssversion"], fields["score"] = get_cvss_version_and_score(cve.get("metrics"))
         except Exception:
-            return_error(f'{raw_cve}')
+            demisto.debug(f'Cant find CVSS score for {raw_cve}')
+
         output_list.append(fields)
 
     return CommandResults(
@@ -292,22 +291,12 @@ def cves_to_war_room(raw_cves):
 
 
 def get_cvss_version_and_score(metrics):
-    try:
-        metrics = metrics["cvssMetricV31"][0]
-        return metrics["cvssData"]["version"], metrics["cvssData"]["baseScore"]
+    cvss_metrics = metrics.get("cvssMetricV31", metrics.get("cvssMetricV30", metrics.get("cvssMetricV2", [])))
 
-    except KeyError:
-        try:
-            metrics = metrics["cvssMetricV30"][0]
-            return metrics["cvssData"]["version"], metrics["cvssData"]["baseScore"]
+    if cvss_metrics and cvss_metrics[0]:
+        return cvss_metrics[0]["cvssData"]["version"], cvss_metrics[0]["cvssData"]["baseScore"]
 
-        except KeyError:
-            try:
-                metrics = metrics["cvssMetricV2"][0]
-                return metrics["cvssData"]["version"], metrics["cvssData"]["baseScore"]
-
-            except KeyError:
-                return '', ''
+    return '', ''
 
 
 def test_module(client: Client):
@@ -373,6 +362,9 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
             total_results = res.get('totalResults', 0)
 
             if total_results:
+                demisto.debug(f'Fetching {param["startIndex"]}-{int(param["startIndex"])+results_per_page}'
+                              'out of {total_results} results.')
+
                 raw_cves += res.get('vulnerabilities')
 
                 param['startIndex'] += int(results_per_page)  # type: ignore
@@ -382,8 +374,9 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
 
         except Exception as e:  # pylint: disable=broad-except
             demisto.debug(e)
-        finally:
-            time.sleep(.5)
+
+        # finally:
+        #    time.sleep(.5)
 
     return raw_cves
 
@@ -396,8 +389,7 @@ def fetch_indicators_command(client: Client) -> list[dict]:
         client: An instance of the BaseClient connection class
 
     Returns:
-        Total number of CVE indicators fetched
-
+        List of CVE indicators fetched
     """
 
     publish_date = False
@@ -438,22 +430,30 @@ def fetch_indicators_command(client: Client) -> list[dict]:
         delta = (end_date - start_index).days
 
         if delta > 120:
+            demisto.debug(f'Fetching CVEs over a span of {delta} days, will run in 120 days batches')
             end_date = start_index + timedelta(days=120)
         else:
             exceeds_span = False
+
+        demisto.debug(f'Fetching CVEs from {start_index:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
+                      f'Using {"Publish date" if publish_date else "Updated date"}')
 
         raw_cves = retrieve_cves(client, start_index, end_date, publish_date=publish_date)
 
         if raw_cves and command != "nvd-get-indicators":
             temp_cves = build_indicators(client, raw_cves)
+            demisto.debug(f'Creating {len(temp_cves)} using "createIndicators"')
             demisto.createIndicators(temp_cves)
             total_results += len(temp_cves)
 
         start_index = end_date
 
     set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT)})
-    demisto.debug(f'Time: ({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), '  # type: ignore
+
+    demisto.debug(f'({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), '  # type: ignore
                   f'Fetched {total_results} indicators.')
+    demisto.debug(f'Setting lastRun to "{end_date.strftime(DATE_FORMAT)}"')
+
     return raw_cves
 
 
