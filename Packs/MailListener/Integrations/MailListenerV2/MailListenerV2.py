@@ -76,6 +76,7 @@ class Email:
             msg = email.message_from_string(message_string)
             demisto.debug('ML: success to parse attachment from str')
 
+        demisto.debug('ML: Managed to decode attachments')
         if msg:
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
@@ -354,9 +355,9 @@ def fetch_mails(client: IMAPClient,
                                                permitted_from_addresses,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
-        demisto.debug(f'message_id not provided, using generated query {messages_query}')
+        demisto.debug(f'ML: message_id not provided, using generated query {messages_query}')
         messages_uids = client.search(messages_query)
-        demisto.debug(f"client returned {len(messages_uids)} message ids: {messages_uids=}")
+        demisto.debug(f"ML: client returned {len(messages_uids)} message ids: {messages_uids=}")
 
         if len(messages_uids) > limit:  # If there's any reason to shorten the list
             if uid_to_fetch_from == 0:
