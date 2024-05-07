@@ -10,7 +10,7 @@ import urllib3
 urllib3.disable_warnings()
 
 """ CONSTANTS """
-
+ou = 42
 API_PREFIX = "/api/v1"
 
 """ CLIENT CLASS """
