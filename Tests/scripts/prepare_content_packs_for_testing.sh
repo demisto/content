@@ -73,17 +73,16 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to build buc
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/Prepare_Content_Packs_For_Testing_gsutil.log" 2>&1
 echo "Finished copying successfully."
 
-CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.json"
-
-CONTENT_PACKS_TO_UPLOAD_JSON=$(cat "${CONTENT_PACKS_TO_UPLOAD_FILE}")
-CONTENT_PACKS_TO_UPDATE_METADATA=$(echo "$CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_update_metadata | @csv')
-if [ -z "${CONTENT_PACKS_TO_UPDATE_METADATA}" ]; then
-  echo "Did not get content packs to update metadata in the bucket."
-fi
-
-CONTENT_PACKS_TO_UPLOAD=$(echo "$CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_upload | @csv')
+CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.txt"
+CONTENT_PACKS_TO_UPLOAD=$(paste -sd, "${CONTENT_PACKS_TO_UPLOAD_FILE}")
 if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" ]]; then
   echo "Did not get content packs to update in the bucket."
+fi
+
+CONTENT_PACKS_TO_UPDATE_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_update_metadata.txt"
+CONTENT_PACKS_TO_UPDATE_METADATA=$(paste -sd, "${CONTENT_PACKS_TO_UPDATE_FILE}")
+if [[ -z "${CONTENT_PACKS_TO_UPDATE_METADATA}" ]]; then
+  echo "Did not get content packs to update metadata in the bucket."
 fi
 
 if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" &&  -z "${CONTENT_PACKS_TO_UPDATE_METADATA}" ]]; then
