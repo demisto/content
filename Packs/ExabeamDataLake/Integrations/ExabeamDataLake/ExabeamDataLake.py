@@ -91,14 +91,18 @@ def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
 
 
 def dates_in_range(start_time, end_time):
-    # Parse start and end dates
-    start_date = datetime.strptime(start_time, "%Y-%m-%d")
-    end_date = datetime.strptime(end_time, "%Y-%m-%d")
+    start_time = datetime.strptime(start_time, "%Y-%m-%d")
+    end_time = datetime.strptime(end_time, "%Y-%m-%d")
     
-    # Generate dates within the range
+    if start_time >= end_time:
+        raise DemistoException("Start time must be before end time")
+    
+    if (end_time - start_time).days > 10:
+        raise DemistoException("Difference between start time and end time must be less than or equal to 10 days")
+    
     dates = []
-    current_date = start_date
-    while current_date <= end_date:
+    current_date = start_time
+    while current_date <= end_time:
         dates.append(current_date.strftime("%Y.%m.%d"))
         current_date += timedelta(days=1)
     
@@ -148,13 +152,11 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
         }
 
     if start_time := args.get("start_time"):
-        # start_time = date_to_timestamp(start_time)
         start_time = arg_to_datetime(arg=start_time, arg_name="Start time", required=True)
         if start_time:
             start_time = start_time.strftime(ISO_8601_FORMAT)
             
     if end_time := args.get("end_time"):
-        # end_time = date_to_timestamp(end_time)
         end_time = arg_to_datetime(arg=end_time, arg_name="End time", required=True)
         if end_time:
             end_time = end_time.strftime(ISO_8601_FORMAT)
@@ -165,8 +167,6 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
     for date in dates:
         date_exabeam = "exabeam-" + date
         dates_in_format.append(date_exabeam)
-    
-    # search_query = _handle_time_range_query(start_time, end_time) if start_time else {}
     
     search_query = {}
 
