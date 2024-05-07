@@ -1,5 +1,4 @@
 Retrieves information about certificates stored in Venafi.
-This integration was integrated and tested with version xx of Venafi TLS Protect.
 
 ## Configure Venafi TLS Protect on Cortex XSOAR
 
