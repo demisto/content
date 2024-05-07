@@ -355,7 +355,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
         print(f'existing reviewer: {existing_reviewer}')
         print(f'type of existing reviewer: {type(existing_reviewer)}')
     if existing_reviewer:
-        return str(existing_reviewer)
+        return existing_reviewer.pop()
 
         #for reviewer in reviewers:
         #    if reviewer in content_reviewers:
