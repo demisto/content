@@ -448,7 +448,7 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--modeling_rules_to_test_files', help='List of modeling rules test data to check.', required=True)
     parser.add_argument('--reset-core-pack-version', help='Reset the core pack version.', type=string_to_bool)
     parser.add_argument('--pack_ids_to_install', help='Path to the packs to install file.')
-    parser.add_argument('--only_to_be_installed', help='True if should uninstall only going to be installed packs.')
+    parser.add_argument('--only_to_be_installed', help='True if should uninstall only going to be installed packs.', action='store_true')
 
     options = parser.parse_args()
 
