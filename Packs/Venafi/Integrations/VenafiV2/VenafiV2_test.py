@@ -15,6 +15,7 @@ def util_load_json(path):
 
 
 @pytest.fixture(autouse=True)
+@freeze_time("2024-04-25 00:00:00")
 def mock_client_with_valid_token(mocker) -> Client:
     """
     Establish a connection to the client with a URL and user credentials.
