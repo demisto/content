@@ -90,11 +90,11 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
                     "PR_NUMBER": str(pull_request.number),
                     "CI_COMMIT_BRANCH": pull_request.base.ref,
                     "CI_PIPELINE_SOURCE": "contrib",
-                    "CONTRIB_REPO": pull_request.head.repo.name,
+                    "CONTRIB_REPO": "content",
                     "BASE_BRANCH": pull_request.base.ref,
                 }
                 new_pipeline = gitlab_project.trigger_pipeline(
-                    ref=pull_request.head.sha,
+                    ref=pull_request.base.ref,
                     token=args.gitlab_trigger_token,
                     variables=variables,
                 )
