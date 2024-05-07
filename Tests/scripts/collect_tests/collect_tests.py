@@ -68,6 +68,7 @@ class CollectionReason(str, Enum):
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
+    RE_UPLOAD_FAILED_PACK = 're-upload failed packs from previous upload'
     PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
     PACK_MASTER_BUCKET_DISCREPANCY = "pack version on master is ahead of bucket"
     NIGHTLY_PACK = "nightly packs are always installed"
@@ -446,13 +447,13 @@ class TestCollector(ABC):
                 logger.debug(str(e))
         return CollectionResult.union(result)
 
-    def _collect_specific_marketplace_compatible_packs(self, packs_to_upload) -> CollectionResult | None:
+    def _collect_specific_marketplace_compatible_packs(self, packs_to_upload, reason) -> CollectionResult | None:
         result = []
         for pack_id in packs_to_upload:
             try:
                 result.append(self._collect_pack(
                     pack_id=pack_id,
-                    reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
+                    reason=reason,
                     reason_description=""
                 ))
             except (NothingToCollectException, IncompatibleMarketplaceException) as e:
@@ -1226,7 +1227,8 @@ class SpecificPacksTestCollector(TestCollector):
         self.packs_to_upload = packs_to_upload
 
     def _collect(self) -> CollectionResult | None:
-        result: CollectionResult | None = super()._collect_specific_marketplace_compatible_packs(self.packs_to_upload)
+        result: CollectionResult | None = (super()._collect_specific_marketplace_compatible_packs
+                                           (self.packs_to_upload, CollectionReason.PACK_CHOSEN_TO_UPLOAD))
         return result
 
 
@@ -1274,7 +1276,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
 
     def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
         failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
-        return self._collect_specific_marketplace_compatible_packs(failed_packs)
+        return self._collect_specific_marketplace_compatible_packs(failed_packs, CollectionReason.RE_UPLOAD_FAILED_PACK)
 
     def _collect_modeling_rule_packs(self) -> CollectionResult | None:
         """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
