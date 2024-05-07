@@ -139,6 +139,7 @@ def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dic
 
     chat_context = []
     for element in conversation:
+        demisto.debug(f'openai-gpt conversation_to_chat_context reading {element=} from conversation')
         chat_context.append({'role': Roles.USER, 'content': element.get(Roles.USER, '')})
         chat_context.append({'role': Roles.ASSISTANT, 'content': element.get(Roles.ASSISTANT, '')})
 
@@ -267,7 +268,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     demisto.debug(f'openai-gpt check_email_part {check_email_part_message=}')
 
     # Starting a new conversation as of a new topic discussed.
-    args.update({ArgAndParamNames.RESET_CONVERSATION_HISTORY: True, ArgAndParamNames.MESSAGE: check_email_part_message})
+    args.update({ArgAndParamNames.RESET_CONVERSATION_HISTORY: 'yes', ArgAndParamNames.MESSAGE: check_email_part_message})
     send_message_command_results, response = send_message_command(client, args)
 
     # Displaying the analyzed email part to the war room and setting the context for the email checking response
@@ -278,7 +279,8 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
                        outputs={
                            'Email' + email_part.capitalize(): readable_input,
                            'Response': response
-                       }
+                       },
+                       replace_existing=True
                        )
     )
     return send_message_command_results
@@ -341,7 +343,7 @@ def send_message_command(client: OpenAiClient,
     demisto.debug(f'openai-gpt send_message_command {response=}')
 
     assistant_message = extract_assistant_message(response)
-    conversation_step = {Roles.USER: message, Roles.ASSISTANT: assistant_message}
+    conversation_step = [{Roles.USER: message, Roles.ASSISTANT: assistant_message}]
 
     usage: dict[str, str] = response.get('usage', {})
 
@@ -381,7 +383,8 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
     return_results(
         CommandResults(
             outputs_prefix='OpenAIGPT.SocEmailTemplate',
-            outputs={'Response': response}
+            outputs={'Response': response},
+            replace_existing=True
         )
     )
     return send_message_command_results
