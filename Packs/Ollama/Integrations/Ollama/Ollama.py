@@ -74,7 +74,7 @@ def convert_size(size_bytes):
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)
-    return "%s %s" % (s, size_name[i])
+    return f"{s} {size_name}"
 
 
 ''' COMMAND FUNCTIONS '''
@@ -87,7 +87,7 @@ def test_module(client: Client, params) -> str:
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
-        return DemistoException(str(e))
+        raise DemistoException(str(e))
 
 
 def list_local_models_command(client):
