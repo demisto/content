@@ -742,7 +742,7 @@ def main() -> None:
         elif command == 'xdome-set-status-for-device-alert-relations':
             return_results(set_device_alert_relations_command(client, args))
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             initial_fetch_time = params.get('initial_fetch_time').strip()
             alert_types = params.get('alert_types')
             fetch_only_unresolved = params.get('fetch_only_unresolved')
@@ -756,6 +756,9 @@ def main() -> None:
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents or [])
+
+        else:
+            raise Exception('Unrecognized command: ' + command)
 
     # Log exceptions and return errors
     except Exception as e:

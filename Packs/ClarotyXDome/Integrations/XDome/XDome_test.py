@@ -1,19 +1,10 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
+import dateparser
 import pytest
 import demistomock as demisto
-from XDome import Client
+from XDome import (
+    Client, _split_device_alert_relation_id, _format_date, _build_alert_types_filter, _or, _simple_filter, _next_tick
+)
 
 INTEGRATION_PARAMS = {
     "url": "https://not.really.api.claroty.com",
@@ -294,3 +285,86 @@ def test_fetch_incidents(xdome_client_mock):
         "rawJSON": json.dumps(mock_pair),
     }
     assert next_run == {"last_fetch": incident["occurred"], "latest_ids": [incident["dbotMirrorId"]]}
+
+
+def test_force_get_all_wrapper(xdome_client_mock):
+    response_len = 100_000
+    big_response_items = [{"alert_id": i, "device_uid": str(i)} for i in range(response_len)]
+
+    def big_response_mock_getter(
+        fields,
+        filter_by=None,
+        offset=0,
+        limit=1,
+        sort_by=None,
+        count=False,
+    ):
+        return {
+            "items": big_response_items[offset:min(offset + limit, response_len)]
+        }
+
+    client = xdome_client_mock()
+    res = client._force_get_all_wrapper(
+        paginated_getter_func=big_response_mock_getter,
+        items_name="items",
+        fields=["alert_id", "device_uid"],
+    )
+    assert res == big_response_items
+
+    res = client._force_get_all_wrapper(
+        paginated_getter_func=big_response_mock_getter,
+        items_name="items",
+        fields=["alert_id", "device_uid"],
+        stop_after=60_000,
+        start_from=9,
+    )
+    assert res == big_response_items[9:60_009]
+
+
+''' Test Util Functions '''
+
+
+def test_split_device_alert_relation_id():
+    alert_id, device_uid = 123, "01234567-89ab-cdef-edcb-a98765432101"
+    device_alert_relation_id_str = f"{alert_id}↔{device_uid}"
+    assert _split_device_alert_relation_id(device_alert_relation_id_str) == (alert_id, device_uid)
+
+
+def test_format_date():
+    assert isinstance(_format_date("7 days"), str)
+    str_date = "2023-10-19T16:21:01+00:00"
+    str_date_fmt = "2023-10-19T16:21:01Z"
+    assert _format_date(str_date) == str_date_fmt
+    assert _format_date(str_date_fmt) == str_date_fmt
+    assert _format_date(dateparser.parse(str_date)) == str_date_fmt
+    assert _format_date(dateparser.parse(str_date_fmt)) == str_date_fmt
+    with pytest.raises(Exception):
+        _format_date("")
+    with pytest.raises(Exception):
+        _format_date("2 corns")
+
+
+def test_build_alert_types_filter():
+    alert_types = ["  at1", "at2  ", " at3 ", " at4", "at5 "]
+    assert _build_alert_types_filter(alert_types) == {
+        "field": "alert_type_name", "operation": "in", "value": ["at1", "at2", "at3", "at4", "at5"]
+    }
+
+
+def test_or_compound_filter():
+    filter1 = _simple_filter("field1", "op1", ["val11", "val12"])
+    filter2 = _simple_filter("field2", "op2", ["val21"])
+    filter3 = _simple_filter("field3", "op3", ["val31", "val32", "val33"])
+    assert _or(None, filter1, None, filter2, None, None, filter3, None) == {
+        "operation": "or",
+        "operands": [filter1, filter2, filter3]
+    }
+
+
+def test_next_tick():
+    with pytest.raises(Exception):
+        _next_tick("")
+
+    str_date = "2023-10-19T16:21:01+00:00"
+    str_date_fmt = "2023-10-19T16:21:01Z"
+    assert _next_tick(str_date) == _next_tick(str_date_fmt) == "2023-10-19T16:21:02Z"  # 1 sec later
