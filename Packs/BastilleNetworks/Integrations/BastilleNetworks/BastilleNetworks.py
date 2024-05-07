@@ -16,7 +16,7 @@ urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS = 100
-
+jf = 25
 
 class Client(BaseClient):
     """ Client to communicate with the Bastille service API """
