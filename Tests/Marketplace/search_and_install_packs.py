@@ -1067,7 +1067,7 @@ def search_and_install_packs_and_their_dependencies(
     merged_graph_dependencies = merge_cycles(graph_dependencies_for_installed_packs)
     save_graph_data_file_log(merged_graph_dependencies, "merged_graph_dependencies")
 
-    logging.debug(
+    logging.info(
         f"Get the following topological sort: {list(nx.topological_generations(merged_graph_dependencies))}"
     )
     sorted_packs_to_install = split_cycles(

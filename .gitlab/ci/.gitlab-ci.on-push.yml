@@ -133,7 +133,7 @@ validate-content-conf:
     - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
 
-.generic-prepare-testing-bucket:
+.generic-prepare-testing-bucket: # todo
   tags:
     - gke
   extends:
@@ -212,6 +212,12 @@ validate-content-conf:
         popd
       fi
     - section_end "Replace Cortex XSOAR"
+
+    - export BUILD_BUCKET_PATH="content/builds/${CI_COMMIT_BRANCH}/${CI_PIPELINE_ID}/${MARKETPLACE_VERSION}" # TODO USE IT IN THE SCRIPTS
+    - section_start "Copy and Prepare Content Packs for Testing"
+    - ./Tests/scripts/copy_and_prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
+    - section_end "Copy and Prepare Content Packs for Testing"
+
     - section_start "Collect Tests" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
@@ -219,13 +225,13 @@ validate-content-conf:
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         [ -n "${DEMISTO_SDK_NIGHTLY}" ] && DEMISTO_SDK_NIGHTLY=true || DEMISTO_SDK_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --sdk-nightly $DEMISTO_SDK_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}"
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --sdk-nightly $DEMISTO_SDK_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}" -bb "${BUILD_BUCKET_PATH}"
       fi
     - section_end "Collect Tests"
 
-    - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
-    - section_end "Prepare Content Packs for Testing"
+    - section_start "Upload Content Packs for Testing"
+    - ./Tests/scripts/upload_content_packs_for_testing.sh "$MARKETPLACE_VERSION"
+    - section_end "Upload Content Packs for Testing"
 
     - section_start "Override and upload core packs versions"
     - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
@@ -296,20 +302,14 @@ xpanse-prepare-testing-bucket:
     - .generic-prepare-testing-bucket
 
 .run_tests:
-  - section_start "Run Tests"
+  - section_start "Run Tests" # todo
   - |
-    if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
-      ./Tests/scripts/run_tests.sh --generate-empty-result-file
-      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
-    else
-      ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
-      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then
-        cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-      fi
-      ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-      rm -f Tests/conf.json
+    if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     fi
+  - |
+    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+  - rm -f Tests/conf.json
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:
@@ -330,7 +330,7 @@ xpanse-prepare-testing-bucket:
     - job: xsoar-prepare-testing-bucket
   script:
     - EXIT_CODE=0
-    - section_start "Check if should run Instance role"
+    - section_start "Check if should run Instance role" # TODO
     - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
     - |
       echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
@@ -355,7 +355,7 @@ xpanse-prepare-testing-bucket:
       cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
       cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
-    - section_start "Install Packs and run Test-Module"
+    - section_start "Install Packs and run Test-Module" # todo
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
@@ -595,7 +595,7 @@ slack-notify-on-merge:
     SLACK_JOB: 'true'
     SLACK_ALLOW_FAILURE: 'false'
 
-.test_content_on_cloud_server_instances_base:
+.test_content_on_cloud_server_instances_base: # todo
   tags:
     - gke
     - us-west1
@@ -616,7 +616,6 @@ slack-notify-on-merge:
         echo "Not running the instance flow, no tests to run were found."
         ./Tests/scripts/run_tests.sh --generate-empty-result-file
         ./Tests/scripts/test_modeling_rules.sh --generate-empty-result-file
-        ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
         job-done
         exit $EXIT_CODE
       fi
@@ -631,7 +630,7 @@ slack-notify-on-merge:
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
     - !reference [.run_tests]
-    - section_start "Test Modeling Rules"
+    - section_start "Test Modeling Rules" # TODO ONLY FOR XSIAM
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
@@ -665,10 +664,10 @@ xsiam_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "nightly"
-        CLOUD_MACHINES_COUNT: 1
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+#      variables:
+#        CLOUD_MACHINES_TYPE: "nightly"
+#        CLOUD_MACHINES_COUNT: 1
+#        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly" # todo revert
   timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
@@ -713,7 +712,12 @@ xsoar_ng_server_ga:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: never
+      when: always
+#      variables:
+##        CLOUD_MACHINES_TYPE: "nightly"
+#        CLOUD_MACHINES_COUNT: 1
+##        GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-nightly" # TODO add ng machine
+  timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -741,10 +745,10 @@ xsoar_ng_server_ga:
     reports:
       junit:
         - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
-        - "${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
+#        - "${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
-      - "${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
+#      - "${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
