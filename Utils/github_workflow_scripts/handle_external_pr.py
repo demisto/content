@@ -307,14 +307,15 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
     print(f'pr creator is: {pr_creator}')
     all_prs = content_repo.get_pulls()
     similar_prs = []
-    print(f'start of temp loop')
+    print('start of temp loop')
     for pr in all_prs:
         if pr.user.login == "xsoar-bot":
             body = pr.body
             PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
             matcher = re.search(PR_AUTHOR_PATTERN, body)
             print(f'the author of the pr is: {matcher.groups()[0]}')
-    print(f'end of the temp loop')
+
+    print('end of the temp loop')
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
