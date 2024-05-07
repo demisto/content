@@ -382,6 +382,33 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
     )
 
 
+def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    ql_query = args.get('ql_query')
+    include_attributes = bool(args.get('include_attributes', False))
+    page = int(args.get('page', 1))
+    page_size = int(args.get('page_size', 50))
+    limit = args.get('limit')
+    params = {
+        'qlQuery': ql_query,
+        'includeAttributes': include_attributes,
+        'page': page,
+        'resultsPerPage': limit if limit else page_size
+    }
+
+    res = client.http_get(url_suffix='/aql/objects', params=params)
+    outputs = convert_keys_to_pascal(res['objectEntries'], {'id': 'ID'})
+    hr_headers = ['ID', 'Label', 'Type', 'ObjectKey']
+    readable_output = []
+    for output in outputs:
+        obj_type = output['ObjectType']['name']
+        del output['ObjectType']
+        readable_output.append({**output, 'Type': obj_type})
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers)
+    )
 ''' MAIN FUNCTION '''
 
 
@@ -442,6 +469,10 @@ def main() -> None:
 
         elif command == 'jira-asset-object-get':
             result = jira_asset_object_get_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-object-search':
+            result = jira_asset_object_search_command(client, args)
             return_results(result)
 
         else:
