@@ -1,9 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-import json
-from typing import Any
 import math
 
 
@@ -91,7 +87,7 @@ def test_module(client: Client, params) -> str:
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
-        return DemistoException("str(e)")
+        return DemistoException(str(e))
 
 
 def list_local_models_command(client):
@@ -110,7 +106,9 @@ def list_local_models_command(client):
         results.append(new_item)
 
     readable = tableToMarkdown(name='List Local Models', t=results,
-                               metadata='Click here to access the models available for download: [https://ollama.com/library](https://ollama.com/library).', removeNull=True)
+                               metadata='Click here to access the models available for download:'\
+                               ' [https://ollama.com/library](https://ollama.com/library).',
+                               removeNull=True)
     return CommandResults(
         readable_output=readable,
         outputs_prefix='ollama.models',
@@ -121,7 +119,8 @@ def list_local_models_command(client):
 
 def pull_model_command(client, model_name):
     '''
-    Download a model from the ollama library. Cancelled pulls are resumed from where they left off, and multiple calls will share the same download progress.
+    Download a model from the ollama library.
+    Cancelled pulls are resumed from where they left off, and multiple calls will share the same download progress.
     '''
 
     response = client.pull_model(model_name)
