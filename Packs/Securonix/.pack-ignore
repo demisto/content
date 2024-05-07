@@ -275,6 +275,9 @@ defaultenrichedevent
 lookupname
 lookupuniquekey
 hr
+BEACONING
+backslashes
+Accountresourcekey
 
 [file:SecuronixGetViolations.yml]
 ignore=BA124
