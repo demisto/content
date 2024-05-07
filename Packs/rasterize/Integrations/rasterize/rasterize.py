@@ -539,6 +539,13 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
             demisto.debug(f'screenshot_image, {include_source=}, {response_body=}')
+
+            response_body, operation_time = backoff(response_body)
+            if response_body:
+                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}")
+            else:
+                demisto.info(f"Response Body not available available after {operation_time} seconds.")
+
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
             demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}')
             response_body_exception = True
