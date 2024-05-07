@@ -21,12 +21,11 @@ jobs:
         git remote add upstream https://github.com/demisto/content.git  # Replace with the URL of the upstream repo
         git fetch upstream
 
-    - name: Merge changes
-      run: |
-        git config user.email "laurasfo@ext.inditex.com"
-        git config user.name "Laura Sangeao Fontán"
-        git merge upstream/master  # Replace 'main' with the name of the branch you want to sync with
-
-    - name: Push changes
-      run: |
-        git push
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ github.token }}
+        commit-message: "Merge upstream changes"
+        title: "Merge upstream changes"
+        body: "This PR merges the latest changes from the upstream repository."
+        branch: "merge-upstream-changes"  # The branch to create for the PR
