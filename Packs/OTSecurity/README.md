@@ -13,26 +13,26 @@ Below are sample types OT investigation that his pack will focus on:
 
 - __Initial Access__
     - Supply Chain Compromise
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T862.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T862.png)
 
     - Data Historian Compromise
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T810.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T810.png)
 
 - __Execution and Persistence__
     - Unauthorized Program State Alteration
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T875.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T875.png)
     - Project File Infection
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T873.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T873.png)
 - __Evasion__
     - Rogue Device Detected
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T848.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T848.png)
     - Rootkits Detected
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T851.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T851.png)
 - __Discovery__
     - I/O Module Discovery
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T851.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T851.png)
     - Network Service Scanning
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATT%26CK%20T824.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/ATTandCK_T824.png)
 - __Lateral Movement__
     - Default Credentials Login
     - Unautherized Remote File Copy
