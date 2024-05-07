@@ -201,6 +201,16 @@ class Portal():
         r = self.post("aros/{aro_id}/transition", aro_id=aro_id, json=request)
         return r.json()
 
+    def comment_aro(self, aro_id, comment="", is_comment_sensitive=False):
+        request = {
+            "aro_id": aro_id,
+            "sensitive": is_comment_sensitive,
+            "text": comment
+        }
+
+        r = self.post("aro_comments", json=request)
+        return r.json()
+
 
 class BrokerClient:
     def __init__(self, host: str, verify_ssl: bool = False, api_key: str | None = None, timeout: int = 60):
@@ -452,6 +462,12 @@ def transition_aro_command():
     return p.transition_aro(**args)
 
 
+def comment_aro_command():
+    p = Portal(bearer=API_KEY)
+    args = demisto.args()
+    return p.comment_aro(**args)
+
+
 ''' Broker Commands '''
 
 
@@ -521,6 +537,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
     broker_url = params.get('broker_url', '')
+    return_error_msg = None
     demisto.info(f'{command} is called')
 
     if broker_url and (command.startswith("cov-mgsec-broker") or command == 'test-module'):
@@ -590,6 +607,21 @@ def main():
                 readable_output=readable_output
             )
             return_results(results)
+        elif command == 'cov-mgsec-comment-aro':
+            r = comment_aro_command()
+            if r:
+                readable_output = tableToMarkdown('ARO', r, removeNull=True,
+                                                  headerTransform=string_to_table_header)
+            else:
+                readable_output = 'Error commenting on ARO.'
+
+            results = CommandResults(
+                outputs_prefix='FESPortal.Org',
+                outputs_key_field='ID',
+                outputs=r,
+                readable_output=readable_output
+            )
+            return_results(results)
         elif command == 'cov-mgsec-broker-ping':
             return_results(ping_broker_command(broker_instance))
         elif command == 'cov-mgsec-broker-list-org':
@@ -607,11 +639,14 @@ def main():
             http_text = e.response.text  # Try to extract a text response if it exists.
         except AttributeError:
             http_text = e.response
-        return_error(f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
-                     f'\nStack trace: {traceback.format_exc()}')
+        return_error_msg = (f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
+                            f'\nStack trace: {traceback.format_exc()}')
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {command} command. Error: {str(e)}.\nStack trace: {traceback.format_exc()}')
+        return_error_msg = f'Failed to execute {command} command. Error: {str(e)}.\nStack trace: {traceback.format_exc()}'
+
+    if return_error_msg:
+        return_error(return_error_msg)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
