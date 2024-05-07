@@ -49,4 +49,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1547.001 - Registry Run Keys Startup Folder](../doc_files/MITRE_ATT&CK_CoA_-_T1547.001_-_Registry_Run_Keys_Startup_Folder.png)
+![MITRE ATT&CK CoA - T1547.001 - Registry Run Keys Startup Folder](../doc_files/MITRE_ATTandCK_CoA_-_T1547_001_-_Registry_Run_Keys_Startup_Folder.png)
