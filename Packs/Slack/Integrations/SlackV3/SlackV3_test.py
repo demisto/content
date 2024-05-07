@@ -8,7 +8,7 @@ import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url
+from SlackV3 import get_war_room_url, parse_common_channels
 
 from CommonServerPython import *
 
@@ -4170,6 +4170,7 @@ def test_fail_connect_threads(mocker):
     import SlackV3
     mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'bot_token': '123'})
     mocker.patch.object(demisto, 'args', return_value={'to': 'test', 'message': 'test message'})
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'command', return_value='send-notification')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     for _i in range(8):
@@ -5077,6 +5078,31 @@ def test_conversation_history(mocker):
                                                                ' | 1690479887.647239 | 1690479887.647239 | message ' \
                                                                '| U047D5QSZD4 |\n'
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
+
+
+@pytest.mark.parametrize('raw, output', [
+    ("""
+    key1:value1
+    
+    
+    key2: value2
+    
+    """, {'key1': 'value1', 'key2': 'value2'}),
+    ('key1: value1', {'key1': 'value1'}), ("""
+    
+    
+    """, {})
+
+])
+def test_parse_common_channels(raw, output):
+    assert parse_common_channels(raw) == output
+
+
+def test_parse_common_channels_error(mocker):
+    with pytest.raises(ValueError) as e:
+        mocker.patch.object(demisto, 'error')
+        parse_common_channels('bad input')
+    assert "Invalid common_channels parameter value." in str(e.value)
 
 
 def test_conversation_replies(mocker):
