@@ -110,7 +110,6 @@ def load_mock_response(file_name: str) -> dict:
     """
     with open(
         os.path.join(os.path.dirname(__file__), f"test_data/{file_name}"),
-        mode="r",
         encoding="utf-8",
     ) as json_file:
         return json.loads(json_file.read())
@@ -124,7 +123,7 @@ def load_file(file_name: str) -> str:
         file_name (str): Name of the mock response JSON file to return.
     """
     with open(
-        os.path.join(os.path.dirname(__file__), f"test_data/{file_name}"), mode="r"
+        os.path.join(os.path.dirname(__file__), f"test_data/{file_name}")
     ) as file:
         return file.read()
 
