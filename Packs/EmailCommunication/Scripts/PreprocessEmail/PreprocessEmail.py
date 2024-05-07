@@ -105,7 +105,7 @@ def get_entry_id_list(attachments, files):
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
         for file in files:
-            if attachment.get('description', ''):
+            if '-' in attachment.get('description', ''):
                 is_file_attached = attachment.get('description', '').split('-')[0]
             if attachment_name == file.get('Name') and is_file_attached != FileAttachmentType.ATTACHED:
                 entry_id_list.append((attachment_name, file.get('EntryID')))
@@ -217,6 +217,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     instance_name = ''
     integration_name = ''
 
+    demisto.debug(f"{email_to=}")
     for label in labels:
         if label.get('type') == 'Email/ID':
             message_id = label.get('value')
@@ -238,7 +239,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     elif integration_name in ['MicrosoftGraphMail dev', 'Microsoft Graph Mail Single User dev']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user_id': email_to, 'message_id': str(message_id),
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'content_ids': identifier_ids,
                                               'using': instance_name}})
 
     else:
@@ -258,23 +259,22 @@ def find_attachments_to_download(attachments, email_html, labels):
             integration_name = label.get('value')
     new_attachment_identifiers_list = []
     new_attachments = []
+    demisto.debug(f"help_the_attachment {attachments}")
+    demisto.debug(f"this_is_the_email {email_html}")
     for attachment in attachments:
-        if attachment.get('description', ''):
-            demisto.debug(f"this_is_the_email {email_html}")
-            demisto.debug(f"this_is_the_description {attachment.get('description', '')}")
+        if '-' in attachment.get('description', ''):
             attachment_id = attachment.get('description', '').split('-', 1)[1]
             demisto.debug(f"this_is_the_id {attachment_id}")
-            content_id = "None"
-            if len(attachment.get('name', '').split('-')) > 1:
-                content_id = attachment.get('name', '').split('-')[1]
-            demisto.debug(f"this_is_the_content {content_id}")
-            if re.search(rf'(src="cid:{content_id}")', email_html):
-                demisto.debug("i_am_in_the_if!!!!")
-                if integration_name in ['Gmail dev', 'Gmail Single User dev']:
-                    new_attachment_identifiers_list.append(content_id)
-                else:
-                    new_attachment_identifiers_list.append(attachment_id)
-                new_attachments.append(attachment)
+        content_id = "None"
+        if '-' in attachment.get('name', '').split('-'):
+            content_id = attachment.get('name', '').split('-')[1]
+        demisto.debug(f"this_is_the_content {content_id}")
+        if re.search(rf'(src="cid:{content_id}")', email_html):
+            if integration_name in ['Gmail dev', 'Gmail Single User dev', 'MicrosoftGraphMail dev', 'Microsoft Graph Mail Single User dev']:
+                new_attachment_identifiers_list.append(content_id)
+            else:
+                new_attachment_identifiers_list.append(attachment_id)
+            new_attachments.append(attachment)
     demisto.debug(f"this_is_the_attachment_ids {new_attachment_identifiers_list}")
     if not new_attachments:
         new_attachments = attachments
@@ -452,7 +452,7 @@ def main():
     email_replyto = custom_fields.get('emailreplyto', '')
     email_latest_message = custom_fields.get('emaillatestmessage', '')
 
-    argToBoolean(args.get('reputation_calc_async', False))
+    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
         demisto.debug("testting gmail")
@@ -470,7 +470,7 @@ def main():
 
         email_html = remove_html_conversation_history(email_html)
 
-        # Get attachments IDs for new attacments
+        #Get attachments IDs for new attacments
         attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, incident.get('labels'))
         demisto.debug(f"{attachment_identifiers_array=}")
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
@@ -479,6 +479,7 @@ def main():
         time.sleep(45)
         files = get_incident_related_files(email_related_incident)
         demisto.debug(f"{files=}")
+        demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
         entry_id_list = get_entry_id_list(attachments, files)
         demisto.debug(f"{entry_id_list=}")
         html_body = create_email_html(email_html, entry_id_list)
