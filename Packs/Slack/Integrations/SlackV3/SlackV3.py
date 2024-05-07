@@ -1772,16 +1772,22 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     conversation: dict = {}
     # Checks if the channel is defined in the integration params
     if len(COMMON_CHANNELS) > 0:
+        demisto.debug(f'searching conversation')
         conversation = search_conversation_in_params(conversation_to_search)
+        demisto.debug(f'{conversation=}')
 
     if not DISABLE_CACHING:
         # Find conversation in the cache if DISABLE_CACHING is false.
         if not conversation:
+            demisto.debug('conversation not in param, getting conversation from context')
             conversation = search_conversation_in_context(conversation_to_search)
+            demisto.debug(f'got conversation from context {conversation}')
 
         # Find conversation in the api if DISABLE_CACHING is false.
         if not conversation:
+            demisto.debug('conversation not in context, getting from api')
             conversation = get_conversation_from_api_paginated(conversation_to_search)
+            demisto.debug(f'got from api, saving to context {conversation}')
             # Save conversation to cache
             save_conversation_to_context(conversation)
 
@@ -2893,6 +2899,7 @@ def init_globals(command_name: str = ''):
 
 
 def parse_common_channels(common_channels: str):
+    demisto.debug(f'parse_common_channels begin {common_channels=}')
     common_channels = (common_channels or '').strip()
     if not common_channels:
         return {}
@@ -2907,6 +2914,7 @@ def parse_common_channels(common_channels: str):
         demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
         raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
             from e
+    demisto.debug(f'parse_common_channels finish successfully, {stripped_channels=}')
     return stripped_channels
 
 
