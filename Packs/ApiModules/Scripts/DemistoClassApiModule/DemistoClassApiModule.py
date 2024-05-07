@@ -14,13 +14,13 @@ try:
     class DemistoScript(DemistoWrapper):
         def getFilePath(self, id):
             self.debug("Getting path of file entry with ID {}".format(id))
-            return super().getFilePath(id)
+            return super(DemistoScript, self).getFilePath(id)
 
     class DemistoIntegration(DemistoWrapper):
         def incidents(self, incidents):
             if isinstance(incidents, list):
                 self.debug("[fetch-incidents] Creating {} incidents".format(len(incidents)))
-            super().incidents(incidents)
+            super(DemistoIntegration, self).incidents(incidents)
 
     if demisto.callingContext.get('context', {}).get('IntegrationBrand', '') in DEMISTO_WRAPPER_INTEGRATIONS:
         demisto.__class__ = DemistoIntegration
