@@ -199,8 +199,7 @@ def test_module(client: Client) -> str:
 
     try:
         test_empty_args: Dict = {}
-        response = client.get_certificates(test_empty_args)
-        certificates = response['Certificates']
+        client.get_certificates(test_empty_args)
     except DemistoException as e:
         raise e
 
