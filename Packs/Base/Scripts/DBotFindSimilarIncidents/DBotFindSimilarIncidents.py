@@ -66,6 +66,15 @@ REGEX_IP = re.compile(
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 
 
+def debug_function(func):
+    def wrapper(*args, **kwargs):
+        demisto.debug(f"Entering function {func.__name__} with args: {args},  kwargs: {kwargs}")
+        results = func(*args, **kwargs)
+        demisto.debug(f"Exiting function {func.__name__}")
+        return results
+
+    return wrapper
+
 def keep_high_level_field(incidents_field: list[str]) -> list[str]:
     """
     Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
@@ -199,6 +208,7 @@ def normalize_json(obj) -> str:  # type: ignore
     return my_string
 
 
+@debug_function
 def normalize_command_line(command: str) -> str:
     """
     Normalize command line
@@ -210,8 +220,11 @@ def normalize_command_line(command: str) -> str:
         command = ' '.join(set(command))
     if command and isinstance(command, str):
         my_string = command.lower()
+        demisto.debug('DBS: Normalizing cmd line REPLACE_COMMAND_LINE')
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
+        demisto.debug('DBS: Normalizing cmd line starting regex')
         my_string = REGEX_IP.sub('IP', my_string)
+        demisto.debug('DBS: Normalizing cmd line finished regex')
         my_string = my_string.strip()
         return my_string
     else:
@@ -227,7 +240,7 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: dict | list, *list
                 incidents_df[field] = ' '.join(value_list)
     return incidents_df
 
-
+@debug_function
 def normalize_identity(my_string: str) -> str:
     """
     Return identity if string
@@ -278,11 +291,13 @@ class Tfidf(BaseEstimator, TransformerMixin):
         self.params = tfidf_params
         self.normalize_function = normalize_function
         if self.normalize_function:
-            demisto.debug('DBS: ')
+            demisto.debug('DBS: Normalizing function in __init__ ')
+            demisto.debug(f'DBS: {current_incident[self.incident_field]=}')
             current_incident = current_incident[self.incident_field].apply(self.normalize_function)
         self.vocabulary = TfidfVectorizer(**self.params, use_idf=False).fit(current_incident).vocabulary_
         self.vec = TfidfVectorizer(**self.params, vocabulary=self.vocabulary)
 
+    @debug_function
     def fit(self, x):
         """
         Fit TFIDF transformer
@@ -291,11 +306,12 @@ class Tfidf(BaseEstimator, TransformerMixin):
         """
         if self.normalize_function:
             x = x[self.incident_field].apply(self.normalize_function)
+            
         self.vec.fit(x)
         demisto.debug('TFIDF transformer (fit function)')
-        demisto.debug(f'{x=}')
         return self
 
+    @debug_function
     def transform(self, x):
         """
         Transform x with the trained vectorizer
@@ -304,12 +320,8 @@ class Tfidf(BaseEstimator, TransformerMixin):
         """
         if self.normalize_function:
             x = x[self.incident_field].apply(self.normalize_function)
-            demisto.debug('TFIDF transformer (transform if)')
-            demisto.debug(f'{x=}')
         else:
             x = x[self.incident_field]
-            demisto.debug('TFIDF transformer (transform else)')
-            demisto.debug(f'{x=}')
         return self.vec.transform(x).toarray()
 
 
@@ -371,6 +383,7 @@ class Transformer():
         self.incidents_df = p_incidents_df
         self.params = p_params
 
+    @debug_function
     def fit_transform(self):
         """
         Fit self.incident_to_match and transform self.incidents_df and self.incident_to_match
