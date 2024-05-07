@@ -48,4 +48,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1569.002 - Service Execution](../doc_files/MITRE_ATT&CK_CoA_-_T1569.002_-_Service_Execution.png)
+![MITRE ATT&CK CoA - T1569.002 - Service Execution](../doc_files/MITRE_ATTandCK_CoA_-_T1569_002_-_Service_Execution.png)
