@@ -94,15 +94,12 @@ class Client(BaseClient):
         else:
             url_suffix = '/vedauth/authorize/oauth'
 
-        try:
-            access_token_obj = self._http_request(
-                method='POST',
-                url_suffix=url_suffix,
-                headers={'Content-Type': 'application/json'},
-                data=json.dumps(json_data),
-            )
-        except DemistoException as e:
-            raise e
+        access_token_obj = self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            headers={'Content-Type': 'application/json'},
+            data=json.dumps(json_data),
+        )
 
         new_token = access_token_obj.get('access_token', '')
         expire_in = arg_to_number(access_token_obj.get('expires_in')) or 1
@@ -146,14 +143,12 @@ class Client(BaseClient):
             'Authorization': f'Bearer {self.token}'
         }
 
-        response = self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/vedsdk/certificates/',
             headers=headers,
             params=args
         )
-
-        return response
 
     def get_certificate_details(self, guid: str) -> dict:
         """
@@ -171,13 +166,11 @@ class Client(BaseClient):
         }
         url_suffix = f'/vedsdk/certificates/{guid}'
 
-        response = self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix=url_suffix,
             headers=headers
         )
-
-        return response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -219,18 +212,13 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
 
     response = client.get_certificates(args)
     certificates = response.get('Certificates', [])
-    readable_certificates = []
-    for certificate in certificates:
-        readable_certificate_details = certificate.copy()
-        readable_certificate_details['ID'] = readable_certificate_details.get('Guid', '').strip('{}')
-        readable_certificates.append(readable_certificate_details)
-
-    markdown_table = tableToMarkdown('Venafi certificates', readable_certificates,
+    adjusted_certificates = edit_response(certificates)
+    markdown_table = tableToMarkdown('Venafi certificates', adjusted_certificates,
                                      headers=['CreatedOn', 'DN', 'Name', 'ParentDn', 'SchemaClass', 'ID'])
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=edit_response(certificates),
+        outputs=adjusted_certificates,
         raw_response=response,
         readable_output=markdown_table,
         outputs_key_field='ID'
@@ -250,14 +238,11 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 
     guid: str = args.get('guid', '')
     response = client.get_certificate_details(guid)
-    response['ID'] = response.get('Guid', '').strip('{}')  # add ID to response for backward compatible with V1
-    del response['Guid']  # remove redundant entry since ID entry is the same.
-    readable_certificate_details = response.copy()
-    if not readable_certificate_details['ID']:
-        entries = []
-    else:
-        entries = [readable_certificate_details]
-    markdown_table = tableToMarkdown('Venafi certificate details', entries,
+    if response.get('Guid'):
+        # Add ID to response for backward compatible with V1 and remove redundant guid entry
+        response['ID'] = response.pop('Guid').strip('{}')
+
+    markdown_table = tableToMarkdown('Venafi certificate details', response,
                                      headers=['CreatedOn', 'DN', 'Name', 'ParentDn', 'SchemaClass', 'ID'])
 
     return CommandResults(
