@@ -13,7 +13,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: devdemisto/py3-tools:1.0.0.93631
+dockerimage: demisto/py3-tools:1.0.0.94051
 fromversion: 5.0.0
 tests:
 - No tests
