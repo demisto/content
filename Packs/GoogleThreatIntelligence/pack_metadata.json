@@ -1,0 +1,23 @@
+{
+    "name": "GoogleThreatIntelligence",
+    "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "VirusTotal",
+    "url": "https://www.virustotal.com",
+    "email": "contact@virustotal.com",
+    "created": "2024-04-16T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Enricher"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

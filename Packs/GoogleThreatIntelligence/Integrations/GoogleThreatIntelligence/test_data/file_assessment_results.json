@@ -1,0 +1,28 @@
+{
+  "id": "699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3",
+  "type": "file",
+  "attributes": {
+    "gti_assessment": {
+      "threat_score": {
+        "value": 100
+      },
+      "severity": {
+        "value": "SEVERITY_HIGH"
+      },
+      "contributing_factors": {
+        "mandiant_association_report": true,
+        "mandiant_association_actor": true,
+        "gavs_detections": 3,
+        "normalised_categories": [
+          "trojan"
+        ],
+        "mandiant_association_malware": true,
+        "mandiant_confidence_score": 100
+      },
+      "verdict": {
+        "value": "VERDICT_MALICIOUS"
+      },
+      "description": "This indicator is malicious (high severity) with high impact."
+    }
+  }
+}
