@@ -18,7 +18,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed, ErrorAccessDenied)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
@@ -1657,7 +1657,7 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root = account.public_folders_root if is_public else account.root.tois #account.root
+    root = account.public_folders_root if is_public else account.root.tois  # account.root
     root_collection = FolderCollection(account=account, folders=[root])
     folders = []
     for f in root_collection.find_folders():
