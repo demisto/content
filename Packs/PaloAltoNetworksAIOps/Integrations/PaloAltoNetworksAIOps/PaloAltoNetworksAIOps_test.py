@@ -13,6 +13,7 @@ def AIOps_client(base_url='base_url', api_key='api_key', tsg_id='tsg_id', client
 
 ''' COMMAND FUNCTIONS TESTS '''
 
+
 def test_generate_access_token_request_called_with(mocker, AIOps_client):
     with patch('CommonServerPython.get_integration_context', return_value={}):
         http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
