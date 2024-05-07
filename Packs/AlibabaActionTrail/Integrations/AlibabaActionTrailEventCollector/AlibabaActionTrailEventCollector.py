@@ -12,6 +12,7 @@ import urllib3
 API_VERSION = '0.6.0'
 VENDOR = "alibaba"
 PRODUCT = "action-trail"
+SOME_CHANGE = "SOME CHANGE"
 urllib3.disable_warnings()
 
 
