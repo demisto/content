@@ -18,7 +18,7 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
-''' CONSTANTS '''
+''' CONSTANTS ''' # TODO - TEST NIGHTLY PACK -> COLLECT FOR UPLOAD (COLLECTED TWICE ONCE TO INSTALL)
 
 SEVERITY_DICT = {
     'Unknown': 0,
