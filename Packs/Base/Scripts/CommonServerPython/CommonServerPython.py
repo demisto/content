@@ -11992,7 +11992,7 @@ def safe_sleep(duration_seconds):
                              .format(duration_seconds, run_duration))
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
-    time.sleep(duration_seconds)
+    time.sleep(duration_seconds)  # pylint: disable=E9003
 
 
 def is_time_sensitive():
