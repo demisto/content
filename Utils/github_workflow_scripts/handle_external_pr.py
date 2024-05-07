@@ -288,10 +288,6 @@ def get_user_from_pr_body(pr: dict) -> str:
     - Found User
     """
     body = pr.body
-    #index_of_user = body.find("Contributor\n@")
-    #substring_user = body[index_of_user + len("Contributor\n@"):]
-    #user_in_list = substring_user.split("\n")[0]
-    #return user_in_list
     PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
     matcher = re.search(PR_AUTHOR_PATTERN, body)
     return matcher.groups()[0]
@@ -317,7 +313,7 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
             body = pr.body
             PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
             matcher = re.search(PR_AUTHOR_PATTERN, body)
-            print(f'the author of the pr is{matcher.groups()[0]}')
+            print(f'the author of the pr is: {matcher.groups()[0]}')
     print(f'end of the temp loop')
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
@@ -342,19 +338,14 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     content_reviewers_set = set(content_reviewers)
     print(f'current content reviewers: {content_reviewers_set}')
     reviewers = []
-    existing_reviewer = ''
     for pr in other_prs_by_same_user:
         for reviewer in pr.requested_reviewers:
             print(f'reviewer of pr {pr.number} is: {reviewer.login}')
             reviewers.append(reviewer.login)
 
-        print(f'pr number is: {pr.number}')
-        print(f'pr requested reviewers: {pr.requested_reviewers}')
         existing_reviewer = content_reviewers_set.intersection(set(reviewers))
-        print(f'existing reviewer: {existing_reviewer}')
-        print(f'type of existing reviewer: {type(existing_reviewer)}')
-    if existing_reviewer:
-        return existing_reviewer.pop()
+        if existing_reviewer:
+            return existing_reviewer.pop()
     return ''
 
 
