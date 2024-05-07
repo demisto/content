@@ -11998,11 +11998,10 @@ def safe_sleep(duration_seconds):
 def is_time_sensitive():
     """
     Checks if the command reputation (auto-enrichment) is called as auto-extract=inline.
-
     This function checks if the 'isTimeSensitive' attribute exists in the 'demisto' object and if it's set to True.
 
-    Returns:
-        bool: True if 'isTimeSensitive' attribute exists and is set to True, False otherwise.
+        :return: bool
+        :rtype: ``bool``
     """
     return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
