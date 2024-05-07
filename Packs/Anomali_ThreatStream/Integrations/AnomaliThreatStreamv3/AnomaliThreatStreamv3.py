@@ -2516,19 +2516,24 @@ def get_indicators(client: Client, **kwargs):
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
     res = client.http_request("GET", url, params=kwargs)
-    iocs_list = res.get('objects', None)
+    iocs_list = res.get('objects') or []
+    demisto.debug(f"Found {len(iocs_list)} indicators in page 0")
     if not iocs_list:
         return 'No indicators found from ThreatStream'
 
     iocs_context = parse_indicators_list(iocs_list)
     # handle the issue that the API does not return more than 1000 indicators.
     if limit > 1000:
+        page = 0
         next_page = res.get('meta', {}).get('next', None)
         while len(iocs_context) < limit and next_page:
+            page += 1
             next_page = next_page.replace('api/', '')
             res = client.http_request("GET", next_page, without_credentials=True)
-            iocs_list = res.get('objects', None)
-            next_page = res.get('meta', {}).get('next', None)
+            iocs_list = res.get('objects') or []
+            metadata = res.get('meta', {})
+            next_page = metadata.get('next', None)
+            demisto.debug(f"Found {len(iocs_list)} indicators in page {page}, {metadata=}")
             if iocs_list:
                 iocs_context.extend(parse_indicators_list(iocs_list))
             else:
