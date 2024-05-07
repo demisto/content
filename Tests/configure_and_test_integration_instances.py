@@ -222,8 +222,8 @@ class Build(ABC):
         self.is_nightly = options.is_nightly
         self.is_sdk_nightly = options.sdk_nightly
         self.secret_conf = get_json_file(options.secret)
-        self.username = options.user if options.user else self.secret_conf.get('username')
-        self.password = options.password if options.password else self.secret_conf.get('userPassword')
+        self.username = 'admin'
+        self.password = 'admin'
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
@@ -1627,7 +1627,7 @@ def get_servers(env_results, instance_role):
         (lst): The server url list to connect to
     """
 
-    return [env.get('InstanceDNS') for env in env_results if instance_role in env.get('Role')]
+    return ['10.180.189.77']
 
 
 def get_json_file(path):
