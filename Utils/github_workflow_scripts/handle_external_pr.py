@@ -343,9 +343,9 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     reviewers = set(content_reviewers)
     relevant_reviewer = ''
     for pr in other_prs_by_same_user:
-        existing_reviewer = reviewers.intersect(set(pr.requested_reviewers))
+        existing_reviewer = reviewers.intersection(set(pr.requested_reviewers))
         if existing_reviewer:
-            return existing_reviewer
+            return str(existing_reviewer)
         #for reviewer in pr.requested_reviewers:
         #    print(f'reviewer of pr {pr.number} is: {reviewer.login}')
         #    reviewers.append(reviewer.login)
@@ -354,7 +354,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
         #        relevant_reviewer = reviewer
         #        break
     #return relevant_reviewer
-    return {}
+    return ''
 
 
 def find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers):
