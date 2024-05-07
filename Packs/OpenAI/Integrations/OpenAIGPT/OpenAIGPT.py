@@ -333,7 +333,7 @@ def send_message_command(client: OpenAiClient,
         ArgAndParamNames.TOP_P: args.get(ArgAndParamNames.TOP_P, None)
     }
 
-    reset_conversation_history = True if str(args.get('reset_conversation_history', '')).lower() in ['true', 'yes'] else False
+    reset_conversation_history = str(args.get('reset_conversation_history', '')).lower() in ['true', 'yes']
     chat_context = get_chat_context(reset_conversation_history, message)
     demisto.debug(f'openai-gpt send_message_command {chat_context=}, {completion_params=}')
 
