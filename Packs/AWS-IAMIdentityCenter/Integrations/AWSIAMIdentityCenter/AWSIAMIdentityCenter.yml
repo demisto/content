@@ -54,7 +54,7 @@ configuration:
 - additionalinfo: "The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure."
   display: Identity Store ID
   name: IdentityStoreId
-  type: 4
+  type: 0
   section: Connect
   required: false
 - display: Access Key
