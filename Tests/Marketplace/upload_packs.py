@@ -1139,7 +1139,8 @@ def main():
     pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names)
     logging.info(f"Collected {len(pack_ids_to_upload)} content packs to upload: {list(pack_ids_to_upload)}")
     pack_ids_to_update_metadata = get_packs_ids_to_upload(option.pack_names_update)
-    logging.info(f"Collected {len(pack_ids_to_update_metadata)} content packs to update metadata: {list(pack_ids_to_update_metadata)}")
+    logging.info(
+        f"Collected {len(pack_ids_to_update_metadata)} content packs to update metadata: {list(pack_ids_to_update_metadata)}")
     upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
