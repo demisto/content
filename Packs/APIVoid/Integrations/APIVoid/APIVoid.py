@@ -18,7 +18,7 @@ GOOD = 10
 SUSPICIOUS = 30
 BAD = 60
 MALICIOUS = 'suspicious'
-
+jh = 42
 
 class Client(BaseClient):
     """
