@@ -42,7 +42,6 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> set:
     """
     if packs_to_upload and isinstance(packs_to_upload, str):
         packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Collected {len(packs)} content packs to upload: {list(packs)}")
         return packs
     else:
         logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
@@ -1096,6 +1095,9 @@ def option_handler():
     parser.add_argument('-pn', '--pack_names',
                         help=("Target packs to upload to gcs."),
                         required=True)
+    parser.add_argument('-pnu', '--pack_names_update',
+                        help=("Target packs to update metadata to gcs."),
+                        required=True)
     parser.add_argument('-p', '--upload_specific_pack',
                         type=str2bool, help=("Indication if the -p flag is used and only specific packs are uploded"),
                         default=False)
@@ -1134,7 +1136,11 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    pack_ids_to_upload, pack_ids_to_update_metadata = get_packs_ids_to_upload_and_update(option.pack_names or "")
+    pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names)
+    logging.info(f"Collected {len(pack_ids_to_upload)} content packs to upload: {list(pack_ids_to_upload)}")
+    pack_ids_to_update_metadata = get_packs_ids_to_upload(option.pack_names_update)
+    logging.info(
+        f"Collected {len(pack_ids_to_update_metadata)} content packs to update metadata: {list(pack_ids_to_update_metadata)}")
     upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
