@@ -7,6 +7,7 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 VENDOR_NAME = 'Anomali Enterprise'
+op = 24
 
 ''' CLIENT CLASS '''
 
