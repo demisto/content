@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This update modifies 'Search And Delete Emails - Generic v2' to respect the 'SearchThisWeek' input and search only the last 7 days for O365 by default. The previous behavior was to run an all-time search for O365 because the 'SearchThisWeek' input was not used for O365."
+}
