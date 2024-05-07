@@ -619,7 +619,7 @@ def results_to_incidents_datetime(response, last_fetch):
                 }
 
                 if MAP_LABELS:
-                    inc['labels'] = incident_label_maker(hit.get('_source'))
+                    inc['label s'] = incident_label_maker(hit.get('_source'))
 
                 incidents.append(inc)
 

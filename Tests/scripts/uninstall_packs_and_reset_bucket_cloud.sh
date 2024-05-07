@@ -36,17 +36,18 @@ else
 
   if [ -n "$NIGHTLY" ]; then
     PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt"
-    echo "Running in nightly environment. PACKS_TO_INSTALL set to: $MY_VAR"
+    echo "Running in nightly environment. PACKS_TO_INSTALL set to: $PACKS_TO_INSTALL"
   else
     PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.json"
-    echo "Not running in nightly environment. PACKS_TO_INSTALL set to: $MY_VAR"
+    echo "Not running in nightly environment. PACKS_TO_INSTALL set to: $PACKS_TO_INSTALL"
   fi
 
   python3 ./Tests/Marketplace/search_and_uninstall_pack.py --cloud_machine "${CLOUD_CHOSEN_MACHINE_IDS}" \
     --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" \
     --non-removable-packs "${NON_REMOVABLE_PACKS}" --one-by-one --build-number "${CI_PIPELINE_ID}" \
     --modeling_rules_to_test_files "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt" \
-    --reset-core-pack-version "${RESET_CORE_PACK_VERSION}"
+    --reset-core-pack-version "${RESET_CORE_PACK_VERSION}" --only_to_be_installed \
+    --pack_ids_to_install "${PACKS_TO_INSTALL}"
   exit_on_error $? "Failed to uninstall packs from cloud machines:${CLOUD_CHOSEN_MACHINE_IDS}"
 
   echo "Successfully finished uninstalling packs from cloud machines"
