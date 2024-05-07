@@ -584,7 +584,7 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id=""):
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
-    #TODO- how to test no name and what to do if no content_id
+    # TODO- how to test no name and what to do if no content_id
     if attachment_name is None or attachment_name == "":
         return f"-{content_id}-demisto_untitled_attachment.eml" if eml_extension else f"-{content_id}-demisto_untitled_attachment"
     elif eml_extension and not attachment_name.endswith(".eml"):
@@ -1070,7 +1070,8 @@ def fetch_attachments_for_message(
             if attachment.item.mime_content:
                 entries.append(
                     fileResult(
-                        get_attachment_name(attachment_name=attachment.name, eml_extension=True, content_id=attachment.attachment.content_id),
+                        get_attachment_name(attachment_name=attachment.name, eml_extension=True,
+                                            content_id=attachment.attachment.content_id),
                         attachment.item.mime_content,
                     )
                 )
@@ -2188,7 +2189,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         if file_result["Type"] == entryTypes["error"]:
                             demisto.error(file_result["Contents"])
                             raise Exception(file_result["Contents"])
-                        
+
                         is_file_attached = FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                         # save attachment to incident
                         incident["attachment"].append(
@@ -2254,7 +2255,8 @@ def parse_incident_from_item(item):  # pragma: no cover
                                         raise err
 
                     data = decode_email_data(attached_email)
-                    file_result = fileResult(get_attachment_name(attachment_name=attachment.name, eml_extension=True, content_id=attachment.content_id), data)
+                    file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
+                                             eml_extension=True, content_id=attachment.content_id), data)
 
                 if file_result:
                     # check for error
@@ -2404,7 +2406,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
 
         if client.mark_as_read:
             mark_item_as_read(client, emails_ids)
-        
+
         if incidents:
             demisto.debug(f"lets look at the incident{incidents[0].get('attachment')}")
         return incidents

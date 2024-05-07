@@ -563,7 +563,7 @@ def mail_to_incident(msg, service, user_key):
         if file_result['Type'] == entryTypes['error']:
             demisto.error(file_result['Contents'])
             raise Exception(file_result['Contents'])
-        
+
         is_file_attached = FileAttachmentType.ATTACHED if not attachment['is_inline'] else ""
         file_names.append({
             'path': file_result['FileID'],

@@ -24,7 +24,6 @@ from oauth2client.client import AccessTokenCredentials
 from googleapiclient.discovery_cache.base import Cache
 import itertools as it
 import urllib.parse
-from typing import List, Optional, Tuple
 import secrets
 import hashlib
 
@@ -181,17 +180,16 @@ class Client:
                              f'{resp.status} {resp.reason} {content}')
         resp_json = json.loads(content)
         if not resp_json.get('refresh_token'):
-            raise ValueError('Error obtaining refresh token. Missing refresh token in response: {}'.format(content))
+            raise ValueError(f'Error obtaining refresh token. Missing refresh token in response: {content}')
         return resp_json.get('refresh_token')
 
     def get_access_token(self):
         integration_context = demisto.getIntegrationContext() or {}
         access_token = integration_context.get('access_token')
         valid_until = integration_context.get('valid_until')
-        if access_token and valid_until and integration_context.get('code') == AUTH_CODE:
-            if self.epoch_seconds() < valid_until:
-                demisto.debug('Using access token from integration context')
-                return access_token
+        if access_token and valid_until and integration_context.get('code') == AUTH_CODE and self.epoch_seconds() < valid_until:
+            demisto.debug('Using access token from integration context')
+            return access_token
         refresh_token = self.get_refresh_token(integration_context)
         demisto.debug(f"Going to obtain access token for client id: {CLIENT_ID}")
         body = {
@@ -210,9 +208,9 @@ class Client:
                 demisto.info('Authentication failure from server: {} {} {}'.format(
                     resp.status, resp.reason, content))
 
-                msg += ' Server message: {}'.format(content)
+                msg += f' Server message: {content}'
             except Exception as ex:
-                demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+                demisto.error(f'Failed parsing error response - Exception: {ex}')
             raise Exception(msg)
 
         parsed_response = json.loads(content)
@@ -232,8 +230,8 @@ class Client:
         return access_token
 
     def parse_mail_parts(self, parts):
-        body = u''
-        html = u''
+        body = ''
+        html = ''
         attachments = []  # type: list
         for part in parts:
             if 'multipart' in part['mimeType'] and part.get('parts'):
@@ -297,7 +295,7 @@ class Client:
         return files
 
     @staticmethod
-    def get_date_from_email_header(header: str) -> Optional[datetime]:
+    def get_date_from_email_header(header: str) -> datetime | None:
         """Parse an email header such as Date or Received. The format is either just the date
         or name value pairs followed by ; and the date specification. For example:
         by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        Mon, 21 Dec 2020 12:11:57 -0800 (PST)
@@ -322,7 +320,7 @@ class Client:
         return None
 
     @staticmethod
-    def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
+    def get_occurred_date(email_data: dict) -> tuple[datetime, bool]:
         """Get the occurred date of an email. The date gmail uses is actually the X-Received or the top Received
         dates in the header. If fails finding these dates will fall back to internal date.
 
@@ -359,7 +357,7 @@ class Client:
         demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
         return datetime.now(tz=timezone.utc), False
 
-    def get_email_context(self, email_data, mailbox) -> Tuple[dict, dict, dict, datetime, bool]:
+    def get_email_context(self, email_data, mailbox) -> tuple[dict, dict, dict, datetime, bool]:
         """Get the email context from email data
 
         Args:
@@ -375,7 +373,7 @@ class Client:
         context_headers = email_data.get('payload', {}).get('headers', [])
         context_headers = [{'Name': v['name'], 'Value': v['value']}
                            for v in context_headers]
-        headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+        headers = {h['Name'].lower(): h['Value'] for h in context_headers}
         body = demisto.get(email_data, 'payload.body.data')
         body = body.encode('ascii') if body is not None else ''
         parsed_body = base64.urlsafe_b64decode(body)
@@ -491,7 +489,7 @@ class Client:
         """
         return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
 
-    def mail_to_incident(self, msg, service, user_key) -> Tuple[dict, datetime, bool]:
+    def mail_to_incident(self, msg, service, user_key) -> tuple[dict, datetime, bool]:
         """Parse an email message
 
         Args:
@@ -602,9 +600,9 @@ class Client:
             'in': _in,
             'has': 'attachment' if has_attachments else ''
         }
-        q = ' '.join('%s:%s ' % (name, value, )
+        q = ' '.join(f'{name}:{value} '
                      for name, value in query_values.items() if value != '')
-        q = ('%s %s' % (q, query, )).strip()
+        q = (f'{q} {query}').strip()
 
         command_args = {
             'userId': user_id,
@@ -658,7 +656,7 @@ class Client:
                 params = json.loads(paramsStr)
 
             except ValueError as e:
-                return_error('Unable to parse templateParams: {}'.format(str(e)))
+                return_error(f'Unable to parse templateParams: {str(e)}')
             # Build a simple key/value
 
             for p in params:
@@ -760,6 +758,7 @@ class Client:
                 })
 
             return inline_attachment
+        return None
 
     def collect_manual_attachments(self):
         attachments = []
@@ -1095,7 +1094,7 @@ def fetch_incidents(client: Client):
     last_fetch = last_run.get('gmt_time')
     next_last_fetch = last_run.get('next_gmt_time')
     page_token = last_run.get('page_token') or None
-    ignore_ids: List[str] = last_run.get('ignore_ids') or []
+    ignore_ids: list[str] = last_run.get('ignore_ids') or []
     ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
     # handle first time fetch - gets current GMT time -1 day
     if not last_fetch:
@@ -1147,7 +1146,7 @@ def fetch_incidents(client: Client):
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info('extract {} incidents'.format(len(incidents)))
+    demisto.info(f'extract {len(incidents)} incidents')
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
         # we still have more results

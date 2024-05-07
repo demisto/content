@@ -43,6 +43,7 @@ def get_query_window():
                       'default query time - 60 days')
         return '60 days'
 
+
 def remove_html_conversation_history(email_html):
     # Removing the conversation's history
     for marker in QUOTE_MARKERS:
@@ -50,6 +51,7 @@ def remove_html_conversation_history(email_html):
         if index != -1:
             email_html = f'{email_html[:index]}</body></html>'
     return email_html
+
 
 def create_email_html(email_html='', entry_id_list=None):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
@@ -64,7 +66,7 @@ def create_email_html(email_html='', entry_id_list=None):
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         demisto.debug(f"{image_name=}")
-        if len(image_name.split('-'))>1:
+        if len(image_name.split('-')) > 1:
             content_id = image_name.split('-')[1]
         demisto.debug(f"{content_id=}")
         matches = re.findall(rf'(src="cid:{content_id}")', email_html)
@@ -72,7 +74,7 @@ def create_email_html(email_html='', entry_id_list=None):
         if re.search(rf'(src="cid:{content_id}")', email_html):
             demisto.debug("i am here")
             email_html = re.sub(f'src="cid:{content_id}"', f'src=entry/download/{image_entry_id}',
-                    email_html)
+                                email_html)
         elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
             email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
                                 email_html)
@@ -241,6 +243,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
+
 
 def find_attachments_to_download(attachments, email_html, labels):
     """ Filter only new attachment.
@@ -449,7 +452,7 @@ def main():
     email_replyto = custom_fields.get('emailreplyto', '')
     email_latest_message = custom_fields.get('emaillatestmessage', '')
 
-    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
+    argToBoolean(args.get('reputation_calc_async', False))
 
     try:
         demisto.debug("testting gmail")
@@ -467,7 +470,7 @@ def main():
 
         email_html = remove_html_conversation_history(email_html)
 
-        #Get attachments IDs for new attacments
+        # Get attachments IDs for new attacments
         attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, incident.get('labels'))
         demisto.debug(f"{attachment_identifiers_array=}")
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)

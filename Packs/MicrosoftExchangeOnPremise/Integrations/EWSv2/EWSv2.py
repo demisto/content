@@ -1261,7 +1261,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 label_attachment_id_type = 'attachmentId'
 
                                 # save the attachment
-                                file_name = get_attachment_name(attachment_name=attachment.name, content_id=attachment.attachment_id.id)
+                                file_name = get_attachment_name(attachment_name=attachment.name,
+                                                                content_id=attachment.attachment_id.id)
                                 file_result = fileResult(file_name, attachment.content)
 
                                 # check for error
@@ -1333,7 +1334,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                             })
 
-                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment_name=attachment.name, content_id=attachment.attachment_id.id)})
+                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(
+                        attachment_name=attachment.name, content_id=attachment.attachment_id.id)})
                     labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
         # handle headers
@@ -1459,7 +1461,8 @@ def fetch_emails_as_incidents(account_email, folder_name):
 
 
 def get_entry_for_file_attachment(item_id, attachment):  # pragma: no cover
-    entry = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.attachment_id.id), attachment.content)
+    entry = fileResult(get_attachment_name(attachment_name=attachment.name,
+                       content_id=attachment.attachment_id.id), attachment.content)
     ec = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
                                                                                                           attachment)
@@ -1600,7 +1603,8 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
         else:
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
-                entries.append(fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.attachment_id.id) + ".eml", attachment.item.mime_content))
+                entries.append(fileResult(get_attachment_name(attachment_name=attachment.name,
+                               content_id=attachment.attachment_id.id) + ".eml", attachment.item.mime_content))
 
     return entries
 
