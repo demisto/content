@@ -161,7 +161,7 @@ Used by Security Hub customers to update information about their investigation i
 
 
 ##### Command Example
-```!aws-securityhub-batch-update-findings finding_identifiers_id='arn:aws:securityhub:eu-west-1:676921422616:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e' finding_identifiers_product_arn='arn:aws:securityhub:eu-west-1::product/aws/securityhub' note_text=test note_updated_by=Demisto```
+```!aws-securityhub-batch-update-findings finding_identifiers_id='arn:aws:securityhub:eu-west-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e' finding_identifiers_product_arn='arn:aws:securityhub:eu-west-1::product/aws/securityhub' note_text=test note_updated_by=Demisto```
 
 ##### Context Example
 ```
@@ -174,7 +174,7 @@ Used by Security Hub customers to update information about their investigation i
 ### AWS SecurityHub BatchUpdateFindings
 |ProcessedFindings|UnprocessedFindings|
 |---|---|
-|  | {'FindingIdentifier': {'Id': "'arn:aws:securityhub:eu-west-1:676921422616:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e'", 'ProductArn': "'arn:aws:securityhub:eu-west-1::product/aws/securityhub'"}, 'ErrorCode': 'FindingNotFound', 'ErrorMessage': 'Finding Not Found'} |
+|  | {'FindingIdentifier': {'Id': "'arn:aws:securityhub:eu-west-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e'", 'ProductArn': "'arn:aws:securityhub:eu-west-1::product/aws/securityhub'"}, 'ErrorCode': 'FindingNotFound', 'ErrorMessage': 'Finding Not Found'} |
 
 
 ### 3. aws-securityhub-enable-security-hub
@@ -612,14 +612,14 @@ Returns a list of findings that match the specified criteria.
             "ProductArn": "arn:aws:securityhub:eu-west-1::product/aws/securityhub", 
             "ProductFields": {
                 "aws/securityhub/SeverityLabel": "MEDIUM", 
-                "StandardsGuideSubscriptionArn": "arn:aws:securityhub:eu-west-1:676921422616:subscription/cis-aws-foundations-benchmark/v/1.2.0", 
+                "StandardsGuideSubscriptionArn": "arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0", 
                 "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation", 
                 "RuleId": "1.8", 
                 "RelatedAWSResources:0/name": "securityhub-iam-password-policy-number-check-a08618e1", 
-                "StandardsControlArn": "arn:aws:securityhub:eu-west-1:676921422616:control/cis-aws-foundations-benchmark/v/1.2.0/1.8", 
+                "StandardsControlArn": "arn:aws:securityhub:eu-west-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.8", 
                 "RelatedAWSResources:0/type": "AWS::Config::ConfigRule", 
                 "aws/securityhub/ProductName": "Security Hub", 
-                "aws/securityhub/FindingId": "arn:aws:securityhub:eu-west-1::product/aws/securityhub/arn:aws:securityhub:eu-west-1:676921422616:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6", 
+                "aws/securityhub/FindingId": "arn:aws:securityhub:eu-west-1::product/aws/securityhub/arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6", 
                 "aws/securityhub/annotation": "Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.", 
                 "StandardsGuideArn": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0", 
                 "aws/securityhub/CompanyName": "AWS"
@@ -630,7 +630,7 @@ Returns a list of findings that match the specified criteria.
                     "Region": "eu-west-1", 
                     "Partition": "aws", 
                     "Type": "AwsAccount", 
-                    "Id": "AWS::::Account:676921422616"
+                    "Id": "AWS::::Account:123456789012"
                 }
             ], 
             "Types": [
@@ -650,9 +650,9 @@ Returns a list of findings that match the specified criteria.
                 "Original": "MEDIUM", 
                 "Label": "MEDIUM"
             }, 
-            "Id": "arn:aws:securityhub:eu-west-1:676921422616:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6", 
+            "Id": "arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6", 
             "CreatedAt": "2020-07-05T13:14:29.111Z", 
-            "AwsAccountId": "676921422616"
+            "AwsAccountId": "123456789012"
         }
     ]
 }
@@ -662,7 +662,7 @@ Returns a list of findings that match the specified criteria.
 ### AWS SecurityHub GetFindings
 |AwsAccountId|Compliance|CreatedAt|Description|FirstObservedAt|GeneratorId|Id|LastObservedAt|ProductArn|ProductFields|RecordState|Remediation|Resources|SchemaVersion|Severity|Title|Types|UpdatedAt|Workflow|WorkflowState|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 676921422616 | Status: WARNING,StatusReasons: {'ReasonCode': 'CONFIG_ACCESS_DENIED', 'Description': 'Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.'} | 2020-07-05T13:14:29.111Z | Password policies are, in part, used to enforce password complexity requirements. IAM password policies can be used to ensure passwords are comprised of different character sets. It is recommended that the password policy require at least one number. | 2020-07-05T13:14:29.111Z | arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.8 | arn:aws:securityhub:eu-west-1:676921422616:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | 2020-07-22T11:30:13.952Z | arn:aws:securityhub:eu-west-1::product/aws/securityhub | StandardsGuideArn: arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0,StandardsGuideSubscriptionArn: arn:aws:securityhub:eu-west-1:676921422616:subscription/cis-aws-foundations-benchmark/v/1.2.0,RuleId: 1.8,RecommendationUrl: https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation,RelatedAWSResources:0/name: securityhub-iam-password-policy-number-check-a08618e1,RelatedAWSResources:0/type: AWS::Config::ConfigRule,StandardsControlArn: arn:aws:securityhub:eu-west-1:676921422616:control/cis-aws-foundations-benchmark/v/1.2.0/1.8,aws/securityhub/SeverityLabel: MEDIUM,aws/securityhub/ProductName: Security Hub,aws/securityhub/CompanyName: AWS,aws/securityhub/annotation: Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.,aws/securityhub/FindingId: arn:aws:securityhub:eu-west-1::product/aws/securityhub/arn:aws:securityhub:eu-west-1:676921422616:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | ACTIVE | Recommendation: {"Text": "For directions on how to fix this issue, please consult the AWS Security Hub CIS documentation.", "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation"} | {'Type': 'AwsAccount', 'Id': 'AWS::::Account:676921422616', 'Partition': 'aws', 'Region': 'eu-west-1'} | 2018-10-08 | Product: 40,Label: MEDIUM,Normalized: 40,Original: MEDIUM | 1.8 Ensure IAM password policy requires at least one number | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | 2020-07-22T11:28:46.637Z | Status: NEW | NEW |
+| 123456789012 | Status: WARNING,StatusReasons: {'ReasonCode': 'CONFIG_ACCESS_DENIED', 'Description': 'Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.'} | 2020-07-05T13:14:29.111Z | Password policies are, in part, used to enforce password complexity requirements. IAM password policies can be used to ensure passwords are comprised of different character sets. It is recommended that the password policy require at least one number. | 2020-07-05T13:14:29.111Z | arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.8 | arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | 2020-07-22T11:30:13.952Z | arn:aws:securityhub:eu-west-1::product/aws/securityhub | StandardsGuideArn: arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0,StandardsGuideSubscriptionArn: arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0,RuleId: 1.8,RecommendationUrl: https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation,RelatedAWSResources:0/name: securityhub-iam-password-policy-number-check-a08618e1,RelatedAWSResources:0/type: AWS::Config::ConfigRule,StandardsControlArn: arn:aws:securityhub:eu-west-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.8,aws/securityhub/SeverityLabel: MEDIUM,aws/securityhub/ProductName: Security Hub,aws/securityhub/CompanyName: AWS,aws/securityhub/annotation: Unable to describe the supporting AWS Config Rule, Please verify that you have enabled AWS Config.,aws/securityhub/FindingId: arn:aws:securityhub:eu-west-1::product/aws/securityhub/arn:aws:securityhub:eu-west-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.8/finding/d1d15683-7fbd-4b82-8eed-3af50785cdf6 | ACTIVE | Recommendation: {"Text": "For directions on how to fix this issue, please consult the AWS Security Hub CIS documentation.", "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.8/remediation"} | {'Type': 'AwsAccount', 'Id': 'AWS::::Account:123456789012', 'Partition': 'aws', 'Region': 'eu-west-1'} | 2018-10-08 | Product: 40,Label: MEDIUM,Normalized: 40,Original: MEDIUM | 1.8 Ensure IAM password policy requires at least one number | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | 2020-07-22T11:28:46.637Z | Status: NEW | NEW |
 
 ### 5. aws-securityhub-get-master-account
 ---
