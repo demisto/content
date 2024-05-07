@@ -1714,7 +1714,7 @@ def get_conversation_from_api_paginated(conversation_to_search):
     while True:
         demisto.debug('extradebuglogs: iterating')
         conversations = response['channels'] if response and response.get('channels') else []
-        demisto.debug(f'conversations in response {len(conversations)=}')
+        demisto.debug(f'extradebuglogs: conversations in response {len(conversations)=}')
         cursor = response.get('response_metadata', {}).get('next_cursor')  # type: ignore
         conversation_filter = list(filter(lambda c: c.get('name').lower() == conversation_to_search, conversations))
         if conversation_filter:
@@ -2904,7 +2904,7 @@ def init_globals(command_name: str = ''):
 
 
 def parse_common_channels(common_channels: str):
-    demisto.debug(f'parse_common_channels begin {common_channels=}')
+    demisto.debug(f'extradebuglogs: parse_common_channels begin {common_channels=}')
     common_channels = (common_channels or '').strip()
     if not common_channels:
         return {}
@@ -2919,7 +2919,7 @@ def parse_common_channels(common_channels: str):
         demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
         raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
             from e
-    demisto.debug(f'parse_common_channels finish successfully, {stripped_channels=}')
+    demisto.debug(f'extradebuglogs: parse_common_channels finish successfully, {stripped_channels=}')
     return stripped_channels
 
 
