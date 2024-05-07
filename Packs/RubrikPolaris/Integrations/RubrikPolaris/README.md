@@ -1862,7 +1862,7 @@ Retrieve the user access information.
 >### User Access (Showing Records 1-1 out of 1)
 >|User ID|User Full Name|User Principal Name|Risk Level|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|
->| S-1-0-01-0000000000-0000000000-000000000-0001 | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
+>| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
 >
 >Note: To retrieve the next set of results, use **next_page_token** = "cursor_2".<br/>
 >If **next_page_token** is provided, then it will reset the record numbers. For the initial use of **next_page_token**, please avoid specifying the **page_number**.
@@ -2265,7 +2265,7 @@ Retrieve the user access information based on the provided user ID.
 >### User Access
 >|User ID|User Full Name|User Principal Name|Risk Level|Access Risk Reason(s)|Insecure Reason(s)|Groups|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|---|---|---|
->| S-1-0-01-0000000000-0000000000-000000000-0001 | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
+>| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
 >
 >
 >### Sensitive Hits
