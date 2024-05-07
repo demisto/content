@@ -908,7 +908,8 @@ def alter_url(url: str) -> str:
     """
     parsed_url = urlparse(url)
     new_netloc = "ext-" + parsed_url.netloc
-    new_url_tuple = (parsed_url.scheme, new_netloc, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment)
+    new_path = '/xsoar' + parsed_url.path
+    new_url_tuple = (parsed_url.scheme, new_netloc, new_path, parsed_url.params, parsed_url.query, parsed_url.fragment)
     new_url = urlunparse(new_url_tuple)
     return new_url
 

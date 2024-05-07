@@ -292,7 +292,7 @@ def test_taxii20_get_server_info_demisto_version(mocker):
 
     results = get_server_info_command(integration_context=integration_context)
 
-    assert results.outputs['default'] == 'https://ext-www.example.com/path/to/resource?query=parameter'
+    assert results.outputs['default'] == 'https://ext-www.example.com/xsoar/path/to/resource?query=parameter'
 
 
 def test_taxii21_collection(mocker, taxii2_server_v21):
