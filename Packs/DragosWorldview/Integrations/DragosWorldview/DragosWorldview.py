@@ -105,7 +105,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     for tag in tags:
         query_list.append('tags%5B%5D=' + tag)
 
-    # If any arguments were submitted then run the relevent query, 
+    # If any arguments were submitted then run the relevent query,
     # else return all indicators from the last 48 hours
     if query_list:
         query_string = '&'.join(query_list)
@@ -117,16 +117,16 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     raw_response = client.api_request(api_query)
     data = raw_response['indicators']
     page_number = 2 if not page else int(page) + 1
-    if page:   
+    if page:
         query_list.pop(0)
         query_string = '&'.join(query_list)
     full_response = raw_response
-        
+
     # If there are still more dragos pages (ie more indicators) than was returned by
     # the intial query, iterate through the remaining pages and add all unique indicators
     # to the return data
     while int(raw_response['total_pages']) > int(raw_response['page']):
-        if query_list:  
+        if query_list:
             api_query = f'indicators?page={page_number}&{query_string}'
         else:
             api_query = f'indicators?page={page_number}&updated_after={time}'
