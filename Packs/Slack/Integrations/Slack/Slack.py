@@ -21,7 +21,7 @@ from slack.web.slack_response import SlackResponse
 # disable unsecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS ''' # TODO - TEST NIGHTLY PACK -> COLLECT FOR UPLOAD (COLLECTED TWICE ONCE TO INSTALL)
+''' CONSTANTS '''
 
 SEVERITY_DICT = {
     'Unknown': 0,

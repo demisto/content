@@ -17,7 +17,6 @@ import hashlib
 import hmac
 from tempfile import NamedTemporaryFile
 
-# TODO TEST
 
 app = FastAPI()
 
