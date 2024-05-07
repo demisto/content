@@ -674,27 +674,33 @@ def test_gti_assessment_command(mocker, requests_mock):
     Then:
     - Validate the command results are valid and contains metric data
     """
-    from GoogleThreatIntelligence import get_assessment_command, ScoreCalculator, Client
+    from GoogleThreatIntelligence import get_assessment_command, encode_url_to_base64, ScoreCalculator, Client
     import CommonServerPython
     # Setup Mocks
-    testing_file = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
-    mocker.patch.object(demisto, 'args', return_value={'resource': testing_file})
-    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
-    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    for resource, resource_type, endpoint in [
+        ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
+        ('8.8.8.8', 'ip', 'ip_addresses'),
+        ('www.example.com', 'domain', 'domains'),
+        ('https://www.example.com', 'url', 'urls'),
+    ]:
+        mocker.patch.object(demisto, 'args', return_value={'resource': resource, 'resource_type': resource_type})
+        mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+        mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
-    # Assign arguments
-    params = demisto.params()
-    mocked_score_calculator = ScoreCalculator(params=params)
-    client = Client(params=params)
+        # Assign arguments
+        params = demisto.params()
+        mocked_score_calculator = ScoreCalculator(params=params)
+        client = Client(params=params)
 
-    # Load assertions and mocked request data
-    mock_response = util_load_json('test_data/file.json')
-    expected_results = util_load_json('test_data/file_assessment_results.json')
-    requests_mock.get(f'https://www.virustotal.com/api/v3/files/{testing_file}'
-                      f'?relationships=', json=mock_response)
+        # Load assertions and mocked request data
+        endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
+        mock_response = util_load_json(f'test_data/{resource_type}.json')
+        expected_results = util_load_json(f'test_data/{resource_type}_assessment_results.json')
+        requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}'
+                          f'?relationships=', json=mock_response)
 
-    # Run command and collect result array
-    results = get_assessment_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
+        # Run command and collect result array
+        results = get_assessment_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
 
-    assert results.execution_metrics is None
-    assert results.outputs == expected_results
+        assert results.execution_metrics is None
+        assert results.outputs == expected_results

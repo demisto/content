@@ -14,7 +14,7 @@
             "timeout": 0,
             "undetected": 8
         },
-        "last_final_url": "http://something_definitely_unsecure.com",
+        "last_final_url": "http://www.example.com",
         "last_http_response_code": 200,
         "last_http_response_content_length": 4372,
         "last_http_response_content_sha256": "67c1bc796bffe9169be3ef87dd8af4e8776d04484812a5bfdc7c5c9042aed1ca",
@@ -47,11 +47,33 @@
                 "url": "//something_definitely_unsecure.js"
             }]
         },
-        "url": "http://something_definitely_unsecure.com"
+        "url": "http://www.example.com",
+        "gti_assessment": {
+            "threat_score": {
+                "value": 100
+            },
+            "severity": {
+                "value": "SEVERITY_HIGH"
+            },
+            "contributing_factors": {
+                "mandiant_association_report": true,
+                "mandiant_association_actor": true,
+                "gavs_detections": 3,
+                "normalised_categories": [
+                    "trojan"
+                ],
+                "mandiant_association_malware": true,
+                "mandiant_confidence_score": 100
+            },
+            "verdict": {
+                "value": "VERDICT_MALICIOUS"
+            },
+            "description": "This indicator is malicious (high severity) with high impact."
+        }
     },
-    "id": "1234",
+    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20",
     "links": {
-        "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1"
+        "self": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20"
     },
     "relationships": {
         "last_serving_ip_address": {
@@ -60,8 +82,8 @@
                 "type": "ip_address"
             },
             "links": {
-                "related": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/last_serving_ip_address",
-                "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/relationships/last_serving_ip_address"
+                "related": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/last_serving_ip_address",
+                "self": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/relationships/last_serving_ip_address"
             },
             "meta": {
                 "count": 1
@@ -73,8 +95,8 @@
                 "type": "domain"
             },
             "links": {
-                "related": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/network_location",
-                "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/relationships/network_location"
+                "related": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/network_location",
+                "self": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/relationships/network_location"
             },
             "meta": {
                 "count": 1

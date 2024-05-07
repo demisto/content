@@ -1278,10 +1278,7 @@ def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
         data = [decrease_data_size(item) for item in data]
     else:
         for attribute in attributes_to_remove:
-            try:
-                del data['attributes'][attribute]
-            except KeyError:
-                pass
+            data['attributes'].pop(attribute, None)
     return data
 
 
@@ -2798,7 +2795,7 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
 
     data = raw_response.get('data', {})
     data.pop('relationships', None)
-    gti_assessment = data.get('attributes', {}).get('gti_assessment')
+    gti_assessment = data.get('attributes', {}).get('gti_assessment', {})
 
     if data:
         if gti_assessment:
@@ -2824,11 +2821,7 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
             ],
             headerTransform=string_to_table_header,
         ),
-        outputs={
-            **data,
-            'id': raw_response['id'],
-            'type': raw_response['type'],
-        },
+        outputs=data,
         raw_response=raw_response,
     )
 
