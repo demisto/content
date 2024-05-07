@@ -195,6 +195,7 @@ def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit
 
 
 def main() -> None:
+    po = 42
     params = demisto.params()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
