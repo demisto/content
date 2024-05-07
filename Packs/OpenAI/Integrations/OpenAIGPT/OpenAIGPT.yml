@@ -7,6 +7,12 @@ commonfields:
   version: -1
 
 configuration:
+- display: Server URL
+  name: url
+  required: false
+  defaultvalue: https://api.openai.com/
+  type: 0
+
 - display: API Key
   name: api_key
   type: 4

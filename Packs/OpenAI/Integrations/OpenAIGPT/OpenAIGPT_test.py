@@ -19,12 +19,8 @@ def test_extract_assistant_message():
     from OpenAIGPT import extract_assistant_message
 
     mock_response = util_load_json('test_data/mock_response.json')
-
-    conversation = []
-    extracted_message = extract_assistant_message(response=mock_response, conversation=conversation)
-
+    extracted_message = extract_assistant_message(response=mock_response)
     assert extracted_message == "Hello! How can I assist you today?"
-    assert conversation == [{'role': 'assistant', 'content': 'Hello! How can I assist you today?'}]
 
 
 @pytest.mark.parametrize('entry_id, should_raise_error', [('VALID_ENTRY_ID', False), ('INVALID_ENTRY_ID', True), ('', True)])
@@ -63,54 +59,46 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/attachment_malicious_url.eml',
                                                               'name': 'attachment_malicious_url.eml'})
 
-    client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
+    client = OpenAiClient(url='DUMMY_URL', api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
     check_email_part(email_part, client, args)
 
 
-@pytest.mark.parametrize('args, expected_conversation',
+@pytest.mark.parametrize('args',
                          [
-                             ({
+                             {
                                  'reset_conversation_history': True,
                                  'message': "Hi There!",
                                  'max_tokens': '100',
                                  'temperature': '0',
                                  'top_p': '1'
-                             }, [{'content': 'Hi There!', 'role': 'user'},
-                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
-                             ({
+                             },
+                             {
                                  'reset_conversation_history': True,
                                  'message': "Hi There!",
-                             }, [{'content': 'Hi There!', 'role': 'user'},
-                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
-                             ({
+                             },
+                             {
                                  'reset_conversation_history': False,
                                  'message': "Hi There!",
-                             }, [{'content': 'Hi There!', 'role': 'user'},
-                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'},
-                                 {'content': 'Hi There!', 'role': 'user'},
-                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
+                             },
                          ], ids=['test-send-message-with-params', 'test-send-message-no-params', 'test-send-message-no-reset']
                          )
-def test_send_message_command(mocker, args, expected_conversation):
+def test_send_message_command(mocker, args):
     """ """
     from OpenAIGPT import OpenAiClient, send_message_command
     mocker.patch.object(OpenAiClient, '_http_request', return_value=util_load_json('test_data/mock_response.json'))
     mocker.patch.object(demisto, 'context', return_value={
         'OpenAIGPT': {'Conversation': [
-            {'content': 'Hi There!', 'role': 'user'},
-            {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}
+            {'user': 'Hi There!', 'assistant': 'Hello! How can I assist you today?'}
         ]
         }
     })
 
-    client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
-    res = send_message_command(client=client, args=args)
-
-    assert res.outputs == expected_conversation
+    client = OpenAiClient(url='DUMMY_URL', api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
+    send_message_command_results, _ = send_message_command(client=client, args=args)
 
 
 def test_create_soc_email_template_command(mocker):
-    from OpenAIGPT import OpenAiClient, create_soc_email_template
+    from OpenAIGPT import OpenAiClient, create_soc_email_template_command
     mocker.patch.object(OpenAiClient, '_http_request', return_value=util_load_json('test_data/mock_response.json'))
-    client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
-    create_soc_email_template(client, args={})
+    client = OpenAiClient(url='DUMMY_URL', api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
+    create_soc_email_template_command(client, args={})
