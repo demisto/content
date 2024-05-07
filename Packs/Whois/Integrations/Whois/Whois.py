@@ -13,10 +13,6 @@ import urllib
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
-IS_TIME_SENSITIVE = False
-if hasattr(demisto, 'isTimeSensitive'):
-    isTimeSensitive = getattr(demisto, 'isTimeSensitive')
-    IS_TIME_SENSITIVE = isTimeSensitive()
 
 # flake8: noqa
 
@@ -7339,7 +7335,7 @@ def whois_request_get_response(domain: str, server: str) -> str:
     """
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        if IS_TIME_SENSITIVE:
+        if is_time_sensitive():
             # Default short timeout
             sock.settimeout(10)
         sock.connect((server, 43))
@@ -8540,7 +8536,7 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
     ips = demisto.args().get('ip', '1.1.1.1')
     rate_limit_retry_count: int = (
         RATE_LIMIT_RETRY_COUNT_DEFAULT
-        if IS_TIME_SENSITIVE
+        if is_time_sensitive()
         else int(
             get_param_or_arg('rate_limit_retry_count', 'rate_limit_retry_count')
             or RATE_LIMIT_RETRY_COUNT_DEFAULT
