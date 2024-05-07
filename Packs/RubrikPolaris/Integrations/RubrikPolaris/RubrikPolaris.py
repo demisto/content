@@ -20,6 +20,7 @@ INTEGRATION_NAME = "Rubrik Radar"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 HUMAN_READABLE_DATE_TIME_FORMAT = "%b %d, %Y at %I:%M:%S %p"
+USER_ACCESS_HYPERLINK = "{}sonar/user_intelligence?redirected_user_id={}"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
@@ -42,7 +43,7 @@ DEFAULT_EVENT_SORT_ORDER = "DESC"
 DEFAULT_SHOW_CLUSTER_SLA_ONLY = "True"
 DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
-DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version(pack_name='Rubrik Polaris') or '1.2.0'}"
+DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version(pack_name='') or '1.2.0'}"
 DEFAULT_PRINCIPAL_SUMMARY_CATEGORY = "USERS_WITH_SENSITIVE_ACCESS"
 SCAN_ID = "Scan ID"
 SNAPSHOT_ID = "Snapshot ID"
@@ -1777,7 +1778,7 @@ def prepare_context_hr_ioc_scan_list(data: list):
 
 
 def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results: bool, user_email: str,
-                                        page_number: int = 1, limit: int = DEFAULT_LIMIT
+                                        base_url: str, page_number: int = 1, limit: int = DEFAULT_LIMIT
                                         ) -> tuple[list[dict], str, int, set[str]]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-list command.
@@ -1790,6 +1791,9 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
 
     :type user_email: ``str``
     :param user_email: User email or user principal name.
+
+    :type base_url: ``str``
+    :param base_url: Base URL of the platform.
 
     :type page_number: ``int``
     :param page_number: The current page number.
@@ -1837,8 +1841,9 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
             if isinstance(file_count, dict):
                 total_sensitive_files += file_count.get(sensitive_files_key) or 0
 
+        user_id = node.get('principalId')
         hr_content.append({
-            USER_ID: node.get('principalId'),
+            USER_ID: f"[{user_id}]({USER_ACCESS_HYPERLINK.format(base_url, user_id)})",
             USER_FULL_NAME: node.get('fullName'),
             USER_PRINCIPAL_NAME: re.escape(node.get('upn') or ''),
             RISK_LEVEL: node.get('riskLevel'),
@@ -1865,7 +1870,7 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
     return context, hr, pages, risk_levels
 
 
-def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list,
+def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list, base_url: str,
                                        include_whitelisted_results: bool) -> tuple[list, str, str]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-get command.
@@ -1875,6 +1880,9 @@ def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_cont
 
     :type policy_hits_context: ``list``
     :param policy_hits_context: Summary of the policy hits for the user.
+
+    :type base_url: ``str``
+    :param base_url: Base URL of the platform.
 
     :type include_whitelisted_results: ``bool``
     :param include_whitelisted_results: Include whitelisted results in the API response.
@@ -1907,8 +1915,9 @@ def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_cont
     access_risk_reasons = principal_summary.get('riskReasons', {}).get('accessRiskReasons', [])
     insecure_reasons = principal_summary.get('riskReasons', {}).get('insecureReasons', [])
 
+    user_id = principal_summary.get('principalId')
     access_hr_content.append({
-        USER_ID: principal_summary.get('principalId'),
+        USER_ID: f"[{user_id}]({USER_ACCESS_HYPERLINK.format(base_url, user_id)})",
         USER_FULL_NAME: principal_summary.get('fullName'),
         USER_PRINCIPAL_NAME: re.escape(principal_summary.get('upn') or ''),
         RISK_LEVEL: principal_summary.get('riskLevel'),
@@ -3781,8 +3790,9 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
         return CommandResults(outputs=outputs, raw_response=response,
                               readable_output=MESSAGES["NO_RECORDS_FOUND"].format("user accesses"))
 
+    base_url = str(client._baseurl).removesuffix('api')
     context, hr, pages, risk_levels = prepare_context_hr_user_access_list(
-        edges, include_whitelisted_results, user_email, page_number, limit)  # type: ignore
+        edges, include_whitelisted_results, user_email, base_url, page_number, limit)  # type: ignore
 
     response["xsoar_risk_levels"] = list(risk_levels)
 
@@ -3866,8 +3876,9 @@ def rubrik_sonar_user_access_get_command(client: PolarisClient, args: Dict[str, 
     else:
         policy_hits_context: list = deepcopy(policy_hits_summaries[0].get('summary') or [])  # type: ignore
 
+    base_url = str(client._baseurl).removesuffix('api')
     access_context, access_hr, policy_hr = prepare_context_hr_user_access_get(principal_summary, policy_hits_context,
-                                                                              include_whitelisted_results)
+                                                                              base_url, include_whitelisted_results)
     outputs = {f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)": access_context}
 
     return CommandResults(outputs=outputs, raw_response=access_response, readable_output=f'{access_hr}\n\n{policy_hr}')

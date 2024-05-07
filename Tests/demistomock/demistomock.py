@@ -804,13 +804,13 @@ def getIntegrationContextVersioned(refresh=False):
 
 def incidents(incidents=None):
     """In script, retrieves the `Incidents` list from the context
-    In integration, used to return incidents to the server
+    In integration, used to return incidents to the server.
 
     Args:
-      incidents (list): In integration only, list of incident objects (Default value = None)
+      incidents (list): In integration only, list of incident objects (Default value = None).
 
     Returns:
-      list: List of incident objects
+      list: List containing the current incident object.
 
     """
     if incidents is None:
@@ -1348,3 +1348,11 @@ def setAssetsLastRun(obj):
 
 def getAssetsLastRun():
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
+
+
+def isTimeSensitive():
+    """
+    This function will indicate whether the command reputation (auto-enrichment) is called as auto-extract=inline.
+    So for default the function return False.
+    """
+    return False
