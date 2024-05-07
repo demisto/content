@@ -241,6 +241,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             json=payload,
             data=data
         )
+        print('response:',res.json())
         res.raise_for_status()
         if is_file:
             return res

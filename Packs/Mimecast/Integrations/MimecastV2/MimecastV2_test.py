@@ -779,3 +779,39 @@ def test_get_search_logs_command(mocker):
     mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
     result = MimecastV2.get_archive_search_logs_command(args)
     assert expected_response.get('data')[0]['logs'] == result.outputs['data'][0]['logs']
+
+
+
+def test_get_view_logs_command(mocker):
+    """
+
+
+    Args:
+    """
+
+    args = {}
+    expected_response = {
+        'meta': {
+            'pagination': {
+                'pageSize': 0},
+            'status': 200},
+        'data': [],
+        'fail': []
+        }
+    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+    result = MimecastV2.mimecast_get_view_logs_command(args)
+    assert expected_response.get('data') == result.outputs['data']
+
+
+def test_mimecast_list_account_command(mocker):
+    """
+
+
+    Args:
+    """
+
+    args = {'account_code': 'ABC123'}
+    expected_response =  {'meta': {'status': 200}, 'data': [{'region': 'us', 'archive': False, 'gateway': True, 'passphrase': '', 'supportCode': '6747', 'maxRetention': 30, 'maxRetentionConfirmed': True, 'minRetentionEnabled': False, 'automatedSegmentPurge': True, 'type': 'full', 'policyInheritance': False, 'databaseCode': 'usterm13', 'searchReason': False, 'contentAdministratorDefaultView': 'Metadata', 'adminSessionTimeout': 60, 'exportApi': False, 'exgestAllowQuery': False, 'exgestAllowExtraction': True, 'expressAccount': False, 'cybergraphV2Enabled': False, 'accountCode': 'ABC123', 'accountName': 'API Alliance - Palo Alto Networks', 'adminEmail': '', 'contactEmail': 'techbd@paloaltonetworks.mime.integration.com', 'domain': '', 'userCount': 10, 'mimecastId': '01-0102-00236', 'contactName': 'Adnan Kharuf', 'telephone': '4088307584', 'packages': ['Journal Services [1053]', 'Desktop Apps - Outlook (Pro) [1016]', 'Mobile Apps (Pro) [1036]', 'Threat Remediation [1075]', 'Advanced MTA (Site) [1002]', 'Stationery 1.0 (Site) [1042]', 'Attachment Protection (Pro) [1059]', 'Secure Email Gateway (Site) [1039]', 'Content Control and Data Leak Prevention (Site) [1013]', 'Metadata Track and Trace (Site) [1032]', 'Attachment Protection (Site) [1056]', 'URL Protection (Site) [1043]', 'Branding [1003]', 'Enhanced Logging [1061]', 'Message Recovery Service (Site) [1031]', 'Impersonation Protection [1060]', 'Auto Responders (Site) [1005]', 'Message Recovery Service - User [1058]', 'Desktop Apps - Mac (Pro) [1051]', 'Content Control and Data Leak Prevention (Pro) [1015]', 'Mimecast Mobile Pro (Pro) [1055]', 'Mimecast Platform [1033]', 'Email Encryption and Privacy (Site) [1023]', 'Internal Email Protect [1064]', 'Configuration Backup & Restore [1106]', 'Attachment Management (Site) [1004]', 'BYO: Threat Intelligence [1089]']}], 'fail': []}
+    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+    result = MimecastV2.mimecast_list_account_command(args)
+    assert expected_response.get('data') == result.outputs['data']
