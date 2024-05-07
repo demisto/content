@@ -1304,7 +1304,7 @@ def searchRelationships(args):
     return {'data': []}
 
 
-def _apiCall(self, name=None, params=None, data=None, headers=None, method=None, path=None):
+def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
 
