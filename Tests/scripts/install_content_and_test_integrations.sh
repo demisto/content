@@ -65,7 +65,7 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
       --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" \
       --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET" \
       --test_pack_path "${ARTIFACTS_FOLDER_SERVER_TYPE}" --content_root "."
-    exit_on_error $? "Failed to $0 script"
+    exit_on_error $? "Failed to run $0 script"
 
     echo "Finished $0 successfully"
     exit 0
