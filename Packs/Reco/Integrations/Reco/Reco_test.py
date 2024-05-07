@@ -19,7 +19,7 @@ from Reco import (
     get_sensitive_assets_by_name,
     get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
     get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score,
-    get_user_context_by_email_address
+    get_user_context_by_email_address, get_assets_shared_externally_command, get_files_exposed_to_email_command
 )
 
 from test_data.structs import (
@@ -786,6 +786,32 @@ def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
     )
     actual_result = get_sensitive_assets_shared_with_public_link(
         reco_client=reco_client
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_assets_shared_externally_command(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    actual_result = get_assets_shared_externally_command(
+        reco_client=reco_client,
+        email_address="g@example.com"
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_files_exposed_to_email_command(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json=raw_result, status_code=200
+    )
+    actual_result = get_files_exposed_to_email_command(
+        reco_client=reco_client,
+        email_account="g@example.com"
     )
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
