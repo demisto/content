@@ -644,7 +644,7 @@ Returns a list of detections for a specified entity.
           "identity_type": "Federated Account",
           "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
           "request_parameters": [
-            "{\"roleName\": \"stratus-red-team-backdoor-r-role\", \"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::193672423079:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\"}"
+            "{\"roleName\": \"stratus-red-team-backdoor-r-role\", \"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::123456789012:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\"}"
           ],
           "response_elements": [],
           "role_sequence": [
@@ -670,7 +670,7 @@ Returns a list of detections for a specified entity.
           "identity_type": "Federated Account",
           "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
           "request_parameters": [
-            "{\"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::193672423079:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\", \"roleName\": \"stratus-red-team-backdoor-r-role\"}"
+            "{\"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::123456789012:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\", \"roleName\": \"stratus-red-team-backdoor-r-role\"}"
           ],
           "response_elements": [],
           "role_sequence": [
@@ -983,7 +983,7 @@ Returns a list of detections for the specified detection ID(s).
           "identity_type": "Federated Account",
           "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
           "request_parameters": [
-            "{\"roleName\": \"stratus-red-team-backdoor-r-role\", \"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::193672423079:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\"}"
+            "{\"roleName\": \"stratus-red-team-backdoor-r-role\", \"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::123456789012:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\"}"
           ],
           "response_elements": [],
           "role_sequence": [
@@ -1009,7 +1009,7 @@ Returns a list of detections for the specified detection ID(s).
           "identity_type": "Federated Account",
           "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
           "request_parameters": [
-            "{\"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::193672423079:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\", \"roleName\": \"stratus-red-team-backdoor-r-role\"}"
+            "{\"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::123456789012:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\", \"roleName\": \"stratus-red-team-backdoor-r-role\"}"
           ],
           "response_elements": [],
           "role_sequence": [

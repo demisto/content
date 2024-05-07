@@ -1191,7 +1191,7 @@ script:
       description: The CMDB entity name that owned the application.
       type: String
     - contextPath: RiskSense.Application.CMDB.SupportedBy
-      description: The CMDB entity name that supported the application
+      description: The CMDB entity name that supported the application.
       type: String
     - contextPath: RiskSense.Application.CMDB.SupportGroup
       description: The CMDB supporting group of the application.
@@ -1771,7 +1771,7 @@ script:
       description: The CMDB entity name that owned the application.
       type: String
     - contextPath: RiskSense.Application.CMDB.SupportedBy
-      description: The CMDB entity name that supported the application
+      description: The CMDB entity name that supported the application.
       type: String
     - contextPath: RiskSense.Application.CMDB.SupportGroup
       description: The CMDB supporting group of the application.
