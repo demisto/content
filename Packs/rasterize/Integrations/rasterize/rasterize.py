@@ -194,7 +194,6 @@ class TabLifecycleManager:
 
 class PychromeEventHandler:
     request_id = None
-    previous_request_id = None
     screen_lock = threading.Lock()
 
     def __init__(self, browser, tab, tab_ready_event):
@@ -209,7 +208,6 @@ class PychromeEventHandler:
         if self.request_id:
             # We're in redirect
             demisto.debug(f'Frame (reload) started loading: {frameId}, clearing {self.request_id=}')
-            self.previous_request_id = self.request_id
             self.request_id = None
             self.response_received = False
             self.start_frame = None
@@ -534,9 +532,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         if request_id:
             demisto.debug(f"request_id available after {request_id_operation_time} seconds.")
         else:
-            demisto.info(f"request_id not available available after {request_id_operation_time} seconds")
-            demisto.info(f"Trying {tab_event_handler.previous_request_id=}")
-            request_id = tab_event_handler.previous_request_id
+            demisto.info(f"request_id not available available after {request_id_operation_time} seconds.")
         demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds.")
 
         response_body_exception = False
@@ -546,7 +542,8 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
             demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}')
             response_body_exception = True
-            demisto.info(f'Failed to get page body due to {ex}')
+            demisto.info(f'Failed to get URL body due to {ex}')
+            response_body = 'Failed to get URL body'
         if not response_body_exception:
             response_body, operation_time = backoff(response_body)
             if response_body:
