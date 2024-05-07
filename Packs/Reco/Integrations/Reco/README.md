@@ -379,13 +379,12 @@ Get files exposed to a specific email address
 | Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
 | Reco.Assets.data_category | String | The data category of the asset | 
 | Reco.Assets.data_categories | String | The data categories of the asset | 
-| Reco.Assets.location | String | The path of the asset | 
-| Reco.Assets.source | String | SaaS tool source of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
+| Reco.SensitiveAssets.location | String | The path of the asset. |
 | Reco.Assets.last_access_date | String | The last access date of the asset |
 | Reco.Assets.file_owner | String | SaaS tool source of the asset | 
 | Reco.Assets.email_account | String | The last access date of the asset |
-| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
-| Reco.SensitiveAssets.location | String | The path of the asset. |
+
 
 
 ### reco-get-assets-shared-externally
