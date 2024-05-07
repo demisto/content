@@ -10,11 +10,16 @@ class MockClient(Client):
 
     def query_datalake_command(self) -> None:
         return
+    
+    
+def test_login()
+    
 
 
 def load_test_data(json_path: str):
     with open(json_path) as f:
         return load(f)
+    
 
 
 @pytest.mark.parametrize(

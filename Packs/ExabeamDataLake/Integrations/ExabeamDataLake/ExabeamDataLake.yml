@@ -51,6 +51,22 @@ script:
       name: page_size
     description: Get events from Exabeam Data Lake.
     name: exabeam-data-lake-search
+    outputs:
+    - contextPath: ExabeamDataLake.Event.id
+      description: The event ID.
+      type: str
+    - contextPath: ExabeamDataLake.Event.vendor
+      description: Vendor of the event.
+      type: str
+    - contextPath: ExabeamDataLake.Event.product
+      description: Product of the event.
+      type: str
+    - contextPath: ExabeamDataLake.Event.created_at
+      description: The time of the event.
+      type: str
+    - contextPath: ExabeamDataLake.Event.message
+      description: The message of the event.
+      type: str
   isfetch: false
   runonce: false
   script: '-'

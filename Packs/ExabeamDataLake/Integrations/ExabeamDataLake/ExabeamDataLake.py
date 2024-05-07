@@ -21,7 +21,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
                  proxy: bool, headers):
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=False, proxy=proxy)
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=False, proxy=proxy, timeout=20)
         self.username = username
         self.password = password
         
@@ -35,7 +35,7 @@ class Client(BaseClient):
         """
         headers = {"Csrf-Token": "nocheck"}
         data = {"username": self.username, "password": self.password}
-       
+    
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
@@ -144,11 +144,11 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
         """
         source: dict = entry.get("_source", {})
         return {
-            "ID": entry.get("_id"),
-            "Vendor": source.get("Vendor"),
-            "Time": source.get("time"),
-            "Product": source.get("Product"),
-            "Message": source.get("message")
+            "id": entry.get("_id"),
+            "vendor": source.get("Vendor"),
+            "created_at": source.get("@timestamp"),
+            "product": source.get("Product"),
+            "message": source.get("message")
         }
 
     if start_time := args.get("start_time"):
@@ -160,7 +160,6 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
         end_time = arg_to_datetime(arg=end_time, arg_name="End time", required=True)
         if end_time:
             end_time = end_time.strftime(ISO_8601_FORMAT)
-            
             
     dates = dates_in_range(start_time, end_time)
     dates_in_format = []
