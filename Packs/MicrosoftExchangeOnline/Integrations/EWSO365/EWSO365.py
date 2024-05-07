@@ -586,10 +586,10 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id=""):
     """
     # TODO- how to test no name and what to do if no content_id
     if attachment_name is None or attachment_name == "":
-        return f"-{content_id}-demisto_untitled_attachment.eml" if eml_extension else f"-{content_id}-demisto_untitled_attachment"
+        return f"{content_id}-demisto_untitled_attachment.eml" if eml_extension else f"{content_id}-demisto_untitled_attachment"
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'-{content_id}-{attachment_name}.eml'
-    return f'-{content_id}-{attachment_name}'
+        return f'{content_id}-{attachment_name}.eml'
+    return f'{content_id}-{attachment_name}'
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):

@@ -259,7 +259,7 @@ class Client:
                             is_inline = 'inline' in header.get('value')
                     attachments.append({
                         'ID': part['body']['attachmentId'],
-                        'Name': f"-{content_id}-{part['filename']}",
+                        'Name': f"{content_id}-{part['filename']}",
                         'is_inline': is_inline
                     })
 
@@ -287,7 +287,7 @@ class Client:
             demisto.debug(f"attachment of id{content_ids_array=}")
             command_args['id'] = attachment['ID']
             result = service.users().messages().attachments().get(**command_args).execute()
-            if not content_ids_array or attachment['Name'].split("-")[1] in content_ids_array:
+            if not content_ids_array or attachment['Name'][::-1].split("-")[1][::-1] in content_ids_array:
                 demisto.debug(f"{attachment['Name']} in {content_ids_array}")
                 file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
                 files.append((attachment['Name'], file_data))
@@ -1077,8 +1077,9 @@ def reply_mail_command(client):
 def get_attachments_command(client):
     args = demisto.args()
     _id = args.get('message-id')
+    content_ids = args.get('content-ids')
 
-    attachments = client.get_attachments('me', _id)
+    attachments = client.get_attachments('me', _id, content_ids)
 
     return [fileResult(name, data) for name, data in attachments]
 

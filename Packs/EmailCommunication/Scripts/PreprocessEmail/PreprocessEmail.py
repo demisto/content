@@ -66,8 +66,8 @@ def create_email_html(email_html='', entry_id_list=None):
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         demisto.debug(f"{image_name=}")
-        if len(image_name.split('-')) > 1:
-            content_id = image_name.split('-')[1]
+        if '-' in image_name.split('-'):
+            content_id = image_name[::-1].split('-', 1)[1][::-1]
         demisto.debug(f"{content_id=}")
         matches = re.findall(rf'(src="cid:{content_id}")', email_html)
         demisto.debug(f"{matches=}")
@@ -105,7 +105,7 @@ def get_entry_id_list(attachments, files):
         attachment_name = attachment.get('name', '')
         for file in files:
             if '-' in attachment.get('description', ''):
-                is_file_attached = attachment.get('description', '').split('-')[0]
+                is_file_attached = attachment.get('description', '').split('-', 1)[0]
             if attachment_name == file.get('Name') and is_file_attached != FileAttachmentType.ATTACHED:
                 entry_id_list.append((attachment_name, file.get('EntryID')))
 
@@ -265,8 +265,8 @@ def find_attachments_to_download(attachments, email_html, labels):
             attachment_id = attachment.get('description', '').split('-', 1)[1]
             demisto.debug(f"this_is_the_id {attachment_id}")
         content_id = "None"
-        if '-' in attachment.get('name', '').split('-'):
-            content_id = attachment.get('name', '').split('-')[1]
+        if '-' in attachment.get('name', ''):
+            content_id = attachment.get('name', '')[::-1].split('-', 1)[1][::-1]
         demisto.debug(f"this_is_the_content {content_id}")
         if re.search(rf'(src="cid:{content_id}")', email_html):
             if integration_name in ['Gmail dev', 'Gmail Single User dev', 'MicrosoftGraphMail dev', 'Microsoft Graph Mail Single User dev']:

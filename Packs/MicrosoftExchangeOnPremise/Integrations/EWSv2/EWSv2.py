@@ -603,8 +603,8 @@ def get_time_zone() -> EWSTimeZone | None:
 
 def get_attachment_name(attachment_name, content_id=""):  # pragma: no cover
     if attachment_name is None or attachment_name == "":
-        return f'-{content_id}-demisto_untitled_attachment'
-    return f'-{content_id}-attachment_name'
+        return f'{content_id}-demisto_untitled_attachment'
+    return f'{content_id}-attachment_name'
 
 
 def switch_hr_headers(obj, hr_header_changes):

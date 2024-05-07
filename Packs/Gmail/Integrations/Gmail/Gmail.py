@@ -192,7 +192,7 @@ def parse_mail_parts(parts):
                         is_inline = 'inline' in header.get('value')
                 attachments.append({
                     'ID': part['body']['attachmentId'],
-                    'Name': f"-{content_id}-{part['filename']}",
+                    'Name': f"{content_id}-{part['filename']}",
                     'is_inline': is_inline
                 })
 

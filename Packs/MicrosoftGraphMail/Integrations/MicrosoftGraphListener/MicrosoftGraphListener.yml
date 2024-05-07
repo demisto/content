@@ -646,6 +646,10 @@ script:
     - deprecated: true
       description: Flag for rate limit retry.
       name: ran_once_flag
+    - description: Content IDs of the required attachments.
+      name: content_ids
+      required: false
+      hidden: true
     outputs:
     - contextPath: File.Size
       description: The size of the file.

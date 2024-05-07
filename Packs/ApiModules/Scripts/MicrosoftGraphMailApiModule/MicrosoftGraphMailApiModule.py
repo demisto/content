@@ -262,7 +262,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
             attachment_type = attachment.get('@odata.type', '')
             attachment_content_id = attachment.get('contentId', '')
-            attachment_name = f"-{attachment_content_id}-{attachment.get('name', 'untitled_attachment')}"
+            attachment_name = f"{attachment_content_id}-{attachment.get('name', 'untitled_attachment')}"
 
             if not attachment_name.isascii():
                 try:
@@ -912,6 +912,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             message_id=email.get('id', ''),
             overwrite_rate_limit_retry=overwrite_rate_limit_retry
         )
+        demisto.debug(f"ms_graph_attachments {attachments=}")
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -1238,7 +1239,7 @@ class GraphMailUtils:
         Returns:
             dict: FileResult with the b64decode of the attachment content
         """
-        name = f"-{raw_attachment.get('contentId')}-{raw_attachment.get('name')}"
+        name = f"{raw_attachment.get('contentId')}-{raw_attachment.get('name')}"
         demisto.debug(f"{name=}")
         data = raw_attachment.get('contentBytes')
         try:
