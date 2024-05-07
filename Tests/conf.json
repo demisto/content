@@ -5852,7 +5852,10 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "VMWare Test": "CIAC-10276"
+        "VMWare Test": "CIAC-10276",
+        "AWS_DynamoDB-Test": "CIAC-10426",
+        "AWS - EC2 Test Playbook": "CIAC-10426",
+        "AWS SNS Listener - Test": "CIAC-10426"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
