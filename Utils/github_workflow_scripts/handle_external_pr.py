@@ -340,10 +340,10 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     Returns:
     - Reviewer of the found pr's
     """
-    reviewers = []
+    reviewers = set(content_reviewers)
     relevant_reviewer = ''
     for pr in other_prs_by_same_user:
-        existing_reviewer = content_reviewers.intersect(set(pr.requested_reviewers))
+        existing_reviewer = reviewers.intersect(set(pr.requested_reviewers))
         if existing_reviewer:
             return existing_reviewer
         #for reviewer in pr.requested_reviewers:
