@@ -21,28 +21,6 @@ create-release-branch:
     - python3 ./Tests/sdk_release/create_release_branch.py -t "${GITHUB_TOKEN}" -n "${RELEASE_VERSION}" -b "${SDK_BRANCH_NAME}"
     - section_end "Create release branch"
 
-trigger-content-private-nightly:
-  stage: trigger-nightlies
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  needs:
-    - create-release-branch
-  artifacts:
-    expire_in: 48 hrs
-    paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-    when: always
-  variables:
-    SLACK_CHANNEL: $SLACK_CHANNEL
-    RELEASE_VERSION: $RELEASE_VERSION
-    GITHUB_TOKEN: $GITHUB_TOKEN
-    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-  script:
-    - section_start "Trigger content-private nightly build" --collapsed
-    - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref "${RELEASE_VERSION}" --artifacts-folder "${ARTIFACTS_FOLDER}"
-    - section_end "Trigger content-private nightly build"
-
 trigger-content-internal-dist-nightly:
   stage: trigger-nightlies
   extends:
@@ -92,27 +70,6 @@ trigger-demisto-sdk-nightly:
     - echo "demisto-sdk nightly build triggered successfully:"
     - echo $CI_PROJECT_URL"/-/pipelines/"$SDK_PIPELINE_ID
     - section_end "Trigger sdk nightly build"
-
-wait-for-content-private-nightly:
-  stage: wait-for-build-to-finish
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  allow_failure: true
-  needs:
-    - trigger-content-private-nightly
-  artifacts:
-    expire_in: 48 hrs
-    paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-  timeout: 6 hours
-  variables:
-    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-    GITHUB_TOKEN: $GITHUB_TOKEN
-  script:
-    - section_start "Wait for content-private nightly build" --collapsed
-    - python3 ./Utils/get_private_build_status.py --github-token "${GITHUB_TOKEN}" --artifacts-folder "${ARTIFACTS_FOLDER}"
-    - section_end "Wait for content-private nightly build"
 
 wait-for-content-internal-dist-nightly:
   stage: wait-for-build-to-finish
@@ -164,7 +121,6 @@ slack-notify:
   allow_failure: true
   needs:
     - wait-for-demisto-sdk-nightly
-    - wait-for-content-private-nightly
     - wait-for-content-internal-dist-nightly
   timeout: 6 hours
   variables:
