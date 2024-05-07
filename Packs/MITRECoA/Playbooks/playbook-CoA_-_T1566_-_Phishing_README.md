@@ -57,4 +57,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1566 - Phishing](../doc_files/MITRE_ATT&CK_CoA_-_T1566_-_Phishing.png)
+![MITRE ATT&CK CoA - T1566 - Phishing](../doc_files/MITRE_ATTandCK_CoA_-_T1566_-_Phishing.png)
