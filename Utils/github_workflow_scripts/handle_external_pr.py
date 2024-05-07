@@ -311,18 +311,17 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
     print(f'pr creator is: {pr_creator}')
     all_prs = content_repo.get_pulls()
     similar_prs = []
+    print(f'start of temp loop')
+    for pr in all_prs:
+        if pr.user.login == "xsoar-bot":
+            body = pr.body
+            PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
+            matcher = re.search(PR_AUTHOR_PATTERN, body)
+            print(f'the author of the pr is{matcher.groups()[0]}')
+    print(f'end of the temp loop')
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
-        #if pr.user.login == "xsoar-bot":
-        #    pr_creator_from_body = get_user_from_pr_body(pr)
-        #    print(f'pr creator from ui: {pr_creator_from_body}')
-        #    if pr_creator_from_body == pr_creator:
-        #        similar_prs.append(pr)
-        #elif pr.user.login == pr_creator:
-        #    similar_prs.append(pr)
-        #else:
-        #    continue
         existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
         if existing_pr_author == pr_creator:
             similar_prs.append(pr)
@@ -356,12 +355,6 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
         print(f'type of existing reviewer: {type(existing_reviewer)}')
     if existing_reviewer:
         return existing_reviewer.pop()
-
-        #for reviewer in reviewers:
-        #    if reviewer in content_reviewers:
-        #        relevant_reviewer = reviewer
-        #        break
-    #return relevant_reviewer
     return ''
 
 
