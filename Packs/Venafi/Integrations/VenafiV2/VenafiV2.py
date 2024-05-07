@@ -307,7 +307,7 @@ def main() -> None:  # pragma: no cover
     username = demisto_params.get('credentials', {}).get('identifier')
     password = demisto_params.get('credentials', {}).get('password')
     client_id = demisto_params.get('client_id')
-    verify_certificate = demisto_params.get('insecure', False)
+    verify_certificate = not demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
