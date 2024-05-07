@@ -53,6 +53,7 @@ class Client(CoreClient):
 
         reply = demisto._apiCall(method='POST',
                                  name="wfReportIncorrectVerdict",
+                                 params=None,
                                  data=json.dumps(request_data))
 
         return reply
