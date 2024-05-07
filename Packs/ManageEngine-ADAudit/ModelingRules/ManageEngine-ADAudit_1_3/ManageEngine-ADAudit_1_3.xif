@@ -2,7 +2,7 @@
 alter 
     xdm.session_context_id = coalesce(to_string(cn2),to_string(cn3)),
     xdm.event.id = to_string(cn1),
-    xdm.source.ipv4 = if(cs2~ = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",cs2,null),
+    xdm.source.ipv4 = if(cs2 ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",cs2,null),
     xdm.source.host.hostname = shost,
     xdm.alert.subcategory = cs4,
     xdm.alert.description = msg,
