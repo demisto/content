@@ -677,12 +677,12 @@ def test_gti_assessment_command(mocker, requests_mock):
     from GoogleThreatIntelligence import get_assessment_command, ScoreCalculator, Client
     import CommonServerPython
     # Setup Mocks
-    mocker.patch.object(demisto, 'args', return_value={'resource': '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'})
+    testing_file = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    mocker.patch.object(demisto, 'args', return_value={'resource': testing_file})
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
     # Assign arguments
-    testing_file = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
     client = Client(params=params)

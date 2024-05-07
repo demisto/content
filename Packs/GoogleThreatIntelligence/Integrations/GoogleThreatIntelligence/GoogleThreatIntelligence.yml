@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: GoogleThreatIntelligence
 display: GoogleThreatIntelligence
-fromversion: 5.5.0
+fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
@@ -1735,7 +1735,7 @@ script:
       description: The analysis ID.
       type: String
 
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.92207
 tests:
 - GoogleThreatIntelligence-test
 - GoogleThreatIntelligence Detonate Test

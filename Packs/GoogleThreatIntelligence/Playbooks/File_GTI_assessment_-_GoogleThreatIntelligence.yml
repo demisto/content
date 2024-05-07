@@ -1,15 +1,7 @@
-id: 9eed1843-d81a-4e64-813f-6792d5d783ad
-version: 4
+id: File GTI assessment - GoogleThreatIntelligence
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: GoogleThreatIntelligence
-    itemVersion: 1.0.0
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: File GTI assessment - GoogleThreatIntelligence
 description: Get file GTI assessment using the GoogleThreatIntelligence integration.
 starttaskid: "0"
@@ -24,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -54,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -84,6 +78,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -108,8 +103,7 @@ tasks:
       id: 3d9a4d8a-9a38-45a5-86d0-d9707b8f9bf1
       version: -1
       name: Is GoogleThreatIntelligence enabled?
-      description: Checks if there is an active instance of the Virus Total Private
-        API enabled.
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -233,7 +227,7 @@ inputs:
             iscontext: true
   required: false
   description: File Hash from which to get GTI assessment
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.MD5
   description: Bad MD5 hash.
@@ -266,8 +260,7 @@ outputs:
   description: For malicious files, the total number of detections.
   type: Unknown
 - contextPath: File.Malicious.TotalEngines
-  description: For malicious files, the total number of engines that checked the file
-    hash.
+  description: For malicious files, the total number of engines that checked the file hash.
   type: Unknown
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -302,4 +295,6 @@ outputs:
 - contextPath: GoogleThreatIntelligence.Assessment.links.self
   description: Link to the response.
   type: Unknown
-sourceplaybookid: File GTI assessment - GoogleThreatIntelligence
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
