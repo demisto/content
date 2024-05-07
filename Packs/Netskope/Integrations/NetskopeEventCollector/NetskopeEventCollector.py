@@ -239,7 +239,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
 
         events.extend(results)
 
-        all_event_types.extend(prepare_events(events, event_type))
+        all_event_types.extend(prepare_events(results, event_type))
 
         if not results or len(results) < MAX_EVENTS_PAGE_SIZE:
             break
