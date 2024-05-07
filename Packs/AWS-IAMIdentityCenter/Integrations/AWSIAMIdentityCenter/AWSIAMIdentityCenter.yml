@@ -7,14 +7,14 @@ sectionOrder:
 configuration:
 - display: Role Arn
   name: roleArn
-  type: 4
+  required: false
   section: Connect
-  required: false
+  type: 4
   hidden: true
-- displaypassword: Role Arn
-  name: roleArnCredentials
-  type: 9
+- name: roleArnCredentials
   required: false
+  type: 9
+  displaypassword: Role Arn
   hiddenusername: true
 - display: Role Session Name
   name: roleSessionName
@@ -23,7 +23,10 @@ configuration:
   type: 0
   additionalinfo: "A descriptive name for the assumed role session."
 - display: AWS Default Region
+  section: Connect
   name: defaultRegion
+  type: 15
+  required: true
   options:
   - us-east-1
   - us-east-2
@@ -43,13 +46,10 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: true
-  section: Connect
-  type: 15
 - display: Role Session Duration
-  section: Connect
   name: sessionDuration
   type: 0
+  section: Connect
   required: false
 - additionalinfo: "The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure."
   display: Identity Store ID
@@ -59,9 +59,9 @@ configuration:
   required: false
 - display: Access Key
   name: access_key
-  type: 4
-  section: Connect
   required: false
+  section: Connect
+  type: 4
   hidden: true
 - display: Secret Key
   name: secret_key
@@ -1173,7 +1173,7 @@ script:
       required: true
     description: Updates an IAM Identity Center group for your AWS account.
     name: aws-iam-identitycenter-update-group
-  dockerimage: demisto/boto3py3:1.0.0.93823
+  dockerimage: demisto/boto3py3:1.0.0.94041
   runonce: false
   script: ''
   subtype: python3

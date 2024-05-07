@@ -311,7 +311,8 @@
         },
         {
             "integrations": "AWS - IAM Identity Center",
-            "playbookID": "AWS-IAMIdentityCenter-Test"
+            "playbookID": "AWS-IAMIdentityCenter-Test",
+            "instance_names": "AWS - IAM Identity Center"
         },
         {
             "integrations": "GoogleDrive",
