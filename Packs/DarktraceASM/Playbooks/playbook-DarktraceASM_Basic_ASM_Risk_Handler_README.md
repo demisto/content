@@ -1,4 +1,4 @@
-Handles each fetched Darktrace ASM Risk by gathering additional data about the associated Asset from Darktrace and XSOAR. Additionally, it offers the ability to take actions from XSOAR to your Darktrace deployment.
+Handles each fetched Darktrace ASM Risk by offering the user the ability to take comment on Risks and Actions and actions on Risks from XSOAR to your Darktrace deployment.
 
 ## Dependencies
 
@@ -16,11 +16,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* darktrace-asm-get-risk
-* darktrace-asm-get-asset
 * darktrace-asm-post-comment
 * darktrace-asm-mitigate-risk
-
 
 ## Playbook Inputs
 

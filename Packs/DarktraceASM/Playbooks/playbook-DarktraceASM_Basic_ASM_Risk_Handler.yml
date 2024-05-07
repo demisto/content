@@ -7,92 +7,23 @@ fromversion: 6.6.0
 tasks:
   "0":
     id: "0"
-    taskid: 8a5257c9-a574-4b5b-8fb4-3f74fd4dcc40
+    taskid: abfb3c79-b29b-4580-8bc8-04756ce78cc1
     type: start
     task:
-      id: 8a5257c9-a574-4b5b-8fb4-3f74fd4dcc40
+      id: abfb3c79-b29b-4580-8bc8-04756ce78cc1
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 390,
-          "y": 70
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 4367ba77-4ce4-4fcd-8aad-b4c6ba21ce82
-    type: regular
-    task:
-      id: 4367ba77-4ce4-4fcd-8aad-b4c6ba21ce82
-      version: -1
-      name: Get risk
-      description: Get a specific Darktrace ASM Risk.
-      script: Darktrace ASM|||darktrace-asm-get-risk
-      type: regular
-      iscommand: true
-      brand: Darktrace ASM
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      risk_id:
-        simple: ${incident.darktraceasmriskid}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 390,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 18298b3b-599a-48a3-81db-882b33143132
-    type: regular
-    task:
-      id: 18298b3b-599a-48a3-81db-882b33143132
-      version: -1
-      name: Get associated asset
-      description: Get a specific Darktrace ASM Asset.
-      script: Darktrace ASM|||darktrace-asm-get-asset
-      type: regular
-      iscommand: true
-      brand: Darktrace ASM
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      asset_id:
-        simple: ${incident.darktraceasmassetid}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 430
+          "x": 100,
+          "y": -180
         }
       }
     note: false
@@ -104,16 +35,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 930cab2d-d3b3-4bda-80e9-4e737f2d9e60
+    taskid: 32ca0da3-2d46-458a-8d07-18c3723984cf
     type: condition
     task:
-      id: 930cab2d-d3b3-4bda-80e9-4e737f2d9e60
+      id: 32ca0da3-2d46-458a-8d07-18c3723984cf
       version: -1
       name: Apply a comment on Darktrace?
       type: condition
       iscommand: false
       brand: Darktrace ASM
-      description: Add a comment to the Risk within the Darktrace UI.
     nexttasks:
       "No":
       - "6"
@@ -123,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 650
+          "x": 100,
+          "y": 80
         }
       }
     note: false
@@ -153,10 +83,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 4d90593b-2ed8-4e79-89ee-adf1d2370969
+    taskid: 55a51166-2813-4aab-89c9-247beea7a3fa
     type: regular
     task:
-      id: 4d90593b-2ed8-4e79-89ee-adf1d2370969
+      id: 55a51166-2813-4aab-89c9-247beea7a3fa
       version: -1
       name: Apply a comment
       description: Post a comment to a Darktrace ASM risk or asset within the Darktrace
@@ -177,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 1050
+          "x": 360,
+          "y": 480
         }
       }
     note: false
@@ -190,16 +120,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e2a645ea-ac0d-4ac8-8cfa-229b309bcf96
+    taskid: d17145e1-2676-4096-8d03-1dec34660c84
     type: collection
     task:
-      id: e2a645ea-ac0d-4ac8-8cfa-229b309bcf96
+      id: d17145e1-2676-4096-8d03-1dec34660c84
       version: -1
       name: Specify a comment message
       type: collection
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -207,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 830
+          "x": 360,
+          "y": 260
         }
       }
     note: false
@@ -255,16 +184,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7ae0921b-8a06-4e56-8cca-a74705fc3545
+    taskid: f341f404-45ac-495d-883e-b80609fb65c3
     type: condition
     task:
-      id: 7ae0921b-8a06-4e56-8cca-a74705fc3545
+      id: f341f404-45ac-495d-883e-b80609fb65c3
       version: -1
       name: Accept risk on Darktrace?
       type: condition
       iscommand: false
       brand: ""
-      description: "Mitigate Risk within Darktrace UI. Warning: This will remove the Risk entirely from the UI and it will not reappear even if no steps were taken to mitigate it."
     nexttasks:
       "No":
       - "7"
@@ -274,8 +202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1270
+          "x": 100,
+          "y": 700
         }
       }
     note: false
@@ -307,10 +235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e1ad3ff2-b37e-4246-8af9-007945b6af50
+    taskid: d7936c6d-c8d5-4a0a-8a8a-5b56a441362e
     type: regular
     task:
-      id: e1ad3ff2-b37e-4246-8af9-007945b6af50
+      id: d7936c6d-c8d5-4a0a-8a8a-5b56a441362e
       version: -1
       name: Close investigation
       description: commands.local.cmd.close.inv
@@ -322,8 +250,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1820
+          "x": 100,
+          "y": 1250
         }
       }
     note: false
@@ -335,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 67088ae2-ef78-4e99-84ff-b247a1c305e4
+    taskid: 581a0edf-f0b6-4392-8e13-fed6dd68c17c
     type: regular
     task:
-      id: 67088ae2-ef78-4e99-84ff-b247a1c305e4
+      id: 581a0edf-f0b6-4392-8e13-fed6dd68c17c
       version: -1
       name: Mitigate risk
       description: Mitigate Darktrace ASM Risk within the Darktrace UI.
@@ -356,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 1550
+          "x": 380,
+          "y": 980
         }
       }
     note: false
@@ -372,13 +300,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1845,
+        "height": 1525,
         "width": 660,
-        "x": 390,
-        "y": 70
+        "x": 100,
+        "y": -180
       }
     }
   }
 inputs: []
 outputs: []
-
