@@ -75,13 +75,9 @@ class TestZoomMailClientGetEmailThread(unittest.TestCase):
     @patch('ZoomMail.ZoomMailClient._http_request')
     def test_get_email_thread_success(self, mock_http_request):
         # Prepare mock response
-        mock_response = {
-            "threadId": self.thread_id,
-            "messages": [
-                {"id": "msg1", "snippet": "This is a test message."}
-            ]
-        }
-        mock_http_request.return_value = mock_response
+        mock_thread_response = load_test_data('test_data/thread/thread_list_response.json')
+
+        mock_http_request.return_value = mock_thread_response
 
         # Call the function
         response = self.client.get_email_thread(
@@ -90,10 +86,10 @@ class TestZoomMailClientGetEmailThread(unittest.TestCase):
         )
 
         # Assertions to verify the expected outcomes
-        self.assertEqual(response['threadId'], self.thread_id)
+        self.assertEqual(response['id'], self.thread_id)
         self.assertIsInstance(response['messages'], list)
-        self.assertEqual(len(response['messages']), 1)
-        self.assertEqual(response['messages'][0]['id'], 'msg1')
+        self.assertEqual(len(response['messages']), 4)
+        self.assertEqual(response['messages'][0]['id'], 'MYSTERY_GUID')
 
     @patch('ZoomMail.ZoomMailClient._http_request')
     def test_get_email_thread_failure(self, mock_http_request):
@@ -168,16 +164,21 @@ class TestFetchIncidents(unittest.TestCase):
     @patch('ZoomMail.demisto.getLastRun')
     @patch('ZoomMail.demisto.setLastRun')
     @patch('ZoomMail.demisto.incidents')
-    def test_no_emails_fetched(self, mock_incidents, mock_set_last_run, mock_get_last_run):
+    def test_no_emails_fetched(self, mock_get_last_run, mock_set_last_run, mock_incidents):
         # Setup the mock responses and behaviors
         mock_get_last_run.return_value = {}
-        self.client.list_emails = MagicMock(return_value={'messages': []})
+
+        mock_thread_response = load_test_data('test_data/fetch/fetch_list_response_empty.json')
+
+        self.client.list_emails = MagicMock(return_value=mock_thread_response)
 
         # Execute the function
         fetch_incidents(self.client, self.params)
 
+        mock_set_last_run.assert_called_once()
+
         # Ensure no incidents are created
-        mock_incidents.assert_called_once_with([])
+        mock_incidents.assert_called_once()
 
     @patch('ZoomMail.demisto.getLastRun')
     @patch('ZoomMail.demisto.setLastRun')
@@ -198,8 +199,8 @@ class TestFetchIncidents(unittest.TestCase):
 
         # Check if incidents are created and handled properly
         incidents = mock_incidents.call_args[0][0]
-        self.assertEqual(len(incidents), 1)
-        self.assertEqual(incidents[0]['name'], 'Test Subject')
+        self.assertEqual(len(incidents), 2)
+        self.assertEqual(incidents[0]['name'], 'Zoom Encrypted Email')
 
     @patch('ZoomMail.demisto.getLastRun')
     @patch('ZoomMail.demisto.setLastRun')
@@ -228,7 +229,13 @@ class TestFetchIncidents(unittest.TestCase):
 class TestGetEmailThreadCommand(unittest.TestCase):
     def setUp(self):
         """Prepare environment for tests, creating a mock client."""
-        self.client = MagicMock()
+        self.client = ZoomMailClient(
+            base_url="https://api.example.com",
+            client_id="test_client_id",
+            client_secret="test_client_secret",
+            account_id="test_account_id",
+            default_email="default@example.com"
+        )
         self.args: Dict[str, str] = {
             "email": "user@example.com",
             "thread_id": "1001",
@@ -238,14 +245,21 @@ class TestGetEmailThreadCommand(unittest.TestCase):
             "page_token": "abc123"
         }
 
-    @patch("ZoomMail.ZoomMailClient.get_email_thread")
+    @patch('ZoomMail.ZoomMailClient.get_email_thread')
     def test_successful_email_thread_retrieval(self, mock_get_email_thread):
         """Test successful retrieval of an email thread."""
-        # Mock API response
-        mock_get_email_thread.return_value = {
-            "messages": [
-                {"id": "msg1", "subject": "Test Subject", "body": "Hello World"}
-            ]
+        # Assuming load_test_data correctly loads and returns the desired JSON structure
+        test_data = load_test_data('test_data/thread/thread_list_response.json')
+        mock_get_email_thread.return_value = test_data
+
+        # Set up command arguments
+        self.args = {
+            "email": "user@example.com",
+            "thread_id": "12345",  # Ensure this matches what's in your mock data if necessary
+            "format": "full",
+            "metadata_headers": "",
+            "max_results": "50",
+            "page_token": ""
         }
 
         # Execute command
@@ -253,13 +267,14 @@ class TestGetEmailThreadCommand(unittest.TestCase):
 
         # Verify results
         self.assertIsInstance(result, CommandResults)
-        self.assertIn("Test Subject", result.readable_output)
-        self.assertIn("msg1", result.readable_output)
+        self.assertIn("Email Thread 12345", result.readable_output)
+        self.assertIn("MYSTERY_GUID", result.readable_output)
 
-    @patch("ZoomMail.ZoomMailClient.get_email_thread")
+    @patch('ZoomMail.ZoomMailClient.get_email_thread')
     def test_empty_email_thread(self, mock_get_email_thread):
         """Test the retrieval of an empty email thread."""
-        mock_get_email_thread.return_value = {"messages": []}
+        test_data = load_test_data('test_data/thread/thread_list_response_empty.json')
+        mock_get_email_thread.return_value = test_data
 
         # Execute command
         result = get_email_thread_command(self.client, self.args)

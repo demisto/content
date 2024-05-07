@@ -579,10 +579,10 @@ def get_email_message_command(
     if not email or not message_id:
         raise ValueError("Both 'email' and 'message_id' arguments are required.")
 
-    format = args.get("format", "full")
+    email_format = args.get("format", "full")
     metadata_headers = args.get("metadata_headers", "")
 
-    message = client.get_email_message(email, message_id, format, metadata_headers)
+    message = client.get_email_message(email, message_id, email_format, metadata_headers)
 
     if "payload" in message:
         body, html, attachments = parse_mail_parts([message.get("payload")])
