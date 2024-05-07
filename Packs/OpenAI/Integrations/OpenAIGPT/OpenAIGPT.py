@@ -274,7 +274,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     # prior to returning the 'send-message-command' results and the entire conversation to the context.
     return_results(
         CommandResults(readable_output=readable_input,
-                       outputs_prefix='Email' + email_part.capitalize(),
+                       outputs_prefix='OpenAIGPT.Email' + email_part.capitalize(),
                        outputs={
                            'Email' + email_part.capitalize(): readable_input,
                            'Response': response
@@ -333,7 +333,7 @@ def send_message_command(client: OpenAiClient,
         ArgAndParamNames.TOP_P: args.get(ArgAndParamNames.TOP_P, None)
     }
 
-    reset_conversation_history = str(args.get('reset_conversation_history', '')).lower() in ['true', 'yes']
+    reset_conversation_history = args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, '') == 'yes'
     chat_context = get_chat_context(reset_conversation_history, message)
     demisto.debug(f'openai-gpt send_message_command {chat_context=}, {completion_params=}')
 
@@ -380,7 +380,7 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
     # and setting the entire conversation in the context.
     return_results(
         CommandResults(
-            outputs_prefix='SocEmailTemplate',
+            outputs_prefix='OpenAIGPT.SocEmailTemplate',
             outputs={'Response': response}
         )
     )

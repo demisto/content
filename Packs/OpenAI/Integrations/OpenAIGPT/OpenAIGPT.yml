@@ -95,7 +95,9 @@ script:
     - name: reset_conversation_history
       required: false
       description: Whether to keep previously sent messages in a conversation context or start a new conversation.
-
+      predefined:
+      - "yes"
+      - "no"
     - name: max_tokens
       required: false
       description: The maximum number of tokens that can be generated for the response.
