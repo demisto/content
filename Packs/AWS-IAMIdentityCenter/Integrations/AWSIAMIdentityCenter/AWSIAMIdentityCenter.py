@@ -13,7 +13,7 @@ PREFIX_GROUP = 'AWS.IAMIdentityCenter.Group'
 ''' HELPER FUNCTIONS '''
 
 
-def get_userId_by_username(args: dict, client, IdentityStoreId: str) -> str:
+def get_userId_by_username(args: dict, client: Any, IdentityStoreId: str) -> str:
     """
     Retrieve the User ID associated with a given username from the AWS IAM Identity Center using the provided client.
 
@@ -101,7 +101,7 @@ def get_limit(args: dict) -> int:
     return 50
 
 
-def get_groupId_by_displayName(args: dict, client, IdentityStoreId: str) -> str:
+def get_groupId_by_displayName(args: dict, client: Any, IdentityStoreId: str) -> str:
     """
     Retrieve the Group ID associated with a given display name or group name
     from the AWS IAM Identity Center using the provided client.
@@ -127,7 +127,7 @@ def get_groupId_by_displayName(args: dict, client, IdentityStoreId: str) -> str:
     return response_id.get('GroupId')
 
 
-def get_group_memberships_for_member(args: dict, client, IdentityStoreId: str) -> list:
+def get_group_memberships_for_member(args: dict, client: Any, IdentityStoreId: str) -> list:
     """
     Retrieve group memberships for a member (user) from the AWS IAM Identity Center based on the provided arguments.
 
@@ -187,7 +187,7 @@ def update_groups_and_memberships(last_data, current_data: list, key: str, id_va
     return final_data
 
 
-def create_user(args: dict, client, IdentityStoreId: str) -> None:
+def create_user(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Creates a user with the provided arguments.
 
@@ -248,7 +248,7 @@ def create_user(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def update_user(args: dict, client, IdentityStoreId: str) -> None:
+def update_user(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Update user information based on the provided arguments.
 
@@ -273,7 +273,7 @@ def update_user(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def delete_user(args: dict, client, IdentityStoreId: str) -> None:
+def delete_user(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Delete a user from the AWS IAM Identity Center based on the provided arguments.
 
@@ -296,7 +296,7 @@ def delete_user(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def get_user(args: dict, client, IdentityStoreId: str) -> None:
+def get_user(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Retrieve user information from the AWS IAM Identity Center based on the provided arguments.
 
@@ -330,7 +330,7 @@ def get_user(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def get_user_by_email(args: dict, client, IdentityStoreId: str) -> None:
+def get_user_by_email(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Retrieve user information from the AWS IAM Identity Center based on the provided email address.
 
@@ -374,7 +374,7 @@ def get_user_by_email(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def list_users(args: dict, client, IdentityStoreId: str) -> None:
+def list_users(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     List users from the AWS IAM Identity Center based on the provided arguments.
 
@@ -416,7 +416,7 @@ def list_users(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def list_groups(args: dict, client, IdentityStoreId: str) -> None:
+def list_groups(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     List groups from the AWS IAM Identity Center based on the provided arguments.
 
@@ -454,7 +454,7 @@ def list_groups(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def create_group(args: dict, client, IdentityStoreId: str) -> None:
+def create_group(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Create a group in the Identity Store based on the provided arguments.
 
@@ -482,7 +482,7 @@ def create_group(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def delete_group(args: dict, client, IdentityStoreId: str) -> None:
+def delete_group(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Delete a group from the AWS IAM Identity Center based on the provided arguments.
 
@@ -505,7 +505,7 @@ def delete_group(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def update_group(args: dict, client, IdentityStoreId: str) -> None:
+def update_group(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Update group information in the Identity Store based on the provided arguments.
 
@@ -532,7 +532,7 @@ def update_group(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def get_group(args: dict, client, IdentityStoreId: str) -> None:
+def get_group(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Retrieve group information from the AWS IAM Identity Center based on the provided arguments.
 
@@ -561,7 +561,7 @@ def get_group(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
+def list_groups_for_user(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     List groups associated with a user from the AWS IAM Identity Center based on the provided arguments.
 
@@ -614,7 +614,7 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def add_user_to_group(args: dict, client, IdentityStoreId: str) -> None:
+def add_user_to_group(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Add a user to a group in the AWS IAM Identity Center based on the provided arguments.
 
@@ -640,7 +640,7 @@ def add_user_to_group(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def delete_group_membership(args: dict, client, IdentityStoreId: str) -> None:
+def delete_group_membership(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     Delete group memberships for a user in the AWS IAM Identity Center based on the provided arguments.
 
@@ -677,7 +677,7 @@ def delete_group_membership(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
+def list_group_memberships(args: dict, client: Any, IdentityStoreId: str) -> None:
     """
     List memberships of a group from the AWS IAM Identity Center based on the provided arguments.
 
@@ -729,7 +729,7 @@ def list_group_memberships(args: dict, client, IdentityStoreId: str) -> None:
     return_results(result)
 
 
-def test_module(args: dict, client, IdentityStoreId: str) -> None:    # pragma: no cover
+def test_module(args: dict, client: Any, IdentityStoreId: str) -> None:    # pragma: no cover
     """ Command to test the connection to the API"""
     if not IdentityStoreId:
         return_error('Identity Store ID was not specified - Test failure. The `Identity Store ID` parameter can be left empty '
