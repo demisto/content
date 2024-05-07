@@ -3,7 +3,7 @@
     "description": "Deprecated. Use Palo Alto Networks AIops instead, run aiops-bpa-report-generate command.",
     "hidden": true,
     "support": "xsoar",
-    "currentVersion": "1.2.23",
+    "currentVersion": "1.2.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

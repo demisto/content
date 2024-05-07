@@ -293,6 +293,7 @@ inputs:
     Can be a CSV list.
 outputs: []
 deprecated: true
+hidden: true
 fromversion: 5.0.0
 tests:
 - No tests (Deprecated)
