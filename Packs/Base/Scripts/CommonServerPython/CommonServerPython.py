@@ -2460,6 +2460,7 @@ def fileResult(filename, data, file_type=None):
     if file_type is None:
         file_type = entryTypes['file']
     temp = demisto.uniqueFile()
+
     # pylint: disable=undefined-variable
     if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
