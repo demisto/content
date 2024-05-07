@@ -1,8 +1,8 @@
 {
 	"id": "a15ddbcd-bf60-45ef-8b79-0195dd3363d8",
-	"version": 3,
+	"version": 5,
 	"cacheVersn": 0,
-	"modified": "2024-05-02T10:22:04.909288905Z",
+	"modified": "2024-05-07T18:47:45.139591165Z",
 	"created": "0001-01-01T00:00:00Z",
 	"sizeInBytes": 0,
 	"packID": "",
@@ -1281,7 +1281,7 @@
 				"commitMessage": "",
 				"shouldCommit": false,
 				"Cache": null,
-				"name": "Top 10 Attack Pattern investigation by Mitre ID",
+				"name": "Top 10 Attack Pattern investigation by Mitre Technique",
 				"prevName": "Indicators Activity by Type",
 				"dataType": "indicators",
 				"widgetType": "pie",
@@ -1342,11 +1342,11 @@
 				"shouldCommit": false,
 				"size": 10,
 				"Cache": null,
-				"name": "Top 10 Attack Pattern Indicators by Month",
+				"name": "Attack Patterns Last Seen in Newly Created Incidents ",
 				"prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
 				"dataType": "indicators",
-				"widgetType": "line",
-				"query": "type:\"Attack Pattern\"",
+				"widgetType": "column",
+				"query": "type:\"Attack Pattern\" investigation.created:\u003e=\"30 days ago\"",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -1356,7 +1356,7 @@
 						"byTo": "",
 						"byFrom": "days",
 						"toValue": null,
-						"fromValue": null,
+						"fromValue": 30,
 						"field": ""
 					},
 					"fromDateLicense": "0001-01-01T00:00:00Z"
@@ -1364,16 +1364,16 @@
 				"params": {
 					"enablePagination": true,
 					"groupBy": [
-						"firstSeen(m)",
-						"mitreid"
+						"lastSeen(m)",
+						"name"
 					],
 					"keys": null,
 					"referenceLine": {},
 					"showGraphValues": false,
 					"timeFrame": "months",
-					"valuesFormat": "abbreviated",
-					"xAxisLabel": "months",
-					"yAxisLabel": "count"
+					"valuesFormat": "regular",
+					"xAxisLabel": "",
+					"yAxisLabel": ""
 				},
 				"category": ""
 			},
