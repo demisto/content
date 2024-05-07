@@ -238,8 +238,9 @@ def create_rk_grid_field(indicator: dict):
     """
     key_value = [{'name': indicator.get('Key Name'),
                  'type': indicator.get('Value Name'),
-                 'data': indicator.get('Key Type')
-    }]
+                  'data': indicator.get('Key Type')
+                  }]
+
     return key_value
 
 

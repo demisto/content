@@ -159,6 +159,7 @@ def test_get_updated_last_run(indicators, groups, previous_run, expected_result)
 
     assert output == expected_result
 
+
 def test_create_indicator_fields_registry_key():
     """
     Given:
@@ -177,9 +178,9 @@ def test_create_indicator_fields_registry_key():
                  'threatAssessConfidence': 'confidence',
                  'description': 'description',
                  'summary': 'name'}
-    
+
     result = create_indicator_fields(indicator, 'Registry Key')
 
     assert 'Key Value' in result
     assert 'name' in result.get('Key Value')[0]
-    assert 'key name' == result.get('Key Value')[0].get('name')
+    assert result.get('Key Value')[0].get('name') == 'key name'
