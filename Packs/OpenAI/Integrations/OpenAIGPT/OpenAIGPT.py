@@ -359,7 +359,7 @@ def send_message_command(client: OpenAiClient,
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation_step,
-        replace_existing=False,
+        replace_existing=reset_conversation_history,
         readable_output=readable_output
     ), response
 
