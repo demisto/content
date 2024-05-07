@@ -1,4 +1,4 @@
-[MODEL: dataset=netskope_netskope_test_raw, model=Network]
+[MODEL: dataset=netskope_netskope_raw, model=Network]
 alter XDM.Network.original_event_type=action,
       XDM.Network.Destination.host.os_family=device,
       XDM.Network.Destination.host.hostname=coalesce(dsthost, hostname),
@@ -16,7 +16,7 @@ alter XDM.Network.original_event_type=action,
       XDM.Network.Destination.user.identifier=userkey,
       XDM.Network.http.user_agent = useragent;
 
-[MODEL: dataset=netskope_netskope_test_raw, model=Audit]
+[MODEL: dataset=netskope_netskope_raw, model=Audit]
 alter XDM.Audit.threat.severity=severity_level,
       XDM.Audit.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
       XDM.Audit.TriggeredBy.identity.name=user,
@@ -38,7 +38,7 @@ alter XDM.Audit.threat.severity=severity_level,
         XDM.Audit.TriggeredBy.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
         XDM.Audit.TriggeredBy.user_agent = useragent;
 
-[MODEL: dataset=netskope_netskope_test_raw, model=Auth]
+[MODEL: dataset=netskope_netskope_raw, model=Auth]
 filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
 | alter XDM.Auth.auth_method=access_method,
         XDM.Auth.original_event_type=activity,

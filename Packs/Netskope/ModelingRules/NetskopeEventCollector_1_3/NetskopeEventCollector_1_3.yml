@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Netskope_test_Modeling_Rule
-name: Netskope test Modeling Rule
+id: Netskope_Modeling_Rule
+name: Netskope Modeling Rule
 rules: ''
 schema: ''
 tags: netskope
