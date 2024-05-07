@@ -666,13 +666,13 @@ def test_not_found_file_sandbox_report_command(mocker, requests_mock):
 def test_gti_assessment_command(mocker, requests_mock):
     """
     Given:
-    - A valid file hash (:sha256:)
+    - A valid or not found IoC
 
     When:
-    - Running the !url command
+    - Running the !gti-assessment-get command
 
     Then:
-    - Validate the command results are valid and contains metric data
+    - Validate the command results are valid
     """
     from GoogleThreatIntelligence import get_assessment_command, encode_url_to_base64, ScoreCalculator, Client
     import CommonServerPython
@@ -683,24 +683,36 @@ def test_gti_assessment_command(mocker, requests_mock):
         ('www.example.com', 'domain', 'domains'),
         ('https://www.example.com', 'url', 'urls'),
     ]:
-        mocker.patch.object(demisto, 'args', return_value={'resource': resource, 'resource_type': resource_type})
-        mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
-        mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+        error_resource_type = resource_type.upper() if resource_type in ['url', 'ip'] else resource_type.capitalize()
+        for mock_response, expected_results in [
+            (
+                util_load_json(f'test_data/{resource_type}.json'),
+                util_load_json(f'test_data/{resource_type}_assessment_results.json')
+            ),
+            (
+                {'error': {'code': 'NotFoundError'}},
+                f'{error_resource_type} "{resource}" was not found in GoogleThreatIntelligence'
+            )
+        ]:
+            mocker.patch.object(demisto, 'args', return_value={'resource': resource, 'resource_type': resource_type})
+            mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+            mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
-        # Assign arguments
-        params = demisto.params()
-        mocked_score_calculator = ScoreCalculator(params=params)
-        client = Client(params=params)
+            # Assign arguments
+            params = demisto.params()
+            mocked_score_calculator = ScoreCalculator(params=params)
+            client = Client(params=params)
 
-        # Load assertions and mocked request data
-        endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
-        mock_response = util_load_json(f'test_data/{resource_type}.json')
-        expected_results = util_load_json(f'test_data/{resource_type}_assessment_results.json')
-        requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}'
-                          f'?relationships=', json=mock_response)
+            # Load assertions and mocked request data
+            endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
+            requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}'
+                              f'?relationships=', json=mock_response)
 
-        # Run command and collect result array
-        results = get_assessment_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
+            # Run command and collect result array
+            results = get_assessment_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
 
-        assert results.execution_metrics is None
-        assert results.outputs == expected_results
+            assert results.execution_metrics is None
+            if 'error' in mock_response:
+                assert results.readable_output == expected_results
+            else:
+                assert results.outputs == expected_results
