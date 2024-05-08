@@ -9,13 +9,13 @@ commonfields:
 configuration:
 - display: Server URL
   name: url
-  required: false
+  required: true
   defaultvalue: https://api.openai.com/
   type: 0
 
 - display: API Key
   name: api_key
-  type: 4
+  type: 9
   required: true
   section: connect
 
