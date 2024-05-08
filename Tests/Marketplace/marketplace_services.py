@@ -411,16 +411,16 @@ class Pack:
         }
 
         update_metadata_fields = {}
-        if self.is_metadata_updated:
+        if self.is_modified:
+            update_metadata_fields = {Metadata.CREATED: self._create_date, Metadata.UPDATED: self._update_date}
+            logging.debug(
+                f"Updating metadata with statistics, created, updated fields because {self._pack_name=} "
+                f"{self.is_modified=} {self.is_metadata_updated=}")
+        elif self.is_metadata_updated:
             update_metadata_fields = {f: self.pack_metadata.get(f) for f in self.pack_metadata
                                       if f not in PACK_METADATA_REQUIRE_RN_FIELDS}
             logging.debug(
                 f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
-                f"{self.is_modified=} {self.is_metadata_updated=}")
-        elif self.is_modified:
-            update_metadata_fields = {Metadata.CREATED: self._create_date, Metadata.UPDATED: self._update_date}
-            logging.debug(
-                f"Updating metadata with statistics, created, updated fields because {self._pack_name=} "
                 f"{self.is_modified=} {self.is_metadata_updated=}")
         else:
             logging.debug(
