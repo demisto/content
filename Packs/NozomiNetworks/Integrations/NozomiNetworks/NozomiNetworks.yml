@@ -66,68 +66,68 @@ name: Nozomi Networks
 script:
   commands:
   - arguments:
-    - description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'
+    - description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'.
       name: filter
     - defaultValue: '50'
-      description: Maximun number of assets get from Nozomi, can't be bigger than 100
+      description: Maximun number of assets get from Nozomi, can't be bigger than 100.
       name: limit
     description: This command permits you to get some assets from Nozomi, you can use the query filter to to refine your search. With the limits you can decide the max number of assets you can retrieve from Nozomi, the limit can't be bigger than 100.
     name: nozomi-find-assets
     outputs:
     - contextPath: Nozomi.Asset.id
-      description: uniq id of an asset
+      description: uniq id of an asset.
       type: String
     - contextPath: Nozomi.Asset.level
-      description: network layer
+      description: network layer.
       type: Number
     - contextPath: Nozomi.Asset.capture_device
-      description: source from which the asset was captured
+      description: source from which the asset was captured.
       type: String
     - contextPath: Nozomi.Asset.ip
-      description: array of asset ip
+      description: array of asset ip.
       type: Unknown
     - contextPath: Nozomi.Asset.mac_address
-      description: array of asset mac address
+      description: array of asset mac address.
       type: Unknown
     - contextPath: Nozomi.asset.mac_vendor
-      description: array of mac vendor
+      description: array of mac vendor.
       type: Unknown
     - contextPath: os
-      description: operating system
+      description: operating system.
       type: String
     - contextPath: vendor
-      description: asset vendor
+      description: asset vendor.
       type: String
     - contextPath: Nozomi.Asset.firmware_version
-      description: firmaware version
+      description: firmaware version.
       type: String
     - contextPath: serial_number
-      description: serial number
+      description: serial number.
       type: String
     - contextPath: product_name
-      description: product name
+      description: product name.
       type: String
     - contextPath: type
-      description: asset type as 'OT_device'
+      description: asset type as 'OT_device'.
       type: String
     - contextPath: protocols
-      description: array of asset protocols
+      description: array of asset protocols.
       type: Unknown
   - arguments:
-    - description: List of IDs to close as security
+    - description: List of IDs to close as security.
       isArray: true
       name: ids
-    description: Close incidents as security
+    description: Close incidents as security.
     name: nozomi-close-incidents-as-security
   - arguments:
     - description: List of IDs to close as change.
       isArray: true
       name: ids
-    description: Close incidents as change
+    description: Close incidents as change.
     name: nozomi-close-incidents-as-change
   - arguments:
     - defaultValue: alerts | count
-      description: 'A valid query, to learn how to create a Nozomi query you can take a look into the Nozomi Networks user documentation'
+      description: 'A valid query, to learn how to create a Nozomi query you can take a look into the Nozomi Networks user documentation.'
       name: query
       required: true
     description: |-
@@ -137,11 +137,11 @@ script:
     name: nozomi-query
     outputs:
     - contextPath: Nozomi.Query.Result
-      description: An array of items
+      description: An array of items.
       type: Unknown
   - arguments:
     - defaultValue: ''''''
-      description: a mac address
+      description: a mac address.
       name: mac
       required: true
     - auto: PREDEFINED
@@ -153,7 +153,7 @@ script:
       - 'True'
       - 'False'
       required: true
-    description: Find a node ip from a mac address
+    description: Find a node ip from a mac address.
     name: nozomi-find-ip-by-mac
     outputs:
     - contextPath: Nozomi.IpByMac.ips
@@ -162,7 +162,7 @@ script:
     - contextPath: Nozomi.IpByMac.mac
       description: Mac found the ips.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   script: '-'
