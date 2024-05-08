@@ -12006,6 +12006,9 @@ def is_time_sensitive():
     return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
 
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################

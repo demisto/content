@@ -95,10 +95,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                      'threatAssessRating': 'verdict',
                      'threatAssessConfidence': 'confidence',
                      'description': 'description',
-                     'summary': 'name',
-                     'Key Name': 'keyvalue.name',
-                     'Value Name': 'keyvalue.data',
-                     'Key Type': 'keyvalue.type'},
+                     'summary': 'name'},
     'URL': {'dateAdded': 'firstseenbysource',
             'lastModified': 'updateddate',
             'threatAssessRating': 'verdict',
@@ -233,6 +230,20 @@ def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) 
     return score
 
 
+def create_rk_grid_field(indicator: dict):
+    """Creating the Key Value field for the registry key indicator type
+
+    Args:
+        indicator (dict): The data of the indicator
+    """
+    key_value = [{'name': indicator.get('Key Name'),
+                 'type': indicator.get('Value Name'),
+                  'data': indicator.get('Key Type')
+                  }]
+
+    return key_value
+
+
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """ Parsing indicator by indicators demisto convention.
     Args:
@@ -280,6 +291,7 @@ def create_indicator_fields(indicator, indicator_type):
     if indicator_type == 'Course of Action':
         fields['action'] = indicator.get('attributes', {}).get('action', '')
     if indicator_type == 'Registry Key':
+        fields['Key Value'] = create_rk_grid_field(indicator)
         fields['namefield'] = indicator.get('Key Name', '')
 
     tlp_color = params.get('tlp_color', '')
