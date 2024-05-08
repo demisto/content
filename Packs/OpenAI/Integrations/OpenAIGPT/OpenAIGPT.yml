@@ -51,7 +51,7 @@ configuration:
 
 - display: Max tokens
   name: max_tokens
-  additionalinfo: "The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption)."
+  additionalinfo: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption).
   type: 0
   required: false
   section: Collect
