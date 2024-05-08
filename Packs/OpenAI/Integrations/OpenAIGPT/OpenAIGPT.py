@@ -116,6 +116,16 @@ class OpenAiClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def setup_args(args: Dict[str, Any], params: Dict[str, Any]):
+    """ Using instance params for model configuration, if command args were not provided."""
+    if not args.get(ArgAndParamNames.MAX_TOKENS, None) and params.get(ArgAndParamNames.MAX_TOKENS, None):
+        args[ArgAndParamNames.MAX_TOKENS] = params.get(ArgAndParamNames.MAX_TOKENS)
+    if not args.get(ArgAndParamNames.TEMPERATURE, None) and params.get(ArgAndParamNames.TEMPERATURE, None):
+        args[ArgAndParamNames.TEMPERATURE] = params.get(ArgAndParamNames.TEMPERATURE)
+    if not args.get(ArgAndParamNames.TOP_P, None) and params.get(ArgAndParamNames.TOP_P, False):
+        args[ArgAndParamNames.TOP_P] = params.get(ArgAndParamNames.TOP_P)
+
+
 def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dict[str, str]]:
     """ A 'Conversation' list that was retrieved from 'demisto.context()' is formatted to be more intuitive for XSOAR users
     and is formatted as: [
@@ -409,13 +419,7 @@ def main() -> None:  # pragma: no cover
     # The provided model will be tested for compatability within the test module.
     model = params.get('model-freetext') if params.get('model-freetext') else params.get('model-select')
 
-    # Using instance params for model configuration, if command args were not provided.
-    if not args.get(ArgAndParamNames.MAX_TOKENS, None) and params.get(ArgAndParamNames.MAX_TOKENS, None):
-        args[ArgAndParamNames.MAX_TOKENS] = params.get(ArgAndParamNames.MAX_TOKENS)
-    if not args.get(ArgAndParamNames.TEMPERATURE, None) and params.get(ArgAndParamNames.TEMPERATURE, None):
-        args[ArgAndParamNames.TEMPERATURE] = params.get(ArgAndParamNames.TEMPERATURE)
-    if not args.get(ArgAndParamNames.TOP_P, None) and params.get(ArgAndParamNames.TOP_P, False):
-        args[ArgAndParamNames.TOP_P] = params.get(ArgAndParamNames.TOP_P)
+    setup_args(args, params)
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
