@@ -140,14 +140,18 @@ class TestScoreCalculator:
         assert not self.score_calculator.is_preferred_vendors_pass_malicious(analysis_results)
 
     def test_is_malicious_by_gti(self):
-        assert self.score_calculator.is_malicious_by_gti({'gti_verdict': {'value': 'VERDICT_MALICIOUS'}}) == True
-        assert self.score_calculator.is_malicious_by_gti({'gti_verdict': {'value': 'VERDICT_SUSPICIOUS'}}) == False
-        assert self.score_calculator.is_malicious_by_gti({}) == False
+        assert self.score_calculator.is_malicious_by_gti({'verdict': {'value': 'VERDICT_MALICIOUS'}}) is True
+        assert self.score_calculator.is_malicious_by_gti({'verdict': {'value': 'VERDICT_SUSPICIOUS'}}) is False
+        assert self.score_calculator.is_malicious_by_gti({}) is False
+        self.score_calculator.gti_malicious = False
+        assert self.score_calculator.is_malicious_by_gti({'verdict': {'value': 'VERDICT_MALICIOUS'}}) is False
 
     def test_is_suspicious_by_gti(self):
-        assert self.score_calculator.is_suspicious_by_gti({'gti_verdict': {'value': 'VERDICT_MALICIOUS'}}) == False
-        assert self.score_calculator.is_suspicious_by_gti({'gti_verdict': {'value': 'VERDICT_SUSPICIOUS'}}) == True
-        assert self.score_calculator.is_suspicious_by_gti({}) == False
+        assert self.score_calculator.is_suspicious_by_gti({'verdict': {'value': 'VERDICT_MALICIOUS'}}) is False
+        assert self.score_calculator.is_suspicious_by_gti({'verdict': {'value': 'VERDICT_SUSPICIOUS'}}) is True
+        assert self.score_calculator.is_suspicious_by_gti({}) is False
+        self.score_calculator.gti_suspicious = False
+        assert self.score_calculator.is_suspicious_by_gti({'verdict': {'value': 'VERDICT_SUSPICIOUS'}}) is False
 
 
 class TestHelpers:
@@ -251,11 +255,54 @@ DEFAULT_PARAMS = {
     'domain_popularity_ranking': 1,
     'relationship_threshold': 1,
     'relationship_suspicious_threshold': 0,
-    'is_premium_api': 'false',
     'feedReliability': 'A - Completely reliable',
     'insecure': 'false',
-    'proxy': 'false'
+    'proxy': 'false',
+    'gti_malicious': True,
+    'gti_suspicious': True,
 }
+
+
+def test_file_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid file hash
+
+    When:
+    - Running the !file command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from GoogleThreatIntelligence import file_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    mocker.patch.object(demisto, 'args', return_value={'file': file_hash, 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(' ', '_')
+    client = Client(params=params)
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/file.json')
+    expected_results = util_load_json('test_data/file_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/files/{file_hash}?relationships={file_relationships}',
+                      json=mock_response)
+
+    # Run command and collect result array
+    results = file_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=file_relationships)
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
+    assert results[0].indicator.dbot_score.score == 3
 
 
 def test_domain_command(mocker, requests_mock):
@@ -279,7 +326,7 @@ def test_domain_command(mocker, requests_mock):
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
+    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     # Load assertions and mocked request data
@@ -319,7 +366,7 @@ def test_not_found_domain_command(mocker, requests_mock):
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
+    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     mock_response = {'error': {'code': 'NotFoundError'}}
@@ -356,7 +403,7 @@ def test_ip_command(mocker, requests_mock):
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     # Load assertions and mocked request data
@@ -397,7 +444,7 @@ def test_ip_command_private_ip_lookup(mocker):
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     # Run command but disabling private IP enrichment
@@ -434,7 +481,7 @@ def test_ip_command_override_private_lookup(mocker, requests_mock):
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     # Load assertions and mocked request data
@@ -475,7 +522,7 @@ def test_not_found_ip_command(mocker, requests_mock):
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     mock_response = {'error': {'code': 'NotFoundError'}}
@@ -514,7 +561,7 @@ def test_url_command(mocker, requests_mock):
     testing_url = 'https://vt_is_awesome.com/uts'
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
+    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     # Load assertions and mocked request data
@@ -555,7 +602,7 @@ def test_not_found_url_command(mocker, requests_mock):
     testing_url = 'https://vt_is_awesome.com/uts'
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
-    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
+    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(' ', '_')
     client = Client(params=params)
 
     mock_response = {'error': {'code': 'NotFoundError'}}

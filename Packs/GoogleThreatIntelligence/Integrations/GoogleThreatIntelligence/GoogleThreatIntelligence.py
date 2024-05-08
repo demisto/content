@@ -772,13 +772,13 @@ class ScoreCalculator:
     def is_malicious_by_gti(self, gti_assessment: dict) -> bool:
         """Determines if an IoC is malicious according to its GTI assessment."""
         if self.gti_malicious:
-            return gti_assessment.get('gti_verdict', {}).get('value') == self.GTI_MALICIOUS_VERDICT
+            return gti_assessment.get('verdict', {}).get('value') == self.GTI_MALICIOUS_VERDICT
         return False
 
     def is_suspicious_by_gti(self, gti_assessment: dict) -> bool:
         """Determines if an IoC is suspicious according to its GTI assessment."""
         if self.gti_suspicious:
-            return gti_assessment.get('gti_verdict', {}).get('value') == self.GTI_SUSPICIOUS_VERDICT
+            return gti_assessment.get('verdict', {}).get('value') == self.GTI_SUSPICIOUS_VERDICT
         return False
 
     def file_score(self, given_hash: str, raw_response: dict) -> int:
@@ -1215,7 +1215,7 @@ def _get_ip_indicator(client, score_calculator: ScoreCalculator, ip: str, raw_re
 
 def _get_file_indicator(client, score_calculator: ScoreCalculator, file_hash: str, raw_response: dict):
     data = raw_response.get('data', {})
-    attributes = data.get('attributes')
+    attributes = data.get('attributes', {})
     exiftool = attributes.get('exiftool', {})
     signature_info = attributes.get('signature_info', {})
 
@@ -1463,7 +1463,7 @@ def build_file_output(
         extended_data: bool
 ) -> CommandResults:
     data = raw_response.get('data', {})
-    attributes = data.get('attributes')
+    attributes = data.get('attributes', {})
 
     last_analysis_stats = attributes.get('last_analysis_stats', {})
     malicious = last_analysis_stats.get('malicious', 0)
