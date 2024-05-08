@@ -1,8 +1,8 @@
 {
 	"id": "a15ddbcd-bf60-45ef-8b79-0195dd3363d8",
-	"version": 5,
+	"version": 7,
 	"cacheVersn": 0,
-	"modified": "2024-05-07T18:47:45.139591165Z",
+	"modified": "2024-05-08T09:18:31.029488723Z",
 	"created": "0001-01-01T00:00:00Z",
 	"sizeInBytes": 0,
 	"packID": "",
@@ -1364,13 +1364,13 @@
 				"params": {
 					"enablePagination": true,
 					"groupBy": [
-						"lastSeen(m)",
+						"killchainphases",
 						"name"
 					],
 					"keys": null,
 					"referenceLine": {},
 					"showGraphValues": false,
-					"timeFrame": "months",
+					"timeFrame": "days",
 					"valuesFormat": "regular",
 					"xAxisLabel": "",
 					"yAxisLabel": ""
