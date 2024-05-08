@@ -1308,16 +1308,15 @@
                 "id": "",
                 "version": 0,
                 "cacheVersn": 0,
-                "modified": "2024-01-31T13:36:29.876892015Z",
-                "created": "2024-01-31T13:36:22.530651544Z",
+                "modified": "0001-01-01T00:00:00Z",
+                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0,
-                "packID": "CommonWidgets",
-                "packName": "Common Widgets",
-                "itemVersion": "1.2.46",
-                "fromServerVersion": "6.2.0",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
-                "propagationLabels": [],
-                "packPropagationLabels": [
+                "propagationLabels": [
                     "all"
                 ],
                 "definitionId": "",
@@ -1325,13 +1324,12 @@
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
-                "size": 10,
                 "Cache": null,
-                "name": "Attack Patterns Last Seen in Newly Created Incidents ",
-                "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
-                "dataType": "indicators",
+                "name": "Top Attack Patterns by Incident Type",
+                "prevName": "",
+                "dataType": "incidents",
                 "widgetType": "column",
-                "query": "type:\"Attack Pattern\" investigation.created:\u003e=\"30 days ago\"",
+                "query": "indicator.type:\"Attack Pattern\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -1341,24 +1339,18 @@
                         "byTo": "",
                         "byFrom": "days",
                         "toValue": null,
-                        "fromValue": 30,
+                        "fromValue": null,
                         "field": ""
                     },
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": {
-                    "enablePagination": true,
                     "groupBy": [
-                        "killchainphases",
-                        "name"
+                        "occurred(m)",
+                        "type"
                     ],
-                    "keys": null,
-                    "referenceLine": {},
-                    "showGraphValues": false,
-                    "timeFrame": "days",
-                    "valuesFormat": "regular",
-                    "xAxisLabel": "",
-                    "yAxisLabel": ""
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated"
                 },
                 "category": ""
             },
