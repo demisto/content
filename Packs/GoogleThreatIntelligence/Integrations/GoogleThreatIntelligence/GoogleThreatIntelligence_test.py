@@ -3,7 +3,6 @@ import json
 import pytest
 from GoogleThreatIntelligence import (
     ScoreCalculator,
-    encode_to_base64,
     encode_url_to_base64,
     epoch_to_timestamp,
     get_working_id,
@@ -180,10 +179,6 @@ class TestHelpers:
     def test_epoch_to_timestamp(self, epoch_time: int, output: str):
         assert epoch_to_timestamp(epoch_time) == output
 
-    def test_encode_to_base64(self):
-        assert encode_to_base64('c59bffd0571b8c341c7b4be63bf0e3cd',
-                                1613568775) == 'YzU5YmZmZDA1NzFiOGMzNDFjN2I0YmU2M2JmMGUzY2Q6MTYxMzU2ODc3NQ=='
-
     def test_get_working_id(self):
         assert get_working_id('314huoh432ou', '') == '314huoh432ou'
 
@@ -343,6 +338,7 @@ def test_domain_command(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+    assert results[0].indicator.dbot_score.score == 3
 
 
 def test_not_found_domain_command(mocker, requests_mock):
@@ -421,6 +417,7 @@ def test_ip_command(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+    assert results[0].indicator.dbot_score.score == 3
 
 
 def test_ip_command_private_ip_lookup(mocker):
@@ -457,6 +454,7 @@ def test_ip_command_private_ip_lookup(mocker):
     assert results[0].execution_metrics is None
     assert results[0].readable_output == ('IP "192.168.0.1" was not enriched. '
                                           'Reputation lookups have been disabled for private IP addresses.')
+    assert results[0].indicator.dbot_score.score == 0
 
 
 def test_ip_command_override_private_lookup(mocker, requests_mock):
@@ -499,6 +497,7 @@ def test_ip_command_override_private_lookup(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+    assert results[0].indicator.dbot_score.score == 3
 
 
 def test_not_found_ip_command(mocker, requests_mock):
@@ -578,6 +577,7 @@ def test_url_command(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+    assert results[0].indicator.dbot_score.score == 3
 
 
 def test_not_found_url_command(mocker, requests_mock):
@@ -735,7 +735,7 @@ def test_gti_assessment_command(mocker, requests_mock):
     """
     from GoogleThreatIntelligence import get_assessment_command, encode_url_to_base64, ScoreCalculator, Client
     import CommonServerPython
-    # Setup Mocks
+
     for resource, resource_type, endpoint in [
         ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
         ('8.8.8.8', 'ip', 'ip_addresses'),
@@ -764,8 +764,8 @@ def test_gti_assessment_command(mocker, requests_mock):
 
             # Load assertions and mocked request data
             endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
-            requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}'
-                              f'?relationships=', json=mock_response)
+            requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}?relationships=',
+                              json=mock_response)
 
             # Run command and collect result array
             results = get_assessment_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
@@ -773,5 +773,62 @@ def test_gti_assessment_command(mocker, requests_mock):
             assert results.execution_metrics is None
             if 'error' in mock_response:
                 assert results.readable_output == expected_results
+                assert results.indicator.dbot_score.score == 0
             else:
                 assert results.outputs == expected_results
+                assert results.indicator.dbot_score.score == 3
+
+
+def test_gti_comments_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid IoC
+
+    When:
+    - Running the !gti-comments-get command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import get_comments_command, encode_url_to_base64, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {
+        'data': [{
+            'attributes': {
+                'date': 0,
+                'text': 'Hello',
+                'votes': {
+                    'positive': 10,
+                    'negative': 5,
+                    'abuse': 1,
+                }
+            }
+        }]
+    }
+
+    for resource, resource_type, endpoint in [
+        ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
+        ('8.8.8.8', 'ip', 'ip_addresses'),
+        ('www.example.com', 'domain', 'domains'),
+        ('https://www.example.com', 'url', 'urls'),
+    ]:
+        mocker.patch.object(demisto, 'args', return_value={
+            'resource': resource,
+            'resource_type': resource_type,
+            'limit': 10,
+        })
+
+        endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
+        requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/comments',
+                          json=mock_response)
+
+        results = get_comments_command(client=client, args=demisto.args())
+
+        assert results.execution_metrics is None
+        assert results.outputs == {'indicator': resource, 'comments': mock_response['data']}

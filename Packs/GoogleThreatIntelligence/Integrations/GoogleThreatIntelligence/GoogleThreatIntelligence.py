@@ -1663,12 +1663,6 @@ def encode_url_to_base64(url: str) -> str:
     """
     return base64.urlsafe_b64encode(url.encode()).decode().strip('=')
 
-
-def merge_two_dicts(dict_a, dict_b):
-    merged_dict = dict_a.copy()
-    merged_dict.update(dict_b)
-    return merged_dict
-
 # endregion
 
 # region Reputation commands
@@ -1878,27 +1872,6 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
         outputs=context,
         raw_response=raw_response
     )
-
-
-def get_md5_by_entry_id(entry_id: str) -> str:
-    """Gets an MD5 from context using entry ID"""
-    md5 = demisto.dt(demisto.context(), f'File(val.EntryID === "{entry_id}").MD5')
-    if not md5:
-        raise DemistoException('Could not find MD5')
-    return md5
-
-
-def encode_to_base64(md5: str, id_: Union[str, int]) -> str:
-    """Sometime the API returns the id as number only. Need to join the id with md5 in base64.
-
-    Args:
-        md5: The MD5 of the file sent to scan
-        id_: The id returned from the file scan
-
-    Returns:
-        base64 encoded of md5:id_
-    """
-    return base64.b64encode(f'{md5}:{id_}'.encode()).decode('utf-8')
 
 
 def get_working_id(id_: str, entry_id: str) -> str:
