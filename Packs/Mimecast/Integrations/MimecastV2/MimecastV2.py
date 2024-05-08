@@ -3301,10 +3301,18 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    result_list = request_with_pagination_api2(api_endpoint, limit=limit, page=page, page_size=page_size)
+    list_policies = request_with_pagination_api2(api_endpoint, limit=limit, page=page, page_size=page_size)
+    for i, policy in enumerate(list_policies):
+        list_policies[i] = {
+            'id': policy['id'],
+            'option': policy['option'],
+            **policy['policy']
+        }
+
     return CommandResults(
-        outputs_prefix='Mimecast.Account',
-        outputs=result_list
+        outputs_prefix='Mimecast.Policies',
+        outputs=list_policies,
+        readable_output=tableToMarkdown('Policies List', t=list_policies)
     )
 
 
