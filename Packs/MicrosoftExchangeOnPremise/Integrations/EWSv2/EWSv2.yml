@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS v2 dev
+  id: EWS v2
   version: -1
 configuration:
 - display: Email address
@@ -117,8 +117,8 @@ configuration:
   advanced: true
   required: false
 description: Exchange Web Services and Office 365 (mail).
-display: EWS v2 dev
-name: EWS v2 dev
+display: EWS v2
+name: EWS v2
 script:
   commands:
   - arguments:
@@ -130,6 +130,10 @@ script:
     - description: The attachments ids to get. If none - all attachments will be retrieve from the message. Support multiple attachments with comma-separated value or array.
       isArray: true
       name: attachment-ids
+    - description: identifier ids not download all files to xsoar (for preprocess script)
+      hidden: true
+      name: identifiers-filter
+      required: false
     description: Retrieves the actual attachments from an item (email message). To get all attachments for a message, only specify the item-id argument.
     name: ews-get-attachment
     outputs:
