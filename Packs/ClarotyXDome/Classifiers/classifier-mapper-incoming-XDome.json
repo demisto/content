@@ -32,14 +32,8 @@
                 "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "Claroty xDome Alert ID": {
-                    "simple": "alert_id"
-                },
                 "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
-                },
-                "Claroty xDome Alert Name": {
-                    "simple": "alert_name"
                 },
                 "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
@@ -101,9 +95,6 @@
                 "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "Claroty xDome Device Name": {
-                    "simple": "device_name"
-                },
                 "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
@@ -124,9 +115,6 @@
                 },
                 "Claroty xDome Device Type": {
                     "simple": "device_type"
-                },
-                "Claroty xDome Device UID": {
-                    "simple": "device_uid"
                 },
                 "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
