@@ -21,13 +21,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 50
         }
       }
@@ -75,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -105,
-          "y": 465
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -114,8 +114,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -105,
-          "y": 790
+          "x": 340,
+          "y": 380
         }
       }
     note: false
@@ -142,175 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: e8c577fe-3307-4b61-8adf-d213500c26f5
-    type: condition
-    task:
-      id: e8c577fe-3307-4b61-8adf-d213500c26f5
-      version: -1
-      name: From indicators
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.Query
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 22400790-a95c-46c2-814e-f5f8adbfd5f7
-    type: condition
-    task:
-      id: 22400790-a95c-46c2-814e-f5f8adbfd5f7
-      version: -1
-      name: YARA indicators found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "Yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ${foundIndicators}
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 655,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: eccee6d3-879f-4c3a-817a-9886ce82eaf6
-    type: regular
-    task:
-      id: eccee6d3-879f-4c3a-817a-9886ce82eaf6
-      version: -1
-      name: Run YARA scan
-      description: Performs a YARA scan on the specified files.
-      scriptName: YaraScan
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      entryIDs:
-        complex:
-          root: inputs.EntryID
-      yaraRule:
-        complex:
-          root: foundIndicators
-          accessor: rawrule
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 655,
-          "y": 1065
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 67c203f3-fd8a-45f4-8ac6-8e1d31d361b0
-    type: regular
-    task:
-      id: 67c203f3-fd8a-45f4-8ac6-8e1d31d361b0
-      version: -1
-      name: Search Yara Rules Indicator
-      description: |-
-        Searches Cortex XSOAR Indicators.
-
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
-
-        You can add additional fields from the indicators using the add_field_to_context argument.
-      scriptName: SearchIndicator
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      add_fields_to_context:
-        simple: rawrule
-      query:
-        simple: ${inputs.Query}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 655,
-          "y": 465
+          "x": 50,
+          "y": 560
         }
       }
     note: false
@@ -323,15 +156,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_yes": 0.73,
-      "1_3_#default#": 0.54,
-      "6_3_#default#": 0.5
+      "1_2_yes": 0.54,
+      "1_3_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 1140,
-        "x": -105,
+        "height": 575,
+        "width": 670,
+        "x": 50,
         "y": 50
       }
     }
@@ -351,17 +183,11 @@ inputs:
   value: {}
   required: false
   description: The YARA rule content
-  playbookInputQuery:
-- key: Query
-  value:
-    simple: type:"YARA Rule"
-  required: false
-  description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Yara
   type: unknown
-  description: The Yara context path.
+  description: The Yara context path
 - contextPath: Yara.Filename
   description: The filename of the file that was scanned.
   type: string
@@ -398,7 +224,6 @@ outputs:
   type: string
 - contextPath: Matches.Tags
   description: A list of tags that are defined in the rule.
+quiet: true
 tests:
 - No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
