@@ -1,8 +1,8 @@
 import pytest
 from json import load
-from CommonServerPython import CommandResults, DemistoException
-from ExabeamDataLake import Client, _handle_time_range_query, query_datalake_command
-
+from CommonServerPython import CommandResults, DemistoException, arg_to_datetime
+from ExabeamDataLake import Client, query_datalake_command, get_date
+from datetime import datetime
 
 class MockClient(Client):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
@@ -94,7 +94,6 @@ def test_query_datalake_command_raise_error(mocker):
     THEN:
         it should raise a DemistoException with the appropriate error message.
     """
-
     args = {
         'page': 1,
         'page_size': 50,
@@ -114,3 +113,13 @@ def test_query_datalake_command_raise_error(mocker):
         query_datalake_command(MockClient("", "", "", False, False), args, "local")
 
 
+def test_get_date(mocker):
+    time = '2024.05.01T14:00:00'
+    expected_result = '2024-05-01'
+
+    with mocker.patch("CommonServerPython.arg_to_datetime", return_value=time):
+        result = get_date(time)
+        
+    assert result == expected_result
+
+    

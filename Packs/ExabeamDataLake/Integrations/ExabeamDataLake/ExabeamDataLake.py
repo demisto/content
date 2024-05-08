@@ -62,34 +62,6 @@ class Client(BaseClient):
 """ COMMAND FUNCTIONS """
 
 
-def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
-    """
-    Args:
-        start_time (int): The start time for the query.
-        end_time (int | None): The end time for the query. If None, the query will not have an end time constraint.
-
-    Returns:
-        dict: A dictionary representing the time range query.
-
-    Raises:
-        DemistoException: If the start_time is greater than the end_time.
-    """
-
-    if end_time and (start_time > end_time):
-        raise DemistoException("Start time must be before end time")
-
-    query_range: dict = {
-        "rangeQuery": {
-            "field": "@timestamp",
-            "gte": str(start_time),
-        }
-    }
-    if end_time:
-        query_range["rangeQuery"].update({"lte": str(end_time)})
-
-    return query_range
-
-
 def _parse_entry(entry: dict) -> dict:
     """
     Parse a single entry from the API response to a dictionary.
@@ -170,24 +142,21 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
         date_exabeam = "exabeam-" + date
         dates_in_format.append(date_exabeam)
     
-    search_query = {}
+    search_query = {
+        "sortBy": [
+            {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
+        ],
+        "query": args.get("query", "*"),
+        "from": from_param,
+        "size": size_param,
+        "clusterWithIndices": [
+            {
+                "clusterName": cluster_name,
+                "indices": dates_in_format,
+            }
+        ]
+    }
 
-    search_query.update(
-        {
-            "sortBy": [
-                {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
-            ],  # the response sort by timestamp
-            "query": args.get("query", "*"),
-            "from": from_param,
-            "size": size_param,
-            "clusterWithIndices": [
-                {
-                    "clusterName": cluster_name,
-                    "indices": dates_in_format,
-                }
-            ]
-        }
-    )
 
     response = client.query_datalake_request(search_query).get("responses", [{}])
 
