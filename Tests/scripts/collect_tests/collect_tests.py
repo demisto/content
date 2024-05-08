@@ -1254,7 +1254,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
             nightly_packs = CollectionResult.union([
                 self._collect_packs_nightly(self.conf.nightly_packs),
                 self._id_set_tests_matching_marketplace_value()
-            ]) # todo add filter to only xsiam
+            ])  # todo add filter to only xsiam
             if nightly_packs:
                 logger.info(f"Collect the following nightly packs to install: {nightly_packs.packs_to_install=}")
                 result.append(nightly_packs)
@@ -1264,9 +1264,9 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 self._collect_modeling_rule_packs(),
                 self.sanity_tests_xsiam(),
             ))
-            modeling_rules.packs_to_upload = set()
-            modeling_rules.packs_to_reinstall = set()
             if modeling_rules:
+                modeling_rules.packs_to_upload = set()
+                modeling_rules.packs_to_reinstall = set()
                 logger.info(f"Collect the following packs to install modeling rules: {modeling_rules.packs_to_install=}")
                 result.append(modeling_rules)
 
@@ -1331,6 +1331,13 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 ):
                     raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
+
+                if (self.marketplace == MarketplaceVersions.MarketplaceV2
+                    and (MarketplaceVersions.XSOAR in playbook.marketplaces
+                         or MarketplaceVersions.XSOAR in PACK_MANAGER.get_pack_metadata(playbook.pack_id).marketplaces)):
+                    raise IncompatibleMarketplaceException(
+                        playbook.path, playbook.marketplaces, self.marketplace)  # TODO for merge
+
                 result.append(CollectionResult(
                     test=playbook.id_,
                     modeling_rule_to_test=None,
