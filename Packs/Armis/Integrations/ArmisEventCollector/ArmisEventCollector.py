@@ -112,18 +112,57 @@ class Client(BaseClient):
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         raw_response = self.perform_fetch(params)
         results = raw_response.get('data', {}).get('results', [])
-
+        next = raw_response.get('data', {}).get('next')
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
-        while (next := raw_response.get('data', '').get('next')) and (len(results) < max_fetch):
+        while next and (len(results) < max_fetch):
             if next < max_fetch:
                 params['length'] = max_fetch - next
             params['from'] = next
             raw_response = self.perform_fetch(params)
+            next = raw_response.get('data', {}).get('next')
             results.extend(raw_response.get('data', {}).get('results', []))
+        
+        if not next:
+            next = raw_response.get('data', {}).get('total')
 
-        return results
+        return results, next
+
+    def fetch_by_aql_query_with_next_field(self, aql_query: str, max_fetch: int, after: None | datetime = None,
+                           order_by: str = 'time'):
+        """ Fetches events using AQL query.
+
+        Args:
+            aql_query (str): AQL query request parameter for the API call.
+            max_fetch (int): Max number of events to fetch.
+            after (None | datetime): The date and time to fetch events from. Defaults to None.
+            order_by (str): Order by parameter for the API call. Defaults to 'time'.
+        Returns:
+            list[dict]: List of events objects represented as dictionaries.
+        """
+        params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
+        if not after:  # this should only happen when get-events command is used without from_date argument
+            after = datetime.now() - timedelta(minutes=1)
+        params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
+        raw_response = self.perform_fetch(params)
+        results = raw_response.get('data', {}).get('results', [])
+        next = raw_response.get('data', {}).get('next')
+        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
+        # The response's 'next' attribute carries the index to start the next request in the
+        # pagination (using the 'from' request parameter), or null if there are no more pages left.
+        while next and (len(results) < max_fetch):
+            if next < max_fetch:
+                params['length'] = max_fetch - next
+            params['from'] = next
+            raw_response = self.perform_fetch(params)
+            next = raw_response.get('data', {}).get('next')
+            results.extend(raw_response.get('data', {}).get('results', []))
+        
+        if not next:
+            next = raw_response.get('data', {}).get('total')
+
+        return results, next
 
     def is_valid_access_token(self, access_token):
         """ Checks if current available access token is valid.
@@ -193,7 +232,7 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: datetime | None):
+def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: datetime | None, last_fetch_next: int | None):
     """ Calculates the fetch start time.
         There are three cases for fetch start time calculation:
         - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
@@ -205,6 +244,7 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: da
     Args:
         last_fetch_time (str | None): Last fetch time (from last run).
         fetch_start_time (datetime | None): Fetch start time.
+        last_fetch_next (int | None): The next field to search from in the following query.
 
     Raises:
         DemistoException: If the transformation to to datetime object failed.
@@ -217,13 +257,15 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: da
         last_fetch_datetime = arg_to_datetime(last_fetch_time)
         if not last_fetch_datetime:
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
-        return last_fetch_datetime
+        return last_fetch_datetime, None
+    if last_fetch_next:
+        return None, last_fetch_next
     # case 2
     elif fetch_start_time:
-        return fetch_start_time
+        return fetch_start_time, None
     # case 3
     else:
-        return None
+        return None, None
 
 
 def are_two_datetime_equal_by_second(x: datetime, y: datetime):
@@ -320,30 +362,48 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         fetch_start_time (datetime | None): Fetch start time.
     """
     last_fetch_ids = f'{event_type.type}_last_fetch_ids'
-    last_fetch_time = f'{event_type.type}_last_fetch_time'
+    last_fetch_time_field = f'{event_type.type}_last_fetch_time'
+    last_fetch_next_field = f'{event_type.type}_last_fetch_next_field'
 
     demisto.debug(f'debug-log: handling event-type: {event_type.type}')
-    demisto.debug(f'debug-log: last run of type: {event_type.type} is: {last_run.get(last_fetch_time)}')
-    event_type_fetch_start_time = calculate_fetch_start_time(last_run.get(last_fetch_time), fetch_start_time)
+    if last_fetch_time := last_run.get(last_fetch_time_field):
+        demisto.debug(f'debug-log: last run of type: {event_type.type} time is: {last_fetch_time}')
+    elif last_fetch_next := last_run.get(last_fetch_next_field):
+        demisto.debug(f'debug-log: last run of type: {event_type.type} next is: {last_fetch_next}')
+    event_type_fetch_start_time, event_type_fetch_next = calculate_fetch_start_time(last_fetch_time, fetch_start_time,
+                                                                                    last_fetch_next)
+    if event_type_fetch_next:
+        response, next = client.fetch_by_aql_query_with_next_field(
+            aql_query=event_type.aql_query,
+            max_fetch=max_fetch,
+            after=event_type_fetch_start_time,
+            order_by=event_type.order_by
+        )
 
-    response = client.fetch_by_aql_query(
-        aql_query=event_type.aql_query,
-        max_fetch=max_fetch,
-        after=event_type_fetch_start_time,
-        order_by=event_type.order_by
-    )
-
-    demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
-    if response:
-        new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
-        next_run[last_fetch_time] = new_events[-1].get(event_type.order_by) if new_events else last_run.get(last_fetch_time)
-        demisto.debug(f'debug-log: updated next_run with: {next_run[last_fetch_time]}')
-        events.setdefault(event_type.dataset_name, []).extend(new_events)
-        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
-        demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
+        demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
+        if response:
+            events.setdefault(event_type.dataset_name, []).extend(response)
+            demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
+            demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
+        else:
+            next_run.update(last_run)
     else:
-        next_run.update(last_run)
+        response, next = client.fetch_by_aql_query(
+            aql_query=event_type.aql_query,
+            max_fetch=max_fetch,
+            after=event_type_fetch_start_time,
+            order_by=event_type.order_by
+        )
+
+        demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
+        if response:
+            new_events, next_run[last_fetch_ids] = dedup_events(
+                response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
+            events.setdefault(event_type.dataset_name, []).extend(new_events)
+            demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
+            demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
+    next_run[last_fetch_next_field] = next
+    demisto.debug(f'debug-log: updated next_run with: {last_fetch_next_field} = {next}')
 
 
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
