@@ -132,7 +132,8 @@
                 "Cortex XDR - IR",
                 "Core REST API"
             ],
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
+            "instance_names": "Cortex XDR - IR"
         },
         {
             "integrations": "Twitter v2",
