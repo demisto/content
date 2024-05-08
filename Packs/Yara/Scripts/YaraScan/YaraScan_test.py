@@ -32,7 +32,7 @@ def test_main(mocker):
                 }
             ]
         else:
-            raise ValueError(f'Unimplemented command called: {name}')
+            raise ValueError('Unimplemented command called: {}'.format(name))
 
     mocker.patch.object(demisto, 'args', return_value={
         'entryIDs': 'test',
