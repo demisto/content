@@ -2703,12 +2703,6 @@ script:
     - name: url_value
       description: Url or domain to be blocked or allowed.
       required: true
-    # - name: page
-    #   description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    # - name: page_size
-    #   description: The number of results per page
-    # - name: limit
-    #   description: The maximum number of items to return.
   - name: mimecast-create-address-alteration-policy
     description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
     arguments:

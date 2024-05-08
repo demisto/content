@@ -3369,7 +3369,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
         data['policy']['toEternal'] = to_eternal
     if conditions:
         data['policy']['conditions'] = {}
-        data['policy']['conditions']['sourceIPs'] = conditions
+        data['policy']['conditions']['spfDomains'] = [conditions]
     if from_attribute_id:
         data['policy']['from']['attribute']['id'] = from_attribute_id
     if from_attribute_name:
@@ -3457,7 +3457,7 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     urls_value = args.get('value')
     from_type = args.get('from_type')
     to_type = args.get('to_type')
-    
+
     data = {
         'description': description,
         'policies': [{
@@ -3478,7 +3478,7 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
             }
                 ]
             }
-    
+
     if args.get('bidirectional'):
         data['policies'][0]['bidirectional'] = bidirectional
     if from_date:
@@ -3493,12 +3493,11 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
         data['urls'][0]['value'] = urls_value
     if id:
         data['urls'][0]['id'] = id
-    
-    
+
     payload = {"data": [data]}
     api_endpoint = '/api/policy/webwhiteurl/create-policy-with-targets'
     response = http_request('POST', api_endpoint, payload)
-    
+
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
@@ -3509,72 +3508,76 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     )
 
 
-def  update_webwhiteurl_policies_command(args: dict) -> CommandResults:
-    description = args.get('description')
-    id = args.get('id') #
-    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
-    comment = args.get('comment')
-    conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled'))
-    enforced = argToBoolean(args.get('enforced'))
-    from_date = args.get('from_date')
-    from_eternal = argToBoolean(args.get('from_eternal'))
-    from_part = args.get('from_part')
-    to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal'))
-    override = argToBoolean(args.get('override')) if args.get('override') else None
-    url_action = args.get('url_action') 
-    url_id = args.get('url_id')
-    url_type = args.get('url_type')
-    url_value = args.get('url_value')
+def update_webwhiteurl_policies_command(args: dict) -> CommandResults:
+    description = args.get("description")
+    id = args.get("id")  #
+    bidirectional = (
+        argToBoolean(args.get("bidirectional")) if args.get("bidirectional") else None
+    )
+    comment = args.get("comment")
+    conditions = args.get("conditions")
+    enabled = argToBoolean(args.get("enabled"))
+    enforced = argToBoolean(args.get("enforced"))
+    from_date = args.get("from_date")
+    from_eternal = argToBoolean(args.get("from_eternal"))
+    from_part = args.get("from_part")
+    to_date = args.get("to_date")
+    to_eternal = argToBoolean(args.get("to_eternal"))
+    override = argToBoolean(args.get("override")) if args.get("override") else None
+    url_action = args.get("url_action")
+    url_id = args.get("url_id")
+    url_type = args.get("url_type")
+    url_value = args.get("url_value")
 
     data = {
-      "id": id,
-      "policies": [{"enabled": enabled,
-          "enforced": enforced,
-          "fromEternal": from_eternal,
-          "toEternal": to_eternal,
-          }],
-      "urls": [
-        {
-          "action": url_action,
-          "type": url_type,
-        }
-      ]
+        "id": id,
+        "policies": [
+            {
+                "enabled": enabled,
+                "enforced": enforced,
+                "fromEternal": from_eternal,
+                "toEternal": to_eternal,
+            }
+        ],
+        "urls": [
+            {
+                "action": url_action,
+                "type": url_type,
+            }
+        ],
     }
-  
+
     if description:
-        data['description'] = description
+        data["description"] = description
     if bidirectional:
-        data['policies']['bidirectional'] = bidirectional
-    if comment:
-        data['policies']['comment'] = comment
+        data["policies"]["bidirectional"] = bidirectional
     if conditions:
-        data['policies']['conditions'] = conditions
+        data['policy']['conditions'] = {}
+        data['policy']['conditions']['sourceIPs'] = [conditions]
     if from_date:
-        data['policies']['fromDate'] = from_date
+        data["policies"]["fromDate"] = from_date
     if from_part:
-        data['policies']['fromPart'] = from_part
+        data["policies"]["fromPart"] = from_part
     if to_date:
-        data['policies']['toDate'] = to_date
+        data["policies"]["toDate"] = to_date
     if override:
-        data['policies']['override'] = override
+        data["policies"]["override"] = override
     if url_id:
-        data['urls'][0]['id'] = url_id
+        data["urls"][0]["id"] = url_id
     if url_value:
-        data['urls'][0]['value'] = url_value
+        data["urls"][0]["value"] = url_value
 
     payload = {"data": [data]}
-    api_endpoint = '/api/policy/webwhiteurl/update-policy-with-targets'
-    response = http_request('POST', api_endpoint, payload)
-    
-    if response.get('fail'):
-        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    api_endpoint = "/api/policy/webwhiteurl/update-policy-with-targets"
+    response = http_request("POST", api_endpoint, payload)
+
+    if response.get("fail"):
+        raise Exception(json.dumps(response.get("fail")[0].get("errors")))
 
     return CommandResults(
-        outputs_prefix='Mimecast.WebWhiteUrlPolicy',
+        outputs_prefix="Mimecast.WebWhiteUrlPolicy",
         outputs=response,
-        readable_output= f'{id} has been updated successfully'
+        readable_output=f"{id} has been updated successfully",
     )
 
 
@@ -3619,7 +3622,8 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     if comment:
         data['comment'] = comment
     if conditions:
-        data['conditions'] = conditions
+        data['policy']['conditions'] = {}
+        data['policy']['conditions']['sourceIPs'] = [conditions]
     if from_date:
         data['fromDate'] = from_date
     if from_part:
@@ -3641,8 +3645,8 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
         outputs=response,
         readable_output= 'Address Alteration policy was created successfully'
     )
-    
-    
+
+
 def update_address_alteration_policy_command(args: dict) -> CommandResults:
     id = args.get('id') #
     policy_description = args.get('policy_description')
@@ -3672,7 +3676,8 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
     if comment:
         data['comment'] = comment
     if conditions:
-        data['conditions'] = conditions
+        data['policy']['conditions'] = {}
+        data['policy']['conditions']['sourceIPs'] = [conditions]
     if from_date:
         data['fromDate'] = from_date
     if from_part:
