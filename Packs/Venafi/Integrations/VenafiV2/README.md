@@ -8,7 +8,7 @@ Retrieves information about certificates stored in Venafi.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
+    | Server URL (e.g., https://192.168.0.1) | True |
     | User Name | True |
     | Password | True |
     | Client ID | True |
@@ -25,9 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### venafi-get-certificates
 
 ***
-Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see:
-- https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm
-- https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm
+Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm
 
 #### Base Command
 
@@ -37,9 +35,9 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| CreatedOn | Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
-| CreatedOnGreater | Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
-| CreatedOnLess | Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
+| CreatedOn | The date on which the certificated was created. Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
+| CreatedOnGreater | Find certificates created after this date. Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
+| CreatedOnLess | Find certificates created before this date. Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
 | Disabled | Include only certificates that are enabled 0 or disabled 1. | Optional | 
 | InError | Whether to include only certificates that are in an error state (1) or not in an error state (0). | Optional | 
 | ValidationState | Validation state. Possible values are: Blank, Success, Failure. | Optional | 
@@ -48,7 +46,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | NetworkValidationDisabled | Whether to include only certificates with network validation disabled (1) or enabled (0). | Optional | 
 | ParentDn | The full path to the parent of the object in Trust Protection Platform (e.g., \VED\Policy\Engineering,\VED\Policy\HR). | Optional | 
 | ParentDnRecursive | The specific folder from which to retrieve certificates. (The subfolders will also be scanned.) Accepts a single value. | Optional | 
-| PendingWorkflow | Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket).  | Optional | 
+| PendingWorkflow | Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket). | Optional | 
 | Stage | Comma-separated list of stages in the certificate lifecycle. Will retrieve certificates at one or more of the stages. | Optional | 
 | StageGreater | Find certificates with a stage greater than the specified stage (does not include specified stage). | Optional | 
 | StageLess | Stage before which to retrieve certificates. | Optional | 
@@ -62,7 +60,6 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | KeySizeLess | The size for which the public key size is less than. | Optional | 
 | L | Find certificates by Locality/City attribute of Subject Distinguished Name (SDN). | Optional | 
 | O | Find certificates by Organization attribute of Subject DN. | Optional | 
-| S | Find certificates by State/Province attribute of Subject DN. | Optional | 
 | S | Find certificates by State/Province attribute of Subject DN. | Optional | 
 | Serial | Serial number of the certificate. | Optional | 
 | SignatureAlgorithm | The algorithm used to sign the certificate (e.g., SHA1RSA). | Optional | 
@@ -82,7 +79,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | Venafi.Certificate.ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
 | Venafi.Certificate.SchemaClass | string | The class name of the certificate object. | 
 | Venafi.Certificate.ID | string | The certificate object GUID. | 
-| Venafi.Certificate.X509 | dictionary | Enrolled or issued certificate information: CN, Issuer, KeyAlgorithm, KeySize, SANS, Serial, Subject, Thumbprint, ValidFrom, ValidTo | 
+| Venafi.Certificate.X509 | dictionary | Enrolled or issued certificate information: CN, Issuer, KeyAlgorithm, KeySize, SANS, Serial, Subject, Thumbprint, ValidFrom, ValidTo. | 
 
 ### venafi-get-certificate-details
 
@@ -97,7 +94,7 @@ Uses a certificate GUID to extract more details from the certificate store.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| guid | The ID of the certificate. Add a description so the user can get this value by running the command “venafi-get-certificates”. | Required | 
+| guid | The ID of the certificate. Get certificates ID by running the command “venafi-get-certificates”. | Required | 
 
 #### Context Output
 
@@ -130,7 +127,7 @@ Uses a certificate GUID to extract more details from the certificate store.
 | Venafi.Certificate.CertificateDetails.KeyUsage | string | A list of Key Usage extension values that describe the purpose of the public key. | 
 | Venafi.Certificate.CertificateDetails.OU | string | An array of Organization Units or names. | 
 | Venafi.Certificate.CertificateDetails.PublicKeyHash | string | The public key hash string. Available only when the certificate has a private key. | 
-| Venafi.Certificate.CertificateDetails.SKIKeyIdentifier | string | The generated Subject Key Identifier \(SKI\) | 
+| Venafi.Certificate.CertificateDetails.SKIKeyIdentifier | string | The generated Subject Key Identifier \(SKI\). | 
 | Venafi.Certificate.CertificateDetails.SignatureAlgorithm | string | The signature algorithm for signing the certificate. | 
 | Venafi.Certificate.CertificateDetails.SignatureAlgorithmOID | string | The Signature Object ID for signing the certificate. | 
 | Venafi.Certificate.CertificateDetails.StoreAdded | string | The Date Time stamp when the private key was added to the store. | 
@@ -140,7 +137,7 @@ Uses a certificate GUID to extract more details from the certificate store.
 | Venafi.Certificate.CertificateDetails.SubjectAltNameIPAddress | string | An array of IP address SANs. | 
 | Venafi.Certificate.CertificateDetails.SubjectAltNameURI | string | An array of Uniform Resource Indicator \(URI\) SANs. | 
 | Venafi.Certificate.CreatedBy | string | The object that initiated enrollment or provisioning changes. The default is Web SDK. | 
-| Venafi.Certificate.Origin | string |  | 
-| Venafi.Certificate.ProcessingDetails | dictionary | Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN | 
-| Venafi.Certificate.RenewalDetails | dictionary | A list of certificate renewal information | 
+| Venafi.Certificate.Origin | string | Filter by origin. | 
+| Venafi.Certificate.ProcessingDetails | dictionary | Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN. | 
+| Venafi.Certificate.RenewalDetails | dictionary | A list of certificate renewal information. | 
 | Venafi.Certificate.ValidationDetails | dictionary | A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. All other validationdetails fields are absent. | 

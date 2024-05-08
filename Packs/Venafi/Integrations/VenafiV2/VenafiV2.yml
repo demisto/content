@@ -30,7 +30,7 @@ configuration:
   required: false
 description: Retrieves information about certificates stored in Venafi.
 display: Venafi TLS Protect
-name: Venafi TLS Protect
+name: VenafiTLSProtect
 script:
   commands:
   - arguments:
