@@ -122,5 +122,4 @@ def test_main(mocker):
     )
     mocker.patch.object(UseCaseAdoptionMetrics, 'get_use_cases', return_value=use_cases_data)
     res = UseCaseAdoptionMetrics.main()
-    
     assert res == expected_table

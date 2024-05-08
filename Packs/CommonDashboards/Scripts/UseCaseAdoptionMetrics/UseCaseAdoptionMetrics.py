@@ -49,7 +49,7 @@ def get_use_cases() -> Dict[str, Any]:
         'Business Email Compromise Coverage': 'https://cortex.marketplace.pan.dev/marketplace/?useCase=Phishing',
         'Network Security': 'https://xsoar.pan.dev/marketplace/?category=Network%20Security',
         'Analytics & SIEM': 'https://cortex.marketplace.pan.dev/marketplace/?category=Analytics+%26+SIEM',
-        'Data Enrichment & Threat Intelligence': 'https://cortex.marketplace.pan.dev/marketplace/?category=Data+Enrichment+%26+Thr'\
+        'Data Enrichment & Threat Intelligence': 'https://cortex.marketplace.pan.dev/marketplace/?category=Data+Enrichment+%26+Thr',
         'eat+Intelligence',
         'Vulnerability Management': 'https://xsoar.pan.dev/marketplace/?category=Vulnerability%20Management',
         'Case Management': 'https://cortex.marketplace.pan.dev/marketplace/?category=Case+Management',
