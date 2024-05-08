@@ -44,7 +44,3 @@ Gets events from SailPoint IdentityNow.
 #### Context Output
 
 There is no context output for this command.
-
-#### Additional Information:
-The default maximum number of events per fetch is 50,000.
-When initiating a fetch, the starting time for the first fetch is one hour ago.
