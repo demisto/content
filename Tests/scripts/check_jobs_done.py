@@ -9,7 +9,6 @@ from Tests.scripts.utils.log_util import install_logging
 CONTENT_NIGHTLY_JOBS = [
     'run-pre-commit',
     'run-validations',
-    'trigger-private-build',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
@@ -64,7 +63,6 @@ CONTENT_COMMON_JOBS = [
     'run-validations',
     'run-validations-new-validate-flow',
     'test-upload-flow',
-    'trigger-private-build',
     'validate-content-conf',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
