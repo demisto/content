@@ -15,9 +15,9 @@
   
 - #### Text generation setting (Optional)
    
-   1. **max-tokens**: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption). **Default: unset**.
-   2. **temperature**: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both. **Default: 1**.
-   3. **top_p**: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values (closer to 0) result in more focused outputs, while higher values (closer to 1) increase diversity. It is generally recommended altering this or temperature but not both. **Default: unset**.
+   1. **max-tokens**: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption). Default: unset.
+   2. **temperature**: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both. Default: 1.
+   3. **top_p**: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values (closer to 0) result in more focused outputs, while higher values (closer to 1) increase diversity. It is generally recommended altering this or temperature but not both. Default: unset.
 
 - #### Click 'Test'
 
