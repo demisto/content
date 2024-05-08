@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 ### gpt-send-message
 ***
-Send a message as a prompt to the GPT model
+Send a message as a prompt to the GPT model.
 
 `!gpt-send-message message="<MESSAGE_TEXT>"`
 
