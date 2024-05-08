@@ -47,7 +47,9 @@ class TestScoreCalculator:
                 'SigmaIDSThreshold': 1,
                 'domain_popularity_ranking': 1,
                 'relationship_threshold': 1,
-                'relationship_suspicious_threshold': 0
+                'relationship_suspicious_threshold': 0,
+                'gti_malicious': True,
+                'gti_suspicious': True,
             }
         )
 
@@ -136,6 +138,16 @@ class TestScoreCalculator:
         # process
         analysis_results = {'v1': {'category': 'malicious'}, 'v2': {'category': 'malicious'}}
         assert not self.score_calculator.is_preferred_vendors_pass_malicious(analysis_results)
+
+    def test_is_malicious_by_gti(self):
+        assert self.score_calculator.is_malicious_by_gti({'gti_verdict': {'value': 'VERDICT_MALICIOUS'}}) == True
+        assert self.score_calculator.is_malicious_by_gti({'gti_verdict': {'value': 'VERDICT_SUSPICIOUS'}}) == False
+        assert self.score_calculator.is_malicious_by_gti({}) == False
+
+    def test_is_suspicious_by_gti(self):
+        assert self.score_calculator.is_suspicious_by_gti({'gti_verdict': {'value': 'VERDICT_MALICIOUS'}}) == False
+        assert self.score_calculator.is_suspicious_by_gti({'gti_verdict': {'value': 'VERDICT_SUSPICIOUS'}}) == True
+        assert self.score_calculator.is_suspicious_by_gti({}) == False
 
 
 class TestHelpers:
