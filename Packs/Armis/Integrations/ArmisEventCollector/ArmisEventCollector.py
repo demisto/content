@@ -94,9 +94,8 @@ class Client(BaseClient):
         raw_response = self.perform_fetch(params)
         return raw_response.get('data', {}).get('results', [])
 
-
     def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: datetime,
-                                           order_by: str = 'time', from_param: None | int = None):
+                           order_by: str = 'time', from_param: None | int = None):
         """ Fetches events using AQL query.
 
         Args:
@@ -108,7 +107,7 @@ class Client(BaseClient):
         Returns:
             (list[dict], int): A tuple with the List of events objects represented as dictionaries and the next event pointer.
         """
-        aql_query = f'{aql_query} after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
+        aql_query = f'{aql_query} after:{after.strftime(DATE_FORMAT)}'
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if from_param:
             params['from'] = from_param
@@ -118,18 +117,22 @@ class Client(BaseClient):
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
-        while next and (len(results) < max_fetch):
-            if next < max_fetch:
-                params['length'] = max_fetch - next
-            params['from'] = next
-            raw_response = self.perform_fetch(params)
-            next = raw_response.get('data', {}).get('next')
-            results.extend(raw_response.get('data', {}).get('results', []))
+        try:
+            while next and (len(results) < max_fetch):
+                if next < max_fetch:
+                    params['length'] = max_fetch - next
+                params['from'] = next
+                raw_response = self.perform_fetch(params)
+                next = raw_response.get('data', {}).get('next')
+                results.extend(raw_response.get('data', {}).get('results', []))
+        except Exception as e:
+            demisto.debug(f'debug-log: caught an exception during pagination:\n{str(e)}')
+            
+        finally:
+            if not next:
+                next = raw_response.get('data', {}).get('total')
 
-        if not next:
-            next = raw_response.get('data', {}).get('total')
-
-        return results, next
+            return results, next
 
     def is_valid_access_token(self, access_token):
         """ Checks if current available access token is valid.
@@ -199,7 +202,7 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: datetime | None):
+def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_start_time: datetime | None):
     """ Calculates the fetch start time.
         There are three cases for fetch start time calculation:
         - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
@@ -209,7 +212,7 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: da
                   page size of 'max_events' (fetch-events / armis-get-events commands).
 
     Args:
-        last_fetch_time (str | None): Last fetch time (from last run).
+        last_fetch_time (datetime | str | None): Last fetch time (from last run).
         fetch_start_time (datetime | None): Fetch start time.
 
     Raises:
@@ -220,7 +223,10 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: da
     """
     # case 1
     if last_fetch_time:
-        last_fetch_datetime = arg_to_datetime(last_fetch_time)
+        if isinstance(last_fetch_time, str):
+            last_fetch_datetime = arg_to_datetime(last_fetch_time)
+        else:
+            last_fetch_datetime = last_fetch_time
         if not last_fetch_datetime:
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
         return last_fetch_datetime
@@ -350,13 +356,13 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
             demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {response[-1]}')
         else:
             new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
+                response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
             events.setdefault(event_type.dataset_name, []).extend(new_events)
             demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
             demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
-            
+
     next_run[last_fetch_next_field] = next
-    # We don't update event_type_fetch_start_time value between executions on purpose because we want to keep the next value according to a particular time.
+    # We don't update time between executions on purpose because we want to keep the next value according to a particular time.
     next_run[last_fetch_time_field] = event_type_fetch_start_time
     demisto.debug(f'debug-log: updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}')
 
