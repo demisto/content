@@ -832,3 +832,46 @@ def test_gti_comments_command(mocker, requests_mock):
 
         assert results.execution_metrics is None
         assert results.outputs == {'indicator': resource, 'comments': mock_response['data']}
+
+
+def test_gti_comments_by_id_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid IoC
+
+    When:
+    - Running the !gti-comments-get-by-id command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import get_comments_by_id_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {
+        'data': {
+            'attributes': {
+                'date': 0,
+                'text': 'Hello',
+                'votes': {
+                    'positive': 10,
+                    'negative': 5,
+                    'abuse': 1,
+                }
+            }
+        }
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'id': 'random_id'})
+    requests_mock.get('https://www.virustotal.com/api/v3/comments/random_id',
+                      json=mock_response)
+
+    results = get_comments_by_id_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == mock_response['data']
