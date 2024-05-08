@@ -1,4 +1,4 @@
-Retrieves information about certificates stored in Venafi.
+Deprecated. use Venafi TLS Protect instead.
 
 This integration was integrated and tested with version 20.3.2.5263 of Venafi.
 

@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: Venafi
 system: true
-display: Venafi
+display: Venafi (Deprecated)
+deprecated: true
 category: IT Services
-description: Retrieves information about certificates stored in Venafi.
+description: Deprecated. use Venafi TLS Protect instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
