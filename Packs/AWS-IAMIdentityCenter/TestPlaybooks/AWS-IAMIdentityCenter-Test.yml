@@ -43,10 +43,10 @@ tasks:
       version: -1
       name: Create User
       description: Creates a new IAM Identity Center user for your AWS account.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-create-user
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-create-user
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "9"
@@ -86,10 +86,10 @@ tasks:
       version: -1
       name: Create Group
       description: Creates a new IAM Identity Center group for your AWS account.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-create-group
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-create-group
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "6"
@@ -123,10 +123,10 @@ tasks:
       version: -1
       name: Get User
       description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-get-user
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-get-user
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "5"
@@ -158,10 +158,10 @@ tasks:
       version: -1
       name: Add User To Group
       description: Adds the specified user to the specified group.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-add-user-to-group
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-add-user-to-group
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "7"
@@ -196,10 +196,10 @@ tasks:
       version: -1
       name: Get Group
       description: Get AWS IAM Identity Center group Information.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-get-group
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-get-group
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "5"
@@ -231,10 +231,10 @@ tasks:
       version: -1
       name: List Groups For User
       description: Lists the IAM Identity Center groups that the specified IAM user belongs to.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-list-groups-for-user
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-groups-for-user
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "12"
@@ -266,10 +266,10 @@ tasks:
       version: -1
       name: List Memberships
       description: Lists the memberships of the group.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-list-memberships
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-memberships
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "12"
@@ -300,10 +300,10 @@ tasks:
       id: 1eb53488-dfe9-4f38-8377-e37265933b83
       version: -1
       name: Get User By Email
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-get-user-by-email
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-get-user-by-email
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "4"
@@ -335,10 +335,10 @@ tasks:
       version: -1
       name: List Users
       description: Lists the IAM users, returns all users in the AWS account.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-list-users
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-users
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "11"
@@ -367,10 +367,10 @@ tasks:
       version: -1
       name: List Groups
       description: Lists all the IAM groups in the AWS account.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-list-groups
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-groups
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -396,10 +396,10 @@ tasks:
       version: -1
       name: Delete Group Membership
       description: Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-delete-group-membership
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-delete-group-membership
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "14"
@@ -431,10 +431,10 @@ tasks:
       version: -1
       name: Delete Group
       description: Removes the entered group.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-delete-group
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-delete-group
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "10"
@@ -466,10 +466,10 @@ tasks:
       version: -1
       name: Delete user
       description: Removes the entered user.
-      script: AWS - IAM Identity Center - TEST|||aws-iam-identitycenter-delete-user
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-delete-user
       type: regular
       iscommand: true
-      brand: AWS - IAM Identity Center - TEST
+      brand: AWS - IAM Identity Center
     nexttasks:
       '#none#':
       - "13"
