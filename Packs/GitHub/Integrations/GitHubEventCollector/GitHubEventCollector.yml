@@ -73,7 +73,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.88462
+  dockerimage: demisto/py3-tools:1.0.0.94051
   isfetchevents: true
   subtype: python3
 marketplaces:
