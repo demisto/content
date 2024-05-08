@@ -116,8 +116,8 @@ def test_main(mocker):
         '### Use Case Coverage\n'
         '|Use Case Adoption & Coverage|Status|\n'
         '|---|---|\n'
-        '| Ransomware & Malware Coverage | ✅ |\n'
         '| Network Security | ✅ |\n'
+        '| Ransomware & Malware Coverage | ✅ |\n'
         '| Business Email Compromise Coverage | ❌ |\n'
     )
     mocker.patch.object(UseCaseAdoptionMetrics, 'get_use_cases', return_value=use_cases_data)
