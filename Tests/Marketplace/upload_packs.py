@@ -44,7 +44,7 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> set:
         packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
         return packs
     else:
-        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
+        logging.critical(f"Not correct usage of flag -p. Please check help section of upload packs script. type is {type(packs_to_upload)}")
         sys.exit(1)
 
 
@@ -76,7 +76,7 @@ def get_packs_ids_to_upload_and_update(packs_to_upload: str) -> tuple[set, set]:
             logging.critical(f"Invalid JSON format. Please check the content of the JSON file, error:\n{e}")
             sys.exit(1)
     else:
-        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
+        logging.critical(f"Not correct usage of flag -p. Please check help section of upload packs script. {type(packs_to_upload)} - {str(packs_to_upload)}")
         sys.exit(1)
 
 
