@@ -356,7 +356,7 @@ inputs:
   playbookInputQuery:
 - key: Query
   value:
-    simple: type:"YARA Rule"
+    simple: 
   required: false
   description: ""
   playbookInputQuery:
