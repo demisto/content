@@ -20,7 +20,7 @@ configuration:
   section: connect
 
 - display: Model
-  additionalinfo: 'The model that will process the inputs and generate the completion.'
+  additionalinfo: The model that will process the inputs and generate the completion.
   name: model-select
   type: 15
   required: false
