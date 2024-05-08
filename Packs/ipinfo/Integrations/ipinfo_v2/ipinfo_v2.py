@@ -197,6 +197,7 @@ def main() -> None:
     reliability = params.get('integrationReliability')
 
     demisto.debug(f'Command being called is {command}')
+    demisto.debug(f'Is time sensitive: {is_time_sensitive()}')
 
     try:
         client = Client(api_key=api_key,
