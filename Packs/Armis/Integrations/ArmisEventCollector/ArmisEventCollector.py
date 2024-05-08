@@ -94,26 +94,24 @@ class Client(BaseClient):
         raw_response = self.perform_fetch(params)
         return raw_response.get('data', {}).get('results', [])
 
-    def fetch_by_aql_query_with_after_field(self, aql_query: str, max_fetch: int, after: None | datetime = None,
-                           order_by: str = 'time'):
+    def fetch_by_aql_query_with_after_field(self, aql_query: str, max_fetch: int, after: datetime,
+                                            order_by: str = 'time'):
         """ Fetches events using AQL query.
 
         Args:
             aql_query (str): AQL query request parameter for the API call.
             max_fetch (int): Max number of events to fetch.
-            after (None | datetime): The date and time to fetch events from. Defaults to None.
+            after (datetime): The date and time to fetch events from.
             order_by (str): Order by parameter for the API call. Defaults to 'time'.
         Returns:
             list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
-        if not after:  # this should only happen when get-events command is used without from_date argument
-            after = datetime.now() - timedelta(minutes=1)
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         return self.fetch_by_aql_query(params, max_fetch=max_fetch)
 
     def fetch_by_aql_query_with_next_field(self, aql_query: str, max_fetch: int, after: datetime,
-                           order_by: str = 'time', from_param: int = 0):
+                                           order_by: str = 'time', from_param: int = 0):
         """ Fetches events using AQL query.
 
         Args:
@@ -129,7 +127,7 @@ class Client(BaseClient):
                                   'from': from_param}
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         return self.fetch_by_aql_query(params, max_fetch=max_fetch)
-        
+
     def fetch_by_aql_query(self, params: dict[str, Any], max_fetch: int):
         """ Fetches events using AQL query.
 
@@ -152,7 +150,7 @@ class Client(BaseClient):
             raw_response = self.perform_fetch(params)
             next = raw_response.get('data', {}).get('next')
             results.extend(raw_response.get('data', {}).get('results', []))
-        
+
         if not next:
             next = raw_response.get('data', {}).get('total')
 
@@ -215,7 +213,7 @@ def test_module(client: Client) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        client.fetch_by_aql_query_with_after_field('in:alerts', 1)
+        client.fetch_by_aql_query_with_after_field('in:alerts', 1, after=(datetime.now() - timedelta(minutes=1)))
 
     except Exception as e:
         raise DemistoException(f'Error in test-module: {e}') from e
@@ -380,6 +378,8 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         else:
             next_run.update(last_run)
     else:
+        if not event_type_fetch_start_time:  # this should only happen when get-events command is used without from_date argument
+            event_type_fetch_start_time = datetime.now() - timedelta(minutes=1)
         response, next = client.fetch_by_aql_query_with_after_field(
             aql_query=event_type.aql_query,
             max_fetch=max_fetch,
@@ -395,7 +395,9 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
             demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
             demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
     next_run[last_fetch_next_field] = next
-    demisto.debug(f'debug-log: updated next_run with: {last_fetch_next_field} = {next}')
+    # We don't update event_type_fetch_start_time value between executions on purpose because we want to keep the next value according to a particular time.
+    next_run[last_fetch_time_field] = event_type_fetch_start_time
+    demisto.debug(f'debug-log: updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}')
 
 
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
