@@ -105,10 +105,11 @@ def list_local_models_command(client):
         }
         results.append(new_item)
 
-    readable = tableToMarkdown(name='List Local Models', t=results,
-                               metadata='Click here to access the models available for download:'\
-                               ' [https://ollama.com/library](https://ollama.com/library).',
-                               removeNull=True)
+    readable = tableToMarkdown(
+        name='List Local Models', t=results,
+        metadata='Click here to access the models available for download: [here](https://ollama.com/library).',
+        removeNull=True
+    )
     return CommandResults(
         readable_output=readable,
         outputs_prefix='ollama.models',
