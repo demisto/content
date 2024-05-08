@@ -474,6 +474,7 @@ class ScoreCalculator:
     DEFAULT_SUSPICIOUS_THRESHOLD = 5
     DEFAULT_RELATIONSHIP_SUSPICIOUS_THRESHOLD = 2
     GTI_MALICIOUS_VERDICT = 'VERDICT_MALICIOUS'
+    GTI_SUSPICIOUS_VERDICT = 'VERDICT_SUSPICIOUS'
 
     logs: List[str]
 
@@ -481,6 +482,7 @@ class ScoreCalculator:
     trusted_vendors_threshold: int
     trusted_vendors: List[str]
     gti_malicious: bool
+    gti_suspicious: bool
 
     # IP
     ip_threshold: dict[str, int]
@@ -569,6 +571,7 @@ class ScoreCalculator:
                 required=True)
         }
         self.gti_malicious = argToBoolean(params.get('gti_malicious', False))
+        self.gti_suspicious = argToBoolean(params.get('gti_suspicious', False))
         self.logs = []
 
     def get_logs(self) -> str:
@@ -772,6 +775,12 @@ class ScoreCalculator:
             return gti_assessment.get('gti_verdict', {}).get('value') == self.GTI_MALICIOUS_VERDICT
         return False
 
+    def is_suspicious_by_gti(self, gti_assessment: dict) -> bool:
+        """Determines if an IoC is suspicious according to its GTI assessment."""
+        if self.gti_suspicious:
+            return gti_assessment.get('gti_verdict', {}).get('value') == self.GTI_SUSPICIOUS_VERDICT
+        return False
+
     def file_score(self, given_hash: str, raw_response: dict) -> int:
         """Analyzing file score.
         The next parameters are analyzed:
@@ -819,6 +828,10 @@ class ScoreCalculator:
             self.logs.append(
                 f'Hash: "{given_hash}" was found suspicious by passing the threshold analysis.')
             return Common.DBotScore.SUSPICIOUS
+        elif self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
+            self.logs.append(
+                f'Hash: "{given_hash}" was found suspicious by gti assessment.')
+            return Common.DBotScore.SUSPICIOUS
         self.logs.append(f'Hash: "{given_hash}" was found good.')
         return Common.DBotScore.GOOD  # Nothing caught
 
@@ -845,7 +858,11 @@ class ScoreCalculator:
         if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
-        return self.score_by_results_and_stats(ip, raw_response, self.ip_threshold)
+        score = self.score_by_results_and_stats(ip, raw_response, self.ip_threshold)
+        if score == Common.DBotScore.GOOD and self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
+            score = Common.DBotScore.SUSPICIOUS
+
+        return score
 
     def url_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
@@ -865,7 +882,11 @@ class ScoreCalculator:
         if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
-        return self.score_by_results_and_stats(indicator, raw_response, self.url_threshold)
+        score = self.score_by_results_and_stats(indicator, raw_response, self.url_threshold)
+        if score == Common.DBotScore.GOOD and self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
+            score = Common.DBotScore.SUSPICIOUS
+
+        return score
 
     def domain_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
@@ -884,9 +905,14 @@ class ScoreCalculator:
         if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
-        return self.score_by_results_and_stats(indicator, raw_response, self.domain_threshold)
+        score = self.score_by_results_and_stats(indicator, raw_response, self.domain_threshold)
+        if score == Common.DBotScore.GOOD and self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
+            score = Common.DBotScore.SUSPICIOUS
+
+        return score
 
 # region Helper functions
+
 
 def create_relationships(entity_a: str, entity_a_type: str, relationships_response: dict, reliability):
     """
@@ -963,8 +989,12 @@ def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
             data['attributes']['sigma_analysis_summary']
     """
     attributes_to_remove = [
-        'last_analysis_results', 'pe_info', 'crowdsourced_ids_results', 'autostart_locations', 'sandbox_verdicts',
-        'sigma_analysis_summary'
+        'last_analysis_results',
+        'pe_info',
+        'crowdsourced_ids_results',
+        'autostart_locations',
+        'sandbox_verdicts',
+        'sigma_analysis_summary',
     ]
     if isinstance(data, list):
         data = [decrease_data_size(item) for item in data]
@@ -994,7 +1024,7 @@ def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) 
 
 
 def build_unknown_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
-    return _get_error_result(client, ioc_id, ioc_type, 'was not found in GoogleThreatIntelligence')
+    return _get_error_result(client, ioc_id, ioc_type, 'was not found in GoogleThreatIntelligence.')
 
 
 def build_quota_exceeded_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
@@ -1002,7 +1032,7 @@ def build_quota_exceeded_output(client: Client, ioc_id: str, ioc_type: str) -> C
 
 
 def build_error_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
-    return _get_error_result(client, ioc_id, ioc_type, 'could not be processed')
+    return _get_error_result(client, ioc_id, ioc_type, 'could not be processed.')
 
 
 def build_unknown_file_output(client: Client, file: str) -> CommandResults:
