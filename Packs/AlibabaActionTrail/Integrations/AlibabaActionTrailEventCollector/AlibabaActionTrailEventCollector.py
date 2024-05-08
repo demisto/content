@@ -12,7 +12,6 @@ import urllib3
 API_VERSION = '0.6.0'
 VENDOR = "alibaba"
 PRODUCT = "action-trail"
-SOME_CHANGE = "SOME CHANGE"
 urllib3.disable_warnings()
 
 
@@ -112,7 +111,7 @@ def canonicalized_resource(resource, params):
     if params:
         urlString = ''
         for key, value in sorted(six.iteritems(params)):
-            urlString += u"{0}={1}&".format(
+            urlString += "{}={}&".format(
                 key, value.decode('utf8') if isinstance(value, six.binary_type) else value)
         resource += '?' + urlString[:-1]
     return resource
