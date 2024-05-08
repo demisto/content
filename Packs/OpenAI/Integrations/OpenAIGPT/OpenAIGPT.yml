@@ -13,11 +13,12 @@ configuration:
   defaultvalue: https://api.openai.com/
   type: 0
 
-- display: API Key
+- displaypassword: API Key
   name: api_key
   type: 9
   required: true
   section: connect
+  hiddenusername: true
 
 - display: Model
   additionalinfo: The model that will process the inputs and generate the completion.
