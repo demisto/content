@@ -1,6 +1,5 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
@@ -82,7 +81,7 @@ class TestConf(DictFileBased):
                 result[integration].append(test)
         return dict(result)
 
-    def get_test(self, test_id: str) -> Optional[TestConfItem]:
+    def get_test(self, test_id: str) -> TestConfItem | None:
         try:
             return self.test_id_to_test[test_id]
         except KeyError:
