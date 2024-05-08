@@ -75,6 +75,7 @@ echo "Finished copying successfully."
 
 CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.txt"
 CONTENT_PACKS_TO_UPLOAD=$(paste -sd, "${CONTENT_PACKS_TO_UPLOAD_FILE}")
+echo "$CONTENT_PACKS_TO_UPLOAD"
 if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" ]]; then
   echo "Did not get content packs to update in the bucket."
 fi
