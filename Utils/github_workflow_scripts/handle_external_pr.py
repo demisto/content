@@ -307,7 +307,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
     Returns:
     - list of all open PR's with similar author as the current PR
     """
-    print(f'pr creator is: {pr_creator}')
+    print(f'PR author is: {pr_creator}')
     all_prs = content_repo.get_pulls()
     similar_prs = []
     for pr in all_prs:
@@ -316,7 +316,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
         existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
         if existing_pr_author == pr_creator:
             similar_prs.append(pr)
-    print(f'similar prs are: {similar_prs}')
+    print(f'PR\'s by the same author: {similar_prs}')
     return similar_prs
 
 
@@ -331,16 +331,21 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     - Reviewer of the found pr's
     """
     content_reviewers_set = set(content_reviewers)
-    print(f'current content reviewers: {content_reviewers_set}')
     reviewers = []
-    for pr in other_prs_by_same_user:
-        for reviewer in pr.requested_reviewers:
-            print(f'reviewer of pr {pr.number} is: {reviewer.login}')
-            reviewers.append(reviewer.login)
+    #s = set(reviewer for reviewer in pr.requested_reviewers])
+    #S = {reviewer for reviewer in pr.requested_reviewers}
+    #existing_reviewer = content_reviewers.intersect(s)
 
-        existing_reviewer = content_reviewers_set.intersection(set(reviewers))
+    for pr in other_prs_by_same_user:
+        #for reviewer in pr.requested_reviewers:
+        #    print(f'reviewer of pr {pr.number} is: {reviewer.login}')
+        #    reviewers.append(reviewer.login)
+        reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
+        existing_reviewer = content_reviewers_set.intersection(reviewer_names)
         if existing_reviewer:
             return existing_reviewer.pop()
+        else:
+            print("There are other PR's by same author, but their reviewer is not in the current contribution round")
     return ''
 
 
@@ -367,8 +372,9 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
         print(f'found reviewer from other PR\'s by similar author is: {reviewers_to_assign}')
         content_reviewer = reviewers_to_assign
     else:
+        print('The reviewer is going to be determined randomly')
         content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
-        print(f'determined reviewer is: {content_reviewer}')
+        print(f'Determined random reviewer, who is: {content_reviewer}')
     return content_reviewer
 
 
