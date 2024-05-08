@@ -4226,7 +4226,7 @@
             "playbookID": "VenafiV2_Test",
             "fromversion": "5.0.0",
             "integrations": [
-                "Venafi TLS Protect"
+                "VenafiTLSProtect"
             ]
         },
         {
@@ -5676,10 +5676,6 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test"
-        },
-        {
-            "integrations": "Venafi TLS Protect",
-            "playbookID": "VenafiV2_Test"
         }
     ],
     "skipped_tests": {
