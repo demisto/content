@@ -59,7 +59,7 @@ configuration:
 
 - display: Temperature
   name: temperature
-  additionalinfo: "Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both."
+  additionalinfo: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
   type: 0
   required: false
   section: Collect
