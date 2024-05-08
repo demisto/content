@@ -97,10 +97,11 @@ def error_handler(res):
 
 
 def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
-    demisto.debug(f'Is time sensitive: {is_time_sensitive()}')
-    retries = 0 if is_time_sensitive() else 3
-    status_list_to_retry = None if is_time_sensitive() else [429]
-    timeout = 2 if is_time_sensitive() else REQUEST_TIMEOUT
+    time_sensitive = is_time_sensitive()
+    demisto.debug(f'{time_sensitive=}')
+    retries = 0 if time_sensitive else 3
+    status_list_to_retry = None if time_sensitive else [429]
+    timeout = 2 if time_sensitive else REQUEST_TIMEOUT
     try:
         res = generic_http_request(method=method,
                                    server_url=BASE_URL,
