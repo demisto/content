@@ -2,7 +2,7 @@ import json
 import demistomock as demisto
 import pytest
 from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, create_types_query, should_send_request, \
-    build_url_with_query_params, set_fields_query, get_updated_last_run
+    build_url_with_query_params, set_fields_query, get_updated_last_run, create_indicator_fields
 
 
 def load_json_file(path):
@@ -158,3 +158,29 @@ def test_get_updated_last_run(indicators, groups, previous_run, expected_result)
     output = get_updated_last_run(indicators, groups, previous_run)
 
     assert output == expected_result
+
+
+def test_create_indicator_fields_registry_key():
+    """
+    Given:
+        - lindicator from type Registry Key
+    When:
+        - running create_indicator_fields command
+    Then:
+        - validate the result contains the 'Key Value' key and the expected data
+    """
+    indicator = {'Key Name': 'key name',
+                 'Value Name': 'value name',
+                 'Key Type': 'key type',
+                 'dateAdded': 'firstseenbysource',
+                 'lastModified': 'updateddate',
+                 'threatAssessRating': 'verdict',
+                 'threatAssessConfidence': 'confidence',
+                 'description': 'description',
+                 'summary': 'name'}
+
+    result = create_indicator_fields(indicator, 'Registry Key')
+
+    assert 'Key Value' in result
+    assert 'name' in result.get('Key Value')[0]
+    assert result.get('Key Value')[0].get('name') == 'key name'
