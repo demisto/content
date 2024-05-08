@@ -4,6 +4,7 @@ from pathlib import Path
 from packaging.version import Version
 from typing import Optional, List
 from unittest.mock import MagicMock
+import pytest
 from Utils.github_workflow_scripts.autobump_release_notes.autobump_rn import (
     PackAutoBumper,
     BranchAutoBumper, AutoBumperManager,
@@ -15,7 +16,6 @@ from Utils.github_workflow_scripts.autobump_release_notes.skip_conditions import
 from git import GitCommandError
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 from Utils.github_workflow_scripts.autobump_release_notes import skip_conditions
-import pytest
 MERGE_STDOUT = "stdout: '\n Auto-merging {}\n failed.\n Auto-merging {}\n failed.\n"
 
 
