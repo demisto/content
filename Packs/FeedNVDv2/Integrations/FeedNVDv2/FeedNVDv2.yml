@@ -30,7 +30,7 @@ configuration:
   defaultvalue:
   required: false
   type: 16
-- defaultvalue: 1 year
+- defaultvalue: 90 days
   display: First fetch time
   additionalinfo: How far back should the integration fetch in its first run (1 day, 2 weeks, 3 months, etc.)
   name: first_fetch
