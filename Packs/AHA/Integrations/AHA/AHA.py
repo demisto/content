@@ -17,10 +17,6 @@ EDIT_FIELDS = ['id', 'reference_num', 'name', 'description', 'workflow_status', 
 DEFAULT_FIELDS = ['reference_num', 'name', 'id', 'created_at']
 FEATURE_FIELDS = ['ideas']
 
-
-"Some change for testing"
-
-
 ''' AHA ENUM'''
 
 
