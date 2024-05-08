@@ -6,6 +6,7 @@ import urllib3
 from blessings import Terminal
 from github import Github
 from git import Repo
+from github.PullRequest import PullRequest
 from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
@@ -278,7 +279,7 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
-def get_user_from_pr_body(pr: dict) -> str:
+def get_user_from_pr_body(pr: PullRequest) -> str:
     """
     Get user from PR that was opened from XSOAR UI by searching for the substring "Contribytor\n@" in the body of the PR
     Arguments:
@@ -290,10 +291,12 @@ def get_user_from_pr_body(pr: dict) -> str:
     body = pr.body
     PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
     matcher = re.search(PR_AUTHOR_PATTERN, body)
-    return matcher.groups()[0]
+    if matcher:
+        return matcher.groups()[0]
+    return ""
 
 
-def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
+def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_number: str) -> list:
     """
     find all open pr's that were opened by the same user as the current PR, excluding current PR
     Arguments:
@@ -307,15 +310,6 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number) -> list:
     print(f'pr creator is: {pr_creator}')
     all_prs = content_repo.get_pulls()
     similar_prs = []
-    print('start of temp loop')
-    for pr in all_prs:
-        if pr.user.login == "xsoar-bot":
-            body = pr.body
-            PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
-            matcher = re.search(PR_AUTHOR_PATTERN, body)
-            print(f'the author of the pr is: {matcher.groups()[0]}')
-
-    print('end of the temp loop')
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
@@ -350,7 +344,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     return ''
 
 
-def find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers):
+def find_reviewer_to_assign(content_repo: Repository, pr: str, pr_number: str, content_reviewers: list[str]):
     """
     Gets the content repo, PR and pr_number. Will return reviewer to assign
     Argument:
