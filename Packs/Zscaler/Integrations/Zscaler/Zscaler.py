@@ -19,6 +19,7 @@ API_KEY = str(demisto.params().get("creds_key", {}).get("password", "")) or str(
 )
 if not API_KEY:
     raise Exception("API Key is missing. Please provide an API Key.")
+RETRIES = int(demisto.params().get("retries", 3))
 BASE_URL = CLOUD_NAME + "/api/v1"
 USE_SSL = not demisto.params().get("insecure", False)
 PROXY = demisto.params().get("proxy", True)
@@ -108,6 +109,7 @@ def error_handler(res):
 
 def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
     try:
+        demisto.debug(f'Calling Zscaler API with {RETRIES=}')
         res = generic_http_request(method=method,
                                    server_url=BASE_URL,
                                    timeout=REQUEST_TIMEOUT,
@@ -119,7 +121,7 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    data=data or {},
                                    ok_codes=(200, 204),
                                    error_handler=error_handler,
-                                   retries=3,
+                                   retries=RETRIES,
                                    status_list_to_retry=[429],
                                    resp_type=resp_type)
 
@@ -437,6 +439,7 @@ def get_whitelist():
 
 
 def url_lookup(args):
+    demisto.debug('Starting url_lookup command')
     url = args.get("url", "")
     multiple = args.get("multiple", "true").lower() == "true"
     response = lookup_request(url, multiple)
@@ -509,7 +512,7 @@ def url_lookup(args):
                 raw_response=data,
             )
         )
-
+    demisto.debug('Finished url lookup')
     return results or "No results found."
 
 
@@ -581,6 +584,7 @@ def ip_lookup(ip):
 
 
 def lookup_request(ioc, multiple=True):
+    demisto.debug('Calling lookup request of url')
     cmd_url = "/urlLookup"
     if multiple:
         ioc_list = argToList(ioc)
@@ -589,6 +593,7 @@ def lookup_request(ioc, multiple=True):
     ioc_list = [url.replace("https://", "").replace("http://", "") for url in ioc_list]
     json_data = json.dumps(ioc_list)
     response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='content')
+    demisto.debug('Got response from Zscaler API returning')
     return response
 
 
