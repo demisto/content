@@ -43,7 +43,7 @@ configuration:
   - gpt-4-32k-0613
 
 - display: Model (Optional - overrides selected choice)
-  additionalinfo: 'The model that will process the inputs and generate the completion.'
+  additionalinfo: The model that will process the inputs and generate the completion.
   name: model-freetext
   type: 0
   required: false
