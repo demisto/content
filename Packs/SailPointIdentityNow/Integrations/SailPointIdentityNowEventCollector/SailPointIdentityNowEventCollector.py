@@ -64,6 +64,7 @@ class Client(BaseClient):
         integration_context.update({'token': token})
         # Subtract 60 seconds from the expiration time to make sure the token is still valid
         integration_context.update({'expires': expiration_time - 60})
+        demisto.debug(f'in generate_token - Updated integration context to be {integration_context}.')
         set_integration_context(integration_context)
 
         return token
@@ -144,22 +145,25 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, limit: int, from_date:str) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, limit: int, from_date:str, from_id: str = '0') -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
         client: Client object with the API client
         limit: Maximum number of events to fetch
-        from_date: The date from which to fetch events
+        from_date: The date from which to get events
+        from_id: The ID of an event from which to start to get events from
     Returns:
         List of events and CommandResults object
     """
     events = client.search_events(
-        prev_id="0",
+        prev_id=from_id,
         from_date=from_date,
         limit=limit,
     )
-    hr = tableToMarkdown(name='Test Event', t=events)
+    demisto.debug(f'in get_events - Fetched {len(events)} events.')
+    demisto.debug(f'in get events - First event: {events[0]}' if events else 'No events fetched.')
+    hr = tableToMarkdown(name='Test Events', t=events)
     return events, CommandResults(readable_output=hr)
 
 
@@ -175,14 +179,18 @@ def fetch_events(client: Client, last_run: dict[str, str],
     Returns:
         Tuple with the next run data and the list of events fetched
     """
+    
     all_events = []
+    formatted_now = datetime.now().strftime(DATE_FORMAT)
     while max_events_per_fetch > 0:
         demisto.debug(f'in fetch_events - Fetching events with max_events_per_fetch: {max_events_per_fetch}.')
         events = client.search_events(
             prev_id=last_run.get('prev_id', "0"),
-            from_date=last_run.get('prev_date', DEFAULT_LOOKBACK),
+            from_date=last_run.get('prev_date', formatted_now),
             limit=max_events_per_fetch,
         )
+        demisto.debug(f'in fetch_events - Fetched {len(events)} events.')
+        demisto.debug(f'in fetch_events - First event: {events[0]}' if events else 'No events fetched.')
         if not events:
             demisto.debug('in fetch_events - No more events to fetch.')
             break
@@ -220,14 +228,16 @@ def add_time_and_status_to_events(events: List[Dict] | None)-> None:
             modified = event.get('modified')
             if modified:
                 modified = datetime.fromisoformat(modified)
-
-            event["_ENTRY_STATUS"] = "modified" if modified and created and modified > created else "new"
+ 
             if created and modified and modified > created:
                 event['_time'] = modified.strftime(DATE_FORMAT)
+                event["_ENTRY_STATUS"] = "modified"
             elif created:
                 event['_time'] = created.strftime(DATE_FORMAT)
-            else:
-                event['_time'] = None
+                event["_ENTRY_STATUS"] = "new"
+            elif modified:
+                event['_time'] = modified.strftime(DATE_FORMAT)
+                event["_ENTRY_STATUS"] = "modified"
 
 
 def main() -> None:
@@ -263,7 +273,8 @@ def main() -> None:
             should_push_events = argToBoolean(args.get('should_push_events'))
             time_to_start = arg_to_datetime(args.get('from_date'))
             formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else DEFAULT_LOOKBACK
-            events, results = get_events(client, limit, from_date=formatted_time_to_start)
+            id_to_start = args.get('from_id') or '0'
+            events, results = get_events(client, limit, from_date=formatted_time_to_start, from_id=id_to_start)
             return_results(results)
             if should_push_events:
                 add_time_and_status_to_events(events)
