@@ -264,8 +264,7 @@ def main(
     )
 
     (artifact_folder / "validate_release_notes_message.txt").write_text(
-        "SDK-Validate docs have changed, review "
-        f"[the content-docs PR](https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pulls/{pr_number})"
+        f"SDK-Validate docs changed, review https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pull/{pr_number}"
     )
 
 
