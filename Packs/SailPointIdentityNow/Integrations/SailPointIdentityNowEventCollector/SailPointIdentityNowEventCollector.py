@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,7 +20,8 @@ DEFAULT_LOOKBACK = (datetime.now() - timedelta(hours=1)).strftime(DATE_FORMAT)
 class Client(BaseClient):
     """Client class to interact with the service API
     """
-    def __init__(self, client_id: str, client_secret: str, base_url: str, proxy: bool, verify: bool, token: str|None =None):
+
+    def __init__(self, client_id: str, client_secret: str, base_url: str, proxy: bool, verify: bool, token: str | None = None):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -36,8 +36,7 @@ class Client(BaseClient):
             }
         except Exception as e:
             raise Exception(f'Failed to get token. Error: {str(e)}')
-        
-    
+
     def generate_token(self) -> str:
         """
         Generates an OAuth 2.0 token using client credentials.
@@ -53,11 +52,11 @@ class Client(BaseClient):
                 'grant_type': 'client_credentials',
                 'client_secret': self.client_secret
             },
-            headers = {"scope": "sp:scope:all"}
+            headers={"scope": "sp:scope:all"}
         )
 
         token = resp.get('access_token')
-        now_timestamp = arg_to_datetime('now').timestamp()
+        now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
         expiration_time = now_timestamp + resp.get('expires_in')
         demisto.debug(f'in generate_token - Generated token that expires at: {expiration_time}.')
         integration_context = get_integration_context()
@@ -68,7 +67,6 @@ class Client(BaseClient):
         set_integration_context(integration_context)
 
         return token
-
 
     def get_token(self) -> str:
         """
@@ -94,9 +92,8 @@ class Client(BaseClient):
         demisto.debug('in get_token - Generated new token.')
 
         return token
-    
 
-    def search_events(self, prev_id: str, from_date: str, limit: int| None = None) -> List[Dict]:
+    def search_events(self, prev_id: str, from_date: str, limit: int | None = None) -> List[Dict]:
         """
         Searches for events in SailPoint IdentityNow
         Args:
@@ -107,14 +104,14 @@ class Client(BaseClient):
             List of events
         """
         query = {"indices": ["events"],
-        "queryType": "SAILPOINT",
-        "queryVersion": "5.2",
-        "query":
-        {"query": f"type:* AND created: [{from_date} TO now]"},
-        "timeZone": "America/Los_Angeles",
-        "sort": ["+id"],
-        "searchAfter": [prev_id]    #add the date - 1 hour
-        }
+                 "queryType": "SAILPOINT",
+                 "queryVersion": "5.2",
+                 "query":
+                 {"query": f"type:* AND created: [{from_date} TO now]"},
+                 "timeZone": "America/Los_Angeles",
+                 "sort": ["+id"],
+                 "searchAfter": [prev_id]
+                 }
         url_suffix = f'/v3/search?limit={limit}' if limit else '/v3/search'
         demisto.debug(f'in search_events - Searching for events with query: {query}.')
         return self._http_request(method='POST', url_suffix=url_suffix, data=query)
@@ -145,7 +142,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, limit: int, from_date:str, from_id: str = '0') -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, limit: int, from_date: str, from_id: str = '0') -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
@@ -168,7 +165,7 @@ def get_events(client: Client, limit: int, from_date:str, from_id: str = '0') ->
 
 
 def fetch_events(client: Client, last_run: dict[str, str],
-                max_events_per_fetch: int
+                 max_events_per_fetch: int
                  ) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the SailPoint IdentityNow API
@@ -179,7 +176,7 @@ def fetch_events(client: Client, last_run: dict[str, str],
     Returns:
         Tuple with the next run data and the list of events fetched
     """
-    
+
     all_events = []
     formatted_now = datetime.now().strftime(DATE_FORMAT)
     while max_events_per_fetch > 0:
@@ -195,8 +192,8 @@ def fetch_events(client: Client, last_run: dict[str, str],
             demisto.debug('in fetch_events - No more events to fetch.')
             break
         last_fetched_event = events[-1]
-        last_fetched_id = last_fetched_event.get('id')
-        last_fetched_creation_date = last_fetched_event.get('created')
+        last_fetched_id = last_fetched_event['id']
+        last_fetched_creation_date = last_fetched_event['created']
         demisto.debug(f'Fetched event with id: {last_fetched_id} and creation date: {last_fetched_creation_date}.')
 
         last_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
@@ -209,9 +206,9 @@ def fetch_events(client: Client, last_run: dict[str, str],
 
 
 ''' MAIN FUNCTION '''
-            
 
-def add_time_and_status_to_events(events: List[Dict] | None)-> None:
+
+def add_time_and_status_to_events(events: List[Dict] | None) -> None:
     """
     Adds _time and _ENTRY_STATUS fields to events
     Args:
@@ -220,7 +217,7 @@ def add_time_and_status_to_events(events: List[Dict] | None)-> None:
         None
     """
     if events:
-         for event in events:
+        for event in events:
             created = event.get('created')
             if created:
                 created = datetime.fromisoformat(created)
@@ -228,16 +225,13 @@ def add_time_and_status_to_events(events: List[Dict] | None)-> None:
             modified = event.get('modified')
             if modified:
                 modified = datetime.fromisoformat(modified)
- 
+
             if created and modified and modified > created:
                 event['_time'] = modified.strftime(DATE_FORMAT)
                 event["_ENTRY_STATUS"] = "modified"
             elif created:
                 event['_time'] = created.strftime(DATE_FORMAT)
                 event["_ENTRY_STATUS"] = "new"
-            elif modified:
-                event['_time'] = modified.strftime(DATE_FORMAT)
-                event["_ENTRY_STATUS"] = "modified"
 
 
 def main() -> None:

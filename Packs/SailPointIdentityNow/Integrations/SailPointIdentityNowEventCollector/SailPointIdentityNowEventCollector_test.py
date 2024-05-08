@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import Mock, patch
 from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client
 
 
@@ -23,8 +22,9 @@ def test_get_token(mocker, expiration_time, expected):
     mocker.patch.object(Client, '_http_request').return_value = {"access_token": "dummy token",
                                                                  "expires_in": 1}
     client = Client(base_url="https://example.com", client_id="test_id", client_secret="test_secret", verify=False, proxy=False)
-                                                               
-    mocker.patch('SailPointIdentityNowEventCollector.get_integration_context', return_value={'token': 'valid_token', 'expires': expiration_time})
+
+    mocker.patch('SailPointIdentityNowEventCollector.get_integration_context',
+                 return_value={'token': 'valid_token', 'expires': expiration_time})
     mocker.patch.object(Client, 'generate_token', return_value='new_token')
     token = client.get_token()
     assert token == expected
@@ -50,8 +50,7 @@ def test_fetch_events(mocker):
     next_run, events = fetch_events(client, last_run, max_events_per_fetch)
 
     assert next_run == {'prev_id': '3', 'prev_date': '2022-01-01T00:03:00'}
-    assert len(events) == max_events_per_fetch +1
-
+    assert len(events) == max_events_per_fetch + 1
 
 
 def test_add_time_and_status_to_events():
@@ -61,8 +60,6 @@ def test_add_time_and_status_to_events():
             case 1: created and modified are both present and modified > created
             case 2: created and modified are both present and modified < created
             case 3: created is present and modified is not
-            case 4: modified is present and created is not
-            case 5: created and modified are not present
     When:
         - calling add_time_and_status_to_events
     Then:
@@ -71,22 +68,18 @@ def test_add_time_and_status_to_events():
             case 1: _ENTRY_STATUS = modified, _time = modified time
             case 2: _ENTRY_STATUS = new, _time = created time
             case 3: _ENTRY_STATUS = new, _time = created time
-            case 4: _ENTRY_STATUS = modified, _time = modified time
-            case 5: no fields are added
     """
 
     events = [
         {'created': '2022-01-01T00:00:00', 'modified': '2022-01-01T00:01:00'},
         {'created': '2022-01-01T00:02:00', 'modified': '2022-01-01T00:01:00'},
         {'created': '2022-01-01T00:03:00'},
-        {'modified':'2022-01-01T00:03:00'},
-        {}
     ]
 
     add_time_and_status_to_events(events)
 
-    assert events[0] == {'created': '2022-01-01T00:00:00', 'modified': '2022-01-01T00:01:00', '_ENTRY_STATUS': 'modified', '_time': '2022-01-01T00:01:00Z'}
-    assert events[1]== {'created': '2022-01-01T00:02:00', 'modified': '2022-01-01T00:01:00', '_ENTRY_STATUS': 'new', '_time': '2022-01-01T00:02:00Z'}
+    assert events[0] == {'created': '2022-01-01T00:00:00', 'modified': '2022-01-01T00:01:00',
+                         '_ENTRY_STATUS': 'modified', '_time': '2022-01-01T00:01:00Z'}
+    assert events[1] == {'created': '2022-01-01T00:02:00', 'modified': '2022-01-01T00:01:00',
+                         '_ENTRY_STATUS': 'new', '_time': '2022-01-01T00:02:00Z'}
     assert events[2] == {'created': '2022-01-01T00:03:00', '_time': '2022-01-01T00:03:00Z', '_ENTRY_STATUS': 'new'}
-    assert events[3] == {'modified': '2022-01-01T00:03:00', '_time': '2022-01-01T00:03:00Z', '_ENTRY_STATUS': 'modified'}
-    assert events[4] == {}
