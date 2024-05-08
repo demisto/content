@@ -54,7 +54,7 @@ Check email body for possible security issues.
 
 | **Argument Name**      | **Description**                                                                                                                                             | **Required** |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| entryId                | Entry ID of an uploaded _.eml_ file from context window.                                                                                                    | Yes          | 
+| entryId                | Entry ID of an uploaded _.eml_ file from the context window.                                                                                                    | Yes          | 
 | additionalInstructions | Provide additional instructions for the GPT model when analyzing the email body.                                                                            | No           | 
 | max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           | 
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           | 
