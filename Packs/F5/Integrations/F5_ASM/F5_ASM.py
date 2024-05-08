@@ -7,6 +7,7 @@ import urllib3
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+ui=25
 LIST_FIELDS = ['name', 'id', 'ipAddress', 'type', 'protocol', 'method', 'actAsMethod',
                'serverTechnologyName', 'checkRequestLength', 'enforcementType',
                'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
