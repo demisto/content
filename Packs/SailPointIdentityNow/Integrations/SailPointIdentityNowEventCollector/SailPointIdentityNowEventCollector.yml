@@ -61,7 +61,7 @@ script:
     deprecated: false
     description: Gets events from SailPoint IdentityNow.
     name: identitynow-get-events
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.90585
   isfetchevents: true
   runonce: false
   script: '-'
