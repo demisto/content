@@ -247,13 +247,17 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     """
     entry_id: str = args.get(ArgAndParamNames.ENTRY_ID, '')
     email_headers, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
-    additional_instructions = f'Additional instructions: {ArgAndParamNames.ADDITIONAL_INSTRUCTIONS}\n'\
+    additional_instructions = f'openai-gpt check_email_part Additional instructions: {ArgAndParamNames.ADDITIONAL_INSTRUCTIONS}\n'\
         if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ''
 
     if email_part == EmailParts.HEADERS:
         demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
         if email_headers:
-            email_headers_formatted = {list(header.values())[0]: list(header.values())[1] for header in email_headers}
+            email_headers_formatted = {
+                header['name']: header['value']
+                for header in email_headers
+                if 'name' in header and 'value' in header
+            }
             readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers_formatted, sort_headers=False)
             check_email_part_message = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
 
