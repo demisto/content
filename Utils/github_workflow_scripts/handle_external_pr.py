@@ -331,15 +331,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     - Reviewer of the found pr's
     """
     content_reviewers_set = set(content_reviewers)
-    reviewers = []
-    #s = set(reviewer for reviewer in pr.requested_reviewers])
-    #S = {reviewer for reviewer in pr.requested_reviewers}
-    #existing_reviewer = content_reviewers.intersect(s)
-
     for pr in other_prs_by_same_user:
-        #for reviewer in pr.requested_reviewers:
-        #    print(f'reviewer of pr {pr.number} is: {reviewer.login}')
-        #    reviewers.append(reviewer.login)
         reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
         existing_reviewer = content_reviewers_set.intersection(reviewer_names)
         if existing_reviewer:
@@ -369,7 +361,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
 
     reviewers_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
     if reviewers_to_assign:
-        print(f'found reviewer from other PR\'s by similar author is: {reviewers_to_assign}')
+        print(f'The reviewer from other PR\'s by similar author is: {reviewers_to_assign}')
         content_reviewer = reviewers_to_assign
     else:
         print('The reviewer is going to be determined randomly')
