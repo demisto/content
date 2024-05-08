@@ -12,7 +12,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "ai"
+        "ai",
+        "openai",
+        "gpt"
     ],
     "marketplaces": [
         "xsoar",
