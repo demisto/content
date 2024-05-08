@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from urllib.parse import urljoin
 
 import requests
+
 PER_PAGE = 100  # value of `per_page` request parameter
 
 
@@ -26,6 +27,7 @@ def main():
     packs_dir_names = get_files_from_github(
         username, branch, pr_number, repo, github_token
     )
+    print(packs_dir_names)
     if packs_dir_names:
         print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
@@ -72,10 +74,12 @@ def get_files_from_github(
         A list of packs names, if found.
     """
     content_path = os.getcwd()
+    print(content_path)
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
     for file_path in get_pr_files(pr_number, github_token):
+        print(file_path)
         abs_file_path = os.path.join(content_path, file_path)
         abs_dir = os.path.dirname(abs_file_path)
         if not os.path.isdir(abs_dir):
@@ -87,9 +91,11 @@ def get_files_from_github(
         ) as file_content:
             file_content.raise_for_status()
             for data in file_content.iter_content(chunk_size=chunk_size):
+                print(data)
                 changed_file.write(data)
 
         files_list.add(file_path.split(os.path.sep)[1])
+    print(list(files_list))
     return list(files_list)
 
 
