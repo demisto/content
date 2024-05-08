@@ -1,11 +1,11 @@
-comment: 'Get version and URL of current XSOAR server.'
+comment: Get version and URL of current XSOAR server.
 commonfields:
   id: GetServerInfo
   version: -1
 name: GetServerInfo
 outputs:
 - contextPath: ServerInfo
-  description: 'A dictionary of "urls" and "version".'
+  description: 'A dictionary of "URLs" and "version".'
   type: Dictionary
 script: '-'
 tags:

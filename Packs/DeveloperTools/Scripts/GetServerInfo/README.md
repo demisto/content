@@ -1,4 +1,4 @@
-Get version and URL of current XSOAR server.
+Get version and URL of current Cortex XSOAR server.
 
 ## Script Data
 
@@ -21,4 +21,4 @@ There are no inputs for this script.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ServerInfo | A dictionary of "urls" and "version" | Dictionary |
+| ServerInfo | A dictionary of "URLs" and "version". | Dictionary |
