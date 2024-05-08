@@ -3545,6 +3545,8 @@ def update_webwhiteurl_policies_command(args: dict) -> CommandResults:
         data['description'] = description
     if bidirectional:
         data['policies']['bidirectional'] = bidirectional
+    if comment:
+        data['policies']['comment'] = comment
     if conditions:
         data['policy']['conditions'] = {}
         data['policy']['conditions']['sourceIPs'] = [conditions]
