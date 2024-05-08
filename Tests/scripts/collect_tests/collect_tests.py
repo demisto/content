@@ -24,7 +24,7 @@ from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
     NoTestsConfiguredException, NothingToCollectException,
-    NotUnderPackException, PrivateTestException, SkippedPackException,
+    NotUnderPackException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
     NonNightlyPackInNightlyBuildException, IncompatibleTestMarketplaceException)
 from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
@@ -259,9 +259,6 @@ class CollectionResult:
 
             if skip_reason := conf.skipped_tests.get(test):  # type: ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
-
-            if test in conf.private_tests:  # type: ignore[union-attr]
-                raise PrivateTestException(test)
 
         if is_nightly:
             if test and test in conf.non_api_tests:  # type: ignore[union-attr]
