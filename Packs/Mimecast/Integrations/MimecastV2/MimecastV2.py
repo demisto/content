@@ -3494,7 +3494,7 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     if id:
         data['urls'][0]['id'] = id
 
-    payload = {"data": [data]}
+    payload = {'data': [data]}
     api_endpoint = '/api/policy/webwhiteurl/create-policy-with-targets'
     response = http_request('POST', api_endpoint, payload)
 
@@ -3509,32 +3509,32 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
 
 
 def update_webwhiteurl_policies_command(args: dict) -> CommandResults:
-    description = args.get("description")
-    id = args.get("id")  #
+    description = args.get('description')
+    id = args.get('id')  #
     bidirectional = (
-        argToBoolean(args.get("bidirectional")) if args.get("bidirectional") else None
+        argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
     )
-    comment = args.get("comment")
-    conditions = args.get("conditions")
-    enabled = argToBoolean(args.get("enabled"))
-    enforced = argToBoolean(args.get("enforced"))
-    from_date = args.get("from_date")
-    from_eternal = argToBoolean(args.get("from_eternal"))
-    from_part = args.get("from_part")
-    to_date = args.get("to_date")
-    to_eternal = argToBoolean(args.get("to_eternal"))
-    override = argToBoolean(args.get("override")) if args.get("override") else None
-    url_action = args.get("url_action")
-    url_id = args.get("url_id")
-    url_type = args.get("url_type")
-    url_value = args.get("url_value")
+    comment = args.get('comment')
+    conditions = args.get('conditions')
+    enabled = argToBoolean(args.get('enabled'))
+    enforced = argToBoolean(args.get('enforced'))
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_part = args.get('from_part')
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args.get('to_eternal'))
+    override = argToBoolean(args.get('override')) if args.get('override') else None
+    url_action = args.get('url_action')
+    url_id = args.get('url_id')
+    url_type = args.get('url_type')
+    url_value = args.get('url_value')
 
     data = {
-        "id": id,
-        "policies": [
+        'id': id,
+        'policies': [
             {
-                "enabled": enabled,
-                "enforced": enforced,
+                'enabled': enabled,
+                'enforced': enforced,
                 "fromEternal": from_eternal,
                 "toEternal": to_eternal,
             }
@@ -3548,36 +3548,36 @@ def update_webwhiteurl_policies_command(args: dict) -> CommandResults:
     }
 
     if description:
-        data["description"] = description
+        data['description'] = description
     if bidirectional:
-        data["policies"]["bidirectional"] = bidirectional
+        data['policies']['bidirectional'] = bidirectional
     if conditions:
         data['policy']['conditions'] = {}
         data['policy']['conditions']['sourceIPs'] = [conditions]
     if from_date:
-        data["policies"]["fromDate"] = from_date
+        data['policies']['fromDate'] = from_date
     if from_part:
-        data["policies"]["fromPart"] = from_part
+        data['policies']['fromPart'] = from_part
     if to_date:
-        data["policies"]["toDate"] = to_date
+        data['policies']['toDate'] = to_date
     if override:
-        data["policies"]["override"] = override
+        data['policies']['override'] = override
     if url_id:
-        data["urls"][0]["id"] = url_id
+        data['urls'][0]['id'] = url_id
     if url_value:
-        data["urls"][0]["value"] = url_value
+        data['urls'][0]['value'] = url_value
 
-    payload = {"data": [data]}
-    api_endpoint = "/api/policy/webwhiteurl/update-policy-with-targets"
-    response = http_request("POST", api_endpoint, payload)
+    payload = {'data': [data]}
+    api_endpoint = '/api/policy/webwhiteurl/update-policy-with-targets'
+    response = http_request('POST', api_endpoint, payload)
 
-    if response.get("fail"):
-        raise Exception(json.dumps(response.get("fail")[0].get("errors")))
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     return CommandResults(
-        outputs_prefix="Mimecast.WebWhiteUrlPolicy",
+        outputs_prefix='Mimecast.WebWhiteUrlPolicy',
         outputs=response,
-        readable_output=f"{id} has been updated successfully",
+        readable_output=f'{id} has been updated successfully',
     )
 
 
@@ -3633,7 +3633,7 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     if override:
         data['override'] = override
 
-    payload = {"data": [data]}
+    payload = {'data': [data]}
     api_endpoint = '/api/policy/address-alteration/create-policy'
     response = http_request('POST', api_endpoint, payload)
     
@@ -3689,7 +3689,7 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
     if bidirectional:
         data['bidirectional'] = bidirectional
 
-    payload = {"data": [data]}
+    payload = {'data': [data]}
     api_endpoint = '/api/policy/address-alteration/update-policy'
     response = http_request('POST', api_endpoint, payload)
     
