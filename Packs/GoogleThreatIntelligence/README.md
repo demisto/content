@@ -1,4 +1,4 @@
-**What**. Google Threat Intelligence is the richest and most actionable **_crowdsourced_** threat intelligence platform on the planet. It equips security teams with comprehensive context and cutting edge functionality to proactively protect their networks from cybersecurity threats.
+**What**. Google Threat Intelligence provides unparalleled visibility into the global threat landscape. We offer deep insights from Mandiant’s leading incident response and threat research team, and combine them with our massive user and device footprint and VirusTotal’s broad crowdsourced malware database.
 
 **Why**. Security teams are often confronted with an unknown file/URL/domain/IP address and asked to make sense of an attack. Without further context, it is virtually impossible to determine attribution, build effective defenses against other strains of the attack, or understand the impact of a given threat in your organization. Through API and web based interaction with Google Threat Intelligence, security analysts can rapidly build a picture of an incident and then use those insights to neutralize other attacks.
 

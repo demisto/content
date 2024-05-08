@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """
-An integration module for the GoogleThreatIntelligence API.
+An integration module for the Google Threat Intelligence API.
 API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
@@ -14,7 +14,7 @@ import ipaddress
 
 INTEGRATION_NAME = 'GoogleThreatIntelligence'
 COMMAND_PREFIX = 'gti'
-INTEGRATION_ENTRY_CONTEXT = 'GoogleThreatIntelligence'
+INTEGRATION_ENTRY_CONTEXT = INTEGRATION_NAME
 
 INDICATOR_TYPE = {
     'ip': FeedIndicatorType.IP,
@@ -103,15 +103,10 @@ RELATIONSHIP_TYPE = {
 
 
 class Client(BaseClient):
-    """
-    Attributes:
-        is_premium: Shall use the premium api (mostly for reputation commands)
-    """
-    is_premium: bool
+    """Client for Google Threat Intelligence API."""
     reliability: DBotScoreReliability
 
     def __init__(self, params: dict):
-        self.is_premium = argToBoolean(params['is_premium_api'])
         self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params['feedReliability'])
 
         super().__init__(
@@ -933,7 +928,7 @@ class ScoreCalculator:
             return Common.DBotScore.BAD
         return self.score_by_threshold(last_analysis_stats, threshold)
 
-    def is_gti_malicious(self, gti_assessment: dict) -> bool:
+    def is_malicious_by_gti(self, gti_assessment: dict) -> bool:
         """Determines if an IoC is malicious according to its GTI assessment."""
         if self.gti_malicious:
             return gti_assessment.get('gti_verdict', {}).get('value') == self.GTI_MALICIOUS_VERDICT
@@ -961,7 +956,7 @@ class ScoreCalculator:
         analysis_stats = attributes.get('last_analysis_stats', {})
 
         # GTI assessment
-        if self.is_gti_malicious(attributes.get('gti_assessment', {})):
+        if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
         # Trusted vendors
@@ -992,6 +987,7 @@ class ScoreCalculator:
     def ip_score(self, ip: str, raw_response: dict) -> int:
         """Analyzing IP score.
         The next parameters are analyzed:
+            Google Threat Intelligence Assessment
             Preferred vendors
             Score by threshold
             Score by rules analysis (YARA, IDS and Sigma, if presents)
@@ -1008,7 +1004,7 @@ class ScoreCalculator:
         attributes = data.get('attributes', {})
 
         # GTI assessment
-        if self.is_gti_malicious(attributes.get('gti_assessment', {})):
+        if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
         return self.score_by_results_and_stats(ip, raw_response, self.ip_threshold)
@@ -1028,7 +1024,7 @@ class ScoreCalculator:
         attributes = data.get('attributes', {})
 
         # GTI assessment
-        if self.is_gti_malicious(attributes.get('gti_assessment', {})):
+        if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
         return self.score_by_results_and_stats(indicator, raw_response, self.url_threshold)
@@ -1047,152 +1043,10 @@ class ScoreCalculator:
         data = raw_response.get('data', {})
         attributes = data.get('attributes', {})
 
-        if self.is_gti_malicious(attributes.get('gti_assessment', {})):
+        if self.is_malicious_by_gti(attributes.get('gti_assessment', {})):
             return Common.DBotScore.BAD
 
         return self.score_by_results_and_stats(indicator, raw_response, self.domain_threshold)
-
-    # region Premium analysis
-    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback=20) -> int:
-        """Checks maliciousness of indicator on relationship files. Look on the recent 20 results returned.
-            if (number of relationship files that are malicious >= malicious threshold) -> Bad
-            if (number of relationship files that are malicious + suspicious >= suspicious threshold) -> suspicious
-            else good
-        Args:
-            relationship_files_response: The raw_response of the relationship call
-            lookback: analysing only the latest results. Defualt is 20
-
-        Returns:
-            DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
-            Common.DBotScore.GOOD
-        """
-        files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
-        total_malicious = 0
-        total_suspicious = 0
-        for file in files:
-            file_hash = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))
-            if file_hash and self.file_score(file_hash, files) == Common.DBotScore.BAD:
-                total_malicious += 1
-            elif file_hash and self.file_score(file_hash, files) == Common.DBotScore.SUSPICIOUS:
-                total_suspicious += 1
-
-        if total_malicious >= self.relationship_threshold['malicious']:
-            self.logs.append(
-                f'Found malicious by relationship files. {total_malicious} >= {self.relationship_threshold["malicious"]}')
-            return Common.DBotScore.BAD
-        if total_suspicious >= self.relationship_threshold['suspicious']:
-            self.logs.append(
-                'Found suspicious by relationship files. '
-                f'{total_malicious + total_suspicious} >= {self.relationship_threshold["suspicious"]}')
-            return Common.DBotScore.SUSPICIOUS
-        self.logs.append(
-            f'Found safe by relationship files. {total_malicious} < {self.relationship_threshold["suspicious"]}')
-        return Common.DBotScore.GOOD
-
-    def analyze_premium_scores(
-            self,
-            indicator: str,
-            base_score: int,
-            relationship_functions: List[Callable[[str], dict]]
-    ) -> int:
-        """Analyzing with premium subscription.
-
-        Args:
-            indicator: The indicator to check
-            base_score: DBotScore got by base check
-            relationship_functions: function to get relationship from (found in client)
-
-        Returns:
-            DBOT Score:
-            If one of the relationship files is Bad, returns Bad
-            if one of the relationship files is suspicious and the base_score is suspicious, returns BAD
-            If one of the relationship files is suspicious and base_score is not, returns Suspicious
-            else return GOOD
-        """
-        is_suspicious = False
-        for func in relationship_functions:
-            self.logs.append(f'Analyzing by {func.__name__}')
-            premium_score = self.is_malicious_or_suspicious_by_relationship_files(func(indicator))
-            if premium_score == Common.DBotScore.BAD:
-                return premium_score
-            if premium_score == Common.DBotScore.SUSPICIOUS and base_score == Common.DBotScore.SUSPICIOUS:
-                self.logs.append('Found malicious!')
-                return premium_score
-            if premium_score == Common.DBotScore.SUSPICIOUS:
-                self.logs.append('Found Suspicious entry, keep searching for malicious')
-                is_suspicious = True
-        if is_suspicious or base_score == Common.DBotScore.SUSPICIOUS:
-            self.logs.append('Found Suspicious')
-            return Common.DBotScore.SUSPICIOUS
-        return Common.DBotScore.GOOD
-
-    def analyze_premium_url_score(self, client: Client, url: str, base_score: int) -> int:
-        """Analyzing premium subscription.
-
-        Args:
-            client: a client with relationship commands.
-            url: the url to check
-            base_score: the base score from basic analysis
-
-        Returns:
-            score calculated by relationship.
-
-        """
-        return self.analyze_premium_scores(
-            url,
-            base_score,
-            [
-                client.get_url_communicating_files,
-                client.get_url_downloaded_files,
-                client.get_url_referrer_files
-            ]
-        )
-
-    def analyze_premium_domain_score(self, client: Client, domain: str, base_score: int) -> int:
-        """Analyzing premium subscription.
-
-        Args:
-            client: a client with relationship commands.
-            domain: the domain to check
-            base_score: the base score from basic analysis
-
-        Returns:
-            score calculated by relationship.
-
-        """
-        return self.analyze_premium_scores(
-            domain,
-            base_score,
-            [
-                client.get_domain_communicating_files,
-                client.get_domain_downloaded_files,
-                client.get_domain_referrer_files
-            ]
-        )
-
-    def analyze_premium_ip_score(self, client: Client, ip: str, base_score: int) -> int:
-        """Analyzing premium subscription.
-
-        Args:
-            client: a client with relationship commands.
-            ip: the ip to check
-            base_score: the base score from basic analysis
-
-        Returns:
-            score calculated by relationship.
-
-        """
-        return self.analyze_premium_scores(
-            ip,
-            base_score,
-            [
-                client.get_ip_communicating_files,
-                client.get_ip_downloaded_files,
-                client.get_ip_referrer_files
-            ]
-        )
-    # endregion
-
 
 # region Helper functions
 
@@ -1383,8 +1237,6 @@ def _get_domain_indicator(client, score_calculator: ScoreCalculator, domain: str
     )
 
     score = score_calculator.domain_score(domain, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_domain_score(client, domain, score)
 
     logs = score_calculator.get_logs()
     demisto.debug(logs)
@@ -1433,8 +1285,6 @@ def _get_url_indicator(client, score_calculator: ScoreCalculator, url: str, raw_
     )
 
     score = score_calculator.url_score(url, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_url_score(client, url, score)
 
     logs = score_calculator.get_logs()
     demisto.debug(logs)
@@ -1472,8 +1322,6 @@ def _get_ip_indicator(client, score_calculator: ScoreCalculator, ip: str, raw_re
     )
 
     score = score_calculator.ip_score(ip, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_ip_score(client, ip, score)
 
     logs = score_calculator.get_logs()
     demisto.debug(logs)
@@ -1962,7 +1810,6 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict,
                relationships: str, disable_private_ip_lookup: bool) -> List[CommandResults]:
     """
     1 API Call for regular
-    1-4 API Calls for premium subscriptions
     """
     ips = argToList(args['ip'])
     results: List[CommandResults] = []
@@ -2072,7 +1919,6 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
 def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
-    1-4 API Calls for premium subscriptions
     """
     urls = argToList(args['url'])
     extended_data = argToBoolean(args.get('extended_data', False))
@@ -2106,7 +1952,6 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
 def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
-    1-4 API Calls for premium subscriptions
     """
     execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])

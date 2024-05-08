@@ -604,27 +604,27 @@
             },
             "url": "http://www.example.com",
             "gti_assessment": {
-				"threat_score": {
-					"value": 100
-				},
-				"severity": {
-					"value": "SEVERITY_HIGH"
-				},
-				"contributing_factors": {
-					"mandiant_association_report": true,
-					"mandiant_association_actor": true,
-					"gavs_detections": 3,
-					"normalised_categories": [
-						"trojan"
-					],
-					"mandiant_association_malware": true,
-					"mandiant_confidence_score": 100
-				},
-				"verdict": {
-					"value": "VERDICT_MALICIOUS"
-				},
-				"description": "This indicator is malicious (high severity) with high impact."
-			}
+                "threat_score": {
+                    "value": 100
+                },
+                "severity": {
+                    "value": "SEVERITY_HIGH"
+                },
+                "contributing_factors": {
+                    "mandiant_association_report": true,
+                    "mandiant_association_actor": true,
+                    "gavs_detections": 3,
+                    "normalised_categories": [
+                        "trojan"
+                    ],
+                    "mandiant_association_malware": true,
+                    "mandiant_confidence_score": 100
+                },
+                "verdict": {
+                    "value": "VERDICT_MALICIOUS"
+                },
+                "description": "This indicator is malicious (high severity) with high impact."
+              }
         },
         "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20",
         "links": {

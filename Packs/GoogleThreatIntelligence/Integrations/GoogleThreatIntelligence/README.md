@@ -14,7 +14,6 @@ This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data |  |
-    | Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
     | File Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | File Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | IP Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
@@ -30,8 +29,6 @@ This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
     | Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
     | Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
     | Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
-    | Premium Subscription Only: Relationship Malicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
-    | Premium Subscription Only: Relationship Suspicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
 
 1. Click **Test** to validate the URLs, token, and connection.
 
@@ -81,21 +78,6 @@ Found safe by relationship files. total_malicious=0 >= 3
 Analyzing by get_url_referrer_files
 Found safe by relationship files. total_malicious=0 >= 3
 ```
-
-### Premium analysis - Relationship Files Threshold
-
-If the organization is using the premium subscription of GoogleThreatIntelligence, you can use the premium API analysis.
-The premium API analysis will check 3 file relationships of each indicator (domain, url, and ip).
-
-- If the relationship is found to be malicious, the indicator will be considered malicious.
-- If the relationship is found to be suspicious and the basic score is suspicious, the indicator will be considered malicious.
-- If the relationship is found to be suspicious, the indicator will be considered suspicious.
-
-The premium API analysis can call up to 4 API calls per indicator. If you want to decrease the use of the API quota, you can disable it.
-
-## Changes from GoogleThreatIntelligence integration
-
-The following lists the changes in this version according to the commands from the GoogleThreatIntelligence integration.
 
 ### Reputation commands (ip, url, domain, and file)
 
