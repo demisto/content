@@ -837,9 +837,9 @@ def test_create_antispoofing_bypass_policy_command(mocker):
     Args:
     """
 
-    args = {'description': 'test', 'enabled': 'true', 'enforced': 'false', 'from_eternal': 'true', 'from_type': 'everyone', 'option': 'disable_bypass', 'to_eternal': 'true', 'to_type': 'everyone'}
-    expected_response =  {}
-    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+    args = {'conditions': 'googl.com', 'description': 'aa', 'enabled': 'true', 'enforced': 'false', 'from_eternal': 'true', 'from_type': 'everyone', 'option': 'disable_bypass', 'to_eternal': 'true', 'to_type': 'everyone'}
+    expected_response =  {'meta': {'status': 200}, 'data': [{'option': 'disable_bypass', 'id': 'eNo1jrsOgjAAAP-ls0OhoGDiQHyiYkBe6oalapVSaEECxn8XBve73H2AJLgWhKZgCjoXBtZuIplZOX6Zv7aIFYR5Mbb156QJK-QKfSExdMNFFC_tK7-HuzzRDFXJBHtcUHK-k6DkGz2uqJcUjblG-VNzSk27HVF9iF70tOzS42ovnBkYgYJnFLdDWUGGMR4BXMuKMyIwT0m_Mw99S4GqpaJxT7-JkJTnPfw3g7Yg9mBDCJXvD7UZQZo', 'policy': {'description': 'aa', 'fromPart': 'envelope_from', 'from': {'type': 'everyone'}, 'to': {'type': 'everyone'}, 'fromType': 'everyone', 'toType': 'everyone', 'fromEternal': True, 'toEternal': True, 'fromDate': '1900-01-01T00:00:00+0000', 'toDate': '2100-01-01T23:59:59+0000', 'override': False, 'bidirectional': False, 'conditions': {'spfDomains': ['googl.com']}, 'enabled': True, 'enforced': False, 'createTime': '2024-05-08T13:00:06+0000', 'lastUpdated': '2024-05-08T13:00:06+0000'}}], 'fail': []}
+    mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
     result = MimecastV2.create_antispoofing_bypass_policy_command(args)
     assert expected_response.get('data') == result.outputs['data']
 

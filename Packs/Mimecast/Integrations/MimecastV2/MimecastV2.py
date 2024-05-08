@@ -102,7 +102,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
 
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
-    print('POST', 'api_endpoint:',api_endpoint, 'payload:',payload, 'headers:',headers, 'is_file:',is_file)
+    print('POST', 'api_endpoint:', api_endpoint, 'payload:', payload, 'headers:', headers, 'is_file:', is_file)
     response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
@@ -244,7 +244,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             data=data
         )
         try:
-            print('response:',res.json())
+            print('response:', res.json())
         except:
             pass
         res.raise_for_status()
@@ -593,20 +593,16 @@ def updating_token_oauth2():
     """
     global TOKEN_OAUTH2
     integration_context = demisto.getIntegrationContext()
-    integration_context.get('last_update')
+    last_update_ts = integration_context.get("last_update")
     current_ts = epoch_seconds()
-    # if (last_update_ts and current_ts - last_update_ts > 15 * 60) or last_update_ts is None:
-    TOKEN_OAUTH2 = token_oauth2_request()
-    if TOKEN_OAUTH2:
-        current_ts = epoch_seconds()
-        token_oauth2 = {
-            'value': TOKEN_OAUTH2,
-            'last_update': current_ts
-        }
-        demisto.setIntegrationContext(token_oauth2)
+    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
+        TOKEN_OAUTH2 = token_oauth2_request()
+        if TOKEN_OAUTH2:
+            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
+            demisto.setIntegrationContext(token_oauth2)
 
-    # else:
-        # TOKEN_OAUTH2 = integration_context.get('value')
+    else:
+        TOKEN_OAUTH2 = integration_context.get("value")
 
 
 def generate_user_auth_headers(api_endpoint):
@@ -1079,9 +1075,9 @@ def get_policy_request(policy_type='blockedsenders', policy_id=None):
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = []
-    
+
     id_field_name = 'id' if policy_type != 'address-alteration' else 'folderId'
-        
+
     if policy_id:
         data.append({
             id_field_name: policy_id
@@ -1359,11 +1355,11 @@ def delete_policy_request(policy_type, policy_id=None):
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     id_field_name = 'id'
-    
+
     data = [{
         id_field_name: policy_id
     }]
-    
+
     payload = {
         'data': data
     }
@@ -3225,7 +3221,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if end:
         data[0]['end'] = end
 
-    response = request_with_pagination_api2('/api/archive/get-search-logs',limit, page, page_size, data)  # type: ignore
+    response = request_with_pagination_api2('/api/archive/get-search-logs', limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.SearchLog',
@@ -3284,7 +3280,7 @@ def list_account_command(args: dict) -> CommandResults:
     if user_count:
         data[0]['userCount'] = user_count
 
-    response = request_with_pagination_api2('/api/account/get-account',limit, page, page_size, data)  # type: ignore
+    response = request_with_pagination_api2('/api/account/get-account', limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.Account',
@@ -3297,7 +3293,6 @@ def list_policies_command(args: dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
-
 
     api_endpoints = {
         'blockedsenders': 'blockedsenders/get-policy',
@@ -3332,19 +3327,18 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     override = argToBoolean(args.get('override')) if args.get('override') else None
     from_type = args.get('from_type')
     to_type = args.get('to_type')
-    
 
     data = {
-      "option": option,
-      "policy": {
-        "to": {
-          "type": to_type
-        },
-        "from": {
-          "type": from_type
-        },
-        "description": description
-      }
+        "option": option,
+        "policy": {
+            "to": {
+                "type": to_type
+            },
+            "from": {
+                "type": from_type
+            },
+            "description": description
+        }
     }
 
     if bidirectional:
@@ -3380,7 +3374,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     payload = {"data": [data]}
     api_endpoint = '/api/policy/antispoofing-bypass/create-policy'
     response = http_request('POST', api_endpoint, payload)
-    
+
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
@@ -3403,13 +3397,13 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     if args.get('bidirectional'):
         bidirectional = argToBoolean(args.get('bidirectional'))
     option = args.get('option')
-    
+
     data = {
         'id': id,
         'option': option,
         'policy': {}
-            }
-    
+    }
+
     if description:
         data['policy']['description'] = description
     if enabled:
@@ -3426,34 +3420,34 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
         data['policy']['toEternal'] = to_eternal
     if args.get('bidirectional'):
         data['policy']['toEternal'] = bidirectional
-    
+
     payload = {"data": [data]}
 
     api_endpoint = '/api/policy/antispoofing-bypass/update-policy'
     response = http_request('POST', api_endpoint, payload)
-    
+
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     return CommandResults(
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
         outputs=response,
-        readable_output= f'{id} has been updated successfully'
+        readable_output=f'{id} has been updated successfully'
     )
 
 
-def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
+def create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     description = args.get('description')
     if args.get('bidirectional'):
         bidirectional = argToBoolean(args.get('bidirectional'))
     from_date = args.get('from_date')
-    from_eternal = argToBoolean(args.get('from_eternal')) # default value
+    from_eternal = argToBoolean(args.get('from_eternal'))  # default value
     from_part = args.get('from_part')
     to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal')) # default value
-    action = args.get('action') # default value
+    to_eternal = argToBoolean(args.get('to_eternal'))  # default value
+    action = args.get('action')  # default value
     id = args.get('id')
-    urls_type = args.get('type') # default value
+    urls_type = args.get('type')  # default value
     urls_value = args.get('value')
     from_type = args.get('from_type')
     to_type = args.get('to_type')
@@ -3465,19 +3459,19 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
             'description': description,
             'from': {
                 'type': from_type
-          },
+            },
             'to': {
                 'type': to_type
-          }
+            }
         }],
         'urls':
-                [
+        [
             {
-            'action': action,
-            'type': urls_type
+                'action': action,
+                'type': urls_type
             }
-                ]
-            }
+        ]
+    }
 
     if args.get('bidirectional'):
         data['policies'][0]['bidirectional'] = bidirectional
@@ -3504,7 +3498,7 @@ def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='Mimecast.WebWhiteUrlPolicy',
         outputs=response,
-        readable_output= 'WebWhite URL policy was created successfully'
+        readable_output='WebWhite URL policy was created successfully'
     )
 
 
@@ -3587,7 +3581,7 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
     comment = args.get('comment')
     conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled')) 
+    enabled = argToBoolean(args.get('enabled'))
     enforced = argToBoolean(args.get('enforced'))
     from_date = args.get('from_date')
     from_eternal = argToBoolean(args.get('from_eternal'))
@@ -3598,25 +3592,23 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     from_type = args.get('from_type')
     to_type = args.get('to_type')
 
-
     data = {
-      'addressAlterationSetId': policy_id,
-      'policy': {
-        'description': policy_description,
-        'enabled': enabled,
-        'enforced': enforced,
-        'fromEternal': from_eternal,
-        'toEternal': to_eternal,
-        'from': {
-          'type': from_type
-        },
-        'to': {
-          'type': to_type
+        'addressAlterationSetId': policy_id,
+        'policy': {
+            'description': policy_description,
+            'enabled': enabled,
+            'enforced': enforced,
+            'fromEternal': from_eternal,
+            'toEternal': to_eternal,
+            'from': {
+                'type': from_type
+            },
+            'to': {
+                'type': to_type
+            }
         }
-      }
     }
 
-  
     if bidirectional:
         data['bidirectional'] = bidirectional
     if comment:
@@ -3636,30 +3628,30 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     payload = {'data': [data]}
     api_endpoint = '/api/policy/address-alteration/create-policy'
     response = http_request('POST', api_endpoint, payload)
-    
+
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     return CommandResults(
         outputs_prefix='Mimecast.AddressAlterationPolicy',
         outputs=response,
-        readable_output= 'Address Alteration policy was created successfully'
+        readable_output='Address Alteration policy was created successfully'
     )
 
 
 def update_address_alteration_policy_command(args: dict) -> CommandResults:
-    id = args.get('id') #
+    id = args.get('id')
     policy_description = args.get('policy_description')
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
     comment = args.get('comment')
     conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled')) # default value
-    enforced = argToBoolean(args.get('enforced')) # default value
+    enabled = argToBoolean(args.get('enabled'))  # default value
+    enforced = argToBoolean(args.get('enforced'))  # default value
     from_date = args.get('from_date')
     from_eternal = argToBoolean(args.get('from_eternal'))  # default value
     from_part = args.get('from_part')
     to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal')) # default value
+    to_eternal = argToBoolean(args.get('to_eternal'))  # default value
     override = args.get('override')
 
     data = {
@@ -3670,8 +3662,8 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
             'enforced': enforced,
             'from_eternal': from_eternal,
             'to_eternal': to_eternal,
-            }
         }
+    }
 
     if comment:
         data['comment'] = comment
@@ -3692,14 +3684,14 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
     payload = {'data': [data]}
     api_endpoint = '/api/policy/address-alteration/update-policy'
     response = http_request('POST', api_endpoint, payload)
-    
+
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
     return CommandResults(
         outputs_prefix='Mimecast.AddressAlterationPolicy',
         outputs=response,
-        readable_output= f'{id} has been updated successfully'
+        readable_output=f'{id} has been updated successfully'
     )
 
 
