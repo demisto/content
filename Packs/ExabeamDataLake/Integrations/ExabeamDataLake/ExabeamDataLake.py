@@ -90,6 +90,26 @@ def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
     return query_range
 
 
+def _parse_entry(entry: dict) -> dict:
+    """
+    Parse a single entry from the API response to a dictionary.
+
+    Args:
+        entry: The entry from the API response.
+
+    Returns:
+        dict: The parsed entry dictionary.
+    """
+    source: dict = entry.get("_source", {})
+    return {
+        "id": entry.get("_id"),
+        "vendor": source.get("Vendor"),
+        "created_at": source.get("@timestamp"),
+        "product": source.get("Product"),
+        "message": source.get("message")
+    }
+
+
 def dates_in_range(start_time, end_time):
     start_time = datetime.strptime(start_time, "%Y-%m-%d")
     end_time = datetime.strptime(end_time, "%Y-%m-%d")
@@ -108,6 +128,13 @@ def dates_in_range(start_time, end_time):
     
     return dates
 
+
+def get_date(time):
+    time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
+    if time:
+        time = time.strftime(ISO_8601_FORMAT)
+    return time
+        
 
 def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandResults:
     """
@@ -131,35 +158,11 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
         size_param = limit
         
     
-
-    def _parse_entry(entry: dict) -> dict:
-        """
-        Parse a single entry from the API response to a dictionary.
-
-        Args:
-            entry: The entry from the API response.
-
-        Returns:
-            dict: The parsed entry dictionary.
-        """
-        source: dict = entry.get("_source", {})
-        return {
-            "id": entry.get("_id"),
-            "vendor": source.get("Vendor"),
-            "created_at": source.get("@timestamp"),
-            "product": source.get("Product"),
-            "message": source.get("message")
-        }
-
     if start_time := args.get("start_time"):
-        start_time = arg_to_datetime(arg=start_time, arg_name="Start time", required=True)
-        if start_time:
-            start_time = start_time.strftime(ISO_8601_FORMAT)
+       start_time = get_date(start_time)
             
     if end_time := args.get("end_time"):
-        end_time = arg_to_datetime(arg=end_time, arg_name="End time", required=True)
-        if end_time:
-            end_time = end_time.strftime(ISO_8601_FORMAT)
+        end_time = get_date(end_time)
             
     dates = dates_in_range(start_time, end_time)
     dates_in_format = []
