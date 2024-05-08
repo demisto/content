@@ -264,7 +264,7 @@ def get_thread_id_from_job_artifacts(gitlab_client: Gitlab, project_id, job_id):
     """
     project = gitlab_client.projects.get(project_id)
     job = project.jobs.get(job_id)
-    artifact = job.artifact('artifacts/ slack_msg.json').decode()
+    artifact = job.artifact('artifacts/slack_msg.json').decode()
     pattern = r'with thread id:\s*(\S+)'
     match = re.search(pattern, artifact)
     if match:
@@ -281,7 +281,10 @@ def get_slack_message_job_id(gitlab_client: Gitlab, project_id, pipeline_id):
     
     for pipeline in child_pipelines:
         if pipeline.name == 'slack-notify-on-merge':
-            return pipeline.id
+            downstream_pipeline_id = pipeline.downstream_pipeline.get('id')
+            all_jobs= project.pipelines.get(downstream_pipeline_id).jobs.list()
+            slack_job_id = next((job.id for job in all_jobs if job.name == 'slack-notify'), None)
+            return slack_job_id
     return None
     
 
