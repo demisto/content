@@ -55,7 +55,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  advance: true
+  advanced: true
 
 - display: Temperature
   name: temperature
@@ -63,7 +63,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  advance: true
+  advanced: true
 
 - display: Top P
   name: top_p
@@ -71,7 +71,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  advance: true
+  advanced: true
 
 - display: Trust any certificate (not secure)
   name: insecure
