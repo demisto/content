@@ -225,20 +225,20 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
 
-    if integration_name in ['EWS v2 dev', 'EWSO365 dev']:
+    if integration_name in ['EWS v2', 'EWSO365']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'item-id': str(message_id), 'attachment-ids': identifier_ids, 'using': instance_name}})
+                                'arguments': {'item-id': str(message_id), 'identifiers-filter': identifier_ids, 'using': instance_name}})
 
-    elif integration_name in ['Gmail dev', 'Gmail Single User dev']:
+    elif integration_name in ['Gmail', 'Gmail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
-                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'content-ids': identifier_ids, 'using': instance_name}})
+                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'identifiers-filter': identifier_ids, 'using': instance_name}})
 
-    elif integration_name in ['MicrosoftGraphMail dev', 'Microsoft Graph Mail Single User dev']:
+    elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'content_ids': identifier_ids,
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'identifier_ids': identifier_ids,
                                               'using': instance_name}})
 
     else:
@@ -447,8 +447,6 @@ def main():
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
-        demisto.debug("testting gmail")
-        demisto.debug(f"first_in_preproccess {attachments[0]}")
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
         email_original_subject = email_subject.split('<')[-1].split('>')[1].strip()
 
@@ -464,16 +462,12 @@ def main():
 
         #Get attachments IDs for new attacments
         attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, email_related_incident)
-        demisto.debug(f"{attachment_identifiers_array=}")
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(45)
         files = get_incident_related_files(email_related_incident)
-        demisto.debug(f"{files=}")
-        demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
         entry_id_list = get_entry_id_list(attachments, files)
-        demisto.debug(f"{entry_id_list=}")
         html_body = create_email_html(email_html, entry_id_list)
 
         # For all other incident types, add message details as context entry
