@@ -51,7 +51,8 @@ class Client(CoreClient):
             "email": email,
         }
 
-        reply = demisto._apiCall(name="wfReportIncorrectVerdict",
+        reply = demisto._apiCall(method='POST',
+                                 name="wfReportIncorrectVerdict",
                                  params=None,
                                  data=json.dumps(request_data))
 
