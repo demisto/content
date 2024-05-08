@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: Rapid7 Nexpose
+  id: Rapid7 Nexpose -dev
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.0.2.0:8080)
@@ -31,8 +31,8 @@ configuration:
   additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
   type: 0
 description: Vulnerability management solution to help reduce threat exposure.
-display: Rapid7 InsightVM
-name: Rapid7 Nexpose
+display: Rapid7 InsightVM -dev
+name: Rapid7 Nexpose -dev
 script:
   commands:
   - arguments:
@@ -2111,6 +2111,82 @@ script:
       name: username
     description: Update an existing shared credential.
     name: nexpose-update-shared-credential
+  - name: nexpose-create-tag
+    arguments:
+    - name: name
+      required: true
+      description: The tage name.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Owner
+      - Location
+      - Custom
+      description: The tage type.
+    - name: color
+      auto: PREDEFINED
+      predefined:
+      - Blue
+      - Green
+      - Orange
+      - Red
+      - Purple
+      - Default
+      description: The tage color - relevant only in "Custom" type.
+      defaultValue: Default
+    - name: ip_address_is
+      description: A specific IP address to search.
+    - name: host_name_is
+      description: A specific host name to search.
+    - name: risk_score_higher_than
+      description: A minimum risk score to use as a filter.
+    - name: vulnerability_title_contains
+      description: A string to search for in vulnerabilities titles.
+    - name: site_id_in
+      description: Site IDs to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: site_name_in
+      description: Site names to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Any
+      description: Operator to determine how to match filters. "all" requires that
+        all filters match for an asset to be included. "any" requires only one filter
+        to match for an asset to be included.
+      defaultValue: Any
+    - name: query
+      description: Queries to use as a filter,. According to the Search Criteria
+        API standard, the structure is {field} {operator} {value}.   Multiple queries
+        can be specified, separated by a ";" separator. For example 'ip-address in-range
+        192.0.2.0,192.0.2.1;host-name is myhost'.
+    description: Create tag.
+  - name: nexpose-delete-tag
+    arguments:
+    - name: id
+      required: true
+      description: The tag ID.
+    description: delete tag.
+  - name: nexpose-list-tag
+    arguments:
+    - name: id
+      description: Get tag by id.
+    - name: name
+      description: Ffilters the returned tags to only those containing the value within their name.
+    - name: type
+      description: Ffilters the returned tags to only those from this type.
+    - name: page_size
+      description: Number of records to retrieve in each API call when pagination.
+        is used.
+    - name: page
+      description: A specific page to retrieve when pagination is used. Page indexing.
+        starts at 0.
+    - name: limit
+      description: A number of records to limit the response to.
+    description: 'Retarn a list of tags'
   runonce: false
   script: '-'
   type: python

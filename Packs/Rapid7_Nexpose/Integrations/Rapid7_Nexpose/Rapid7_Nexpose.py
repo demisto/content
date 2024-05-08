@@ -1921,6 +1921,54 @@ class Client(BaseClient):
 
         return None
 
+    def create_tag(self, name: str, type: str, color: str, match: str | None = MATCH_DEFAULT_VALUE, filters: list[dict] | None = None):
+        json_data: dict[str, str | dict] = {
+            "type": type,
+            "name": name,
+            "color": color
+        }
+        if filters is not None:
+            json_data["searchCriteria"] = find_valid_params(filters=filters, match=match,)
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/tags",
+            json_data=json_data,
+            resp_type="json",
+        )
+
+    def delete_tag(self, id: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/tags/{id}",
+            resp_type="json"
+        )
+
+    def get_tag_by_id(self, id: int):
+        return self._http_request(
+            url_suffix=f"/tags/{id}",
+            method="GET",
+            resp_type="json"
+        )
+
+    def get_tags_list(self, name: str | None = None, type: str | None = None, page_size: int | None = DEFAULT_PAGE_SIZE,
+                      page: int | None = None, limit: int | None = None):
+        params = {}
+        if name:
+            params["name"] = name
+        if type:
+            params["type"] = type
+
+        return self._paged_http_request(
+            url_suffix="/tags",
+            method="GET",
+            params=params,
+            page_size=page_size,
+            page=page,
+            limit=limit,
+            resp_type="json",
+        )
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -4828,6 +4876,69 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
     return results
 
 
+def create_tag_command(client: Client, name: str, type: str, color: str = "Default", ip_address_is: str | None = None,
+                       host_name_is: str | None = None, risk_score_higher_than: str | None = None,
+                       vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
+                       site_name_in: str | None = None, query: str | None = None, match: str | None = None):
+
+    filters_data: list[str] = []
+
+    if ip_address_is:
+        filters_data.append("ip-address is " + ip_address_is)
+
+    if host_name_is:
+        filters_data.append("host-name is " + host_name_is)
+
+    if risk_score_higher_than:
+        filters_data.append("risk-score is-greater-than " + risk_score_higher_than)
+
+    if vulnerability_title_contains:
+        filters_data.append("vulnerability-title contains " + vulnerability_title_contains)
+
+    if query:
+        filters_data.extend(query.split(";"))
+
+    res = client.create_tag(name=name, type=type, color=color, match=match, filters=convert_asset_search_filters(filters_data))
+
+    if isinstance(res, dict) and res["id"]:
+        id = res["id"]
+
+    return CommandResults(
+        outputs_prefix="Nexpose.Tag",
+        outputs_key_field="Id",
+        outputs=res,
+        readable_output=f"A new tag '{name}' created successfully with ID: {id}",
+        raw_response=res,
+    )
+
+
+def delete_tag_command(client: Client, id: str):
+    client.delete_tag(id)
+    return CommandResults(readable_output=f"tag: {id} was deleted successfully")
+
+
+def get_tags_list_command(client: Client, id: str | None = None, name: str | None = None, type: str | None = None,
+                          page_size: str | None = None, page: str | None = None, limit: str | None = None):
+
+    id_int = arg_to_number(id, required=False)
+    page_size_int = arg_to_number(page_size, required=False)
+    page_int = arg_to_number(page, required=False)
+    limit_int = arg_to_number(limit, required=False)
+
+    if id_int:
+        tags = client.get_tag_by_id(id=id_int)
+    else:
+        tags = client.get_tags_list(name=name, type=type, page_size=page_size_int, page=page_int, limit=limit_int)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.Tag",
+        outputs_key_field="Id",
+        outputs=tags,
+        readable_output=tableToMarkdown("Tags list", tags),
+        raw_response=tags
+    )
+
+
 def set_assigned_shared_credential_status_command(client: Client, credential_id: str, enabled: bool,
                                                   site_id: str | None = None,
                                                   site_name: str | None = None) -> CommandResults:
@@ -5512,6 +5623,12 @@ def main():  # pragma: no cover
             results = start_site_scan_command(client=client, site_id=args.pop("site", None), **args)
         elif command == "nexpose-stop-scan":
             results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.STOP)
+        elif command == "nexpose-create-tag":
+            results = create_tag_command(client=client, **args)
+        elif command == "nexpose-delete-tag":
+            results = delete_tag_command(client=client, **args)
+        elif command == "nexpose-list-tag":
+            results = get_tags_list_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
