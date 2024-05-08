@@ -13,9 +13,12 @@ class Client(BaseClient):
         Client to use in the IPinfo integration. Uses BaseClient
         """
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
+        time_sensitive = is_time_sensitive()
+        demisto.debug(f'{time_sensitive=}')
+
+        self.timeout = 2 if time_sensitive else 20
         self.api_key = api_key
         self.reliability = reliability
-        self.timeout = 2 if is_time_sensitive() else 20
 
     def ipinfo_ip(self, ip: str) -> dict[str, Any]:
         return self.http_request(ip)
@@ -197,7 +200,6 @@ def main() -> None:
     reliability = params.get('integrationReliability')
 
     demisto.debug(f'Command being called is {command}')
-    demisto.debug(f'Is time sensitive: {is_time_sensitive()}')
 
     try:
         client = Client(api_key=api_key,
