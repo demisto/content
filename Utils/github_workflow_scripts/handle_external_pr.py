@@ -344,7 +344,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     return ''
 
 
-def find_reviewer_to_assign(content_repo: Repository, pr: str, pr_number: str, content_reviewers: list[str]):
+def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number: str, content_reviewers: list[str]):
     """
     Gets the content repo, PR and pr_number. Will return reviewer to assign
     Argument:
