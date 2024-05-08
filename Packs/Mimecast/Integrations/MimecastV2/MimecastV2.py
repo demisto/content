@@ -18,29 +18,31 @@ from xml.etree import ElementTree
 
 ''' GLOBALS/PARAMS '''
 print('args:', demisto.args())
-BASE_URL = demisto.params().get('baseUrl')
-ACCESS_KEY = demisto.params().get('accessKey')
-# SECRET_KEY = demisto.params().get('secretKey')
-# SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
-APP_ID = demisto.params().get('appId')
-# APP_KEY = demisto.params().get('appKey')
-# APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
+print('params:', demisto.params())
 
-USE_SSL = None  # assigned in determine_ssl_usage
-PROXY = bool(demisto.params().get('proxy'))
-# Flags to control which type of incidents are being fetched
-FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
-FETCH_ALL = 'All' in FETCH_PARAMS
-FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
-FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
-FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
-FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
-# Used to refresh token / discover available auth types / login
-# EMAIL_ADDRESS = demisto.params().get('email')
-# EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-# PASSWORD = demisto.params().get('password')
-# PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
-FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+try:
+    BASE_URL = demisto.params().get('baseUrl')
+    ACCESS_KEY = demisto.params().get('accessKey')
+    SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
+    APP_ID = demisto.params().get('appId')
+    APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
+
+    USE_SSL = None  # assigned in determine_ssl_usage
+    PROXY = bool(demisto.params().get('proxy'))
+    # Flags to control which type of incidents are being fetched
+    FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
+    FETCH_ALL = 'All' in FETCH_PARAMS
+    FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
+    FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
+    FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
+    FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
+    # Used to refresh token / discover available auth types / login
+    EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
+    PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
+    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+except:
+    pass
+
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 USE_OAUTH2 = demisto.params().get("use_oauth2")
@@ -241,7 +243,10 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             json=payload,
             data=data
         )
-        print('response:',res.json())
+        try:
+            print('response:',res.json())
+        except:
+            pass
         res.raise_for_status()
         if is_file:
             return res
@@ -3228,7 +3233,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     )
 
 
-def mimecast_get_view_logs_command(args: dict) -> CommandResults:
+def get_view_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
     start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
     end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
@@ -3256,7 +3261,7 @@ def mimecast_get_view_logs_command(args: dict) -> CommandResults:
     )
 
 
-def mimecast_list_account_command(args: dict) -> CommandResults:
+def list_account_command(args: dict) -> CommandResults:
     account_name = args.get('account_name', '')
     account_code = args.get('account_code', '')
     admin_email = args.get('admin_email', '')
@@ -3287,7 +3292,7 @@ def mimecast_list_account_command(args: dict) -> CommandResults:
     )
 
 
-def mimecast_list_policies_command(args: dict) -> CommandResults:
+def list_policies_command(args: dict) -> CommandResults:
     policy_type = args.get('policyType', 'blockedsenders')
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -3308,7 +3313,7 @@ def mimecast_list_policies_command(args: dict) -> CommandResults:
     )
 
 
-def mimecast_create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
+def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     option = args.get('option')
     bidirectional = args.get('bidirectional')
     comment = args.get('comment')
@@ -3386,7 +3391,7 @@ def mimecast_create_antispoofing_bypass_policy_command(args: dict) -> CommandRes
     )
 
 
-def  mimecast_update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
+def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     description = args.get('description')
     id = args.get('id')
     enabled = argToBoolean(args.get('enabled'))
@@ -3398,9 +3403,6 @@ def  mimecast_update_antispoofing_bypass_policy_command(args: dict) -> CommandRe
     if args.get('bidirectional'):
         bidirectional = argToBoolean(args.get('bidirectional'))
     option = args.get('option')
-    # page = arg_to_number(args.get('page'))
-    # page_size = arg_to_number(args.get('page_size'))
-    # limit = arg_to_number(args.get('limit'))
     
     data = {
         'id': id,
@@ -3429,7 +3431,6 @@ def  mimecast_update_antispoofing_bypass_policy_command(args: dict) -> CommandRe
 
     api_endpoint = '/api/policy/antispoofing-bypass/update-policy'
     response = http_request('POST', api_endpoint, payload)
-    # response = request_with_pagination_api2(api_endpoint, limit, page, page_size, payload) # type: ignore
     
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
@@ -3441,7 +3442,7 @@ def  mimecast_update_antispoofing_bypass_policy_command(args: dict) -> CommandRe
     )
 
 
-def  mimecast_create_webwhiteurl_policy_command(args: dict) -> CommandResults:
+def  create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     description = args.get('description')
     if args.get('bidirectional'):
         bidirectional = argToBoolean(args.get('bidirectional'))
@@ -3508,7 +3509,7 @@ def  mimecast_create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     )
 
 
-def  mimecast_update_webwhiteurl_policies_command(args: dict) -> CommandResults:
+def  update_webwhiteurl_policies_command(args: dict) -> CommandResults:
     description = args.get('description')
     id = args.get('id') #
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
@@ -3526,9 +3527,6 @@ def  mimecast_update_webwhiteurl_policies_command(args: dict) -> CommandResults:
     url_id = args.get('url_id')
     url_type = args.get('url_type')
     url_value = args.get('url_value')
-    # page = args.get('page')
-    # page_size = args.get('page_size')
-    # limit = args.get('limit')
 
     data = {
       "id": id,
@@ -3580,7 +3578,7 @@ def  mimecast_update_webwhiteurl_policies_command(args: dict) -> CommandResults:
     )
 
 
-def  mimecast_create_address_alteration_policy_command(args: dict) -> CommandResults:
+def create_address_alteration_policy_command(args: dict) -> CommandResults:
     policy_id = args.get('policy_id')
     policy_description = args.get('policy_description')
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
@@ -3645,7 +3643,7 @@ def  mimecast_create_address_alteration_policy_command(args: dict) -> CommandRes
     )
     
     
-def mimecast_update_address_alteration_policy_command(args: dict) -> CommandResults:
+def update_address_alteration_policy_command(args: dict) -> CommandResults:
     id = args.get('id') #
     policy_description = args.get('policy_description')
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
@@ -3796,23 +3794,23 @@ def main():
         elif command == 'mimecast-get-search-logs':
             return_results(get_search_logs_command(args))
         elif command == 'mimecast-get-view-logs':
-            return_results(mimecast_get_view_logs_command(args))
+            return_results(get_view_logs_command(args))
         elif command == 'mimecast-list-account':
-            return_results(mimecast_list_account_command(args))
+            return_results(list_account_command(args))
         elif command == 'mimecast-list-policies':
-            return_results(mimecast_list_policies_command(args))
+            return_results(list_policies_command(args))
         elif command == 'mimecast-create-antispoofing-bypass-policy':
-            return_results(mimecast_create_antispoofing_bypass_policy_command(args))
+            return_results(create_antispoofing_bypass_policy_command(args))
         elif command == 'mimecast-update-antispoofing-bypass-policy':
-            return_results(mimecast_update_antispoofing_bypass_policy_command(args))
+            return_results(update_antispoofing_bypass_policy_command(args))
         elif command == 'mimecast-create-webwhiteurl-policy':
-            return_results(mimecast_create_webwhiteurl_policy_command(args))
+            return_results(create_webwhiteurl_policy_command(args))
         elif command == 'mimecast-update-webwhiteurl-policies':
-            return_results(mimecast_update_webwhiteurl_policies_command(args))
+            return_results(update_webwhiteurl_policies_command(args))
         elif command == 'mimecast-create-address-alteration-policy':
-            return_results(mimecast_create_address_alteration_policy_command(args))
+            return_results(create_address_alteration_policy_command(args))
         elif command == 'mimecast-update-address-alteration-policy':
-            return_results(mimecast_update_address_alteration_policy_command(args))
+            return_results(update_address_alteration_policy_command(args))
 
     except Exception as e:
         return_error(e)
