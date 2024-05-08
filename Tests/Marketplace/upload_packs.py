@@ -44,7 +44,7 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> set:
         packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
         return packs
     else:
-        logging.critical(f"Not correct usage of flag -p. Please check help section of upload packs script. type is {type(packs_to_upload)}")
+        logging.critical(f"Not correct usage of flag -p. Please check help section of upload packs script. type is {str(packs_to_upload)}")
         sys.exit(1)
 
 
