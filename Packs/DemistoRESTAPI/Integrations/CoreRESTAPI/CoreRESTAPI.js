@@ -317,7 +317,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
-        if (installed_packs) {
+        if (installed_packs.length === 0) {
             return 'The following packs installed successfully: ' + installed_packs.join(", ")
         } else {
             return 'No pack has been installed, please check that the pack name and version are correct.'
