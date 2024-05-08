@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Removed support for xsiam marketplace for SendEmailOnSLABreach script."
+    "breakingChangesNotes": "The ***SendEmailOnSLABreach*** script is no longer supported on Cortex XSIAM."
 }
