@@ -36,7 +36,8 @@ configuration:
   type: 8
   required: false
 - section: Collect
-  display: First fetch time ("<number> <time unit>" e.g. "24 hours", "7 days")
+  display: First fetch time
+  additionalinfo: First insight updated date to fetch. e.g., "24 hours", "7 days", "1 month"
   name: first_fetch
   defaultvalue: 7 days
   type: 0
