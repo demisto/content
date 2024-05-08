@@ -104,43 +104,43 @@ Uses a certificate GUID to extract more details from the certificate store.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Venafi.Certificate.ID | string | The certificate object GUID. | 
-| ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
-| CreatedOn | date | The exact date and time when the Certificate object was created. | 
-| DN | string | The DN of the certificate. | 
-| Name | string | The name of the certificate. | 
-| SchemaClass | string | The class name of the certificate object. | 
-| Approver | string | An array of one or more users or groups who are certificate approvers. | 
-| CertificateAuthorityDN | string | The CA template that is required for certificate renewal. | 
-| Contact | string | An array of one or more users or groups who receive event notifications. The events notify people about certificate expiration and validation failures. | 
-| Description | string | Certificate description. | 
-| ManagedBy | string | Certificate manager. | 
-| ManagementType | string | The level of management that the Trust Protection Platform applies to the certificate. | 
-| CertificateDetails.AIAKeyIdentifier | string | Authority key identifier. | 
-| CertificateDetails.Issuer | string | The CN, O, L, S, and C values from the certificate request. | 
-| CertificateDetails.Serial | string | The unique serial number that the CA assigned to the certificate. | 
-| CertificateDetails.Subject | string | The CN, O, L, S, and C values from the certificate request. | 
-| CertificateDetails.Thumbprint | string | The SHA1 thumbprint hash of the certificate. | 
-| CertificateDetails.ValidFrom | string | Certificate validation start date. | 
-| CertificateDetails.ValidTo | string | Certificate validation end time. | 
-| CertificateDetails.AIACAIssuerURL | array | Available only when the certificate was issued by a well-configured CA. An array of Authority Information Access \(AIA\). Shows the CA issuer link and the CA's certificate details. May also include Online Certificate Status Protocol \(OCSP\) information about revocation. | 
-| CertificateDetails.CN | string | The Common Name attribute of Subject Distinguished Name \(DN\). | 
-| CertificateDetails.EnhancedKeyUsage | string | The PKI Server Authentication object identifier \(OID\). | 
-| CertificateDetails.KeyAlgorithm | string | The algorithm for the public key. | 
-| CertificateDetails.KeySize | string | Only available for RSA certificates. The bit size of the public key. | 
-| CertificateDetails.KeyUsage | string | A list of Key Usage extension values that describe the purpose of the public key. | 
-| CertificateDetails.OU | string | An array of Organization Units or names. | 
-| CertificateDetails.PublicKeyHash | string | The public key hash string. Available only when the certificate has a private key. | 
-| CertificateDetails.SKIKeyIdentifier | string | The generated Subject Key Identifier \(SKI\) | 
-| CertificateDetails.SignatureAlgorithm | string | The signature algorithm for signing the certificate. | 
-| CertificateDetails.SignatureAlgorithmOID | string | The Signature Object ID for signing the certificate. | 
-| CertificateDetails.StoreAdded | string | The Date Time stamp when the private key was added to the store. | 
-| CertificateDetails.SubjectAltNameDNS | string | An array of Domain Name System \(DNS\) SANs. | 
-| CertificateDetails.SubjectAltNameEmail | string | An array of Email SANs. Based on RFC 822. | 
-| CertificateDetails.SubjectAltNameOtherNameUPN | string | An array of User Principal Name \(UPN\) SANs. | 
-| CertificateDetails.SubjectAltNameIPAddress | string | An array of IP address SANs. | 
-| CertificateDetails.SubjectAltNameURI | string | An array of Uniform Resource Indicator \(URI\) SANs. | 
-| CreatedBy | string | The object that initiated enrollment or provisioning changes. The default is Web SDK. | 
-| Origin | string |  | 
-| ProcessingDetails | dictionary | Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN | 
-| RenewalDetails | dictionary | A list of certificate renewal information | 
-| ValidationDetails | dictionary | A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. All other validationdetails fields are absent. | 
+| Venafi.Certificate.ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
+| Venafi.Certificate.CreatedOn | date | The exact date and time when the Certificate object was created. | 
+| Venafi.Certificate.DN | string | The DN of the certificate. | 
+| Venafi.Certificate.Name | string | The name of the certificate. | 
+| Venafi.Certificate.SchemaClass | string | The class name of the certificate object. | 
+| Venafi.Certificate.Approver | string | An array of one or more users or groups who are certificate approvers. | 
+| Venafi.Certificate.CertificateAuthorityDN | string | The CA template that is required for certificate renewal. | 
+| Venafi.Certificate.Contact | string | An array of one or more users or groups who receive event notifications. The events notify people about certificate expiration and validation failures. | 
+| Venafi.Certificate.Description | string | Certificate description. | 
+| Venafi.Certificate.ManagedBy | string | Certificate manager. | 
+| Venafi.Certificate.ManagementType | string | The level of management that the Trust Protection Platform applies to the certificate. | 
+| Venafi.Certificate.CertificateDetails.AIAKeyIdentifier | string | Authority key identifier. | 
+| Venafi.Certificate.CertificateDetails.Issuer | string | The CN, O, L, S, and C values from the certificate request. | 
+| Venafi.Certificate.CertificateDetails.Serial | string | The unique serial number that the CA assigned to the certificate. | 
+| Venafi.Certificate.CertificateDetails.Subject | string | The CN, O, L, S, and C values from the certificate request. | 
+| Venafi.Certificate.CertificateDetails.Thumbprint | string | The SHA1 thumbprint hash of the certificate. | 
+| Venafi.Certificate.CertificateDetails.ValidFrom | string | Certificate validation start date. | 
+| Venafi.Certificate.CertificateDetails.ValidTo | string | Certificate validation end time. | 
+| Venafi.Certificate.CertificateDetails.AIACAIssuerURL | array | Available only when the certificate was issued by a well-configured CA. An array of Authority Information Access \(AIA\). Shows the CA issuer link and the CA's certificate details. May also include Online Certificate Status Protocol \(OCSP\) information about revocation. | 
+| Venafi.Certificate.CertificateDetails.CN | string | The Common Name attribute of Subject Distinguished Name \(DN\). | 
+| Venafi.Certificate.CertificateDetails.EnhancedKeyUsage | string | The PKI Server Authentication object identifier \(OID\). | 
+| Venafi.Certificate.CertificateDetails.KeyAlgorithm | string | The algorithm for the public key. | 
+| Venafi.Certificate.CertificateDetails.KeySize | string | Only available for RSA certificates. The bit size of the public key. | 
+| Venafi.Certificate.CertificateDetails.KeyUsage | string | A list of Key Usage extension values that describe the purpose of the public key. | 
+| Venafi.Certificate.CertificateDetails.OU | string | An array of Organization Units or names. | 
+| Venafi.Certificate.CertificateDetails.PublicKeyHash | string | The public key hash string. Available only when the certificate has a private key. | 
+| Venafi.Certificate.CertificateDetails.SKIKeyIdentifier | string | The generated Subject Key Identifier \(SKI\) | 
+| Venafi.Certificate.CertificateDetails.SignatureAlgorithm | string | The signature algorithm for signing the certificate. | 
+| Venafi.Certificate.CertificateDetails.SignatureAlgorithmOID | string | The Signature Object ID for signing the certificate. | 
+| Venafi.Certificate.CertificateDetails.StoreAdded | string | The Date Time stamp when the private key was added to the store. | 
+| Venafi.Certificate.CertificateDetails.SubjectAltNameDNS | string | An array of Domain Name System \(DNS\) SANs. | 
+| Venafi.Certificate.CertificateDetails.SubjectAltNameEmail | string | An array of Email SANs. Based on RFC 822. | 
+| Venafi.Certificate.CertificateDetails.SubjectAltNameOtherNameUPN | string | An array of User Principal Name \(UPN\) SANs. | 
+| Venafi.Certificate.CertificateDetails.SubjectAltNameIPAddress | string | An array of IP address SANs. | 
+| Venafi.Certificate.CertificateDetails.SubjectAltNameURI | string | An array of Uniform Resource Indicator \(URI\) SANs. | 
+| Venafi.Certificate.CreatedBy | string | The object that initiated enrollment or provisioning changes. The default is Web SDK. | 
+| Venafi.Certificate.Origin | string |  | 
+| Venafi.Certificate.ProcessingDetails | dictionary | Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN | 
+| Venafi.Certificate.RenewalDetails | dictionary | A list of certificate renewal information | 
+| Venafi.Certificate.ValidationDetails | dictionary | A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. All other validationdetails fields are absent. | 
