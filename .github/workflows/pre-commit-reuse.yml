@@ -87,6 +87,7 @@ jobs:
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
         ! github.event.pull_request.head.repo.fork
       uses: MishaKav/pytest-coverage-comment@main
+      continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
         junitxml-path: .report_pytest.xml
