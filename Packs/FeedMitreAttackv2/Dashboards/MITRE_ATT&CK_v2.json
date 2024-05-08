@@ -1,1385 +1,1370 @@
 {
-	"id": "a15ddbcd-bf60-45ef-8b79-0195dd3363d8",
-	"version": 7,
-	"cacheVersn": 0,
-	"modified": "2024-05-08T09:18:31.029488723Z",
-	"created": "0001-01-01T00:00:00Z",
-	"sizeInBytes": 0,
-	"packID": "",
-	"packName": "",
-	"itemVersion": "",
-	"fromServerVersion": "",
-	"toServerVersion": "",
-	"definitionId": "",
-	"vcShouldIgnore": false,
-	"vcShouldKeepItemLegacyProdMachine": false,
-	"commitMessage": "",
-	"shouldCommit": false,
-	"fromDate": "0001-01-01T00:00:00Z",
-	"toDate": "0001-01-01T00:00:00Z",
-	"period": {
-		"by": "",
-		"byTo": "",
-		"byFrom": "days",
-		"toValue": null,
-		"fromValue": 180,
-		"field": ""
-	},
-	"fromDateLicense": "0001-01-01T00:00:00Z",
-	"name": "MITRE ATT\u0026CK",
-	"prevName": "MITRE ATT\u0026CK",
-	"layout": [
-		{
-			"id": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
-			"forceRange": false,
-			"x": 0,
-			"y": 4,
-			"i": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Initial Access",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "34f20330-a348-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 2,
-			"y": 4,
-			"i": "34f20330-a348-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Execution",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "673b1700-a348-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 0,
-			"y": 5,
-			"i": "673b1700-a348-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Persistence",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "85a61b90-a348-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 2,
-			"y": 5,
-			"i": "85a61b90-a348-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Privilege Escalation",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 0,
-			"y": 6,
-			"i": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Defense Evasion",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 0,
-			"y": 7,
-			"i": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Discovery",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 2,
-			"y": 7,
-			"i": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Lateral Movement",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 0,
-			"y": 8,
-			"i": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Collection",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "ce291380-a349-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 0,
-			"y": 9,
-			"i": "ce291380-a349-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Command and Control",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 2,
-			"y": 9,
-			"i": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Exfiltration",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
-			"forceRange": false,
-			"x": 2,
-			"y": 8,
-			"i": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Impact",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "84e563a0-b247-11eb-bba6-a17854c1d523",
-			"forceRange": false,
-			"x": 2,
-			"y": 6,
-			"i": "84e563a0-b247-11eb-bba6-a17854c1d523",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Credential Access",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "d30a7f40-f004-11ee-8364-358ac255f0be",
-			"forceRange": false,
-			"x": 0,
-			"y": 3,
-			"i": "d30a7f40-f004-11ee-8364-358ac255f0be",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Reconnaissance",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Reconnaissance\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "464d2e30-f005-11ee-8364-358ac255f0be",
-			"forceRange": false,
-			"x": 2,
-			"y": 3,
-			"i": "464d2e30-f005-11ee-8364-358ac255f0be",
-			"w": 2,
-			"h": 1,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"created": "0001-01-01T00:00:00Z",
-				"sizeInBytes": 0,
-				"packID": "",
-				"packName": "",
-				"itemVersion": "",
-				"fromServerVersion": "",
-				"toServerVersion": "",
-				"propagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Resource Development",
-				"prevName": "",
-				"dataType": "incidents",
-				"widgetType": "number",
-				"query": "-status:closed -category:job indicator.killchainphases:\"Resource Development\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": false
-		},
-		{
-			"id": "267cc3c0-f1a6-11ee-8324-a33475926ab2",
-			"forceRange": true,
-			"x": 4,
-			"y": 3,
-			"i": "267cc3c0-f1a6-11ee-8324-a33475926ab2",
-			"w": 8,
-			"h": 3,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-31T13:36:29.876892015Z",
-				"created": "2024-01-31T13:36:22.530651544Z",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.46",
-				"fromServerVersion": "6.2.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"size": 100,
-				"sort": [
-					{
-						"field": "Creation Date",
-						"fieldType": "",
-						"asc": false
-					}
-				],
-				"Cache": null,
-				"name": "Newly Added Attack Pattern Indicators",
-				"prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
-				"dataType": "indicators",
-				"widgetType": "table",
-				"query": "type:\"Attack Pattern\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 30,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"enablePagination": true,
-					"tableColumns": [
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "indicator_type",
-							"width": 120
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "value",
-							"width": 300
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "score",
-							"width": 120
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "firstSeen",
-							"width": 275
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "lastSeen",
-							"width": 275
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "timestamp",
-							"width": 190
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "relatedIncCount",
-							"width": 150
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "sourceBrands",
-							"width": 175
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "sourceInstances",
-							"width": 175
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "expirationStatus",
-							"width": 175
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "expiration",
-							"width": 190
-						},
-						{
-							"displayed": true,
-							"key": "Creation Date",
-							"width": 200
-						}
-					]
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "7627bea0-f1a8-11ee-8324-a33475926ab2",
-			"forceRange": false,
-			"x": 4,
-			"y": 6,
-			"i": "7627bea0-f1a8-11ee-8324-a33475926ab2",
-			"w": 8,
-			"h": 4,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-31T13:36:29.876892015Z",
-				"created": "2024-01-31T13:36:22.530651544Z",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.46",
-				"fromServerVersion": "6.2.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"size": 10,
-				"sort": [
-					{
-						"field": "relatedIncCount",
-						"fieldType": "",
-						"asc": false
-					}
-				],
-				"Cache": null,
-				"name": "Top 10 Attack Pattern Indicators in Related Incidents",
-				"prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
-				"dataType": "indicators",
-				"widgetType": "table",
-				"query": "type:\"Attack Pattern\" and incident.id:* expirationStatus:active",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 180,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"enablePagination": true,
-					"tableColumns": [
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "value",
-							"width": 300
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "relatedIncCount",
-							"width": 150
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "firstSeen",
-							"width": 275
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "lastSeen",
-							"width": 275
-						},
-						{
-							"displayed": true,
-							"key": "Description",
-							"width": 200
-						},
-						{
-							"displayed": true,
-							"key": "Kill Chain Phases",
-							"width": 200
-						},
-						{
-							"displayed": true,
-							"key": "Tags",
-							"width": 200
-						}
-					]
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "18049ea0-f1b3-11ee-8324-a33475926ab2",
-			"forceRange": true,
-			"x": 0,
-			"y": 0,
-			"i": "18049ea0-f1b3-11ee-8324-a33475926ab2",
-			"w": 6,
-			"h": 3,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-31T13:36:29.876419221Z",
-				"created": "2024-01-31T13:36:22.529053428Z",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.46",
-				"fromServerVersion": "5.0.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"Cache": null,
-				"name": "Top 10 Attack Pattern investigation by Mitre Technique",
-				"prevName": "Indicators Activity by Type",
-				"dataType": "indicators",
-				"widgetType": "pie",
-				"query": "type:\"Attack Pattern\"  and investigationsCount:\u003e0",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": null,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"groupBy": [
-						"top"
-					],
-					"showGraphValues": false,
-					"valuesFormat": "abbreviated"
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		},
-		{
-			"id": "35e94c30-f745-11ee-97de-f9229fd017f4",
-			"forceRange": true,
-			"x": 6,
-			"y": 0,
-			"i": "35e94c30-f745-11ee-97de-f9229fd017f4",
-			"w": 6,
-			"h": 3,
-			"widget": {
-				"id": "",
-				"version": 0,
-				"cacheVersn": 0,
-				"modified": "2024-01-31T13:36:29.876892015Z",
-				"created": "2024-01-31T13:36:22.530651544Z",
-				"sizeInBytes": 0,
-				"packID": "CommonWidgets",
-				"packName": "Common Widgets",
-				"itemVersion": "1.2.46",
-				"fromServerVersion": "6.2.0",
-				"toServerVersion": "",
-				"propagationLabels": [],
-				"packPropagationLabels": [
-					"all"
-				],
-				"definitionId": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"commitMessage": "",
-				"shouldCommit": false,
-				"size": 10,
-				"Cache": null,
-				"name": "Attack Patterns Last Seen in Newly Created Incidents ",
-				"prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
-				"dataType": "indicators",
-				"widgetType": "column",
-				"query": "type:\"Attack Pattern\" investigation.created:\u003e=\"30 days ago\"",
-				"isPredefined": false,
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"toDate": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byTo": "",
-						"byFrom": "days",
-						"toValue": null,
-						"fromValue": 30,
-						"field": ""
-					},
-					"fromDateLicense": "0001-01-01T00:00:00Z"
-				},
-				"params": {
-					"enablePagination": true,
-					"groupBy": [
-						"killchainphases",
-						"name"
-					],
-					"keys": null,
-					"referenceLine": {},
-					"showGraphValues": false,
-					"timeFrame": "days",
-					"valuesFormat": "regular",
-					"xAxisLabel": "",
-					"yAxisLabel": ""
-				},
-				"category": ""
-			},
-			"reflectDimensions": true
-		}
-	],
+    "id": "MITRE ATT\u0026CK v2",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 180,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "MITRE ATT\u0026CK",
+    "layout": [
+        {
+            "id": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Initial Access",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "34f20330-a348-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 2,
+            "y": 4,
+            "i": "34f20330-a348-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Execution",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "673b1700-a348-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "673b1700-a348-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Persistence",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "85a61b90-a348-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 2,
+            "y": 5,
+            "i": "85a61b90-a348-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Privilege Escalation",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Defense Evasion",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 0,
+            "y": 7,
+            "i": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Discovery",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 2,
+            "y": 7,
+            "i": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Lateral Movement",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 0,
+            "y": 8,
+            "i": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Collection",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "ce291380-a349-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 0,
+            "y": 9,
+            "i": "ce291380-a349-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Command and Control",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 2,
+            "y": 9,
+            "i": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Exfiltration",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
+            "forceRange": false,
+            "x": 2,
+            "y": 8,
+            "i": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Impact",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "84e563a0-b247-11eb-bba6-a17854c1d523",
+            "forceRange": false,
+            "x": 2,
+            "y": 6,
+            "i": "84e563a0-b247-11eb-bba6-a17854c1d523",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Credential Access",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "d30a7f40-f004-11ee-8364-358ac255f0be",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "d30a7f40-f004-11ee-8364-358ac255f0be",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Reconnaissance",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Reconnaissance\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "464d2e30-f005-11ee-8364-358ac255f0be",
+            "forceRange": false,
+            "x": 2,
+            "y": 3,
+            "i": "464d2e30-f005-11ee-8364-358ac255f0be",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Resource Development",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Resource Development\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "267cc3c0-f1a6-11ee-8324-a33475926ab2",
+            "forceRange": true,
+            "x": 4,
+            "y": 3,
+            "i": "267cc3c0-f1a6-11ee-8324-a33475926ab2",
+            "w": 8,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876892015Z",
+                "created": "2024-01-31T13:36:22.530651544Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 100,
+                "sort": [
+                    {
+                        "field": "Creation Date",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "Cache": null,
+                "name": "Newly Added Attack Pattern Indicators",
+                "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "dataType": "indicators",
+                "widgetType": "table",
+                "query": "type:\"Attack Pattern\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "score",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "width": 275
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "width": 275
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "width": 190
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 150
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "width": 175
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "width": 175
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "width": 175
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "expiration",
+                            "width": 190
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Creation Date",
+                            "width": 200
+                        }
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "7627bea0-f1a8-11ee-8324-a33475926ab2",
+            "forceRange": false,
+            "x": 4,
+            "y": 6,
+            "i": "7627bea0-f1a8-11ee-8324-a33475926ab2",
+            "w": 8,
+            "h": 4,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876892015Z",
+                "created": "2024-01-31T13:36:22.530651544Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": [
+                    {
+                        "field": "relatedIncCount",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "Cache": null,
+                "name": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "dataType": "indicators",
+                "widgetType": "table",
+                "query": "type:\"Attack Pattern\" and incident.id:* expirationStatus:active",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 180,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 150
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "width": 275
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "width": 275
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Description",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Kill Chain Phases",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Tags",
+                            "width": 200
+                        }
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "18049ea0-f1b3-11ee-8324-a33475926ab2",
+            "forceRange": true,
+            "x": 0,
+            "y": 0,
+            "i": "18049ea0-f1b3-11ee-8324-a33475926ab2",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876419221Z",
+                "created": "2024-01-31T13:36:22.529053428Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Top 10 Attack Pattern investigation by Mitre Technique",
+                "prevName": "Indicators Activity by Type",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "type:\"Attack Pattern\"  and investigationsCount:\u003e0",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "top"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "35e94c30-f745-11ee-97de-f9229fd017f4",
+            "forceRange": true,
+            "x": 6,
+            "y": 0,
+            "i": "35e94c30-f745-11ee-97de-f9229fd017f4",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876892015Z",
+                "created": "2024-01-31T13:36:22.530651544Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 10,
+                "Cache": null,
+                "name": "Attack Patterns Last Seen in Newly Created Incidents ",
+                "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "type:\"Attack Pattern\" investigation.created:\u003e=\"30 days ago\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "enablePagination": true,
+                    "groupBy": [
+                        "killchainphases",
+                        "name"
+                    ],
+                    "keys": null,
+                    "referenceLine": {},
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "regular",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
     "fromVersion": "5.0.0",
     "description": "",
     "isPredefined": true
