@@ -183,16 +183,20 @@ def parse_mail_parts(parts):
 
         else:
             if part['body'].get('attachmentId') is not None and part.get('headers'):
-                content_id = ""
+                identifier_id = ""
                 is_inline = False
                 for header in part['headers']:
                     if header.get('name') == 'Content-ID':
-                        content_id = header.get('value').strip("<>")
+                        identifier_id = header.get('value')
+                        if not identifier_id or identifier_id == "None":
+                            identifier_id = part['body'].get('attachmentId')
+                        else:
+                            identifier_id = identifier_id.strip("<>")
                     if header.get('name') == 'Content-Disposition':
                         is_inline = 'inline' in header.get('value')
                 attachments.append({
                     'ID': part['body']['attachmentId'],
-                    'Name': f"{content_id}-{part['filename']}",
+                    'Name': f"{identifier_id}-{part['filename']}",
                     'is_inline': is_inline
                 })
 
@@ -1537,14 +1541,14 @@ def get_attachments_command():
     args = demisto.args()
     user_id = args.get('user-id')
     _id = args.get('message-id')
-    content_ids = args.get('content-ids')
+    identifiers_filter = args.get('identifiers-filter', "")
 
-    attachments = get_attachments(user_id, _id, content_ids)
+    attachments = get_attachments(user_id, _id, identifiers_filter)
 
     return [fileResult(name, data) for name, data in attachments]
 
 
-def get_attachments(user_id, _id, content_ids=None):
+def get_attachments(user_id, _id, identifiers_filter=""):
     mail_args = {
         'userId': user_id,
         'id': _id,
@@ -1565,12 +1569,10 @@ def get_attachments(user_id, _id, content_ids=None):
     files = []
     for attachment in result['Attachments']:
         demisto.debug(f"lets look on the attachment {attachment}")
-        content_ids_array = argToList(content_ids)
-        demisto.debug(f"attachment of id{content_ids_array=}")
+        identifiers_filter_array = argToList(identifiers_filter)
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        if not content_ids_array or attachment['Name'].split("-")[1] in content_ids_array:
-            demisto.debug(f"{attachment['Name']} in {content_ids_array}")
+        if not identifiers_filter_array or attachment['Name'][::-1].split("-")[1][::-1] in identifiers_filter_array:
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
     return files

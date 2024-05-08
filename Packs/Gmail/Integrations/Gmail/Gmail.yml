@@ -206,7 +206,7 @@ script:
       name: user-id
       required: true
     - description: Content IDs of the required attachments.
-      name: content-ids
+      name: identifiers-filter
       required: false
       hidden: true
     description: Retrieves attachments from a sent Gmail message.
