@@ -164,6 +164,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Check if there is a Query in the input to collect YARA rules from indicators'
     nexttasks:
       '#default#':
       - "1"
@@ -207,6 +208,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Check if the query returned YARA rules indicators'
     nexttasks:
       '#default#':
       - "3"
