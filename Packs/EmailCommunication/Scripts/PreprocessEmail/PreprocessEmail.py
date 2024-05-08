@@ -245,17 +245,13 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
 
 
-def find_attachments_to_download(attachments, email_html, labels, email_related_incident):
+def find_attachments_to_download(attachments, email_html, email_related_incident):
     """ Filter only new attachment.
 
     Args:
         attachments (Attachment): All attachments from the current thread mail
         email_html (str): email html for the newest message
     """
-    integration_name = ""
-    for label in labels:
-        if label.get('type') == 'Brand':
-            integration_name = label.get('value')
     new_attachment_identifiers_list = []
     new_attachments = []
     demisto.debug(f"help_the_attachment {attachments}")
@@ -265,14 +261,11 @@ def find_attachments_to_download(attachments, email_html, labels, email_related_
     previous_file_names = [ file.get("Name") for file in previous_files ]
     for attachment in attachments:
         if attachment.get('name', '') not in previous_file_names:
-            if (integration_name in ['Gmail dev', 'Gmail Single User dev',
-                                     'MicrosoftGraphMail dev', 'Microsoft Graph Mail Single User dev']
-                and '-' in attachment.get('name', '')):
+            if '-' in attachment.get('name', ''):
                 content_id = attachment.get('name', '')[::-1].split('-', 1)[1][::-1]
                 new_attachment_identifiers_list.append(content_id)
-            elif '-' in attachment.get('description', ''):
-                attachment_id = attachment.get('description', '').split('-', 1)[1]
-                new_attachment_identifiers_list.append(attachment_id)
+            else:
+                CommandResults(readable_output=f"Could not find image {attachment.get('name', '')[::-1].split('-', 1)[0][::-1]}")
             new_attachments.append(attachment)
     demisto.debug(f"this_is_the_attachment_ids {new_attachment_identifiers_list}")
     if not new_attachments:
@@ -470,7 +463,7 @@ def main():
         email_html = remove_html_conversation_history(email_html)
 
         #Get attachments IDs for new attacments
-        attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, incident.get('labels'), email_related_incident)
+        attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, email_related_incident)
         demisto.debug(f"{attachment_identifiers_array=}")
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
 

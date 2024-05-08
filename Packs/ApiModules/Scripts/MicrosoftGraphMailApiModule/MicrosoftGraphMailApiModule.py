@@ -261,8 +261,10 @@ class MsGraphMailBaseClient(MicrosoftClient):
         for attachment in attachments:
 
             attachment_type = attachment.get('@odata.type', '')
-            attachment_content_id = attachment.get('contentId', '')
-            attachment_name = f"{attachment_content_id}-{attachment.get('name', 'untitled_attachment')}"
+            attachment_identifier_id = attachment.get('contentId')
+            if not attachment_identifier_id or attachment_identifier_id == "None":
+                attachment_identifier_id = attachment.get('id', '')
+            attachment_name = f"{attachment_identifier_id}-{attachment.get('name', 'untitled_attachment').replace('-', '_')}"
 
             if not attachment_name.isascii():
                 try:
@@ -1239,7 +1241,10 @@ class GraphMailUtils:
         Returns:
             dict: FileResult with the b64decode of the attachment content
         """
-        name = f"{raw_attachment.get('contentId')}-{raw_attachment.get('name')}"
+        identifier_id = raw_attachment.get('contentId')
+        if not identifier_id or identifier_id == "None":
+            identifier_id = raw_attachment.get('id', '')
+        name = f"{identifier_id}-{raw_attachment.get('name','').replace('-', '_')}"
         demisto.debug(f"{name=}")
         data = raw_attachment.get('contentBytes')
         try:
@@ -1762,11 +1767,15 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
     kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
     demisto.debug(f"aaa {raw_response=}")
-    content_ids = argToList(args.get('content_ids'))
-    demisto.debug(f"{content_ids=}")
-    demisto.debug(f"enters_the_if {raw_response[0]['contentId'] in content_ids}")
-    # return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id']) for attachment in raw_response if (not content_ids or attachment['contentId'] in content_ids)]
-    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id']) for attachment in raw_response if ((not content_ids) or (attachment['contentId'] in content_ids))]
+    identifier_ids = argToList(args.get('identifier_ids'))
+    demisto.debug(f"{identifier_ids=}")
+    demisto.debug(f"enters_the_if {raw_response[0]['contentId'] in identifier_ids}")
+    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'])
+            for attachment in raw_response
+            if (
+                (not identifier_ids) or (attachment.get('contentId') in identifier_ids or attachment.get('id') in identifier_ids)
+                )
+            ]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
