@@ -781,7 +781,6 @@ def test_get_search_logs_command(mocker):
     assert expected_response.get('data')[0]['logs'] == result.outputs['data'][0]['logs']
 
 
-
 def test_get_view_logs_command(mocker):
     """
 
@@ -815,9 +814,8 @@ def test_list_account_command(mocker):
     mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
     result = MimecastV2.list_account_command(args)
     assert expected_response.get('data') == result.outputs['data']
-    
-    
-    
+
+
 def test_list_policies_command(mocker):
     """
 
@@ -830,8 +828,8 @@ def test_list_policies_command(mocker):
     mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
     result = MimecastV2.list_policies_command(args)
     assert expected_response.get('data') == result.outputs['data']
-    
-    
+
+
 def test_create_antispoofing_bypass_policy_command(mocker):
     """
 
@@ -844,10 +842,8 @@ def test_create_antispoofing_bypass_policy_command(mocker):
     mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
     result = MimecastV2.create_antispoofing_bypass_policy_command(args)
     assert expected_response.get('data') == result.outputs['data']
-    
-    
-    
-    
+
+
 def test_update_antispoofing_bypass_policy_command(mocker):
     """
 
@@ -861,9 +857,8 @@ def test_update_antispoofing_bypass_policy_command(mocker):
     result = MimecastV2.update_antispoofing_bypass_policy_command(args)
     assert expected_response.get('data') == result.outputs.get('data')
     assert f'{args["id"]} has been updated successfully' == result.readable_output
-    
-    
-    
+
+
 def test_update_address_alteration_policy_command(mocker):
     """
 
@@ -871,8 +866,44 @@ def test_update_address_alteration_policy_command(mocker):
     Args:
     """
 
-    args = {'enabled': 'true', 'enforced': 'false', 'from_eternal': 'true', 'from_type': 'everyone', 'policy_description': 'test', 'policy_id': 'eNo11111', 'to_eternal': 'true', 'to_type': 'everyone'}
-    expected_response =  {'meta': {'status': 200}, 'data': [{'addressAlterationSetId': 'eNo11111', 'policy': {'description': 'שש', 'fromPart': 'envelope_from', 'from': {'type': 'everyone'}, 'to': {'type': 'everyone'}, 'fromType': 'everyone', 'toType': 'everyone', 'fromEternal': True, 'toEternal': True, 'fromDate': '1900-01-01T00:00:00+0000', 'toDate': '2100-01-01T23:59:59+0000', 'override': False, 'bidirectional': False, 'conditions': {}, 'enabled': True, 'enforced': False, 'createTime': '2024-05-07T14:29:18+0000', 'lastUpdated': '2024-05-07T14:29:18+0000'}}], 'fail': []}
-    mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
+    args = {
+        "enabled": "true",
+        "enforced": "false",
+        "from_eternal": "true",
+        "from_type": "everyone",
+        "policy_description": "test",
+        "policy_id": "eNo11111",
+        "to_eternal": "true",
+        "to_type": "everyone",
+    }
+    expected_response = {
+        "meta": {"status": 200},
+        "data": [
+            {
+                "addressAlterationSetId": "eNo11111",
+                "policy": {
+                    "description": "test",
+                    "fromPart": "envelope_from",
+                    "from": {"type": "everyone"},
+                    "to": {"type": "everyone"},
+                    "fromType": "everyone",
+                    "toType": "everyone",
+                    "fromEternal": True,
+                    "toEternal": True,
+                    "fromDate": "1900-01-01T00:00:00+0000",
+                    "toDate": "2100-01-01T23:59:59+0000",
+                    "override": False,
+                    "bidirectional": False,
+                    "conditions": {},
+                    "enabled": True,
+                    "enforced": False,
+                    "createTime": "2024-05-07T14:29:18+0000",
+                    "lastUpdated": "2024-05-07T14:29:18+0000",
+                },
+            }
+        ],
+        "fail": [],
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=expected_response)
     result = MimecastV2.update_address_alteration_policy_command(args)
-    assert expected_response.get('data') == result.outputs.get('data')
+    assert expected_response.get("data") == result.outputs.get("data")
