@@ -35,10 +35,10 @@ else
   sleep 120
 
   if [ -n "$NIGHTLY" ]; then
-    PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt"
+    PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.txt"
     echo "Running in nightly environment. PACKS_TO_INSTALL set to: $PACKS_TO_INSTALL"
   else
-    PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.json"
+    PACKS_TO_INSTALL="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.json"
     echo "Not running in nightly environment. PACKS_TO_INSTALL set to: $PACKS_TO_INSTALL"
   fi
 
