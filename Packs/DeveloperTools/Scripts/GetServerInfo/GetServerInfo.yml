@@ -1,8 +1,8 @@
 comment: 'Get version and URL of current XSOAR server.'
 commonfields:
-  id: GetLongRunningServerURL
+  id: GetServerInfo
   version: -1
-name: GetLongRunningServerURL
+name: GetServerInfo
 outputs:
 - contextPath: ServerInfo
   description: 'A dictionary of "urls" and "version".'
