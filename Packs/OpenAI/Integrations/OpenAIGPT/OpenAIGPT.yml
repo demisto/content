@@ -1,7 +1,7 @@
 category: Messaging and Conferencing
 name: OpenAIGPT
 display: OpenAI GPT
-description: Designed to assist security professionals with security investigations, threat hunting, anomaly detection. Leveraging OpenAI GPT models' natural language conversational capabilities.
+description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 commonfields:
   id: OpenAIGPT
   version: -1
