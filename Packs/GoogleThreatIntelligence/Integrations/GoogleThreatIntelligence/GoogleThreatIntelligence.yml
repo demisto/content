@@ -26,11 +26,6 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
-- display: Premium Subscription
-  name: is_premium_api
-  defaultvalue: 'false'
-  type: 8
-  required: false
 - display: GTI Malicious Verdict. Check Google Threat Intelligence Verdict to consider the file malicious.
   name: gti_malicious
   defaultvalue: 'false'
