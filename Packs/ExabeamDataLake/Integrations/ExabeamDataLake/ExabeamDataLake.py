@@ -100,11 +100,33 @@ def dates_in_range(start_time, end_time):
     return dates
 
 
-def get_date(time):
-    time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
-    if time:
-        date = time.strftime(ISO_8601_FORMAT)
+def get_date(time: str):
+    date_time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
+    if date_time:
+        date = date_time.strftime(ISO_8601_FORMAT)
     return date
+
+
+def calculate_page_parameters(args: dict):
+    page_arg = args.get('page')
+    page_size_arg = args.get('page_size')
+    limit_arg = args.get('limit')
+
+    if limit_arg and (page_arg or page_size_arg):
+        raise DemistoException("You can only provide 'limit' alone or 'page' and 'page_size' together.")
+    
+    page = arg_to_number(args.get('page', '1'))
+    page_size = arg_to_number(args.get('page_size', '50'))
+    limit = arg_to_number(args.get('limit', '50'))
+    
+    if page and page_size:
+        from_param = page * page_size - page_size
+        size_param = page_size
+    else:
+        from_param = 0
+        size_param = limit if limit is not None else 50
+
+    return from_param, size_param
 
 
 def query_datalake_command(client: Client, args: dict, cluster_name: str) -> CommandResults:
@@ -118,15 +140,7 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
     Returns:
         CommandResults: The command results object containing outputs and readable output.
     """
-    page = arg_to_number(args.get('page', '1'))
-    page_size = arg_to_number(args.get('page_size', '50'))
-    limit = arg_to_number(args.get('limit', '50'))
-    if page and page_size:
-        from_param = page * page_size - page_size
-        size_param = page_size
-    else:
-        from_param = 0
-        size_param = limit if limit is not None else 50
+    from_param, size_param = calculate_page_parameters(args)
 
     if start_time := args.get("start_time", ""):
         start_time = get_date(start_time)

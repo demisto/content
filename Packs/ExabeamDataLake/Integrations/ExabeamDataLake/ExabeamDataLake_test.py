@@ -15,7 +15,6 @@ def test_query_datalake_command(mocker):
     args = {
         'page': 1,
         'page_size': 50,
-        'limit': 50,
         'start_time': '2024-05-01T00:00:00',
         'end_time': '2024-05-08T00:00:00',
         'query': '*'
@@ -67,7 +66,6 @@ def test_query_datalake_command_no_response(mocker):
     args = {
         'page': 1,
         'page_size': 50,
-        'limit': 50,
         'start_time': '2024-05-01T00:00:00',
         'end_time': '2024-05-08T00:00:00',
         'query': '*'
@@ -94,7 +92,6 @@ def test_query_datalake_command_raise_error(mocker):
     args = {
         'page': 1,
         'page_size': 50,
-        'limit': 50,
         'start_time': '2024-05-01T00:00:00',
         'end_time': '2024-05-08T00:00:00',
         'query': '*'
@@ -156,3 +153,6 @@ def test_dates_in_range_valid(mocker, start_time_str, end_time_str, expected_out
 def test_dates_in_range_invalid(mocker, start_time_str, end_time_str, expected_output):
     with pytest.raises(DemistoException, match=expected_output):
         dates_in_range(start_time_str, end_time_str)
+
+
+def test_calculate_page_parameters(mocker,)
