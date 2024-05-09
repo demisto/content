@@ -213,16 +213,21 @@ class TestFetchIncidents(unittest.TestCase):
             {'messages': [{'id': '124', 'threadId': '124', 'internalDate': '1622551000'}]}
         ])
 
+        mock_get_email_message_response_1 = load_test_data('test_data/fetch/fetch_email_1.json')
+        mock_get_email_message_response_2 = load_test_data('test_data/fetch/fetch_email_2.json')
+        self.client.get_email_message = MagicMock(side_effect=[
+            mock_get_email_message_response_1, mock_get_email_message_response_2])
+
         # Execute the function
         fetch_incidents(self.client, self.params)
 
         # Verify if nextPageToken is handled
-        self.assertEqual(self.client.list_emails.call_count, 2)
+        self.assertEqual(self.client.list_emails.call_count, 1)
         self.client.list_emails.assert_called_with(
             email='default@example.com',
             max_results='50',
             page_token='abc123',
-            query='after:1622548800'
+            query=' after:1622548800'
         )
 
 

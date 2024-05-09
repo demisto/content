@@ -17,7 +17,14 @@ ZOOM_MAIL_COMMAND_PREFIX = "zoom-mail"
 
 class ZoomMailClient(BaseClient):
     def __init__(
-        self, base_url, client_id, client_secret, account_id, default_email, verify=True, proxy=False
+        self,
+        base_url,
+        client_id,
+        client_secret,
+        account_id,
+        default_email,
+        verify=True,
+        proxy=False,
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
@@ -26,7 +33,6 @@ class ZoomMailClient(BaseClient):
         self.access_token = None
         self.token_time = None
         self.default_email = default_email  # Default email added here
-
 
     def obtain_access_token(self):
         """
@@ -97,7 +103,9 @@ class ZoomMailClient(BaseClient):
         """
         if email is None:
             if not self.default_email:
-                raise ValueError("No email address was provided and no default email address was set.")
+                raise ValueError(
+                    "No email address was provided and no default email address was set."
+                )
             email = self.default_email
 
         url_suffix = f"/emails/mailboxes/{email}/threads/{thread_id}"
@@ -180,7 +188,7 @@ class ZoomMailClient(BaseClient):
             method="GET", url_suffix=url_suffix, params=params
         )
 
-        #TODO: Store page token to fetch in the next run, but also store last run time
+        # TODO: Store page token to fetch in the next run, but also store last run time
 
         return response
 
@@ -342,30 +350,35 @@ def fetch_incidents(client: ZoomMailClient, params: dict) -> None:
     max_fetch = min(int(params.get("max_fetch", 50)), 200)
 
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get("last_fetch")
+    last_fetch_info = last_run.get("last_fetch_info", {"internalDate": None, "ids": []})
     last_page_fetch_token = last_run.get("next_page_token")
     processed_ids: Set[str] = set(last_run.get("processed_ids", []))
 
-    if not last_fetch:
+    if not last_fetch_info["internalDate"]:
         first_fetch_dt = parse(first_fetch_time)
         if not first_fetch_dt:
             first_fetch_dt = datetime.now() - timedelta(days=3)
-        last_fetch = first_fetch_dt.timestamp()
+        last_fetch_info["internalDate"] = first_fetch_dt.timestamp()
 
     new_last_fetch = last_fetch
     new_processed_ids = processed_ids.copy()
 
     incidents: List[Dict[str, Any]] = []
 
-    query = fetch_query + f" after:{int(last_fetch)}"
+    query = f"{fetch_query} after:{int(last_fetch_info['internalDate'])}"
     if last_page_fetch_token:
         demisto.info("Fetching leftover emails from previous fetch run.")
-        messages_response = client.list_emails(email=fetch_from, page_token=last_page_fetch_token, label_ids=fetch_labels)
+        messages_response = client.list_emails(
+            email=fetch_from, page_token=last_page_fetch_token, label_ids=fetch_labels
+        )
     else:
         messages_response = client.list_emails(
-            email=fetch_from, max_results=str(max_fetch), query=query, label_ids=fetch_labels
+            email=fetch_from,
+            max_results=str(max_fetch),
+            query=query,
+            label_ids=fetch_labels,
         )
-    next_page_token = messages_response.get('nextPageToken', None)
+    next_page_token = messages_response.get("nextPageToken", None)
     messages = messages_response.get("messages", [])
     message_dates: List[float] = []
 
@@ -377,10 +390,10 @@ def fetch_incidents(client: ZoomMailClient, params: dict) -> None:
         )
         internal_date = float(message_details.get("internalDate")) / 1000.0
 
-        if (
-            internal_date > last_fetch
-            and message_id not in processed_ids
-            and message_id == thread_id
+        if internal_date > last_fetch_info["internalDate"] or (
+            internal_date == last_fetch_info["internalDate"]
+            and (message_id not in last_fetch_info["ids"])
+            and (message_id == thread_id)
         ):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
@@ -388,12 +401,18 @@ def fetch_incidents(client: ZoomMailClient, params: dict) -> None:
             message_dates.append(internal_date)
 
     if message_dates:
-        new_last_fetch = min(message_dates)
+        new_internal_date = max(message_dates)
+        new_ids = [
+            msg["id"]
+            for msg in messages
+            if float(msg["internalDate"]) / 1000.0 == new_internal_date
+        ]
+
+        last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
 
     demisto.setLastRun(
-        {"last_fetch": new_last_fetch, "processed_ids": list(new_processed_ids), "next_page_token": next_page_token}
+        {"last_fetch_info": last_fetch_info, "next_page_token": next_page_token}
     )
-
     demisto.incidents(incidents)
 
 
@@ -451,7 +470,7 @@ def get_email_thread_command(
         )
 
     if "pageToken" in response:
-        response.update({"ThreadNextToken": response['pageToken']})
+        response.update({"ThreadNextToken": response["pageToken"]})
 
     # Return command results
     return CommandResults(
@@ -541,7 +560,9 @@ def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
 
     if message_id:
 
-        message = client.get_email_message(email, message_id, msg_format, metadata_headers)
+        message = client.get_email_message(
+            email, message_id, msg_format, metadata_headers
+        )
 
         if "payload" in message:
             body, html, attachments = parse_mail_parts([message.get("payload")])
@@ -578,7 +599,7 @@ def list_emails_command(client: ZoomMailClient, args: Dict[str, str]) -> Command
         readable_output = f"No messages found in mailbox {email}."
 
     if "pageToken" in response:
-        response.update({"EmailNextToken": response['pageToken']})
+        response.update({"EmailNextToken": response["pageToken"]})
 
     return CommandResults(
         readable_output=readable_output,
@@ -736,7 +757,7 @@ def list_users_command(client: ZoomMailClient, args: Dict[str, str]) -> CommandR
     )
 
     if "pageToken" in response:
-        response.update({"UserNextToken": response['pageToken']})
+        response.update({"UserNextToken": response["pageToken"]})
 
     # Return command results with structured data
     return CommandResults(
@@ -1048,7 +1069,7 @@ def is_required_for_fetch(value: Any) -> bool:
     Returns:
         bool: True if fetching is enabled, and the value is not None and not empty; False otherwise.
     """
-    is_fetch_active = demisto.params().get('isFetch', False)
+    is_fetch_active = demisto.params().get("isFetch", False)
     return is_fetch_active and value is not None and value != ""
 
 
