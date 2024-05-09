@@ -420,7 +420,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('api_key', {}).get('password')
+    api_key = params.get('apikey', {}).get('password')
     # If a model name was provided within the free text box, it will override the selected one from the model selection box.
     # The provided model will be tested for compatability within the test module.
     model = params.get('model-freetext') if params.get('model-freetext') else params.get('model-select')

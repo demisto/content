@@ -15,7 +15,7 @@ configuration:
   type: 0
 
 - displaypassword: API Key
-  name: api_key
+  name: apikey
   type: 9
   required: true
   section: Connect
