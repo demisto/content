@@ -61,7 +61,7 @@ UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 ]
 REGEX_EXTRACT_MACHINE = re.compile(r"qa2-test-\d+")
-BUILD_STATUS_SLACK_CHANNEL = "test_slack_notifier_when_master_is_broken"
+BUILD_STATUS_SLACK_CHANNEL = "dmst-build-status--beta"
 
 
 def options_handler() -> argparse.Namespace:
