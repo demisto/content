@@ -1,4 +1,3 @@
-register_module_line('Digital Shadows V2', 'start', __line__())
 
 """Digital Shadows for Cortex XSOAR."""
 
@@ -401,9 +400,6 @@ def get_triage_item_events(request_handler: HttpRequestHandler, event_num_after=
         params['event-created-after'] = utc_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if len(risk_types) > 0:
         params['risk-type'] = risk_types
-    LOG("Fetching triage item events. Parameters: {}".format(params))
-    LOG("request_handler type: {}".format(type(request_handler)))
-    LOG("requests type: {}".format(type(requests)))
     r = request_handler.get('/v1/triage-item-events', params=params, **kwargs)
     LOG("response------> {}".format(r))
     r.raise_for_status()
@@ -821,7 +817,6 @@ class SearchLightTriagePoller(object):
         incident_map = {incident[ID]: incident for incident in incidents}
         asset_map = {asset[ID]: asset for asset in assets}
         comment_map = get_comments_map(triage_item_comments)
-        LOG('inside merge ------->>>>')
         for triage_item in triage_items:
             data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
             if triage_item[ID] in comment_map:
@@ -899,7 +894,7 @@ class SearchLightTriagePoller(object):
         # filtering events by risk level
         if risk_level_filter:
             events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
-            
+
         if not events:
             LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit: {}".format(
                 event_num_start, event_created_after, limit))
@@ -937,6 +932,37 @@ class SearchLightTriagePoller(object):
 
         triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets)
         return PollResult(max_event_num, triage_data)
+
+
+    def get_triage_details(self, triage_item_ids):
+        triage_items = get_triage_items(self.request_handler, triage_item_ids)
+
+        if not triage_items:
+            # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
+            # so validate before proceeding
+            LOG("No triage items were fetched. Event id:"
+                .format(triage_item_ids))
+            return []
+
+        triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
+
+        alert_triage_items = [ti for ti in triage_items if ALERT_ID in ti[SOURCE] and ti[SOURCE][ALERT_ID]]
+
+        # get summary details of alerts and incidents.
+        # note that this is a simplified example. For certain classifications we have more-detailed endpoints that give
+        # a greater granularity of information, such as the credential-exposure endpoint which contains the actual
+        # credential we have found exposed in a specific field on the model
+        alerts = self.get_alerts(alert_triage_items=alert_triage_items)
+
+        incident_ids = set([ti[SOURCE][INCIDENT_ID] for ti in triage_items if
+                            INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]])
+        incidents = get_incidents(self.request_handler, incident_ids=incident_ids)
+
+        asset_ids = set(
+            [asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]])
+        assets = get_assets(self.request_handler, asset_ids=asset_ids)
+
+        return self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets)
 
 
 '''SearchLightIndicatorsPoller'''
@@ -1095,11 +1121,38 @@ def test_module(client):
         return 'Test failed because ......' + message
 
 
-def get_remote_data_command(client, args):
-    remote_args = GetRemoteDataArgs(args)
+def get_remote_incident_data(client, incident_id):
+    """
+    Gets the remote incident data.
+    Args:
+        client: The client object.
+        incident_id: The incident ID to retrieve.
 
-    LOG(f"remote args {remote_args}")
-    new_incident_data: Dict = client.get_incident_data(parsed_args.remote_incident_id, parsed_args.last_update)
+    Returns:
+        mirrored_data: The raw mirrored data.
+        updated_object: The updated object to set in the XSOAR incident.
+    """
+    LOG(f"inside---get_remote_incident_data")
+    return
+    # mirrored_data = client.http_request('GET', f'incidents/{incident_id}')
+    # incident_mirrored_data = incident_data_to_xsoar_format(mirrored_data, is_fetch_incidents=True)
+    # fetch_incidents_additional_info(client, incident_mirrored_data)
+    # updated_object: Dict[str, Any] = {}
+    #
+    # for field in INCOMING_MIRRORED_FIELDS:
+    #     if value := incident_mirrored_data.get(field):
+    #         updated_object[field] = value
+    #
+    # return mirrored_data, updated_object
+
+
+def get_remote_data_command(client, args):
+    LOG(f"inside---get_remote_data_command")
+    LOG(f"inside---{args}")
+    parsed_args = GetRemoteDataArgs(args)
+
+    LOG(f"remote args {parsed_args}")
+    new_incident_data = get_remote_incident_data(client, parsed_args.remote_incident_id)
     LOG(f"new incident data : {new_incident_data}")
 
 
@@ -1216,7 +1269,7 @@ def main():
         elif demisto.command() == 'ds-search':
             demisto.results(search_find(digital_shadows_request_handler, demisto.args()))
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
+            return_results(get_remote_data_command(search_light_request_handler, demisto.args()))
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
     # Log exceptions

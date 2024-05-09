@@ -13,7 +13,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 9,
+	"logicalVersion": 11,
 	"mapping": {
 		"DS EXPOSED_CREDENTIAL": {
 			"dontMapEventToLabels": false,
@@ -137,17 +137,26 @@
 				},
 				"State": {
 					"simple": "triage_item.state"
+				},
+				"dbotMirrorDirection": {
+					"simple": "Both"
+				},
+				"dbotMirrorId": {
+					"simple": "triage_item.id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "Digital Shadows V2_instance_1"
+				},
+				"dbotMirrorTags": {
+					"simple": "comments"
 				}
 			}
 		}
 	},
-	"name": "DigitalShadowsIncidentMapper",
-	"nameRaw": "DigitalShadowsIncidentMapper",
+	"name": "DigitalShadowsIncidentMapper V2",
+	"nameRaw": "DigitalShadowsIncidentMapper V2",
 	"packID": "",
 	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
 	"sourceClassifierId": "",
 	"system": false,
 	"toServerVersion": "",

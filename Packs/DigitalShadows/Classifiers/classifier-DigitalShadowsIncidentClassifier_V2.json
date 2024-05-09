@@ -53,17 +53,17 @@
 		"weak-certificate": "DS WEAK_CERTIFICATE"
 	},
 	"locked": false,
-	"logicalVersion": 6,
+	"logicalVersion": 7,
 	"mapping": null,
-	"name": "DigitalShadowsIncidentClassifier",
-	"nameRaw": "DigitalShadowsIncidentClassifier",
+	"name": "DigitalShadowsIncidentClassifier V2",
+	"nameRaw": "DigitalShadowsIncidentClassifier V2",
 	"packID": "",
 	"packName": "",
 	"sourceClassifierId": "",
 	"system": false,
 	"toServerVersion": "",
 	"transformer": {
-		"simple": "selling-unauthorized-goods"
+		"simple": "triage_item.risk-type"
 	},
 	"type": "classification",
 	"unclassifiedCases": null,

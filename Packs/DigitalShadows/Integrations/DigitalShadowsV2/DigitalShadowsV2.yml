@@ -22,10 +22,12 @@ configuration:
   type: 0
 - additionalinfo: Enter the API Key for this account.
   display: API Key
+  hiddenpassword: true
   name: apiKey
   required: true
   type: 9
 - display: API Secret
+  hiddenpassword: true
   name: apiSecret
   required: true
   type: 9
@@ -93,161 +95,39 @@ configuration:
   name: feed
   required: false
   type: 8
+- additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
+  defaultvalue: all
+  display: Risk Level
+  name: riskLevel
+  options:
+  - all
+  - none
+  - low
+  - medium
+  - high
+  - very-low
+  - very-high
+  required: false
+  type: 16
 description: This is digital shadows integration.
 display: Digital Shadows V2 (Partner Contribution)
 name: Digital Shadows V2
 script:
   commands:
   - arguments:
-    - default: true
-      description: A comma-separated list of IPs.
-      isArray: true
-      name: ip
-    - defaultValue: "65"
-      description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
-      name: threshold
-    description: Return IP information and reputation.
-    name: ip
-    outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: HelloWorld.IP.asn
-      description: The autonomous system name for the IP address.
-      type: String
-    - contextPath: HelloWorld.IP.asn_cidr
-      description: The ASN CIDR.
-      type: String
-    - contextPath: HelloWorld.IP.asn_country_code
-      description: The ASN country code.
-      type: String
-    - contextPath: HelloWorld.IP.asn_date
-      description: The date on which the ASN was assigned.
-      type: Date
-    - contextPath: HelloWorld.IP.asn_description
-      description: The ASN description.
-      type: String
-    - contextPath: HelloWorld.IP.asn_registry
-      description: The registry the ASN belongs to.
-      type: String
-    - contextPath: HelloWorld.IP.entities
-      description: Entities associated to the IP.
-      type: String
-    - contextPath: HelloWorld.IP.ip
-      description: The actual IP address.
-      type: String
-    - contextPath: HelloWorld.IP.network.cidr
-      description: Network CIDR for the IP address.
-      type: String
-    - contextPath: HelloWorld.IP.network.country
-      description: The country of the IP address.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.end_address
-      description: The last IP address of the CIDR.
-      type: String
-    - contextPath: HelloWorld.IP.network.events.action
-      description: The action that happened on the event.
-      type: String
-    - contextPath: HelloWorld.IP.network.events.actor
-      description: The actor that performed the action on the event.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.events.timestamp
-      description: The timestamp when the event occurred.
-      type: String
-    - contextPath: HelloWorld.IP.network.handle
-      description: The handle of the network.
-      type: String
-    - contextPath: HelloWorld.IP.network.ip_version
-      description: The IP address version.
-      type: String
-    - contextPath: HelloWorld.IP.network.links
-      description: Links associated to the IP address.
-      type: String
-    - contextPath: HelloWorld.IP.network.name
-      description: The name of the network.
-      type: String
-    - contextPath: HelloWorld.IP.network.notices.description
-      description: The description of the notice.
-      type: String
-    - contextPath: HelloWorld.IP.network.notices.links
-      description: Links associated with the notice.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.notices.title
-      description: Title of the notice.
-      type: String
-    - contextPath: HelloWorld.IP.network.parent_handle
-      description: Handle of the parent network.
-      type: String
-    - contextPath: HelloWorld.IP.network.raw
-      description: Additional raw data for the network.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.remarks
-      description: Additional remarks for the network.
-      type: Unknown
-    - contextPath: HelloWorld.IP.network.start_address
-      description: The first IP address of the CIDR.
-      type: String
-    - contextPath: HelloWorld.IP.network.status
-      description: Status of the network.
-      type: String
-    - contextPath: HelloWorld.IP.network.type
-      description: The type of the network.
-      type: String
-    - contextPath: HelloWorld.IP.query
-      description: IP address that was queried.
-      type: String
-    - contextPath: HelloWorld.IP.raw
-      description: Additional raw data for the IP address.
-      type: Unknown
-    - contextPath: HelloWorld.IP.score
-      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
-      type: Number
-    - contextPath: IP.Address
-      description: IP address.
-      type: String
-    - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious.
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious.
-      type: String
-    - contextPath: IP.ASN
-      description: The autonomous system name for the IP address.
-      type: String
-    - contextPath: IP.Relationships.EntityA
-      description: The source of the relationship.
-      type: string
-    - contextPath: IP.Relationships.EntityB
-      description: The destination of the relationship.
-      type: string
-    - contextPath: IP.Relationships.Relationship
-      description: The name of the relationship.
-      type: string
-    - contextPath: IP.Relationships.EntityAType
-      description: The type of the source of the relationship.
-      type: string
-    - contextPath: IP.Relationships.EntityBType
-      description: The type of the destination of the relationship.
-      type: string
+    - name: query
+      required: true
+    description: Perform a general search against incidents, threats closed sources, etc.
+    name: ds-search
   dockerimage: demisto/python3:3.10.13.74666
-  feed: true
   isfetch: true
   ismappable: true
   isremotesyncin: true
-  isFetchSamples: true
+  isremotesyncout: true
   runonce: false
   script: ''
   subtype: python3
   type: python
 
-defaultmapperin: DigitalShadowsIncidentMapper
-defaultclassifier: DigitalShadowsIncidentClassifier
+defaultmapperin: DigitalShadowsIncidentMapper V2
+defaultclassifier: DigitalShadowsIncidentClassifier V2
