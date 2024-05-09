@@ -119,7 +119,33 @@
           "value": "VERDICT_MALICIOUS"
         },
         "description": "This indicator is malicious (high severity) with high impact."
-      }
+      },
+      "sigma_analysis_stats": {
+        "high": 0,
+        "medium": 1,
+        "critical": 0,
+        "low": 1
+      },
+      "sigma_analysis_results": [
+        {
+          "match_context": [],
+          "rule_level": "medium",
+          "rule_description": "Description 1",
+          "rule_source": "Source 1",
+          "rule_title": "Title 1",
+          "rule_id": "random_id_1",
+          "rule_author": "Author 1"
+        },
+        {
+          "match_context": [],
+          "rule_level": "low",
+          "rule_description": "Description 2",
+          "rule_source": "Source 2",
+          "rule_title": "Title 2",
+          "rule_id": "random_id_2",
+          "rule_author": "Author 2"
+        }
+      ]
     }
   }
 }

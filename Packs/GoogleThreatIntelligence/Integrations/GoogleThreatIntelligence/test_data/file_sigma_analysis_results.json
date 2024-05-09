@@ -22,6 +22,16 @@
     "first_seen_itw_date": 1075654056,
     "first_submission_date": 1170892383,
     "last_analysis_date": 1502355193,
+    "last_analysis_results": {
+      "AVG": {
+        "category": "undetected",
+        "engine_name": "AVG",
+        "engine_update": "20170810",
+        "engine_version": "8.0.1489.320",
+        "method": "blacklist",
+        "result": null
+      }
+    },
     "last_analysis_stats": {
       "harmless": 0,
       "malicious": 0,

@@ -1093,3 +1093,38 @@ def test_url_scan_command(mocker, requests_mock):
         'GoogleThreatIntelligence.Submission(val.id && val.id === obj.id)': mock_response['data'],
         'vtScanID': 'random_id',
     }
+
+
+def test_file_sigma_analysis_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid file hash
+
+    When:
+    - Running the !gti-file-sigma-analysis command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from GoogleThreatIntelligence import file_sigma_analysis_command, Client
+    import CommonServerPython
+
+    file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = util_load_json('test_data/file.json')
+    expected_results = util_load_json('test_data/file_sigma_analysis_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/files/{file_hash}?relationships=',
+                      json=mock_response)
+
+    for only_stats in [True, False]:
+        mocker.patch.object(demisto, 'args', return_value={'file': file_hash, 'only_stats': only_stats})
+
+        results = file_sigma_analysis_command(client=client, args=demisto.args())
+
+        assert results.execution_metrics is None
+        assert results.outputs == expected_results
