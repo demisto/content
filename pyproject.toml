@@ -18,7 +18,6 @@ dateparser = "^1.1.8"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
-flake8 = "^4.0.1"
 ruff = "^0.0.264"
 
 [tool.poetry.group.testing.dependencies]
