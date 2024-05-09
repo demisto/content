@@ -127,10 +127,10 @@ class Client(BaseClient):
                 results.extend(raw_response.get('data', {}).get('results', []))
         except Exception as e:
             demisto.debug(f'debug-log: caught an exception during pagination:\n{str(e)}')
-            
+
         finally:
             if not next:
-                next = raw_response.get('data', {}).get('total')
+                next = 0
 
             return results, next
 
@@ -338,8 +338,8 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
     demisto.debug(f'debug-log: handling event-type: {event_type.type}')
     if last_fetch_time := last_run.get(last_fetch_time_field):
         demisto.debug(f'debug-log: last run of type: {event_type.type} time is: {last_fetch_time}')
-    if last_fetch_next := last_run.get(last_fetch_next_field):
-        demisto.debug(f'debug-log: last run of type: {event_type.type} next is: {last_fetch_next}')
+    last_fetch_next = last_run.get(last_fetch_next_field, 0)
+    demisto.debug(f'debug-log: last run of type: {event_type.type} next is: {last_fetch_next}')
     event_type_fetch_start_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time)
     response, next = client.fetch_by_aql_query(
         aql_query=event_type.aql_query,
@@ -362,7 +362,8 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
             demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
     next_run[last_fetch_next_field] = next
-    # We don't update time between executions on purpose because we want to keep the next value according to a particular time.
+    if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
+        event_type_fetch_start_time = datetime.now().strftime(DATE_FORMAT)
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time

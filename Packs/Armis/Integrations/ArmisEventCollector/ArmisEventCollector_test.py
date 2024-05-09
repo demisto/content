@@ -57,7 +57,8 @@ class TestClientFunctions:
         }
 
         mocked_http_request = mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
-        assert dummy_client.fetch_by_aql_query('example_query', 2, (datetime.now() - timedelta(minutes=1))) == (expected_result, 2)
+        assert dummy_client.fetch_by_aql_query('example_query', 2, (datetime.now()
+                                               - timedelta(minutes=1))) == (expected_result, 2)
 
         mocked_http_request.assert_called_with(**expected_args)
 
@@ -519,8 +520,8 @@ class TestFetchFlow:
 
     @ pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
         next_run, next', [case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
-                    case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
-                    ])
+                          case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
+                          ])
     def test_fetch_flow_cases(self, mocker, dummy_client, max_fetch, devices_max_fetch, last_run,
                               fetch_start_time, event_types_to_fetch, response, events, next_run, next):
         """
@@ -578,7 +579,7 @@ class TestFetchFlow:
                     ],
                     'next': 4
                 }
-            }
+        }
         fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
         mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(
             message='Invalid access token'), events_with_different_time])
