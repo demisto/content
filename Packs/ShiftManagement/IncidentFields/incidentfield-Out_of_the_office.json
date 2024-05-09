@@ -46,15 +46,9 @@
     ],
     "content": true,
     "defaultRows": [
-        {
-
-        },
-        {
-
-        },
-        {
-
-        }
+        {},
+        {},
+        {}
     ],
     "editForm": true,
     "group": 0,
