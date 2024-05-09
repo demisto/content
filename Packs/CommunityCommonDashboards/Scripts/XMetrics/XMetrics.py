@@ -27,7 +27,7 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
     if metrictype in METRICCOLORS:
         colors = METRICCOLORS[metrictype]
     else:
-        return(wstats)
+        return (wstats)
 
     for stat in wstats:
         i = 0
@@ -35,17 +35,17 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
             stat['groups'][i]['color'] = colors[i % len(colors)]
             i += 1
 
-    return(wstats)
+    return (wstats)
 
 
 def StackedBars(group: list, key: str, val: list, index: int) -> list:
     group.append({'name': key, 'data': [val[index]], 'color': ""})
-    return(group)
+    return (group)
 
 
 def TaskWidgetGroup(wstats: list, name: str, groups: list) -> list:
     wstats.append({'name': name, 'groups': groups, 'data': [], 'label': "", 'color': ""})
-    return(wstats)
+    return (wstats)
 
 
 def LoadList(listname: str) -> dict:
@@ -54,7 +54,7 @@ def LoadList(listname: str) -> dict:
     if "Item not found" not in results and (results is not None or results != ""):
         if results != "":
             fields = json.loads(results)
-    return(fields)
+    return (fields)
 
 
 def BuildIncidentTable(incidents, metrictype: str) -> dict:
@@ -71,7 +71,7 @@ def BuildIncidentTable(incidents, metrictype: str) -> dict:
             table[inctype][monthindex] = int(int(cnt) / divisor)
             monthindex += 1
 
-    return(table)
+    return (table)
 
 
 def BuildEffortReductionTable(incidents, efforts) -> dict:
@@ -100,7 +100,7 @@ def BuildEffortReductionTable(incidents, efforts) -> dict:
                 table[inctype][monthindex] = int((table[inctype][monthindex] / total[monthindex]) * 100.0)
             monthindex += 1
 
-    return(table)
+    return (table)
 
 
 def BuildEffortTable(incidents, efforts) -> dict:
@@ -120,7 +120,7 @@ def BuildEffortTable(incidents, efforts) -> dict:
                 table["Automated Incident Effort"][monthindex] += int((int(val) * efforts[inctype][1]) / 60)
             monthindex += 1
 
-    return(table)
+    return (table)
 
 
 def main():

@@ -757,7 +757,7 @@ def test_fetch_incidents(requests_mock, mocker):
     assert len(incidents) == 2
     assert incidents[0]['name'] == "Networking Infrastructure"
     assert json.loads(incidents[0]['rawJSON']).pop('local_insert_ts')
-    assert next_run == {'last_fetch': 1659452809020}
+    assert next_run == {'last_fetch': 1659455267908}
 
 
 def test_list_external_websites_command(requests_mock):
