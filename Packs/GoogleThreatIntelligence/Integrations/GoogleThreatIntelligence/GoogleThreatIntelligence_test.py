@@ -1128,3 +1128,39 @@ def test_file_sigma_analysis_command(mocker, requests_mock):
 
         assert results.execution_metrics is None
         assert results.outputs == expected_results
+
+
+def test_search_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid query
+
+    When:
+    - Running the !gti-search command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import search_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {
+        'data': [{
+            'id': 'random_id',
+            'attributes': {},
+        }]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'query': 'random', 'limit': 2})
+    requests_mock.get('https://www.virustotal.com/api/v3/search?query=random&limit=2',
+                      json=mock_response)
+
+    results = search_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == mock_response['data']
