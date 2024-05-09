@@ -1286,20 +1286,19 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Cortex XSOAR
     """
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch', None)
 
-    # Handle first time fetch
-    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
-    latest_created_time = cast(int, last_fetch)
+    last_time_fetched = last_run.get('last_fetch', None)
 
-    demisto.debug(f"CortexXpanse - last fetched alert timestamp: {str(last_fetch)}")
+    last_time_fetched = first_fetch_time if last_time_fetched is None else int(last_time_fetched)
+    latest_created_time = cast(int, last_time_fetched)
+
+    demisto.debug(f"CortexXpanse - last fetched alert timestamp: {str(last_time_fetched)}")
 
     incidents = []
 
-    # Changed from 'last_fetch' to 'latest_created time' because they are the same and fixed type error.
+    # server_creation_time is used to reflect the creation time of Xpanse alerts
     filters = [{'field': 'alert_source', 'operator': 'in', 'value': ['ASM']}, {
-        'field': 'creation_time', 'operator': 'gte', 'value': latest_created_time + 1}]
+        'field': 'server_creation_time', 'operator': 'gte', 'value': latest_created_time + 1}]
     if severity:
         filters.append({"field": "severity", "operator": "in", "value": severity})
     if status:
@@ -1308,13 +1307,13 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
         filters.append({"field": "tags", "operator": "in", "value": tags.split(',')})
 
     request_data = {'request_data': {'filters': filters, 'search_from': 0,
-                                     'search_to': max_fetch, 'sort': {'field': 'creation_time', 'keyword': 'asc'}}}
+                                     'search_to': max_fetch, 'sort': {'field': 'server_creation_time', 'keyword': 'asc'}}}
 
     raw = client.list_alerts_request(request_data)
 
     items = raw.get('reply', {}).get('alerts')
     for item in items:
-        incident_created_time = item['detection_timestamp']
+        incident_created_time = item['local_insert_ts']  # local_insert_ts is the closest time to alert creation time in Xpanse.
         incident = {
             'name': item['name'],
             'details': item['description'],
