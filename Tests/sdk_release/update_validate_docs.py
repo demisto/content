@@ -225,16 +225,6 @@ def main(
 
     validate_docs_path = Path("docs/concepts/demisto-sdk-validate.md")
 
-    # Commit to content-docs
-    docs_client = GitHubClient(
-        organization=ORG_NAME,
-        repo=DOCS_REPO_NAME,
-        branch_name=branch_name,
-        is_draft=is_draft,
-        github_token=github_token,
-    )
-    docs_client.create_remote_branch()
-
     generated_docs = compile_validate_docs(
         readme_markdown=decode_base64(
             sdk_client.get_file(Path("demisto_sdk/commands/validate/README.md"))[
@@ -246,7 +236,7 @@ def main(
         ),
     )
 
-    docs_master_client = GitHubClient(
+    docs_master_client = GitHubClient(  # Used for retrieving existing markdown
         organization=ORG_NAME,
         repo=DOCS_REPO_NAME,
         branch_name="master",
@@ -263,6 +253,16 @@ def main(
         output_message = "Generated docs are identical to the ones on content-docs/master, not opening a PR."
 
     else:
+        # Commit to content-docs
+        docs_client = GitHubClient(
+            organization=ORG_NAME,
+            repo=DOCS_REPO_NAME,
+            branch_name=branch_name,
+            is_draft=is_draft,
+            github_token=github_token,
+        )
+
+        docs_client.create_remote_branch()
         docs_client.commit_file(
             path_in_repo=validate_docs_path,
             content=generated_docs,
