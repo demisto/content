@@ -195,7 +195,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
@@ -218,7 +218,7 @@ def unblacklist_url(url):
 
     data = {"blacklistUrls": urls_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_unblacklist:
         list_of_urls += "- " + url + "\n"
@@ -232,7 +232,7 @@ def blacklist_ip(ip):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": ips_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_blacklist:
         list_of_ips += "- " + ip + "\n"
@@ -256,7 +256,7 @@ def unblacklist_ip(ip):
         raise Exception("Given IP addresses are not blacklisted.")
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
