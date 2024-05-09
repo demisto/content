@@ -34,8 +34,8 @@
         ]
     },
     "group": "case",
-    "id": "Default",
-    "name": "Default",
+    "id": "Case_Layout_from_pack",
+    "name": "Case_Layout_from_pack",
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
