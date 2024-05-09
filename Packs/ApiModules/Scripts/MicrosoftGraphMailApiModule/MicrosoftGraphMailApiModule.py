@@ -1766,11 +1766,12 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
     kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
     kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
-    identifier_ids = argToList(args.get('identifier_ids'))
+    identifiers_filter = argToList(args.get('identifiers_filter'))
     return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'])
             for attachment in raw_response
             if (
-                (not identifier_ids) or (attachment.get('contentId') in identifier_ids or attachment.get('id') in identifier_ids)
+                (not identifiers_filter)
+                or (attachment.get('contentId') in identifiers_filter or attachment.get('id') in identifiers_filter)
     )
     ]
 

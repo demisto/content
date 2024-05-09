@@ -453,7 +453,7 @@ script:
       description: flag for rate limit retry.
       name: ran_once_flag
     - description: Content IDs of the required attachments.
-      name: identifier_ids
+      name: identifiers_filter
       required: false
       hidden: true
     description: Gets an attachment from the email.

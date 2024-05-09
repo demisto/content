@@ -669,17 +669,19 @@ def test_main_untagged_email(mocker):
     [
         ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'ews'},
           {'type': 'Brand', 'value': 'EWSO365'}], 'test@test.com',
-         {'arguments': {'item-id': 'foo@test.com', 'using': 'ews'}, 'command': 'ews-get-attachment', 'incidents': None}
+         {'arguments': {'item-id': 'foo@test.com', 'identifiers-filter': '', 'using': 'ews'},
+          'command': 'ews-get-attachment', 'incidents': None}
          ),
         ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'gmail'},
           {'type': 'Brand', 'value': 'Gmail'}], 'test@gmail.com',
-         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'using': 'gmail'},
+         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'identifiers-filter': '', 'using': 'gmail'},
           'command': 'gmail-get-attachments', 'incidents': None}
          ),
         ([{'type': 'Email/ID', 'value': 'foo@outlook.com'}, {'type': 'Instance', 'value': 'MicrosoftGraphMail'},
           {'type': 'Brand', 'value': 'MicrosoftGraphMail'}], 'test@outlook.com',
-         {'arguments': {'message_id': 'foo@outlook.com', 'user_id': 'test@outlook.com', 'using': 'MicrosoftGraphMail'},
-          'command': 'msgraph-mail-get-attachment', 'incidents': None}
+         {'command': 'msgraph-mail-get-attachment', 'incidents': None,
+         'arguments': {'user_id': 'test@outlook.com', 'message_id': 'foo@outlook.com', 'identifiers_filter': '',
+                       'using': 'MicrosoftGraphMail'}}
          ),
     ]
 )

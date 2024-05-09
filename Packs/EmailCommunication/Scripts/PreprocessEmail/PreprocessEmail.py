@@ -238,8 +238,8 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'identifier_ids': identifier_ids,
-                                              'using': instance_name}})
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id),
+                                              'identifiers_filter': identifier_ids, 'using': instance_name}})
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
