@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from urllib.parse import urljoin
 
 import requests
+
 PER_PAGE = 100  # value of `per_page` request parameter
 
 
@@ -27,7 +28,7 @@ def main():
         username, branch, pr_number, repo, github_token
     )
     if packs_dir_names:
-        print('Successfully updated the base branch '  # noqa: T201
+        print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
               f'{", Packs/".join(packs_dir_names)}')
 
@@ -71,13 +72,18 @@ def get_files_from_github(
     Returns:
         A list of packs names, if found.
     """
+    print("Getting files from Github")
     content_path = os.getcwd()
+    print(f"content_path: {content_path}")
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
     for file_path in get_pr_files(pr_number, github_token):
+        print(f"file_path: {file_path}")
         abs_file_path = os.path.join(content_path, file_path)
+        print(f"abs_file_path: {abs_file_path}")
         abs_dir = os.path.dirname(abs_file_path)
+        print(f"abs_dir: {abs_dir}")
         if not os.path.isdir(abs_dir):
             os.makedirs(abs_dir)
         with open(abs_file_path, "wb") as changed_file, requests.get(
@@ -85,12 +91,13 @@ def get_files_from_github(
             stream=True,
             headers={"Authorization": f"Bearer {github_token}"},
         ) as file_content:
-            # mypy didn't like the request being used as context manager
-            file_content.raise_for_status()  # type:ignore[attr-defined]
-            for data in file_content.iter_content(chunk_size=chunk_size):  # type:ignore[attr-defined]
+            file_content.raise_for_status()
+            for data in file_content.iter_content(chunk_size=chunk_size):
+                print(data)
                 changed_file.write(data)
 
         files_list.add(file_path.split(os.path.sep)[1])
+    print(f"list(files_list): {list(files_list)}")
     return list(files_list)
 
 
