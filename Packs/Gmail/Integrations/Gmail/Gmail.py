@@ -190,8 +190,7 @@ def parse_mail_parts(parts):
                         identifier_id = header.get('value')
                         if not identifier_id or identifier_id == "None":
                             identifier_id = part['body'].get('attachmentId')
-                        else:
-                            identifier_id = identifier_id.strip("<>")
+                        identifier_id = identifier_id.strip("<>")
                     if header.get('name') == 'Content-Disposition':
                         is_inline = 'inline' in header.get('value')
                 attachments.append({

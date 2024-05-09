@@ -960,3 +960,56 @@ def test_handle_html_image_with_new_line():
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+
+
+part_test1 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '<5678>'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test2 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '5678'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test3 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': 'None'},
+                {'name': 'Content-Disposition', 'value': 'attachment'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': '5678-image_1.png', 'is_inline': True}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': '5678-image_1.png', 'is_inline': True}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': '1234-image_1.png', 'is_inline': False}])),
+    ],
+)
+def test_parse_mail_parts(part, expected_result):
+    """
+        Given:
+            - Part of message from gmail API response.
+        When:
+            - run parse_mail_parts function.
+        Then:
+            - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    result = parse_mail_parts(part)
+    assert result == expected_result
