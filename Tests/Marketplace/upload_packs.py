@@ -1097,7 +1097,7 @@ def option_handler():
                         required=True)
     parser.add_argument('-pnu', '--pack_names_update',
                         help=("Target packs to update metadata to gcs."),
-                        required=True)
+                        required=False)
     parser.add_argument('-p', '--upload_specific_pack',
                         type=str2bool, help=("Indication if the -p flag is used and only specific packs are uploded"),
                         default=False)
@@ -1138,7 +1138,7 @@ def main():
     service_account = option.service_account
     pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names)
     logging.info(f"Collected {len(pack_ids_to_upload)} content packs to upload: {list(pack_ids_to_upload)}")
-    pack_ids_to_update_metadata = get_packs_ids_to_upload(option.pack_names_update)
+    pack_ids_to_update_metadata = get_packs_ids_to_upload(option.pack_names_update) if option.pack_names_update else set()
     logging.info(
         f"Collected {len(pack_ids_to_update_metadata)} content packs to update metadata: {list(pack_ids_to_update_metadata)}")
     upload_specific_pack = option.upload_specific_pack
