@@ -470,4 +470,3 @@ def test_create_stix_hash_observable():
     indicator = {'indicator_type': 'File', 'value': '123456789'}
     observable = create_stix_hash_observable(namespace, indicator)
     assert observable
-
