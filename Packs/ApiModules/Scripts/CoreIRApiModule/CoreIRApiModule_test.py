@@ -3788,7 +3788,9 @@ class TestGetIncidents:
         }
         assert expected_output == outputs
 
-    def test_get_starred_incident_list(self, requests_mock):
+    @pytest.mark.parametrize('starred, expected_starred',
+                             [(True, True), (False, False), ('true', True), ('false', False)])
+    def test_get_starred_incident_list(self, requests_mock, starred, expected_starred):
         """
         Given: A query with starred parameters.
         When: Running get_incidents_command.
@@ -3796,7 +3798,8 @@ class TestGetIncidents:
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -3804,12 +3807,33 @@ class TestGetIncidents:
 
         args = {
             'incident_id_list': '1 day',
-            'starred': True,
+            'starred': starred,
             'starred_incidents_fetch_window': '3 days'
         }
+
+        starred_filter = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': '3 days'
+        }
+
         _, outputs, _ = get_incidents_command(client, args)
 
-        assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        if expected_starred:
+            assert starred_filter in request_filters
+            assert starred_fetch_window_filter in request_filters
+            assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+        else:
+            assert starred_filter not in request_filters
+            assert starred_fetch_window_filter not in request_filters
+            assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
 
 
 INPUT_test_handle_outgoing_issue_closure = load_test_data('./test_data/handle_outgoing_issue_closure_input.json')
