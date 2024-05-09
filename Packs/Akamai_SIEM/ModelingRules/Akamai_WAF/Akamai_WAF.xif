@@ -14,7 +14,8 @@ alter // pre-modeling extractions
     response_code = httpMessage -> status,
     rule_actions = arraystring(json_extract_scalar_array(attackData, "$.ruleActions"), ";"),
     rule_messages = json_extract_scalar_array(attackData, "$.ruleMessages"),
-    rules = arraystring(json_extract_scalar_array(attackData, "$.rules"), ";")
+    rules = arraystring(json_extract_scalar_array(attackData, "$.rules"), ";"),
+    as_number = geo -> asn
 
 | alter // initialize the url components 
     // set url scheme according to protocol which is an enum of either 80 or 443 
@@ -47,7 +48,7 @@ alter // pre-modeling extractions
     xdm.observer.name = type, // Characterizes the source of this report data. Value is always "akamai_siem".
     xdm.source.application.name = clientData -> appBundleId, 
     xdm.source.application.version = clientData -> appVersion,
-    xdm.source.asn.as_number = to_integer(geo -> asn), // The AS number or numbers that the IP belongs to.
+    xdm.source.asn.as_number = if(as_number ~= "\D|^\s*$", null, to_integer(as_number)), // The AS number or numbers that the IP belongs to.
     xdm.source.host.os_family = if(client_platform contains "WINDOWS", XDM_CONST.OS_FAMILY_WINDOWS, client_platform contains "MAC", XDM_CONST.OS_FAMILY_MACOS, client_platform contains "LINUX", XDM_CONST.OS_FAMILY_LINUX, client_platform contains "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, client_platform contains "IOS", XDM_CONST.OS_FAMILY_IOS, client_platform contains "UBUNTU", XDM_CONST.OS_FAMILY_UBUNTU, client_platform contains "DEBIAN", XDM_CONST.OS_FAMILY_DEBIAN, client_platform contains "FEDORA", XDM_CONST.OS_FAMILY_FEDORA, client_platform contains "CENTOS", XDM_CONST.OS_FAMILY_CENTOS, client_platform contains "CHROME", XDM_CONST.OS_FAMILY_CHROMEOS, client_platform contains "SOLARIS", XDM_CONST.OS_FAMILY_SOLARIS, client_platform contains "SCADA", XDM_CONST.OS_FAMILY_SCADA, client_platform),
     xdm.source.ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip), // // The IPv4 address of the client making the request.
     xdm.source.ipv6 = if(client_ip ~= ":", client_ip), // // The IPv6 address of the client making the request.
