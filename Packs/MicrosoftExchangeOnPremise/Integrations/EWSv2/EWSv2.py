@@ -25,7 +25,7 @@ from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
-                                 EXCHANGE_2010_SP2, EXCHANGE_2013,
+                                 EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2013_SP1,
                                  EXCHANGE_2016, EXCHANGE_2019)
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
@@ -66,6 +66,7 @@ VERSIONS = {
     '2010': EXCHANGE_2010,
     '2010_SP2': EXCHANGE_2010_SP2,
     '2013': EXCHANGE_2013,
+    '2013_SP1': EXCHANGE_2013_SP1,
     '2016': EXCHANGE_2016,
     '2019': EXCHANGE_2019
 }
@@ -109,7 +110,7 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
 NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
-VERSION_STR = demisto.params().get('defaultServerVersion', None)
+VERSION_STR = demisto.params().get('defaultServerVersion', '')
 MANUAL_USERNAME = demisto.params().get('domainAndUserman', '')
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
 IS_PUBLIC_FOLDER = demisto.params().get('isPublicFolder', False)
@@ -211,9 +212,6 @@ def prepare_context(credentials):  # pragma: no cover
 def prepare():  # pragma: no cover
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
-    else:
-        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
-
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
@@ -246,7 +244,6 @@ def prepare():  # pragma: no cover
             config_args['service_endpoint'] = EWS_SERVER
         else:
             config_args['server'] = EWS_SERVER
-
         return Configuration(**config_args), None
 
 
@@ -775,7 +772,6 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         entry = get_searchable_mailboxes(protocol)
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
-
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
         search_results = search_results[:limit]
@@ -1477,15 +1473,20 @@ def prepare_args(d):  # pragma: no cover
     return d
 
 
-def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
+def get_limited_number_of_messages_from_qs(qs, limit, folder = ''):  # pragma: no cover
     count = 0
     results = []
+    counter_items = 0
+    
     for item in qs:
         if count == limit:
             break
+        if folder == 'WorkingSet':
+            demisto.debug(f'{item}')
         if isinstance(item, Message):
             count += 1
             results.append(item)
+        counter_items +=1
     return results
 
 
@@ -1493,10 +1494,8 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
                             is_public=None, selected_fields='all', surround_id_with_angle_brackets=True):  # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
-
     if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != '<' and message_id[-1] != '>':
         message_id = f'<{message_id}>'
-
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
     if folder_path.lower() == 'inbox':
@@ -1505,11 +1504,10 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()  # pylint: disable=E1101
-
+        root = account.public_folders_root if is_public else account.root.tois
+        folders = FolderCollection(account=account, folders=[root]).find_folders()  # pylint: disable=E1101
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
-
     if selected_all_fields:
         restricted_fields = {x.name for x in Message.FIELDS}  # type: ignore
     else:
@@ -1526,11 +1524,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
         if len(items) >= limit:
             break
-
     items = items[:limit]
     searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                                 compact_fields=selected_all_fields) for item in items]
-
     if not selected_all_fields:
         # we show id as 'itemId' for BC
         restricted_fields.remove('id')
@@ -1538,7 +1534,6 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         searched_items_result = [
             {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
-
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
@@ -2074,7 +2069,6 @@ def sub_main():  # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
-
     fix_2010()
     try:
         protocol = get_protocol()

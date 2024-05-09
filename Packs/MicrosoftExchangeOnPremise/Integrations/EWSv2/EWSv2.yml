@@ -78,7 +78,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013 2016, and 2019)'
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2013_SP1, 2016, and 2019)'
   name: defaultServerVersion
   type: 0
   section: Connect
