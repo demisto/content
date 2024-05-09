@@ -43,7 +43,7 @@ tasks:
       name: Apply a comment on Darktrace?
       type: condition
       iscommand: false
-      brand: Darktrace ASM
+      brand: ""
     nexttasks:
       "No":
       - "6"
@@ -94,7 +94,7 @@ tasks:
       script: Darktrace ASM|||darktrace-asm-post-comment
       type: regular
       iscommand: true
-      brand: Darktrace ASM
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -273,7 +273,7 @@ tasks:
       script: Darktrace ASM|||darktrace-asm-mitigate-risk
       type: regular
       iscommand: true
-      brand: Darktrace ASM
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
