@@ -878,7 +878,8 @@ def get_entry_for_file_attachment(item_id, attachment):
     :param attachment: attachment dict
     :return: file entry dict for attachment
     """
-    entry = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id), attachment.content)
+    entry = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id,
+                       attachment_id=attachment.attachment_id.id), attachment.content)
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT
         + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
@@ -2187,7 +2188,8 @@ def parse_incident_from_item(item):  # pragma: no cover
                         label_attachment_id_type = "attachmentId"
 
                         # save the attachment
-                        file_name = get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)
+                        file_name = get_attachment_name(attachment_name=attachment.name,
+                                                        content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)

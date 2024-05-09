@@ -101,23 +101,32 @@ p
 <img size="8023" data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
 </div></body></html>"""
 
-EXPECTED_RESULT_1 = """
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
-<div><div><img src=entry/download/37@119 alt="image_1.png" width="275" height="184"><br></div></div><div>image 2:
-</div><div><div><img src="cid:ii_kgjzygxz1" alt="image_2.png" width="225" height="224"><br></div></div></div><br>
-</body></html>"""
+EXPECTED_RESULT_1 = ('\n<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div '
+                     'dir="ltr">image 1:\n<div><div><img src=entry/download/37@119 alt="image_1.png" width="275" height="184">'
+                     '<br></div></div><div>image 2:\n</div><div><div><img src="cid:ii_kgjzygxz1" alt="image_2.png" width="225" '
+                     'height="224"><br></div></div></div><br>\n<div class="gmail_quote"><div dir="ltr" class="gmail_attr">On Thu,'
+                     ' Oct 22, 2020 at 1:56 AM Avishai Brandeis &lt;\n<a href="mailto:avishai@demistodev.onmicrosoft.com">'
+                     'avishai@demistodev.onmicrosoft.com</a>&gt; wrote:<br></div>\n<blockquote class="gmail_quote" style="margin:'
+                     ' 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u></u><div>\n<p>please add multiple inline '
+                     'images</p></div></blockquote></div></body></html>')
 
-EXPECTED_RESULT_2 = """
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
-<div><div><img src="cid:ii_kgjzy6yh0" alt="image_1.png" width="275" height="184"><br></div></div><div>image 2:
-</div><div><div><img src="cid:ii_kgjzygxz1" alt="image_2.png" width="225" height="224"><br></div></div></div><br>
-</body></html>"""
+EXPECTED_RESULT_2 = ('\n<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div '
+                     'dir="ltr">image 1:\n<div><div><img src="cid:ii_kgjzy6yh0" alt="image_1.png" width="275" height="184">'
+                     '<br></div></div><div>image 2:\n</div><div><div><img src="cid:ii_kgjzygxz1" alt="image_2.png" width='
+                     '"225" height="224"><br></div></div></div><br>\n<div class="gmail_quote"><div dir="ltr" class="gmail_attr"'
+                     '>On Thu, Oct 22, 2020 at 1:56 AM Avishai Brandeis &lt;\n<a href="mailto:avishai@demistodev.onmicrosoft.com"'
+                     '>avishai@demistodev.onmicrosoft.com</a>&gt; wrote:<br></div>\n<blockquote class="gmail_quote" '
+                     'style="margin: 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u></u><div>\n<p>please add '
+                     'multiple inline images</p></div></blockquote></div></body></html>')
 
-EXPECTED_RESULT_3 = """
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
-<div><div><img src=entry/download/37@119 alt="image_1.png" width="275" height="184"><br></div></div><div>image 2:
-</div><div><div><img src=entry/download/38@120 alt="image_2.png" width="225" height="224"><br></div></div></div><br>
-</body></html>"""
+EXPECTED_RESULT_3 = ('\n<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div '
+                     'dir="ltr">image 1:\n<div><div><img src=entry/download/37@119 alt="image_1.png" width="275" height="184">'
+                     '<br></div></div><div>image 2:\n</div><div><div><img src=entry/download/38@120 alt="image_2.png" '
+                     'width="225" height="224"><br></div></div></div><br>\n<div class="gmail_quote"><div dir="ltr" class'
+                     '="gmail_attr">On Thu, Oct 22, 2020 at 1:56 AM Avishai Brandeis &lt;\n<a href="mailto:avishai@demisto'
+                     'dev.onmicrosoft.com">avishai@demistodev.onmicrosoft.com</a>&gt; wrote:<br></div>\n<blockquote '
+                     'class="gmail_quote" style="margin: 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u>'
+                     '</u><div>\n<p>please add multiple inline images</p></div></blockquote></div></body></html>')
 
 EXPECTED_RESULT_NO_ALT = """
 <html><head>
@@ -163,6 +172,35 @@ def test_create_email_html(email_html, entry_id_list, expected):
     """
     from PreprocessEmail import create_email_html
     result = create_email_html(email_html, entry_id_list)
+    assert result == expected
+
+
+EXPECTED_RESULT_REMOVE_MESSAGE_HISTORY = ('\n<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+                                          '</head><body><div dir="ltr">image 1:\n<div><div><img src="cid:ii_kgjzy6yh0" '
+                                          'alt="image_1.png" width="275" height="184"><br></div></div><div>image 2:\n</div><div>'
+                                          '<div><img src="cid:ii_kgjzygxz1" alt="image_2.png" width="225" height="224"><br></div>'
+                                          '</div></div><br>\n</body></html>')
+
+
+@pytest.mark.parametrize(
+    "email_html, expected",
+    [(EMAIL_HTML, EXPECTED_RESULT_REMOVE_MESSAGE_HISTORY)]
+)
+def test_remove_html_conversation_history(email_html, expected):
+    """
+    Test case to remove previous conversation history from email HTML.
+
+    Given:
+        - The email's HTML representation.
+
+    When:
+        - Retrieving only the last message.
+
+    Then:
+        - Ensures that the previous messages are being deleted from the current HTML.
+    """
+    from PreprocessEmail import remove_html_conversation_history
+    result = remove_html_conversation_history(email_html)
     assert result == expected
 
 
@@ -263,7 +301,7 @@ def test_get_entry_id_list_with_attached_file():
     from PreprocessEmail import get_entry_id_list
     attachments = [
         {
-            "description": FileAttachmentType.ATTACHED,
+            "description": f"{FileAttachmentType.ATTACHED}-asdfghjk",
             "name": "attachment_1.pdf",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
@@ -650,3 +688,99 @@ def test_get_attachments_using_instance(labels, email_to, result, mocker):
     mocker.patch.object(demisto, 'executeCommand')
     get_attachments_using_instance(None, labels, email_to)
     assert demisto.executeCommand.call_args[0][1] == result
+
+
+ATTACHMENTS = [{
+    "description": "",
+    "name": "123-image_1.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}, {
+    "description": "",
+    "name": "456-image_2.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}]
+
+FILES_TEST1 = [{
+    "EntryID": "4@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "123-image_1.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}, {
+    "EntryID": "5@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "456-image_2.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}]
+
+FILES_TEST2 = {
+    "EntryID": "4@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "123-image_1.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}
+
+FILES_TEST3 = {}
+
+
+@pytest.mark.parametrize(
+    "attachments, email_html, email_related_incident, files, expected_result",
+    [
+        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST1, ('', [])),
+        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST2, ('456', [{'description': '', 'name': '456-image_2.png',
+                                                                           'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
+                                                                           'showMediaFile': False, 'type': ''}])),
+        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST3, ('123,456', [{'description': '', 'name': '123-image_1.png',
+                                                                              'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
+                                                                               'showMediaFile': False, 'type': ''},
+                                                                              {'description': '', 'name': '456-image_2.png',
+                                                                              'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
+                                                                               'showMediaFile': False, 'type': ''}])),
+    ]
+)
+def test_find_attachments_to_download(attachments, email_html, email_related_incident, files, expected_result, mocker):
+    """
+    Test case to find attachments to download based on different scenarios.
+
+    Given:
+        - Attachments of the incident.
+        - Email HTML.
+        - Email which is related to the incident.
+
+    When:
+        - Scenario 1: no new images.
+        - Scenario 2: one new image.
+        - Scenario 3: all images are new.
+
+    Then:
+        - Return the corresponding amount of entry IDs.
+    """
+    import PreprocessEmail
+    mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=files)
+    result = PreprocessEmail.find_attachments_to_download(attachments, email_html, email_related_incident)
+    assert result[0] == expected_result[0]
+    assert result[1] == expected_result[1]

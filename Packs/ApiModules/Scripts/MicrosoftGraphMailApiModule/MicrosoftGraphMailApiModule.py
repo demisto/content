@@ -1774,8 +1774,8 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
             for attachment in raw_response
             if (
                 (not identifier_ids) or (attachment.get('contentId') in identifier_ids or attachment.get('id') in identifier_ids)
-                )
-            ]
+    )
+    ]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:

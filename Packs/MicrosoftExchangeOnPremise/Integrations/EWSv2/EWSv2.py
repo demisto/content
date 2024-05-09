@@ -603,7 +603,7 @@ def get_time_zone() -> EWSTimeZone | None:
 
 def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pragma: no cover
     identifier_id = content_id
-    if not identifier_id or identifier_id=="None":
+    if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
         return f'{identifier_id}-demisto_untitled_attachment'

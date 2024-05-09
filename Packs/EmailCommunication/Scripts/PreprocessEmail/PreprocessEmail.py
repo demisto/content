@@ -98,10 +98,10 @@ def get_entry_id_list(attachments, files):
         return []
 
     entry_id_list = []
-    is_file_attached = ""
     files = [files] if not isinstance(files, list) else files
     demisto.debug(f"{files=}")
     for attachment in attachments:
+        is_file_attached = ""
         attachment_name = attachment.get('name', '')
         for file in files:
             if '-' in attachment.get('description', ''):
@@ -258,7 +258,7 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
     demisto.debug(f"this_is_the_email {email_html}")
     previous_files = get_incident_related_files(email_related_incident)
     previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
-    previous_file_names = [ file.get("Name") for file in previous_files ]
+    previous_file_names = [file.get("Name") for file in previous_files]
     for attachment in attachments:
         if attachment.get('name', '') not in previous_file_names:
             if '-' in attachment.get('name', ''):
@@ -268,8 +268,6 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
                 CommandResults(readable_output=f"Could not find image {attachment.get('name', '')[::-1].split('-', 1)[0][::-1]}")
             new_attachments.append(attachment)
     demisto.debug(f"this_is_the_attachment_ids {new_attachment_identifiers_list}")
-    if not new_attachments:
-        new_attachments = attachments
     return ",".join(new_attachment_identifiers_list), new_attachments
 
 
@@ -460,7 +458,7 @@ def main():
 
         email_html = remove_html_conversation_history(email_html)
 
-        #Get attachments IDs for new attacments
+        # Get attachments IDs for new attacments
         attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, email_related_incident)
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
 
@@ -470,11 +468,19 @@ def main():
         entry_id_list = get_entry_id_list(attachments, files)
         html_body = create_email_html(email_html, entry_id_list)
 
-        # For all other incident types, add message details as context entry
-        demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
-        create_thread_context(email_related_incident_code, email_cc, email_bcc, email_text, email_from, html_body,
-                              email_latest_message, email_received, email_replyto, email_subject, email_to,
-                              email_related_incident, attachments)
+        if incident_details['type'] == 'Email Communication':
+            # Add new email message as Entry if type is 'Email Communication'
+            demisto.debug(
+                "Incoming email related to Email Communication Incident"
+                f" {email_related_incident}. Appending a message there.")
+            email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
+            add_entries(email_reply, email_related_incident, reputation_calc_async)
+        else:
+            # For all other incident types, add message details as context entry
+            demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
+            create_thread_context(email_related_incident_code, email_cc, email_bcc, email_text, email_from, html_body,
+                                  email_latest_message, email_received, email_replyto, email_subject, email_to,
+                                  email_related_incident, attachments)
 
         # Return False - tell pre-processing to not create new incident
         return_results(False)
