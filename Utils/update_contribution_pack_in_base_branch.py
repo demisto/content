@@ -24,6 +24,8 @@ def main():
     branch = args.branch
     github_token = args.github_token
 
+    print("debug logs")
+
     packs_dir_names = get_files_from_github(
         username, branch, pr_number, repo, github_token
     )
