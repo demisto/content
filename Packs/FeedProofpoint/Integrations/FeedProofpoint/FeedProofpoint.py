@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 """ IMPORTS """
 import urllib3
 import csv
-import datapraser
+import datepraser as dateparser
 from typing import Generator, Tuple, Optional, List
 
 # disable insecure warnings
@@ -110,6 +110,25 @@ class Client(BaseClient):
 
     @staticmethod
     def _process_item(item: dict, tags: list, tlp_color: Optional[str] = None) -> dict:
+        first_seen_raw = item.get("first_seen","")
+        last_seen_raw = item.get("last_seen","")
+
+        if first_seen_raw:
+            try:
+                first_seen = dateparser.parse(first_seen_raw).isoformat()
+            except AttributeError:
+                first_seen = ""
+        else:
+            first_seen = ""
+
+        if last_seen_raw:
+            try:
+                last_seen = dateparser.parse(last_seen_raw).isoformat()
+            except AttributeError:
+                last_seen = ""
+        else:
+            last_seen = ""
+
         indicator_obj = {
             "value": item["value"],
             "type": item["type"],
@@ -117,8 +136,8 @@ class Client(BaseClient):
             "fields": {
                 "tags": tags,
                 "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
-                "firstseenbysource": datapraser.parse(item.get("first_seen", "")).isoformat(),
-                "lastseenbysource": datapraser.parse(item.get("last_seen", "")).isoformat(),
+                "firstseenbysource": first_seen,
+                "lastseenbysource": last_seen,
                 "threattypes": {
                     "threatcategory": item.get("category_name", ""),
                     "threatcategoryconfidence": item.get("score", "")
