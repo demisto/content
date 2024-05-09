@@ -1,7 +1,7 @@
 import pytest
 from json import load
-from CommonServerPython import CommandResults, DemistoException, arg_to_datetime
-from ExabeamDataLake import Client, query_datalake_command, get_date
+from CommonServerPython import CommandResults, DemistoException
+from ExabeamDataLake import Client, query_datalake_command, get_date, dates_in_range
 from datetime import datetime
 
 class MockClient(Client):
@@ -122,4 +122,40 @@ def test_get_date(mocker):
         
     assert result == expected_result
 
+
+@pytest.mark.parametrize('start_time_str, end_time_str, expected_output', [
+    (
+        "2024-05-01",
+        "2024-05-10",
+        [
+            '2024.05.01', '2024.05.02', '2024.05.03',
+            '2024.05.04', '2024.05.05', '2024.05.06',
+            '2024.05.07', '2024.05.08', '2024.05.09', '2024.05.10'
+        ]
+    ),
+    (
+        "2024-05-01",
+        "2024-05-05",
+        ['2024.05.01', '2024.05.02', '2024.05.03', '2024.05.04', '2024.05.05']
+    )
+])
+def test_dates_in_range_valid(mocker, start_time_str,end_time_str,expected_output):
+    result = dates_in_range(start_time_str, end_time_str)
+    assert result == expected_output
     
+    
+@pytest.mark.parametrize('start_time_str, end_time_str, expected_output', [
+    (
+        "2024-05-10",
+        "2024-05-01",
+        "Start time must be before end time"
+    ),
+    (
+        "2024-05-01",
+        "2024-05-15",
+        "Difference between start time and end time must be less than or equal to 10 days"
+    )
+])
+def test_dates_in_range_invalid(mocker, start_time_str, end_time_str, expected_output):
+    with pytest.raises(DemistoException, match=expected_output):
+        dates_in_range(start_time_str, end_time_str)

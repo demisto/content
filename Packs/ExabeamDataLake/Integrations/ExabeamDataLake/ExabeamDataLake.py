@@ -108,7 +108,7 @@ def get_date(time):
     return time
         
 
-def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandResults:
+def query_datalake_command(client: Client, args: dict, cluster_name: str) -> CommandResults:
     """
     Query the datalake command and return the results in a formatted table.
 
@@ -130,10 +130,10 @@ def query_datalake_command(client: Client, args: dict, cluster_name) -> CommandR
         size_param = limit
         
     
-    if start_time := args.get("start_time"):
+    if start_time := args.get("start_time", ""):
        start_time = get_date(start_time)
             
-    if end_time := args.get("end_time"):
+    if end_time := args.get("end_time", ""):
         end_time = get_date(end_time)
             
     dates = dates_in_range(start_time, end_time)
