@@ -112,8 +112,12 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, non_removab
     """
 
     packs_to_uninstall = get_all_installed_packs(client, non_removable_packs)
+    logging.info(f"Here, packs to uninstall {packs_to_uninstall=}")
+    logging.info(f"Here2, packs to be installed {packs_to_be_installed=}")
     if packs_to_be_installed is not None and packs_to_uninstall:
         packs_to_uninstall = set(packs_to_uninstall) - packs_to_be_installed
+        logging.info(f"Here3, sub is {packs_to_uninstall=}")
+
     logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
                  f'uninstall: {len(packs_to_uninstall)}')
     uninstalled_count = 0
