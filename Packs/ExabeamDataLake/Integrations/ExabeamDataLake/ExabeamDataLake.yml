@@ -52,19 +52,19 @@ script:
     description: Get events from Exabeam Data Lake.
     name: exabeam-data-lake-search
     outputs:
-    - contextPath: ExabeamDataLake.Event.id
+    - contextPath: ExabeamDataLake.Event._id
       description: The event ID.
       type: str
-    - contextPath: ExabeamDataLake.Event.vendor
+    - contextPath: ExabeamDataLake.Event._source.Vendor
       description: Vendor of the event.
       type: str
-    - contextPath: ExabeamDataLake.Event.product
+    - contextPath: ExabeamDataLake.Event._source.Product
       description: Product of the event.
       type: str
-    - contextPath: ExabeamDataLake.Event.created_at
+    - contextPath: ExabeamDataLake.Event._source.@timestamp
       description: The time of the event.
       type: str
-    - contextPath: ExabeamDataLake.Event.message
+    - contextPath: ExabeamDataLake.Event._source.message
       description: The message of the event.
       type: str
   isfetch: false

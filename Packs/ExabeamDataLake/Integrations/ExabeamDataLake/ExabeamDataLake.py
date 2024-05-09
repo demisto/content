@@ -74,11 +74,11 @@ def _parse_entry(entry: dict) -> dict:
     """
     source: dict = entry.get("_source", {})
     return {
-        "id": entry.get("_id"),
-        "vendor": source.get("Vendor"),
-        "created_at": source.get("@timestamp"),
-        "product": source.get("Product"),
-        "message": source.get("message")
+        "Id": entry.get("_id"),
+        "Vendor": source.get("Vendor"),
+        "Created_at": source.get("@timestamp"),
+        "Product": source.get("Product"),
+        "Message": source.get("message")
     }
 
 

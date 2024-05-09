@@ -49,7 +49,7 @@ def test_query_datalake_command(mocker):
                         'not_relevant': 'nothing'}} in result
     expected_result = (
         "### Logs\n"
-        "|created_at|id|message|product|vendor|\n"
+        "|Created_at|Id|Message|Product|Vendor|\n"
         "|---|---|---|---|---|\n"
         "| 2024-05-01T12:00:00 |  | example message 1 |  |  |\n"
         "| 2024-05-02T12:00:00 |  | example message 2 |  |  |\n"
