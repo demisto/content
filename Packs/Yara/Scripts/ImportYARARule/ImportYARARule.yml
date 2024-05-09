@@ -1,0 +1,43 @@
+args:
+- name: string
+  required: false
+  description: One or more YARA signatures in string format.
+- name: entryID
+  required: false
+  description: An entry ID with for a file containing YARA signatures.
+commonfields:
+  id: 'ImportYARARule'
+  version: -1
+outputs:
+- contextPath: ImportYARARule.value
+  description: The YARA Rule name
+  type: string
+- contextPath: ImportYARARule.description
+  description: The YARA Rule description.
+  type: string
+- contextPath: ImportYARARule.rawrule
+  description: The raw YARA Rule in code block format.
+  type: string
+- contextPath: ImportYARARule.rulecondition
+  description: The YARA Rule condition.
+  type: string
+- contextPath: ImportYARARule.strings
+  description: The YARA Rule strings in grid format.
+  type: string
+- contextPath: ImportYARARule.tags
+  description: The YARA Rule tags.
+  type: string
+dockerimage: demisto/yarapy:1.0.0.85051
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: ImportYARARule
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
