@@ -338,7 +338,7 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
     demisto.debug(f'debug-log: handling event-type: {event_type.type}')
     if last_fetch_time := last_run.get(last_fetch_time_field):
         demisto.debug(f'debug-log: last run of type: {event_type.type} time is: {last_fetch_time}')
-    elif last_fetch_next := last_run.get(last_fetch_next_field):
+    if last_fetch_next := last_run.get(last_fetch_next_field):
         demisto.debug(f'debug-log: last run of type: {event_type.type} next is: {last_fetch_next}')
     event_type_fetch_start_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time)
     response, next = client.fetch_by_aql_query(
@@ -363,6 +363,8 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
 
     next_run[last_fetch_next_field] = next
     # We don't update time between executions on purpose because we want to keep the next value according to a particular time.
+    if isinstance(event_type_fetch_start_time, datetime):
+        event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
     demisto.debug(f'debug-log: updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}')
 
