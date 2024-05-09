@@ -6,13 +6,14 @@ import urllib3
 from blessings import Terminal
 from github import Github
 from git import Repo
+from github.PullRequest import PullRequest
 from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 from random import randint
-
+import re
 
 from Utils.github_workflow_scripts.utils import (
     get_env_var,
@@ -63,6 +64,7 @@ SECURITY_CONTENT_ITEMS = [
     "Dashboards",
     "Triggers"
 ]
+PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
 
 
 def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
@@ -91,7 +93,7 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
     return 0
 
 
-def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
+def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have been assigned to a user
     for each potential reviewer and returns the user with the smallest amount.
     If all the reviewers have the same amount, it will select one randomly.
@@ -278,6 +280,96 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
+def get_user_from_pr_body(pr: PullRequest) -> str:
+    """
+    Get user from PR that was opened from XSOAR UI by searching for the substring "Contribytor\n@" in the body of the PR
+    Arguments:
+    - pr - the opened PR
+
+    Returns:
+    - Found User
+    """
+    body = pr.body
+    matcher = re.search(PR_AUTHOR_PATTERN, body)
+    if matcher:
+        return matcher.groups()[0]
+    return ""
+
+
+def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_number: str) -> list:
+    """
+    find all open pr's that were opened by the same user as the current PR, excluding current PR
+    Arguments:
+    - content_repo: the content repository
+    - pr_creator: the author of the current PR
+    - pr_number: number of the current PR
+
+    Returns:
+    - list of all open PR's with similar author as the current PR
+    """
+    print(f'PR author is: {pr_creator}')
+    all_prs = content_repo.get_pulls()
+    similar_prs = []
+    for pr in all_prs:
+        if pr.number == pr_number:  # Exclude current PR
+            continue
+        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
+        if existing_pr_author == pr_creator:
+            similar_prs.append(pr)
+    print(f'PR\'s by the same author: {similar_prs}')
+    return similar_prs
+
+
+def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_reviewers: list[str]) -> str:
+    """
+    Get all PR's that are currently open from the same author, filter the list and return reviewer if reviewer is part
+    of the current contribution round
+    Arguments:
+    - other_prs_by_same_user - list of opened PR's
+
+    Returns:
+    - Reviewer of the found pr's
+    """
+    content_reviewers_set = set(content_reviewers)
+    for pr in other_prs_by_same_user:
+        reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
+        existing_reviewer = content_reviewers_set.intersection(reviewer_names)
+        if existing_reviewer:
+            return existing_reviewer.pop()
+        else:
+            print("There are other PR's by same author, but their reviewer is not in the current contribution round")
+    return ''
+
+
+def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number: str, content_reviewers: list[str]) -> str:
+    """
+    Gets the content repo, PR and pr_number. Will return reviewer to assign
+    Argument:
+    - content_repo - the content repository
+    - pr - current new PR
+    - pr_number - number of current_pr
+
+    Returns:
+    - Reviewer to assign
+    """
+    if pr.user.login == "xsoar-bot":
+        pr_creator = get_user_from_pr_body(pr)
+    else:
+        pr_creator = pr.user.login
+
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
+
+    reviewer_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
+    if reviewer_to_assign:
+        print(f'The reviewer from other PR\'s by similar author is: {reviewer_to_assign}')
+        content_reviewer = reviewer_to_assign
+    else:
+        print('The reviewer is going to be determined randomly')
+        content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
+        print(f'Determined random reviewer, who is: {content_reviewer}')
+    return content_reviewer
+
+
 def main():
     """Handles External PRs (PRs from forks)
 
@@ -359,7 +451,8 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    content_reviewer = determine_reviewer(content_reviewers, content_repo)
+    content_reviewer = find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers)
+
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
