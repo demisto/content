@@ -88,7 +88,7 @@ def error_handler(res):
     else:
         if res.status_code in ERROR_CODES_DICT:
             raise Exception(
-                f"Your request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
+                f"The request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
             )
         else:
             raise Exception(
