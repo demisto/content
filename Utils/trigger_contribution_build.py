@@ -94,7 +94,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
                     "BASE_BRANCH": pull_request.base.ref,
                 }
                 new_pipeline = gitlab_project.trigger_pipeline(
-                    ref=pull_request.merge_commit_sha,
+                    ref=pull_request.base.ref,
                     token=args.gitlab_trigger_token,
                     variables=variables,
                 )
