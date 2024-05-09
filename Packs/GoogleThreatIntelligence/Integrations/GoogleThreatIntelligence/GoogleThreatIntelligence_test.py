@@ -1053,3 +1053,43 @@ def test_gti_private_analysis_get(mocker, requests_mock):
 
     assert results.execution_metrics is None
     assert results.outputs == expected_response
+
+
+def test_url_scan_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid URL
+
+    When:
+    - Running the !url-scan command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import scan_url_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    url = 'https://www.example.com'
+    mock_response = {
+        'data': {
+            'id': 'random_id',
+            'url': url,
+        }
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    requests_mock.post('https://www.virustotal.com/api/v3/urls',
+                       json=mock_response)
+
+    results = scan_url_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == {
+        'GoogleThreatIntelligence.Submission(val.id && val.id === obj.id)': mock_response['data'],
+        'vtScanID': 'random_id',
+    }

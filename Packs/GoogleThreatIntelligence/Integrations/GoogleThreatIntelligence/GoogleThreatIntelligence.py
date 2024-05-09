@@ -1997,15 +1997,15 @@ def scan_url_command(client: Client, args: dict) -> CommandResults:
             f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
             'vtScanID': data.get('id')  # BC preservation
         }
-    except DemistoException as ex:
-        error = ex.res.json().get('error')
+    except DemistoException as e:
+        error = e.res.json().get('error')
 
         # Invalid url, probably due to an unknown TLD
         if error['code'] == 'InvalidArgumentError':
             data = {'url': url, 'id': '', 'error': error['message']}
             headers.append('error')
         else:
-            raise
+            raise e
 
     return CommandResults(
         readable_output=tableToMarkdown(
