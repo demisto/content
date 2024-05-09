@@ -423,7 +423,8 @@ inputs:
   description: The YARA rule content
   playbookInputQuery:
 - key: Query
-  value: {}
+  value:
+    simple: 
   required: false
   description: |-
     A query to match the relevant YARA rule indicators from TIM.
