@@ -3789,6 +3789,7 @@ class TestGetIncidents:
         }
         assert expected_output == outputs
 
+    @freeze_time("2024-01-15 17:00:00 UTC")
     @pytest.mark.parametrize('starred, expected_starred',
                              [(True, True),
                               (False, False),
@@ -3852,6 +3853,7 @@ class TestGetIncidents:
             assert starred_filter_false not in request_filters
             assert starred_fetch_window_filter not in request_filters
 
+    @freeze_time("2024-01-15 17:00:00 UTC")
     @pytest.mark.parametrize('starred, expected_starred',
                              [(True, True),
                               (False, False),
@@ -3867,18 +3869,14 @@ class TestGetIncidents:
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
-                                                   json=get_incidents_list_response)
         mocker.patch('demistomock.command', return_value='fetch-incidents')
+        handle_fetch_starred_mock = mocker.patch.object(CoreClient,
+                                                        'handle_fetch_starred_incidents',
+                                                        return_value=get_incidents_list_response)
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-
-        handle_fetch_starred_mock = mocker.patch.object(client,
-                                                        'handle_fetch_starred_incidents',
-                                                        return_value=get_incidents_list_response)
-
 
         args = {
             'incident_id_list': '1 day',
