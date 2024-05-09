@@ -1,9 +1,9 @@
 category: Messaging and Conferencing
-name: OpenAIGPT
+name: OpenAiChatGPTV3
 display: OpenAI GPT
 description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 commonfields:
-  id: OpenAIGPT
+  id: OpenAiChatGPTV3
   version: -1
 
 configuration:
@@ -112,7 +112,7 @@ script:
       description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
 
     outputs:
-    - contextPath: OpenAIGPT.Conversation
+    - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
@@ -139,7 +139,7 @@ script:
       required: false
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
-    - contextPath: OpenAIGPT.Conversation
+    - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model. 
       type: Dictionary
 
@@ -166,7 +166,7 @@ script:
       required: false
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
-    - contextPath: OpenAIGPT.Conversation
+    - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
@@ -189,7 +189,7 @@ script:
       required: false
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
-    - contextPath: OpenAIGPT.Conversation
+    - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
   runonce: false

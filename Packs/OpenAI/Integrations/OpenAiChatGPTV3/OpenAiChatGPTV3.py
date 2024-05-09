@@ -170,7 +170,7 @@ def get_chat_context(reset_conversation_history: bool, message: str) -> List[dic
         List[Dict[str, str]]: The updated conversation history with the new message appended.
     """
     # Retrieve or initialize conversation history based on the context and reset flag
-    conversation = demisto.context().get('OpenAIGPT', {}).get('Conversation')
+    conversation = demisto.context().get('OpenAiChatGPTV3', {}).get('Conversation')
 
     if reset_conversation_history or not conversation:
         conversation = []
@@ -290,7 +290,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     # prior to returning the 'send-message-command' results and the entire conversation to the context.
     return_results(
         CommandResults(readable_output=readable_input,
-                       outputs_prefix='OpenAIGPT.Email' + email_part.capitalize(),
+                       outputs_prefix='OpenAiChatGPTV3.Email' + email_part.capitalize(),
                        outputs={
                            'Email' + email_part.capitalize(): readable_input,
                            'Response': response
@@ -372,7 +372,7 @@ def send_message_command(client: OpenAiClient,
                                                                  }
                                                                  )
     return CommandResults(
-        outputs_prefix='OpenAIGPT.Conversation',
+        outputs_prefix='OpenAiChatGPTV3.Conversation',
         outputs=conversation_step,
         replace_existing=reset_conversation_history,
         readable_output=readable_output
@@ -397,7 +397,7 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
     # and setting the entire conversation in the context.
     return_results(
         CommandResults(
-            outputs_prefix='OpenAIGPT.SocEmailTemplate',
+            outputs_prefix='OpenAiChatGPTV3.SocEmailTemplate',
             outputs={'Response': response},
             replace_existing=True
         )
