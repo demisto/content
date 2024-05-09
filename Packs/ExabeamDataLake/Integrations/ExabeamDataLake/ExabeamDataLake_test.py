@@ -1,6 +1,6 @@
 import pytest
 from CommonServerPython import DemistoException
-from ExabeamDataLake import Client, query_datalake_command, get_date, dates_in_range, calculate_page_parameters
+from ExabeamDataLake import Client, query_datalake_command, get_date, dates_in_range, calculate_page_parameters, _parse_entry
 
 
 class MockClient(Client):
@@ -133,7 +133,7 @@ def test_get_date(mocker):
         ['2024.05.01', '2024.05.02', '2024.05.03', '2024.05.04', '2024.05.05']
     )
 ])
-def test_dates_in_range_valid(mocker, start_time_str, end_time_str, expected_output):
+def test_dates_in_range_valid(start_time_str, end_time_str, expected_output):
     result = dates_in_range(start_time_str, end_time_str)
     assert result == expected_output
 
@@ -150,7 +150,7 @@ def test_dates_in_range_valid(mocker, start_time_str, end_time_str, expected_out
         "Difference between start time and end time must be less than or equal to 10 days"
     )
 ])
-def test_dates_in_range_invalid(mocker, start_time_str, end_time_str, expected_output):
+def test_dates_in_range_invalid(start_time_str, end_time_str, expected_output):
     with pytest.raises(DemistoException, match=expected_output):
         dates_in_range(start_time_str, end_time_str)
 
@@ -159,7 +159,7 @@ def test_dates_in_range_invalid(mocker, start_time_str, end_time_str, expected_o
     ({'page': '1', 'page_size': '50', 'limit': None}, 0, 50),
     ({'page': None, 'page_size': None, 'limit': '100'}, 0, 100)
 ])
-def test_calculate_page_parameters_valid(mocker, args, from_param_expected, size_param_expected):
+def test_calculate_page_parameters_valid(args, from_param_expected, size_param_expected):
     from_param, size_param = calculate_page_parameters(args)
     assert from_param == from_param_expected
     assert size_param == size_param_expected
@@ -173,3 +173,22 @@ def test_calculate_page_parameters_valid(mocker, args, from_param_expected, size
 def test_calculate_page_parameters_invalid(mocker, args):
     with pytest.raises(DemistoException, match="You can only provide 'limit' alone or 'page' and 'page_size' together."):
         calculate_page_parameters(args)
+
+
+def test_parse_entry():
+    entry = {
+        "_id": "12345",
+        "_source": {
+            "Vendor": "VendorName",
+            "@timestamp": "2024-05-09T12:00:00Z",
+            "Product": "ProductA",
+            "message": "Some message here"
+        }
+    }
+
+    parsed_entry = _parse_entry(entry)
+    assert parsed_entry["Id"] == "12345"
+    assert parsed_entry["Vendor"] == "VendorName"
+    assert parsed_entry["Created_at"] == "2024-05-09T12:00:00Z"
+    assert parsed_entry["Product"] == "ProductA"
+    assert parsed_entry["Message"] == "Some message here"
