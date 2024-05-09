@@ -4,13 +4,10 @@ commonfields:
   version: -1
 configuration:
 - display: API Username
-  name: username
+  name: credentials
+  type: 9
   required: true
-  type: 0
-- display: API Key
-  name: apikey
-  required: true
-  type: 4
+  displaypassword: API Key
 - display: High-Risk Threshold
   name: risk_threshold
   required: true

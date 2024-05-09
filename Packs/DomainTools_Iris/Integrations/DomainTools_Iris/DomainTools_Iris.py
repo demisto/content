@@ -16,8 +16,8 @@ import copy
 urllib3.disable_warnings()
 
 ''' GLOBALS '''
-USERNAME = demisto.params().get('username')
-API_KEY = demisto.params().get('apikey')
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+API_KEY = demisto.params().get('credentials', {}).get('password')
 RISK_THRESHOLD = arg_to_number(demisto.params().get('risk_threshold')) or 70
 YOUNG_DOMAIN_TIMEFRAME = arg_to_number(demisto.params().get('young_domain_timeframe')) or 7
 VERIFY_CERT = not demisto.params().get('insecure', False)
