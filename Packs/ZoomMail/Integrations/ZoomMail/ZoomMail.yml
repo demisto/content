@@ -192,7 +192,7 @@ script:
           description: The token used to fetch the next page.
         - name: license
           description: Indicates if the user is licensed or not.
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   subtype: python3
