@@ -1,9 +1,9 @@
 category: Messaging and Conferencing
-name: OpenAiChatGPTV3
+name: OpenAi ChatGPT v3
 display: OpenAI GPT
 description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 commonfields:
-  id: OpenAiChatGPTV3
+  id: OpenAi ChatGPT v3
   version: -1
 
 configuration:
@@ -11,13 +11,14 @@ configuration:
   name: url
   required: true
   defaultvalue: https://api.openai.com/
+  section: Connect
   type: 0
 
 - displaypassword: API Key
   name: api_key
   type: 9
   required: true
-  section: connect
+  section: Connect
   hiddenusername: true
 
 - display: Model
@@ -25,7 +26,7 @@ configuration:
   name: model-select
   type: 15
   required: false
-  section: connect
+  section: Connect
   defaultvalue: gpt-3.5-turbo
   options:
   - gpt-3.5-turbo
@@ -48,7 +49,7 @@ configuration:
   name: model-freetext
   type: 0
   required: false
-  section: connect
+  section: Connect
 
 - display: Max tokens
   name: max_tokens
