@@ -111,12 +111,10 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, non_removab
         A flag that indicates if the operation succeeded or not.
     """
 
-    packs_to_uninstall = get_all_installed_packs(client, non_removable_packs)
-    logging.info(f"Here, packs to uninstall {packs_to_uninstall=}")
-    logging.info(f"Here2, packs to be installed {packs_to_be_installed=}")
-    if packs_to_be_installed is not None and packs_to_uninstall:
-        packs_to_uninstall = set(packs_to_uninstall) - packs_to_be_installed
-        logging.info(f"Here3, sub is {packs_to_uninstall=}")
+    if packs_to_be_installed is not None:
+        packs_to_uninstall = packs_to_be_installed
+    else:
+        packs_to_uninstall = get_all_installed_packs(client, non_removable_packs)
 
     logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
                  f'uninstall: {len(packs_to_uninstall)}')
@@ -452,7 +450,8 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--modeling_rules_to_test_files', help='List of modeling rules test data to check.', required=True)
     parser.add_argument('--reset-core-pack-version', help='Reset the core pack version.', type=string_to_bool)
     parser.add_argument('--pack_ids_to_install', help='Path to the packs to install file.')
-    parser.add_argument('--only_to_be_installed', help='True if should uninstall only going to be installed packs.', action='store_true')
+    parser.add_argument('--only_to_be_installed', help='True if should uninstall only going to be installed packs.',
+                        action='store_true')
 
     options = parser.parse_args()
 
