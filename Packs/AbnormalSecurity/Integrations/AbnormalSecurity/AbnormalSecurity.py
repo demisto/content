@@ -633,7 +633,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 
 def submit_false_negative_report_command(client, args):
-    recipient_email = str(args.get('recipient_email;', ''))
+    recipient_email = str(args.get('recipient_email', ''))
     sender_email = str(args.get('sender_email', ''))
     subject = str(args.get('subject', ''))
     response = client.submit_false_negative_report_request(recipient_email, sender_email, subject)
@@ -646,7 +646,7 @@ def submit_false_negative_report_command(client, args):
 
 
 def submit_false_positive_report_command(client, args):
-    portal_link = str(args.get('portal_link;', ''))
+    portal_link = str(args.get('portal_link', ''))
     response = client.submit_false_positive_report_request(portal_link)
     command_results = CommandResults(
         readable_output=response,
