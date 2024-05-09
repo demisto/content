@@ -76,14 +76,16 @@ def get_files_from_github(
         A list of packs names, if found.
     """
     content_path = os.getcwd()
-    print(content_path)
+    print(f"content_path: {content_path}")
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
     for file_path in get_pr_files(pr_number, github_token):
-        print(file_path)
+        print(f"file_path: {file_path}")
         abs_file_path = os.path.join(content_path, file_path)
+        print(f"abs_file_path: {abs_file_path}")
         abs_dir = os.path.dirname(abs_file_path)
+        print(f"abs_dir: {abs_dir}")
         if not os.path.isdir(abs_dir):
             os.makedirs(abs_dir)
         with open(abs_file_path, "wb") as changed_file, requests.get(
@@ -97,7 +99,7 @@ def get_files_from_github(
                 changed_file.write(data)
 
         files_list.add(file_path.split(os.path.sep)[1])
-    print(list(files_list))
+    print(f"list(files_list): {list(files_list)}")
     return list(files_list)
 
 
