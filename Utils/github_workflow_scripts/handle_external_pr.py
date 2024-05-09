@@ -64,6 +64,7 @@ SECURITY_CONTENT_ITEMS = [
     "Dashboards",
     "Triggers"
 ]
+PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
 
 
 def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
@@ -289,7 +290,6 @@ def get_user_from_pr_body(pr: PullRequest) -> str:
     - Found User
     """
     body = pr.body
-    PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
     matcher = re.search(PR_AUTHOR_PATTERN, body)
     if matcher:
         return matcher.groups()[0]
@@ -341,7 +341,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     return ''
 
 
-def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number: str, content_reviewers: list[str]):
+def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number: str, content_reviewers: list[str]) -> str:
     """
     Gets the content repo, PR and pr_number. Will return reviewer to assign
     Argument:
@@ -359,10 +359,10 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
 
     other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
 
-    reviewers_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
-    if reviewers_to_assign:
-        print(f'The reviewer from other PR\'s by similar author is: {reviewers_to_assign}')
-        content_reviewer = reviewers_to_assign
+    reviewer_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
+    if reviewer_to_assign:
+        print(f'The reviewer from other PR\'s by similar author is: {reviewer_to_assign}')
+        content_reviewer = reviewer_to_assign
     else:
         print('The reviewer is going to be determined randomly')
         content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
