@@ -834,6 +834,61 @@ def test_gti_comments_command(mocker, requests_mock):
         assert results.outputs == {'indicator': resource, 'comments': mock_response['data']}
 
 
+def test_gti_add_comments_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid IoC and comment
+
+    When:
+    - Running the !gti-comments-add command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import add_comments_command, encode_url_to_base64, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {
+        'data': {
+            'attributes': {
+                'date': 0,
+                'text': 'Hello',
+                'votes': {
+                    'positive': 10,
+                    'negative': 5,
+                    'abuse': 1,
+                }
+            }
+        }
+    }
+
+    for resource, resource_type, endpoint in [
+        ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
+        ('8.8.8.8', 'ip', 'ip_addresses'),
+        ('www.example.com', 'domain', 'domains'),
+        ('https://www.example.com', 'url', 'urls'),
+    ]:
+        mocker.patch.object(demisto, 'args', return_value={
+            'resource': resource,
+            'resource_type': resource_type,
+            'comment': 'Hello',
+        })
+
+        endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
+        requests_mock.post(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/comments',
+                           json=mock_response)
+
+        results = add_comments_command(client=client, args=demisto.args())
+
+        assert results.execution_metrics is None
+        assert results.outputs == mock_response['data']
+
+
 def test_gti_comments_by_id_command(mocker, requests_mock):
     """
     Given:
