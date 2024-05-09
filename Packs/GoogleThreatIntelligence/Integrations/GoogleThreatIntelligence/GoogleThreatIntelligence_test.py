@@ -907,3 +907,45 @@ def test_gti_passive_dns(mocker, requests_mock):
 
     assert results.execution_metrics is None
     assert results.outputs == expected_response
+
+
+def test_gti_analysis_get(mocker, requests_mock):
+    """
+    Given:
+    - A valid analysis ID
+
+    When:
+    - Running the !gti-analysis-get command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import get_analysis_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {
+        'data': {
+            'attributes': {
+                'stats': {
+                    'threat_severity_level': '',
+                    'popular_threat_category': '',
+                    'threat_verdict': '',
+                },
+                'status': 'completed',
+            }
+        }
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'id': 'random_id'})
+    requests_mock.get('https://www.virustotal.com/api/v3/analyses/random_id',
+                      json=mock_response)
+
+    results = get_analysis_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == {'id': 'random_id', **mock_response}

@@ -1927,9 +1927,7 @@ def upload_file(client: Client, args: dict, private: bool = False) -> List[Comma
                 raw_response = client.file_scan(file_path, upload_url)
             data = raw_response.get('data', {})
             # add current file as identifiers
-            data.update(
-                get_file_context(entry_id)
-            )
+            data.update(get_file_context(entry_id))
             id_ = data.get('id')
             demisto.debug(f'Result from vt-scan-file {entry_id=} {id_=} {data.get("type")=}')
             id_ = get_working_id(id_, entry_id)
@@ -2345,9 +2343,11 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
     raw_response = client.get_private_analysis(analysis_id)
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
-    stats = {'threat_severity_level': '',
-             'popular_threat_category': '',
-             'threat_verdict': ''}
+    stats = {
+        'threat_severity_level': '',
+        'popular_threat_category': '',
+        'threat_verdict': '',
+    }
     if attributes.get('status', '') == 'completed':
         file_response = client.get_private_file_from_analysis(analysis_id)
         file_attributes = file_response.get('data', {}).get('attributes', {})
