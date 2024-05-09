@@ -152,22 +152,18 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
     Raises:
         Exception: If the API returns an error response.
     """
+    
+    if page_size and not page:
+        raise ValueError('If you provide page_size must also provide page,')
 
-    if page and page_size:
-        limit = page * page_size
-    elif limit and not page and not page_size:
-        page_size = PAGE_SIZE_MAX
-    elif limit and (page and not page_size or page_size and not page):
-        raise ValueError('You can only provide either both page and page_size or limit only.')
-    elif page and not limit and not page_size:
+    page_mode = True
+    if not page_size:
+        page_mode = False
         page_size = DEFAULT_PAGE_SIZE
-        limit = page_size * page
-    elif page_size and not limit and not page:
-        raise ValueError('You can only provide either both page and page_size or limit only.')
-    elif not limit and not page and not page_size:
-        limit = DEFAULT_PAGE_SIZE
-        page_size = PAGE_SIZE_MAX
-
+    
+    if page_size and page:
+        limit = page * page_size
+         
     payload = {
         'meta': {
             'pagination': {
@@ -200,6 +196,11 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
 
         payload['meta']['pagination']['pageToken'] = next_page
         response = http_request('POST', api_endpoint, payload, headers=headers)
+        
+        
+    if page_mode:
+        return results[-1 * page_size:]
+            
 
     print('len_of_results:', len_of_results)
     return results
@@ -1066,12 +1067,10 @@ def get_policy():
 def get_policy_request(policy_type='blockedsenders', policy_id=None):
     if not policy_type:
         policy_type = 'blockedsenders'
-    # Setup required variables
     api_endpoints = {
         'blockedsenders': 'blockedsenders/get-policy',
         'antispoofing-bypass': 'antispoofing-bypass/get-policy',
         'address-alteration': 'address-alteration/get-address-alteration-set',
-        'webwhiteurl': 'webwhiteurl/get-policy-with-targets',
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = []
@@ -1351,7 +1350,6 @@ def delete_policy_request(policy_type, policy_id=None):
         'blockedsenders': 'blockedsenders/delete-policy',
         'antispoofing-bypass': 'antispoofing-bypass/delete-policy',
         'address-alteration': 'address-alteration/delete-policy',
-        'webwhiteurl': 'webwhiteurl/delete-policy-with-targets',
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     id_field_name = 'id'
@@ -3301,18 +3299,38 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    list_policies = request_with_pagination_api2(api_endpoint, limit=limit, page=page, page_size=page_size)
-    for i, policy in enumerate(list_policies):
-        list_policies[i] = {
-            'id': policy['id'],
-            'option': policy['option'],
-            **policy['policy']
-        }
+    policies_list = request_with_pagination_api2(api_endpoint, limit=limit, page=page, page_size=page_size)
+    contents = []
+    for policy_list in policies_list:
+        policy = policy_list.get('policy', {})
+        sender = policy.get('from', {})
+        reciever = policy.get('to', {})
+        contents.append({
+            'Policy ID': policy_list['id'],
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Email Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Reciever': {
+                'Group': reciever.get('groupId'),
+                'Email Address': reciever.get('emailAddress'),
+                'Domain': reciever.get('emailDomain'),
+                'Type': reciever.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'Start': policy.get('fromDate'),
+            'End': policy.get('toDate')
+        })
+    headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+    
+    title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
 
     return CommandResults(
         outputs_prefix='Mimecast.Policies',
-        outputs=list_policies,
-        readable_output=tableToMarkdown('Policies List', t=list_policies)
+        outputs=policies_list,
+        readable_output=tableToMarkdown(title, contents ,headers)
     )
 
 
@@ -3441,147 +3459,6 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
         outputs=response,
         readable_output=f'{id} has been updated successfully'
-    )
-
-
-def create_webwhiteurl_policy_command(args: dict) -> CommandResults:
-    description = args.get('description')
-    if args.get('bidirectional'):
-        bidirectional = argToBoolean(args.get('bidirectional'))
-    from_date = args.get('from_date')
-    from_eternal = argToBoolean(args.get('from_eternal'))  # default value
-    from_part = args.get('from_part')
-    to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal'))  # default value
-    action = args.get('action')  # default value
-    id = args.get('id')
-    urls_type = args.get('type')  # default value
-    urls_value = args.get('value')
-    from_type = args.get('from_type')
-    to_type = args.get('to_type')
-
-    data = {
-        'description': description,
-        'policies': [{
-            'fromEternal': from_eternal,
-            'description': description,
-            'from': {
-                'type': from_type
-            },
-            'to': {
-                'type': to_type
-            }
-        }],
-        'urls':
-        [
-            {
-                'action': action,
-                'type': urls_type
-            }
-        ]
-    }
-
-    if args.get('bidirectional'):
-        data['policies'][0]['bidirectional'] = bidirectional
-    if from_date:
-        data['policies'][0]['fromDate'] = from_date
-    if from_part:
-        data['policies'][0]['fromPart'] = from_part
-    if to_date:
-        data['policies'][0]['toDate'] = to_date
-    if to_eternal:
-        data['policies'][0]['toEternal'] = to_eternal
-    if urls_value:
-        data['urls'][0]['value'] = urls_value
-    if id:
-        data['urls'][0]['id'] = id
-
-    payload = {'data': [data]}
-    api_endpoint = '/api/policy/webwhiteurl/create-policy-with-targets'
-    response = http_request('POST', api_endpoint, payload)
-
-    if response.get('fail'):
-        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
-
-    return CommandResults(
-        outputs_prefix='Mimecast.WebWhiteUrlPolicy',
-        outputs=response,
-        readable_output='WebWhite URL policy was created successfully'
-    )
-
-
-def update_webwhiteurl_policies_command(args: dict) -> CommandResults:
-    description = args.get('description')
-    id = args.get('id')  #
-    bidirectional = (
-        argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
-    )
-    comment = args.get('comment')
-    conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled'))
-    enforced = argToBoolean(args.get('enforced'))
-    from_date = args.get('from_date')
-    from_eternal = argToBoolean(args.get('from_eternal'))
-    from_part = args.get('from_part')
-    to_date = args.get('to_date')
-    to_eternal = argToBoolean(args.get('to_eternal'))
-    override = argToBoolean(args.get('override')) if args.get('override') else None
-    url_action = args.get('url_action')
-    url_id = args.get('url_id')
-    url_type = args.get('url_type')
-    url_value = args.get('url_value')
-
-    data = {
-        'id': id,
-        'policies': [
-            {
-                'enabled': enabled,
-                'enforced': enforced,
-                "fromEternal": from_eternal,
-                "toEternal": to_eternal,
-            }
-        ],
-        "urls": [
-            {
-                "action": url_action,
-                "type": url_type,
-            }
-        ],
-    }
-
-    if description:
-        data['description'] = description
-    if bidirectional:
-        data['policies']['bidirectional'] = bidirectional
-    if comment:
-        data['policies']['comment'] = comment
-    if conditions:
-        data['policy']['conditions'] = {}
-        data['policy']['conditions']['sourceIPs'] = [conditions]
-    if from_date:
-        data['policies']['fromDate'] = from_date
-    if from_part:
-        data['policies']['fromPart'] = from_part
-    if to_date:
-        data['policies']['toDate'] = to_date
-    if override:
-        data['policies']['override'] = override
-    if url_id:
-        data['urls'][0]['id'] = url_id
-    if url_value:
-        data['urls'][0]['value'] = url_value
-
-    payload = {'data': [data]}
-    api_endpoint = '/api/policy/webwhiteurl/update-policy-with-targets'
-    response = http_request('POST', api_endpoint, payload)
-
-    if response.get('fail'):
-        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
-
-    return CommandResults(
-        outputs_prefix='Mimecast.WebWhiteUrlPolicy',
-        outputs=response,
-        readable_output=f'{id} has been updated successfully',
     )
 
 
@@ -3810,10 +3687,6 @@ def main():
             return_results(create_antispoofing_bypass_policy_command(args))
         elif command == 'mimecast-update-antispoofing-bypass-policy':
             return_results(update_antispoofing_bypass_policy_command(args))
-        elif command == 'mimecast-create-webwhiteurl-policy':
-            return_results(create_webwhiteurl_policy_command(args))
-        elif command == 'mimecast-update-webwhiteurl-policies':
-            return_results(update_webwhiteurl_policies_command(args))
         elif command == 'mimecast-create-address-alteration-policy':
             return_results(create_address_alteration_policy_command(args))
         elif command == 'mimecast-update-address-alteration-policy':
