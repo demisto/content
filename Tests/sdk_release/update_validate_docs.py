@@ -74,7 +74,7 @@ class GitHubClient:
         GitHubClient.raise_for_status(res)
         return res.json()
 
-    def create_branch(self) -> None:
+    def create_remote_branch(self) -> None:
         sha = requests.get(
             f"{self.base_url}/branches/master",
             headers=self.headers,
@@ -202,15 +202,11 @@ def main(
     branch_name: Annotated[str, typer.Option("-b", "--branch-name")],
     release_owner: Annotated[str, typer.Option("-r", "--reviewer")],
     artifact_folder: Annotated[Path, typer.Option("-f", "--artifact-folder")],
-    _is_draft: Annotated[
-        str,
-        typer.Option(
-            "-d",
-            "--draft",
-        ),
-    ] = "False",
+    _is_draft: Annotated[str, typer.Option("-d", "--draft")] = "False",
 ) -> None:
+    slack_message_output_path = artifact_folder / "validate_release_notes_message.txt"
     is_draft = bool(_is_draft and (_is_draft.lower() == "true"))
+
     # Get generated `validate` docs from the branch workflow
     sdk_client = GitHubClient(
         organization=ORG_NAME,
@@ -220,22 +216,15 @@ def main(
         github_token=github_token,
     )
 
-    try:
-        checks_markdown_artifact_zip = sdk_client.get_workflow_artifact_zip(
-            artifact_name="validation_docs",
-            workflow_id=sdk_client.get_most_recent_workflow_run_id(
-                workflow_name="CI - On Push"
-            ),
-        )
-    except CannotFindArtifactError:
-        logger.warning(
-            "Cannot find the artifact containing validation docs. "
-            "This is OK when validations don't change between SDK releases."
-        )
-        raise typer.Exit(0)
-    checks_markdown = checks_markdown_artifact_zip.read("validation_docs.md").decode(
-        "utf-8"
+    checks_markdown_artifact_zip = sdk_client.get_workflow_artifact_zip(
+        artifact_name="validation_docs",
+        workflow_id=sdk_client.get_most_recent_workflow_run_id(
+            workflow_name="CI - On Push"
+        ),
     )
+
+    validate_docs_path = Path("docs/concepts/demisto-sdk-validate.md")
+
     # Commit to content-docs
     docs_client = GitHubClient(
         organization=ORG_NAME,
@@ -244,28 +233,50 @@ def main(
         is_draft=is_draft,
         github_token=github_token,
     )
-    docs_client.create_branch()
-    docs_client.commit_file(
-        path_in_repo=Path("docs/concepts/demisto-sdk-validate.md"),
-        content=compile_validate_docs(
-            readme_markdown=decode_base64(
-                sdk_client.get_file(Path("demisto_sdk/commands/validate/README.md"))[
-                    "content"
-                ]
-            ),
-            checks_markdown=checks_markdown,
+    docs_client.create_remote_branch()
+
+    generated_docs = compile_validate_docs(
+        readme_markdown=decode_base64(
+            sdk_client.get_file(Path("demisto_sdk/commands/validate/README.md"))[
+                "content"
+            ]
         ),
-        commit_message=f"SDK v{branch_name} Validate docs",
-    )
-    pr_number = docs_client.create_pr(
-        title=f"SDK Validate docs: {branch_name}",
-        body="Automated update of SDK validate docs",
-        reviewer=release_owner,
+        checks_markdown=checks_markdown_artifact_zip.read("validation_docs.md").decode(
+            "utf-8"
+        ),
     )
 
-    (artifact_folder / "validate_release_notes_message.txt").write_text(
-        f"SDK-Validate docs changed, review https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pull/{pr_number}"
+    docs_master_client = GitHubClient(
+        organization=ORG_NAME,
+        repo=DOCS_REPO_NAME,
+        branch_name="master",
+        is_draft=True,  # Won't be used for committing (to master) anyway
+        github_token=github_token,
     )
+
+    (artifact_folder / "generated_validate_docs.md").write_text(generated_docs)
+
+    previous_docs = docs_master_client.get_file(validate_docs_path)["content"]
+    (artifact_folder / "previous_validate_docs.md").write_text(previous_docs)
+
+    if previous_docs == generated_docs:
+        output_message = "Generated docs are identical to the ones on content-docs/master, not opening a PR."
+
+    else:
+        docs_client.commit_file(
+            path_in_repo=validate_docs_path,
+            content=generated_docs,
+            commit_message=f"SDK v{branch_name} Validate docs",
+        )
+        pr_number = docs_client.create_pr(
+            title=f"SDK Validate docs: {branch_name}",
+            body="Automated update of SDK validate docs",
+            reviewer=release_owner,
+        )
+        output_message = f"SDK-Validate docs changed! Review https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pull/{pr_number}"
+
+    logger.success(output_message)
+    slack_message_output_path.write_text(output_message)
 
 
 if __name__ == "__main__":
