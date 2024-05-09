@@ -92,7 +92,7 @@ def error_handler(res):
             )
         else:
             raise Exception(
-                f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
+                f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}"
             )
 
 
