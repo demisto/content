@@ -285,3 +285,4 @@ DB
 WAF
 VPC
 GPT
+chatgpt
