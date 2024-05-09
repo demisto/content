@@ -1,8 +1,7 @@
 import pytest
-from json import load
-from CommonServerPython import CommandResults, DemistoException
+from CommonServerPython import DemistoException
 from ExabeamDataLake import Client, query_datalake_command, get_date, dates_in_range
-from datetime import datetime
+
 
 class MockClient(Client):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
@@ -10,8 +9,7 @@ class MockClient(Client):
 
     def query_datalake_command(self) -> None:
         return
-    
-    
+
 
 def test_query_datalake_command(mocker):
     args = {
@@ -27,26 +25,25 @@ def test_query_datalake_command(mocker):
             {
                 "hits": {
                     "hits": [
-                        {"_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1", "another_values":"nothing"}},
-                        {"_source": {"@timestamp": "2024-05-02T12:00:00", "message": "example message 2", "not_relevant":"nothing"}}
+                        {"_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1"}},
+                        {"_source": {"@timestamp": "2024-05-02T12:00:00", "message": "example message 2", "only_hr": "nothing"}}
                     ]
                 }
             }
         ]
     }
-    
+
     mocker.patch.object(Client, "query_datalake_request", return_value=mock_response)
-    
-    client = MockClient("","","", False, False)
-    
+
+    client = MockClient("", "", "", False, False)
+
     response = query_datalake_command(client, args, cluster_name="local")
 
-    result = response.to_context().get('EntryContext',{}).get('ExabeamDataLake.Event',{})
-    
-    assert {'_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1',
-                        'another_values': 'nothing'}} in result
+    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event', {})
+
+    assert {'_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
     assert {'_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
-                        'not_relevant': 'nothing'}} in result
+                        'only_hr': 'nothing'}} in result
     expected_result = (
         "### Logs\n"
         "|Created_at|Id|Message|Product|Vendor|\n"
@@ -75,7 +72,7 @@ def test_query_datalake_command_no_response(mocker):
         'end_time': '2024-05-08T00:00:00',
         'query': '*'
     }
-    
+
     mocker.patch.object(Client, "query_datalake_request", return_value={})
 
     response = query_datalake_command(MockClient("", "", "", False, False), args, "local")
@@ -119,7 +116,7 @@ def test_get_date(mocker):
 
     with mocker.patch("CommonServerPython.arg_to_datetime", return_value=time):
         result = get_date(time)
-        
+
     assert result == expected_result
 
 
@@ -139,11 +136,11 @@ def test_get_date(mocker):
         ['2024.05.01', '2024.05.02', '2024.05.03', '2024.05.04', '2024.05.05']
     )
 ])
-def test_dates_in_range_valid(mocker, start_time_str,end_time_str,expected_output):
+def test_dates_in_range_valid(mocker, start_time_str, end_time_str, expected_output):
     result = dates_in_range(start_time_str, end_time_str)
     assert result == expected_output
-    
-    
+
+
 @pytest.mark.parametrize('start_time_str, end_time_str, expected_output', [
     (
         "2024-05-10",

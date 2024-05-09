@@ -24,7 +24,7 @@ class Client(BaseClient):
         super().__init__(base_url=f'{base_url}', headers=headers, verify=False, proxy=proxy, timeout=20)
         self.username = username
         self.password = password
-        
+
         self._login()
 
     def _login(self):
@@ -35,14 +35,13 @@ class Client(BaseClient):
         """
         headers = {"Csrf-Token": "nocheck"}
         data = {"username": self.username, "password": self.password}
-    
+
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
             headers=headers,
             data=data,
         )
-        
 
     def test_module_request(self):
         """
@@ -85,28 +84,28 @@ def _parse_entry(entry: dict) -> dict:
 def dates_in_range(start_time, end_time):
     start_time = datetime.strptime(start_time, "%Y-%m-%d")
     end_time = datetime.strptime(end_time, "%Y-%m-%d")
-    
+
     if start_time >= end_time:
         raise DemistoException("Start time must be before end time")
-    
+
     if (end_time - start_time).days > 10:
         raise DemistoException("Difference between start time and end time must be less than or equal to 10 days")
-    
+
     dates = []
     current_date = start_time
     while current_date <= end_time:
         dates.append(current_date.strftime("%Y.%m.%d"))
         current_date += timedelta(days=1)
-    
+
     return dates
 
 
 def get_date(time):
     time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
     if time:
-        time = time.strftime(ISO_8601_FORMAT)
-    return time
-        
+        date = time.strftime(ISO_8601_FORMAT)
+    return date
+
 
 def query_datalake_command(client: Client, args: dict, cluster_name: str) -> CommandResults:
     """
@@ -119,29 +118,28 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
     Returns:
         CommandResults: The command results object containing outputs and readable output.
     """
-    page = arg_to_number(args.get('page',1))
-    page_size = arg_to_number(args.get('page_size', 50))
-    limit = arg_to_number(args.get('limit', 50))
-    if page is not None:
+    page = arg_to_number(args.get('page', '1'))
+    page_size = arg_to_number(args.get('page_size', '50'))
+    limit = arg_to_number(args.get('limit', '50'))
+    if page and page_size:
         from_param = page * page_size - page_size
         size_param = page_size
     else:
         from_param = 0
-        size_param = limit
-        
-    
+        size_param = limit if limit is not None else 50
+
     if start_time := args.get("start_time", ""):
-       start_time = get_date(start_time)
-            
+        start_time = get_date(start_time)
+
     if end_time := args.get("end_time", ""):
         end_time = get_date(end_time)
-            
+
     dates = dates_in_range(start_time, end_time)
     dates_in_format = []
     for date in dates:
         date_exabeam = "exabeam-" + date
         dates_in_format.append(date_exabeam)
-    
+
     search_query = {
         "sortBy": [
             {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
@@ -156,7 +154,6 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
             }
         ]
     }
-
 
     response = client.query_datalake_request(search_query).get("responses", [{}])
 
@@ -198,7 +195,7 @@ def main() -> None:
     credentials = params.get('credentials', {})
     username = credentials.get('identifier')
     password = credentials.get('password')
-    base_url = params.get('url','')
+    base_url = params.get('url', '')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
