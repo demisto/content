@@ -173,7 +173,7 @@ tasks:
       - "8"
     scriptarguments:
       backup_arn:
-        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music/backup/01618149183237-23ebc580
+        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music/backup/01618149183237-23ebc580
       raw_json: {}
       region: {}
       roleArn: {}
@@ -435,7 +435,7 @@ tasks:
       raw_json: {}
       region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
@@ -480,7 +480,7 @@ tasks:
       raw_json: {}
       region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
@@ -522,7 +522,7 @@ tasks:
       raw_json: {}
       region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
@@ -679,7 +679,7 @@ tasks:
       raw_json: {}
       region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
