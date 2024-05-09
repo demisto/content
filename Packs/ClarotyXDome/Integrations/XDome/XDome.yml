@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.claroty.com/
-  display: xDome API Base URL
+  display: XDome API Base URL
   name: url
   required: true
   type: 0
