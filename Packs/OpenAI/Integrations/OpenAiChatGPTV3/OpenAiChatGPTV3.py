@@ -93,7 +93,7 @@ class OpenAiClient(BaseClient):
                              completion_params: dict[str, str | None]) -> dict[str, Any]:
         """ Gets the response to a chat_completions request using the OpenAI API. """
 
-        options = {ArgAndParamNames.MODEL: self.model}
+        options: Dict[str, Any] = {ArgAndParamNames.MODEL: self.model}
         max_tokens = completion_params.get(ArgAndParamNames.MAX_TOKENS, None)
         if max_tokens:
             options[ArgAndParamNames.MAX_TOKENS] = max_tokens
@@ -106,7 +106,7 @@ class OpenAiClient(BaseClient):
         if top_p:
             options[ArgAndParamNames.TOP_P] = top_p
 
-        options['messages']: List[dict[str, str]] = chat_context
+        options['messages'] = chat_context
         demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
         return self._http_request(method='POST',
                                   url_suffix=OpenAiClient.CHAT_COMPLETIONS_ENDPOINT,
