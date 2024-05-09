@@ -106,7 +106,7 @@ class OpenAiClient(BaseClient):
         if top_p:
             options[ArgAndParamNames.TOP_P] = top_p
 
-        options['messages'] = str(chat_context)
+        options['messages']: List[dict[str, str]] = chat_context
         demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
         return self._http_request(method='POST',
                                   url_suffix=OpenAiClient.CHAT_COMPLETIONS_ENDPOINT,
