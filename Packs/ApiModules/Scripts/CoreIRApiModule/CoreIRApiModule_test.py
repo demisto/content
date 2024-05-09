@@ -3820,7 +3820,7 @@ class TestGetIncidents:
         starred_fetch_window_filter = {
             'field': 'creation_time',
             'operator': 'gte',
-            'value': '3 days'
+            'value': 1715000033000
         }
 
         _, outputs, _ = get_incidents_command(client, args)
