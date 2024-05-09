@@ -24,12 +24,9 @@ def main():
     branch = args.branch
     github_token = args.github_token
 
-    print("debug logs")
-
     packs_dir_names = get_files_from_github(
         username, branch, pr_number, repo, github_token
     )
-    print(packs_dir_names)
     if packs_dir_names:
         print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
