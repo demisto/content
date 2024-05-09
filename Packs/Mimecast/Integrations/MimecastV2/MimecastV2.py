@@ -152,7 +152,7 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
     Raises:
         Exception: If the API returns an error response.
     """
-    
+
     if page_size and not page:
         raise ValueError('If you provide page_size must also provide page,')
 
@@ -160,10 +160,10 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
     if not page_size:
         page_mode = False
         page_size = DEFAULT_PAGE_SIZE
-    
+
     if page_size and page:
         limit = page * page_size
-         
+
     payload = {
         'meta': {
             'pagination': {
@@ -196,11 +196,9 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
 
         payload['meta']['pagination']['pageToken'] = next_page
         response = http_request('POST', api_endpoint, payload, headers=headers)
-        
-        
+
     if page_mode:
         return results[-1 * page_size:]
-            
 
     print('len_of_results:', len_of_results)
     return results
@@ -3324,13 +3322,13 @@ def list_policies_command(args: dict) -> CommandResults:
             'End': policy.get('toDate')
         })
     headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
-    
+
     title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
 
     return CommandResults(
         outputs_prefix='Mimecast.Policies',
         outputs=policies_list,
-        readable_output=tableToMarkdown(title, contents ,headers)
+        readable_output=tableToMarkdown(title, contents, headers)
     )
 
 
