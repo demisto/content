@@ -29,7 +29,7 @@ script:
     - description: The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices
       name: saved_query_name
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     description: Gather device info by saved query.
     name: axonius-get-devices-by-savedquery
@@ -68,7 +68,7 @@ script:
     - description: The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users
       name: saved_query_name
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     description: Gather user info by saved query.
     name: axonius-get-users-by-savedquery
@@ -101,7 +101,7 @@ script:
     - description: The user email address to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -137,7 +137,7 @@ script:
     - description: The user email address to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -173,7 +173,7 @@ script:
     - description: The username to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -209,7 +209,7 @@ script:
     - description: The username to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -245,7 +245,7 @@ script:
     - description: The hostname to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -287,7 +287,7 @@ script:
     - description: The hostname to search for within Axonius using regex.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -329,7 +329,7 @@ script:
     - description: The IP address to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -371,7 +371,7 @@ script:
     - description: The IP address to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -413,7 +413,7 @@ script:
     - description: The MAC address to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
@@ -455,7 +455,7 @@ script:
     - description: The MAC address to search for within Axonius.
       name: value
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return (Default - 50).
       name: max_results
     - description: Comma separated list of Axonius fields to return.
       isArray: true
