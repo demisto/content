@@ -724,7 +724,7 @@ xpanse-force-pack-upload:
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
-saas-force-pack-upload:
+xsoar-saas-force-pack-upload:
   needs: [ "xsoar-saas-prepare-testing-bucket-upload-flow" ]
   variables:
     SERVER_TYPE: "XSOAR SAAS"
@@ -732,7 +732,7 @@ saas-force-pack-upload:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_XSOAR_SAAS_BUCKET
     MARKETPLACE: "xsoar saas"
-    GCS_CURRENT_PRODUCTION_BUCKET: $GGCS_MARKET_XSOAR_SAAS_BUCKET
+    GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_XSOAR_SAAS_BUCKET
   extends: .force-pack-upload
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
@@ -820,7 +820,7 @@ upload-id-set-bucket:
     - job-done
 
 .sync-buckets-between-projects:
-  # syncs buckets from oproxy-dev/prod project to xdr-xsoar-content-dev-01/prod-us project
+  # syncs buckets from oproxy-dev/oproxy-prod projects to xdr-xsoar-content-dev-01/xdr-xsoar-content-prod-us-01 projects
   tags:
     - gke
   extends:
@@ -879,4 +879,4 @@ force-upload-sync-buckets-between-projects:
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends: .sync-buckets-between-projects
-  needs: ["xsoar-force-pack-upload", "marketplace-v2-force-pack-upload", "xpanse-force-pack-upload"]
+  needs: ["xsoar-force-pack-upload", "marketplace-v2-force-pack-upload", "xpanse-force-pack-upload", "xsoar-saas-force-pack-upload"]
