@@ -55,7 +55,8 @@ In order to verify that the messaging endpoint is open as expected, you can surf
 1. Set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 2. Check the **long running instance** parameter in the integration instance configuration.
 3. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
-4. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
+4. Add basic authentication under **settings** > **Long Running Integrations** > **Configure Universal Credentials for Long Running Integrations**
+5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
    a. Go to the Microsoft Teams app.
    b. Go to your team, and click the three dots next to the name.
    c. Go to **manage team** > **apps**.
