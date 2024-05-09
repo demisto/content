@@ -24,7 +24,7 @@ from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
     NoTestsConfiguredException, NothingToCollectException,
-    NotUnderPackException, PrivateTestException, SkippedPackException,
+    NotUnderPackException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
     NonNightlyPackInNightlyBuildException, IncompatibleTestMarketplaceException)
 from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
@@ -260,9 +260,6 @@ class CollectionResult:
             if skip_reason := conf.skipped_tests.get(test):  # type: ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
 
-            if test in conf.private_tests:  # type: ignore[union-attr]
-                raise PrivateTestException(test)
-
         if is_nightly:
             if test and test in conf.non_api_tests:  # type: ignore[union-attr]
                 return
@@ -391,7 +388,6 @@ class TestCollector(ABC):
 
         for test_id in test_ids:
             if not (test_object := self.conf.get_test(test_id)):
-                # todo prevent this case, see CIAC-4006
                 continue
 
             # collect the pack containing the test playbook
@@ -784,7 +780,6 @@ class BranchTestCollector(TestCollector):
             branch_name: str,
             marketplace: MarketplaceVersions,
             service_account: str | None,
-            private_pack_path: str | None = None,
             graph: bool = False,
     ):
         """
@@ -792,25 +787,14 @@ class BranchTestCollector(TestCollector):
         :param branch_name: branch name
         :param marketplace: marketplace value
         :param service_account: used for comparing with the latest upload bucket
-        :param private_pack_path: path to a pack, only used for content-private.
         """
         super().__init__(marketplace, graph)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
-        self.private_pack_path: Path | None = Path(private_pack_path) if private_pack_path else None
-
-    def _get_private_pack_files(self) -> tuple[str, ...]:
-        if not self.private_pack_path:
-            raise RuntimeError('private_pack_path cannot be empty')
-        return tuple(str(path) for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> CollectionResult | None:
-        collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
-                                      pack_ids_files_were_removed_from=()) \
-            if self.private_pack_path \
-            else self._get_git_diff()
-
+        collect_from = self._get_git_diff()
         return CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
@@ -923,7 +907,6 @@ class BranchTestCollector(TestCollector):
                 if yml.id_ in self.conf.test_id_to_test:
                     tests = yml.id_,
                 else:
-                    # todo fix in CIAC-4006
                     logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
                     tests = ()
                 reason = CollectionReason.TEST_PLAYBOOK_CHANGED
@@ -1507,6 +1490,9 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
 
+        if pack_metadata_path in git_util.added_files():  # first version
+            continue
+
         if rn_path not in changed_files and pack_metadata_path in changed_files:
             packs_to_update_metadata.add(pack_id)
 
@@ -1527,7 +1513,7 @@ def output(result: CollectionResult | None):
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
-    modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
+    modeling_rules_to_test = [x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test]
     machines = result.machines if result and result.machines else ()
     packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 
@@ -1543,14 +1529,12 @@ def output(result: CollectionResult | None):
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
     logger.info(f'collected {len(packs_to_update_metadata)} packs to update:\n{packs_to_update_metadata_str}')
-    num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
-    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
+    logger.info(f'collected {len(modeling_rules_to_test)} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
     logger.info(f'collected {len(packs_to_reinstall_test)} packs to reinstall to test:\n{packs_to_reinstall_test_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
-    PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
     PATHS.output_packs_to_upload_file.write_text(json.dumps({'packs_to_upload': packs_to_upload,
                                                              'packs_to_update_metadata': packs_to_update_metadata}))
     PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
@@ -1573,8 +1557,6 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
     parser.add_argument('-sn', '--sdk-nightly', type=str2bool, help='Is SDK nightly')
-    parser.add_argument('-p', '--changed_pack_path', type=str,
-                        help='Path to a changed pack. Used for private content')
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
@@ -1600,10 +1582,7 @@ if __name__ == '__main__':
     pack_to_upload = args.pack_names
     collector: TestCollector
 
-    if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
-
-    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+    if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:

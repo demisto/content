@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 import requests
 import urllib3
-from typing import Dict, List, Optional
+from typing import Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()

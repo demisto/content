@@ -804,13 +804,13 @@ def getIntegrationContextVersioned(refresh=False):
 
 def incidents(incidents=None):
     """In script, retrieves the `Incidents` list from the context
-    In integration, used to return incidents to the server
+    In integration, used to return incidents to the server.
 
     Args:
-      incidents (list): In integration only, list of incident objects (Default value = None)
+      incidents (list): In integration only, list of incident objects (Default value = None).
 
     Returns:
-      list: List of incident objects
+      list: List containing the current incident object.
 
     """
     if incidents is None:
@@ -1304,7 +1304,7 @@ def searchRelationships(args):
     return {'data': []}
 
 
-def _apiCall(name, params=None, data=None):
+def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
 
@@ -1312,7 +1312,11 @@ def _apiCall(name, params=None, data=None):
         name: name of the api (currently only wfReportIncorrectVerdict is supported)
         params: url query args to pass. Use a dictionary such as: `{"key":"value"}
         data: POST data as a string. Make sure to json.dumps.
-        Note: if data is empty then a GET request is performed instead of a POST.
+        headers: headers to pass. Use a dictionary such as: `{"key":"value"}`
+        method: HTTP method to use.
+        path: path to append to the base url.
+
+        *Note if data is empty then a GET request is performed instead of a POST.
 
     Returns:
         dict: The response of the api call
@@ -1348,3 +1352,11 @@ def setAssetsLastRun(obj):
 
 def getAssetsLastRun():
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
+
+
+def isTimeSensitive():
+    """
+    This function will indicate whether the command reputation (auto-enrichment) is called as auto-extract=inline.
+    So for default the function return False.
+    """
+    return False

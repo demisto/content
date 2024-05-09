@@ -35,6 +35,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Insecure OpenSSH
   - OpenSSH
   - SSH Server
+  - SSH Terrapin Attack
   - SNMP Server
   - RDP Server
   - Telnet Server
@@ -49,10 +50,13 @@ Automated remediation is only possible when the right conditions are met.  These
   - Azure Compute Instance
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
+  - An asset that is not one of the above, but is protected by Cortex Endpoint Security (XSIAM/XDR)
 - Service owner information found through one of the following:
   - Active Directory
   - AWS IAM
   - Azure IAM
+  - Cortex Endpoint (XSIAM/XDR)
+  - Email addresses found in tags
   - GCP IAM
   - Prisma Cloud
   - Rapid7 InsightVM (Nexpose)
@@ -78,6 +82,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
   - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
   - [Cortex ASM - Cortex Endpoint Enrichment](#cortex-asm---cortex-endpoint-enrichment)
+  - [Cortex ASM - Cortex Endpoint Remediation](#cortex-asm---cortex-endpoint-remediation)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
@@ -138,6 +143,12 @@ A playbook that given the IP address enriches Azure information relevant to ASM 
 This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.
 
 ![Cortex ASM - Cortex Endpoint Enrichment](https://raw.githubusercontent.com/demisto/content/935a77339c2b1ecde3b9ea64992018bd625c61ed/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Enrichment.png)
+
+#### Cortex ASM - Cortex Endpoint Remediation
+
+This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)). 
+
+![Cortex ASM - Cortex Endpoint Remediation](https://raw.githubusercontent.com/demisto/content/c421d6d3de62992a3ac3afbce09e82224e505641/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
 
 #### Cortex ASM - Detect Service
 
@@ -263,7 +274,7 @@ A playbook that given the IP address enriches Splunk information relevant to ASM
 
 A playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
 
-![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
+![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable_io_Enrichment.png)
 
 ### Automation Scripts
 

@@ -564,3 +564,118 @@ Broker - List organizations.
 
 
 
+### cov-mgsec-comment-aro
+
+***
+Comment on an ARO.
+
+#### Base Command
+
+`cov-mgsec-comment-aro`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| aro_id | This ARO ID to transition. | Required | 
+| comment | Comment to leave on the ARO. | Required | 
+| is_comment_sensitive | Optionally mark the comment as sensitive. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESPortal.Aro.ID | String | ID. | 
+| FESPortal.Aro.acknowledged | Boolean | Acknowledged | 
+| FESPortal.Aro.acknowledged_by.ID | String | Acknowledged By ID | 
+| FESPortal.Aro.acknowledged_by.avatar_file_url | String | Acknowledged By | 
+| FESPortal.Aro.acknowledged_by.email | String | Acknowledged By Email | 
+| FESPortal.Aro.acknowledged_by.first_name | String | Acknowledged By First Name | 
+| FESPortal.Aro.acknowledged_by.last_name | String | Acknowledged By Last Name | 
+| FESPortal.Aro.acknowledged_time | Date | Acknowledged Time | 
+| FESPortal.Aro.aro_id | String | ARO ID | 
+| FESPortal.Aro.author.ID | String | Author ID | 
+| FESPortal.Aro.author.avatar_file_url | String | Author Avatar File URL | 
+| FESPortal.Aro.author.email | String | Author Email | 
+| FESPortal.Aro.author.first_name | String | Author First Name | 
+| FESPortal.Aro.author.last_name | String | Author Last Name | 
+| FESPortal.Aro.author_organization.ID | String | Author Organization ID | 
+| FESPortal.Aro.author_organization.email | String | Author Organization Email | 
+| FESPortal.Aro.author_organization.name | String | Author Organization Name | 
+| FESPortal.Aro.author_organization_type | String | Author Organization Type | 
+| FESPortal.Aro.available_only_to_organization_id | String | ARO Comment Available Only to Organization ID | 
+| FESPortal.Aro.available_only_to_provider_id | String | ARO Comment Available Only to Provider ID | 
+| FESPortal.Aro.created_time | Date | ARO Created Time | 
+| FESPortal.Aro.id | String | ARO Comment ID | 
+| FESPortal.Aro.last_updated_time | Date | ARO Comment Last Updated Time | 
+| FESPortal.Aro.sensitive | Boolean | ARO Comment Sensitive | 
+| FESPortal.Aro.source | String | ARO Comment Source | 
+| FESPortal.Aro.text | String | ARO Comment Text | 
+| FESPortal.Aro.type | String | ARO Comment Type | 
+| FESPortal.Aro.visible_to.ID | String | ARO Comment Visible to ID | 
+| FESPortal.Aro.visible_to.email | String | ARO Comment Visible to Email | 
+| FESPortal.Aro.visible_to.name | String | ARO Comment Visible to Name | 
+
+#### Command example
+```!cov-mgsec-comment-aro aro_id="b25e461e-75e9-415b-a631-6d0f4516f33a" comment="Risk mitigated."```
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "Org": {
+            "acknowledged": true,
+            "acknowledged_by": {
+                "ID": "abcdefghijklmnopqrstuvwxyzabd1",
+                "avatar_file_url": null,
+                "email": "foo@bar.com",
+                "first_name": "John",
+                "last_name": "Smith"
+            },
+            "acknowledged_time": "2024-04-12 17:01:25",
+            "aro_id": "b25e461e-75e9-415b-a631-6d0f4516f33a",
+            "author": {
+                "ID": "abcdefghijklmnopqrstuvwxyzabd1",
+                "avatar_file_url": null,
+                "email": "foo@bar.com",
+                "first_name": "John",
+                "last_name": "Smith"
+            },
+            "author_organization": {
+                "ID": "00000000-1111-2222-3333-444444444444",
+                "email": "foo@bar.com",
+                "name": "Field Effect"
+            },
+            "author_organization_type": "Field Effect",
+            "available_only_to_organization_id": null,
+            "available_only_to_provider_id": null,
+            "created_time": "2024-04-12 17:01:25",
+            "id": "b14a53a4-23ac-488d-b992-dbc1d5ef5361",
+            "last_updated_time": "2024-04-12 17:01:25",
+            "sensitive": false,
+            "source": "Portal",
+            "text": "Risk mitigated.",
+            "type": "Comment",
+            "visible_to": [
+                {
+                    "ID": "00000000-1111-2222-3333-444444444444",
+                    "email": null,
+                    "name": "Tradecraft Test & Development (Do Not Delete)"
+                },
+                {
+                    "ID": "00000000-1111-2222-3333-444444444444",
+                    "email": "foo@bar.com",
+                    "name": "Field Effect"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ARO
+>|Acknowledged|Acknowledged By|Acknowledged Time|Aro Id|Author|Author Organization|Author Organization Type|Created Time|Id|Last Updated Time|Sensitive|Source|Text|Type|Visible To|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | 2024-04-12 17:01:25 | b25e461e-75e9-415b-a631-6d0f4516f33a | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | ID: 00000000-1111-2222-3333-444444444444<br/>email: foo@bar.com<br/>name: Field Effect | Field Effect | 2024-04-12 17:01:25 | b14a53a4-23ac-488d-b992-dbc1d5ef5361 | 2024-04-12 17:01:25 | false | Portal | Risk mitigated. | Comment | {'ID': '00000000-1111-2222-3333-444444444444', 'email': None, 'name': 'Tradecraft Test & Development (Do Not Delete)'},<br/>{'ID': '00000000-1111-2222-3333-444444444444', 'email': 'foo@bar.com', 'name': 'Field Effect'} |
+

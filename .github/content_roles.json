@@ -1,11 +1,10 @@
 {
     "CONTRIBUTION_REVIEWERS": [
         "anas-yousef",
-        "mmhw",
-        "maimorag"
+        "mmhw"
     ],
     "CONTRIBUTION_TL": "JasBeilin",
-    "CONTRIBUTION_SECURITY_REVIEWER": "melamedbn",
+    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
     "ON_CALL_DEVS": [
         "adaud",
         "ilappe"
