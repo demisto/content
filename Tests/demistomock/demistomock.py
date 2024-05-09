@@ -1304,7 +1304,7 @@ def searchRelationships(args):
     return {'data': []}
 
 
-def _apiCall(name, params=None, data=None):
+def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
 
@@ -1312,7 +1312,11 @@ def _apiCall(name, params=None, data=None):
         name: name of the api (currently only wfReportIncorrectVerdict is supported)
         params: url query args to pass. Use a dictionary such as: `{"key":"value"}
         data: POST data as a string. Make sure to json.dumps.
-        Note: if data is empty then a GET request is performed instead of a POST.
+        headers: headers to pass. Use a dictionary such as: `{"key":"value"}`
+        method: HTTP method to use.
+        path: path to append to the base url.
+
+        *Note if data is empty then a GET request is performed instead of a POST.
 
     Returns:
         dict: The response of the api call
