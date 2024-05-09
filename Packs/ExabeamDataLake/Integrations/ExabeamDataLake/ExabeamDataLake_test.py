@@ -155,21 +155,21 @@ def test_dates_in_range_invalid(mocker, start_time_str, end_time_str, expected_o
         dates_in_range(start_time_str, end_time_str)
 
 
-@pytest.mark.parametrize('args, from_param_expected, size_param_expected',[
+@pytest.mark.parametrize('args, from_param_expected, size_param_expected', [
     ({'page': '1', 'page_size': '50', 'limit': None}, 0, 50),
     ({'page': None, 'page_size': None, 'limit': '100'}, 0, 100)
 ])
-def test_calculate_page_parameters_valid(mocker,args,from_param_expected,size_param_expected):
+def test_calculate_page_parameters_valid(mocker, args, from_param_expected, size_param_expected):
     from_param, size_param = calculate_page_parameters(args)
     assert from_param == from_param_expected
     assert size_param == size_param_expected
-    
 
-@pytest.mark.parametrize('args',[
+
+@pytest.mark.parametrize('args', [
     ({'page': '1', 'page_size': None, 'limit': '100'}),
     ({'page': '1', 'page_size': '25', 'limit': '100'}),
     ({'page': None, 'page_size': '25', 'limit': None})
 ])
-def test_calculate_page_parameters_invalid(mocker,args):
+def test_calculate_page_parameters_invalid(mocker, args):
     with pytest.raises(DemistoException, match="You can only provide 'limit' alone or 'page' and 'page_size' together."):
         calculate_page_parameters(args)

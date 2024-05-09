@@ -114,11 +114,11 @@ def calculate_page_parameters(args: dict):
 
     if (limit_arg and (page_arg or page_size_arg)) or ((not (page_arg and page_size_arg)) and (page_arg or page_size_arg)):
         raise DemistoException("You can only provide 'limit' alone or 'page' and 'page_size' together.")
-    
+
     page = arg_to_number(args.get('page', '1'))
     page_size = arg_to_number(args.get('page_size', '50'))
     limit = arg_to_number(args.get('limit', '50'))
-    
+
     if page and page_size:
         from_param = page * page_size - page_size
         size_param = page_size
@@ -142,17 +142,10 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
     """
     from_param, size_param = calculate_page_parameters(args)
 
-    if start_time := args.get("start_time", ""):
-        start_time = get_date(start_time)
-
-    if end_time := args.get("end_time", ""):
-        end_time = get_date(end_time)
-
+    start_time = get_date(args.get("start_time", ""))
+    end_time = get_date(args.get("end_time", ""))
     dates = dates_in_range(start_time, end_time)
-    dates_in_format = []
-    for date in dates:
-        date_exabeam = "exabeam-" + date
-        dates_in_format.append(date_exabeam)
+    dates_in_format = ["exabeam-" + date for date in dates]
 
     search_query = {
         "sortBy": [
@@ -227,13 +220,12 @@ def main() -> None:
 
         demisto.debug(f"Command being called is {command}")
 
-        match command:
-            case "test-module":
-                return_results(test_module(client))
-            case "exabeam-data-lake-search":
-                return_results(query_datalake_command(client, args, cluster_name))
-            case _:
-                raise NotImplementedError(f"Command {command} is not supported")
+        if command == "test-module":
+            return_results(test_module(client))
+        elif command == "exabeam-data-lake-search":
+            return_results(query_datalake_command(client, args, cluster_name))
+        else:
+            raise NotImplementedError(f"Command {command} is not supported")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
