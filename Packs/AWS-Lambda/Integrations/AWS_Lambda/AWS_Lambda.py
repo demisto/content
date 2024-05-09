@@ -305,7 +305,8 @@ def invoke(args, aws_client):
     return CommandResults(
         outputs=data,
         readable_output=human_readable,
-        outputs_prefix="AWS.Lambda.InvokedFunctions"
+        outputs_prefix="AWS.Lambda.InvokedFunctions",
+        outputs_key_field=["FunctionName", "Payload"]
     )
 
 
