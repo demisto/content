@@ -9,6 +9,7 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
+boto3 = "^1.34.101"
 
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = "1.29.3"
