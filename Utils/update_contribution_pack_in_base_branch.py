@@ -24,6 +24,10 @@ def main():
     branch = args.branch
     github_token = args.github_token
 
+    print(
+        f"args received in Utils/update_contribution_pack_in_base_branch.py script: {pr_number=}, {username=}, {repo=}, {branch=}"
+    )
+
     packs_dir_names = get_files_from_github(
         username, branch, pr_number, repo, github_token
     )
@@ -78,6 +82,7 @@ def get_files_from_github(
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
+    print(f"base url: {base_url}")
     for file_path in get_pr_files(pr_number, github_token):
         print(f"file_path: {file_path}")
         abs_file_path = os.path.join(content_path, file_path)
