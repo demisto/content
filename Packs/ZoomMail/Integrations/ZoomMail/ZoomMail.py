@@ -1,3 +1,5 @@
+from traceback import format_exc
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -343,9 +345,8 @@ def the_testing_module(client: ZoomMailClient, params: dict) -> str:
 
     # Next we test for access
     token_response = client.obtain_access_token()
-    if token_response.get("success"):
-        return "ok"
-    err.append(token_response.get("error", "Unknown error occurred."))
+    if "error" in token_response:
+        err.append(token_response.get("error", "Unknown error occurred."))
 
     # If we have errors, let's give them all at once in a nice neat message
     if len(err) > 0:
@@ -1016,7 +1017,7 @@ def zoom_mail_to_incident(
 
 
 def process_attachments(
-    msg: dict[str, Any], client: ZoomMailClient, email: str
+    msg: dict[str, Any], client: ZoomMailClient, email: Optional[str]
 ) -> list[dict[str, str]]:
     """
     Process the attachments of an email, downloading and storing them if applicable.
@@ -1158,6 +1159,7 @@ def validate_params(params: dict[str, Any]) -> list[str]:
 def main():
     params = demisto.params()
     args = demisto.args()
+    command = demisto.command()
     base_url = params.get("url")
     client_id = params.get("credentials", {}).get("identifier") or params.get(
         "client_id"
@@ -1170,48 +1172,52 @@ def main():
     proxy = params.get("proxy", False)
     default_email = params.get("default_email", None)
 
-    client = ZoomMailClient(
-        base_url=base_url,
-        client_id=client_id,
-        client_secret=client_secret,
-        account_id=account_id,
-        verify=verify_certificate,
-        proxy=proxy,
-        default_email=default_email,
-    )
+    try:
+        client = ZoomMailClient(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            account_id=account_id,
+            verify=verify_certificate,
+            proxy=proxy,
+            default_email=default_email,
+        )
 
-    COMMAND_FUNCTIONS: dict[str, Callable] = {
-        "fetch-incidents": lambda: fetch_incidents(client, params),
-        "test-module": lambda: the_testing_module(client, params),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-email-move-trash": lambda: trash_email_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-email-list": lambda: list_emails_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-thread-list": lambda: get_email_thread_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-email-attachment-get": lambda: get_email_attachment_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-send-email": lambda: send_email_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-mailbox-profile-get": lambda: get_mailbox_profile_command(
-            client, args
-        ),
-        f"{ZOOM_MAIL_COMMAND_PREFIX}-user-list": lambda: list_users_command(
-            client, args
-        ),
-    }
+        COMMAND_FUNCTIONS: dict[str, Callable] = {
+            "fetch-incidents": lambda: fetch_incidents(client, params),
+            "test-module": lambda: the_testing_module(client, params),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-move-trash": lambda: trash_email_command(
+                client, args
+            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-list": lambda: list_emails_command(
+                client, args
+            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-thread-list": lambda: get_email_thread_command(
+                client, args
+            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-attachment-get": lambda: get_email_attachment_command(
+                client, args
+            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-send-email": lambda: send_email_command(
+                client, args
+            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-mailbox-profile-get": lambda: get_mailbox_profile_command(
+                client, args
+            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-user-list": lambda: list_users_command(
+                client, args
+            ),
+        }
 
-    command = demisto.command()
-    if command in COMMAND_FUNCTIONS:
-        return_results(COMMAND_FUNCTIONS[command]())
+        if command in COMMAND_FUNCTIONS:
+            return_results(COMMAND_FUNCTIONS[command]())
+        else:
+            raise NotImplementedError(f"Command '{command}' is not implemented.")
 
-    else:
-        raise NotImplementedError(f"Command '{command}' is not implemented.")
+    except DemistoException as dem_exc:
+        # For any other integration command exception, return an error
+        demisto.error(format_exc())
+        return_error(f"Failed to execute {command} command. Error: {str(dem_exc)}.")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
