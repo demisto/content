@@ -17,7 +17,7 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index, g
 from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACES_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
-    XSOAR_SANITY_TEST_NAMES,
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES,
     TEST_DATA_PATTERN)
 from Tests.scripts.collect_tests.exceptions import (
@@ -1488,11 +1488,7 @@ if __name__ == '__main__':
     build_bucket_path = args.build_bucket
     collector: TestCollector
 
-    if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
-
-    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':  # todo adapt to the new design
-    if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+    if os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':  # todo adapt to the new design
         if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:
