@@ -190,7 +190,7 @@ class TestHelpers:
 def test_create_relationships():
     """
     Given:
-    - The IP response from the api.
+    - The IP response from the API.
 
     When:
     - create relationships function.
@@ -298,6 +298,44 @@ def test_file_command(mocker, requests_mock):
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
     assert results[0].indicator.dbot_score.score == 3
+
+
+def test_not_found_file_command(mocker, requests_mock):
+    """
+    Given:
+    - A not found file hash
+
+    When:
+    - Running the !file command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from GoogleThreatIntelligence import file_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    mocker.patch.object(demisto, 'args', return_value={'file': file_hash, 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    domain_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(' ', '_')
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/files/{file_hash}?relationships={domain_relationships}',
+                      json=mock_response)
+
+    results = file_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=domain_relationships)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'File "{file_hash}" was not found in GoogleThreatIntelligence.'
+    assert results[0].indicator.dbot_score.score == 0
 
 
 def test_domain_command(mocker, requests_mock):

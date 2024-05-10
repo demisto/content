@@ -14,6 +14,8 @@ This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data |  |
+    | GTI Malicious Verdict. Check Google Threat Intelligence verdict to consider the file malicious. |  | False |
+    | GTI Suspicious Verdict. Check Google Threat Intelligence verdict to consider the file suspicious. |  | False |
     | File Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | File Suspicious Threshold. Minimum number of positive and suspicious results from GoogleThreatIntelligence scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | IP Malicious Threshold. Minimum number of positive results from GoogleThreatIntelligence scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |

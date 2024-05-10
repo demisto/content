@@ -500,10 +500,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
-        return self.get_domain_relationships(
-            domain,
-            'communicating_files'
-        )
+        return self.get_domain_relationships(domain, 'communicating_files')
 
     def get_domain_downloaded_files(self, domain: str) -> dict:
         """
@@ -512,10 +509,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
-        return self.get_domain_relationships(
-            domain,
-            'downloaded_files'
-        )
+        return self.get_domain_relationships(domain, 'downloaded_files')
 
     def get_domain_referrer_files(self, domain: str) -> dict:
         """
@@ -524,10 +518,7 @@ class Client(BaseClient):
         See Also:
                 https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
-        return self.get_domain_relationships(
-            domain,
-            'referrer_files'
-        )
+        return self.get_domain_relationships(domain, 'referrer_files')
 
     def get_url_relationships(self, url: str, relationship: str) -> dict:
         """
@@ -545,10 +536,7 @@ class Client(BaseClient):
         See Also:
                 https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
-        return self.get_url_relationships(
-            url,
-            'communicating_files'
-        )
+        return self.get_url_relationships(url, 'communicating_files')
 
     def get_url_downloaded_files(self, url: str) -> dict:
         """
@@ -557,10 +545,7 @@ class Client(BaseClient):
         See Also:
                 https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
-        return self.get_url_relationships(
-            url,
-            'downloaded_files'
-        )
+        return self.get_url_relationships(url, 'downloaded_files')
 
     def get_url_referrer_files(self, url: str) -> dict:
         """
@@ -569,10 +554,7 @@ class Client(BaseClient):
         See Also:
                 https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
-        return self.get_url_relationships(
-            url,
-            'referrer_files'
-        )
+        return self.get_url_relationships(url, 'referrer_files')
 
     def get_ip_relationships(self, ip: str, relationship: str) -> dict:
         """
@@ -590,10 +572,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
-        return self.get_ip_relationships(
-            ip,
-            'communicating_files'
-        )
+        return self.get_ip_relationships(ip, 'communicating_files')
 
     def get_ip_downloaded_files(self, ip: str) -> dict:
         """
@@ -602,10 +581,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
-        return self.get_ip_relationships(
-            ip,
-            'downloaded_files'
-        )
+        return self.get_ip_relationships(ip, 'downloaded_files')
 
     def get_ip_referrer_files(self, ip: str) -> dict:
         """
@@ -614,10 +590,7 @@ class Client(BaseClient):
         See Also:
                 https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
-        return self.get_ip_relationships(
-            ip,
-            'referrer_files'
-        )
+        return self.get_ip_relationships(ip, 'referrer_files')
     # endregion
 
 
