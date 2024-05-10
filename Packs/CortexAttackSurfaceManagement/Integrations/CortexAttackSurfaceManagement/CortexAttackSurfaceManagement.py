@@ -629,6 +629,16 @@ def list_asset_internet_exposure_command(
     name = args.get("name")
     asm_type = args.get("type")
     has_active_external_services = args.get("has_active_external_services")
+    asm_id_list = args.get("asm_id_list")
+    ipv6_address = args.get("ipv6_address")
+    gcp_cloud_tags = args.get("gcp_cloud_tags")
+    azure_cloud_tags = args.get("azure_cloud_tags")
+    aws_cloud_tags = args.get("aws_cloud_tags")
+    has_xdr_agent = args.get("has_xdr_agent")
+    externally_detected_providers = args.get("externally_detected_providers")
+    externally_inferred_cves = args.get("externally_inferred_cves")
+    business_units_list = args.get("business_units_list")
+    has_bu_overrides = args.get("has_bu_overrides")
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
@@ -645,6 +655,86 @@ def list_asset_internet_exposure_command(
                 "field": "has_active_external_services",
                 "operator": "in",
                 "value": [has_active_external_services],
+            }
+        )
+    if asm_id_list:
+        search_params.append(
+            {
+                "field": "asm_id_list",
+                "operator": "in",
+                "value": str(asm_id_list).split(",")
+            }
+        )
+    if ipv6_address:
+        search_params.append(
+            {
+                "field": "ipv6_address",
+                "operator": "eq",
+                "value": str(ipv6_address)
+            }
+        )
+    if aws_cloud_tags:
+        search_params.append(
+            {
+                "field": "aws_cloud_tags",
+                "value": str(aws_cloud_tags).split(","),
+                "operator": "in"
+            }
+        )
+    if gcp_cloud_tags:
+        search_params.append(
+            {
+                "field": "gcp_cloud_tags",
+                "value": str(gcp_cloud_tags).split(","),
+                "operator": "in"
+            }
+        )
+    if azure_cloud_tags:
+        search_params.append(
+            {
+                "field": "azure_cloud_tags",
+                "value": str(azure_cloud_tags).split(","),
+                "operator": "in"
+            }
+        )
+    if has_xdr_agent:
+        search_params.append(
+            {
+                "field": "has_xdr_agent",
+                "value": str(has_xdr_agent).split(","),
+                "operator": "in"
+            }
+        )
+    if externally_detected_providers:
+        search_params.append(
+            {
+                "field": "externally_detected_providers",
+                "value": externally_detected_providers,
+                "operator": "contains"
+            }
+        )
+    if externally_inferred_cves:
+        search_params.append(
+            {
+                "field": "externally_inferred_cves",
+                "value": str(externally_inferred_cves),
+                "operator": "contains"
+            }
+        )
+    if business_units_list:
+        search_params.append(
+            {
+                "field": "business_units_list",
+                "value": str(business_units_list).split(","),
+                "operator": "in"
+            }
+        )
+    if has_bu_overrides:
+        search_params.append(
+            {
+                "field": "has_bu_overrides",
+                "value": False if has_bu_overrides.lower() == 'false' else True,
+                "operator": "eq"
             }
         )
 

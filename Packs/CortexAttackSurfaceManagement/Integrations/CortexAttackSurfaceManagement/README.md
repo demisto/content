@@ -813,6 +813,16 @@ Get a list of all your internet exposure filtered by IP address, domain, type, a
 | name | Name of the asset on which to search. | Optional | 
 | type | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
 | has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no. | Optional | 
+| asm_id_list | List of asm ids. | Optional | 
+| ipv6_address | IPv6 address on which to search. | Optional | 
+| gcp_cloud_tags | Search based on GCP cloud tags. | Optional | 
+| aws_cloud_tags | Search based on AWS cloud tags. | Optional | 
+| azure_cloud_tags | Search based on AZURE cloud tags. | Optional | 
+| has_xdr_agent | Search based on xdr agent. | Optional | 
+| externally_detected_providers | Search on externally detected providers. | Optional | 
+| externally_inferred_cves | Search on externally inferred cve. | Optional | 
+| business_units_list | Search on Business units list. | Optional | 
+| has_bu_overrides | Whether it has BU overrides. Possible values are: True, False. | Optional | 
 
 #### Context Output
 
