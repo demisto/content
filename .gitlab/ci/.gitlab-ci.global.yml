@@ -370,6 +370,17 @@
     fi
   - section_end "Unlock Machine"
 
+.split-packs-to-machines:
+  - section_start "Split packs to chosen machines" --collapsed
+  - |
+    if [[ ${#CLOUD_CHOSEN_MACHINE_IDS[@]} -gt 1 ]]; then
+      echo "There are more than 1 chosen cloud machines."
+    else
+      echo "There is 1 machine."
+    python3 Tests/scripts/split_packs_to_machines.py --cloud_machines ${CLOUD_CHOSEN_MACHINE_IDS}
+    fi
+
+
 .cloud-machine-information:
   - section_start "Cloud Machine information"
   - ./Tests/scripts/print_cloud_machine_details.sh
