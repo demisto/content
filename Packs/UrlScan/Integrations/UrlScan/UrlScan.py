@@ -23,7 +23,6 @@ BLACKLISTED_URL_ERROR_MESSAGES = [
     'The submitted domain is on our blacklist, we will not scan it.'
 ]
 BRAND = 'urlscan.io'
-IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
 DEFAULT_LIMIT = 20
 MAX_WORKERS = 5
 
@@ -104,8 +103,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_api_url + url_suffix,
-                                                                             json))
+        f'requesting https request with method: {method}, url: {client.base_api_url + url_suffix}, data: {json}')
     r = requests.request(
         method,
         client.base_api_url + url_suffix,
@@ -116,23 +114,14 @@ def http_request(client, method, url_suffix, json=None, retries=0):
 
     rate_limit_remaining = int(r.headers.get('X-Rate-Limit-Remaining', 99))
     rate_limit_reset_after = int(r.headers.get('X-Rate-Limit-Reset-After', 60))
-    limit_action = r.headers.get('X-Rate-Limit-Action', 'search')
-    limit_window = r.headers.get('X-Rate-Limit-Window', 'minute')
+
     if rate_limit_remaining < 10:
         return_warning('Your available rate limit remaining is {} and is about to be exhausted. '
                        'The rate limit will reset at {}'.format(str(rate_limit_remaining),
                                                                 r.headers.get("X-Rate-Limit-Reset")))
     if r.status_code != 200:
         if r.status_code == 429:
-            if ScheduledCommand.supports_polling():
-                return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
-            if retries <= 0:
-                # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error(f'You have exceeded your {limit_action} limit for this {limit_window}. The rate limit will'
-                             f' reset in {rate_limit_reset_after} seconds')
-            else:
-                time.sleep(rate_limit_reset_after)  # pylint: disable=sleep-exists
-                return http_request(method, url_suffix, json, rate_limit_reset_after, retries - 1)
+            return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
 
         response_json = r.json()
         error_description = response_json.get('description') or response_json.get('message')
@@ -570,7 +559,7 @@ def urlscan_submit_command(client):
     rate_limit_reset_after: int = 60
 
     urls = argToList(demisto.args().get('url'))
-    if IS_SYNC_MODE:
+    if is_time_sensitive():
         args = ((client, url, command_results, execution_metrics) for url in urls)
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             executor.map(lambda p: urlscan_search_only(*p), args)
@@ -858,8 +847,8 @@ def main():
     )
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    if IS_SYNC_MODE:
-        demisto.debug('Running in sync mode')
+    demisto.debug(f'Is time sensitive: {is_time_sensitive()}')
+
     try:
         handle_proxy()
         if demisto.command() == 'test-module':

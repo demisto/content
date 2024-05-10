@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   script: "-"
@@ -300,6 +300,71 @@ script:
       type: Unknown
     description: Get user context by email address from Reco.
     name: reco-get-user-context-by-email-address
+  - arguments:
+    - description: user email address.
+      name: email_address
+      required: true
+    outputs:
+    - contextPath: Reco.Assets.asset_id
+      description: The asset id.
+      type: String
+    - contextPath: Reco.Assets.asset
+      description: Json string of the asset's url and the name.
+      type: Unknown
+    - contextPath: Reco.Assets.data_category
+      description: The data category of the asset.
+      type: String
+    - contextPath: Reco.Assets.data_categories
+      description: The data categories of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.location
+      description: The path of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset.
+      type: String
+    - contextPath: Reco.Assets.last_access_date
+      description: The last access date of the asset.
+      type: String
+    - contextPath: Reco.Assets.email_account
+      description: Email account of the user.
+      type: String
+    - contextPath: Reco.Assets.file_owner
+      description: The owner of the asset.
+      type: String
+    description: Get files user has access to from Reco.
+    name: reco-get-files-exposed-to-email-address
+  - arguments:
+      - description: user email address.
+        name: email_address
+        required: true
+    outputs:
+      - contextPath: Reco.Assets.asset_id
+        description: The asset id.
+        type: String
+      - contextPath: Reco.Assets.asset
+        description: Json string of the asset's url and the name.
+        type: Unknown
+      - contextPath: Reco.Assets.data_category
+        description: The data category of the asset.
+        type: String
+      - contextPath: Reco.Assets.data_categories
+        description: The data categories of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.location
+        description: The path of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.source
+        description: SaaS tool source of the asset.
+        type: String
+      - contextPath: Reco.Assets.last_access_date
+        description: The last access date of the asset.
+        type: String
+      - contextPath: Reco.Assets.file_owner
+        description: The owner of the asset.
+        type: String
+    description: Get files user has access to from Reco.
+    name: reco-get-assets-shared-externally
 tests:
 - No tests
 fromversion: 6.5.0
