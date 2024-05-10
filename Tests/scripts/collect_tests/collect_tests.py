@@ -1326,9 +1326,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
 
-                if (self.marketplace == MarketplaceVersions.MarketplaceV2
-                    and (MarketplaceVersions.XSOAR in playbook.marketplaces
-                         or MarketplaceVersions.XSOAR in PACK_MANAGER.get_pack_metadata(playbook.pack_id).marketplaces)):
+                if self.marketplace == MarketplaceVersions.MarketplaceV2 and MarketplaceVersions.XSOAR in playbook.marketplaces:
                     raise IncompatibleMarketplaceException(
                         playbook.path, playbook.marketplaces, self.marketplace)  # TODO for merge
 
