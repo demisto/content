@@ -2394,8 +2394,9 @@ script:
       - no
     - name: comment
       description: Comment about the policy. This field is not visible within the Administration Console.
-    - name: conditions
-      description: Policy application based on email transmission requirements.
+    - name: spf_domain
+      description: Source IP Ranges for a policy it will only apply when the source IP address used to transmit the email data falls inside/matches the range(s) configured. IP ranges should be entered in CIDR notation.
+      required: true
     - name: description
       description: Narrative to describe the policy for future reference.
       required : true
@@ -2462,6 +2463,8 @@ script:
       - address_attribute_value
       - individual_email_address
       required: true
+    - name: from_value
+      description: Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.	
     - name: to_type
       description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address.
       auto: PREDEFINED
@@ -2474,7 +2477,8 @@ script:
       - address_attribute_value
       - individual_email_address
       required: true
-
+    - name: to_value
+      description: Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.
     outputs:
   - name: mimecast-update-antispoofing-bypass-policy
     description: This endpoint can be used to update an existing Anti-Spoofing SPF based Bypass policy.

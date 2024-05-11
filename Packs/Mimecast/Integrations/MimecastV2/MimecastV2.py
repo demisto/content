@@ -3336,7 +3336,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     option = args.get('option')
     bidirectional = args.get('bidirectional')
     comment = args.get('comment')
-    conditions = args.get('conditions')
+    spf_domain = args.get('spf_domain')
     description = args.get('description')
     enabled = args['enabled']
     enforced = args['enforced']
@@ -3350,21 +3350,23 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     to_eternal = argToBoolean(args['to_eternal'])
     override = argToBoolean(args.get('override')) if args.get('override') else None
     from_type = args.get('from_type')
+    from_value = args.get('from_value')
     to_type = args.get('to_type')
+    to_value = args.get('to_value')
 
+        
     data = {
         "option": option,
         "policy": {
-            "to": {
-                "type": to_type
-            },
-            "from": {
-                "type": from_type
-            },
-            "description": description
+            "description": description,
+            "fromType": from_type,
+            "toType": to_type,
         }
     }
-
+    if from_value:
+        data['policy']['fromValue'] = from_value
+    if to_value:
+        data['policy']['toValue'] = to_value
     if bidirectional:
         data['policy']['bidirectional'] = bidirectional
     if comment:
@@ -3385,9 +3387,9 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
         data['policy']['toDate'] = to_date
     if to_eternal:
         data['policy']['toEternal'] = to_eternal
-    if conditions:
+    if spf_domain:
         data['policy']['conditions'] = {}
-        data['policy']['conditions']['spfDomains'] = [conditions]
+        data['policy']['conditions']['spfDomains'] = [spf_domain]
     if from_attribute_id:
         data['policy']['from']['attribute']['id'] = from_attribute_id
     if from_attribute_name:
