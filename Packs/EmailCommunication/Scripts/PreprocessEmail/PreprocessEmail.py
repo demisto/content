@@ -61,18 +61,12 @@ def create_email_html(email_html='', entry_id_list=None):
     Returns:
         str. Email Html.
     """
-    demisto.debug(f"{email_html=}")
     content_id = "None"
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
-        demisto.debug(f"{image_name=}")
         if '-' in image_name.split('-'):
             content_id = image_name[::-1].split('-', 1)[1][::-1]
-        demisto.debug(f"{content_id=}")
-        matches = re.findall(rf'(src="cid:{content_id}")', email_html)
-        demisto.debug(f"{matches=}")
         if re.search(rf'(src="cid:{content_id}")', email_html):
-            demisto.debug("i am here")
             email_html = re.sub(f'src="cid:{content_id}"', f'src=entry/download/{image_entry_id}',
                                 email_html)
         elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
@@ -99,7 +93,6 @@ def get_entry_id_list(attachments, files):
 
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
-    demisto.debug(f"{files=}")
     for attachment in attachments:
         is_file_attached = ""
         attachment_name = attachment.get('name', '')
@@ -216,7 +209,6 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     instance_name = ''
     integration_name = ''
 
-    demisto.debug(f"{email_to=}")
     for label in labels:
         if label.get('type') == 'Email/ID':
             message_id = label.get('value')
@@ -228,12 +220,16 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     if integration_name in ['EWS v2', 'EWSO365']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'item-id': str(message_id), 'identifiers-filter': identifier_ids, 'using': instance_name}})
+                                'arguments': {'item-id': str(message_id),
+                                              'identifiers-filter': identifier_ids,
+                                              'using': instance_name}})
 
     elif integration_name in ['Gmail', 'Gmail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
-                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'identifiers-filter': identifier_ids, 'using': instance_name}})
+                                'arguments': {'user-id': 'me', 'message-id': str(message_id),
+                                              'identifiers-filter': identifier_ids,
+                                              'using': instance_name}})
 
     elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
@@ -254,8 +250,6 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
     """
     new_attachment_identifiers_list = []
     new_attachments = []
-    demisto.debug(f"help_the_attachment {attachments}")
-    demisto.debug(f"this_is_the_email {email_html}")
     previous_files = get_incident_related_files(email_related_incident)
     previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
     previous_file_names = [file.get("Name") for file in previous_files]
@@ -267,7 +261,6 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
             else:
                 CommandResults(readable_output=f"Could not find image {attachment.get('name', '')[::-1].split('-', 1)[0][::-1]}")
             new_attachments.append(attachment)
-    demisto.debug(f"this_is_the_attachment_ids {new_attachment_identifiers_list}")
     return ",".join(new_attachment_identifiers_list), new_attachments
 
 

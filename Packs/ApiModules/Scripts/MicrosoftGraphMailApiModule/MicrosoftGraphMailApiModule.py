@@ -257,7 +257,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
                                         f'users/{user_id}/messages/{message_id}/attachments',
                                         overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
-        demisto.debug(f"{attachments=}")
         for attachment in attachments:
 
             attachment_type = attachment.get('@odata.type', '')
@@ -914,7 +913,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             message_id=email.get('id', ''),
             overwrite_rate_limit_retry=overwrite_rate_limit_retry
         )
-        demisto.debug(f"ms_graph_attachments {attachments=}")
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -1259,8 +1257,6 @@ class GraphMailUtils:
         attachment_type = raw_attachment.get('@odata.type', '')
         # Documentation about the different attachment types
         # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
-        demisto.debug(f"{attachment_type=}")
-        demisto.debug("i am here")
         if 'itemAttachment' in attachment_type:
             return GraphMailUtils.item_result_creator(raw_attachment, user_id)
         elif 'fileAttachment' in attachment_type:

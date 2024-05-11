@@ -1053,7 +1053,6 @@ def fetch_attachments_for_message(
     :param (Optional) identifiers_filter: attachment ids or content ids to create a fileResult
     :return: list of parsed entries
     """
-    demisto.debug(f"in fetch_attachments_for_message func {attachment_ids=}")
     identifiers_filter = argToList(identifiers_filter)
     account = client.get_account(target_mailbox)
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
@@ -2170,7 +2169,6 @@ def parse_incident_from_item(item):  # pragma: no cover
 
     # handle attachments
     if item.attachments:
-        demisto.debug(f"checking_the_attachment {item.attachments=}")
         incident["attachment"] = []
         demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
         attachment_counter = 0
@@ -2417,8 +2415,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
         if client.mark_as_read:
             mark_item_as_read(client, emails_ids)
 
-        if incidents:
-            demisto.debug(f"lets look at the incident{incidents[0].get('attachment')}")
         return incidents
 
     except RateLimitError:

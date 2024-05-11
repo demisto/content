@@ -1274,7 +1274,9 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 # save attachment to incident
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
-                                    'name': get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+                                    'name': get_attachment_name(attachment_name=attachment.name,
+                                                                content_id=attachment.content_id,
+                                                                attachment_id=attachment.attachment_id.id),
                                     "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                                 })
                         except TypeError as e:
@@ -1324,13 +1326,17 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id) + ".eml",
+                                'name': get_attachment_name(attachment_name=attachment.name,
+                                                            content_id=attachment.content_id,
+                                                            attachment_id=attachment.attachment_id.id) + ".eml",
                                 "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                             })
 
                         else:
                             incident['attachment'].append({
-                                'name': get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id) + ".eml",
+                                'name': get_attachment_name(attachment_name=attachment.name,
+                                                            content_id=attachment.content_id,
+                                                            attachment_id=attachment.attachment_id.id) + ".eml",
                                 "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                             })
 
@@ -1483,7 +1489,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+                'attachmentName': get_attachment_name(attachment_name=attachment.name,
+                                                      content_id=attachment.content_id,
+                                                      attachment_id=attachment.attachment_id.id),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -1500,7 +1508,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+                'attachmentName': get_attachment_name(attachment_name=attachment.name,
+                                                      content_id=attachment.content_id,
+                                                      attachment_id=attachment.attachment_id.id),
                 'attachmentSize': attachment.size,
                 'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
                 'attachmentIsInline': attachment.is_inline,
@@ -1514,7 +1524,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+            'attachmentName': get_attachment_name(attachment_name=attachment.name,
+                                                  content_id=attachment.content_id,
+                                                  attachment_id=attachment.attachment_id.id),
             'attachmentSHA256': None,
             'attachmentContentType': attachment.content_type,
             'attachmentContentId': attachment.content_id,

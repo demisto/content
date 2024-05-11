@@ -356,16 +356,12 @@ def get_date_from_email_header(header: str) -> Optional[datetime]:
 def get_email_context(email_data, mailbox):
     occurred, occurred_is_valid = get_occurred_date(email_data)
     context_headers = email_data.get('payload', {}).get('headers', [])
-    demisto.debug(f"before {context_headers=}")
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
-    demisto.debug(f"after {context_headers=}")
     headers = {h['Name'].lower(): h['Value'] for h in context_headers}
-    demisto.debug(f"{headers=}")
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    demisto.debug(f"get_email_context {body=} {parsed_body=}")
 
     # demisto.debug(f"this_is_the_attachments_field {email_data.get('payload', {})}")
     context_gmail = {
@@ -431,8 +427,6 @@ def get_email_context(email_data, mailbox):
         context_email['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
-    demisto.debug(f"maybe_html: {context_gmail['Html']}")
-    demisto.debug(f"hello11 {context_email['Attachments']=}")
     return context_gmail, headers, context_email, occurred, occurred_is_valid
 
 
@@ -553,10 +547,8 @@ def mail_to_incident(msg, service, user_key):
     }
 
     for attachment in parsed_msg['Attachments']:
-        demisto.debug(f"meeee {attachment['ID']}")
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        demisto.debug(f"line_543 {result=}")
         file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
 
         # save the attachment
@@ -1567,7 +1559,6 @@ def get_attachments(user_id, _id, identifiers_filter=""):
     }
     files = []
     for attachment in result['Attachments']:
-        demisto.debug(f"lets look on the attachment {attachment}")
         identifiers_filter_array = argToList(identifiers_filter)
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
@@ -2605,7 +2596,6 @@ def fetch_incidents():
     params = demisto.params()
     user_key = params.get('queryUserKey')
     user_key = user_key if user_key else ADMIN_EMAIL
-    demisto.debug(f"{user_key=}")
     max_fetch = int(params.get('fetch_limit') or 50)
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
