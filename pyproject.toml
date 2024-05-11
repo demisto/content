@@ -6,6 +6,10 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 package-mode = false
 
+[[tool.poetry.source]]
+name = "pypi-public"
+url = "https://pypi.org/simple/"
+
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
