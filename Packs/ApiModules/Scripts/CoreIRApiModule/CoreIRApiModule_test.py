@@ -3916,7 +3916,7 @@ class TestGetIncidents:
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         handle_fetch_starred_mock = mocker.patch.object(CoreClient,
                                                         'handle_fetch_starred_incidents',
-                                                        return_value=get_incidents_list_response['incidents'][0])
+                                                        return_value=get_incidents_list_response["reply"]['incidents'])
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
