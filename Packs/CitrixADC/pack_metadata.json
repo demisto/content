@@ -9,11 +9,11 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
+    "tags": [],
+    "useCases": [],
+    "keywords": [
         "NetScaler"
     ],
-    "useCases": [],
-    "keywords": [],
     "marketplaces": [
         "marketplacev2"
     ]
