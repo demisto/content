@@ -26,7 +26,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### wiz-get-issues
 ***
 Get the issues on cloud resources
-
 <h4> Base Command </h4>
 
 `wiz-get-issues`
@@ -163,6 +162,35 @@ Re-open an Issue.
 #### Command Example
 ```
 !wiz-reject-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reject_reason="WONT_FIX" reject_note="this is by design"
+```
+
+### wiz-resolve-issue
+***
+Resolve a Threat Detection Issue.
+
+<h4> Base Command </h4>
+
+`wiz-resolve-issue`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description**                                 | **Required** |
+|-------------------|-------------------------------------------------| --- |
+| issue_id          | Issue id                                        | Required | 
+| resolution_reason | Issue resolution reason                         | Required | 
+| resolution_note   | Note to explain why the Issue has been resolved | Required | 
+
+
+<h4> Context Output </h4>
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Wiz.Manager.Issue | String | Issue details | 
+
+
+#### Command Example
+```
+!wiz-resolve-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_note="won't fix this issue as this is low priority" resolution_reason="WONT_FIX"
 ```
 
 ### wiz-set-issue-note
