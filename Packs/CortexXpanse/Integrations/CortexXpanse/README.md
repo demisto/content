@@ -787,22 +787,32 @@ Get external IP address range details according to the range IDs.
 
 ### asm-list-asset-internet-exposure
 ***
-Get a list of all your internet exposures filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
-
+Get a list of all your internet exposures filtered by IP address, domain, type, asm id, IPv6 address, AWS/GCP/Azure tags, has XDR agent, Externally detected providers, Externally inferred cves, Business units list, has BU overrides and/or if there is an active external service. Maximum result limit is 100 assets.
 
 #### Base Command
 
 `asm-list-asset-internet-exposure`
 #### Input
 
-| **Argument Name**            | **Description**                                                                                                                      | **Required** |
-|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------| --- |
-| ip_address                   | IP address on which to search.                                                                                                       | Optional | 
-| name                         | Name of asset on which to search.                                                                                                    | Optional | 
-| type                         | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
-| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no.                                          | Optional | 
-| search_from                  | Represents the start offset index of results. Default is 0.                                                                          | Optional | 
-| search_to                    | Represents the end offset index of results. Default is 100.                                                                          | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_address | IP address on which to search. | Optional | 
+| name | Name of the asset on which to search. | Optional | 
+| type | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
+| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no. | Optional | 
+| search_from | Represents the start offset index of results. Default is 0. | Optional | 
+| search_to | Represents the end offset index of results. | Optional | 
+| asm_id_list | List of asm ids. | Optional | 
+| ipv6_address | IPv6 address on which to search. | Optional | 
+| gcp_cloud_tags | Search based on GCP cloud tags. | Optional | 
+| aws_cloud_tags | Search based on AWS cloud tags. | Optional | 
+| azure_cloud_tags | Search based on AZURE cloud tags. | Optional | 
+| has_xdr_agent | Search based on xdr agent. | Optional | 
+| externally_detected_providers | Search on externally detected providers. | Optional | 
+| externally_inferred_cves | Search on externally inferred cve. | Optional | 
+| business_units_list | Search on Business units list. | Optional | 
+| has_bu_overrides | Whether it has BU overrides. Possible values are: True, False. | Optional | 
+| mac_address | Search based on MAC address. | Optional | 
 
 #### Context Output
 
@@ -825,6 +835,7 @@ Get a list of all your internet exposures filtered by ip address, domain, type, 
 | ASM.AssetInternetExposure.service_type | String | Type of the asset. | 
 | ASM.AssetInternetExposure.externally_inferred_cves | String | If the internet exposure has associated CVEs. | 
 | ASM.AssetInternetExposure.ips | String | IP addresses associated with the internet exposure. | 
+
 
 #### Command example
 ```!asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no```

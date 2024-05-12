@@ -639,16 +639,33 @@ def list_asset_internet_exposure_command(
     externally_inferred_cves = args.get("externally_inferred_cves")
     business_units_list = args.get("business_units_list")
     has_bu_overrides = args.get("has_bu_overrides")
+    mac_addresses = args.get("mac_addresses")
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
         search_params.append(
-            {"field": "ip_address", "operator": "eq", "value": ip_address}
+            {
+                "field": "ip_address",
+                "operator": "eq",
+                "value": ip_address
+            }
         )
     if name:
-        search_params.append({"field": "name", "operator": "contains", "value": name})
+        search_params.append(
+            {
+                "field": "name",
+                "operator": "contains",
+                "value": name
+            }
+        )
     if asm_type:
-        search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
+        search_params.append(
+            {
+                "field": "type",
+                "operator": "in",
+                "value": [asm_type]
+            }
+        )
     if has_active_external_services:
         search_params.append(
             {
@@ -735,6 +752,14 @@ def list_asset_internet_exposure_command(
                 "field": "has_bu_overrides",
                 "value": False if has_bu_overrides.lower() == 'false' else True,
                 "operator": "eq"
+            }
+        )
+    if mac_addresses:
+        search_params.append(
+            {
+                "field": "mac_addresses",
+                "value": mac_addresses,
+                "operator": "contains"
             }
         )
 

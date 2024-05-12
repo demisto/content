@@ -799,7 +799,7 @@ Get the external IP address range details according to the range IDs.
 ### asm-list-asset-internet-exposure
 
 ***
-Get a list of all your internet exposure filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
+Get a list of all your internet exposure filtered by IP address, domain, type, asm id, IPv6 address, AWS/GCP/Azure tags, has XDR agent, Externally detected providers, Externally inferred cves, Business units list, has BU overrides and/or if there is an active external service. Maximum result limit is 100 assets.
 
 #### Base Command
 
@@ -823,6 +823,7 @@ Get a list of all your internet exposure filtered by IP address, domain, type, a
 | externally_inferred_cves | Search on externally inferred cve. | Optional | 
 | business_units_list | Search on Business units list. | Optional | 
 | has_bu_overrides | Whether it has BU overrides. Possible values are: True, False. | Optional | 
+| mac_address | Search based on MAC address. | Optional | 
 
 #### Context Output
 
@@ -1236,7 +1237,7 @@ Get the status of an existing Remediation Confirmation Scan.
 | interval_in_seconds | The interval, in seconds, to poll for scan results of an existing Remediation Confirmation Scan. Default is 600. | Optional | 
 | timeout_in_seconds | The timeout, in seconds, for polling for scan results of an existing Remediation Confirmation Scan. Default is 11000. | Optional | 
 | hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional | 
-| polling | Whether to poll until there is at least one result. Possible values are: true, false. Default is True. | Optional | 
+| polling | Whether to poll until there is at least one result. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
