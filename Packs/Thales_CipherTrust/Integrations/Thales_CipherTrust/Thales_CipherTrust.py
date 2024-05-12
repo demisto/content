@@ -1,171 +1,96 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
+from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument,
+                                                                                  YMLMetadataCollector, OutputArgument,
+                                                                                  ParameterTypes)
+from CommonServerPython import BaseClient, CommandResults, datetime
 
-This is an empty Integration with some basic structure according
-to the code conventions.
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-from CommonServerUserPython import *  # noqa
+''' IMPORTS '''
 
 import urllib3
-from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+'''CLIENT CLASS'''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """ A client class to interact with the Thales CipherTrust API """
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, username: str, password: str, base_url: str, proxy: bool, verify: bool):
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
+        res = self._create_auth_token(username, password)
+        self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def _create_auth_token(self, username, password):  # todo: before each request to make sure isn't expired?
+        return self._http_request(
+            method='POST',
+            url_suffix='/auth/tokens',
+            json_data={
+                'grant_type': 'password',
+                'username': username,
+                'password': password
+            }
+        )
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def test_module(client: Client):
+    """Tests connectivity with the client.
+    Takes as an argument all client arguments to create a new client
     """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+def main():
     """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+    """
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    server_url = params.get('server_url')
+    base_url = urljoin(server_url, '/api/v1')
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    username = params.get('credentials', {}).get('username')
+    password = params.get('credentials', {}).get('password')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
+    verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: dict = {}
-
         client = Client(
+            username=username,
+            password=password,
             base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
+            verify=verify,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+        demisto.debug(f'Command being called is {command}')
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        if command == 'test-module':
+            return_results(test_module(client))
 
-    # Log exceptions and return errors
+
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
+        demisto.error(traceback.format_exc())
+        return_error(message=msg, error=e)
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
