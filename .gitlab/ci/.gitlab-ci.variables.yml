@@ -47,6 +47,5 @@ variables:
   INSTALL_POETRY: "true"
   DOCKER_IO: "docker.io" # defined in the project level CI/CD variables
   KUBERNETES_CPU_REQUEST: 2
-  KUBERNETES_MEMORY_REQUEST: 8Gi
-  KUBERNETES_MEMORY_LIMIT: 16Gi
+  KUBERNETES_MEMORY_REQUEST: 2Gi
   RESET_CORE_PACK_VERSION: "true"
