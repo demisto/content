@@ -48,8 +48,7 @@ def should_run_with_guid():  # pragma: no cover
         return False
 
 
-def calculate_end_time(timeout):
-    now = get_current_time()
+def calculate_end_time(now, timeout):
     end_time = now + timedelta(minutes=timeout)
     short_format = "%Y-%m-%d %H:%M:%S"
     return end_time.strftime(short_format)
@@ -133,11 +132,12 @@ def main():  # pragma: no cover
     if should_run_with_guid():
         # Generate a GUID for the scheduled entry and add it to the command.
         entryGuid = str(uuid.uuid4())
-        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
+        now = get_current_time()
+        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(now, timeout)}"'
         schedule_command_args['command'] = command_string
         # Set the times to be the number of times the polling command should run (using the cron job functionally).
         # Adding extra iteration to verify that the polling command will stop the schedule entry.
-        schedule_command_args['times'] = (timeout // interval) + 1
+        schedule_command_args['times'] = (timeout // interval) + (now.minute % interval) + 1
         schedule_command_args['scheduledEntryGuid'] = entryGuid
 
     res = demisto.executeCommand("ScheduleCommand",
