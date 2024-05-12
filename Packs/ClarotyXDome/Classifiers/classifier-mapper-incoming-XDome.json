@@ -26,9 +26,6 @@
                 "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "Claroty xDome Alert Category": {
-                    "simple": "alert_category"
-                },
                 "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
