@@ -39,15 +39,23 @@ switch (command) {
 
     case 'demisto-lock-get':
         var lockTimeout = args.timeout || params.timeout || 600;
-        var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
+        var incidentID = incidents[0].id
+        var lockInfo = 'Locked by incident #' + incidentID + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
 
         var guid = guid();
         var time = 0;
         var lock, version;
-
+        var attempt = 1;
         do{
+            logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Trying to acquire lock lockName: ' + lockName + ', attempt number: ' + attempt);
             [lock, version] = getLock();
+
+            if (typeof version === 'object') {
+                version = JSON.stringify(version)
+            }
+            logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
+
             if (lock.guid === guid) {
                 break;
             }
@@ -55,9 +63,10 @@ switch (command) {
                 try {
                     setLock(guid, lockInfo, version);
                 } catch(err) {
-                    logDebug(err.message)
+                    logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Failed setting lock: ' + err.message);
                 }
             }
+            attempt++;
             wait(1);
         } while (time++ < lockTimeout) ;
 
@@ -77,6 +86,7 @@ switch (command) {
         break;
 
     case 'demisto-lock-release':
+        logDebug('Releasing lock lockName: ' + lockName);
         if(sync)   {
             mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
         } else {
@@ -84,6 +94,9 @@ switch (command) {
             delete integrationContext[lockName];
             setVersionedIntegrationContext(integrationContext, sync);
         }
+        [lock, version] = getLock();
+        logDebug('Current lock is: ' + JSON.stringify(lock) + ', version: ' + JSON.stringify(version));
+
 
         var md = '### Demisto Locking Mechanism\n';
         md += 'Lock released successfully';
