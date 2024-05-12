@@ -2,4 +2,4 @@
 ignore=DS107
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM110
