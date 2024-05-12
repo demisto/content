@@ -1,6 +1,10 @@
 import json
+
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
+
+from freezegun import freeze_time
+
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 
 MOCK_URL = "http://123-fake-api.com"
@@ -220,12 +224,10 @@ def return_self(return_date):
     return return_date
 
 
+@freeze_time("2010-01-01T00:00:00Z", tz_offset=0)
 def test_first_fetch_incidents(requests_mock, mocker):
-    mocker.patch('ProofpointTAP_v2.get_now',
-                 return_value=get_mocked_time())
-    mocker.patch('ProofpointTAP_v2.parse_date_range', return_value=("2010-01-01T00:00:00Z", 'never mind'))
     requests_mock.get(
-        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
+        MOCK_URL + '/v2/siem/all?format=json&interval=2009-12-31T23%3A30%3A00Z%2F2010-01-01T00%3A00%3A00Z',
         json=MOCK_ALL_EVENTS)
 
     client = Client(
@@ -240,7 +242,7 @@ def test_first_fetch_incidents(requests_mock, mocker):
     next_run, incidents, _ = fetch_incidents(
         client=client,
         last_run={},
-        first_fetch_time="3 month",
+        first_fetch_time="30 minutes",
         event_type_filter=ALL_EVENTS,
         threat_status="",
         threat_type=""
@@ -269,7 +271,7 @@ def test_next_fetch(requests_mock, mocker):
     next_run, incidents, _ = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_date},
-        first_fetch_time="3 month",
+        first_fetch_time="3 days",
         event_type_filter=ALL_EVENTS,
         threat_status=["active", "cleared"],
         threat_type="",
@@ -324,6 +326,7 @@ def test_fetch_limit(requests_mock, mocker):
     assert not remained
 
 
+@freeze_time("2010-01-01T00:00:00Z", tz_offset=0)
 def test_fetch_incidents_with_encoding(requests_mock, mocker):
     """
     Given:
@@ -339,10 +342,6 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     mocker.patch(
         'ProofpointTAP_v2.get_now',
         return_value=get_mocked_time()
-    )
-    mocker.patch(
-        'ProofpointTAP_v2.parse_date_range',
-        return_value=("2010-01-01T00:00:00Z", 'never mind')
     )
     requests_mock.get(
         MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
@@ -368,7 +367,7 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     _, incidents, _ = fetch_incidents(
         client=client,
         last_run={},
-        first_fetch_time='3 month',
+        first_fetch_time='now',
         event_type_filter=ALL_EVENTS,
         threat_status='',
         threat_type='',
@@ -803,7 +802,7 @@ class TestGetForensics:
         assert len(reports) == 2
         report = reports[0]
         assert all(report)
-        assert self.FORENSICS_REPORT == report
+        assert report == self.FORENSICS_REPORT
 
 
 def load_mock_response(file_name: str) -> str:
@@ -817,7 +816,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
 
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -1084,3 +1083,40 @@ def test_list_issues_command(requests_mock):
     assert len(messages_result.outputs) == 1
     assert messages_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
     assert messages_result.outputs[0].get('messageID') == "1111@evil.zz"
+
+
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+@freeze_time("2024-05-03T11:00:00")
+def test_validate_start_query_time_valid_str():
+    """
+        Given:
+         - A valid str start_query_time
+        When:
+         - running fetch_incidents.
+        Then:
+         - Ensure that the datetime representation of start_query_time is returned.
+    """
+    from ProofpointTAP_v2 import validate_start_query_time
+    start_query_time = '2024-05-03T10:00:00Z'
+    datetime_start_query_time = datetime.strptime(start_query_time, DATE_FORMAT)
+    validated_start_query_time = validate_start_query_time(start_query_time)
+    assert datetime_start_query_time == validated_start_query_time
+
+
+@freeze_time("2024-05-03T11:00:00", tz_offset=0)
+def test_validate_start_query_time_not_valid():
+    """
+        Given:
+         - A not valid start_query_time
+        When:
+         - running fetch_incidents.
+        Then:
+         - Ensure that a valid datetime object is returned (less than 7 days ago).
+    """
+    from ProofpointTAP_v2 import validate_start_query_time
+    start_query_time = '2024-04-20T10:00:00Z'
+    expected_start_query_time = datetime.now() - timedelta(days=6, hours=23)
+    validated_start_query_time = validate_start_query_time(start_query_time)
+    assert expected_start_query_time == validated_start_query_time
