@@ -2186,7 +2186,64 @@ script:
         starts at 0.
     - name: limit
       description: A number of records to limit the response to.
-    description: 'Retarn a list of tags'
+    description: Retarn a list of tags.
+  - name: nexpose-update-tag-search-criteria
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: ip_address_is
+      description: A specific IP address to search.
+    - name: host_name_is
+      description: A specific host name to search.
+    - name: risk_score_title_contains
+      description: Aminimum risk score to use as a filter.
+    - name: vulnerability_title_conains
+      description: A string to searck for in vulnerbilities titles.
+    - name: site_id_in
+      description: Site IDs to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: site_name_in
+      description: Site names to filter for. Can be a comma-separated list.
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Any
+      description: Operator to determine how to match filters. "all" requires that
+        all filters match for an asset to be included. "any" requires only one filter
+        to match for an asset to be included.
+      defaultValue: Any
+    - name: query
+      description: Queries to use as a filter, in addition to the specific fields
+        detailed above. According to the Search Criteria API standard, the structure
+        is {field} {operator} {value}.   Multiple queries can be specified, separated
+        by a ";" separator. For example 'ip-address in-range 192.0.2.0,192.0.2.1;host-name
+        is myhost'.
+    - name: overwrite
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether to overwrite the original search values OR append new conditions
+        to the existing  search.
+      defaultValue: "no"
+    description: Update tag search criteria.
+  - name: nexpose-list-tag-asset-group
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    description: Return a list of tag is asset groups.
+  - name: nexpose-add-tag-asset-group
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_group_ids
+      required: true
+      description: The asset group to add. Can be a comma-separated list.
+    description: Add asset group to existing tag.
   runonce: false
   script: '-'
   type: python
