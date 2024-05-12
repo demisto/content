@@ -212,9 +212,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+    - description: Deprecated. Use gte_creation_time instead.
       defaultValue: 3 days
-      name: starred_incidents_fetch_window (Deprecated. Use gte_creation_time instead)
+      name: starred_incidents_fetch_window
       deprecated: true
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
