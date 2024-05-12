@@ -1067,7 +1067,7 @@ def fetch_attachments_for_message(
     for attachment in attachments:
         if (not identifiers_filter
             or attachment.content_id in identifiers_filter
-            or attachment.attachment_id.id in identifiers_filter):
+                or attachment.attachment_id.id in identifiers_filter):
             if isinstance(attachment, FileAttachment):
                 try:
                     if attachment.content:
