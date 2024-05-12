@@ -134,7 +134,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data=[{}], headers={}) -> list:
+def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data=[{}], headers={}) -> list[dict]:
     """
     Makes a paginated request to an API using OAuth2 authentication and retrieves all results up to a specified limit.
 
@@ -176,6 +176,7 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         payload['data'] = data
 
     response = http_request('POST', api_endpoint, payload, headers=headers)
+    print('response:', response)
 
     len_of_results = 0
     results = []
@@ -3354,7 +3355,6 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     to_type = args.get('to_type')
     to_value = args.get('to_value')
 
-        
     data = {
         "option": option,
         "policy": {

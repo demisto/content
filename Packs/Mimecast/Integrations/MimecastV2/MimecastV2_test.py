@@ -824,12 +824,36 @@ def test_list_policies_command(mocker):
     Args:
     """
 
-    args = {'policyType': 'address-alteration'}
-    expected_response = {'meta': {'status': 200}, 'data': [{'addressAlterationSetId': 'eN11111', 'id': 'eN111', 'policy': {'description': 'test2', 'fromPart': 'envelope_from', 'from': {'type': 'internal_addresses'}, 'to': {'type': 'internal_addresses'}, 'fromType': 'internal_addresses',
-                                                                                                                           'toType': 'internal_addresses', 'fromEternal': True, 'toEternal': True, 'fromDate': '1900-01-01T00:00:00+0000', 'toDate': '2100-01-01T23:59:59+0000', 'override': False, 'bidirectional': False, 'conditions': {}, 'enabled': True, 'enforced': False}}], 'fail': []}
-    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+    args = {"policyType": "address-alteration"}
+    expected_response = [
+        {
+            "option": "no_action",
+            "id": "eNo1jr",
+            "policy": {
+                "description": "test",
+                "fromPart": "envelope_from",
+                "from": {"type": "internal_addresses"},
+                "to": {"type": "external_addresses"},
+                "fromType": "internal_addresses",
+                "toType": "external_addresses",
+                "fromEternal": True,
+                "toEternal": True,
+                "fromDate": "1900-01-01T00:00:00+0000",
+                "toDate": "2100-01-01T23:59:59+0000",
+                "override": False,
+                "bidirectional": False,
+                "conditions": {},
+                "enabled": True,
+                "enforced": False,
+                "createTime": "2024-04-17T09:01:16+0000",
+                "lastUpdated": "2024-04-17T09:01:16+0000",
+            },
+        }
+    ]
+
+    mocker.patch.object(MimecastV2, "request_with_pagination_api2", return_value=expected_response)
     result = MimecastV2.list_policies_command(args)
-    assert expected_response.get('data') == result.outputs['data']
+    assert result.outputs == expected_response
 
 
 def test_create_antispoofing_bypass_policy_command(mocker):
