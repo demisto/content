@@ -1726,7 +1726,7 @@ Sends an email using EWS.
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | raw_message | Raw email message from MimeContent type. | Optional | 
 | from | The email address from which to reply. | Optional | 
-| bodyType | Whether message response body type is Text, or HTML. Default is Text. | Required | 
+| bodyType | Whether message response body type is Text or HTML. Default is Text. | Required | 
 
 
 #### Context Output
