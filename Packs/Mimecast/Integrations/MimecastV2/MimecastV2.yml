@@ -2106,16 +2106,12 @@ script:
     arguments:
     - name: account_name
       description: The account name.
-
     - name: account_code
       description: The unique Mimecast account code for the customer.
-
     - name: admin_email
       description: The email address of the first administrator created on the account.
-
     - name: region
       description: The region where the account is hosted.
-
     - name: user_count
       description: The number of user licenses on the account.
     - name: page

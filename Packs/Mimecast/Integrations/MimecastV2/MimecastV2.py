@@ -522,35 +522,6 @@ def list_email_queues_request(args):
                         payload=payload)
 
 
-def get_archive_search_logs_request(args):
-    """
-    Sends a request to get archive search logs.
-
-    :param args: A dictionary containing the request parameters.
-                 Should contain 'query_xml' key for the query XML.
-    :type args: dict
-
-    :return: The response from the API.
-    :rtype: dict
-    """
-
-    query = args.get('query', '')
-    requestBody = None
-    if query:
-        requestBody = {
-            "data": [
-                {
-                    "query": query,
-                }
-            ]
-        }
-
-    return http_request('POST',
-                        api_endpoint='/api/archive/get-archive-search-logs',
-                        payload=requestBody
-                        )
-
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -3192,8 +3163,23 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
     :return: The CommandResults object containing the outputs and raw response.
     """
+    
+    query = args.get('query', '')
+    request = None
+    
+    if query:
+        request = {
+            "data": [
+                {
+                    "query": query,
+                }
+            ]
+        }
 
-    response = get_archive_search_logs_request(args)
+    response = http_request('POST',
+                        api_endpoint='/api/archive/get-archive-search-logs',
+                        payload=request
+                        )
 
     return CommandResults(
         outputs_prefix='Mimecast.ArchiveSearchLog',
