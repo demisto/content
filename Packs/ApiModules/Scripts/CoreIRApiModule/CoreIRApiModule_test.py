@@ -3843,7 +3843,7 @@ class TestGetIncidents:
         assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
         if expected_starred:
             assert starred_filter_true in request_filters
-            assert starred_fetch_window_filter not in request_filters
+            assert starred_fetch_window_filter in request_filters
             assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
         elif expected_starred is False:
             assert starred_filter_false in request_filters
@@ -3916,7 +3916,7 @@ class TestGetIncidents:
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         handle_fetch_starred_mock = mocker.patch.object(CoreClient,
                                                         'handle_fetch_starred_incidents',
-                                                        return_value=get_incidents_list_response)
+                                                        return_value=get_incidents_list_response['incidents'][0])
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
