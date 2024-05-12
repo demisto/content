@@ -1012,7 +1012,7 @@ inputs:
   playbookInputQuery:
 - key: query
   value:
-    simple: type:file
+    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active and -tags:xdr_pushed and -tags:xdr_not_processed
   required: true
   description: ""
   playbookInputQuery:
