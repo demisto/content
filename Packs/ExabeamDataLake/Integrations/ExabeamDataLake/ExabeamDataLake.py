@@ -152,16 +152,17 @@ def calculate_page_parameters(args: dict):
     if (limit_arg and (page_arg or page_size_arg)) or ((not (page_arg and page_size_arg)) and (page_arg or page_size_arg)):
         raise DemistoException("You can only provide 'limit' alone or 'page' and 'page_size' together.")
 
-    page = arg_to_number(args.get('page', '1'))
-    page_size = arg_to_number(args.get('page_size', '50'))
     limit = arg_to_number(args.get('limit', '50'))
-
-    if page and page_size:
-        from_param = page * page_size - page_size
-        size_param = page_size
+    
+    if args.get('page') and args.get('page_size'):
+        page = arg_to_number(args.get('page', '1'))
+        page_size = arg_to_number(args.get('page_size', '50'))
+        if page and page_size:
+            from_param = page * page_size - page_size
+            size_param = page_size
     else:
         from_param = 0
-        size_param = limit if limit is not None else 50
+        size_param = limit
 
     return from_param, size_param
 

@@ -24,8 +24,8 @@ def test_query_datalake_command(mocker):
             {
                 "hits": {
                     "hits": [
-                        {"_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1"}},
-                        {"_source": {"@timestamp": "2024-05-02T12:00:00", "message": "example message 2", "only_hr": "nothing"}}
+                        {"_id":"FIRST_ID","_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1"}},
+                        {"_id":"SECOND_ID","_source": {"@timestamp": "2024-05-02T12:00:00", "message": "example message 2", "only_hr": "nothing"}}
                     ]
                 }
             }
@@ -38,17 +38,17 @@ def test_query_datalake_command(mocker):
 
     response = query_datalake_command(client, args, cluster_name="local")
 
-    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event', {})
+    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event(val._id && val._id == obj._id)', {})
 
-    assert {'_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
-    assert {'_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
+    assert {'_id':'FIRST_ID','_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
+    assert {'_id':'SECOND_ID','_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
                         'only_hr': 'nothing'}} in result
     expected_result = (
         "### Logs\n"
         "|Created_at|Id|Message|Product|Vendor|\n"
         "|---|---|---|---|---|\n"
-        "| 2024-05-01T12:00:00 |  | example message 1 |  |  |\n"
-        "| 2024-05-02T12:00:00 |  | example message 2 |  |  |\n"
+        "| 2024-05-01T12:00:00 | FIRST_ID | example message 1 |  |  |\n"
+        "| 2024-05-02T12:00:00 | SECOND_ID | example message 2 |  |  |\n"
     )
     assert expected_result in response.readable_output
 
