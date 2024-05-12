@@ -361,9 +361,10 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
             demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
             demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
-    next_run[last_fetch_next_field] = next
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         event_type_fetch_start_time = datetime.now().strftime(DATE_FORMAT)
+        next = 0
+    next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time

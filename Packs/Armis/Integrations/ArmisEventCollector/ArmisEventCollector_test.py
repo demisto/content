@@ -106,7 +106,7 @@ class TestClientFunctions:
 
         from_arg = arg_to_datetime('2023-01-01T01:00:01')
         mocked_http_request = mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
-        assert dummy_client.fetch_by_aql_query('example_query', 3, from_arg) == (expected_result, None)
+        assert dummy_client.fetch_by_aql_query('example_query', 3, from_arg) == (expected_result, 0)
 
         mocked_http_request.assert_called_with(**expected_args)
 
@@ -224,15 +224,27 @@ class TestHelperFunction:
         from ArmisEventCollector import dedup_events
         assert dedup_events(events, events_last_fetch_ids, unique_id_key, event_order_by) == expected_result
 
-    def test_fetch_by_event_type(self, mocker, dummy_client):
+    @pytest.mark.parametrize(
+        "next_pointer, expected_last_run", [
+            (4, {'events_last_fetch_ids': ['3'], 'events_last_fetch_next_field': 4,
+                 'events_last_fetch_time': '2023-01-01T01:00:20'}),
+            (None, {'events_last_fetch_ids': ['3'], 'events_last_fetch_next_field': 0,
+                    'events_last_fetch_time': '2024-01-01T01:00:00'})]
+    )
+    @freeze_time("2024-01-01 01:00:00")
+    def test_fetch_by_event_type(self, mocker, dummy_client, next_pointer, expected_last_run):
         """
         Given:
-            - A valid event type arguments for API request (unique_id_key, aql_query, type).
+            - A valid event type arguments for API request (unique_id_key, aql_query, type) and a mocker for the response data.
+            - Case 1: A response data with a nullified next pointer.
+            - Case 2: A response data with a next pointer = 4.
         When:
             - Iterating over which event types to fetch.
         Then:
             - Perform fetch for the specific event type, update event list and update
               last run dictionary for next fetch cycle.
+            - Case 1: Should set the next to 0 and take the freezed now time as the next run time.
+            - Case 2: Should set the next to 4 and take the time of the last incident.
         """
         from ArmisEventCollector import fetch_by_event_type
         event_type = EVENT_TYPE('unique_id', 'example:query', 'events', 'time', 'events')
@@ -254,13 +266,12 @@ class TestHelperFunction:
                 'time': '2023-01-01T01:00:30.123456+00:00'
             }
         ]
-        mocker.patch.object(Client, 'fetch_by_aql_query', return_value=(response, 4))
+        mocker.patch.object(Client, 'fetch_by_aql_query', return_value=(response, next_pointer))
 
         fetch_by_event_type(dummy_client, event_type, events, 1, last_run, next_run, fetch_start_time_param)
 
         assert events['events'] == [{'unique_id': '3', 'time': '2023-01-01T01:00:30.123456+00:00'}]
-        assert next_run == {'events_last_fetch_ids': ['3'], 'events_last_fetch_next_field': 4,
-                            'events_last_fetch_time': '2023-01-01T01:00:20'}
+        assert next_run == expected_last_run
 
     # test_add_time_to_events parametrize arguments
     case_one_event = (
