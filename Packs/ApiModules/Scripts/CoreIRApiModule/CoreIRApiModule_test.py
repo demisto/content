@@ -3801,7 +3801,7 @@ class TestGetIncidents:
         """
         Given: A query with starred parameters.
         When: Running get_incidents_command.
-        Then: Ensure the starred output is returned.
+        Then: Ensure the starred output is returned and the request filters are set correctly.
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
@@ -3854,25 +3854,18 @@ class TestGetIncidents:
             assert starred_fetch_window_filter not in request_filters
 
     @freeze_time("2024-01-15 17:00:00 UTC")
-    @pytest.mark.parametrize('starred, expected_starred',
-                             [(True, True),
-                              (False, False),
-                              ('true', True),
-                              ('false', False),
-                              (None, None),
-                              ('', None)])
-    def test_get_starred_incident_list_from_fetch(self, mocker, starred, expected_starred):
+    @pytest.mark.parametrize('starred', [False, "False", 'false', None, ''])
+    def test_get_starred_false_incident_list_from_fetch(self, mocker, requests_mock, starred):
         """
-        Given: A query with starred parameters.
-        When: Running get_incidents_command.
-        Then: Ensure the starred output is returned.
+        Given: A query with starred=false parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request doesn't filter on starred incidents.
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-        handle_fetch_starred_mock = mocker.patch.object(CoreClient,
-                                                        'handle_fetch_starred_incidents',
-                                                        return_value=get_incidents_list_response)
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -3904,17 +3897,57 @@ class TestGetIncidents:
 
         _, outputs, _ = get_incidents_command(client, args)
 
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true not in request_filters
+        assert starred_filter_false not in request_filters
+        assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [True, 'true', "True"])
+    def test_get_starred_true_incident_list_from_fetch(self, mocker, starred):
+        """
+        Given: A query with starred=true parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request filters on starred incidents and contains the starred_fetch_window_filter filter.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        handle_fetch_starred_mock = mocker.patch.object(CoreClient,
+                                                        'handle_fetch_starred_incidents',
+                                                        return_value=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
         handle_fetch_starred_mock.assert_called()
         request_filters = handle_fetch_starred_mock.call_args.args[2]['filters']
         assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
-        if expected_starred:
-            assert starred_filter_true in request_filters
-            assert starred_fetch_window_filter in request_filters
-            assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
-        else:  # expected_starred is False or None
-            assert starred_filter_true not in request_filters
-            assert starred_filter_false not in request_filters
-            assert starred_fetch_window_filter not in request_filters
+        assert starred_filter_true in request_filters
+        assert starred_fetch_window_filter in request_filters
+        assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
 
 
 INPUT_test_handle_outgoing_issue_closure = load_test_data('./test_data/handle_outgoing_issue_closure_input.json')
