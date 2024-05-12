@@ -1,0 +1,33 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "name": "---unused---",
+      "pid": 1,
+      "ppid": 1,
+      "username": "---unused---",
+      "create_time": "---unused---",
+      "maybe_hollow": "---unused---",
+      "cmdline": "---unused---",
+      "connections": [
+        {
+          "connection_state": "---unused---",
+          "protocol": "---unused---",
+          "ip_version": 4,
+          "src_addr": "---unused---",
+          "src_port": 1
+        }
+      ],
+      "agent": {
+        "hostname": "---unused---",
+        "osproducttype": "---unused---",
+        "osversion": "---unused---"
+      },
+      "binaryinfo": {
+        "fullpath": "---unused---"
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+!gpt-send-message message="What is Cross-Site Request Forgery?" max_tokens=100
+!gpt-check-email-header entryId=15 additionalInstructions="Check for 'Spoofing' within the attached email header."
+!gpt-check-email-body entryId=22 additionalInstructions="Check if the body contains any embedded scripts and answer with Yes/No merely."
+!gpt-create-soc-email-template additionalInstructions="Gather the discussed details from our conversation into the email."
