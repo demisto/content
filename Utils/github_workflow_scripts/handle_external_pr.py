@@ -246,6 +246,7 @@ def is_tim_content(pr_files: list[str]) -> bool:
     """
     integrations_checked = []
     for file in pr_files:
+        print(f'file is: {file}')
         if 'CONTRIBUTORS.json' in file:
             continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
