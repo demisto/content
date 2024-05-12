@@ -658,6 +658,45 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
                      f'does not exist.  Please choose a valid Thread Number and re-try.')
         return None
 
+def detect_image_format(image_binary_data):
+    # Check for PNG signature
+    if image_binary_data.startswith(b'\x89PNG\r\n\x1a\n'):
+        return 'image/png'
+    # Check for JPEG signature
+    elif image_binary_data.startswith(b'\xff\xd8\xff'):
+        return 'image/jpeg'
+    # Check for GIF signature
+    elif image_binary_data.startswith(b'GIF87a') or image_binary_data.startswith(b'GIF89a'):
+        return 'image/gif'
+    # Check for BMP signature
+    elif image_binary_data.startswith(b'BM'):
+        return 'image/bmp'
+    else:
+        return None
+
+def convert_internal_url_to_base64(match):
+    original_src = match.group(1)
+    demisto.debug(f"{original_src=}")
+    result = demisto.executeCommand("core-api-get", {"uri": original_src})
+    image_binary_data = result[0].get('Contents', {}).get('response', b'')
+    if not image_binary_data:
+        raise DemistoException("Failed to convert inline image to base64 in order to send it outside Xsoar.")
+    demisto.debug(f"{image_binary_data=}")
+    if isinstance(image_binary_data, str):
+        image_binary_data = image_binary_data.encode('utf-8')
+
+    demisto.debug(f"{image_binary_data=}")
+    image_format = detect_image_format(image_binary_data)
+    # if image_format is None:
+    #     raise DemistoException("Unknown image format")
+    # Base64 encode the image data
+    base64_data_image = base64.b64encode(image_binary_data)
+    demisto.debug(f"{base64_data_image=}")
+    base64_string_image = base64_data_image.decode('utf-8')
+    demisto.debug(f"{base64_string_image=}")
+
+    # Construct the src attribute with appropriate MIME type
+    return f'src="data:image/png;base64,{base64_string_image}"'
 
 def format_body(new_email_body):
     """
@@ -666,7 +705,8 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    return markdown(new_email_body,
+    demisto.debug(f"{new_email_body=}")
+    html_body =  markdown(new_email_body,
                     extensions=[
                         'tables',
                         'fenced_code',
@@ -675,6 +715,11 @@ def format_body(new_email_body):
                         'nl2br',
                         DemistoExtension(),
                     ])
+
+    # Use re.sub with the function as the replacement argument
+    html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, html_body)
+    demisto.debug(f"{html_body=}")
+    return html_body
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
