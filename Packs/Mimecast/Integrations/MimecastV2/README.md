@@ -10,7 +10,7 @@ Please read detailed instructions in order to understand how to set the integrat
    | **Parameter** | **Required** |
    | --- | --- |
    | BaseUrl - API url including region, For example https://eu-api.mimecast.com | True |
-   | App ID | True |
+   | App ID | False |
    | User Email Address (Use for auto token refresh) | False |
    | Password | False |
    | App key | False |
