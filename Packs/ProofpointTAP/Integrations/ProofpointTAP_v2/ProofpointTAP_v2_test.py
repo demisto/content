@@ -7,6 +7,7 @@ from freezegun import freeze_time
 
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MOCK_URL = "http://123-fake-api.com"
 MOCK_DELIVERED_MESSAGE = {
     "GUID": "1111",
@@ -1085,9 +1086,6 @@ def test_list_issues_command(requests_mock):
     assert messages_result.outputs[0].get('messageID') == "1111@evil.zz"
 
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
-
 @freeze_time("2024-05-03T11:00:00")
 def test_validate_start_query_time_valid_str():
     """
@@ -1117,7 +1115,7 @@ def test_validate_start_query_time_not_valid():
     """
     from ProofpointTAP_v2 import validate_start_query_time
     start_query_time = '2024-04-20T10:00:00Z'
-    expected_start_query_time = datetime.now() - timedelta(days=6, hours=23)
+    expected_start_query_time = datetime.now() - timedelta(days=6, hours=23, minutes=59)
     validated_start_query_time = validate_start_query_time(start_query_time)
     assert expected_start_query_time == validated_start_query_time
 
