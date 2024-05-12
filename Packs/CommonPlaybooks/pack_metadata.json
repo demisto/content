@@ -234,10 +234,6 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "CommonReports": {
-            "mandatory": true,
-            "display_name": "Common Reports"
-        },
         "Cybereason": {
             "mandatory": false,
             "display_name": "Cybereason"
@@ -365,7 +361,6 @@
         "ANYRUN",
         "Symantec_Messaging_Gateway",
         "CommonScripts",
-        "CommonReports",
         "Cybereason",
         "TrendMicroApex",
         "Palo_Alto_Networks_WildFire",
