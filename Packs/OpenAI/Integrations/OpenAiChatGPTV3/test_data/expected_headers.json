@@ -1,0 +1,22 @@
+[
+    {"name": "User-Agent", "value": "Microsoft-MacOutlook/10.20.0.191208"
+    },
+    {"name": "Date", "value": "Mon, 23 Dec 2019 16:09:27 +0200"
+    },
+    {"name": "Subject", "value": "Test email"
+    },
+    {"name": "From", "value": "Example <example@example.com>"
+    },
+    {"name": "To", "value": "<example1@example.com>"
+    },
+    {"name": "CC", "value": "<example2@example.com>"
+    },
+    {"name": "Thread-Topic", "value": "Test email"
+    },
+    {"name": "Mime-version", "value": "1.0"
+    },
+    {"name": "Content-type", "value": "multipart/mixed; boundary=\"B_3659962201_1947450797\""
+    },
+    {"name": "Message-ID", "value": "<D8E264DE-95F6-44B1-A39A-36E611575836@demistodev.onmicrosoft.com>"
+    }
+]
