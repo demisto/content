@@ -5,11 +5,10 @@ from CommonServerUserPython import *
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # ISO8601 format with UTC, default in XSOAR
-
 HEADERS = {"Accept": "application/json", "Csrf-Token": "nocheck"}
 
 ISO_8601_FORMAT = "%Y-%m-%d"
+
 
 """ CLIENT CLASS """
 
@@ -58,7 +57,7 @@ class Client(BaseClient):
         )
 
 
-""" COMMAND FUNCTIONS """
+""" HELPER FUNCTIONS """
 
 
 def _parse_entry(entry: dict) -> dict:
@@ -82,6 +81,20 @@ def _parse_entry(entry: dict) -> dict:
 
 
 def dates_in_range(start_time, end_time):
+    """
+     Generate a list of dates within a specified range.
+
+    Args:
+        start_time: The start date of the range in the format "YYYY-MM-DD".
+        end_time: The end date of the range in the format "YYYY-MM-DD".
+
+    Raises:
+        DemistoException: If the start time is not before the end time, or if the difference between start time and end time is
+        greater than 10 days.
+
+    Returns:
+        list: A list of dates within the specified range, formatted as strings in the format "YYYY.MM.DD".
+    """
     start_time = datetime.strptime(start_time, "%Y-%m-%d")
     end_time = datetime.strptime(end_time, "%Y-%m-%d")
 
@@ -101,6 +114,16 @@ def dates_in_range(start_time, end_time):
 
 
 def get_date(time: str):
+    """
+    Get the date from a given time string.
+
+    Args:
+        time (str): The time string to extract the date from.
+
+    Returns:
+        str: The date extracted from the time string formatted in ISO 8601 format (YYYY-MM-DD),
+        or None if the time string is invalid.
+    """
     date_time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
     if date_time:
         date = date_time.strftime(ISO_8601_FORMAT)
@@ -108,6 +131,20 @@ def get_date(time: str):
 
 
 def calculate_page_parameters(args: dict):
+    """
+      Calculate the page parameters for pagination.
+
+    Args:
+        args: A dictionary containing the arguments passed to the function.
+
+    Raises:
+        DemistoException: If invalid combinations of arguments are provided. You can only provide 'limit'
+        alone or 'page' and 'page_size' together.
+
+    Returns:
+        tuple: A tuple containing two integers representing the 'from' and 'size' parameters for pagination.
+        'from' is the index of the first item to retrieve, and 'size' is the number of items to retrieve.
+    """
     page_arg = args.get('page')
     page_size_arg = args.get('page_size')
     limit_arg = args.get('limit')
@@ -127,6 +164,9 @@ def calculate_page_parameters(args: dict):
         size_param = limit if limit is not None else 50
 
     return from_param, size_param
+
+
+""" COMMAND FUNCTIONS """
 
 
 def query_datalake_command(client: Client, args: dict, cluster_name: str) -> CommandResults:
