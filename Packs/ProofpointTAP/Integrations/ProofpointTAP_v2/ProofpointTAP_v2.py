@@ -545,14 +545,13 @@ def validate_start_query_time(start_query_time: str):
         Returns:
             A valid datetime for the start_query_time
         """
-    demisto.debug(f'In validate_start_query_time {start_query_time=}')
     dt_start_query_time = datetime.strptime(start_query_time, DATE_FORMAT) if start_query_time else get_now() - timedelta(hours=1)
     seven_days_ago = get_now() - timedelta(days=7)
     if dt_start_query_time <= seven_days_ago:
         new_start_query_time = get_now() - timedelta(days=6, hours=23)
         demisto.debug(f'The {start_query_time=} is more than 7 days ago. Replacing it with {new_start_query_time=}')
         return new_start_query_time
-    demisto.debug(f'The {start_query_time=} is less than 7 days ago')
+    demisto.debug(f'The {start_query_time=} is less than 7 days ago. Returning {dt_start_query_time=}')
     return dt_start_query_time
 
 
