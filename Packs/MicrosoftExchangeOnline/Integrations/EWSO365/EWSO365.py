@@ -588,7 +588,9 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", att
     if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return f"{identifier_id}-demisto_untitled_attachment.eml" if eml_extension else f"{identifier_id}-demisto_untitled_attachment"
+        return (f"{identifier_id}-demisto_untitled_attachment.eml"
+                if eml_extension
+                else f"{identifier_id}-demisto_untitled_attachment")
     elif eml_extension and not attachment_name.endswith(".eml"):
         return f'{identifier_id}-{attachment_name.replace("-", "_")}.eml'
     return f'{identifier_id}-{attachment_name.replace("-", "_")}'
@@ -905,7 +907,9 @@ def parse_attachment_as_dict(item_id, attachment):
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            "attachmentName": get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+            "attachmentName": get_attachment_name(attachment_name=attachment.name,
+                                                  content_id=attachment.content_id,
+                                                  attachment_id=attachment.attachment_id.id),
             "attachmentSHA256": hashlib.sha256(attachment_content).hexdigest()
             if attachment_content
             else None,
@@ -925,7 +929,9 @@ def parse_attachment_as_dict(item_id, attachment):
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            "attachmentName": get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+            "attachmentName": get_attachment_name(attachment_name=attachment.name,
+                                                  content_id=attachment.content_id,
+                                                  attachment_id=attachment.attachment_id.id),
             "attachmentSHA256": None,
             "attachmentContentType": attachment.content_type,
             "attachmentContentId": attachment.content_id,
@@ -952,7 +958,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(
         parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True)
     )
-    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"'
+    title = (f'EWS get attachment got item for "{target_email}", '
+             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')
 
     return get_entry_for_object(
         title,
@@ -1058,7 +1065,9 @@ def fetch_attachments_for_message(
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if not identifiers_filter or attachment.content_id in identifiers_filter or attachment.attachment_id.id in identifiers_filter:
+        if (not identifiers_filter
+            or attachment.content_id in identifiers_filter
+            or attachment.attachment_id.id in identifiers_filter):
             if isinstance(attachment, FileAttachment):
                 try:
                     if attachment.content:

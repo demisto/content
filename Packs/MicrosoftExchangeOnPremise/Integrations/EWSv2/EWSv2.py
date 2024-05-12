@@ -1313,7 +1313,9 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                             and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
-                            file_result = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id) + ".eml",
+                            file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
+                                                                         content_id=attachment.content_id,
+                                                                         attachment_id=attachment.attachment_id.id) + ".eml",
                                                      attached_email.as_string())
 
                         is_file_attached = FileAttachmentType.ATTACHED if not attachment.is_inline else ""
@@ -1542,7 +1544,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"'
+    title = (f'EWS get attachment got item for "{target_email}", '
+             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                 dict_result)
@@ -1608,7 +1611,9 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if not identifiers_filter or attachment.content_id in identifiers_filter or attachment.attachment_id.id in identifiers_filter:
+        if (not identifiers_filter
+            or attachment.content_id in identifiers_filter
+            or attachment.attachment_id.id in identifiers_filter):
             if isinstance(attachment, FileAttachment):
                 try:
                     if attachment.content:
@@ -1621,7 +1626,8 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
                 if attachment.item.mime_content:
                     entries.append(fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                   content_id=attachment.content_id,
-                                                                  attachment_id=attachment.attachment_id.id) + ".eml", attachment.item.mime_content))
+                                                                  attachment_id=attachment.attachment_id.id) + ".eml",
+                                              attachment.item.mime_content))
 
     return entries
 
