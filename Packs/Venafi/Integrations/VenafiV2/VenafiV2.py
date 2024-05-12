@@ -19,7 +19,7 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
-
+    # comment should be removed. this comment is to make difference between main branch to addsecrettobranch branch
     def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.token = self.login(client_id, username, password)
