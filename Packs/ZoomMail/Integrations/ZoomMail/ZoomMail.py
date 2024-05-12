@@ -356,35 +356,35 @@ def the_testing_module(client: ZoomMailClient, params: dict) -> str:
 
 def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     """
-    Fetches email messages from ZoomMail API and creates incidents.
+    Fetches email messages from ZoomMail API and creates incidents based on the specified criteria.
 
     :param client: The ZoomMailClient instance.
+    :param params: Configuration parameters including mailbox, query, fetch labels, and control flags.
     """
     fetch_from: Optional[str] = params.get("default_mailbox")
     fetch_query: str = params.get("fetch_query", "")
     first_fetch_time: str = params.get("first_fetch", "3 days")
     fetch_labels: str = params.get("fetch_labels", "INBOX")
+    fetch_threads: Optional[bool] = params.get("fetch_threads", False)
 
     max_fetch = min(int(params.get("max_fetch", 50)), 200)
 
     last_run = demisto.getLastRun()
     last_fetch_info = last_run.get("last_fetch_info", {"internalDate": 0, "ids": []})
     last_page_fetch_token = last_run.get("next_page_token")
-    processed_ids: Set[str] = set(last_run.get("processed_ids", []))
 
     if not last_fetch_info["internalDate"]:
         first_fetch_dt = parse(first_fetch_time)
         if not first_fetch_dt:
+            demisto.info("No last fetch was found, defaulting to 3 days.")
             first_fetch_dt = datetime.now() - timedelta(days=3)
         last_fetch_info["internalDate"] = first_fetch_dt.timestamp()
-
-    new_processed_ids = processed_ids.copy()
 
     incidents: list[dict[str, Any]] = []
 
     query = f"{fetch_query} after:{int(last_fetch_info['internalDate'])}"
     if last_page_fetch_token:
-        demisto.info("Fetching leftover emails from previous fetch run.")
+        demisto.info(f"Fetching additional messages from previous fetch run, {last_page_fetch_token}")
         messages_response = client.list_emails(
             email=fetch_from, page_token=last_page_fetch_token, label_ids=fetch_labels
         )
@@ -409,17 +409,12 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
         msg.update({"internalDate": internal_date})
 
-        if (
-            internal_date > last_fetch_info["internalDate"]
-            and message_id == thread_id
-            or (
-                internal_date == last_fetch_info["internalDate"]
-                and message_id not in last_fetch_info["ids"]
-            )
-        ):
+        # Check if it's a new message, and if it's either all messages (fetch_threads is False) or only thread starters
+        if (internal_date > last_fetch_info["internalDate"] or (
+            internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"]
+        )) and (not fetch_threads or message_id == thread_id):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
-            new_processed_ids.add(message_id)
             message_dates.append(internal_date)
 
     if message_dates:

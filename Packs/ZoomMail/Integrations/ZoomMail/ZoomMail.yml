@@ -77,6 +77,11 @@ configuration:
     type: 0
     required: false
     additionalinfo: Specify the folder that the messages will be fetched from.
+  - display: Include Threads when Fetching
+    name: fetch_threads
+    type: 8
+    required: false
+    defaultvalue: "false"
 script:
   script: ""
   type: python

@@ -181,7 +181,7 @@
                 "value": "1.0"
             }, {
                 "name": "References",
-                "value": "<CAA7=MYSTERY_GUID@mail.gmail.com> <CAA7=03bPfL=mnSCpDyn6tKprBaojQYiMZ2KngKtAde5MeDLxBw@mail.gmail.com>"
+                "value": "<CAA7=MYSTERY_GUID@mail.gmail.com> <CAA7=MYSTERY_GUID@mail.gmail.com>"
             }, {
                 "name": "In-Reply-To",
                 "value": "<CAA7=MYSTERY_GUID@mail.gmail.com>"
@@ -259,7 +259,7 @@
                 "value": "1.0"
             }, {
                 "name": "References",
-                "value": "<CAA7=MYSTERY_GUIDA@mail.gmail.com> <CAA7=MYSTERY_GUID@mail.gmail.com> <CAA7=MYSTERY_GUID@mail.gmail.com>"
+                "value": "<CAA7=MYSTERY_GUID@mail.gmail.com> <CAA7=MYSTERY_GUID@mail.gmail.com> <CAA7=MYSTERY_GUID@mail.gmail.com>"
             }, {
                 "name": "In-Reply-To",
                 "value": "<CAA7=MYSTERY_GUID@mail.gmail.com>"

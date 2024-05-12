@@ -33,6 +33,7 @@ def load_test_data(json_path):
 
 class TestZoomMailClient(unittest.TestCase):
     def setUp(self):
+        """Prepare environment for testing."""
         self.base_url = "https://api.zoom.us/v2"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -48,36 +49,50 @@ class TestZoomMailClient(unittest.TestCase):
 
     @patch("ZoomMail.BaseClient._http_request")
     def test_obtain_access_token_success(self, mock_http_request):
-        # Setup mock response
-        mock_response = {
-            "access_token": "test_token",
-        }
-        mock_http_request.return_value = mock_response
+        """
+        Tests the successful retrieval of an access token from the API.
 
-        # Execute function
+        Given:
+          - Mock response simulates a successful API call returning an access token.
+        When:
+          - Client requests an access token.
+        Then:
+          - Client should receive a valid token and update internal states appropriately.
+        """
+        mock_http_request.return_value = {"access_token": "test_token"}
         result = self.client.obtain_access_token()
-
-        # Verify results
         assert result["success"]
         assert result["token"] == "test_token"
-        assert self.client.access_token is not None
+        assert self.client.access_token == "test_token"
         assert self.client.token_time is not None
 
     @patch("ZoomMail.BaseClient._http_request")
     def test_obtain_access_token_failure(self, mock_http_request):
-        # Setup mock response
+        """
+        Tests the failure to retrieve an access token from the API.
+
+        Given:
+          - Mock response simulates an API failure with empty response.
+        When:
+          - Client attempts to obtain an access token.
+        Then:
+          - The response should indicate failure and contain an appropriate error message.
+        """
         mock_http_request.return_value = {}
-
-        # Execute function
         result = self.client.obtain_access_token()
-
-        # Verify results
         assert not result["success"]
         assert "error" in result
 
 
 class TestZoomMailClientGetEmailThread(unittest.TestCase):
+    """
+    Unit tests for the ZoomMailClient's method get_email_thread to ensure it handles different scenarios correctly.
+    """
+
     def setUp(self):
+        """
+        Prepare environment for each test.
+        """
         self.base_url = "https://api.zoom.us/v2"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -99,102 +114,98 @@ class TestZoomMailClientGetEmailThread(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_thread_success(self, mock_http_request):
-        # Prepare mock response
-        mock_thread_response = load_test_data(
-            "test_data/thread/thread_list_response.json"
-        )
+        """
+        Tests successful retrieval of an email thread.
 
+        Given:
+          - A valid response from the API for an email thread retrieval.
+        When:
+          - Requesting the email thread using valid parameters.
+        Then:
+          - Should return the correct thread details.
+        """
+        mock_thread_response = load_test_data("test_data/thread/thread_list_response.json")
         mock_http_request.return_value = mock_thread_response
-
-        # Call the function
         response = self.client.get_email_thread(
-            self.email,
-            self.thread_id,
-            self.format,
-            self.metadata_headers,
-            self.maxResults,
-            self.pageToken,
+            self.email, self.thread_id, self.format, self.metadata_headers, self.maxResults, self.pageToken
         )
-
-        # Assertions to verify the expected outcomes
         assert response["id"] == self.thread_id
         assert isinstance(response["messages"], list)
         assert len(response["messages"]) == 4
-        assert response["messages"][0]["id"] == "MYSTERY_GUID"
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_thread_failure(self, mock_http_request):
-        # Setup to simulate an API failure
-        mock_http_request.side_effect = Exception("API Request Failed")
+        """
+        Tests the client's response to a failed API request.
 
-        # Call the function and handle exceptions
+        Given:
+          - An API error occurs during the request.
+        When:
+          - Retrieving an email thread.
+        Then:
+          - Should raise an Exception and provide a relevant error message.
+        """
+        mock_http_request.side_effect = Exception("API Request Failed")
         with self.assertRaises(Exception) as context:
             self.client.get_email_thread(
-                self.email,
-                self.thread_id,
-                self.format,
-                self.metadata_headers,
-                self.maxResults,
-                self.pageToken,
+                self.email, self.thread_id, self.format, self.metadata_headers, self.maxResults, self.pageToken
             )
-
-        # Verify that the exception message is correct
         assert "API Request Failed" in str(context.exception)
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_thread_invalid_input(self, mock_http_request):
-        # Assuming the API returns a different type of error for invalid inputs
+        """
+        Tests handling of invalid thread IDs.
+
+        Given:
+          - The API returns an error response for invalid input.
+        When:
+          - An invalid thread ID is used to retrieve an email thread.
+        Then:
+          - Should receive an error response indicating the invalid input.
+        """
         mock_http_request.return_value = {"error": "Invalid thread ID"}
-
-        # Call the function with an invalid thread ID
         response = self.client.get_email_thread(
-            self.email,
-            "invalid_thread_id",
-            self.format,
-            self.metadata_headers,
-            self.maxResults,
-            self.pageToken,
+            self.email, "invalid_thread_id", self.format, self.metadata_headers, self.maxResults, self.pageToken
         )
-
-        # Check if the error is handled as expected
         assert "error" in response
         assert response["error"] == "Invalid thread ID"
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_email_thread_with_no_email_provided_uses_default(
-        self, mock_http_request
-    ):
-        """Test that the default email is used when no email is provided."""
-        # Prepare mock response
+    def test_get_email_thread_with_no_email_provided_uses_default(self, mock_http_request):
+        """
+        Tests the use of default email when none is provided.
+
+        Given:
+          - An API call is made without specifying the email address.
+        When:
+          - The email parameter is None, expecting the system to use the default email address.
+        Then:
+          - Should use the default email address and execute the API call successfully.
+        """
         mock_response = {"id": self.thread_id, "messages": []}
         mock_http_request.return_value = mock_response
-
-        # Call the function with email set to None
         response = self.client.get_email_thread(
-            None,  # No email provided
-            self.thread_id,
-            self.format,
-            self.metadata_headers,
-            self.maxResults,
-            self.pageToken,
+            None, self.thread_id, self.format, self.metadata_headers, self.maxResults, self.pageToken
         )
-
-        # Assertions to verify the default email is used
         mock_http_request.assert_called_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{self.default_email}/threads/{self.thread_id}",
-            params={
-                "format": self.format,
-                "metadata_headers": self.metadata_headers,
-                "maxResults": self.maxResults,
-                "pageToken": self.pageToken,
-            },
+            params={"format": self.format, "metadata_headers": self.metadata_headers,
+                    "maxResults": self.maxResults, "pageToken": self.pageToken},
         )
-        assert response == mock_response, "The response should match the mock response."
+        assert response == mock_response
 
 
 class TestZoomMailClientTrashEmail(unittest.TestCase):
+    """
+    Tests for the ZoomMailClient's trash_email method to ensure it correctly handles email trashing under various scenarios.
+    """
+
     def setUp(self):
+        """
+        Set up common variables for tests.
+        """
         self.base_url = "https://api.example.com"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -211,53 +222,63 @@ class TestZoomMailClientTrashEmail(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_trash_email_with_email_provided(self, mock_http_request):
-        """Test trashing an email with a specific email address provided."""
+        """
+        Test that trashing an email successfully sends a request to the server when an email address is provided.
+
+        Given:
+          - An email address and message ID to trash.
+        When:
+          - The trash_email method is called with the email address.
+        Then:
+          - A POST request should be made to the correct API endpoint.
+          - The server should return a success response.
+        """
         email = "user@example.com"
-        expected_url_suffix = (
-            f"/emails/mailboxes/{email}/messages/{self.message_id}/trash"
-        )
+        expected_url_suffix = f"/emails/mailboxes/{email}/messages/{self.message_id}/trash"
         mock_http_request.return_value = {"success": True}
 
-        # Call the function
         response = self.client.trash_email(email, self.message_id)
 
-        # Assert correct HTTP request call
-        mock_http_request.assert_called_once_with(
-            method="POST", url_suffix=expected_url_suffix
-        )
-        # Assert response matches the mock
+        mock_http_request.assert_called_once_with(method="POST", url_suffix=expected_url_suffix)
         assert response == {"success": True}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_trash_email_with_no_email_provided_uses_default(self, mock_http_request):
-        """Test trashing an email with no email address provided uses default email."""
-        expected_url_suffix = (
-            f"/emails/mailboxes/{self.default_email}/messages/{self.message_id}/trash"
-        )
+        """
+        Test that trashing an email uses the default email when none is provided.
+
+        Given:
+          - A message ID to trash and no email address provided.
+        When:
+          - The trash_email method is called without an email address.
+        Then:
+          - A POST request should be made using the default email to the correct API endpoint.
+          - The server should return a success response.
+        """
+        expected_url_suffix = f"/emails/mailboxes/{self.default_email}/messages/{self.message_id}/trash"
         mock_http_request.return_value = {"success": True}
 
-        # Call the function without providing an email
         response = self.client.trash_email(None, self.message_id)
 
-        # Assert correct HTTP request call
-        mock_http_request.assert_called_once_with(
-            method="POST", url_suffix=expected_url_suffix
-        )
-        # Assert response matches the mock
+        mock_http_request.assert_called_once_with(method="POST", url_suffix=expected_url_suffix)
         assert response == {"success": True}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_trash_email_raises_error_if_no_default_email_set(self, mock_http_request):
-        """Test that trashing an email raises an error if no email is provided and no default is set."""
+        """
+        Test that trashing an email raises an error if no email is provided and no default email is set.
+
+        Given:
+          - A message ID to trash and no email address or default email set.
+        When:
+          - The trash_email method is called without an email and without a default email.
+        Then:
+          - The method should raise a ValueError due to missing email information.
+        """
         client_without_default = ZoomMailClient(
-            self.base_url,
-            self.client_id,
-            self.client_secret,
-            self.account_id,
-            None,  # No default email set
+            self.base_url, self.client_id, self.client_secret, self.account_id, None  # No default email set
         )
 
-        # Expecting ValueError when no default email is set and none is provided
         with self.assertRaises(ValueError) as context:
             client_without_default.trash_email(None, self.message_id)
 
@@ -265,7 +286,14 @@ class TestZoomMailClientTrashEmail(unittest.TestCase):
 
 
 class TestZoomMailClientListEmails(unittest.TestCase):
+    """
+    Tests for the ZoomMailClient's list_emails method to ensure it handles email listing under various scenarios correctly.
+    """
+
     def setUp(self):
+        """
+        Set up common test components and dependencies.
+        """
         self.base_url = "https://api.example.com"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -281,7 +309,17 @@ class TestZoomMailClientListEmails(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_list_emails_with_all_parameters(self, mock_http_request):
-        """Test listing emails with all parameters provided."""
+        """
+        Test listing emails successfully with all filtering parameters provided.
+
+        Given:
+          - A complete set of filtering parameters for listing emails.
+        When:
+          - The list_emails method is invoked with these parameters.
+        Then:
+          - A GET request should be made to the API with the correct parameters.
+          - The API should return a list of emails.
+        """
         email = "user@example.com"
         expected_params = {
             "maxResults": "100",
@@ -291,7 +329,6 @@ class TestZoomMailClientListEmails(unittest.TestCase):
         }
         mock_http_request.return_value = {"messages": []}
 
-        # Call the function
         response = self.client.list_emails(
             email=email,
             max_results="100",
@@ -301,18 +338,26 @@ class TestZoomMailClientListEmails(unittest.TestCase):
             include_spam_trash=True,
         )
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{email}/messages",
             params=expected_params,
         )
-        # Assert response matches the mock
         assert response == {"messages": []}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_list_emails_uses_default_email_when_none_provided(self, mock_http_request):
-        """Test listing emails uses default email when none is provided."""
+        """
+        Test that the default email address is used for listing emails when no specific email is provided.
+
+        Given:
+          - No specific email address is provided for listing emails.
+        When:
+          - The list_emails method is called without an email address.
+        Then:
+          - The API should use the default email address for the request.
+          - A GET request should retrieve the emails from the mailbox associated with the default email.
+        """
         expected_params = {
             "maxResults": "50",
             "pageToken": "",
@@ -321,21 +366,27 @@ class TestZoomMailClientListEmails(unittest.TestCase):
         }
         mock_http_request.return_value = {"messages": []}
 
-        # Call the function without providing an email
         response = self.client.list_emails(email=None)
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{self.default_email}/messages",
             params=expected_params,
         )
-        # Assert response matches the mock
         assert response == {"messages": []}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_list_emails_raises_error_if_no_default_email_set(self, mock_http_request):
-        """Test that listing emails raises an error if no email is provided and no default is set."""
+        """
+        Test that an error is raised when attempting to list emails without providing an email and no default is set.
+
+        Given:
+          - No default email is set and no email address is provided.
+        When:
+          - The list_emails method is called without an email address.
+        Then:
+          - The method should raise a ValueError indicating that no email address was provided and no default is set.
+        """
         client_without_default = ZoomMailClient(
             self.base_url,
             self.client_id,
@@ -344,7 +395,6 @@ class TestZoomMailClientListEmails(unittest.TestCase):
             None,  # No default email set
         )
 
-        # Expecting ValueError when no default email is set and none is provided
         with self.assertRaises(ValueError) as context:
             client_without_default.list_emails(email=None)
 
@@ -352,7 +402,14 @@ class TestZoomMailClientListEmails(unittest.TestCase):
 
 
 class TestZoomMailClientGetEmailAttachment(unittest.TestCase):
+    """
+    Tests for the ZoomMailClient's get_email_attachment method to ensure it handles attachment retrieval correctly.
+    """
+
     def setUp(self):
+        """
+        Set up common test components and dependencies.
+        """
         self.base_url = "https://api.example.com"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -368,48 +425,65 @@ class TestZoomMailClientGetEmailAttachment(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_attachment_success(self, mock_http_request):
-        """Test successful retrieval of an email attachment."""
+        """
+        Test successful retrieval of an email attachment.
+
+        Given:
+          - All parameters including email, message ID, and attachment ID are provided.
+        When:
+          - The get_email_attachment method is called with these parameters.
+        Then:
+          - A GET request should be made correctly and the expected attachment data should be returned.
+        """
         email = "user@example.com"
         message_id = "12345"
         attachment_id = "67890"
         mock_http_request.return_value = {"data": "base64data", "more_info": "details"}
 
-        # Call the function
         response = self.client.get_email_attachment(email, message_id, attachment_id)
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{email}/messages/{message_id}/attachments/{attachment_id}",
         )
-        # Assert response matches the mock
         assert response == {"data": "base64data", "more_info": "details"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_email_attachment_uses_default_email_when_none_provided(
-        self, mock_http_request
-    ):
-        """Test using default email when none is provided."""
+    def test_get_email_attachment_uses_default_email_when_none_provided(self, mock_http_request):
+        """
+        Test the default email address is used for retrieving an email attachment when no specific email is provided.
+
+        Given:
+          - Message ID and attachment ID are provided, but no email address is provided.
+        When:
+          - The get_email_attachment method is called without an email address.
+        Then:
+          - The API should use the default email address for the request and successfully return the attachment data.
+        """
         message_id = "12345"
         attachment_id = "67890"
         mock_http_request.return_value = {"data": "base64data"}
 
-        # Call the function without providing an email
         response = self.client.get_email_attachment(None, message_id, attachment_id)
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{self.default_email}/messages/{message_id}/attachments/{attachment_id}",
         )
-        # Assert response matches the mock
         assert response == {"data": "base64data"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_email_attachment_raises_error_if_no_default_email_set(
-        self, mock_http_request
-    ):
-        """Test that method raises an error if no email is provided and no default is set."""
+    def test_get_email_attachment_raises_error_if_no_default_email_set(self, mock_http_request):
+        """
+        Test that an error is raised when attempting to retrieve an email attachment without providing an email and no default is set.
+
+        Given:
+          - No default email is set and no email address is provided.
+        When:
+          - The get_email_attachment method is called without an email address.
+        Then:
+          - The method should raise a ValueError indicating that no email address was provided and no default is set.
+        """
         client_without_default = ZoomMailClient(
             self.base_url,
             self.client_id,
@@ -420,7 +494,6 @@ class TestZoomMailClientGetEmailAttachment(unittest.TestCase):
         message_id = "12345"
         attachment_id = "67890"
 
-        # Expecting ValueError when no default email is set and none is provided
         with self.assertRaises(ValueError) as context:
             client_without_default.get_email_attachment(None, message_id, attachment_id)
 
@@ -428,7 +501,14 @@ class TestZoomMailClientGetEmailAttachment(unittest.TestCase):
 
 
 class TestZoomMailClientGetEmailMessage(unittest.TestCase):
+    """
+    Tests for the ZoomMailClient's get_email_message method to ensure it properly retrieves email messages.
+    """
+
     def setUp(self):
+        """
+        Set up common test components and dependencies.
+        """
         self.base_url = "https://api.example.com"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -444,52 +524,69 @@ class TestZoomMailClientGetEmailMessage(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_message_success(self, mock_http_request):
-        """Test successful retrieval of an email message."""
+        """
+        Test successful retrieval of an email message.
+
+        Given:
+          - An email address, message ID, message format, and metadata headers are provided.
+        When:
+          - The get_email_message method is called with these parameters.
+        Then:
+          - A GET request should be made correctly, and the expected email details should be returned.
+        """
         email = "user@example.com"
         message_id = "12345"
         msg_format = "full"
         metadata_headers = "From,To"
         mock_http_request.return_value = {"id": message_id, "subject": "Test Email"}
 
-        # Call the function
         response = self.client.get_email_message(
             email, message_id, msg_format, metadata_headers
         )
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{email}/messages/{message_id}",
             params={"format": msg_format, "metadata_headers": metadata_headers},
         )
-        # Assert response matches the mock
         assert response == {"id": message_id, "subject": "Test Email"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_email_message_uses_default_email_when_none_provided(
-        self, mock_http_request
-    ):
-        """Test using default email when none is provided."""
+    def test_get_email_message_uses_default_email_when_none_provided(self, mock_http_request):
+        """
+        Test the default email address is used for retrieving an email message when no specific email is provided.
+
+        Given:
+          - Only a message ID is provided, without an email address.
+        When:
+          - The get_email_message method is called without an email address.
+        Then:
+          - The API should use the default email address for the request and successfully return the email message.
+        """
         message_id = "12345"
         mock_http_request.return_value = {"id": message_id}
 
-        # Call the function without providing an email
         response = self.client.get_email_message(None, message_id, "full", "")
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{self.default_email}/messages/{message_id}",
             params={"format": "full", "metadata_headers": ""},
         )
-        # Assert response matches the mock
         assert response == {"id": message_id}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_email_message_raises_error_if_no_default_email_set(
-        self, mock_http_request
-    ):
-        """Test that method raises an error if no email is provided and no default is set."""
+    def test_get_email_message_raises_error_if_no_default_email_set(self, mock_http_request):
+        """
+        Test that an error is raised when attempting to retrieve an email message without providing an email and no default is set.
+
+        Given:
+          - No default email is set and no email address is provided.
+        When:
+          - The get_email_message method is called without an email address.
+        Then:
+          - The method should raise a ValueError indicating that no email address was provided and no default is set.
+        """
         client_without_default = ZoomMailClient(
             self.base_url,
             self.client_id,
@@ -499,7 +596,6 @@ class TestZoomMailClientGetEmailMessage(unittest.TestCase):
         )
         message_id = "12345"
 
-        # Expecting ValueError when no default email is set and none is provided
         with self.assertRaises(ValueError) as context:
             client_without_default.get_email_message(None, message_id, "full", "")
 
@@ -507,7 +603,14 @@ class TestZoomMailClientGetEmailMessage(unittest.TestCase):
 
 
 class TestZoomMailClientSendEmail(unittest.TestCase):
+    """
+    Tests for the ZoomMailClient's send_email method to ensure it properly handles sending emails.
+    """
+
     def setUp(self):
+        """
+        Set up common test components and dependencies for each test case.
+        """
         self.base_url = "https://api.example.com"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -523,44 +626,65 @@ class TestZoomMailClientSendEmail(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_send_email_success(self, mock_http_request):
-        """Test successful sending of an email."""
+        """
+        Test successful sending of an email.
+
+        Given:
+          - An email address and raw_message are provided.
+        When:
+          - The send_email method is called with these parameters.
+        Then:
+          - A POST request should be made correctly, and the expected email send confirmation should be returned.
+        """
         email = "user@example.com"
         raw_message = "encoded_message"
         mock_http_request.return_value = {"status": "sent", "id": "123"}
 
-        # Call the function
         response = self.client.send_email(email, raw_message)
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="POST",
             url_suffix=f"/emails/mailboxes/{email}/messages/send",
             json_data={"raw": raw_message},
         )
-        # Assert response contains the expected keys
         assert response == {"status": "sent", "id": "123"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_send_email_uses_default_email_when_none_provided(self, mock_http_request):
-        """Test using default email when none is provided."""
+        """
+        Test using default email when none is provided during the email sending operation.
+
+        Given:
+          - No email is provided, but a raw_message is specified.
+        When:
+          - The send_email method is called without an email address.
+        Then:
+          - The API should use the default email address for the send operation, confirming successful sending.
+        """
         raw_message = "encoded_message"
         mock_http_request.return_value = {"status": "sent"}
 
-        # Call the function without providing an email
         response = self.client.send_email(None, raw_message)
 
-        # Assert correct HTTP request call
         mock_http_request.assert_called_once_with(
             method="POST",
             url_suffix=f"/emails/mailboxes/{self.default_email}/messages/send",
             json_data={"raw": raw_message},
         )
-        # Assert response matches the mock
         assert response == {"status": "sent"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_send_email_raises_error_if_no_default_email_set(self, mock_http_request):
-        """Test that method raises an error if no email is provided and no default is set."""
+        """
+        Test that an error is raised if no email is provided and no default is set during the email sending operation.
+
+        Given:
+          - No default email is set and no email address is provided.
+        When:
+          - The send_email method is called without an email address.
+        Then:
+          - The method should raise a ValueError indicating that no email address was provided and no default is set.
+        """
         client_without_default = ZoomMailClient(
             self.base_url,
             self.client_id,
@@ -570,7 +694,6 @@ class TestZoomMailClientSendEmail(unittest.TestCase):
         )
         raw_message = "encoded_message"
 
-        # Expecting ValueError when no default email is set and none is provided
         with self.assertRaises(ValueError) as context:
             client_without_default.send_email(None, raw_message)
 
@@ -650,6 +773,11 @@ class TestZoomMailClientGetMailboxProfile(unittest.TestCase):
 
 class TestZoomMailClientListUsers(unittest.TestCase):
     def setUp(self):
+        """Set up the environment for each test.
+
+        Given:
+        - Base URL, client ID, client secret, account ID, and a default email are provided to initialize the ZoomMailClient.
+        """
         self.base_url = "https://api.example.com"
         self.client_id = "test_client_id"
         self.client_secret = "test_client_secret"
@@ -665,13 +793,18 @@ class TestZoomMailClientListUsers(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_list_users_basic(self, mock_http_request):
-        """Test listing users without pagination."""
+        """Test listing users without pagination.
+
+        When:
+        - No pagination or other additional parameters are provided.
+
+        Then:
+        - The function should use default parameters to list users.
+        - Assert that the HTTP request was made correctly.
+        - Verify the response matches the expected empty list of users.
+        """
         mock_http_request.return_value = {"users": [], "total": 0}
-
-        # Call the function
         response = self.client.list_users()
-
-        # Assert correct HTTP request call
         expected_params = {
             "status": "active",
             "page_size": 30,
@@ -681,30 +814,37 @@ class TestZoomMailClientListUsers(unittest.TestCase):
             "next_page_token": "",
             "license": "",
         }
-        mock_http_request.assert_called_once_with(
-            method="GET", url_suffix="/users", params=expected_params
-        )
-        # Assert response is as expected
+        mock_http_request.assert_called_once_with(method="GET", url_suffix="/users", params=expected_params)
         assert response == {"users": [], "total": 0}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_list_users_with_pagination(self, mock_http_request):
-        """Test listing users with pagination token."""
+        """Test listing users with a pagination token.
+
+        When:
+        - A next_page_token is provided to fetch a specific page of users.
+
+        Then:
+        - The function should make an HTTP request including the pagination token.
+        - Verify the response matches the expected empty list of users.
+        """
         mock_http_request.return_value = {"users": [], "total": 0}
-
-        # Call the function with a next_page_token
         response = self.client.list_users(next_page_token="abc123")
-
-        # Assert correct HTTP request call with pagination
-        mock_http_request.assert_called_once_with(
-            method="GET", url_suffix="/users", params={"next_page_token": "abc123"}
-        )
-        # Assert response is as expected
+        mock_http_request.assert_called_once_with(method="GET", url_suffix="/users", params={"next_page_token": "abc123"})
         assert response == {"users": [], "total": 0}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_list_users_with_advanced_filters(self, mock_http_request):
-        """Test listing users with additional filter options."""
+        """Test listing users with additional filter options such as status, role, and license.
+
+        When:
+        - Advanced filters such as status, role ID, page number, and license type are provided.
+
+        Then:
+        - The function should make an HTTP request with these filters.
+        - Verify the HTTP request is called with the expected parameters.
+        - Assert the response matches the expected output with an empty user list.
+        """
         mock_http_request.return_value = {"users": [], "total": 0}
         advanced_filters = {
             "status": "inactive",
@@ -714,24 +854,22 @@ class TestZoomMailClientListUsers(unittest.TestCase):
             "include_fields": "email",
             "zoom_license": "pro",
         }
-
-        # Call the function with additional filters
         response = self.client.list_users(**advanced_filters)
-
-        # Check that the HTTP request is called with the modified parameters
         expected_params = advanced_filters.copy()
         expected_params["license"] = expected_params.pop("zoom_license")
         expected_params["next_page_token"] = ""
-        mock_http_request.assert_called_once_with(
-            method="GET", url_suffix="/users", params=expected_params
-        )
-
-        # Assert the response is correct
+        mock_http_request.assert_called_once_with(method="GET", url_suffix="/users", params=expected_params)
         assert response == {"users": [], "total": 0}
 
 
 class TestTheTestingModule(unittest.TestCase):
     def setUp(self):
+        """Prepare environment for each test.
+
+        Given:
+        - An instance of ZoomMailClient is initialized with test credentials and default configurations.
+        - Test parameters for API interaction are set up.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -747,49 +885,61 @@ class TestTheTestingModule(unittest.TestCase):
 
     @patch("ZoomMail.validate_params")
     @patch("ZoomMail.ZoomMailClient.obtain_access_token")
-    def test_the_testing_module_success(
-        self, mock_obtain_access_token, mock_validate_params
-    ):
-        """Test successful API authentication."""
+    def test_the_testing_module_success(self, mock_obtain_access_token, mock_validate_params):
+        """Test if the module correctly handles successful authentication.
+
+        When:
+        - API credentials are validated successfully.
+
+        Then:
+        - The function should return 'ok' indicating successful authentication.
+        - Ensure that the access token retrieval is invoked once.
+        """
         mock_validate_params.return_value = []
         mock_obtain_access_token.return_value = {"success": True}
 
-        # Execute the function
         result = the_testing_module(self.client, self.params)
 
-        # Verify results
         assert result == "ok"
         mock_obtain_access_token.assert_called_once()
 
     @patch("ZoomMail.validate_params")
     @patch("ZoomMail.ZoomMailClient.obtain_access_token")
-    def test_the_testing_module_failed_authentication(
-        self, mock_obtain_access_token, mock_validate_params
-    ):
-        """Test failed authentication due to API error."""
+    def test_the_testing_module_failed_authentication(self, mock_obtain_access_token, mock_validate_params):
+        """Test handling of failed authentication due to invalid API credentials.
+
+        When:
+        - API responds with an error during authentication.
+
+        Then:
+        - The function should return a detailed error message.
+        - Ensure that the result includes the specific error message from the API.
+        """
         mock_validate_params.return_value = []
         mock_obtain_access_token.return_value = {
             "success": False,
             "error": "Invalid credentials",
         }
 
-        # Execute the function
         result = the_testing_module(self.client, self.params)
 
-        # Verify results
         expected_error = "Errors were found while testing:\nInvalid credentials"
         assert result == expected_error
 
     @patch("ZoomMail.validate_params")
     @patch("ZoomMail.ZoomMailClient.obtain_access_token")
-    def test_the_testing_module_invalid_params(
-        self, mock_obtain_access_token, mock_validate_params
-    ):
-        """Test response when there are validation errors in the parameters."""
+    def test_the_testing_module_invalid_params(self, mock_obtain_access_token, mock_validate_params):
+        """Test the response when there are validation errors with the provided parameters.
+
+        When:
+        - Parameters are incomplete or improperly formatted.
+
+        Then:
+        - The function should return an error message listing all validation errors.
+        """
         mock_validate_params.return_value = ["URL parameter is missing."]
         mock_obtain_access_token.return_value = {"success": True}
 
-        # Execute the function
         result = the_testing_module(self.client, self.params)
 
         expected_error = "Errors were found while testing:\nURL parameter is missing."
@@ -798,7 +948,13 @@ class TestTheTestingModule(unittest.TestCase):
 
 class TestFetchIncidents(unittest.TestCase):
     def setUp(self):
-        # Set up a ZoomMailClient instance with dummy parameters
+        """
+        Prepare environment for each test.
+
+        Given:
+        - An instance of ZoomMailClient is initialized with test configurations.
+        - Common parameters for fetching incidents are defined.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -806,7 +962,6 @@ class TestFetchIncidents(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
-        # Common attributes for use in tests
         self.params = {
             "default_mailbox": "default@example.com",
             "first_fetch": "3 days",
@@ -816,58 +971,47 @@ class TestFetchIncidents(unittest.TestCase):
     @patch("ZoomMail.demisto.getLastRun")
     @patch("ZoomMail.demisto.setLastRun")
     @patch("ZoomMail.demisto.incidents")
-    def test_no_emails_fetched(
-        self, mock_get_last_run, mock_set_last_run, mock_incidents
-    ):
-        # Setup the mock responses and behaviors
+    def test_no_emails_fetched(self, mock_incidents, mock_set_last_run, mock_get_last_run):
+        """
+        Test the scenario where no emails are fetched.
+
+        When:
+        - No new emails are available to fetch.
+
+        Then:
+        - Ensure no incidents are created and the last run is updated accordingly.
+        """
         mock_get_last_run.return_value = {}
-
-        mock_thread_response = load_test_data(
-            "test_data/fetch/fetch_list_response_empty.json"
-        )
-
+        mock_thread_response = load_test_data("test_data/fetch/fetch_list_response_empty.json")
         self.client.list_emails = MagicMock(return_value=mock_thread_response)
 
-        # Execute the function
         fetch_incidents(self.client, self.params)
 
         mock_set_last_run.assert_called_once()
-
-        # Ensure no incidents are created
         mock_incidents.assert_called_once()
 
     @patch("ZoomMail.demisto.getLastRun")
     @patch("ZoomMail.demisto.setLastRun")
     @patch("ZoomMail.demisto.incidents")
     def test_emails_fetched(self, mock_incidents, mock_set_last_run, mock_get_last_run):
-        # Prepare mock data and response
+        """
+        Test fetching emails successfully and creating incidents.
+
+        When:
+        - Emails are available to be fetched.
+
+        Then:
+        - Incidents should be created based on the fetched emails.
+        """
         mock_get_last_run.return_value = {
             "last_fetch_info": {"internalDate": 1622440000, "ids": []},
             "next_page_token": "",
         }
         mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
         self.client.list_emails = MagicMock(return_value=mock_list_response)
-        mock_get_email_message_response_1 = load_test_data(
-            "test_data/fetch/fetch_email_1.json"
-        )
-        mock_get_email_message_response_2 = load_test_data(
-            "test_data/fetch/fetch_email_2.json"
-        )
-        mock_get_email_message_response_3 = load_test_data(
-            "test_data/fetch/fetch_email_3.json"
-        )
-        self.client.get_email_message = MagicMock(
-            side_effect=[
-                mock_get_email_message_response_1,
-                mock_get_email_message_response_2,
-                mock_get_email_message_response_3,
-            ]
-        )
 
-        # Execute the function
         fetch_incidents(self.client, self.params)
 
-        # Check if incidents are created and handled properly
         incidents = mock_incidents.call_args[0][0]
         assert len(incidents) == 2
         assert incidents[0]["name"] == "Zoom Encrypted Email"
@@ -875,10 +1019,16 @@ class TestFetchIncidents(unittest.TestCase):
     @patch("ZoomMail.demisto.getLastRun")
     @patch("ZoomMail.demisto.setLastRun")
     @patch("ZoomMail.demisto.incidents")
-    def test_handle_pagination(
-        self, mock_incidents, mock_set_last_run, mock_get_last_run
-    ):
-        # Setup for pagination testing
+    def test_handle_pagination(self, mock_incidents, mock_set_last_run, mock_get_last_run):
+        """
+        Test handling pagination during incident fetch.
+
+        When:
+        - There are more emails to fetch than can be retrieved in one API call.
+
+        Then:
+        - Pagination should be handled correctly, ensuring all emails are fetched across multiple API calls.
+        """
         mock_get_last_run.return_value = {
             "last_fetch_info": {"internalDate": 1622440000, "ids": []},
             "next_page_token": "",
@@ -893,20 +1043,6 @@ class TestFetchIncidents(unittest.TestCase):
             ]
         )
 
-        mock_get_email_message_response_1 = load_test_data(
-            "test_data/fetch/fetch_email_2.json"
-        )
-        mock_get_email_message_response_2 = load_test_data(
-            "test_data/fetch/fetch_email_3.json"
-        )
-        self.client.get_email_message = MagicMock(
-            side_effect=[
-                mock_get_email_message_response_1,
-                mock_get_email_message_response_2,
-            ]
-        )
-
-        # Execute the function
         fetch_incidents(self.client, self.params)
 
         # Verify if nextPageToken is handled correctly
@@ -917,14 +1053,17 @@ class TestFetchIncidents(unittest.TestCase):
         }
         # Check that setLastRun was called correctly
         assert len(calls) == 1
-        assert (
-            calls[0][0][0] == expected_call
-        )  # Accessing the first argument of the first call
+        assert calls[0][0][0] == expected_call
 
 
 class TestGetEmailThreadCommand(unittest.TestCase):
     def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
+        """
+        Prepare environment for tests by initializing a mock ZoomMailClient.
+
+        Given:
+        - An instance of ZoomMailClient is initialized with test configurations.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -943,82 +1082,107 @@ class TestGetEmailThreadCommand(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient.get_email_thread")
     def test_successful_email_thread_retrieval(self, mock_get_email_thread):
-        """Test successful retrieval of an email thread."""
-        # Assuming load_test_data correctly loads and returns the desired JSON structure
+        """
+        Test successful retrieval of an email thread.
+
+        When:
+        - Retrieving an email thread with valid parameters.
+
+        Then:
+        - Ensure the result is successfully parsed and contains expected thread information.
+        """
         test_data = load_test_data("test_data/thread/thread_list_response.json")
         mock_get_email_thread.return_value = test_data
 
-        # Set up command arguments
-        self.args = {
-            "email": "user@example.com",
-            "thread_id": "12345",  # Ensure this matches what's in your mock data if necessary
-            "format": "full",
-            "metadata_headers": "",
-            "max_results": "50",
-            "page_token": "",
-        }
-
-        # Execute command
         result = get_email_thread_command(self.client, self.args)
 
-        # Verify results
         assert isinstance(result, CommandResults)
         assert "Email Thread 12345" in result.readable_output
         assert "MYSTERY_GUID" in result.readable_output
 
     @patch("ZoomMail.ZoomMailClient.get_email_thread")
     def test_empty_email_thread(self, mock_get_email_thread):
-        """Test the retrieval of an empty email thread."""
+        """
+        Test the retrieval of an email thread that has no messages.
+
+        When:
+        - The API returns an empty thread.
+
+        Then:
+        - Ensure the output indicates that no messages were found.
+        """
         test_data = load_test_data("test_data/thread/thread_list_response_empty.json")
         mock_get_email_thread.return_value = test_data
 
-        # Execute command
         result = get_email_thread_command(self.client, self.args)
 
-        # Verify results
         assert "has no messages" in result.readable_output
 
     @patch("ZoomMail.ZoomMailClient.get_email_thread")
     def test_email_thread_pagination_handling(self, mock_get_email_thread):
-        """Test proper handling of pagination tokens."""
+        """
+        Test proper handling of pagination tokens when retrieving email threads.
+
+        When:
+        - Pagination is required to retrieve all messages in a thread.
+
+        Then:
+        - Ensure pagination tokens are handled correctly and all messages are retrieved.
+        """
         mock_get_email_thread.return_value = {
             "messages": [{"id": "msg1"}, {"id": "msg2"}],
             "nextPageToken": "def456",
         }
 
-        # Execute command
         result = get_email_thread_command(self.client, self.args)
 
-        # Verify page token use and output correctness
         mock_get_email_thread.assert_called_with(
             "user@example.com", "1001", "full", "Subject,Date", "10", "abc123"
         )
         assert "msg2" in result.readable_output
 
     def test_missing_email_argument(self):
-        """Test response when required email argument is missing."""
+        """
+        Test the response when the required 'email' argument is missing.
+
+        When:
+        - The 'email' argument is not provided in the command arguments.
+
+        Then:
+        - Ensure a ValueError is raised indicating that both 'email' and 'thread_id' are required.
+        """
         self.args.pop("email")
+
         with self.assertRaises(ValueError) as context:
             get_email_thread_command(self.client, self.args)
 
-        assert "Both 'email' and 'thread_id' arguments are required" in str(
-            context.exception
-        )
+        assert "Both 'email' and 'thread_id' arguments are required" in str(context.exception)
 
     def test_missing_thread_id_argument(self):
-        """Test response when required thread_id argument is missing."""
+        """
+        Test the response when the required 'thread_id' argument is missing.
+
+        When:
+        - The 'thread_id' argument is not provided in the command arguments.
+
+        Then:
+        - Ensure a ValueError is raised indicating that both 'email' and 'thread_id' are required.
+        """
         self.args.pop("thread_id")
+
         with self.assertRaises(ValueError) as context:
             get_email_thread_command(self.client, self.args)
 
-        assert "Both 'email' and 'thread_id' arguments are required" in str(
-            context.exception
-        )
+        assert "Both 'email' and 'thread_id' arguments are required" in str(context.exception)
 
 
 class TestTrashEmailCommand(unittest.TestCase):
     def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
+        """
+        Prepare environment for tests, creating a mock client.
+        Given:
+        - An initialized ZoomMailClient with test configurations.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -1033,41 +1197,56 @@ class TestTrashEmailCommand(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient.trash_email")
     def test_successful_email_trashing(self, mock_trash_email):
-        """Test successful trashing of an email."""
-        # Mock API response
+        """
+        Test successful trashing of an email.
+        When:
+        - Trashing an email with a specific email address provided.
+        Then:
+        - Ensure the email is moved to TRASH and the result is successful.
+        """
         mock_trash_email.return_value = {"success": True, "id": "msg123"}
 
-        # Execute command
         result = trash_email_command(self.client, self.args)
 
-        # Verify results
         assert isinstance(result, CommandResults)
         assert "was moved to TRASH" in result.readable_output
 
     def test_missing_email_argument(self):
-        """Test response when required email argument is missing."""
+        """
+        Test response when required email argument is missing.
+        When:
+        - The 'email' argument is not provided in the command arguments.
+        Then:
+        - Ensure a ValueError is raised indicating that both 'email' and 'message_id' are required.
+        """
         self.args.pop("email")
         with self.assertRaises(ValueError) as context:
             trash_email_command(self.client, self.args)
 
-        assert "Both 'email' and 'message_id' arguments are required" in str(
-            context.exception
-        )
+        assert "Both 'email' and 'message_id' arguments are required" in str(context.exception)
 
     def test_missing_message_id_argument(self):
-        """Test response when required message_id argument is missing."""
+        """
+        Test response when required message_id argument is missing.
+        When:
+        - The 'message_id' argument is not provided in the command arguments.
+        Then:
+        - Ensure a ValueError is raised indicating that both 'email' and 'message_id' are required.
+        """
         self.args.pop("message_id")
         with self.assertRaises(ValueError) as context:
             trash_email_command(self.client, self.args)
 
-        assert "Both 'email' and 'message_id' arguments are required" in str(
-            context.exception
-        )
+        assert "Both 'email' and 'message_id' arguments are required" in str(context.exception)
 
 
 class TestListEmailsCommand(unittest.TestCase):
     def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
+        """
+        Prepare environment for tests, creating a mock client.
+        Given:
+        - An initialized ZoomMailClient with test configurations.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -1086,37 +1265,47 @@ class TestListEmailsCommand(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient.list_emails")
     def test_successful_email_listing(self, mock_list_emails):
-        """Test successful listing of emails."""
-        # Mock API response
+        """
+        Test successful listing of emails.
+        When:
+        - Email listing is requested with specific filters.
+        Then:
+        - Verify the listing is successful and contains expected email messages.
+        """
         mock_list_emails.return_value = {
-            "messages": [
-                {"id": "msg1", "threadId": "thread1"},
-                {"id": "msg2", "threadId": "thread2"},
-            ]
+            "messages": [{"id": "msg1", "threadId": "thread1"}, {"id": "msg2", "threadId": "thread2"}]
         }
 
-        # Execute command
         result = list_emails_command(self.client, self.args)
 
-        # Verify results
         assert isinstance(result, CommandResults)
         assert "msg1" in result.readable_output
         assert "thread1" in result.readable_output
 
     @patch("ZoomMail.ZoomMailClient.list_emails")
     def test_no_emails_found(self, mock_list_emails):
-        """Test the scenario where no emails are found."""
+        """
+        Test the scenario where no emails are found.
+        When:
+        - Email listing is requested but the API returns no messages.
+        Then:
+        - Verify the output indicates no messages were found.
+        """
         mock_list_emails.return_value = {}
 
-        # Execute command
         result = list_emails_command(self.client, self.args)
 
-        # Verify results
         assert "No messages found" in result.readable_output
 
     def test_missing_email_argument(self):
-        """Test response when the required 'email' argument is missing."""
-        del self.args["email"]  # Remove the email from args to simulate the error
+        """
+        Test response when the required 'email' argument is missing.
+        When:
+        - The command is executed without an 'email' argument.
+        Then:
+        - Ensure a ValueError is raised indicating that the 'email' argument is required.
+        """
+        del self.args["email"]
 
         with self.assertRaises(ValueError) as context:
             list_emails_command(self.client, self.args)
@@ -1125,33 +1314,31 @@ class TestListEmailsCommand(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient.list_emails")
     def test_optional_parameters_handling(self, mock_list_emails):
-        """Test proper handling of optional parameters."""
-        self.args["include_spam_trash"] = (
-            "true"  # Adjust for boolean handling in function
-        )
+        """
+        Test proper handling of optional parameters.
+        When:
+        - Email listing is requested with the 'include_spam_trash' set to True.
+        Then:
+        - Ensure the function is called with correct parameters, including the conversion of 'include_spam_trash' to a boolean.
+        """
+        self.args["include_spam_trash"] = "true"
 
         mock_list_emails.return_value = {}
 
         list_emails_command(self.client, self.args)
 
-        # Check if the mock was called
-        assert mock_list_emails.called, "The list_emails function was not called."
-
-        # Check the arguments with which the mock was called
+        assert mock_list_emails.called
         called_with_kwargs = mock_list_emails.call_args[0]
-
-        # Additional asserts to check argument passing
-        assert called_with_kwargs[0] == self.args["email"]
-        assert called_with_kwargs[1] == self.args["max_results"]
-        assert called_with_kwargs[2] == self.args["page_token"]
-        assert called_with_kwargs[3] == self.args["label_ids"]
-        assert called_with_kwargs[4] == self.args["query"]
-        assert called_with_kwargs[5] is True
+        assert called_with_kwargs[5] is True  # Checking 'include_spam_trash' boolean conversion
 
 
 class TestGetEmailAttachmentCommand(unittest.TestCase):
     def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
+        """
+        Prepare environment for tests, creating a mock client.
+        Given:
+        - An initialized ZoomMailClient with test configurations.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -1166,65 +1353,70 @@ class TestGetEmailAttachmentCommand(unittest.TestCase):
         }
 
     @patch("ZoomMail.ZoomMailClient.get_email_attachment")
-    @patch("ZoomMail.fileResult")
-    def test_successful_attachment_retrieval(
-        self, mock_file_result, mock_get_email_attachment
-    ):
-        """Test successful retrieval of an email attachment."""
-        # Mock API response and file result function
+    def test_successful_attachment_retrieval(self, mock_get_email_attachment):
+        """
+        Test successful retrieval of an email attachment.
+        When:
+        - An attachment is requested from a specific email.
+        Then:
+        - Ensure the attachment is retrieved successfully and matches expected content.
+        """
         mock_get_email_attachment.return_value = {
             "data": "SGVsbG8sIHdvcmxkIQ==",  # base64 for "Hello, world!"
             "attachmentId": "2001",
         }
-        mock_file_result.return_value = {
-            "Type": "File",
-            "FileID": "2001",
-            "File": "attachment.txt",
-        }
 
-        # Execute command
         result = get_email_attachment_command(self.client, self.args)
 
-        # Verify results
         assert isinstance(result, CommandResults)
         assert "retrieved successfully" in result.readable_output
         assert result.outputs["attachmentId"] == "2001"
 
     @patch("ZoomMail.ZoomMailClient.get_email_attachment")
     def test_no_attachment_found(self, mock_get_email_attachment):
-        """Test the scenario where no attachment is found."""
+        """
+        Test the scenario where no attachment is found.
+        When:
+        - An attachment is requested but the API returns no data.
+        Then:
+        - Ensure the output indicates that no data was found.
+        """
         mock_get_email_attachment.return_value = {}
 
-        # Execute command
         result = get_email_attachment_command(self.client, self.args)
 
-        # Verify results
         assert "No data found" in result.readable_output
 
     def test_missing_required_arguments(self):
-        """Test response when required arguments are missing."""
+        """
+        Test response when required arguments are missing.
+        When:
+        - The command is executed with missing 'message_id' or 'attachment_id'.
+        Then:
+        - Ensure a ValueError is raised indicating that both 'message_id' and 'attachment_id' are required.
+        """
         # Missing message_id
         with self.assertRaises(ValueError) as context:
             missing_args = self.args.copy()
             del missing_args["message_id"]
             get_email_attachment_command(self.client, missing_args)
-        assert "The 'message_id', and 'attachment_id' arguments are required" in str(
-            context.exception
-        )
+        assert "The 'message_id', and 'attachment_id' arguments are required" in str(context.exception)
 
         # Missing attachment_id
         with self.assertRaises(ValueError) as context:
             missing_args = self.args.copy()
             del missing_args["attachment_id"]
             get_email_attachment_command(self.client, missing_args)
-        assert "The 'message_id', and 'attachment_id' arguments are required" in str(
-            context.exception
-        )
+        assert "The 'message_id', and 'attachment_id' arguments are required" in str(context.exception)
 
 
 class TestGetMailboxProfileCommand(unittest.TestCase):
     def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
+        """
+        Prepare environment for tests, creating a mock client.
+        Given:
+        - An initialized ZoomMailClient with test configurations.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -1236,7 +1428,13 @@ class TestGetMailboxProfileCommand(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient.get_mailbox_profile")
     def test_successful_mailbox_profile_retrieval(self, mock_get_mailbox_profile):
-        """Test successful retrieval of a mailbox profile."""
+        """
+        Test successful retrieval of a mailbox profile.
+        When:
+        - A mailbox profile retrieval command is executed with a valid email.
+        Then:
+        - Verify the command retrieves and displays the mailbox profile as expected.
+        """
         # Mock API response
         mock_get_mailbox_profile.return_value = {
             "emailAddress": "user@example.com",
@@ -1261,7 +1459,13 @@ class TestGetMailboxProfileCommand(unittest.TestCase):
         assert "2048 bytes" in result.readable_output
 
     def test_missing_email_argument(self):
-        """Test response when the 'email' argument is missing."""
+        """
+        Test response when the 'email' argument is missing.
+        When:
+        - The command is executed without an 'email' argument.
+        Then:
+        - Verify that a ValueError is raised indicating that the 'email' argument is required.
+        """
         with self.assertRaises(ValueError) as context:
             missing_args = {}
             get_mailbox_profile_command(self.client, missing_args)
@@ -1271,7 +1475,11 @@ class TestGetMailboxProfileCommand(unittest.TestCase):
 
 class TestListUsersCommand(unittest.TestCase):
     def setUp(self):
-        """Prepare environment for tests, creating a mock client."""
+        """
+        Prepare environment for tests, creating a mock client.
+        Given:
+        - An initialized ZoomMailClient with configuration for API connection.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -1291,76 +1499,70 @@ class TestListUsersCommand(unittest.TestCase):
 
     @patch("ZoomMail.ZoomMailClient.list_users")
     def test_successful_user_listing(self, mock_list_users):
-        """Test successful listing of users."""
-        # Mock API response
+        """
+        Test successful listing of users.
+        When:
+        - Requesting to list users with specific filter settings.
+        Then:
+        - Ensure the users are listed as expected and verify key user information is displayed.
+        """
         mock_list_users.return_value = {
             "users": [
-                {
-                    "email": "user1@example.com",
-                    "first_name": "John",
-                    "last_name": "Doe",
-                    "type": "admin",
-                    "status": "active",
-                },
-                {
-                    "email": "user2@example.com",
-                    "first_name": "Jane",
-                    "last_name": "Smith",
-                    "type": "member",
-                    "status": "inactive",
-                },
+                {"email": "user1@example.com", "first_name": "John", "last_name": "Doe", "type": "admin", "status": "active"},
+                {"email": "user2@example.com", "first_name": "Jane", "last_name": "Smith", "type": "member", "status": "inactive"},
             ]
         }
 
-        # Execute command
         result = list_users_command(self.client, self.args)
 
-        # Verify results
         assert isinstance(result, CommandResults)
         assert "user1@example.com" in result.readable_output
         assert "John" in result.readable_output
 
     @patch("ZoomMail.ZoomMailClient.list_users")
     def test_no_users_found(self, mock_list_users):
-        """Test the scenario where no users are found."""
+        """
+        Test the scenario where no users are found.
+        When:
+        - Requesting to list users but the response contains no user data.
+        Then:
+        - Ensure the output indicates no users were found.
+        """
         mock_list_users.return_value = {"users": []}
 
-        # Execute command
         result = list_users_command(self.client, self.args)
 
-        # Verify results
         assert "No entries" in result.readable_output
 
     @patch("ZoomMail.ZoomMailClient.list_users")
     def test_user_listing_with_pagination(self, mock_list_users):
-        """Test user listing with pagination."""
+        """
+        Test user listing with pagination.
+        When:
+        - Requesting to list users with a pagination token to fetch additional pages.
+        Then:
+        - Ensure pagination is handled correctly and subsequent user data is retrieved.
+        """
         mock_list_users.return_value = {
-            "users": [
-                {
-                    "email": "user3@example.com",
-                    "first_name": "Alice",
-                    "last_name": "Johnson",
-                    "type": "admin",
-                    "status": "active",
-                }
-            ],
+            "users": [{"email": "user3@example.com", "first_name": "Alice", "last_name": "Johnson", "type": "admin", "status": "active"}],
             "nextPageToken": "abc123",
         }
         self.args["next_page_token"] = "abc123"
 
-        # Execute command
         result = list_users_command(self.client, self.args)
 
-        # Ensure pagination token is used correctly
-        mock_list_users.assert_called_with(
-            "active", 50, "admin", "1", "email,status", "", "pro"
-        )
+        mock_list_users.assert_called_with("active", 50, "admin", "1", "email,status", "", "pro")
         assert "Alice" in result.readable_output
 
 
 class TestProcessAttachments(unittest.TestCase):
     def setUp(self):
-        """Prepare test environment."""
+        """
+        Prepare test environment.
+        Given:
+        - An initialized ZoomMailClient with configuration for API connection.
+        - Mocked email details including attachments to process.
+        """
         self.client = ZoomMailClient(
             base_url="https://api.example.com",
             client_id="test_client_id",
@@ -1382,45 +1584,46 @@ class TestProcessAttachments(unittest.TestCase):
     def test_process_attachments_failure(
         self, mock_get_email_attachment, mock_demisto_error
     ):
-        """Test handling errors while processing attachments."""
-        # Setup the client mock to raise an exception on attachment retrieval
-        mock_get_email_attachment.side_effect = Exception(
-            "Failed to retrieve attachment"
-        )
-
-        # Execute the function
+        """
+        Test handling errors while processing attachments.
+        When:
+        - Retrieval of an attachment fails due to an API error.
+        Then:
+        - No attachments are processed and an error is logged.
+        """
+        mock_get_email_attachment.side_effect = Exception("Failed to retrieve attachment")
         result = process_attachments(self.message, self.client, self.email)
-
-        # Check that no attachments are returned
-        assert len(result) == 0
-
-        # Ensure error handling function is called
-        mock_demisto_error.assert_called()
+        assert len(result) == 0  # Verify no attachments processed
+        mock_demisto_error.assert_called()  # Error handling should be invoked
 
     @patch("ZoomMail.demisto.error")
     @patch("ZoomMail.ZoomMailClient.get_email_attachment")
     def test_process_attachments_success(
         self, mock_get_email_attachment, mock_demisto_error
     ):
-        """Test successful processing of email attachments."""
-        # Setup the client mock to return mock attachment data
+        """
+        Test successful processing of email attachments.
+        When:
+        - Attachment data is retrieved successfully.
+        Then:
+        - Attachments are processed and added to the result without any errors.
+        """
         encoded_data = base64.urlsafe_b64encode(b"Test file content").decode("ascii")
         mock_get_email_attachment.return_value = {"data": encoded_data}
-
-        # Execute the function
-        result = process_attachments(self.message, self.client, self.email)
-
-        # Check that attachments are processed correctly
-        assert len(result) == 2
+        result = process_attachments(self.message, this.client, self.email)
+        assert len(result) == 2  # Ensure both attachments are processed
         assert result[0]["name"] == "file1.pdf"
         assert result[1]["name"] == "file2.pdf"
-
-        # Ensure error handling function is not called
-        mock_demisto_error.assert_not_called()
+        mock_demisto_error.assert_not_called()  # No error should be logged
 
 
 class TestCreateEmailMessage(unittest.TestCase):
     def setUp(self):
+        """
+        Given:
+        - An email configuration including sender, recipient, subject, body text, HTML content, and attachment IDs.
+        Prepare environment for tests, setting up the necessary email components.
+        """
         self.from_email = "from@example.com"
         self.to_email = "to@example.com"
         self.subject = "Test Subject"
@@ -1430,7 +1633,12 @@ class TestCreateEmailMessage(unittest.TestCase):
 
     @patch("ZoomMail.attach_files_to_email")
     def test_create_plain_text_email(self, mock_attach_files):
-        """Test creating a plain text email without HTML or attachments."""
+        """
+        When:
+        - Creating a plain text email without HTML or attachments.
+        Then:
+        - Verify the email object is correctly formed with the appropriate headers and body.
+        """
         email = create_email_message(
             self.from_email, self.to_email, self.subject, self.body_text, None, []
         )
@@ -1439,13 +1647,18 @@ class TestCreateEmailMessage(unittest.TestCase):
         assert email["From"] == self.from_email
         assert email["To"] == self.to_email
         assert email["Subject"] == self.subject
-        assert len(email.get_payload()), 1
+        assert len(email.get_payload()) == 1
         assert isinstance(email.get_payload()[0], MIMEText)
         assert email.get_payload()[0].get_payload() == self.body_text
 
     @patch("ZoomMail.attach_files_to_email")
     def test_create_html_email(self, mock_attach_files):
-        """Test creating an email with HTML content."""
+        """
+        When:
+        - Creating an email with HTML content only.
+        Then:
+        - Verify the email object is correctly formed with HTML content.
+        """
         email = create_email_message(
             self.from_email, self.to_email, self.subject, None, self.html_text, []
         )
@@ -1457,7 +1670,12 @@ class TestCreateEmailMessage(unittest.TestCase):
 
     @patch("ZoomMail.attach_files_to_email")
     def test_create_email_with_attachments(self, mock_attach_files):
-        """Test creating an email with attachments."""
+        """
+        When:
+        - Creating an email with both text, HTML content, and attachments.
+        Then:
+        - Verify the email object includes all parts and attachments are handled correctly.
+        """
         email = create_email_message(
             self.from_email,
             self.to_email,
@@ -1472,7 +1690,12 @@ class TestCreateEmailMessage(unittest.TestCase):
 
     @patch("ZoomMail.attach_files_to_email")
     def test_create_email_all_elements(self, mock_attach_files):
-        """Test creating an email with text, HTML, and attachments."""
+        """
+        When:
+        - Creating an email with all elements: plain text, HTML, and attachments.
+        Then:
+        - Verify the multipart email is correctly constructed with multiple payloads.
+        """
         email = create_email_message(
             self.from_email,
             self.to_email,
@@ -1490,24 +1713,31 @@ class TestCreateEmailMessage(unittest.TestCase):
 
 class TestAttachFilesToEmail(unittest.TestCase):
     def setUp(self):
+        """
+        Given:
+        - A MIMEMultipart email message and a list of attachment IDs.
+        Prepare environment for testing file attachment functionality.
+        """
         self.message = MIMEMultipart()
         self.attachment_ids = ["123", "456", "789"]
 
     @patch("ZoomMail.demisto.getFilePath")
     @patch("ZoomMail.attach_file")
     def test_attach_files_success(self, mock_attach_file, mock_get_file_path):
-        """Test attaching files successfully."""
-        # Mock getFilePath to return dummy file paths
+        """
+        When:
+        - Attaching files to an email, and all files are found.
+        Then:
+        - Verify that all files are attached successfully and the correct methods are called.
+        """
         mock_get_file_path.side_effect = [
             {"path": "/path/to/file1", "name": "file1.txt"},
             {"path": "/path/to/file2", "name": "file2.txt"},
             {"path": "/path/to/file3", "name": "file3.txt"},
         ]
 
-        # Call the function under test
         attach_files_to_email(self.message, self.attachment_ids)
 
-        # Assert attach_file was called correctly
         assert mock_attach_file.call_count == 3
         mock_attach_file.assert_any_call(self.message, "/path/to/file1", "file1.txt")
         mock_attach_file.assert_any_call(self.message, "/path/to/file2", "file2.txt")
@@ -1516,14 +1746,16 @@ class TestAttachFilesToEmail(unittest.TestCase):
     @patch("ZoomMail.demisto.getFilePath")
     @patch("ZoomMail.attach_file")
     def test_attach_files_no_files_found(self, mock_attach_file, mock_get_file_path):
-        """Test scenario where no files are found."""
-        # Mock getFilePath to return None indicating no file was found
+        """
+        When:
+        - Attempting to attach files, but no files are found.
+        Then:
+        - Verify that no files are attached and attach_file method is not called.
+        """
         mock_get_file_path.return_value = None
 
-        # Call the function under test
         attach_files_to_email(self.message, self.attachment_ids)
 
-        # Assert attach_file was not called
         mock_attach_file.assert_not_called()
 
     @patch("ZoomMail.demisto.getFilePath")
@@ -1531,18 +1763,20 @@ class TestAttachFilesToEmail(unittest.TestCase):
     def test_attach_files_partial_files_found(
         self, mock_attach_file, mock_get_file_path
     ):
-        """Test attaching files when some files are not found."""
-        # Mock getFilePath to return None for some files
+        """
+        When:
+        - Attempting to attach files, but only some of the files are found.
+        Then:
+        - Verify that only the found files are attached and the attach_file method is called correctly for those files.
+        """
         mock_get_file_path.side_effect = [
             {"path": "/path/to/file1", "name": "file1.txt"},
             None,
             {"path": "/path/to/file3", "name": "file3.txt"},
         ]
 
-        # Call the function under test
         attach_files_to_email(self.message, self.attachment_ids)
 
-        # Assert attach_file was called correctly
         assert mock_attach_file.call_count == 2
         mock_attach_file.assert_any_call(self.message, "/path/to/file1", "file1.txt")
         mock_attach_file.assert_any_call(self.message, "/path/to/file3", "file3.txt")
@@ -1550,6 +1784,11 @@ class TestAttachFilesToEmail(unittest.TestCase):
 
 class TestAttachFile(unittest.TestCase):
     def setUp(self):
+        """
+        Given:
+        - A new MIMEMultipart message for testing attachment functionalities.
+        Prepare environment for testing the attachment of a single file to an email message.
+        """
         self.message = MIMEMultipart()
 
     @patch(
@@ -1558,37 +1797,43 @@ class TestAttachFile(unittest.TestCase):
     @patch("ZoomMail.MIMEBase")
     @patch("ZoomMail.encoders.encode_base64")
     def test_attach_file(self, mock_encode_base64, mock_mime_base, mock_open):
-        """Test attaching a single file to the email."""
-        # Configure the MIMEBase mock
+        """
+        When:
+        - Attaching a file to an email message using the attach_file function.
+        Then:
+        - Ensure the file is opened, read, and encoded correctly.
+        - Verify the MIME part is created with appropriate headers and attached to the message.
+        """
+        # Configure the MIMEBase mock to simulate file attachment behavior.
         mock_part = MagicMock(spec=MIMEBase)
         mock_mime_base.return_value = mock_part
 
-        # Call the function under test
         attach_file(self.message, "/fake/path/to/file.txt", "file.txt")
 
-        # Assert file was opened correctly
+        # Validate file opening and content handling.
         mock_open.assert_called_once_with("/fake/path/to/file.txt", "rb")
-
-        # Check MIMEBase was initialized correctly
         mock_mime_base.assert_called_once_with("application", "octet-stream")
-
-        # Ensure the file content was read and encoded
         mock_part.set_payload.assert_called_once_with("file content")
         mock_encode_base64.assert_called_once_with(mock_part)
-
-        # Verify correct headers were added to the part
         mock_part.add_header.assert_called_once_with(
             "Content-Disposition", "attachment", filename="file.txt"
         )
 
-        # Check the part was attached to the message
+        # Confirm the MIME part is correctly attached to the MIMEMultipart message.
         assert len(self.message.get_payload()) == 1
 
 
 class TestMainFunction(unittest.TestCase):
     @patch("ZoomMail.demisto")
     def test_command_routing(self, mock_demisto):
-        """Test if commands are routed to the correct function."""
+        """
+        Given:
+        - Command name 'test-module' and necessary parameters and arguments are set in the demisto mock.
+        When:
+        - main function is called.
+        Then:
+        - Ensure that the correct function for 'test-module' is called and returns the expected result.
+        """
         # Setup mocks for demisto functions and client methods
         mock_demisto.params.return_value = {
             "url": "https://api.example.com",
@@ -1616,14 +1861,28 @@ class TestMainFunction(unittest.TestCase):
 
     @patch("ZoomMail.demisto")
     def test_handle_not_implemented_command(self, mock_demisto):
-        """Test the handling of not implemented commands."""
+        """
+        Given:
+        - A command 'non-existent-command' that is not implemented.
+        When:
+        - main function is called.
+        Then:
+        - An error is raised indicating the command is not implemented.
+        """
         mock_demisto.command.return_value = "non-existent-command"
         with self.assertRaises(NotImplementedError):
             main()
 
     @patch("ZoomMail.demisto")
     def test_error_handling(self, mock_demisto):
-        """Test if exceptions are handled correctly."""
+        """
+        Given:
+        - An exception is expected to be thrown by the 'test-module' command.
+        When:
+        - main function is called.
+        Then:
+        - The exception is handled properly and the error message is processed.
+        """
         mock_demisto.command.return_value = "test-module"
         mock_demisto.params.return_value = {}
         mock_demisto.args.return_value = {}

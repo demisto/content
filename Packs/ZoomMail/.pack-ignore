@@ -1,13 +1,2 @@
-[file:Zoom_Mail.yml]
-ignore=BA108,BA109
 
-[file:Zoom_IAM_image.png]
-ignore=IM111
-
-[known_words]
-zoomapimodule
-JWT
-
-[file:Zoom.yml]
-ignore=MR108
 
