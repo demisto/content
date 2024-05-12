@@ -4,7 +4,7 @@
         "Shift handover"
     ],
     "caseInsensitive": true,
-    "cliName": "outofftheoffice",
+    "cliName": "outoftheoffice",
     "closeForm": false,
     "columns": [
         {
@@ -46,23 +46,17 @@
     ],
     "content": true,
     "defaultRows": [
-        {
-
-        },
-        {
-
-        },
-        {
-
-        }
+        {},
+        {},
+        {}
     ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_outofftheoffice",
+    "id": "incident_outoftheoffice",
     "isReadOnly": false,
     "locked": false,
-    "name": "Out off the office",
+    "name": "Out of the office",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
