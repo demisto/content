@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed the value 'CONTROL_CHANGED' from the possible values for the argument 'reject_reason' in the 'wiz-reject-issue' command, as it was removed from the API side."
+}
