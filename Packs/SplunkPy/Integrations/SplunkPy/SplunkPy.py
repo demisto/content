@@ -896,7 +896,6 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
 
 def build_drilldown_search(notable_data, search, raw_dict):
     """ Replaces all needed fields in a drilldown search query
-
     Args:
         notable_data (dict): The notable data
         search (str): The drilldown search query
@@ -936,6 +935,7 @@ def get_drilldown_timeframe(notable_data, raw):
         earliest_offset: The earliest time to query from.
         latest_offset: The latest time to query to.
     """
+    # TODO: I'm not sure about this logic - it seems that now the query offset for each drilldown is set in the earliest and latest fields inside the drilldown dict. 
     task_status = True
     earliest_offset = notable_data.get("drilldown_earliest", "")
     latest_offset = notable_data.get("drilldown_latest", "")
@@ -957,9 +957,28 @@ def get_drilldown_timeframe(notable_data, raw):
 
     return task_status, earliest_offset, latest_offset
 
+def extract_drilldown_search_queries(drilldown_searches: list) -> list[str]:
+    """ Goes over the drilldown searches list, and from each drilldown search dictionary extracts the search query.
 
-def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events):
+    Args:
+        drilldown_searches (list): The list of the drilldown searches.
+
+    Returns:
+        list[str]: A list of the drilldown searches queries.
+    """
+    search_queries = []
+    
+    for drilldown_search in drilldown_searches:
+        search = json.loads(drilldown_search)
+        query = search.get("search", '')
+        search_queries.append(query)
+    
+    return search_queries
+
+          
+def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[client.Job]:
     """ Performs a drilldown enrichment.
+    If the notable has more then one drilldown search, enriches all the drilldown searches.
 
     Args:
         service (splunklib.client.Service): Splunk service object.
@@ -968,36 +987,54 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
 
     Returns: The Splunk Job
     """
-    job = None
+    jobs = []
     demisto.debug(f"notable data is: {notable_data}")
-    if search := notable_data.get("drilldown_search") or notable_data.get("drilldown_searches", ""):
+    if drilldown_search := notable_data.get("drilldown_search") or argToList(notable_data.get("drilldown_searches", [])):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
-        if searchable_query := build_drilldown_search(
-            notable_data, search, raw_dict
-        ):
-            status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
-            if status:
-                kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
-                if latest_offset:
-                    kwargs['latest_time'] = latest_offset
-                if earliest_offset:
-                    kwargs['earliest_time'] = earliest_offset
-                query = build_search_query({"query": searchable_query})
-                demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]}: {query}")
-                try:
-                    job = service.jobs.create(query, **kwargs)
-                except Exception as e:
-                    demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
-            else:
-                demisto.debug(f'Failed getting the drilldown timeframe for notable {notable_data[EVENT_ID]}')
+        
+        if isinstance(drilldown_search, list):
+            # there exist more than one drilldown searches to enrich
+            searches = extract_drilldown_search_queries(drilldown_search)
         else:
-            demisto.debug(
-                f"Couldn't build search query for notable {notable_data[EVENT_ID]} with the following drilldown search {search}"
-            )
+            # only one drilldown search
+            searches = [drilldown_search]
+        total_searches = len(searches)
+        demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches')
+            
+        for i in range(total_searches):
+            # iterates over the drilldown searches of the given notable to enrich each one of them
+            search = searches[i]
+            demisto.debug(f'Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}')
+            
+            if searchable_query := build_drilldown_search(
+                notable_data, search, raw_dict
+            ):
+                status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
+                # TODO - to be sure about the timeframe logic we need to create a notable with 3 different drilldown searches, 
+                # for each one of them different earliest and latest offsets and check the relevant fields of the notable fetched data. 
+                if status:
+                    kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
+                    if latest_offset:
+                        kwargs['latest_time'] = latest_offset
+                    if earliest_offset:
+                        kwargs['earliest_time'] = earliest_offset
+                    query = build_search_query({"query": searchable_query})
+                    demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]}: {query}")
+                    try:
+                        job = service.jobs.create(query, **kwargs)
+                        jobs.append(job)
+                    except Exception as e:
+                        demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
+                else:
+                    demisto.debug(f'Failed getting the drilldown timeframe for notable {notable_data[EVENT_ID]}')
+            else:
+                demisto.debug(
+                    f"Couldn't build search query for notable {notable_data[EVENT_ID]} with the following drilldown search {search}"
+                )
     else:
         demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
 
-    return job
+    return jobs
 
 
 def identity_enrichment(service: client.Service, notable_data, num_enrichment_events) -> client.Job:
@@ -1211,8 +1248,9 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
     submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
 
     if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
-        job = drilldown_enrichment(service, notable.data, num_enrichment_events)
-        notable.enrichments.append(Enrichment.from_job(DRILLDOWN_ENRICHMENT, job))
+        jobs = drilldown_enrichment(service, notable.data, num_enrichment_events)
+        for job in jobs:
+            notable.enrichments.append(Enrichment.from_job(DRILLDOWN_ENRICHMENT, job))
     if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_asset:
         job = asset_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(Enrichment.from_job(ASSET_ENRICHMENT, job))
