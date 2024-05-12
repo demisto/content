@@ -3807,7 +3807,7 @@ class TestGetIncidents:
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
         get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
                                                    json=get_incidents_list_response)
-        mocker.patch('demistomock.command', return_value='get-incidents')
+        mocker.patch.object(demisto, 'command', return_value='get-incidents')
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -3834,7 +3834,7 @@ class TestGetIncidents:
         starred_fetch_window_filter = {
             'field': 'creation_time',
             'operator': 'gte',
-            'value': 1715000033000
+            'value': 1705078800000
         }
 
         _, outputs, _ = get_incidents_command(client, args)
@@ -3861,7 +3861,7 @@ class TestGetIncidents:
                               ('false', False),
                               (None, None),
                               ('', None)])
-    def test_get_starred_incident_list_from_fetch(self, mocker, requests_mock, starred, expected_starred):
+    def test_get_starred_incident_list_from_fetch(self, mocker, starred, expected_starred):
         """
         Given: A query with starred parameters.
         When: Running get_incidents_command.
@@ -3869,7 +3869,7 @@ class TestGetIncidents:
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        mocker.patch('demistomock.command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         handle_fetch_starred_mock = mocker.patch.object(CoreClient,
                                                         'handle_fetch_starred_incidents',
                                                         return_value=get_incidents_list_response)
@@ -3899,11 +3899,12 @@ class TestGetIncidents:
         starred_fetch_window_filter = {
             'field': 'creation_time',
             'operator': 'gte',
-            'value': 1715000033000
+            'value': 1705078800000
         }
 
         _, outputs, _ = get_incidents_command(client, args)
 
+        handle_fetch_starred_mock.assert_called()
         request_filters = handle_fetch_starred_mock.call_args.args[2]['filters']
         assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
         if expected_starred:
