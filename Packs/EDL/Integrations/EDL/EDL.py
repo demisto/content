@@ -744,12 +744,13 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
              f"\nAction | Indicator | Raw Indicator | Reason"
 
     with open(EDL_FULL_LOG_PATH, 'w+') as new_full_log_file, open(EDL_FULL_LOG_PATH_WIP, 'r') as log_file_data:
+        # Finalize the current log: write the headers and the WIP log to full_log_path
         new_full_log_file.write(header)
         for log_line in log_file_data:
             new_full_log_file.write(log_line)
 
     with open(EDL_FULL_LOG_PATH_WIP, 'w+') as log_file_data:
-        # empty wip file after copy
+        # Empty WIP log file after finalization.
         log_file_data.seek(0)
 
 
@@ -1193,10 +1194,19 @@ def route_edl_log() -> Response:
     created = datetime.now(timezone.utc)
     ctx = demisto.getIntegrationContext()
 
+    # If edl_data_log is too large, first return a corresponding message as text.
+    # Second, return the log as a file.
+    # Alternate between the two via log_as_file context data key.
     if edl_data_log == LARGE_LOG_DISPLAY_MSG:
+        # If we should return the log as a file this time
         if ctx.get('log_as_file', False):
+            # Reset the log_as_file context key. Next time a message will be returned.
+            ctx['log_as_file'] = False
+            set_integration_context(ctx)
+            # Remove previous zip versions of the log file if they exist.
             for previous_zip in glob.glob(f'{LOGS_ZIP_FILE_PREFIX}_*.zip'):
                 os.remove(previous_zip)
+            # zip the current log file and return it.
             log_zip_filename = f'{LOGS_ZIP_FILE_PREFIX}_{created.strftime("%Y%m%d-%H%M%S")}.zip'
             zipf = zipfile.ZipFile(log_zip_filename, 'w', zipfile.ZIP_DEFLATED)
             zipf.write(EDL_FULL_LOG_PATH)
@@ -1206,6 +1216,7 @@ def route_edl_log() -> Response:
                              download_name=log_zip_filename,
                              as_attachment=True)
         else:
+            # Reset the log_as_file context key. Next time a file will be returned.
             ctx['log_as_file'] = True
             set_integration_context(ctx)
 
