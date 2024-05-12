@@ -6,8 +6,18 @@ configuration:
 - display: API Username
   name: credentials
   type: 9
-  required: true
+  required: false
   displaypassword: API Key
+- display: API Username
+  name: username
+  required: false
+  hidden: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: false
+  hidden: true
+  type: 4
 - display: High-Risk Threshold
   name: risk_threshold
   required: true
