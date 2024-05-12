@@ -74,7 +74,6 @@ configuration:
 - display: Use OAuth 2.0
   name:  use_oauth2
   type: 8
-  required: false
   defaultvalue: "true"
 - display: Client ID
   name: client_id
@@ -2743,7 +2742,6 @@ script:
       predefined:
       - yes
       - no    
-
   isfetch: true
   runonce: false
   script: '-'

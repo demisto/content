@@ -9,7 +9,7 @@ Please read detailed instructions in order to understand how to set the integrat
 
    | **Parameter** | **Required** |
    | --- | --- |
-   | BaseUrl - API url including region, For example https://eu-api.mimecast.com | True |
+   | BaseUrl - API url including region, For example https://api.services.mimecast.com | True |
    | App ID | False |
    | User Email Address (Use for auto token refresh) | False |
    | Password | False |
@@ -22,6 +22,9 @@ Please read detailed instructions in order to understand how to set the integrat
    | Fetch URL incidents | False |
    | Fetch attachment incidents | False |
    | Fetch impersonation incidents | False |
+   | Use OAuth 2.0 | False |
+   | Client ID | False |
+   | Client Secret | False |
    | Incident type | False |
    | Hours before first fetch to retrieve incidents | False |
    | Incident type | False |

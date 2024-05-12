@@ -20,28 +20,27 @@ from xml.etree import ElementTree
 print('args:', demisto.args())
 print('params:', demisto.params())
 
-try:
-    BASE_URL = demisto.params().get('baseUrl')
-    ACCESS_KEY = demisto.params().get('accessKey')
-    SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
-    APP_ID = demisto.params().get('appId')
-    APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 
-    USE_SSL = None  # assigned in determine_ssl_usage
-    PROXY = bool(demisto.params().get('proxy'))
-    # Flags to control which type of incidents are being fetched
-    FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
-    FETCH_ALL = 'All' in FETCH_PARAMS
-    FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
-    FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
-    FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
-    FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
-    # Used to refresh token / discover available auth types / login
-    EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-    PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
-    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
-except:
-    pass
+BASE_URL = demisto.params().get('baseUrl')
+ACCESS_KEY = demisto.params().get('accessKey')
+SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
+APP_ID = demisto.params().get('appId')
+APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
+
+USE_SSL = None  # assigned in determine_ssl_usage
+PROXY = bool(demisto.params().get('proxy'))
+# Flags to control which type of incidents are being fetched
+FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
+FETCH_ALL = 'All' in FETCH_PARAMS
+FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
+FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
+FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
+FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
+# Used to refresh token / discover available auth types / login
+EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
+PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
+FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+
 
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
@@ -237,16 +236,12 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         res = requests.request(
             method,
             url,
-            verify=False,
+            verify=USE_SSL,
             params=params,
             headers=headers,
             json=payload,
             data=data
         )
-        try:
-            print('response:', res.json())
-        except:
-            pass
         res.raise_for_status()
         if is_file:
             return res
@@ -3592,7 +3587,7 @@ def main():
 
     try:
         handle_proxy()
-        # determine_ssl_usage()
+        determine_ssl_usage()
         if USE_OAUTH2:
             updating_token_oauth2()
         if ACCESS_KEY:
