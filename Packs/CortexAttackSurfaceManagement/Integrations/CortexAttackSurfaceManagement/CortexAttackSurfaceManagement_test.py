@@ -314,6 +314,7 @@ def test_list_asset_internet_exposure_command(requests_mock):
     args_externally_detected_providers = {"externally_detected_providers": ["Amazon Web Services"]}
     args_has_bu_overrides = {"has_bu_overrides": False}
     args_business_units_list = {"business_units": ["Acme"]}
+    args_mac_address = {"mac_address": ["00:11:22:33:44:55"]}
 
     response_name = list_asset_internet_exposure_command(args=args_name, client=client)
     response_externally_inferred_cves = list_asset_internet_exposure_command(args=args_externally_inferred_cves, client=client)
@@ -327,6 +328,7 @@ def test_list_asset_internet_exposure_command(requests_mock):
         args=args_externally_detected_providers, client=client)
     response_has_bu_overrides = list_asset_internet_exposure_command(args=args_has_bu_overrides, client=client)
     response_business_units_list = list_asset_internet_exposure_command(args=args_business_units_list, client=client)
+    response_mac_address = list_asset_internet_exposure_command(args=args_mac_address, client=client)
 
     assert response_name.outputs == EXTERNAL_EXPOSURES_RESULTS
     assert response_name.outputs_prefix == "ASM.AssetInternetExposure"
@@ -371,6 +373,10 @@ def test_list_asset_internet_exposure_command(requests_mock):
     assert response_business_units_list.outputs == EXTERNAL_EXPOSURES_RESULTS
     assert response_business_units_list.outputs_prefix == "ASM.AssetInternetExposure"
     assert response_business_units_list.outputs_key_field == "asm_ids"
+
+    assert response_mac_address.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_mac_address.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_mac_address.outputs_key_field == "asm_ids"
 
 
 def test_get_asset_internet_exposure_command(requests_mock, mocker):

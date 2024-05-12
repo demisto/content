@@ -411,6 +411,7 @@ EXTERNAL_SERVICE_RESULTS = [
         "azure_cloud_tags": [
                     "Name:azure Lab"
                 ],
+        "mac_address": ["00:11:22:33:44:55"],
         "has_bu_overrides": False,
         "has_xdr_agent": "NO",
         "externally_inferred_cves": [

@@ -143,6 +143,7 @@ EXTERNAL_SERVICE_RESPONSE = {
                 ],
                 "has_xdr_agent": "NO",
                 "has_bu_overrides": False,
+                "mac_address": ["00:11:22:33:44:55"],
                 "externally_inferred_cves": [
                     "CVE-2020-15778",
                     "CVE-2021-41617",
