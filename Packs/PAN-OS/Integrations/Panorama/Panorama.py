@@ -14120,6 +14120,7 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
     """
     new_entries_dict: Dict = {}
     for log_type in entries_dict:
+        if log_type == 
         demisto.debug(f'Filtering {log_type} type enties, recived {len(entries_dict[log_type])} to filter.')
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
