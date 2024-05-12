@@ -300,6 +300,7 @@ xpanse-prepare-testing-bucket:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   stage: run-instances
+  when: manual
   needs:
     - job: xsoar-prepare-testing-bucket
   script:
@@ -576,6 +577,7 @@ slack-notify-on-merge:
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
+  when: manual
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
@@ -787,6 +789,7 @@ test-upload-flow:
 
 .server_test_playbooks_results:
   stage: results
+  when: manual
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -811,6 +814,7 @@ test-upload-flow:
 
 .e2e_test_results:
   stage: results
+  when: manual
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$NIGHTLY'
@@ -837,6 +841,7 @@ test-upload-flow:
 
 .test_modeling_rule_results:
   stage: results
+  when: manual
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'

@@ -13,9 +13,9 @@ stages: # todo remove stages
   - security
   - unittests-and-validations
   - prepare-testing-bucket
-#  - run-instances
-#  - results
-#  - upload-to-marketplace
+  - run-instances
+  - results
+  - upload-to-marketplace
   - create-release-branch
   - trigger-nightlies
   - wait-for-build-to-finish
