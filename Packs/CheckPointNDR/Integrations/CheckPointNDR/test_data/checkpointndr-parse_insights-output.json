@@ -1,0 +1,19 @@
+[
+    {
+    "type": "Check Point NDR Insight",
+    "dbotMirrorId": "636750_950961",
+    "name": "Behavioral.Geo.Bulgaria",
+    "severity": 2,
+    "occurred": "2023-12-24T03:10:02.954000Z",
+    "updated": 1703387404364,
+    "details": "An anomaly detected from 127.0.0.1",
+    "CustomFields": {
+        "externalstarttime": "2023-12-22T15:15:28.000000Z",
+        "externalendtime": "2023-12-22T16:15:28.000000Z",
+        "externallink": "https://now.checkpoint.com/#/insights?id=636750&domain=test&startDate=1703258128000&endDate=1703261728000",
+        "description": "An anomaly detected from 127.0.0.1",
+        "eventdescriptions": ""
+    },
+    "rawJSON": "{\"id\": 950961, \"domain\": \"test\", \"from\": 1703258128000, \"to\": 1703261728000, \"filter\": \"src:\\\"127.0.0.1\\\"\", \"targetDomain\": \"test\", \"type\": \"Behavioral\", \"insight\": \"Behavioral.Geo.Bulgaria\", \"count\": 1, \"data\": {\"discovery_date\": \"1703387402954\"}, \"user\": \"Analytics\", \"created\": 1703387404364, \"updated\": 1703387404364, \"mdr\": false, \"probability\": 64, \"externalId\": null, \"editable\": true}"
+    }
+]
