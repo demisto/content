@@ -405,8 +405,6 @@ class TestCollector(ABC):
                     logger.warning(f'Could not find script {script} in id_set'
                                    f' when searching for integrations the {test_id} test depends on')
 
-        logger.info(f'Michal _collect_test_dependencies {len(result)=}')
-
         return CollectionResult.union(tuple(result))
 
     def _collect_test_dependency(
@@ -710,7 +708,7 @@ class TestCollector(ABC):
 
     def __validate_marketplace_compatibility(self,
                                              content_item_marketplaces: tuple[MarketplaceVersions, ...],
-                                             content_item_path: Path) -> None:  # TODO CHECK CIAC-9470
+                                             content_item_path: Path) -> None:
         # intended to only be called from __validate_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
@@ -1230,11 +1228,11 @@ class NightlyTestCollector(BranchTestCollector, ABC):
             logger.info('changed packs drops collected tests, as they are not required')
             result.append(changed_packs)
 
-        if self.marketplace in [MarketplaceVersions.XSOAR, MarketplaceVersions.MarketplaceV2]:
+        if self.marketplace in [MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2]:
             nightly_packs = CollectionResult.union([
                 self._collect_packs_nightly(self.conf.nightly_packs),
                 self._id_set_tests_matching_marketplace_value()
-            ])  # todo add filter to only xsiam
+            ])
             if nightly_packs:
                 logger.info(f"Collect the following nightly packs to install: {nightly_packs.packs_to_install=}")
                 result.append(nightly_packs)
@@ -1311,10 +1309,6 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 ):
                     raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
-
-                if self.marketplace == MarketplaceVersions.MarketplaceV2 and MarketplaceVersions.XSOAR in playbook.marketplaces:
-                    raise IncompatibleMarketplaceException(
-                        playbook.path, playbook.marketplaces, self.marketplace)  # TODO for merge
 
                 result.append(CollectionResult(
                     test=playbook.id_,
@@ -1493,7 +1487,7 @@ if __name__ == '__main__':
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:
             collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace, graph)
-        else:
+        else: # todo - will not need this case - will be part of the nightly
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     elif sdk_nightly:

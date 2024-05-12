@@ -8,14 +8,14 @@ default:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
 
-stages:
+stages: # todo remove stages
   - cleanup
   - security
   - unittests-and-validations
   - prepare-testing-bucket
-  - run-instances
-  - results
-  - upload-to-marketplace
+#  - run-instances
+#  - results
+#  - upload-to-marketplace
   - create-release-branch
   - trigger-nightlies
   - wait-for-build-to-finish

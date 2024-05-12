@@ -107,6 +107,7 @@ class GCPConfig:
     VERSIONS_METADATA_FILE = 'versions-metadata.json'
     COREPACKS_OVERRIDE_FILE = 'corepacks_override.json'
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
+    CONTENT_STATUS = 'content_status'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json')) as core_packs_xsoar_list_file:
         packs_list = json.load(core_packs_xsoar_list_file)

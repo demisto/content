@@ -3376,7 +3376,7 @@ def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.
 
 
 def get_failed_packs_from_previous_upload(service_account, build_bucket_path):
-    """ Downloading index.json from GCP and extract the failed packs from the previous upload.
+    """ Downloading content_status.json from GCP and extract the failed packs from the previous upload.
 
     Args:
         service_account: service account to connect to GCP
@@ -3386,11 +3386,11 @@ def get_failed_packs_from_previous_upload(service_account, build_bucket_path):
     """
     storage_client = init_storage_client(service_account)
     build_bucket = storage_client.bucket(GCPConfig.CI_BUILD_BUCKET)
-    index_storage_path = os.path.join(build_bucket_path, 'content/packs/', f"{GCPConfig.INDEX_NAME}.json")
+    index_storage_path = os.path.join(build_bucket_path, 'content/packs/', f"{GCPConfig.CONTENT_STATUS}.json")
     index_blob = build_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
-    return index_json.get('failed_packs', [])  # TODO change name
+    return index_json.get('packs_to_upload', [])  # TODO change name
 
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:

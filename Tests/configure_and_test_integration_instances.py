@@ -31,7 +31,7 @@ from ruamel import yaml
 
 from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    upload_zipped_packs
+    upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.private_build.upload_packs_private import extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -392,16 +392,16 @@ class Build(ABC):
         tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
-            # if self.is_nightly: # TODO
-            #     # skip test button testing
-            #     logging.debug('Not running instance tests in nightly flow')
-            #     tests_for_iteration = []
-            # else:
-            # if not filtered_tests in cloud, we not running tests at all
-            if self.is_cloud and not filtered_tests:
+            if self.is_nightly:
+                # skip test button testing
+                logging.debug('Not running instance tests in nightly flow')
                 tests_for_iteration = []
             else:
-                tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
+                # if not filtered_tests in cloud, we not running tests at all
+                if self.is_cloud and not filtered_tests:
+                    tests_for_iteration = []
+                else:
+                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -505,7 +505,7 @@ class Build(ABC):
                          all_module_instances: list,
                          pre_update: bool,
                          use_mock: bool = True,
-                         first_call: bool = True) -> tuple[set, set]:  # todo
+                         first_call: bool = True) -> tuple[set, set]:
         """
         Runs 'test-module' command for the instances detailed in `all_module_instances`
         Args:
@@ -524,7 +524,7 @@ class Build(ABC):
         failed_tests = set()
         successful_tests = set()
         # Test all module instances (of modified + unchanged integrations) pre-updating content
-        if all_module_instances:  # todo - why empty
+        if all_module_instances:
             # only print start message if there are instances to configure
             logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
         else:
@@ -640,7 +640,7 @@ class XSOARBuild(Build):
             logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
-    def install_nightly_pack(self) -> bool:  # todo
+    def install_nightly_pack(self) -> bool:
         """
         Installs all existing packs in master
         Collects all existing test playbooks, saves them to test_pack.zip
@@ -649,42 +649,19 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        # success, results = self.concurrently_run_function_on_servers(
-        #     function=install_all_content_packs_for_nightly,
-        #     service_account=self.service_account,
-        #     packs_to_install=self.pack_ids_to_install
-        # )
-        # success &= all(results)
-        # # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        # create_test_pack()
-        # # uploads test_pack.zip to all servers
-        # upload_success, upload_results = self.concurrently_run_function_on_servers(function=upload_zipped_packs,
-        #                                                                            pack_path=f'{Build.test_pack_target}'
-        #                                                                                      '/test_pack.zip')
-        # success &= upload_success and all(upload_results)
-        #
-        # logging.info('Sleeping for 45 seconds while installing nightly packs')
-        # sleep(45)
-        # if success:
-        #     logging.success("Finished installing nightly packs")
-        # else:
-        #     logging.error("Failed to install nightly packs")
-        # return success
-        success = self.install_packs(install_packs_in_batches=True, production_bucket=True)
-        if not success:
-            logging.error("Failed to install nightly packs")
-
+        success, results = self.concurrently_run_function_on_servers(
+            function=install_all_content_packs_for_nightly,
+            service_account=self.service_account,
+            packs_to_install=self.pack_ids_to_install
+        )
+        success &= all(results)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
-        # uploads test_pack.zip to all servers (we have only one cloud server)
-        upload_success = True
-        for server in self.servers:
-            upload_success &= upload_zipped_packs(client=server.client,
-                                                  host=server.name,
-                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
-        if not upload_success:
-            logging.error("Failed to upload test pack to cloud servers")
-        success &= upload_success
+        # uploads test_pack.zip to all servers
+        upload_success, upload_results = self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                                                   pack_path=f'{Build.test_pack_target}'
+                                                                                             '/test_pack.zip')
+        success &= upload_success and all(upload_results)
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
@@ -788,7 +765,7 @@ class XSOARBuild(Build):
         env_conf = get_env_conf()
         return get_servers(env_conf, ami_env)
 
-    def concurrently_run_function_on_servers(  # TODO
+    def concurrently_run_function_on_servers(
         self, function=None, pack_path=None, service_account=None, packs_to_install=None
     ) -> tuple[bool, list[Any]]:
         if not function:
@@ -1986,8 +1963,7 @@ def main():
     build.configure_servers_and_restart()
     build.disable_instances()
 
-    # if build.is_nightly or build.is_sdk_nightly:
-    if build.is_sdk_nightly:
+    if build.is_nightly or build.is_sdk_nightly:
         success = build.install_nightly_pack()
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
@@ -2002,7 +1978,7 @@ def main():
         success = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
-        if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow todo
+        if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
             build.create_and_upload_test_pack(packs_to_install=build.pack_ids_to_install)
         success &= report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                        new_integrations_names, build)
