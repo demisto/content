@@ -2243,7 +2243,40 @@ script:
     - name: asset_group_ids
       required: true
       description: The asset group to add. Can be a comma-separated list.
-    description: Add asset group to existing tag.
+    description: Add existing asset group to existing tag.
+  - name: nexpose-remove-tag-asset-group
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_group_id
+      required: true
+      description: The asset group ID.
+    description: Remove asset group from tag.
+  - name: nexpose-list-tag-asset
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    description: Return a list of tag is assets.
+  - name: nexpose-add-tag-asset
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_id
+      required: true
+      description: The asset ID.
+    description: Add existing asset to existing tag.
+  - name: nexpose-remove-tag-asset
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_id
+      required: true
+      description: The asset ID.
+    description: Remove asset from tag.
   runonce: false
   script: '-'
   type: python

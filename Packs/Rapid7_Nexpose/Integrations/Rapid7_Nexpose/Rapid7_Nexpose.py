@@ -1921,8 +1921,8 @@ class Client(BaseClient):
 
         return None
 
-    def create_tag(self, name: str, type: str, color: str, filters: list[dict] | None = None ,
-                   match: str | None = MATCH_DEFAULT_VALUE):
+    def create_tag(self, name: str, type: str, color: str, filters: list[dict] | None = None,
+                   match: str | None = MATCH_DEFAULT_VALUE) -> dict:
         json_data: dict[str, str | dict] = {
             "type": type,
             "name": name,
@@ -1938,14 +1938,14 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def delete_tag(self, id: int):
+    def delete_tag(self, id: int) -> dict:
         return self._http_request(
             method="DELETE",
             url_suffix=f"/tags/{id}",
             resp_type="json"
         )
 
-    def get_tag_by_id(self, id: int):
+    def get_tag_by_id(self, id: int) -> dict:
         return self._http_request(
             url_suffix=f"/tags/{id}",
             method="GET",
@@ -1969,8 +1969,8 @@ class Client(BaseClient):
             limit=limit,
             resp_type="json",
         )
-    
-    def update_tag_search_criteria(self, id: int, filters: list[dict] = [] , match: str | None = MATCH_DEFAULT_VALUE):
+
+    def update_tag_search_criteria(self, id: int, filters: list[dict] = [], match: str | None = MATCH_DEFAULT_VALUE) -> dict:
         return self._http_request(
             method="PUT",
             url_suffix=f"/tags/{id}/search_criteria",
@@ -1978,19 +1978,47 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_tag_asset_group_list(self, tag_id: int):
+    def get_tag_asset_group_list(self, tag_id: int) -> dict:
         return self._http_request(
             method="GET",
             url_suffix=f"/tags/{tag_id}/asset_groups",
             resp_type="json"
         )
 
-    def update_tag_asset_group_list(self, tag_id: int, asset_groups: list[int]):
+    def update_tag_asset_group_list(self, tag_id: int, asset_groups: list[int]) -> dict:
         return self._http_request(
             method="PUT",
             url_suffix=f"/tags/{tag_id}/asset_groups",
             json_data=asset_groups,
             resp_type="json",
+        )
+
+    def remove_tag_asset_group(self, tag_id: int, asset_group_id: int) -> dict:
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/tags/{tag_id}/asset_groups/{asset_group_id}",
+            resp_type="json"
+        )
+
+    def get_tag_asset_list(self, tag_id: int) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/tags/{tag_id}/assets",
+            resp_type="json"
+        )
+
+    def add_tag_asset(self, tag_id: int, asset_id: int) -> dict:
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"/tags/{tag_id}/assets/{asset_id}",
+            resp_type="json",
+        )
+
+    def remove_tag_asset(self, tag_id: int, asset_id: int) -> dict:
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/tags/{tag_id}/assets/{asset_id}",
+            resp_type="json"
         )
 
 
@@ -4906,17 +4934,17 @@ def pars_filters(**kwargs):
     if kwargs.get("ip_address_is"):
         filters_data.append("ip-address is " + kwargs["ip_address_is"])
 
-    if  kwargs.get("host_name_is"):
+    if kwargs.get("host_name_is"):
         filters_data.append("host-name is " + kwargs["host_name_is"])
 
-    if  kwargs.get("risk_score_higher_than"):
-        filters_data.append("risk-score is-greater-than " +  kwargs["risk_score_higher_than"])
+    if kwargs.get("risk_score_higher_than"):
+        filters_data.append("risk-score is-greater-than " + kwargs["risk_score_higher_than"])
 
-    if  kwargs.get("vulnerability_title_contains"):
-        filters_data.append("vulnerability-title contains " +  kwargs["vulnerability_title_contains"])
+    if kwargs.get("vulnerability_title_contains"):
+        filters_data.append("vulnerability-title contains " + kwargs["vulnerability_title_contains"])
 
-    if  kwargs.get("query"):
-        filters_data.extend( kwargs["query"].split(";"))
+    if kwargs.get("query"):
+        filters_data.extend(kwargs["query"].split(";"))
 
     return filters_data
 
@@ -4927,9 +4955,9 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
                        site_name_in: str | None = None, query: str | None = None, match: str | None = None):
     filters_data = pars_filters(ip_address_is=ip_address_is, host_name_is=host_name_is, risk_score_higher_than=risk_score_higher_than,
                                 vulnerability_title_contains=vulnerability_title_contains, query=query)
-    filters=convert_asset_search_filters(filters_data)
+    filters = convert_asset_search_filters(filters_data)
     res = client.create_tag(name=name, type=type, color=color, filters=filters, match=match)
-    
+
     id = res.get("id", 'ID not found')
 
     return CommandResults(
@@ -4967,13 +4995,13 @@ def get_tags_list_command(client: Client, id: str | None = None, name: str | Non
 
 
 def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: str, ip_address_is: str | None = None,
-                                        host_name_is: str | None = None, risk_score_higher_than: str | None = None,
-                                        vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
-                                        site_name_in: str | None = None, query: str | None = None, match: str | None = None):
+                                       host_name_is: str | None = None, risk_score_higher_than: str | None = None,
+                                       vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
+                                       site_name_in: str | None = None, query: str | None = None, match: str | None = None):
     tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
 
     filters_data = pars_filters(ip_address_is=ip_address_is, host_name_is=host_name_is, risk_score=risk_score_higher_than,
-                            vulnerability_title_contains=vulnerability_title_contains, query=query)
+                                vulnerability_title_contains=vulnerability_title_contains, query=query)
     filters = convert_asset_search_filters(filters_data)
 
     if not argToBoolean(overwrite):
@@ -4987,26 +5015,65 @@ def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: s
 
 def get_tag_asset_group_list_command(client: Client, tag_id: str):
     tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+
     res = client.get_tag_asset_group_list(tag_id_int)
     asset_groups_ids = res.get("resources", [])
     return CommandResults(
         outputs_prefix="Nexpose.TagAssetGroup",
         outputs_key_field="Id",
         outputs=res,
-        readable_output=tableToMarkdown(f"Tag {tag_id_int} asset groups.", asset_groups_ids, headers=['asset groups IDs']),
+        readable_output=tableToMarkdown(f"Tag {tag_id_int} asset groups.", asset_groups_ids, headers=['Asset groups IDs']),
         raw_response=res
     )
 
 
 def add_tag_asset_group_command(client: Client, tag_id: str, asset_group_ids: str):
     tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
-    asset_group_ids_list = argToList(asset_group_ids)
+    asset_group_ids_list = argToList(asset_group_ids, transform=int)
 
     old_asset_groups = client.get_tag_asset_group_list(tag_id_int)
     all_asset_group = list(set(old_asset_groups.get("resources", []) + asset_group_ids_list))
 
     client.update_tag_asset_group_list(tag_id_int, all_asset_group)
     return CommandResults(readable_output=f"asset groups '{','.join(asset_group_ids_list)}' was added successfully")
+
+
+def remove_tag_asset_group_command(client: Client, tag_id: str, asset_group_id: str):
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_group_id_int = arg_to_number(asset_group_id, arg_name="asset_group_id", required=True)
+
+    client.remove_tag_asset_group(tag_id_int, asset_group_id_int)
+    return CommandResults(readable_output=f"Asset group {asset_group_id_int} was removed from tag {tag_id_int} successfully")
+
+
+def get_tag_asset_list_command(client: Client, tag_id: str):
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+
+    res = client.get_tag_asset_list(tag_id_int)
+    resources = res.get("resources", [])
+    return CommandResults(
+        outputs_prefix="Nexpose.TagAsset",
+        outputs_key_field="Id",
+        outputs=res,
+        readable_output=tableToMarkdown(f"Tag {tag_id_int} assets", resources),
+        raw_response=res
+    )
+
+
+def add_tag_asset_command(client: Client, tag_id: str, asset_id: str):
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_id_int = arg_to_number(asset_id, arg_name="asset_id", required=True)
+
+    client.add_tag_asset(tag_id_int, asset_id_int)
+    return CommandResults(readable_output=f"asset {asset_id_int} was added successfully")
+
+
+def remove_tag_asset_command(client: Client, tag_id: str, asset_id: str):
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_id_int = arg_to_number(asset_id, arg_name="asset_id", required=True)
+
+    client.remove_tag_asset(tag_id_int, asset_id_int)
+    return CommandResults(readable_output=f"Asset {asset_id_int} was removed from tag {tag_id_int} successfully")
 
 
 def set_assigned_shared_credential_status_command(client: Client, credential_id: str, enabled: bool,
@@ -5705,6 +5772,14 @@ def main():  # pragma: no cover
             results = get_tag_asset_group_list_command(client=client, **args)
         elif command == "nexpose-add-tag-asset-group":
             results = add_tag_asset_group_command(client=client, **args)
+        elif command == "nexpose-remove-tag-asset-group":
+            results = remove_tag_asset_group_command(client=client, **args)
+        elif command == "nexpose-list-tag-asset":
+            results = get_tag_asset_list_command(client=client, **args)
+        elif command == "nexpose-add-tag-asset":
+            results = add_tag_asset_command(client=client, **args)
+        elif command == "nexpose-remove-tag-asset":
+            results = remove_tag_asset_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
