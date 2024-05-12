@@ -4185,7 +4185,7 @@ def get_incidents_command(client, args):
 
     statuses = argToList(args.get('status', ''))
 
-    starred = argToBoolean(args.get('starred')) if args.get('starred', None) is not None else None
+    starred = argToBoolean(args.get('starred')) if args.get('starred', None) not in ('', None) else None
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
