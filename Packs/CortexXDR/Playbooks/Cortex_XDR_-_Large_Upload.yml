@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2864f683-d804-43bb-8946-4d90039fc751
+    taskid: f8019971-848d-42ea-8092-41468c83a05c
     type: condition
     task:
-      id: 2864f683-d804-43bb-8946-4d90039fc751
+      id: f8019971-848d-42ea-8092-41468c83a05c
       version: -1
       name: Found Results?
       description: Determine if previous false positive incidents have been detected with similar characteristics.
@@ -86,15 +86,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               complex:
                 root: DBotFindSimilarIncidents
+                accessor: isSimilarIncidentFound
             iscontext: true
-          right:
-            value:
-              simple: "True"
           ignorecase: true
       - - operator: containsGeneral
           left:
@@ -2367,10 +2365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: aeec3291-f750-4743-8442-77286d075ff8
+    taskid: f70c3820-f3f8-47d0-89c4-12976b23af85
     type: condition
     task:
-      id: aeec3291-f750-4743-8442-77286d075ff8
+      id: f70c3820-f3f8-47d0-89c4-12976b23af85
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2398,7 +2396,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "2"
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -2408,7 +2406,7 @@ tasks:
             value:
               simple: GB
           ignorecase: true
-        - operator: greaterThanOrEqual
+        - operator: isEqualString
           left:
             value:
               complex:
@@ -2425,19 +2423,12 @@ tasks:
                     regex:
                       value:
                         simple: uploaded\s(.*(MB|GB|TB))
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: MB
-                - operator: SumList
             iscontext: true
           right:
             value:
-              complex:
-                root: inputs.Transferred_Data _Threshold
-            iscontext: true
-        - operator: isEqualString
+              simple: TB
+          ignorecase: true
+        - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -2449,16 +2440,32 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "2"
+                        simple: "0"
                     keys: {}
                     regex:
                       value:
                         simple: uploaded\s(.*(MB|GB|TB))
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: MB
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "0"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: (\d+)\.
             iscontext: true
           right:
             value:
-              simple: TB
-          ignorecase: true
+              complex:
+                root: inputs.Transferred_Data _Threshold
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
