@@ -1,0 +1,304 @@
+[
+    {
+        "value": "CVE-2024-3400",
+        "relationships": [
+            {
+                "name": "targets",
+                "reverseName": "targeted-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "CVE-2024-3400",
+                "entityAFamily": "Indicator",
+                "entityAType": "cve",
+                "entityB": "Paloaltonetworks",
+                "entityBFamily": "Indicator",
+                "entityBType": "identity",
+                "fields": {}
+            },
+            {
+                "name": "targets",
+                "reverseName": "targeted-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "CVE-2024-3400",
+                "entityAFamily": "Indicator",
+                "entityAType": "cve",
+                "entityB": "Pan-os",
+                "entityBFamily": "Indicator",
+                "entityBType": "software",
+                "fields": {}
+            }
+        ],
+        "type": "CVE",
+        "rawJSON": {
+            "id": "CVE-2024-3400",
+            "sourceIdentifier": "psirt@paloaltonetworks.com",
+            "published": "2024-04-12T08:15:06.230",
+            "lastModified": "2024-04-18T01:00:01.527",
+            "vulnStatus": "Undergoing Analysis",
+            "cisaExploitAdd": "2024-04-12",
+            "cisaActionDue": "2024-04-19",
+            "cisaRequiredAction": "Apply mitigations per vendor instructions as they become available. Otherwise, users with vulnerable versions of affected devices should enable Threat Prevention IDs available from the vendor. See the vendor bulletin for more details and a patch release schedule.",
+            "cisaVulnerabilityName": "Palo Alto Networks PAN-OS Command Injection Vulnerability",
+            "descriptions": [
+                {
+                    "lang": "en",
+                    "value": "A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.\n\nCloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability."
+                },
+                {
+                    "lang": "es",
+                    "value": "Una vulnerabilidad de inyecci\u00f3n de comandos en la funci\u00f3n GlobalProtect del software PAN-OS de Palo Alto Networks para versiones espec\u00edficas de PAN-OS y configuraciones de funciones distintas puede permitir que un atacante no autenticado ejecute c\u00f3digo arbitrario con privilegios de root en el firewall. Cloud NGFW, dispositivos Panorama y Prisma Access no se ven afectados por esta vulnerabilidad."
+                }
+            ],
+            "metrics": {
+                "cvssMetricV31": [
+                    {
+                        "source": "nvd@nist.gov",
+                        "type": "Primary",
+                        "cvssData": {
+                            "version": "3.1",
+                            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+                            "attackVector": "NETWORK",
+                            "attackComplexity": "LOW",
+                            "privilegesRequired": "NONE",
+                            "userInteraction": "NONE",
+                            "scope": "CHANGED",
+                            "confidentialityImpact": "HIGH",
+                            "integrityImpact": "HIGH",
+                            "availabilityImpact": "HIGH",
+                            "baseScore": 10.0,
+                            "baseSeverity": "CRITICAL"
+                        },
+                        "exploitabilityScore": 3.9,
+                        "impactScore": 6.0
+                    },
+                    {
+                        "source": "psirt@paloaltonetworks.com",
+                        "type": "Secondary",
+                        "cvssData": {
+                            "version": "3.1",
+                            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+                            "attackVector": "NETWORK",
+                            "attackComplexity": "LOW",
+                            "privilegesRequired": "NONE",
+                            "userInteraction": "NONE",
+                            "scope": "CHANGED",
+                            "confidentialityImpact": "HIGH",
+                            "integrityImpact": "HIGH",
+                            "availabilityImpact": "HIGH",
+                            "baseScore": 10.0,
+                            "baseSeverity": "CRITICAL"
+                        },
+                        "exploitabilityScore": 3.9,
+                        "impactScore": 6.0
+                    }
+                ]
+            },
+            "weaknesses": [
+                {
+                    "source": "nvd@nist.gov",
+                    "type": "Primary",
+                    "description": [
+                        {
+                            "lang": "en",
+                            "value": "CWE-77"
+                        }
+                    ]
+                },
+                {
+                    "source": "psirt@paloaltonetworks.com",
+                    "type": "Secondary",
+                    "description": [
+                        {
+                            "lang": "en",
+                            "value": "CWE-77"
+                        }
+                    ]
+                }
+            ],
+            "configurations": [
+                {
+                    "nodes": [
+                        {
+                            "operator": "OR",
+                            "negate": false,
+                            "cpeMatch": [
+                                {
+                                    "vulnerable": true,
+                                    "criteria": "cpe:2.3:o:paloaltonetworks:pan-os:10.2.0:*:*:*:*:*:*:*",
+                                    "matchCriteriaId": "D515774C-BDB8-4A78-BCFB-01A825B93DF5"
+                                },
+                                {
+                                    "vulnerable": true,
+                                    "criteria": "cpe:2.3:o:paloaltonetworks:pan-os:11.0.0:*:*:*:*:*:*:*",
+                                    "matchCriteriaId": "6F3693A5-182E-4723-BE2A-062D0C9E736C"
+                                },
+                                {
+                                    "vulnerable": true,
+                                    "criteria": "cpe:2.3:o:paloaltonetworks:pan-os:11.1.0:*:*:*:*:*:*:*",
+                                    "matchCriteriaId": "CB628D07-9AB0-4C19-8DA3-DBE5689A3F40"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "references": [
+                {
+                    "url": "https://security.paloaltonetworks.com/CVE-2024-3400",
+                    "source": "psirt@paloaltonetworks.com",
+                    "tags": [
+                        "Vendor Advisory"
+                    ]
+                },
+                {
+                    "url": "https://unit42.paloaltonetworks.com/cve-2024-3400/",
+                    "source": "psirt@paloaltonetworks.com",
+                    "tags": [
+                        "Exploit",
+                        "Vendor Advisory"
+                    ]
+                },
+                {
+                    "url": "https://www.volexity.com/blog/2024/04/12/zero-day-exploitation-of-unauthenticated-remote-code-execution-vulnerability-in-globalprotect-cve-2024-3400/",
+                    "source": "psirt@paloaltonetworks.com",
+                    "tags": [
+                        "Exploit",
+                        "Third Party Advisory"
+                    ]
+                }
+            ]
+        },
+        "fields": {
+            "description": "A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.\n\nCloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability.",
+            "cvemodified": "2024-04-18T01:00:01.527",
+            "published": "2024-04-12T08:15:06.230",
+            "updateddate": "2024-04-18T01:00:01.527",
+            "vulnerabilities": [
+                {
+                    "source": "nvd@nist.gov",
+                    "type": "Primary",
+                    "description": [
+                        {
+                            "lang": "en",
+                            "value": "CWE-77"
+                        }
+                    ]
+                },
+                {
+                    "source": "psirt@paloaltonetworks.com",
+                    "type": "Secondary",
+                    "description": [
+                        {
+                            "lang": "en",
+                            "value": "CWE-77"
+                        }
+                    ]
+                }
+            ],
+            "publications": [
+                {
+                    "title": "CVE-2024-3400",
+                    "source": "psirt@paloaltonetworks.com",
+                    "link": "https://security.paloaltonetworks.com/CVE-2024-3400"
+                },
+                {
+                    "title": "CVE-2024-3400",
+                    "source": "psirt@paloaltonetworks.com",
+                    "link": "https://unit42.paloaltonetworks.com/cve-2024-3400/"
+                },
+                {
+                    "title": "CVE-2024-3400",
+                    "source": "psirt@paloaltonetworks.com",
+                    "link": "https://www.volexity.com/blog/2024/04/12/zero-day-exploitation-of-unauthenticated-remote-code-execution-vulnerability-in-globalprotect-cve-2024-3400/"
+                }
+            ],
+            "vulnerableproducts": [
+                {
+                    "CPE": "cpe:2.3:o:paloaltonetworks:pan-os:10.2.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "CPE": "cpe:2.3:o:paloaltonetworks:pan-os:11.0.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "CPE": "cpe:2.3:o:paloaltonetworks:pan-os:11.1.0:*:*:*:*:*:*:*"
+                }
+            ],
+            "cvssversion": "3.1",
+            "cvssscore": 6.0,
+            "cvssvector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+            "sourceoriginalseverity": 6.0,
+            "cvsstable": [
+                {
+                    "metrics": "source",
+                    "value": "nvd@nist.gov"
+                },
+                {
+                    "metrics": "type",
+                    "value": "Primary"
+                },
+                {
+                    "metrics": "version",
+                    "value": "3.1"
+                },
+                {
+                    "metrics": "vectorString",
+                    "value": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
+                },
+                {
+                    "metrics": "attackVector",
+                    "value": "NETWORK"
+                },
+                {
+                    "metrics": "attackComplexity",
+                    "value": "LOW"
+                },
+                {
+                    "metrics": "privilegesRequired",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "userInteraction",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "scope",
+                    "value": "CHANGED"
+                },
+                {
+                    "metrics": "confidentialityImpact",
+                    "value": "HIGH"
+                },
+                {
+                    "metrics": "integrityImpact",
+                    "value": "HIGH"
+                },
+                {
+                    "metrics": "availabilityImpact",
+                    "value": "HIGH"
+                },
+                {
+                    "metrics": "baseScore",
+                    "value": 10.0
+                },
+                {
+                    "metrics": "baseSeverity",
+                    "value": "CRITICAL"
+                },
+                {
+                    "metrics": "exploitabilityScore",
+                    "value": 3.9
+                },
+                {
+                    "metrics": "impactScore",
+                    "value": 6.0
+                }
+            ],
+            "tags": [
+                "Paloaltonetworks",
+                "Pan-os",
+                "Operating-System"
+            ],
+            "trafficlightprotocol": ""
+        },
+        "score": 2
+    }
+]
