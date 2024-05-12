@@ -1,12 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import copy
-
-from CommonServerUserPython import *  # noqa
-from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
 import urllib3
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa
+from CrowdStrikeApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 
@@ -99,7 +99,8 @@ def kill_chain_standard_values(phases: list | None):
 
 class Client(CrowdStrikeClient):
 
-    def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
+    def __init__(self, credentials, base_url, include_deleted, type, limit, indicator_field_to_fetch_by,
+                 tlp_color=None, feed_tags=None,
                  malicious_confidence=None, filter_string=None, generic_phrase=None, insecure=True, proxy=False,
                  first_fetch=None, create_relationships=True, timeout='10'):
         params = assign_params(credentials=credentials,
@@ -119,6 +120,7 @@ class Client(CrowdStrikeClient):
         self.limit = limit
         self.first_fetch = first_fetch
         self.create_relationships = create_relationships
+        self.indicator_field_to_fetch_by = indicator_field_to_fetch_by
 
     def get_indicators(self, params):
         response = super().http_request(
@@ -547,6 +549,7 @@ def main() -> None:
     feed_tags = argToList(params.get('feedTags'))
     create_relationships = params.get('create_relationships', True)
     timeout = params.get('timeout')
+    indicator_field_to_fetch_by = params.get('indicator_field_to_fetch_by')
 
     args = demisto.args()
 
@@ -559,6 +562,7 @@ def main() -> None:
             base_url=base_url,
             insecure=insecure,
             proxy=proxy,
+            indicator_field_to_fetch_by=indicator_field_to_fetch_by,
             tlp_color=tlp_color,
             feed_tags=feed_tags,
             include_deleted=include_deleted,

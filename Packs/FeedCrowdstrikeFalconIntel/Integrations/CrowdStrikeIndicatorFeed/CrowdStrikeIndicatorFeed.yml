@@ -161,6 +161,16 @@ configuration:
   type: 8
   hidden: true
   required: false
+- additionalinfo: "Choose which indicator field to fetch indicators by. Default field is 'last updated'."
+  display: Indicator field to fetch by
+  name: indicator_field_to_fetch_by
+  options:
+  - last updated
+  - published date
+  defaultvalue: last updated
+  type: 16
+  required: true
+  section: Collect
 description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
 display: CrowdStrike Indicator Feed
 name: CrowdStrike Indicator Feed
@@ -229,7 +239,7 @@ script:
       type: Unknown
   - description: 'Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.'
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.92207
   feed: true
   runonce: false
   script: '-'
