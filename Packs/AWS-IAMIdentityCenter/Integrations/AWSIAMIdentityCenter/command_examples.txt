@@ -1,0 +1,15 @@
+!aws-iam-identitycenter-create-group description=New displayName=NewGroup
+!aws-iam-identitycenter-create-user displayName=example familyName=fam givenName=example userName=exampleName userEmailAddress=test@example.com
+!aws-iam-identitycenter-get-group displayName=NewGroup
+!aws-iam-identitycenter-update-group description=changed displayName=NewGroup
+!aws-iam-identitycenter-update-user userName=example familyName=changed
+!aws-iam-identitycenter-get-user userName=exampleName
+!aws-iam-identitycenter-add-user-to-group groupName=NewGroup userName=exampleName
+!aws-iam-identitycenter-delete-group groupName=NewGroup
+!aws-iam-identitycenter-delete-group-membership userName=exampleName
+!aws-iam-identitycenter-delete-user userName=exampleName
+!aws-iam-identitycenter-get-user-by-email emailAddress=test@example.com
+!aws-iam-identitycenter-list-users
+!aws-iam-identitycenter-list-groups
+!aws-iam-identitycenter-list-groups-for-user userName=exampleName
+!aws-iam-identitycenter-list-memberships groupName=NewGroup
