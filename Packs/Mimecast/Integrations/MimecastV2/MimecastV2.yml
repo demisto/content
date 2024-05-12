@@ -255,7 +255,7 @@ script:
       description: Block emails to receiver type.
       type: string
   - arguments:
-    - description: Filter by policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies and mimecast-list-webwhiteurl-policies.
+    - description: Filter by policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies.
       name: policyID
       required: true
     - description: According to this argument an endpoint is selected.
@@ -266,7 +266,6 @@ script:
       - blockedsenders
       - antispoofing-bypass
       - address-alteration
-      - webwhiteurl
     description: Get a blocked sender policy by ID.
     name: mimecast-get-policy
     outputs:
@@ -389,7 +388,7 @@ script:
       description: The receiver type.
       type: String
   - arguments:
-    - description: policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies and mimecast-list-webwhiteurl-policies.
+    - description: policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies.
       name: policyID
       required: true
     - description: According to this argument an endpoint is selected.
@@ -401,7 +400,6 @@ script:
       - blockedsenders
       - antispoofing-bypass
       - address-alteration
-      - webwhiteurl
     description: Delete a Blocked Sender Policy.
     name: mimecast-delete-policy
     outputs:
@@ -2594,170 +2592,6 @@ script:
       - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.lastUpdated
         description: The most recent modification timestamp of the policy.
         type: Date
-  - name: mimecast-create-webwhiteurl-policy
-    description: This endpoint can be used to create a Web Security Block or Allow List policy for domains or URLs.
-    arguments:
-    - name: description
-      description: A description of the policies for future reference.
-      required: true
-    - name: bidirectional
-      description: Determines if the policy should apply in both directions, where the from and to configurations are reversed.
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-    - name: from_date
-      description: string (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false.
-    - name: from_eternal
-      description: Specifies if the policy should have no start date.
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      defaultValue: yes
-    - name: from_part
-      description: Policy from part - envelope_from , header_from, both
-      auto: PREDEFINED
-      predefined:
-      - envelope_from
-      - header_from
-      - both
-    - name: to_date
-      description: Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false.
-    - name: to_eternal
-      description: Specifies if the policy should have no expiration date. 
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      defaultValue: yes
-    - name: action
-      description: Action to be taken - allow or block. 
-      auto: PREDEFINED
-      predefined:
-      - allow
-      - block
-      defaultValue: allow
-    - name: id
-      description: The Mimecast secure ID of web white URL. If omitted (for request) a new web white URL will be created
-    - name: type
-      description: Type of web block/allow list entry - url or domain. 
-      auto: PREDEFINED
-      predefined:
-      - url
-      - domain
-      defaultValue: url
-    - name: value
-      description: Url or domain to be blocked or allowed.
-      required: true 
-    - name: from_type
-      description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name, web_device_group, web_device
-      auto: PREDEFINED
-      predefined:
-      - everyone
-      - internal_addresses
-      - external_addresses
-      - email_domain
-      - profile_group
-      - address_attribute_value
-      - individual_email_address
-      required: true
-    - name: to_type
-      description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name, web_device_group, web_device
-      auto: PREDEFINED
-      predefined:
-      - everyone
-      - internal_addresses
-      - external_addresses
-      - email_domain
-      - profile_group
-      - address_attribute_value
-      - individual_email_address
-      required: true
-  - name: mimecast-update-webwhiteurl-policies
-    description: This endpoint can be used to update an existing Web Security Block or Allow List policy for domains or URLs.
-    arguments:
-    - name: description
-      description: A description of the policies for future reference.
-      required: true
-    - name: id
-      description: The Mimecast secure id of an existing policy.
-      required: true 
-    - name: bidirectional
-      description: Determines if the policy should apply in both email directions, where the sender and recipient configurations are reversed.
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-    - name: comment
-      description: Comment about the policy. This field is not visible within the Administration Console.
-    - name: conditions
-      description: Policy application based on email transmission requirements.
-    - name: enabled
-      description: Determines if the policy should be enabled to process messages. 
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      defaultValue: yes
-    - name: enforced
-      description: Determines if the policy enforcement option is enabled.
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      defaultValue: no
-    - name: from_date
-      description: string (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false.
-    - name: from_eternal
-      description: Specifies if the policy should have no start date.
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      defaultValue: yes
-    - name: from_part
-      description: Policy from part - envelope_from , header_from, both
-      auto: PREDEFINED
-      predefined:
-      - envelope_from
-      - header_from
-      - both
-    - name: to_date
-      description: Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false.
-    - name: to_eternal
-      description: Specifies if the policy should have no expiration date. 
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      defaultValue: yes
-    - name: override
-      description: Specifies if the policy should be set as an override, to be considered prior to equally-specific policies.
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-    - name: url_action
-      description: Action to be taken - allow or block. The following values are allowed allow, block.
-      required: true 
-      defaultValue: allow
-      auto: PREDEFINED
-      predefined:
-      - allow
-      - block
-    - name: url_id
-      description: The Mimecast secure ID of web white URL. If omitted (for request) a new web white URL will be created
-    - name: url_type
-      description: Type of web block/allow list entry - url or domain. 
-      defaultValue: url
-      auto: PREDEFINED
-      predefined:
-      - url
-      - domain
-    - name: url_value
-      description: Url or domain to be blocked or allowed.
-      required: true
   - name: mimecast-create-address-alteration-policy
     description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
     arguments:
@@ -2846,6 +2680,10 @@ script:
       - address_attribute_value
       - individual_email_address
       required: true
+    - name: from_value
+      description: Required if fromType is one of email domain, profile group, individual email address. Expected values If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.
+    - name: to_value
+      description: Required if toType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.
   - name: mimecast-update-address-alteration-policy
     description: This API endpoint can be used to update an existing Address Alteration policy.
     arguments:

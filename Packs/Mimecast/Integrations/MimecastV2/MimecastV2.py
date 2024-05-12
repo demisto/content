@@ -3477,7 +3477,9 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     to_eternal = argToBoolean(args.get('to_eternal'))
     override = argToBoolean(args.get('override')) if args.get('override') else None
     from_type = args.get('from_type')
+    from_value = args.get('from_value')
     to_type = args.get('to_type')
+    to_value = args.get('to_value')
 
     data = {
         'addressAlterationSetId': policy_id,
@@ -3487,15 +3489,15 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
             'enforced': enforced,
             'fromEternal': from_eternal,
             'toEternal': to_eternal,
-            'from': {
-                'type': from_type
-            },
-            'to': {
-                'type': to_type
-            }
+            "fromType": from_type,
+            "toType": to_type,
         }
     }
 
+    if from_value:
+        data['policy']['fromValue'] = from_value
+    if to_value:
+        data['policy']['toValue'] = to_value
     if bidirectional:
         data['bidirectional'] = bidirectional
     if comment:
