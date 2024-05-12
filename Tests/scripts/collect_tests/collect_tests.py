@@ -17,7 +17,7 @@ from Tests.Marketplace.marketplace_services import get_last_commit_from_index, g
 from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACES_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
-    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
+    XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES,
     TEST_DATA_PATTERN)
 from Tests.scripts.collect_tests.exceptions import (
@@ -743,7 +743,6 @@ class BranchTestCollector(TestCollector):
         self.branch_name = branch_name
         self.service_account = service_account
         self.build_bucket_path = build_bucket_path
-
 
     def _collect(self) -> CollectionResult | None:
         collect_from = self._get_git_diff()
@@ -1487,7 +1486,7 @@ if __name__ == '__main__':
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:
             collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace, graph)
-        else: # todo - will not need this case - will be part of the nightly
+        else:  # todo - will not need this case - will be part of the nightly, but will need it for test upload flow
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     elif sdk_nightly:
