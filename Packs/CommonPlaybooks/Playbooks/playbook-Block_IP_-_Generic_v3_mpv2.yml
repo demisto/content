@@ -1290,7 +1290,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst
+        simple: Investigator
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
@@ -3052,7 +3052,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst
+        simple: Investigator
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
@@ -3778,4 +3778,4 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels: []
 marketplaces:
-  - xsoar
+  - marketplacev2

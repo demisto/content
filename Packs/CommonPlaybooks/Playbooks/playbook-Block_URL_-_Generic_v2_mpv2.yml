@@ -814,7 +814,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst
+        simple: Investigator
       subject:
         simple: 'User Verification - Block URLs (Inc #${incident.id})'
       body:
@@ -1418,4 +1418,4 @@ tests:
 fromversion: 6.5.0
 system: true
 marketplaces:
-  - xsoar
+  - marketplacev2
