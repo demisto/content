@@ -831,7 +831,6 @@ script:
       type: string
   - description: discover authentication types that are supported for your account and which base URL to use for the requesting user.
     name: mimecast-discover
-    deprecated: true
     outputs:
     - contextPath: Mimecast.Authentication.AuthenticationTypes
       description: List of authentication types available to the user.
@@ -844,10 +843,8 @@ script:
       type: string
   - description: Refresh access key validity.
     name: mimecast-refresh-token
-    deprecated: true
   - description: Login to generate Access Key and  Secret Key.
     name: mimecast-login
-    deprecated: true
   - arguments:
     - description: Message ID.
       name: messageID
@@ -2075,7 +2072,8 @@ script:
   - name: mimecast-get-archive-search-logs
     description: Retrieves archive search logs.
     arguments:
-    - name: query_xml
+    - name: query
+      description: Text to search within the logs, which can contain email addresses. See query examples https://integrations.mimecast.com/documentation/tutorials/building-search-queries/
     - name: page
       description: Page number for pagination.
     - name: page_size

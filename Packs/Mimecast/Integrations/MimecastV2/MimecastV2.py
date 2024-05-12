@@ -20,26 +20,35 @@ from xml.etree import ElementTree
 print('args:', demisto.args())
 print('params:', demisto.params())
 
+try:
+    BASE_URL = demisto.params().get('baseUrl')
+    ACCESS_KEY = demisto.params().get('accessKey')
+    
+    SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds')
+    if isinstance(SECRET_KEY, dict):
+        SECRET_KEY = SECRET_KEY.get('password', '')
+    APP_ID = demisto.params().get('appId')
+    APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {})
+    if isinstance(APP_KEY, dict):
+        APP_KEY = APP_KEY.get('password', '')
 
-BASE_URL = demisto.params().get('baseUrl')
-ACCESS_KEY = demisto.params().get('accessKey')
-SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
-APP_ID = demisto.params().get('appId')
-APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
-
-USE_SSL = None  # assigned in determine_ssl_usage
-PROXY = bool(demisto.params().get('proxy'))
-# Flags to control which type of incidents are being fetched
-FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
-FETCH_ALL = 'All' in FETCH_PARAMS
-FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
-FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
-FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
-FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
-# Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
-FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+    USE_SSL = None  # assigned in determine_ssl_usage
+    PROXY = bool(demisto.params().get('proxy'))
+    # Flags to control which type of incidents are being fetched
+    FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
+    FETCH_ALL = 'All' in FETCH_PARAMS
+    FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
+    FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
+    FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
+    FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
+    # Used to refresh token / discover available auth types / login
+    EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
+    PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {})
+    if isinstance(PASSWORD, dict):
+        PASSWORD = PASSWORD.get('password', '')
+    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+except:
+    pass
 
 
 CLIENT_ID = demisto.params().get('client_id')
@@ -525,7 +534,7 @@ def get_archive_search_logs_request(args):
     :rtype: dict
     """
 
-    query = args.get('query_xml', '')
+    query = args.get('query', '')
     requestBody = None
     if query:
         requestBody = {
