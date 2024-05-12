@@ -2699,8 +2699,8 @@ def main() -> None:
     try:
         # Retrieve XSOAR params
         base_url = demisto.params().get('url')
-        username = demisto.params().get('credentials', {}).get('identifier')
-        secret = demisto.params().get('credentials', {}).get('password')
+        username = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('username')
+        secret = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
         verify_certificate = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
         request_timeout = get_request_timeout()
