@@ -52,20 +52,54 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "indicator_rulereference",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Meta",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_rawrule",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "indicator_rulestrings",
                         "isVisible": true
                     },
                     {
                         "fieldId": "indicator_rulecondition",
                         "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_rawrule",
-                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
                 "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_publications",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Additional Data",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
@@ -439,32 +473,16 @@
                         "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 6
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-f4943560-e542-11ee-a45c-d1e6a9d22f67",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Relationships",
-                        "static": false,
-                        "type": "relationshipsTable",
-                        "w": 1,
-                        "x": 0,
                         "y": 4
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
                         "i": "indicator-quick-view-info-fd6067e0-e542-11ee-a45c-d1e6a9d22f67",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "author",
-                                "height": 22,
+                                "height": 26,
                                 "id": "0af10040-e543-11ee-a45c-d1e6a9d22f67",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -472,19 +490,39 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "ruleid",
-                                "height": 22,
-                                "id": "2ad3fed0-e543-11ee-a45c-d1e6a9d22f67",
+                                "fieldId": "description",
+                                "height": 52,
+                                "id": "02557ba0-0d0c-11ef-8f04-cbecc5f8d970",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 22,
-                                "id": "27dcdee0-e543-11ee-a45c-d1e6a9d22f67",
+                                "fieldId": "ruleid",
+                                "height": 26,
+                                "id": "2ad3fed0-e543-11ee-a45c-d1e6a9d22f67",
                                 "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "rulereference",
+                                "height": 26,
+                                "id": "0e8ec160-0d0c-11ef-8f04-cbecc5f8d970",
+                                "index": 3,
+                                "listId": "indicator-quick-view-info-fd6067e0-e542-11ee-a45c-d1e6a9d22f67",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 26,
+                                "id": "27dcdee0-e543-11ee-a45c-d1e6a9d22f67",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -496,20 +534,95 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "displayType": "ROW",
+                        "hideName": false
                     },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-181dceb0-0d0c-11ef-8f04-cbecc5f8d970",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "rawrule",
+                                "height": 106,
+                                "id": "22337120-0d0c-11ef-8f04-cbecc5f8d970",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rulestrings",
+                                "height": 106,
+                                "id": "28b9ab40-0d0c-11ef-8f04-cbecc5f8d970",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rulecondition",
+                                "height": 26,
+                                "id": "2a4924e0-0d0c-11ef-8f04-cbecc5f8d970",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Rule",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "xspz7jirx9",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "xspz7jirx9-5ccc5b80-0d0c-11ef-8f04-cbecc5f8d970",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "egomwlkovy",
+                "name": "Additional Data",
+                "sections": [
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "indicator-quick-view-info-13f24c80-e543-11ee-a45c-d1e6a9d22f67",
+                        "i": "egomwlkovy-e66608f0-0d0c-11ef-8f04-cbecc5f8d970",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "description",
-                                "height": 44,
-                                "id": "0e0ff380-e543-11ee-a45c-d1e6a9d22f67",
+                                "fieldId": "publications",
+                                "height": 26,
+                                "id": "e7dca360-0d0c-11ef-8f04-cbecc5f8d970",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -518,11 +631,11 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Description",
+                        "name": "References",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 0
                     }
                 ],
                 "type": "custom"
