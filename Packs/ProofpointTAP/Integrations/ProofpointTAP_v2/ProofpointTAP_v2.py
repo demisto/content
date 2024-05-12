@@ -545,14 +545,15 @@ def validate_start_query_time(start_query_time: str):
         Returns:
             A valid datetime for the start_query_time
         """
-    datetime_start_query_time = datetime.strptime(start_query_time, DATE_FORMAT)
+    demisto.debug(f'In validate_start_query_time {start_query_time=}')
+    dt_start_query_time = datetime.strptime(start_query_time, DATE_FORMAT) if start_query_time else get_now() - timedelta(hours=1)
     seven_days_ago = get_now() - timedelta(days=7)
-    if datetime_start_query_time <= seven_days_ago:
+    if dt_start_query_time <= seven_days_ago:
         new_start_query_time = get_now() - timedelta(days=6, hours=23)
         demisto.debug(f'The {start_query_time=} is more than 7 days ago. Replacing it with {new_start_query_time=}')
         return new_start_query_time
     demisto.debug(f'The {start_query_time=} is less than 7 days ago')
-    return datetime_start_query_time
+    return dt_start_query_time
 
 
 def fetch_incidents(
@@ -579,7 +580,8 @@ def fetch_incidents(
     start_query_time = last_run.get("last_fetch")
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
-        start_query_time = dateparser.parse(date_string=f'{first_fetch_time} UTC').strftime(DATE_FORMAT)
+        dt_start_query_time = dateparser.parse(date_string=f'{first_fetch_time} UTC')
+        start_query_time = dt_start_query_time.strftime(DATE_FORMAT) if dt_start_query_time else ''
 
     # validate that the start time is no more than 7 days ago
     start_query_time = validate_start_query_time(start_query_time)

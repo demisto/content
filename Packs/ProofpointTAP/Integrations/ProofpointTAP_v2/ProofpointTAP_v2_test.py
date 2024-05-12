@@ -1120,3 +1120,20 @@ def test_validate_start_query_time_not_valid():
     expected_start_query_time = datetime.now() - timedelta(days=6, hours=23)
     validated_start_query_time = validate_start_query_time(start_query_time)
     assert expected_start_query_time == validated_start_query_time
+
+
+@freeze_time("2024-05-03T11:00:00", tz_offset=0)
+def test_validate_start_query_time_empty():
+    """
+        Given:
+         - An empty string as start_query_time
+        When:
+         - running fetch_incidents.
+        Then:
+         - Ensure that a valid datetime object is returned (less than 7 days ago).
+    """
+    from ProofpointTAP_v2 import validate_start_query_time
+    start_query_time = ''
+    expected_start_query_time = datetime.now() - timedelta(hours=1)
+    validated_start_query_time = validate_start_query_time(start_query_time)
+    assert expected_start_query_time == validated_start_query_time
