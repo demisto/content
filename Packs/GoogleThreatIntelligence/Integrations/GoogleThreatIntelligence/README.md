@@ -107,10 +107,10 @@ Found safe by relationship files. total_malicious=0 >= 3
   additional information as *last_analysis_results* which contains the service name and its specific analysis.
 - Reputation commands can return relationships of the indicator.
   The relationships that are supported are defined as part of the instance configuration.
-  For more information regarding URL relationships, see: <https://developers.virustotal.com/v3.0/reference#url-object>
-  For more information regarding IP relationships, see: <https://developers.virustotal.com/v3.0/reference#ip-object>
-  For more information regarding Domain relationships, see: <https://developers.virustotal.com/v3.0/reference#domains-1>
-  For more information regarding File relationships, see: <https://developers.virustotal.com/v3.0/reference#files>
+  For more information regarding URL relationships, see: <https://gtidocs.virustotal.com/reference/url-info>
+  For more information regarding IP relationships, see: <https://gtidocs.virustotal.com/reference/ip-info>
+  For more information regarding Domain relationships, see: <https://gtidocs.virustotal.com/reference/domain-info>
+  For more information regarding File relationships, see: <https://gtidocs.virustotal.com/reference/file-info>
 
 - Starting with XSOAR version 6.8.0, You may monitor API usage via the *GoogleThreatIntelligence Execution Metrics* dashboard.
 ### Comments

@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 """
 An integration module for the Google Threat Intelligence API.
 API Documentation:
-    https://developers.virustotal.com/v3.0/reference
+    https://gtidocs.virustotal.com/reference
 """
 from collections import defaultdict
 from typing import cast
@@ -123,7 +123,7 @@ class Client(BaseClient):
     def ip(self, ip: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-info
+            https://gtidocs.virustotal.com/reference/ip-info
         """
         return self._http_request(
             'GET',
@@ -133,7 +133,7 @@ class Client(BaseClient):
     def file(self, file: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#file
+            https://gtidocs.virustotal.com/reference/file-info
         """
         return self._http_request(
             'GET',
@@ -144,7 +144,7 @@ class Client(BaseClient):
     def private_file(self, file: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-files-info
+            https://gtidocs.virustotal.com/reference/private-files-info
         """
         return self._http_request(
             'GET',
@@ -154,7 +154,7 @@ class Client(BaseClient):
     def url(self, url: str, relationships: str = ''):
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#url
+            https://gtidocs.virustotal.com/reference/url-info
         """
         return self._http_request(
             'GET',
@@ -165,7 +165,7 @@ class Client(BaseClient):
     def domain(self, domain: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domain-info
+            https://gtidocs.virustotal.com/reference/domain-info
         """
         return self._http_request(
             'GET',
@@ -179,7 +179,7 @@ class Client(BaseClient):
     def delete_comment(self, id_: str):
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#comment-id-delete
+            https://gtidocs.virustotal.com/reference/comment-id-delete
         """
         self._http_request(
             'DELETE',
@@ -190,7 +190,7 @@ class Client(BaseClient):
     def get_ip_comments(self, ip: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-comments-get
+            https://gtidocs.virustotal.com/reference/ip-comments-get
         """
 
         return self._http_request(
@@ -202,7 +202,7 @@ class Client(BaseClient):
     def get_url_comments(self, url: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-comments-get
+            https://gtidocs.virustotal.com/reference/urls-comments-get
 
         """
         return self._http_request(
@@ -214,7 +214,7 @@ class Client(BaseClient):
     def get_hash_comments(self, file_hash: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-comments-get
+            https://gtidocs.virustotal.com/reference/files-comments-get
         """
         return self._http_request(
             'GET',
@@ -225,7 +225,7 @@ class Client(BaseClient):
     def get_domain_comments(self, domain: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-comments-get
+            https://gtidocs.virustotal.com/reference/domains-comments-get
         """
         return self._http_request(
             'GET',
@@ -236,7 +236,7 @@ class Client(BaseClient):
     def get_comment_by_id(self, comment_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-comment
+            https://gtidocs.virustotal.com/reference/get-comment
         """
         return self._http_request(
             'GET',
@@ -262,28 +262,28 @@ class Client(BaseClient):
     def add_comment_to_ip(self, ip: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-comments-post
+            https://gtidocs.virustotal.com/reference/ip-comments-post
         """
         return self.add_comment(f'ip_addresses/{ip}/comments', comment)
 
     def add_comment_to_url(self, url: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-comments-post
+            https://gtidocs.virustotal.com/reference/urls-comments-post
         """
         return self.add_comment(f'urls/{encode_url_to_base64(url)}/comments', comment)
 
     def add_comment_to_domain(self, domain: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-comments-post
+            https://gtidocs.virustotal.com/reference/domains-comments-post
         """
         return self.add_comment(f'domains/{domain}/comments', comment)
 
     def add_comment_to_file(self, resource: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-comments-post
+            https://gtidocs.virustotal.com/reference/files-comments-post
         """
         return self.add_comment(f'files/{resource}/comments', comment)
 
@@ -293,7 +293,7 @@ class Client(BaseClient):
     def file_rescan(self, file_hash: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-analyse
+            https://gtidocs.virustotal.com/reference/files-analyse
         """
         return self._http_request(
             'POST',
@@ -303,7 +303,7 @@ class Client(BaseClient):
     def file_scan(self, file_path: str, /, upload_url: Optional[str]) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/files-scan
+            https://gtidocs.virustotal.com/reference/files-analyse
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
@@ -333,7 +333,7 @@ class Client(BaseClient):
     def private_file_scan(self, file_path: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/post_files
+            https://gtidocs.virustotal.com/reference/post_files-1
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
@@ -362,7 +362,7 @@ class Client(BaseClient):
     def get_upload_url(self) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-upload-url
+            https://gtidocs.virustotal.com/reference/files-upload-url
         """
         return self._http_request(
             'GET',
@@ -372,7 +372,7 @@ class Client(BaseClient):
     def get_private_upload_url(self) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-files-upload-url
+            https://gtidocs.virustotal.com/reference/private-files-upload-url
         """
         return self._http_request(
             'GET',
@@ -382,7 +382,7 @@ class Client(BaseClient):
     def url_scan(self, url: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls
+            https://gtidocs.virustotal.com/reference/urls-analyse
         """
         return self._http_request(
             'POST',
@@ -395,7 +395,7 @@ class Client(BaseClient):
     def file_sandbox_report(self, file_hash: dict, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-relationships
+            https://gtidocs.virustotal.com/reference/files-relationships
         """
         return self._http_request(
             'GET',
@@ -407,7 +407,7 @@ class Client(BaseClient):
     def passive_dns_data(self, id: dict, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
+            https://gtidocs.virustotal.com/reference/ip-relationships
         """
         return self._http_request(
             'GET',
@@ -418,7 +418,7 @@ class Client(BaseClient):
     def search(self, query: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#search-1
+            https://gtidocs.virustotal.com/reference/intelligence-search
         """
         return self._http_request(
             'GET',
@@ -429,7 +429,7 @@ class Client(BaseClient):
     def get_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#analysis
+            https://gtidocs.virustotal.com/reference/analysis
         """
         return self._http_request(
             'GET',
@@ -439,7 +439,7 @@ class Client(BaseClient):
     def get_private_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-analysis
+            https://gtidocs.virustotal.com/reference/private-analysis
         """
         return self._http_request(
             'GET',
@@ -449,7 +449,7 @@ class Client(BaseClient):
     def get_private_file_from_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/item-1
+            https://gtidocs.virustotal.com/reference/analysesidrelationship
         """
         return self._http_request(
             'GET',
@@ -459,7 +459,7 @@ class Client(BaseClient):
     def get_file_sigma_analysis(self, file_hash: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/files#relationships
+            https://gtidocs.virustotal.com/reference/files-relationships
         """
         return self._http_request(
             'GET',

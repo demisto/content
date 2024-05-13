@@ -69,4 +69,4 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 **Additional information**
 - [Contact the Google Threat Intelligence team](https://www.virustotal.com/gui/contact-us)
 - [Google Threat Intelligence website](https://www.virustotal.com/)
-- [Google Threat Intelligence API developer reference guide](<GTI doc url>)
+- [Google Threat Intelligence API developer reference guide](https://gtidocs.virustotal.com/reference)
