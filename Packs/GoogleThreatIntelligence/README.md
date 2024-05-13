@@ -67,9 +67,6 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 
 
 **Additional information**
-- [Contact the VirusTotal team](https://www.virustotal.com/gui/contact-us)
-- [VirusTotal public website](https://www.virustotal.com/)
-- [VirusTotal API developer reference guide](https://developers.virustotal.com/v3.0/reference)
-- [VirusTotal 360 overview brief](https://www.virustotal.com/go/vt360)
-- [VirusTotal service catalog](http://www.virustotal.com/go/vt-services-catalog)
-- [VirusTotal webinars](https://www.brighttalk.com/search/?q=%22Google+Cloud+Security%22+%22VirusTotal%22)
+- [Contact the Google Threat Intelligence team](https://www.virustotal.com/gui/contact-us)
+- [Google Threat Intelligence website](https://www.virustotal.com/)
+- [Google Threat Intelligence API developer reference guide](<GTI doc url>)
