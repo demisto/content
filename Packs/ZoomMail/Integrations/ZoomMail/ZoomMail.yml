@@ -89,7 +89,7 @@ script:
     - name: zoom-mail-email-move-trash
       arguments:
         - name: email
-          required: true
+          required: false
           description: The target mailbox to delete the email from
         - name: message_id
           description: The message_id of the message to delete
@@ -98,7 +98,7 @@ script:
     - name: zoom-mail-email-list
       arguments:
         - name: email
-          required: true
+          required: false
           description: The target mailbox to list emails.
         - name: query
           description: Query to filter emails within the given mailbox.
@@ -109,7 +109,7 @@ script:
         - name: include_spam_trash
           description: Whether or not to include spam or trash messages in the results.
         - name: message_id
-          required: true
+          required: false
           description: The immutable message ID.
         - name: format
           auto: PREDEFINED
@@ -119,10 +119,20 @@ script:
             - minimal
           description: The format to return the message with.
       description: Lists the messages in the user's mailbox.
+      outputs:
+        - contextPath: ZoomMail.Email.messages.id
+          description: The ID of the email message.
+          type: string
+        - contextPath: ZoomMail.Email.messages.threadId
+          description: The ID of the email thread.
+          type: string
+        - contextPath: ZoomMail.Email.resultSizeEstimate
+          description: The estimated amount of messages found.
+          type: number
     - name: zoom-mail-thread-list
       arguments:
         - name: email
-          required: true
+          required: false
           description: The target mailbox to list emails.
         - name: thread_id
           description: Unique identifier for the email thread you want to retrieve.
@@ -142,10 +152,23 @@ script:
         - name: page_token
           description: The token for the next page of results.
       description: Get an email thread.
+      outputs:
+        - contextPath: ZoomMail.Thread.id
+          description: The ID of the email thread.
+          type: string
+        - contextPath: ZoomMail.Thread.status
+          description: The status of the email thread.
+          type: string
+        - contextPath: ZoomMail.Thread.threadName
+          description: The name of the email thread.
+          type: string
+        - contextPath: ZoomMail.Thread.messages
+          description: The messages found in the email thread.
+          type: unknown
     - name: zoom-mail-email-attachment-get
       arguments:
         - name: email
-          required: true
+          required: false
           description: The email address of the inbox.
         - name: message_id
           required: true
@@ -157,7 +180,7 @@ script:
     - name: zoom-mail-send-email
       arguments:
         - name: from
-          required: true
+          required: false
           description: The sender address.
         - name: to
           required: true
@@ -175,10 +198,30 @@ script:
           isArray: true
       description: Sends an email message with support for plain text, HTML, and
         attachments.
+      outputs:
+        - contextPath: ZoomMail.Email.id
+          description: The id of the sent email.
+          type: string
+        - contextPath: ZoomMail.Email.threadId
+          description: The id for the thread of the sent email.
+          type: string
     - name: zoom-mail-mailbox-profile-get
       arguments:
         - name: email
           description: The target mailbox.
+      outputs:
+        - contextPath: ZoomMail.Profile.status
+          description: The status of the mailbox profile.
+          type: string
+        - contextPath: ZoomMail.Profile.emailAddress
+          description: The email address assigned to the mailbox profile.
+          type: string
+        - contextPath: ZoomMail.Profile.messagesTotal
+          description: The total number of messages.
+          type: number
+        - contextPath: ZoomMail.Profile.threadsTotal
+          description: The total number of threads.
+          type: number
       description: Retrieves the mailbox profile.
     - name: zoom-mail-user-list
       description: Lists the available users.
@@ -197,10 +240,23 @@ script:
           description: The token used to fetch the next page.
         - name: license
           description: Indicates if the user is licensed or not.
+      outputs:
+        - contextPath: ZoomMail.User.role_id
+          description: The ID of the users role.
+          type: string
+        - contextPath: ZoomMail.User.display_name
+          description: The display name of the user.
+          type: string
+        - contextPath: ZoomMail.User.id
+          description: The ID of the user.
+          type: string
+        - contextPath: ZoomMail.User.email
+          description: The email for the user.
+          type: unknown
   dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   subtype: python3
 fromversion: 6.10.0
 tests:
-  - No tests (auto formatted)
+  - ZoomMailTest

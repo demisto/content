@@ -286,7 +286,7 @@ class ZoomMailClient(BaseClient):
         )
         return response
 
-    def get_mailbox_profile(self, email: str):
+    def get_mailbox_profile(self, email: Optional[str]):
         """
         Retrieves the profile information of a specified mailbox.
 
@@ -365,7 +365,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     fetch_query: str = params.get("fetch_query", "")
     first_fetch_time: str = params.get("first_fetch", "3 days")
     fetch_labels: str = params.get("fetch_labels", "INBOX")
-    fetch_threads: Optional[bool] = params.get("fetch_threads", False)
+    fetch_threads: Optional[Union[str, bool]] = params.get("fetch_threads", False)
 
     max_fetch = min(int(params.get("max_fetch", 50)), 200)
 
@@ -399,6 +399,8 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     messages = messages_response.get("messages", [])
     message_dates: list[float] = []
 
+    demisto.info(f"Found {len(messages)} messages to process prior to filtering.")
+
     for msg in messages:
         message_id = msg.get("id")
         thread_id = msg.get("threadId", "")
@@ -425,6 +427,8 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
         last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
 
+    demisto.info(f"Found {len(incidents)} incidents to create and {len(messages) - len(incidents)} messages to skip.")
+    demisto.debug(f"Last fetch info: {last_fetch_info}")
     demisto.setLastRun(
         {"last_fetch_info": last_fetch_info, "next_page_token": next_page_token}
     )
@@ -459,8 +463,8 @@ def get_email_thread_command(
     # Validate required arguments
     email = args.get("email")
     thread_id = args.get("thread_id")
-    if not email or not thread_id:
-        raise ValueError("Both 'email' and 'thread_id' arguments are required.")
+    if not thread_id:
+        raise ValueError("The 'thread_id' argument is required.")
 
     # Optional arguments with defaults
     msg_format = args.get("format", "full")
@@ -511,13 +515,13 @@ def trash_email_command(client: ZoomMailClient, args: dict[str, str]) -> Command
                         the API response, and other metadata for use in other parts of the system.
 
     Raises:
-        ValueError: If 'email' or 'message_id' arguments are not provided.
+        ValueError: If 'message_id' argument is not provided.
     """
     # Extract required parameters
     email = args.get("email")
     message_id = args.get("message_id")
-    if not email or not message_id:
-        raise ValueError("Both 'email' and 'message_id' arguments are required.")
+    if not message_id:
+        raise ValueError("The 'message_id' argument is required.")
 
     # Call the client function to trash the email
     response = client.trash_email(email, message_id)
@@ -555,8 +559,6 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
                         the API response, and other metadata for use in other parts of the system.
     """
     email = args.get("email")
-    if not email:
-        raise ValueError("The 'email' argument is required.")
 
     max_results = args.get("max_results", "50")
     page_token = args.get("page_token", "")
@@ -697,10 +699,6 @@ def get_mailbox_profile_command(
     """
     email = args.get("email")
 
-    # Validate that the email parameter is provided
-    if not email:
-        raise ValueError("The 'email' argument is required.")
-
     # Retrieve the mailbox profile using the API client
     profile = client.get_mailbox_profile(email)
 
@@ -813,7 +811,12 @@ def send_email_command(
     # Validate that the email parameter is provided
     if not body or html_body:
         raise ValueError("Either the 'body' or 'html_body' argument is required.")
-
+    if email is None:
+        if not client.default_email:
+            raise ValueError(
+                "No email address was provided and no default email address was set."
+            )
+        email = client.default_email
     message = create_email_message(
         email, recipients, subject, body, html_body, entry_ids
     )
@@ -905,7 +908,10 @@ def generate_send_email_results(response: dict[str, Any]) -> CommandResults:
     """
     if response.get("id"):
         return CommandResults(
-            readable_output=f"Email sent successfully with ID: {response['id']}"
+            readable_output=f"Email sent successfully with ID: {response['id']}",
+            outputs_prefix="ZoomMail.Email",
+            outputs_key_field="id",
+            outputs=response,
         )
     return CommandResults(readable_output="Failed to send email.")
 
@@ -1094,7 +1100,9 @@ def is_required_for_fetch(value: Any) -> bool:
         bool: True if fetching is enabled, and the value is not None and not empty; False otherwise.
     """
     is_fetch_active = demisto.params().get("isFetch", False)
-    return is_fetch_active and value is not None and value != ""
+    if is_fetch_active:
+        return value is not None and value != ""
+    return True
 
 
 def is_required(value: Any) -> bool:
@@ -1127,7 +1135,7 @@ def is_url(value: str) -> bool:
 # Validation rules for parameters
 # Each parameter is mapped to a list of (validation_function, error_message) tuples
 PARAM_RULES: dict[str, list[tuple[Callable, str]]] = {
-    "default_mailbox": [
+    "fetch_from": [
         (is_required_for_fetch, "An email address is required in order to fetch."),
         (is_email, "Email must be a valid email address."),
     ],
@@ -1165,7 +1173,7 @@ def main():
     account_id = params.get("account_id")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    default_email = params.get("default_email", None)
+    default_email = params.get("fetch_from", None)
 
     try:
         client = ZoomMailClient(

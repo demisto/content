@@ -475,7 +475,8 @@ class TestZoomMailClientGetEmailAttachment(unittest.TestCase):
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_attachment_raises_error_if_no_default_email_set(self, mock_http_request):
         """
-        Test that an error is raised when attempting to retrieve an email attachment without providing an email and no default is set.
+        Test that an error is raised when attempting to retrieve an email attachment without providing an email and no default is
+         set.
 
         Given:
           - No default email is set and no email address is provided.
@@ -578,7 +579,8 @@ class TestZoomMailClientGetEmailMessage(unittest.TestCase):
     @patch("ZoomMail.ZoomMailClient._http_request")
     def test_get_email_message_raises_error_if_no_default_email_set(self, mock_http_request):
         """
-        Test that an error is raised when attempting to retrieve an email message without providing an email and no default is set.
+        Test that an error is raised when attempting to retrieve an email message without providing an email and no default is
+         set.
 
         Given:
           - No default email is set and no email address is provided.
@@ -962,6 +964,7 @@ class TestFetchIncidents(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
+        self.client.access_token = "TestToken"
         self.params = {
             "default_mailbox": "default@example.com",
             "first_fetch": "3 days",
@@ -1009,11 +1012,27 @@ class TestFetchIncidents(unittest.TestCase):
         }
         mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
         self.client.list_emails = MagicMock(return_value=mock_list_response)
+        mock_get_email_message_response_1 = load_test_data(
+            "test_data/fetch/fetch_email_1.json"
+        )
+        mock_get_email_message_response_2 = load_test_data(
+            "test_data/fetch/fetch_email_2.json"
+        )
+        mock_get_email_message_response_3 = load_test_data(
+            "test_data/fetch/fetch_email_3.json"
+        )
+        self.client.get_email_message = MagicMock(
+            side_effect=[
+                mock_get_email_message_response_1,
+                mock_get_email_message_response_2,
+                mock_get_email_message_response_3,
+            ]
+        )
 
         fetch_incidents(self.client, self.params)
 
         incidents = mock_incidents.call_args[0][0]
-        assert len(incidents) == 2
+        assert len(incidents) == 3
         assert incidents[0]["name"] == "Zoom Encrypted Email"
 
     @patch("ZoomMail.demisto.getLastRun")
@@ -1042,13 +1061,25 @@ class TestFetchIncidents(unittest.TestCase):
                 {"messages": [{"id": "124", "threadId": "124"}]},
             ]
         )
+        mock_get_email_message_response_1 = load_test_data(
+            "test_data/fetch/fetch_email_1.json"
+        )
+        mock_get_email_message_response_2 = load_test_data(
+            "test_data/fetch/fetch_email_2.json"
+        )
+        self.client.get_email_message = MagicMock(
+            side_effect=[
+                mock_get_email_message_response_1,
+                mock_get_email_message_response_2,
+            ]
+        )
 
         fetch_incidents(self.client, self.params)
 
         # Verify if nextPageToken is handled correctly
         calls = mock_set_last_run.call_args_list
         expected_call = {
-            "last_fetch_info": {"internalDate": 1714987137.321, "ids": ["123"]},
+            "last_fetch_info": {"internalDate": 1714987142.591, "ids": ["123"]},
             "next_page_token": "abc123",
         }
         # Check that setLastRun was called correctly
@@ -1071,6 +1102,7 @@ class TestGetEmailThreadCommand(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
+        self.client.access_token = "TestToken"
         self.args: dict[str, str] = {
             "email": "user@example.com",
             "thread_id": "1001",
@@ -1097,7 +1129,7 @@ class TestGetEmailThreadCommand(unittest.TestCase):
         result = get_email_thread_command(self.client, self.args)
 
         assert isinstance(result, CommandResults)
-        assert "Email Thread 12345" in result.readable_output
+        assert "Email Thread 1001" in result.readable_output
         assert "MYSTERY_GUID" in result.readable_output
 
     @patch("ZoomMail.ZoomMailClient.get_email_thread")
@@ -1141,23 +1173,6 @@ class TestGetEmailThreadCommand(unittest.TestCase):
         )
         assert "msg2" in result.readable_output
 
-    def test_missing_email_argument(self):
-        """
-        Test the response when the required 'email' argument is missing.
-
-        When:
-        - The 'email' argument is not provided in the command arguments.
-
-        Then:
-        - Ensure a ValueError is raised indicating that both 'email' and 'thread_id' are required.
-        """
-        self.args.pop("email")
-
-        with self.assertRaises(ValueError) as context:
-            get_email_thread_command(self.client, self.args)
-
-        assert "Both 'email' and 'thread_id' arguments are required" in str(context.exception)
-
     def test_missing_thread_id_argument(self):
         """
         Test the response when the required 'thread_id' argument is missing.
@@ -1173,7 +1188,7 @@ class TestGetEmailThreadCommand(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             get_email_thread_command(self.client, self.args)
 
-        assert "Both 'email' and 'thread_id' arguments are required" in str(context.exception)
+        assert "The 'thread_id' argument is required." in str(context.exception)
 
 
 class TestTrashEmailCommand(unittest.TestCase):
@@ -1190,6 +1205,7 @@ class TestTrashEmailCommand(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
+        self.client.access_token = "TestToken"
         self.args: dict[str, str] = {
             "email": "user@example.com",
             "message_id": "msg123",
@@ -1211,20 +1227,6 @@ class TestTrashEmailCommand(unittest.TestCase):
         assert isinstance(result, CommandResults)
         assert "was moved to TRASH" in result.readable_output
 
-    def test_missing_email_argument(self):
-        """
-        Test response when required email argument is missing.
-        When:
-        - The 'email' argument is not provided in the command arguments.
-        Then:
-        - Ensure a ValueError is raised indicating that both 'email' and 'message_id' are required.
-        """
-        self.args.pop("email")
-        with self.assertRaises(ValueError) as context:
-            trash_email_command(self.client, self.args)
-
-        assert "Both 'email' and 'message_id' arguments are required" in str(context.exception)
-
     def test_missing_message_id_argument(self):
         """
         Test response when required message_id argument is missing.
@@ -1237,7 +1239,7 @@ class TestTrashEmailCommand(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             trash_email_command(self.client, self.args)
 
-        assert "Both 'email' and 'message_id' arguments are required" in str(context.exception)
+        assert "The 'message_id' argument is required" in str(context.exception)
 
 
 class TestListEmailsCommand(unittest.TestCase):
@@ -1296,21 +1298,6 @@ class TestListEmailsCommand(unittest.TestCase):
         result = list_emails_command(self.client, self.args)
 
         assert "No messages found" in result.readable_output
-
-    def test_missing_email_argument(self):
-        """
-        Test response when the required 'email' argument is missing.
-        When:
-        - The command is executed without an 'email' argument.
-        Then:
-        - Ensure a ValueError is raised indicating that the 'email' argument is required.
-        """
-        del self.args["email"]
-
-        with self.assertRaises(ValueError) as context:
-            list_emails_command(self.client, self.args)
-
-        assert "The 'email' argument is required" in str(context.exception)
 
     @patch("ZoomMail.ZoomMailClient.list_emails")
     def test_optional_parameters_handling(self, mock_list_emails):
@@ -1424,6 +1411,7 @@ class TestGetMailboxProfileCommand(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
+        self.client.access_token = "TestToken"
         self.args = {"email": "user@example.com"}
 
     @patch("ZoomMail.ZoomMailClient.get_mailbox_profile")
@@ -1458,20 +1446,6 @@ class TestGetMailboxProfileCommand(unittest.TestCase):
         assert "active" in result.readable_output
         assert "2048 bytes" in result.readable_output
 
-    def test_missing_email_argument(self):
-        """
-        Test response when the 'email' argument is missing.
-        When:
-        - The command is executed without an 'email' argument.
-        Then:
-        - Verify that a ValueError is raised indicating that the 'email' argument is required.
-        """
-        with self.assertRaises(ValueError) as context:
-            missing_args = {}
-            get_mailbox_profile_command(self.client, missing_args)
-
-        assert "The 'email' argument is required" in str(context.exception)
-
 
 class TestListUsersCommand(unittest.TestCase):
     def setUp(self):
@@ -1487,6 +1461,7 @@ class TestListUsersCommand(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
+        self.client.access_token = "TestToken"
         self.args = {
             "status": "active",
             "limit": "50",
@@ -1508,8 +1483,18 @@ class TestListUsersCommand(unittest.TestCase):
         """
         mock_list_users.return_value = {
             "users": [
-                {"email": "user1@example.com", "first_name": "John", "last_name": "Doe", "type": "admin", "status": "active"},
-                {"email": "user2@example.com", "first_name": "Jane", "last_name": "Smith", "type": "member", "status": "inactive"},
+                {
+                    "email": "user1@example.com",
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "type": "admin",
+                    "status": "active"
+                }, {
+                    "email": "user2@example.com",
+                    "first_name": "Jane",
+                    "last_name": "Smith",
+                    "type": "member",
+                    "status": "inactive"},
             ]
         }
 
@@ -1544,7 +1529,15 @@ class TestListUsersCommand(unittest.TestCase):
         - Ensure pagination is handled correctly and subsequent user data is retrieved.
         """
         mock_list_users.return_value = {
-            "users": [{"email": "user3@example.com", "first_name": "Alice", "last_name": "Johnson", "type": "admin", "status": "active"}],
+            "users": [
+                {
+                    "email": "user3@example.com",
+                    "first_name": "Alice",
+                    "last_name": "Johnson",
+                    "type": "admin",
+                    "status": "active"
+                }
+            ],
             "nextPageToken": "abc123",
         }
         self.args["next_page_token"] = "abc123"
@@ -1570,6 +1563,7 @@ class TestProcessAttachments(unittest.TestCase):
             account_id="test_account_id",
             default_email="default@example.com",
         )
+        self.client.access_token = "TestToken"
         self.email = "test@example.com"
         self.message = {
             "id": "123",
@@ -1610,7 +1604,7 @@ class TestProcessAttachments(unittest.TestCase):
         """
         encoded_data = base64.urlsafe_b64encode(b"Test file content").decode("ascii")
         mock_get_email_attachment.return_value = {"data": encoded_data}
-        result = process_attachments(self.message, this.client, self.email)
+        result = process_attachments(self.message, self.client, self.email)
         assert len(result) == 2  # Ensure both attachments are processed
         assert result[0]["name"] == "file1.pdf"
         assert result[1]["name"] == "file2.pdf"
