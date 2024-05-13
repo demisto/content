@@ -446,7 +446,10 @@ def list_external_service_command(client: Client, args: dict[str, Any]) -> Comma
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
-        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        if '.' in ip_address:
+            search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        else:
+            search_params.append({"field": "ipv6_address", "operator": "eq", "value": ip_address})
     if domain:
         search_params.append({"field": "domain", "operator": "contains", "value": domain})
     if is_active:
@@ -591,7 +594,10 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
-        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        if '.' in ip_address:
+            search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        else:
+            search_params.append({"field": "ipv6_address", "operator": "eq", "value": ip_address})
     if name:
         search_params.append({"field": "name", "operator": "contains", "value": name})
     if asm_type:
