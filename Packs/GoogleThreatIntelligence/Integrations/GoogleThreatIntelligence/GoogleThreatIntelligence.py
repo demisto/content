@@ -6,7 +6,6 @@ API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
 from collections import defaultdict
-from collections.abc import Callable
 from typing import cast
 
 from dateparser import parse
