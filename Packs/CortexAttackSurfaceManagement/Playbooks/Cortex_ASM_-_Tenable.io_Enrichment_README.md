@@ -36,4 +36,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Cortex ASM - Tenable.io Enrichment](../doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
+![Cortex ASM - Tenable.io Enrichment](../doc_files/Cortex_ASM_-_Tenable_io_Enrichment.png)

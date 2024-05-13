@@ -164,23 +164,22 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "additionalemailaddresses",
+                                "height": 26,
+                                "id": "c477b540-d63e-11ee-a660-f13ca793ceb6",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "categories",
                                 "height": 22,
                                 "id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
                                 "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-							{
-								"endCol": 2,
-								"fieldId": "additionalemailaddresses",
-								"height": 26,
-								"id": "c477b540-d63e-11ee-a660-f13ca793ceb6",
-								"index": 11,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-
+                            }
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -517,7 +516,7 @@
                         "y": 14
                     },
                     {
-                        "description": "",
+                        "description": ":warning: This section contains the original HTML of the email. Links may lead to malicious websites!",
                         "h": 6,
                         "i": "swtuqptgvs-ca48f510-f322-11ed-8c15-d92844a806b0",
                         "items": [],
@@ -1357,6 +1356,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.1.0",
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }

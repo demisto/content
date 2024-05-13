@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Any, Optional
+from typing import Any
 from oci.regions import is_region
 from oci.signer import Signer
 
@@ -23,13 +23,14 @@ class Client(BaseClient):
     """
 
     def __init__(self, verify_certificate: bool, proxy: bool, user_ocid: str, private_key: str, key_fingerprint: str,
-                 tenancy_ocid: str, region: str):
-        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid)
+                 tenancy_ocid: str, region: str, compartment_id: str, private_key_type: str):
+        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid, private_key_type)
         self.base_url = self.build_audit_base_url(region)
-        self.compartment_id = tenancy_ocid
+        self.compartment_id = compartment_id if compartment_id else tenancy_ocid
         super().__init__(proxy=proxy, verify=verify_certificate, auth=self.singer, base_url=self.base_url)
 
-    def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str) -> dict[str, str]:
+    def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str,
+                            private_key_type: str) -> dict[str, str]:
         """Build a singer object.
         The Signer used as part of making raw requests.
 
@@ -38,6 +39,7 @@ class Client(BaseClient):
             private_key (str): Private Key parameter.
             key_fingerprint (str): API Key Fingerprint parameter.
             tenancy_ocid (str): Tenancy OCID parameter.
+            private_key_type (str): The type of the private key.
 
         Raises:
             DemistoException: If the singer object is invalid.
@@ -46,7 +48,7 @@ class Client(BaseClient):
             (dict): A config dictionary that can be used to create Audit clients.
         """
         try:
-            validated_private_key = self.validate_private_key_syntax(private_key)
+            validated_private_key = self.validate_private_key_syntax(private_key, private_key_type)
 
             singer = Signer(
                 tenancy=tenancy_ocid,
@@ -80,7 +82,7 @@ class Client(BaseClient):
 
         return f'https://audit.{region}.oraclecloud.com/{PORT}/auditEvents'
 
-    def validate_private_key_syntax(self, private_key_parameter: str) -> str:
+    def validate_private_key_syntax(self, private_key_parameter: str, private_key_type: str) -> str:
         """Validate private key parameter syntax.
         The Private Key parameter needs to be provided to the OCI SDK singer object in a specific format.
         The most common way to obtain the private key is to download a .pem file from the OCI console.
@@ -98,6 +100,8 @@ class Client(BaseClient):
 
         Args:
             private_key_parameter (str): Private Key parameter.
+            private_key_type(str): The type of the private key PKCS#1 and PKCS#8.
+                More info about the types: https://stackoverflow.com/questions/48958304/pkcs1-and-pkcs8-format-for-rsa-private-key
 
         Returns:
             str: Private Key parameter unescaped and spaceless.
@@ -108,8 +112,13 @@ class Client(BaseClient):
         if ' ' not in private_key:
             return private_key
 
-        prefix = '-----BEGIN PRIVATE KEY-----\n'
-        postfix = '\n-----END PRIVATE KEY-----'
+        demisto.debug(f'{private_key_type=}')
+        if private_key_type == 'PKCS#8':
+            prefix = '-----BEGIN PRIVATE KEY-----\n'
+            postfix = '\n-----END PRIVATE KEY-----'
+        else:
+            prefix = '-----BEGIN RSA PRIVATE KEY-----\n'
+            postfix = '\n-----END RSA PRIVATE KEY-----'
 
         private_key = private_key.replace(prefix, '').replace(postfix, '')
 
@@ -165,7 +174,7 @@ def get_last_event_time(events: list, first_fetch_time: datetime) -> str:
         else first_fetch_time.strftime(DATE_FORMAT)
 
 
-def get_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[datetime]:
+def get_fetch_time(last_run: str | None, first_fetch_param: str) -> datetime | None:
     """Calculates the time in which the current fetch should start from.
 
     Args:
@@ -364,6 +373,7 @@ def main():
     first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     should_push_events = argToBoolean(args.get('should_push_events', False))
+    private_key_type = params.get('private_key_type') or 'PKCS#8'
     demisto.info(f'OCI: Command being called is {command}')
 
     try:
@@ -377,7 +387,9 @@ def main():
             private_key=params.get('credentials', {}).get('password'),
             key_fingerprint=params.get('credentials', {}).get('identifier'),
             tenancy_ocid=params.get('tenancy_ocid'),
-            region=params.get('region')
+            region=params.get('region'),
+            compartment_id=params.get('compartment_id'),
+            private_key_type=private_key_type
         )
         demisto.info('OCI: Client created successfully.')
 

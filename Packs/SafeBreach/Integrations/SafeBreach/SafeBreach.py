@@ -507,6 +507,7 @@ def format_sb_code_error(errors_data):
         error_data = error.get("data")
         error_code = error.get("sbcode")
         final_error_string = final_error_string + " " + sb_error_string(error_data=error_data, sb_code=int(error_code))
+
     return final_error_string
 
 
