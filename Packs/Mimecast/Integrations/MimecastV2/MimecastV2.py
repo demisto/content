@@ -51,7 +51,6 @@ if isinstance(PASSWORD, dict):
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 
-
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 USE_OAUTH2 = demisto.params().get("use_oauth2")
@@ -166,9 +165,9 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         raise ValueError('If you provide page_size must also provide page,')
     elif page and not page_size:
         page_size = DEFAULT_PAGE_SIZE
-        
+
     return_page = True
-    if not page: # if only limit
+    if not page:  # if only limit
         return_page = False
         page_size = limit if limit < PAGE_SIZE_MAX else PAGE_SIZE_MAX
 
@@ -3173,13 +3172,14 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
-    
+
     data = [{}]
-    
+
     if query:
         data[0]['query'] = query
-        
-    result_list = request_with_pagination_api2('/api/archive/get-archive-search-logs', limit, page, page_size, data)  # type: ignore
+
+    result_list = request_with_pagination_api2('/api/archive/get-archive-search-logs',
+                                               limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.ArchiveSearchLog',
@@ -3198,7 +3198,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
-    
+
     if not any([query, start, end]):
         raise ValueError('At least one argument must be entered.')
 
@@ -3211,7 +3211,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
         data[0]['end'] = end
 
     result_list = request_with_pagination_api2('/api/archive/get-search-logs', limit, page, page_size, data)  # type: ignore
-    
+
     return CommandResults(
         outputs_prefix='Mimecast.SearchLog',
         outputs=result_list
@@ -3222,7 +3222,7 @@ def get_view_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
     start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
     end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
-    
+
     if not any([query, start, end]):
         raise ValueError('At least one argument must be entered.')
 

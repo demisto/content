@@ -254,7 +254,7 @@ script:
       description: Block emails to receiver type.
       type: string
   - arguments:
-    - description: Filter by policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies.
+    - description: You can get the value by the command mimecast-list-policies. For type address-alteration enter folderId (addressAlterationSetId).
       name: policyID
       required: true
     - description: According to this argument an endpoint is selected.
