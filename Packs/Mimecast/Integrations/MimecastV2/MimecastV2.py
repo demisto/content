@@ -20,35 +20,36 @@ from xml.etree import ElementTree
 print('args:', demisto.args())
 print('params:', demisto.params())
 
-try:
-    BASE_URL = demisto.params().get('baseUrl')
-    ACCESS_KEY = demisto.params().get('accessKey')
-    
-    SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds')
-    if isinstance(SECRET_KEY, dict):
-        SECRET_KEY = SECRET_KEY.get('password', '')
-    APP_ID = demisto.params().get('appId')
-    APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {})
-    if isinstance(APP_KEY, dict):
-        APP_KEY = APP_KEY.get('password', '')
 
-    USE_SSL = None  # assigned in determine_ssl_usage
-    PROXY = bool(demisto.params().get('proxy'))
-    # Flags to control which type of incidents are being fetched
-    FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
-    FETCH_ALL = 'All' in FETCH_PARAMS
-    FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
-    FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
-    FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
-    FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
-    # Used to refresh token / discover available auth types / login
-    EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-    PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {})
-    if isinstance(PASSWORD, dict):
-        PASSWORD = PASSWORD.get('password', '')
-    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
-except:
-    pass
+BASE_URL = demisto.params().get('baseUrl')
+ACCESS_KEY = demisto.params().get('accessKey')
+
+SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds')
+if isinstance(SECRET_KEY, dict):
+    SECRET_KEY = SECRET_KEY.get('password', '')
+APP_ID = demisto.params().get('appId')
+APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {})
+if isinstance(APP_KEY, dict):
+    APP_KEY = APP_KEY.get('password', '')
+
+USE_SSL = None  # assigned in determine_ssl_usage
+PROXY = bool(demisto.params().get('proxy'))
+# Flags to control which type of incidents are being fetched
+FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
+FETCH_ALL = 'All' in FETCH_PARAMS
+FETCH_URL = 'Url' in FETCH_PARAMS or FETCH_ALL
+FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
+FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
+FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
+# Used to refresh token / discover available auth types / login
+EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {})
+if isinstance(EMAIL_ADDRESS, dict):
+    EMAIL_ADDRESS = EMAIL_ADDRESS.get('identifier', '')
+PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {})
+if isinstance(PASSWORD, dict):
+    PASSWORD = PASSWORD.get('password', '')
+FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+
 
 
 CLIENT_ID = demisto.params().get('client_id')
@@ -163,11 +164,13 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
 
     if page_size and not page:
         raise ValueError('If you provide page_size must also provide page,')
-
-    page_mode = True
-    if not page_size:
-        page_mode = False
+    elif page and not page_size:
         page_size = DEFAULT_PAGE_SIZE
+        
+    return_page = True
+    if not page: # if only limit
+        return_page = False
+        page_size = limit if limit < PAGE_SIZE_MAX else PAGE_SIZE_MAX
 
     if page_size and page:
         limit = page * page_size
@@ -192,8 +195,9 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
-        # response_data = response.get('data')[0]['logs'] # for mimecast-get-search-logs
         response_data = response.get('data')
+        if len(response_data) > 0:
+            response_data = response_data[0].get('logs') if response_data[0].get('logs') else response_data
         for entry in response_data:
             if not limit or len_of_results < limit:
                 len_of_results += 1
@@ -206,10 +210,10 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         payload['meta']['pagination']['pageToken'] = next_page
         response = http_request('POST', api_endpoint, payload, headers=headers)
 
-    if page_mode:
+    print('len_of_results:', len_of_results)
+    if return_page:
         return results[-1 * page_size:]
 
-    print('len_of_results:', len_of_results)
     return results
 
 
@@ -567,6 +571,8 @@ def updating_token_oauth2():
         str: The updated OAuth2 token.
     """
     global TOKEN_OAUTH2
+    global USE_SSL
+    USE_SSL = False
     integration_context = demisto.getIntegrationContext()
     last_update_ts = integration_context.get("last_update")
     current_ts = epoch_seconds()
@@ -3163,28 +3169,21 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
     :return: The CommandResults object containing the outputs and raw response.
     """
-    
     query = args.get('query', '')
-    request = None
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+    
+    data = [{}]
     
     if query:
-        request = {
-            "data": [
-                {
-                    "query": query,
-                }
-            ]
-        }
-
-    response = http_request('POST',
-                        api_endpoint='/api/archive/get-archive-search-logs',
-                        payload=request
-                        )
+        data[0]['query'] = query
+        
+    result_list = request_with_pagination_api2('/api/archive/get-archive-search-logs', limit, page, page_size, data)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.ArchiveSearchLog',
-        outputs=response,
-        raw_response=response
+        outputs=result_list
     )
 
 
@@ -3199,6 +3198,9 @@ def get_search_logs_command(args: dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
+    
+    if not any([query, start, end]):
+        raise ValueError('At least one argument must be entered.')
 
     data = [{}]
     if query:
@@ -3208,11 +3210,11 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if end:
         data[0]['end'] = end
 
-    response = request_with_pagination_api2('/api/archive/get-search-logs', limit, page, page_size, data)  # type: ignore
-
+    result_list = request_with_pagination_api2('/api/archive/get-search-logs', limit, page, page_size, data)  # type: ignore
+    
     return CommandResults(
         outputs_prefix='Mimecast.SearchLog',
-        outputs=response
+        outputs=result_list
     )
 
 
@@ -3220,6 +3222,9 @@ def get_view_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
     start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
     end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
+    
+    if not any([query, start, end]):
+        raise ValueError('At least one argument must be entered.')
 
     if start and end and start > end:
         raise ValueError('Start date cannot be greater than end date.')
