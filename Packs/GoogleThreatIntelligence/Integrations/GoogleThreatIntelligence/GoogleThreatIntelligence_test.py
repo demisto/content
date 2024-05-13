@@ -290,7 +290,7 @@ def test_file_command(mocker, requests_mock):
         mocker.patch.object(demisto, 'args', return_value={'file': file_hash, 'extended_data': extended_data})
 
         if extended_data:
-            expected_results = util_load_json('test_data/file_sigma_analysis_results.json')
+            expected_results = util_load_json('test_data/file_extended_results.json')
         else:
             expected_results = util_load_json('test_data/file_results.json')
 
@@ -1160,7 +1160,7 @@ def test_file_sigma_analysis_command(mocker, requests_mock):
     client = Client(params=params)
 
     mock_response = util_load_json('test_data/file.json')
-    expected_results = util_load_json('test_data/file_sigma_analysis_results.json')
+    expected_results = util_load_json('test_data/file_extended_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/files/{file_hash}?relationships=',
                       json=mock_response)
 

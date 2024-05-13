@@ -112,16 +112,6 @@ configuration:
   type: 0
   defaultvalue: '10000'
   required: false
-- display: 'Premium Subscription Only: Relationship Malicious Files Threshold'
-  name: relationship_threshold
-  type: 0
-  required: false
-  defaultvalue: '3'
-- display: 'Premium Subscription Only: Relationship Suspicious Files Threshold'
-  name: relationship_suspicious_threshold
-  type: 0
-  required: false
-  defaultvalue: '2'
 - display: IP Relationships
   name: ip_relationships
   type: 16

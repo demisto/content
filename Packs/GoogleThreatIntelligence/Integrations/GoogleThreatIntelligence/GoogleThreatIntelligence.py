@@ -467,132 +467,6 @@ class Client(BaseClient):
             f'files/{file_hash}/sigma_analysis',
         )
 
-    # region Premium commands
-    def get_relationship(self, indicator: str, indicator_type: str, relationship: str) -> dict:
-        """
-        Args:
-            indicator: a url encoded in base64 or domain.
-            indicator_type: urls or domains
-            relationship: a relationship to search for
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
-        """
-        return self._http_request(
-            'GET',
-            urljoin(urljoin(indicator_type, indicator), relationship)
-        )
-
-    def get_domain_relationships(self, domain: str, relationship: str) -> dict:
-        """
-        Wrapper of get_relationship
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#domains-relationships
-        """
-        return self.get_relationship(domain, 'domains', relationship)
-
-    def get_domain_communicating_files(self, domain: str) -> dict:
-        """
-        Wrapper of get_domain_relationships
-
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
-        """
-        return self.get_domain_relationships(domain, 'communicating_files')
-
-    def get_domain_downloaded_files(self, domain: str) -> dict:
-        """
-        Wrapper of get_domain_relationships
-
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
-        """
-        return self.get_domain_relationships(domain, 'downloaded_files')
-
-    def get_domain_referrer_files(self, domain: str) -> dict:
-        """
-        Wrapper of get_domain_relationships
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#domains-relationships
-        """
-        return self.get_domain_relationships(domain, 'referrer_files')
-
-    def get_url_relationships(self, url: str, relationship: str) -> dict:
-        """
-        Wrapper of get_relationship
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_relationship(encode_url_to_base64(url), 'urls', relationship)
-
-    def get_url_communicating_files(self, url: str) -> dict:
-        """
-        Wrapper of url_relationships
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_url_relationships(url, 'communicating_files')
-
-    def get_url_downloaded_files(self, url: str) -> dict:
-        """
-        Wrapper of url_relationships
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_url_relationships(url, 'downloaded_files')
-
-    def get_url_referrer_files(self, url: str) -> dict:
-        """
-        Wrapper of url_relationships
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_url_relationships(url, 'referrer_files')
-
-    def get_ip_relationships(self, ip: str, relationship: str) -> dict:
-        """
-        Wrapper of get_relationship
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_relationship(ip, 'ip_addresses', relationship)
-
-    def get_ip_communicating_files(self, ip: str) -> dict:
-        """
-        Wrapper of get_ip_relationships
-
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_ip_relationships(ip, 'communicating_files')
-
-    def get_ip_downloaded_files(self, ip: str) -> dict:
-        """
-        Wrapper of get_ip_relationships
-
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_ip_relationships(ip, 'downloaded_files')
-
-    def get_ip_referrer_files(self, ip: str) -> dict:
-        """
-        Wrapper of get_ip_relationships
-
-        See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
-        """
-        return self.get_ip_relationships(ip, 'referrer_files')
-    # endregion
-
 
 class ScoreCalculator:
     """
@@ -626,7 +500,6 @@ class ScoreCalculator:
     sigma_ids_threshold: int
     crowdsourced_yara_rules_enabled: bool
     crowdsourced_yara_rules_threshold: int
-    relationship_threshold: dict[str, int]
 
     def __init__(self, params: dict):
         self.trusted_vendors = argToList(params['preferredVendors'])
@@ -687,16 +560,6 @@ class ScoreCalculator:
             arg_name='Domain Popularity Ranking Threshold',
             required=True
         )
-        self.relationship_threshold = {
-            'malicious': arg_to_number_must_int(
-                params['relationship_threshold'],
-                arg_name='Relationship Files Malicious Threshold',
-                required=True),
-            'suspicious': arg_to_number_must_int(
-                params['relationship_suspicious_threshold'] or self.DEFAULT_RELATIONSHIP_SUSPICIOUS_THRESHOLD,
-                arg_name='Relationship Files Suspicious Threshold',
-                required=True)
-        }
         self.gti_malicious = argToBoolean(params.get('gti_malicious', False))
         self.gti_suspicious = argToBoolean(params.get('gti_suspicious', False))
         self.logs = []
@@ -721,13 +584,13 @@ class ScoreCalculator:
         total = analysis_stats.get('malicious', 0)
         if suspicious:
             total += analysis_stats.get('suspicious', 0)
-        veredict = 'suspicious' if suspicious else 'malicious'
-        self.logs.append(f'{total} vendors found {veredict}.\n'
-                         f'The {veredict} threshold is {threshold}.')
+        verdict = 'suspicious' if suspicious else 'malicious'
+        self.logs.append(f'{total} vendors found {verdict}.\n'
+                         f'The {verdict} threshold is {threshold}.')
         if total >= threshold:
-            self.logs.append(f'Found as {veredict}: {total} >= {threshold}.')
+            self.logs.append(f'Found as {verdict}: {total} >= {threshold}.')
             return True
-        self.logs.append(f'Not found {veredict} by threshold: {total} < {threshold}.')
+        self.logs.append(f'Not found {verdict} by threshold: {total} < {threshold}.')
         return False
 
     def is_suspicious_by_threshold(self, analysis_stats: dict, threshold: int) -> bool:
@@ -962,11 +825,10 @@ class ScoreCalculator:
         self.logs.append(f'Hash: "{given_hash}" was found good.')
         return Common.DBotScore.GOOD  # Nothing caught
 
-    def ip_score(self, client: Client, indicator: str, raw_response: dict) -> int:
+    def ip_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
 
         Args:
-            client: Client
             indicator: The indicator we analyzing.
             raw_response: The response from the API
 
@@ -985,16 +847,12 @@ class ScoreCalculator:
         if score == Common.DBotScore.GOOD and self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
             score = Common.DBotScore.SUSPICIOUS
 
-        if score != Common.DBotScore.BAD:
-            score = self.analyze_premium_ip_score(client, indicator, score)
-
         return score
 
-    def url_score(self, client: Client, indicator: str, raw_response: dict) -> int:
+    def url_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
 
         Args:
-            client: Client
             indicator: The indicator we analyzing.
             raw_response: The raw response from API.
 
@@ -1013,16 +871,12 @@ class ScoreCalculator:
         if score == Common.DBotScore.GOOD and self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
             score = Common.DBotScore.SUSPICIOUS
 
-        if score != Common.DBotScore.BAD:
-            score = self.analyze_premium_url_score(client, indicator, score)
-
         return score
 
-    def domain_score(self, client: Client, indicator: str, raw_response: dict) -> int:
+    def domain_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
 
         Args:
-            client: Client
             indicator: The indicator we analyzing.
             raw_response: The raw response from API.
 
@@ -1040,149 +894,7 @@ class ScoreCalculator:
         if score == Common.DBotScore.GOOD and self.is_suspicious_by_gti(attributes.get('gti_assessment', {})):
             score = Common.DBotScore.SUSPICIOUS
 
-        if score != Common.DBotScore.BAD:
-            score = self.analyze_premium_domain_score(client, indicator, score)
-
         return score
-
-    def _is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback=20) -> int:
-        """Checks maliciousness of indicator on relationship files. Look on the recent 20 results returned.
-            if (number of relationship files that are malicious >= malicious threshold) -> Bad
-            if (number of relationship files that are malicious + suspicious >= suspicious threshold) -> suspicious
-            else good
-        Args:
-            relationship_files_response: The raw_response of the relationship call
-            lookback: analysing only the latest results. Default is 20
-
-        Returns:
-            DBotScore of the indicator. Can be Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
-            Common.DBotScore.GOOD
-        """
-        files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
-        total_malicious = 0
-        total_suspicious = 0
-        for file in files:
-            file_hash = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))
-            if file_hash and self.file_score(file_hash, files) == Common.DBotScore.BAD:
-                total_malicious += 1
-            elif file_hash and self.file_score(file_hash, files) == Common.DBotScore.SUSPICIOUS:
-                total_suspicious += 1
-
-        if total_malicious >= self.relationship_threshold['malicious']:
-            self.logs.append(
-                f'Found malicious by relationship files. {total_malicious} >= {self.relationship_threshold["malicious"]}')
-            return Common.DBotScore.BAD
-        if total_suspicious >= self.relationship_threshold['suspicious']:
-            self.logs.append(
-                'Found suspicious by relationship files. '
-                f'{total_malicious + total_suspicious} >= {self.relationship_threshold["suspicious"]}')
-            return Common.DBotScore.SUSPICIOUS
-        self.logs.append(
-            f'Found safe by relationship files. {total_malicious} < {self.relationship_threshold["suspicious"]}')
-        return Common.DBotScore.GOOD
-
-    def _analyze_premium_scores(
-            self,
-            indicator: str,
-            base_score: int,
-            relationship_functions: List[Callable[[str], dict]]
-    ) -> int:
-        """Analyzing with premium subscription.
-
-        Args:
-            indicator: The indicator to check
-            base_score: DBotScore got by base check
-            relationship_functions: function to get relationship from (found in client)
-
-        Returns:
-            DBOT Score:
-            If one of the relationship files is Bad, returns Bad
-            if one of the relationship files is suspicious and the base_score is suspicious, returns BAD
-            If one of the relationship files is suspicious and base_score is not, returns Suspicious
-            else return GOOD
-        """
-        is_suspicious = False
-        for func in relationship_functions:
-            self.logs.append(f'Analyzing by {func.__name__}')
-            premium_score = self._is_malicious_or_suspicious_by_relationship_files(func(indicator))
-            if premium_score == Common.DBotScore.BAD:
-                return premium_score
-            if premium_score == Common.DBotScore.SUSPICIOUS and base_score == Common.DBotScore.SUSPICIOUS:
-                self.logs.append('Found malicious!')
-                return premium_score
-            if premium_score == Common.DBotScore.SUSPICIOUS:
-                self.logs.append('Found Suspicious entry, keep searching for malicious')
-                is_suspicious = True
-        if is_suspicious or base_score == Common.DBotScore.SUSPICIOUS:
-            self.logs.append('Found Suspicious')
-            return Common.DBotScore.SUSPICIOUS
-        return Common.DBotScore.GOOD
-
-    def analyze_premium_url_score(self, client: Client, url: str, base_score: int) -> int:
-        """Analyzing premium subscription.
-
-        Args:
-            client: a client with relationship commands.
-            url: the url to check
-            base_score: the base score from basic analysis
-
-        Returns:
-            score calculated by relationship.
-
-        """
-        return self._analyze_premium_scores(
-            url,
-            base_score,
-            [
-                client.get_url_communicating_files,
-                client.get_url_downloaded_files,
-                client.get_url_referrer_files
-            ]
-        )
-
-    def analyze_premium_domain_score(self, client: Client, domain: str, base_score: int) -> int:
-        """Analyzing premium subscription.
-
-        Args:
-            client: a client with relationship commands.
-            domain: the domain to check
-            base_score: the base score from basic analysis
-
-        Returns:
-            score calculated by relationship.
-
-        """
-        return self._analyze_premium_scores(
-            domain,
-            base_score,
-            [
-                client.get_domain_communicating_files,
-                client.get_domain_downloaded_files,
-                client.get_domain_referrer_files
-            ]
-        )
-
-    def analyze_premium_ip_score(self, client: Client, ip: str, base_score: int) -> int:
-        """Analyzing premium subscription.
-
-        Args:
-            client: a client with relationship commands.
-            ip: the ip to check
-            base_score: the base score from basic analysis
-
-        Returns:
-            score calculated by relationship.
-
-        """
-        return self._analyze_premium_scores(
-            ip,
-            base_score,
-            [
-                client.get_ip_communicating_files,
-                client.get_ip_downloaded_files,
-                client.get_ip_referrer_files
-            ]
-        )
     # endregion
 
 
@@ -1379,7 +1091,7 @@ def _get_domain_indicator(client: Client, score_calculator: ScoreCalculator, dom
         reliability=client.reliability
     )
 
-    score = score_calculator.domain_score(client, domain, raw_response)
+    score = score_calculator.domain_score(domain, raw_response)
 
     logs = score_calculator.get_logs()
     demisto.debug(logs)
@@ -1427,7 +1139,7 @@ def _get_url_indicator(client: Client, score_calculator: ScoreCalculator, url: s
         reliability=client.reliability
     )
 
-    score = score_calculator.url_score(client, url, raw_response)
+    score = score_calculator.url_score(url, raw_response)
 
     logs = score_calculator.get_logs()
     demisto.debug(logs)
@@ -1464,7 +1176,7 @@ def _get_ip_indicator(client: Client, score_calculator: ScoreCalculator, ip: str
         reliability=client.reliability
     )
 
-    score = score_calculator.ip_score(client, ip, raw_response)
+    score = score_calculator.ip_score(ip, raw_response)
 
     logs = score_calculator.get_logs()
     demisto.debug(logs)
