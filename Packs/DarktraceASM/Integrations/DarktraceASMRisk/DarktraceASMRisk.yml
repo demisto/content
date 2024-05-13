@@ -19,7 +19,7 @@ detaileddescription: "### Community Contributed Integration\n#### Integration Au
   Darktrace ASM API token\n\n---
   \n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/darktrace-admin)"
 fromversion: 6.6.0
-defaultmapperin: DarktraceASM Risk Mapper
+defaultmapperin: Darktrace ASM Risk Mapper
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
