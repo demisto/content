@@ -148,7 +148,7 @@ tasks:
       version: -1
       name: Rescan
       description: Rescans an already submitted file. This avoids having to upload
-        the file again. Use the vt-analysis-get command to get the scan results.
+        the file again. Use the gti-analysis-get command to get the scan results.
       script: GoogleThreatIntelligence|||file-rescan
       type: regular
       iscommand: true

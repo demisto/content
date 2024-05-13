@@ -809,8 +809,8 @@ tasks:
     task:
       id: 35d2d8e6-d679-4335-88a0-076d076f4b6b
       version: -1
-      name: VT Search
-      description: Search for an indicator in Virus Total.
+      name: GTI Search
+      description: Search for an indicator in Google Threat Intelligence.
       script: GoogleThreatIntelligence|||gti-search
       type: regular
       iscommand: true
