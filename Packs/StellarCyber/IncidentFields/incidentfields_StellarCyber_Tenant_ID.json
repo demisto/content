@@ -14,7 +14,7 @@
     "hidden": false,
     "openEnded": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "threshold": 72,
     "associatedToAll": false,
