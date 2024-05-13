@@ -376,7 +376,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     if not last_fetch_info["internalDate"]:
         first_fetch_dt = parse(first_fetch_time)
         if not first_fetch_dt:
-            demisto.info("No last fetch was found, defaulting to 3 days.")
+            demisto.info("First fetch time is empty or failed to be parsed, defaulting to 3 days.")
             first_fetch_dt = datetime.now() - timedelta(days=3)
         last_fetch_info["internalDate"] = first_fetch_dt.timestamp()
 
