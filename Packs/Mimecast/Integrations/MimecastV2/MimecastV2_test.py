@@ -703,7 +703,7 @@ def test_get_archive_search_logs_command(mocker):
         - Make sure no exception is raised.
     """
 
-    args = {'query_xml': 'aa@aa.aa'}
+    args = {'limit': '5', 'query': 'integration.com'}
     expected_response = {
         "meta": {
             "pagination": {
@@ -729,9 +729,9 @@ def test_get_archive_search_logs_command(mocker):
         ],
         "fail": []
     }
-    mocker.patch.object(MimecastV2, 'http_request', return_value={'data': [expected_response]})
+    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert expected_response.get('data') == result.outputs['data'][0]['data']
+    assert expected_response['data'][0]['logs'] == result.outputs['data'][0]['logs']
 
 
 def test_get_search_logs_command(mocker):
@@ -778,28 +778,49 @@ def test_get_search_logs_command(mocker):
     }
     mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert expected_response.get('data')[0]['logs'] == result.outputs['data'][0]['logs']
+    assert expected_response.get('data')[0]['logs'] == result.outputs
 
 
 def test_get_view_logs_command(mocker):
     """
-
+    Test the get_view_logs_command function of the MimecastV2 integration.
 
     Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
     """
 
-    args = {}
+    args = {"end": "2024-09-16T14:49:18+0000", "limit": "2", "query": "aa@aaa.one", "start": "2017-09-16T14:49:18+0000"}
     expected_response = {
-        'meta': {
-            'pagination': {
-                'pageSize': 0},
-            'status': 200},
-        'data': [],
-        'fail': []
+        "meta": {"pagination": {"pageSize": 2, "totalCount": 81, "next": "eNo00000"}, "status": 200},
+        "data": [
+            {
+                "viewer": "aa@aa.aa",
+                "source": "Message Tracking",
+                "viewed": "2022-09-01T08:13:39+0000",
+                "from": "aa@aa.aa",
+                "to": "aa@aa.aa",
+                "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+                "messageDate": "2022-07-18T13:25:21+0000",
+                "contentViewed": False,
+                "discoveryCase": False,
+            },
+            {
+                "viewer": "aa@aa.aa",
+                "source": "Message Tracking",
+                "viewed": "2022-08-31T14:29:48+0000",
+                "from": "aa@aa.aa",
+                "to": "aa@aa.aa",
+                "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+                "messageDate": "2022-07-18T13:25:21+0000",
+                "contentViewed": False,
+                "discoveryCase": False,
+            },
+        ],
+        "fail": [],
     }
-    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+    mocker.patch.object(MimecastV2, "request_with_pagination_api2", return_value=expected_response)
     result = MimecastV2.get_view_logs_command(args)
-    assert expected_response.get('data') == result.outputs['data']
+    assert expected_response.get("data") == result.outputs["data"]
 
 
 def test_list_account_command(mocker):
