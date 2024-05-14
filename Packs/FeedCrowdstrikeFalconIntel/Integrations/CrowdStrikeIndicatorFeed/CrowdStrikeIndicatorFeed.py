@@ -260,8 +260,7 @@ class Client(CrowdStrikeClient):
         """Update the integration context according to the newly calculated last_run.
         This function take into consideration that there are two types fo field options
         to fetch by (`Last Updated`, `Published Date`),
-        and will set the integration context with the updated last_run timestamp
-        according to the `fetch_by_field` parameter.
+        and will set the integration context with the updated last_run timestamp according to the `fetch_by_field` parameter.
 
         Args:
             new_last_run_timestamp (str): The updated last_run timestamp for the next fetch cycle.
@@ -275,6 +274,9 @@ class Client(CrowdStrikeClient):
 
     def get_updated_last_run_time(self, response):
         """Calculate the updated last run time according to the received API response.
+        This function take into consideration that there are two types fo field options
+        to fetch by (`Last Updated`, `Published Date`),
+        and will calculate the updated last_run timestamp according to the `fetch_by_field` parameter.
 
         Args:
             response (dict): API response dictionary.
@@ -282,12 +284,13 @@ class Client(CrowdStrikeClient):
         Returns:
             str: The updated last_run timestamp for next fetch cycle.
         """
+        context_value = FETCH_BY_FIELDS[self.fetch_by_field]["context_value"]
         if resources := response.get("resources", []):
             new_last_run_timestamp = resources[-1].get(FETCH_BY_FIELDS[self.fetch_by_field["response_resources_ref"]])
+            demisto.debug(f"There are new indicators, new last_run is {context_value}={new_last_run_timestamp}")
         else:
-            new_last_run_timestamp = demisto.getIntegrationContext().get(FETCH_BY_FIELDS[self.fetch_by_field]["context_value"])
+            new_last_run_timestamp = demisto.getIntegrationContext().get(context_value)
             last_run_timestamp_for_debug = new_last_run_timestamp or f"No data on last_run for {self.fetch_by_field} yet"
-            context_value = FETCH_BY_FIELDS[self.fetch_by_field]["context_value"]
             demisto.debug(
                 f"There are no new indicators, using {context_value}={last_run_timestamp_for_debug} from Integration Context"
             )
