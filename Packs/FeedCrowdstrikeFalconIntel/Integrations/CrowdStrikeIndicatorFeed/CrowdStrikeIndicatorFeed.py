@@ -76,6 +76,21 @@ INDICATOR_TO_CROWDSTRIKE_RELATION_DICT: Dict[str, Any] = {
 }
 CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families', 'vulnerabilities', 'relations']
 
+FETCH_INDICATORS_BY_FIELD = {
+    "Last Updated": {
+        "field_name": "last_updated",
+        "filter": "_marker:>",
+        "sort": "_marker|asc",
+        "context_value": "last_marker_time",
+    },
+    "Published Date": {
+        "field_name": "published_date",
+        "filter": "published_date:>",
+        "sort_query": "published_date|asc",
+        "context_value": "last_published_date_time",
+    },
+}
+
 
 def kill_chain_standard_values(phases: list | None):
     """
@@ -173,20 +188,26 @@ class Client(CrowdStrikeClient):
                             if filter_string else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
-            if last_run := self.get_last_run():
+            if last_run := self.get_last_run(self.indicator_field_to_fetch_by):
                 filter_string = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
-            else:
+            elif self.indicator_field_to_fetch_by == "Last Updated":
+                # pre 2.1.0 use-case is only relevant when fetching indicators by the "Last Updated" field.
                 filter_string, indicators = self.handle_first_fetch_context_or_pre_2_1_0(filter_string)
                 if indicators:
                     limit = limit - len(indicators)
 
         if filter_string or not fetch_command:
             demisto.debug(f'{filter_string=}')
-            params = assign_params(include_deleted=self.include_deleted,
-                                   limit=limit,
-                                   offset=offset, q=self.generic_phrase,
-                                   filter=filter_string,
-                                   sort='_marker|asc')
+            params = assign_params(
+                include_deleted=self.include_deleted,
+                limit=limit,
+                offset=offset,
+                q=self.generic_phrase,
+                filter=filter_string,
+                sort=FETCH_INDICATORS_BY_FIELD[self.indicator_field_to_fetch_by][
+                    "sort"
+                ],
+            )
 
             response = self.get_indicators(params=params)
 
@@ -262,19 +283,28 @@ class Client(CrowdStrikeClient):
         return '', []
 
     @staticmethod
-    def get_last_run() -> str:
-        """ Gets last run time in timestamp
+    def get_last_run(indicator_field_to_fetch_by: str) -> str:
+        """Gets last run time in timestamp.
+        This function take into consideration that there are two types fo fields to fetch by (`Last Updated`, `Published Date`)
+        and given the `indicator_field_to_fetch_by` arguments passed,
+        it will attempt to get the matching last_run argument from the integration context accordingly.
 
         Returns:
-            last run in timestamp, or '' if no last run.
-            Taken from Integration Context key last_marker_time.
+            last run in timestamp, or '' if no last run is found.
+            Taken from Integration Context key last_marker_time / last_published_date_time.
 
         """
-        if last_run := demisto.getIntegrationContext().get('last_marker_time'):
-            demisto.info(f'get last_run: {last_run}')
-            params = f"_marker:>'{last_run}'"
+        if last_run := demisto.getIntegrationContext().get(
+            FETCH_INDICATORS_BY_FIELD[indicator_field_to_fetch_by]["context_value"]
+        ):
+            filter = FETCH_INDICATORS_BY_FIELD[indicator_field_to_fetch_by]["filter"]
+            params = f"{filter}{last_run}'"
+            demisto.info(f"get last_run: {last_run}. filter parameter is: {params=}")
         else:
-            demisto.debug('There is no last_run (last_marker_time in Integration Context)')
+            demisto.debug(
+                f'There is no last_run ({FETCH_INDICATORS_BY_FIELD[indicator_field_to_fetch_by]["context_value"]}) \
+                    value in the Integration Context. Setting `params` to an empty string.'
+            )
             params = ''
         return params
 

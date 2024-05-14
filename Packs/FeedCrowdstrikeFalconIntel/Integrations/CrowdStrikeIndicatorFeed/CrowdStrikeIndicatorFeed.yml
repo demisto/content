@@ -165,8 +165,8 @@ configuration:
   display: Indicator field to fetch by
   name: indicator_field_to_fetch_by
   options:
-  - last updated
-  - published date
+  - Last Updated
+  - Published Date
   defaultvalue: last updated
   type: 16
   required: true
