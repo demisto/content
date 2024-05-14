@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 # Std imports
+from typing import Tuple, Dict
 import re
 from datetime import datetime
 import time
@@ -38,7 +39,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def test_module(self) -> dict:
+    def test_module(self) -> Dict:
         """
             Performs basic GET request to check if the API is reachable and authentication is successful.
         Returns:
@@ -69,7 +70,7 @@ class Client(BaseClient):
                           ra: str = "third-party",
                           validation_type: str = "third-party",
                           sans: list = []
-                          ) -> dict:
+                          ) -> Dict:
         """
             Create an enrollment
         Args:
@@ -143,7 +144,7 @@ class Client(BaseClient):
 
     def list_enrollments(self,
                          contract_id: str,
-                         ) -> dict:
+                         ) -> Dict:
         """
             List enrollments
             Please refer to https://techdocs.akamai.com/cps/reference/get-enrollments
@@ -173,7 +174,7 @@ class Client(BaseClient):
     def get_change(self,
                    enrollment_path: str,
                    allowed_input_type_param: str = "third-party-csr"
-                   ) -> dict:
+                   ) -> Dict:
         """
             Get change
             Please refer to https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
@@ -200,7 +201,7 @@ class Client(BaseClient):
                       trust_chain: str,
                       allowed_input_type_param: str = "third-party-cert-and-trust-chain",
                       key_algorithm: str = "RSA"
-                      ) -> dict:
+                      ) -> Dict:
         """
             Update a change
             Please refer to https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
@@ -238,7 +239,7 @@ class Client(BaseClient):
 
     # Created by C.L.
 
-    def acknowledge_warning(self, change_path: str) -> dict:
+    def acknowledge_warning(self, change_path: str, allowed_input_type_param: str = 'post-verification-warnings-ack') -> Dict:
         """
             Acknowledge the warning message after updating a enrollment change
 
@@ -255,14 +256,14 @@ class Client(BaseClient):
         payload = '{"acknowledgement": "acknowledge"}'
         return self._http_request(
             method='POST',
-            url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
+            url_suffix=f"{change_path}/input/update/{allowed_input_type_param}",
             headers=headers,
             data=payload
         )
 
     # Created by C.L.
 
-    def acknowledge_pre_verification_warning(self, change_path: str) -> dict:
+    def acknowledge_pre_verification_warning(self, change_path: str) -> Dict:
         """
             Acknowledge the pre verification warning message after initiate an enrollment change
 
@@ -289,7 +290,7 @@ class Client(BaseClient):
 
     def get_production_deployment(self,
                                   enrollment_id: str
-                                  ) -> dict:
+                                  ) -> Dict:
         """
             get production deployment by enrollment id.
 
@@ -307,7 +308,7 @@ class Client(BaseClient):
     # Created by C.L. Oct-06-22
     def get_change_history(self,
                            enrollment_id: str
-                           ) -> dict:
+                           ) -> Dict:
         """
             get change history by enrollment id.
 
@@ -332,7 +333,7 @@ class Client(BaseClient):
 
     def get_group(self,
                   group_id: int = 0
-                  ) -> dict:
+                  ) -> Dict:
         """
             Get the information of a group
         Args:
@@ -352,7 +353,7 @@ class Client(BaseClient):
 
     def create_group(self,
                      group_id: int = 0, groupname: str = ""
-                     ) -> dict:
+                     ) -> Dict:
         """
             Create a new group
         Args:
@@ -407,7 +408,7 @@ class Client(BaseClient):
         return response
 
     # Created by C.L.
-    def create_domain(self, group_id: int, domain_name: str) -> dict:
+    def create_domain(self, group_id: int, domain_name: str) -> Dict:
         """
            Creating domains
         Args:
@@ -519,7 +520,7 @@ class Client(BaseClient):
                     ]
                 }
             ]
-            trafficTargets: list[dict] = []
+            trafficTargets: List[dict] = []
         elif property_type == "failover":
             staticRRSets = []
             trafficTargets = []
@@ -611,7 +612,7 @@ class Client(BaseClient):
                           list_type: str = None,
                           extended: bool = True,
                           include_elements: bool = True,
-                          ) -> dict:
+                          ) -> Dict:
         """
             Get network lists
         Args:
@@ -633,7 +634,7 @@ class Client(BaseClient):
                                   url_suffix='/network-list/v2/network-lists',
                                   params=params)
 
-    def get_network_list_by_id(self, network_list_id: str) -> dict:
+    def get_network_list_by_id(self, network_list_id: str) -> Dict:
         """
             Get network list by ID
         Args:
@@ -650,8 +651,8 @@ class Client(BaseClient):
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}',
                                   params=params)
 
-    def create_network_list(self, list_name: str, list_type: str, elements: list | str | None,
-                            description: str | None = None) -> dict:
+    def create_network_list(self, list_name: str, list_type: str, elements: Union[list, str] = None,
+                            description: str = None) -> Dict:
         """
             Create network list
         Args:
@@ -673,7 +674,7 @@ class Client(BaseClient):
                                   url_suffix='/network-list/v2/network-lists',
                                   json_data=body)
 
-    def delete_network_list(self, network_list_id: str) -> dict:
+    def delete_network_list(self, network_list_id: str) -> Dict:
         """
             Delete network list by ID
         Args:
@@ -686,7 +687,7 @@ class Client(BaseClient):
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}',
                                   resp_type='response')
 
-    def update_network_list_elements(self, network_list_id: str, elements: list | str) -> dict:
+    def update_network_list_elements(self, network_list_id: str, elements: Union[list, str]) -> Dict:
         """
             Update network list by ID
         Args:
@@ -745,8 +746,8 @@ class Client(BaseClient):
                                   f'{network_list_id}?extended=true&includeElements=true',
                                   json_data=body)
 
-    def activate_network_list(self, network_list_id: str, env: str, comment: str | None,
-                              notify: list | None) -> dict:
+    def activate_network_list(self, network_list_id: str, env: str, comment: str = None,
+                              notify: list = None) -> Dict:
         """
             Activating network list in STAGING or PRODUCTION
         Args:
@@ -768,7 +769,7 @@ class Client(BaseClient):
                                   json_data=body,
                                   resp_type='response')
 
-    def add_elements_to_network_list(self, network_list_id: str, elements: list | str | None) -> dict:
+    def add_elements_to_network_list(self, network_list_id: str, elements: Union[list, str] = None) -> Dict:
         """
             Add elements to network list
         Args:
@@ -788,7 +789,7 @@ class Client(BaseClient):
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}/append',
                                   json_data=body)
 
-    def remove_element_from_network_list(self, network_list_id: str, element: str) -> dict:
+    def remove_element_from_network_list(self, network_list_id: str, element: str) -> Dict:
         """
             Remove element from network list
         Args:
@@ -806,7 +807,7 @@ class Client(BaseClient):
                                   params=params,
                                   resp_type='response')
 
-    def get_activation_status(self, network_list_id: str, env: str) -> dict:
+    def get_activation_status(self, network_list_id: str, env: str) -> Dict:
         """
             Get activation status of network list in enviorment - Staging/Production
         Args:
@@ -825,7 +826,7 @@ class Client(BaseClient):
                           property_name: str,
                           contract_id: str,
                           group_id: str,
-                          ) -> dict:
+                          ) -> Dict:
         """
             Create a new papi property
         Args:
@@ -863,7 +864,7 @@ class Client(BaseClient):
     # created by D.S.
     def list_papi_property_bygroup(self,
                                    contract_id: str,
-                                   group_id: str) -> dict:
+                                   group_id: str) -> Dict:
         """
             List properties available for the current contract and group.
         Args:
@@ -897,7 +898,7 @@ class Client(BaseClient):
                             group_id: str,
                             property_id: str,
                             version: str
-                            ) -> dict:
+                            ) -> Dict:
         """
             Clone a new papi property from an existing template property
         Args:
@@ -947,7 +948,7 @@ class Client(BaseClient):
                                    include_cert_status: bool,
                                    cname_from: str,
                                    edge_hostname_id: str,
-                                   ) -> dict:
+                                   ) -> Dict:
         """
             add a hostname into papi property
         Args:
@@ -997,7 +998,7 @@ class Client(BaseClient):
     def list_papi_edgehostname_bygroup(self,
                                        contract_id: str,
                                        group_id: str,
-                                       options: str) -> dict:
+                                       options: str) -> Dict:
         """
             clone a new property from an existing template property
         Args:
@@ -1037,7 +1038,7 @@ class Client(BaseClient):
                               secure: str,
                               secure_network: str,
                               cert_enrollment_id: str
-                              ) -> dict:
+                              ) -> Dict:
         """
             add a new edge hostname via Papi
         Args:
@@ -1087,7 +1088,7 @@ class Client(BaseClient):
     # created by D.S.
     def list_cps_enrollments(self,
                              contract_id: str,
-                             ) -> dict:
+                             ) -> Dict:
         """
             list all cps enrollments
         Args:
@@ -1116,7 +1117,7 @@ class Client(BaseClient):
     # created by D.S.
     def list_papi_cpcodeid_bygroup(self,
                                    contract_id: str,
-                                   group_id: str) -> dict:
+                                   group_id: str) -> Dict:
         """
             clone a new property from an existing template property
         Args:
@@ -1147,7 +1148,7 @@ class Client(BaseClient):
                         contract_id: str,
                         group_id: str,
                         cpcode_name: str,
-                        ) -> dict:
+                        ) -> Dict:
         """
             clone a new property from an existing template property
         Args:
@@ -1190,7 +1191,7 @@ class Client(BaseClient):
                                  property_version: str,
                                  validate_rules: str,
                                  body,
-                                 ) -> dict:
+                                 ) -> Dict:
         """
             clone a new property from an existing template property
         Args:
@@ -1479,7 +1480,7 @@ class Client(BaseClient):
     def clone_appsec_config_version(self,
                                     config_id: str,
                                     create_from_version: str,
-                                    rule_update: bool = True) -> dict:
+                                    rule_update: bool = True) -> Dict:
         """
         Create a new version of security configuration from a previous version
         Args:
@@ -1558,9 +1559,9 @@ class Client(BaseClient):
 
     def modify_appsec_config_selected_hosts(self, config_id: int,
                                             config_version: int,
-                                            hostname_list: list[dict[str, Any]],
+                                            hostname_list: List[dict],
                                             mode: str
-                                            ) -> dict:
+                                            ) -> Dict:
         """
             Update the list of selected hostnames for a configuration version.
 
@@ -1597,7 +1598,7 @@ class Client(BaseClient):
 
     # Created by D.S.
 
-    def update_appsec_config_version_notes(self, config_id: int, config_version: int, notes: str) -> dict:
+    def update_appsec_config_version_notes(self, config_id: int, config_version: int, notes: str) -> Dict:
         """
             Update application secuirty configuration version notes
         Args:
@@ -1740,7 +1741,7 @@ class Client(BaseClient):
     def get_papi_property_bygroup(self,
                                   contract_id: str,
                                   group_id: str,
-                                  property_id: str,) -> dict:
+                                  property_id: str,) -> Dict:
         """
             get property by propertyId with a group
         Args:
@@ -1773,7 +1774,7 @@ class Client(BaseClient):
                                   property_id: str,
                                   group_id: str,
                                   create_from_version: str,
-                                  ) -> dict:
+                                  ) -> Dict:
         """
             Create a new property version based on any previous version.
             All data from the createFromVersion populates the new version, including its rules and hostnames.
@@ -1812,7 +1813,7 @@ class Client(BaseClient):
     def list_papi_property_activations(self,
                                        contract_id: str,
                                        property_id: str,
-                                       group_id: str,) -> dict:
+                                       group_id: str,) -> Dict:
         """
             This lists all activations for all versions of a property, on both production and staging networks.
         Args:
@@ -1836,7 +1837,7 @@ class Client(BaseClient):
                                   )
 
     def list_appsec_configuration_activation_history(self,
-                                                     config_id: int,) -> dict:
+                                                     config_id: int,) -> Dict:
         """
             Lists the activation history for a configuration.
             The history is an array in descending order of submitDate.
@@ -1859,7 +1860,7 @@ class Client(BaseClient):
                                        hostname: str,
                                        network: str = None,
                                        contract_id: str = None,
-                                       group_id: str = None,) -> dict:
+                                       group_id: str = None,) -> Dict:
         """
             This operation lists active property hostnames for all properties available in an account.
         Args:
@@ -1886,7 +1887,7 @@ class Client(BaseClient):
                                   headers=headers,
                                   )
 
-    def list_siteshield_maps(self) -> dict:
+    def list_siteshield_maps(self) -> Dict:
         """
             Returns a list of all Site Shield maps that belong to your account.
         Args:
@@ -1901,7 +1902,7 @@ class Client(BaseClient):
                                   headers={"accept": "application/json"},
                                   )
 
-    def list_cidr_blocks(self, effective_date_gt: str = '', last_action: str = '') -> dict:
+    def list_cidr_blocks(self, effective_date_gt: str = '', last_action: str = '') -> Dict:
         """
             List all CIDR blocks for all services you are subscribed to.
             To see additional CIDR blocks, subscribe yourself to more services and run this operation again
@@ -1935,7 +1936,7 @@ class Client(BaseClient):
 
     def get_cps_enrollment_deployment(self,
                                       enrollment_id: int,
-                                      environment: str,) -> dict:
+                                      environment: str,) -> Dict:
         """
             Returns the certification/Enarollment deployment status for specific a environtment: production or staging.
         Args:
@@ -1962,7 +1963,7 @@ class Client(BaseClient):
                               allow_staging_bypass: str = 'true',
                               force_renewal: str = 'true',
                               renewal_date_check_override: str = 'true',
-                              allow_missing_certificate_addition: str = 'true') -> dict:
+                              allow_missing_certificate_addition: str = 'true') -> Dict:
         """
             Returns the enrollment change path.
         Args:
@@ -1997,7 +1998,7 @@ class Client(BaseClient):
 
     def get_enrollment_byid(self,
                             enrollment_id: str,
-                            json_version: str = '11') -> dict:
+                            json_version: str = '11') -> Dict:
         """
             Returns the enrollment with the ID specified.
         Args:
@@ -2027,7 +2028,7 @@ class Client(BaseClient):
                                        enrollment_id: str = '',
                                        change_id: str = '',
                                        deploy_not_after: Optional[str] = '',
-                                       ) -> dict:
+                                       ) -> Dict:
         """
             Returns the enrollment change path.
         Args:
@@ -2076,7 +2077,7 @@ class Client(BaseClient):
     def get_cps_change_status(self,
                               enrollment_path: str = "",
                               enrollment_id: str = "",
-                              change_id: str = "",) -> dict:
+                              change_id: str = "",) -> Dict:
         """
             Gets the status of a pending change.
         Args:
@@ -2106,7 +2107,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_network_lists_ec(raw_response: list | None) -> tuple[list, list]:
+def get_network_lists_ec(raw_response: list = None) -> Tuple[list, list]:
     """
         Get raw response list of networks from Akamai and parse to ec
     Args:
@@ -2146,7 +2147,7 @@ def get_network_lists_ec(raw_response: list | None) -> tuple[list, list]:
     return entry_context, human_readable
 
 
-def get_list_from_file(entry_id: str | None) -> list:
+def get_list_from_file(entry_id: str = None) -> list:
     """
         Get list of IPs and Geo from txt file
     Args:
@@ -2166,7 +2167,7 @@ def get_list_from_file(entry_id: str | None) -> list:
 
 
 # Created by D.S.
-def new_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
+def new_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi propertyLink
 
@@ -2194,7 +2195,7 @@ def new_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S. [Modified on 2023/02/27, add a few new fields]
-def list_papi_property_bygroup_ec(raw_response: dict) -> tuple[list, list]:
+def list_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi property
     Args:
@@ -2221,7 +2222,7 @@ def list_papi_property_bygroup_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def clone_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
+def clone_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi propertyLink
 
@@ -2252,7 +2253,7 @@ def clone_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def add_papi_property_hostname_command_ec(raw_response: dict) -> tuple[list, list]:
+def add_papi_property_hostname_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi property
 
@@ -2283,7 +2284,7 @@ def add_papi_property_hostname_command_ec(raw_response: dict) -> tuple[list, lis
 
 
 # Created by D.S.
-def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> tuple[list, list]:
+def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse edgehostnameId
 
@@ -2311,7 +2312,7 @@ def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def new_papi_edgehostname_command_ec(raw_response: dict) -> tuple[list, list]:
+def new_papi_edgehostname_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse edgehostnameId
 
@@ -2343,7 +2344,7 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> dict:
+def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> Dict:
     """
         get cps enrollment info by common name
 
@@ -2354,7 +2355,6 @@ def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> dict:
     Returns:
         full enrollment info for given common name
     """
-
     for enrollment in raw_response.get("enrollments", []):
         if enrollment.get("csr").get("cn") == cnname:
             return enrollment
@@ -2364,7 +2364,7 @@ def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> dict:
 
 
 # Created by D.S.
-def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> tuple[list, list]:
+def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse enrollment and abstract enrollmentId
 
@@ -2392,7 +2392,7 @@ def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> tuple[list, list]:
+def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse cpcode cpcId
     Args:
@@ -2418,7 +2418,7 @@ def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def new_papi_cpcode_ec(raw_response: dict) -> tuple[list, list]:
+def new_papi_cpcode_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse cpcode cpcId
 
@@ -2450,7 +2450,7 @@ def new_papi_cpcode_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def patch_papi_property_rule_ec(raw_response: dict) -> tuple[list, list]:
+def patch_papi_property_rule_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse property etag
 
@@ -2475,7 +2475,7 @@ def patch_papi_property_rule_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def activate_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
+def activate_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse property activation_id
 
@@ -2503,7 +2503,7 @@ def activate_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def clone_security_policy_command_ec(raw_response: dict) -> tuple[list, list]:
+def clone_security_policy_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse security policy_id
     Args:
@@ -2532,7 +2532,7 @@ def clone_security_policy_command_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def new_match_target_command_ec(raw_response: dict) -> tuple[list, list]:
+def new_match_target_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse match target Id
 
@@ -2564,7 +2564,7 @@ def new_match_target_command_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S.
-def activate_appsec_config_version_command_ec(raw_response: dict) -> tuple[list, list]:
+def activate_appsec_config_version_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse appsec config activation_id
 
@@ -2593,7 +2593,7 @@ def activate_appsec_config_version_command_ec(raw_response: dict) -> tuple[list,
 
 
 # Created by D.S.
-def get_appsec_config_activation_status_command_ec(raw_response: dict) -> tuple[list, list]:
+def get_appsec_config_activation_status_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse appsec config activation status
 
@@ -2623,7 +2623,7 @@ def get_appsec_config_activation_status_command_ec(raw_response: dict) -> tuple[
 
 
 # Created by D.S.
-def get_appsec_config_latest_version_command_ec(raw_response: dict) -> tuple[list, list]:
+def get_appsec_config_latest_version_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         get latest version of appsec configuration
 
@@ -2659,7 +2659,7 @@ def get_appsec_config_latest_version_command_ec(raw_response: dict) -> tuple[lis
 
 
 # Created by D.S.
-def get_security_policy_id_by_name_command_ec(raw_response: dict, is_baseline_policy) -> tuple[list, list]:
+def get_security_policy_id_by_name_command_ec(raw_response: dict, is_baseline_policy) -> Tuple[list, list]:
     """
         parse security policy name and Id
 
@@ -2700,7 +2700,7 @@ def get_security_policy_id_by_name_command_ec(raw_response: dict, is_baseline_po
 # Created by D.S.
 
 
-def clone_appsec_config_version_command_ec(raw_response: dict) -> tuple[list, list]:
+def clone_appsec_config_version_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse security policy name and Id
 
@@ -2745,7 +2745,7 @@ def generate_policy_prefix():
 
 
 # Created by D.S.
-def get_papi_property_activation_status_command_ec(raw_response: dict) -> tuple[list, list]:
+def get_papi_property_activation_status_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse papi property activation status
 
@@ -2775,7 +2775,7 @@ def get_papi_property_activation_status_command_ec(raw_response: dict) -> tuple[
 
 
 # Created by D.S.
-def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> tuple[list, list]:
+def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse papi edgehostname creation status
 
@@ -2803,7 +2803,7 @@ def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> tupl
 
 
 # Created by D.S. 2022-11-25
-def get_papi_property_bygroup_ec(raw_response: dict) -> tuple[list, list]:
+def get_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi property
     Args:
@@ -2830,7 +2830,7 @@ def get_papi_property_bygroup_ec(raw_response: dict) -> tuple[list, list]:
 
 
 # Created by D.S. 2023-02-27
-def new_papi_property_version_ec(raw_response: dict) -> tuple[list, list]:
+def new_papi_property_version_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi propertyLink
 
@@ -2854,7 +2854,7 @@ def new_papi_property_version_ec(raw_response: dict) -> tuple[list, list]:
     return entry_context, human_readable
 
 
-def list_papi_property_activations_ec(raw_response: dict) -> tuple[list, list]:
+def list_papi_property_activations_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi activations
 
@@ -2879,7 +2879,7 @@ def list_papi_property_activations_ec(raw_response: dict) -> tuple[list, list]:
 
 
 def list_appsec_configuration_activation_history_ec(raw_response: dict,
-                                                    config_id: int) -> tuple[list, list]:
+                                                    config_id: int) -> Tuple[list, list]:
     """
         Parse Secuirty configuration activation history
 
@@ -2905,7 +2905,7 @@ def list_appsec_configuration_activation_history_ec(raw_response: dict,
 
 
 def list_papi_property_by_hostname_ec(raw_response: dict,
-                                      cname_from: str) -> tuple[list, list]:
+                                      cname_from: str) -> Tuple[list, list]:
     """
         Parse papi properties list
 
@@ -2932,7 +2932,7 @@ def list_papi_property_by_hostname_ec(raw_response: dict,
     return entry_context, human_readable
 
 
-def list_siteshield_maps_ec(raw_response: dict) -> tuple[list, list]:
+def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse siteshield map
 
@@ -2945,12 +2945,12 @@ def list_siteshield_maps_ec(raw_response: dict) -> tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-        entry_context.append(raw_response.get('siteShieldMaps', [])[0])
-        human_readable.append(raw_response.get('siteShieldMaps', [])[0])
+        entry_context.append(raw_response.get('siteShieldMaps', []))
+        human_readable.append(raw_response.get('siteShieldMaps', []))
     return entry_context, human_readable
 
 
-def update_cps_enrollment_ec(raw_response: dict) -> tuple[list, list]:
+def update_cps_enrollment_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse enrollment change path
 
@@ -2983,7 +2983,7 @@ def update_cps_enrollment_ec(raw_response: dict) -> tuple[list, list]:
     return entry_context, human_readable
 
 
-def update_cps_enrollment_schedule_ec(raw_response: dict) -> tuple[list, list]:
+def update_cps_enrollment_schedule_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse enrollment change path
 
@@ -3034,7 +3034,7 @@ def try_parsing_date(date: str, arr_fmt: list):
 
 
 @logger
-def check_group_command(client: Client, checking_group_name: str) -> tuple[object, dict, list | dict]:
+def check_group_command(client: Client, checking_group_name: str) -> Tuple[object, dict, Union[list, dict]]:
     raw_response: dict = client.list_groups()
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - List Groups'
@@ -3073,7 +3073,7 @@ def check_group_command(client: Client, checking_group_name: str) -> tuple[objec
 
 
 @logger
-def list_groups_command(client: Client) -> tuple[object, dict, list | dict]:
+def list_groups_command(client: Client) -> Tuple[object, dict, Union[list, dict]]:
     """
     List the information of all groups
 
@@ -3092,7 +3092,7 @@ def list_groups_command(client: Client) -> tuple[object, dict, list | dict]:
 
 
 @logger
-def get_group_command(client: Client, group_id: int = 0) -> tuple[object, dict, list | dict]:
+def get_group_command(client: Client, group_id: int = 0) -> Tuple[object, dict, Union[list, dict]]:
     """
         Get the information of a group
     Args:
@@ -3147,7 +3147,7 @@ def create_enrollment_command(client: Client,
                               ra: str = "third-party",
                               validation_type: str = "third-party",
                               sans: list = []
-                              ) -> tuple[object, dict, list | dict]:
+                              ) -> Tuple[object, dict, Union[list, dict]]:
     """
         Create an enrollment
     Args:
@@ -3218,7 +3218,7 @@ def create_enrollment_command(client: Client,
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-def list_enrollments_command(client: Client, contract_id: str) -> tuple[object, dict, list | dict]:
+def list_enrollments_command(client: Client, contract_id: str) -> Tuple[object, dict, Union[list, dict]]:
     """
         List enrollments
     Args:
@@ -3239,7 +3239,7 @@ def list_enrollments_command(client: Client, contract_id: str) -> tuple[object, 
 # Created by C.L.
 @logger
 def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: str = ""
-                                 ) -> tuple[object, dict, list | dict]:
+                                 ) -> Tuple[object, dict, Union[list, dict]]:
     """
         List enrollments
     Args:
@@ -3271,7 +3271,7 @@ def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: st
 
 @logger
 def get_change_command(client: Client, enrollment_path: str, allowed_input_type_param: str = "third-party-csr"
-                       ) -> tuple[object, dict, list | dict]:
+                       ) -> Tuple[object, dict, Union[list, dict]]:
     """
         Get change
     Args:
@@ -3296,7 +3296,7 @@ def update_change_command(client: Client, change_path: str,
                           certificate: str, trust_chain: str,
                           allowed_input_type_param: str = "third-party-cert-and-trust-chain",
                           key_algorithm: str = "RSA"
-                          ) -> tuple[object, dict, list | dict]:
+                          ) -> Tuple[object, dict, Union[list, dict]]:
     """
         Update a change
     Args:
@@ -3322,9 +3322,22 @@ def update_change_command(client: Client, change_path: str,
 
 # Created by C.L.
 @logger
-def acknowledge_warning_command(client: Client, change_path: str) -> tuple[object, dict, list | dict]:
+def acknowledge_warning_command(client: Client, change_path: str, allowed_input_type_param: str = 'post-verification-warnings-ack') -> Tuple[object, dict, Union[list, dict]]:
+    """
+    Acknowledge the warning message after updating a enrollment change
 
-    raw_response: dict = client.acknowledge_warning(change_path)
+    Args:
+        change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+        allowed_input_type_param:    Enum Found as the last part of Change.allowedInput[].update hypermedia URL.
+            supported values include:
+                     change-management-ack,
+                     lets-encrypt-challenges-completed,
+                     post-verification-warnings-ack,
+                     pre-verification-warnings-ack.
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: dict = client.acknowledge_warning(change_path, allowed_input_type_param)
 
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
@@ -3336,7 +3349,7 @@ def acknowledge_warning_command(client: Client, change_path: str) -> tuple[objec
 
 # Created by C.L.
 @logger
-def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> tuple[object, dict, list | dict]:
+def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[list, dict]]:
 
     raw_response: dict = client.acknowledge_pre_verification_warning(change_path)
 
@@ -3351,7 +3364,7 @@ def acknowledge_pre_verification_warning_command(client: Client, change_path: st
 # Created by C.L. Oct-06-22
 
 
-def get_production_deployment_command(client: Client, enrollment_id: str) -> tuple[object, dict, list | dict]:
+def get_production_deployment_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[list, dict]]:
 
     raw_response: dict = client.get_production_deployment(enrollment_id)
 
@@ -3365,7 +3378,7 @@ def get_production_deployment_command(client: Client, enrollment_id: str) -> tup
 # Created by C.L. Oct-06-22
 
 
-def get_change_history_command(client: Client, enrollment_id: str) -> tuple[object, dict, list | dict]:
+def get_change_history_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[list, dict]]:
 
     raw_response: dict = client.get_change_history(enrollment_id)
 
@@ -3379,7 +3392,7 @@ def get_change_history_command(client: Client, enrollment_id: str) -> tuple[obje
 
 # Created by C.L.
 @logger
-def create_group_command(client: Client, group_path: str = '') -> tuple[object, dict, list | dict]:
+def create_group_command(client: Client, group_path: str = '') -> Tuple[object, dict, Union[list, dict]]:
     """
         Create a new group
     Args:
@@ -3416,7 +3429,7 @@ def create_group_command(client: Client, group_path: str = '') -> tuple[object, 
 # Created by C.L.
 
 
-def get_domains_command(client: Client) -> tuple[object, dict, list | dict]:
+def get_domains_command(client: Client) -> Tuple[object, dict, Union[list, dict]]:
     """
         Get all of the existing domains
 
@@ -3432,7 +3445,7 @@ def get_domains_command(client: Client) -> tuple[object, dict, list | dict]:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-def get_domain_command(client: Client, domain_name: str) -> tuple[object, dict, list | dict]:
+def get_domain_command(client: Client, domain_name: str) -> Tuple[object, dict, Union[list, dict]]:
     """
         Get information of a specific domain
     Args:
@@ -3451,7 +3464,7 @@ def get_domain_command(client: Client, domain_name: str) -> tuple[object, dict, 
 
 
 @logger
-def create_domain_command(client: Client, group_id: int, domain_name: str) -> tuple[object, dict, list | dict]:
+def create_domain_command(client: Client, group_id: int, domain_name: str) -> Tuple[object, dict, Union[list, dict]]:
     """
        Creating domains
     Args:
@@ -3474,7 +3487,7 @@ def create_domain_command(client: Client, group_id: int, domain_name: str) -> tu
 # Created by C.L.
 @logger
 def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "", dc_country: str = "US"
-                              ) -> tuple[object, dict, list | dict]:
+                              ) -> Tuple[object, dict, Union[list, dict]]:
     """
     Updating or adding datacenter to existing GTM domain
     Args:
@@ -3502,7 +3515,7 @@ def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "
 def update_property_command(client: Client, property_type: str, domain_name: str, property_name: str,
                             static_type: str = "", property_comments: str = "", static_server: str = "", server_1: str = "",
                             server_2: str = "", weight_1: int = 50, weight_2: int = 50, dc1_id: int = 3131, dc2_id: int = 3132
-                            ) -> tuple[object, dict, list | dict]:
+                            ) -> Tuple[object, dict, Union[list, dict]]:
     """
     Updating or adding properties to existing GTM domain
 
@@ -3534,7 +3547,7 @@ def update_property_command(client: Client, property_type: str, domain_name: str
 
 
 @logger
-def test_module_command(client: Client, *_) -> tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -3560,7 +3573,7 @@ def get_network_lists_command(
         list_type: str = None,
         extended: str = 'true',
         include_elements: str = 'true',
-) -> tuple[object, dict, list | dict]:
+) -> Tuple[object, dict, Union[list, dict]]:
     """Get network lists
 
     Args:
@@ -3593,7 +3606,7 @@ def get_network_lists_command(
 
 
 @logger
-def get_network_list_by_id_command(client: Client, network_list_id: str) -> tuple[object, dict, list | dict]:
+def get_network_list_by_id_command(client: Client, network_list_id: str) -> Tuple[object, dict, Union[list, dict]]:
     """Get network list by ID
 
     Args:
@@ -3621,9 +3634,9 @@ def get_network_list_by_id_command(client: Client, network_list_id: str) -> tupl
 
 
 @logger
-def create_network_list_command(client: Client, list_name: str, list_type: str, description: str | None = None,
-                                entry_id: str | None = None, elements: str | list | None = None) \
-        -> tuple[object, dict, list | dict]:
+def create_network_list_command(client: Client, list_name: str, list_type: str, description: str = None,
+                                entry_id: str = None, elements: Union[str, list] = None) \
+        -> Tuple[object, dict, Union[list, dict]]:
     """
         Create network list
 
@@ -3663,7 +3676,7 @@ def create_network_list_command(client: Client, list_name: str, list_type: str, 
 
 
 @logger
-def delete_network_list_command(client: Client, network_list_id: str) -> tuple[object, dict, list | dict]:
+def delete_network_list_command(client: Client, network_list_id: str) -> Tuple[object, dict, Union[list, dict]]:
     """Delete network list by ID
 
     Args:
@@ -3682,8 +3695,8 @@ def delete_network_list_command(client: Client, network_list_id: str) -> tuple[o
 
 
 @logger
-def update_network_list_elements_command(client: Client, network_list_id: str, elements: str | list | None = None) \
-        -> tuple[object, dict, list | dict]:
+def update_network_list_elements_command(client: Client, network_list_id: str, elements: Union[str, list] = None) \
+        -> Tuple[object, dict, Union[list, dict]]:
     """Update network list by ID
 
     Args:
@@ -3707,8 +3720,8 @@ def update_network_list_elements_command(client: Client, network_list_id: str, e
 
 
 @logger
-def activate_network_list_command(client: Client, network_list_ids: str, env: str, comment: str | None = None,
-                                  notify: str | None = None) -> tuple[object, dict, list | dict]:
+def activate_network_list_command(client: Client, network_list_ids: str, env: str, comment: str = None,
+                                  notify: str = None) -> Tuple[object, dict, Union[list, dict]]:
     """Activate network list by ID
 
     Args:
@@ -3743,9 +3756,9 @@ def activate_network_list_command(client: Client, network_list_ids: str, env: st
 
 
 @logger
-def add_elements_to_network_list_command(client: Client, network_list_id: str, entry_id: str | None = None,
-                                         elements: str | list | None = None) \
-        -> tuple[object, dict, list | dict]:
+def add_elements_to_network_list_command(client: Client, network_list_id: str, entry_id: str = None,
+                                         elements: Union[str, list] = None) \
+        -> Tuple[object, dict, Union[list, dict]]:
     """Add elements to network list by ID
 
     Args:
@@ -3775,7 +3788,7 @@ def add_elements_to_network_list_command(client: Client, network_list_id: str, e
 
 @logger
 def remove_element_from_network_list_command(client: Client, network_list_id: str, element: str) -> \
-        tuple[object, dict, list | dict]:
+        Tuple[object, dict, Union[list, dict]]:
     """Remove element from network list by ID
 
     Args:
@@ -3796,8 +3809,8 @@ def remove_element_from_network_list_command(client: Client, network_list_id: st
 
 
 @logger
-def get_activation_status_command(client: Client, network_list_ids: str | list, env: str) \
-        -> tuple[str, dict[str, Any], list | dict]:
+def get_activation_status_command(client: Client, network_list_ids: Union[str, list], env: str) \
+        -> Tuple[str, dict, Union[list, dict]]:
     """Get activation status
 
     Args:
@@ -3859,7 +3872,7 @@ def clone_papi_property_command(client: Client,
                                 group_id: str,
                                 property_id: str,
                                 version: str,
-                                check_existence_before_create="yes") -> tuple[str, dict[str, Any], list | dict]:
+                                check_existence_before_create="yes") -> Tuple[str, dict, Union[list, dict]]:
     """
         Post clone property command
     Args:
@@ -3919,7 +3932,7 @@ def add_papi_property_hostname_command(client: Client,
                                        cname_from: str,
                                        edge_hostname_id: str,
                                        sleep_time: str = '30'
-                                       ) -> tuple[str, dict[str, Any], list | dict]:
+                                       ) -> Tuple[str, dict, Union[list, dict]]:
     """
         add hostname papi property
 
@@ -3971,7 +3984,7 @@ def add_papi_property_hostname_command(client: Client,
 def list_papi_edgehostname_bygroup_command(client: Client,
                                            contract_id: str,
                                            group_id: str,
-                                           domain_prefix: str) -> tuple[str, dict[str, Any], list | dict]:
+                                           domain_prefix: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         add papi edge hostname command
     Args:
@@ -4020,7 +4033,7 @@ def new_papi_edgehostname_command(client: Client,
                                   secure: str,
                                   secure_network: str,
                                   cert_enrollment_id: str,
-                                  check_existence_before_create="yes") -> tuple[str, dict[str, Any], list | dict]:
+                                  check_existence_before_create="yes") -> Tuple[str, dict, Union[list, dict]]:
     """
         add papi edge hostname command
 
@@ -4091,7 +4104,7 @@ def new_papi_edgehostname_command(client: Client,
 def get_cps_enrollmentid_by_cnname_command(client: Client,
                                            contract_id: str,
                                            cnname: str,
-                                           ) -> tuple[str, dict[str, Any], list | dict]:
+                                           ) -> Tuple[str, dict, Union[list, dict]]:
     """
         get CPS EnrollmentID by Common Name
 
@@ -4105,7 +4118,6 @@ def get_cps_enrollmentid_by_cnname_command(client: Client,
     """
 
     raw_response: dict = client.list_cps_enrollments(contract_id=contract_id)
-
     enrollment: dict = get_cps_enrollment_by_cnname(raw_response=raw_response, cnname=cnname)
     title = f'{INTEGRATION_NAME} - Get cps enrollmentid by cnname command'
     entry_context, human_readable_ec = get_cps_enrollment_by_cnname_ec(enrollment)
@@ -4129,7 +4141,7 @@ def new_papi_cpcode_command(client: Client,
                             group_id: str,
                             cpcode_name: str,
                             check_existence_before_create="yes"
-                            ) -> tuple[str, dict[str, Any], list | dict]:
+                            ) -> Tuple[str, dict, Union[list, dict]]:
     """
         get papi property All Versions by group_id and property_id command
     Args:
@@ -4189,7 +4201,7 @@ def patch_papi_property_rule_cpcode_command(client: Client,
                                             path: str,
                                             cpcode_id: str,
                                             name: str,
-                                            ) -> tuple[str, dict[str, Any], list | dict]:
+                                            ) -> Tuple[str, dict, Union[list, dict]]:
     """
         get papi property All Versions by group_id and property_id command
     Args:
@@ -4254,7 +4266,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                                             external_url: str,
                                             gzip_compression: str,
                                             sleep_time: str = '30',
-                                            ) -> tuple[str, dict[str, Any], list | dict]:
+                                            ) -> Tuple[str, dict, Union[list, dict]]:
     """
         get papi property All Versions by group_id and property_id command
     Args:
@@ -4395,7 +4407,7 @@ def activate_papi_property_command(client: Client,
                                    notify_emails: str,
                                    property_version: str,
                                    note: str,
-                                   ) -> tuple[str, dict[str, Any], list | dict]:
+                                   ) -> Tuple[str, dict, Union[list, dict]]:
     """
         activate an property command
     Args:
@@ -4442,7 +4454,7 @@ def clone_security_policy_command(client: Client,
                                   create_from_security_policy: str,
                                   policy_name: str,
                                   policy_prefix: str = '',
-                                  check_existence_before_create="yes") -> tuple[str, dict[str, Any], list | dict]:
+                                  check_existence_before_create="yes") -> Tuple[str, dict, Union[list, dict]]:
     """
         Clone security policy property command
     Args:
@@ -4542,7 +4554,7 @@ def new_match_target_command(client: Client,
                              file_paths: str,
                              hostnames: str,
                              policy_id: str
-                             ) -> tuple[str, dict[str, Any], list | dict]:
+                             ) -> Tuple[str, dict, Union[list, dict]]:
     """
         New match target command
     Args:
@@ -4599,7 +4611,7 @@ def activate_appsec_config_version_command(client: Client,
                                            notification_emails: str,
                                            action: str,
                                            network: str,
-                                           note: str) -> tuple[str, dict[str, Any], list | dict]:
+                                           note: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         Activate appsec config version command
     Args:
@@ -4644,7 +4656,7 @@ def activate_appsec_config_version_command(client: Client,
 def get_appsec_config_activation_status_command(client: Client,
                                                 activation_id: str,
                                                 sleep_time: str,
-                                                retries: str) -> tuple[str, dict[str, Any], list | dict]:
+                                                retries: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         Get appsec config version activation status command
     Args:
@@ -4686,7 +4698,7 @@ def get_appsec_config_latest_version_command(client: Client,
                                              sec_config_name: str,
                                              sleep_time: str,
                                              retries: str,
-                                             skip_consistency_check: str) -> tuple[str, dict[str, Any], list | dict]:
+                                             skip_consistency_check: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         1) Get appsec config Id and latestVersion.
         2) Check latestVersion and stagingVersion, productionVersion consistency
@@ -4738,7 +4750,7 @@ def get_security_policy_id_by_name_command(client: Client,
                                            config_id: str,
                                            config_version: str,
                                            policy_name: str,
-                                           is_baseline_policy: str) -> tuple[str, dict[str, Any], list | dict]:
+                                           is_baseline_policy: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         get a security policy ID by Policy name
                     It is also used to get the policy ID of "Baseline Security Policy"
@@ -4787,7 +4799,7 @@ def clone_appsec_config_version_command(client: Client,
                                         create_from_version: str,
                                         do_not_clone: str,
                                         rule_update: bool = True,
-                                        ) -> tuple[str, dict[str, Any], list | dict]:
+                                        ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Appsec Configurtion - create a new version by clone the latest version
     Args:
@@ -4835,7 +4847,7 @@ def patch_papi_property_rule_httpmethods_command(client: Client,
                                                  operation: str,
                                                  path: str,
                                                  value: dict,
-                                                 ) -> tuple[str, dict[str, Any], list | dict]:
+                                                 ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Patch papi property All Versions by group_id and property_id command
     Args:
@@ -4892,7 +4904,7 @@ def get_papi_property_activation_status_command(client: Client,
                                                 activation_id: int,
                                                 property_id: int,
                                                 sleep_time: str,
-                                                retries: str) -> tuple[str, dict[str, Any], list | dict]:
+                                                retries: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         Get papi property activation status command - retry if the status is not "activate"
     Args:
@@ -4936,7 +4948,7 @@ def get_papi_edgehostname_creation_status_command(client: Client,
                                                   edgehostname_id: str,
                                                   options: str,
                                                   sleep_time: str,
-                                                  retries: str) -> tuple[str, dict[str, Any], list | dict]:
+                                                  retries: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         Get papi property activation status command - retry if the status is not "activate"
     Args:
@@ -4984,7 +4996,7 @@ def modify_appsec_config_selected_hosts_command(client: Client,
                                                 config_version: int,
                                                 hostname_list: list,
                                                 mode: str
-                                                ) -> tuple[str, dict, list | dict]:
+                                                ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Update the list of selected hostnames for a configuration version.
 
@@ -5027,7 +5039,7 @@ def patch_papi_property_rule_siteshield_command(client: Client,
                                                 operation: str,
                                                 path: str,
                                                 ssmap: str
-                                                ) -> tuple[str, dict[str, Any], list | dict]:
+                                                ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Patch papi property default rule's site shield command
     Args:
@@ -5081,7 +5093,7 @@ def patch_papi_property_rule_siteshield_command(client: Client,
 def update_appsec_config_version_notes_command(client: Client,
                                                config_id: int,
                                                config_version: int,
-                                               notes: str) -> tuple[str, dict[str, Any], list | dict]:
+                                               notes: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         Update application secuirty configuration version notes command
     Args:
@@ -5117,7 +5129,7 @@ def new_or_renew_match_target_command(client: Client,
                                       file_paths: str,
                                       hostnames: str,
                                       policy_id: str
-                                      ) -> tuple[str, dict[str, Any], list | dict]:
+                                      ) -> Tuple[str, dict, Union[list, dict]]:
     """
         New match target if no existing found otherwise update the existing match target hostnames
         If there are multiple match targets found, the first one in the list will be updated
@@ -5207,7 +5219,7 @@ def patch_papi_property_rule_command(client: Client,
                                      path: str,
                                      value: str,
                                      value_to_json: str
-                                     ) -> tuple[str, dict[str, Any], list | dict]:
+                                     ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Generic JSON patch command for Papi Property default rule
     Args:
@@ -5264,7 +5276,7 @@ def get_papi_property_rule_command(client: Client,
                                    property_version: int,
                                    group_id: str,
                                    validate_rules: str
-                                   ) -> tuple[str, dict[str, Any], list | dict]:
+                                   ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Get Papi Property default rule
     Args:
@@ -5306,7 +5318,7 @@ def get_papi_property_rule_command(client: Client,
 def get_papi_property_by_name_command(client: Client,
                                       contract_id: str,
                                       group_id: str,
-                                      property_name: str,) -> tuple[str, dict[str, Any], list | dict]:
+                                      property_name: str,) -> Tuple[str, dict, Union[list, dict]]:
     """
         Get papi property within a group by property name
     Args:
@@ -5352,7 +5364,7 @@ def get_papi_property_by_name_command(client: Client,
 def get_papi_property_by_id_command(client: Client,
                                     contract_id: str,
                                     group_id: str,
-                                    property_id: str,) -> tuple[str, dict[str, Any], list | dict]:
+                                    property_id: str,) -> Tuple[str, dict, Union[list, dict]]:
     """
         Get papi property within a group by property name
     Args:
@@ -5387,7 +5399,7 @@ def list_papi_property_by_group_command(client: Client,
                                         contract_id: str,
                                         group_id: str,
                                         context_path: str = 'PapiProperty.ByGroup',
-                                        ) -> tuple[str, dict[str, Any], list | dict]:
+                                        ) -> Tuple[str, dict, Union[list, dict]]:
     """
         Lists properties available for the current contract and group.
     Args:
@@ -5423,7 +5435,7 @@ def new_papi_property_version_command(client: Client,
                                       contract_id: str,
                                       property_id: str,
                                       group_id: str,
-                                      create_from_version: str) -> tuple[str, dict[str, Any], list | dict]:
+                                      create_from_version: str) -> Tuple[str, dict, Union[list, dict]]:
     """
         Create a new property version based on any previous version.
         All data from the createFromVersion populates the new version, including its rules and hostnames.
@@ -5461,7 +5473,7 @@ def new_papi_property_version_command(client: Client,
 def list_papi_property_activations_command(client: Client,
                                            contract_id: str,
                                            property_id: str,
-                                           group_id: str,) -> tuple[str, dict[str, Any], list | dict]:
+                                           group_id: str,) -> Tuple[str, dict, Union[list, dict]]:
     """
         This lists all activations for all versions of a property, on both production and staging networks.
 
@@ -5494,7 +5506,7 @@ def list_papi_property_activations_command(client: Client,
 
 @logger
 def list_appsec_configuration_activation_history_command(client: Client,
-                                                         config_id: int,) -> tuple[str, dict[str, Any], list | dict]:
+                                                         config_id: int,) -> Tuple[str, dict, Union[list, dict]]:
     """
         Lists the activation history for a configuration.
         The history is an array in descending order of submitDate.
@@ -5529,7 +5541,7 @@ def list_papi_property_by_hostname_command(client: Client,
                                            hostname: str,
                                            network: str = None,
                                            contract_id: str = None,
-                                           group_id: str = None,) -> tuple[str, dict[str, Any], list | dict]:
+                                           group_id: str = None,) -> Tuple[str, dict, Union[list, dict]]:
     """
         This operation lists active property hostnames for all properties available in an account.
 
@@ -5565,7 +5577,7 @@ def list_papi_property_by_hostname_command(client: Client,
 
 # Created by D.S. 2023-03-30
 @logger
-def list_siteshield_maps_command(client: Client) -> tuple[str, dict[str, Any], list | dict]:
+def list_siteshield_maps_command(client: Client) -> Tuple[str, dict, Union[list, dict]]:
     """
         Returns a list of all Site Shield maps that belong to your account.
 
@@ -5581,22 +5593,16 @@ def list_siteshield_maps_command(client: Client) -> tuple[str, dict[str, Any], l
     title = f'{INTEGRATION_NAME} - list siteshield map command'
     entry_context, human_readable_ec = list_siteshield_maps_ec(raw_response=raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.SiteShieldMaps": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.SiteShieldMaps": entry_context[0]
     }
-
-    human_readable = tableToMarkdown(
-        name=title,
-        t=human_readable_ec,
-        removeNull=True,
-    )
-    return human_readable, context_entry, raw_response
+    return raw_response, context_entry, raw_response
 
 
 # Created by D.S. 2023-05-03
 @logger
 def get_cps_enrollment_deployment_command(client: Client,
                                           enrollment_id: int,
-                                          environment: str = 'production',) -> tuple[str, dict[str, Any], list | dict]:
+                                          environment: str = 'production',) -> Tuple[str, dict, Union[list, dict]]:
     """
         Returns the certification/Enarollment deployment status for specific a environtment: production or staging.
 
@@ -5624,14 +5630,14 @@ def get_cps_enrollment_deployment_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 
 @logger
 def list_cidr_blocks_command(client: Client,
                              last_action: str = '',
-                             effective_date_gt: str = '') -> tuple[str, dict[str, Any], list | dict]:
+                             effective_date_gt: str = '') -> Tuple[str, dict, Union[list, dict]]:
     """
         List all CIDR blocks for all services you are subscribed to.
         To see additional CIDR blocks, subscribe yourself to more services and run this operation again.
@@ -5667,7 +5673,7 @@ def list_cidr_blocks_command(client: Client,
         t=raw_response,
         removeNull=True,
     )
-    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 
@@ -5682,7 +5688,7 @@ def update_cps_enrollment_command(client: Client,
                                   deploy_not_before: str = "",
                                   force_renewal: str = 'false',
                                   renewal_date_check_override: str = 'true',
-                                  allow_missing_certificate_addition: str = 'false') -> tuple[str, dict[str, Any], list | dict]:
+                                  allow_missing_certificate_addition: str = 'false') -> Tuple[str, dict, Union[list, dict]]:
     import json
     """
         Updates an enrollment with changes. Response type will vary depending on the type and impact of change.
@@ -5783,7 +5789,7 @@ def update_cps_enrollment_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 
@@ -5793,7 +5799,7 @@ def update_cps_enrollment_schedule_command(client: Client,
                                            enrollment_id: str = '',
                                            change_id: str = '',
                                            deploy_not_before: str = '',
-                                           deploy_not_after: str = None) -> tuple[str, dict[str, Any], list | dict]:
+                                           deploy_not_after: str = None) -> Tuple[str, dict, Union[list, dict]]:
     """
         Updates the current deployment schedule.
         Reference: https://techdocs.akamai.com/cps/reference/put-change-deployment-schedule
@@ -5850,7 +5856,7 @@ def update_cps_enrollment_schedule_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 # Created by D.S.
@@ -5860,7 +5866,7 @@ def update_cps_enrollment_schedule_command(client: Client,
 def get_cps_change_status_command(client: Client,
                                   enrollment_path: str = "",
                                   enrollment_id: str = "",
-                                  change_id: str = "",) -> tuple[str, dict[str, Any], list | dict]:
+                                  change_id: str = "",) -> Tuple[str, dict, Union[list, dict]]:
     """
         Gets the status of a pending change.
 
@@ -5895,7 +5901,7 @@ def get_cps_change_status_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 
