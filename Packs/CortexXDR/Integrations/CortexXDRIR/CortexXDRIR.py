@@ -424,7 +424,6 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        demisto.debug(f'incidents replay {reply} fetched')
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
@@ -540,13 +539,11 @@ def sort_incident_data(raw_incident):
             - file artifact
             - network artifacts.
     """
-    
+
     incident = raw_incident.get('incident', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data', None)
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
-    demisto.debug(f'file_artifacts: {file_artifacts}')
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
-    demisto.debug(f'network_artifacts: {network_artifacts}')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     if context_alerts:
         for alert in context_alerts:
