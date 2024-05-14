@@ -209,7 +209,7 @@ class Client(CrowdStrikeClient):
                             if filter_string else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
-            if last_run := self.get_last_run(self.fetch_by_field):
+            if last_run := self.get_last_run(self.fetch_by_field, self.first_fetch):
                 filter_string = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
             elif self.fetch_by_field == "Last Updated":
                 # pre 2.1.0 use-case is only relevant when fetching indicators by the "Last Updated" field.
@@ -286,7 +286,7 @@ class Client(CrowdStrikeClient):
         """
         context_value = FETCH_BY_FIELDS[self.fetch_by_field]["context_value"]
         if resources := response.get("resources", []):
-            new_last_run_timestamp = resources[-1].get(FETCH_BY_FIELDS[self.fetch_by_field["response_resources_ref"]])
+            new_last_run_timestamp = resources[-1].get(FETCH_BY_FIELDS[self.fetch_by_field]["response_resources_ref"])
             demisto.debug(f"There are new indicators, new last_run is {context_value}={new_last_run_timestamp}")
         else:
             new_last_run_timestamp = demisto.getIntegrationContext().get(context_value)
@@ -344,7 +344,7 @@ class Client(CrowdStrikeClient):
         return '', []
 
     @staticmethod
-    def get_last_run(fetch_by_field: str) -> str:
+    def get_last_run(fetch_by_field: str, first_fetch) -> str:
         """Gets last run time in timestamp.
         This function take into consideration that there are two types
         fo field options to fetch by (`Last Updated`, `Published Date`).
@@ -356,17 +356,32 @@ class Client(CrowdStrikeClient):
             Taken from Integration Context key last_marker_time / last_published_date_time.
 
         """
+
+        # Case 1: This is not the first fetch cycle and there is a last_run value saved in the Integration Context
         if last_run := demisto.getIntegrationContext().get(FETCH_BY_FIELDS[fetch_by_field]["context_value"]):
             filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
-            params = f"{filter}{last_run}'"
-            demisto.info(f"get last_run: {last_run}. filter parameter is: {params=}")
+            last_run_query = f"{filter}{last_run}'"
+            demisto.info(f"get last_run: {last_run}. filter parameter is: {last_run_query=}")
+        # Case 2: fetch_by_field=`Published Date` and its the first fetch cycle, create a timestamp out of `first_fetch` parameter
+        elif fetch_by_field == "Published Date":
+            filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
+            first_fetch_datetime = arg_to_datetime(first_fetch, required=True)
+            first_fetch_timestamp = int(first_fetch_datetime.timestamp()) if first_fetch_datetime else None
+            if first_fetch_timestamp:
+                last_run_query = f"{filter}{first_fetch_timestamp}'"
+            else:
+                raise DemistoException(
+                    "Could not create timestamp for first fetch. Please verify `First fetch time` parameter validity."
+                )
+        # Case 3: fetch_by_field=`Last Updated` and its the first fetch cycle
+        # `filter_string` is handled later in `handle_first_fetch_context_or_pre_2_1_0`` function
         else:
             demisto.debug(
                 f'There is no last_run ({FETCH_BY_FIELDS[fetch_by_field]["context_value"]}) \
-                    value in the Integration Context. Setting `params` to an empty string.'
+                    value in the Integration Context. Setting `last_run_query` to an empty string.'
             )
-            params = ''
-        return params
+            last_run_query = ""
+        return last_run_query
 
     @staticmethod
     def create_indicators_from_response(raw_response, get_actors_names_request_func, tlp_color=None, feed_tags=None,
@@ -547,10 +562,7 @@ def fetch_indicators_command(client: Client):
     Returns:
         list of indicators(list)
     """
-    parsed_indicators = client.fetch_indicators(
-        fetch_command=True,
-        limit=client.limit
-    )
+    parsed_indicators = client.fetch_indicators(fetch_command=True, limit=client.limit)
     # we submit the indicators in batches
     for b in batch(parsed_indicators, batch_size=2000):
         demisto.createIndicators(b)
@@ -688,4 +700,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    main()  # FIX: Remove `DEV` from display,name and id values in yml when development is finished
