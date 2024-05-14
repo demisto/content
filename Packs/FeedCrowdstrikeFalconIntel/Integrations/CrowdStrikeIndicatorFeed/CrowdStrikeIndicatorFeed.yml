@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CrowdStrike Indicator Feed
+  id: CrowdStrike Indicator Feed DEV
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -161,19 +161,19 @@ configuration:
   type: 8
   hidden: true
   required: false
-- additionalinfo: "Choose which indicator field to fetch indicators by. Default field is 'last updated'."
+- additionalinfo: "Choose which indicator field to fetch indicators by. Default field is 'Last Updated'."
   display: Indicator field to fetch by
   name: fetch_by_field
   options:
   - Last Updated
   - Published Date
-  defaultvalue: last updated
-  type: 16
+  defaultvalue: Last Updated
+  type: 15
   required: true
   section: Collect
 description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
-display: CrowdStrike Indicator Feed
-name: CrowdStrike Indicator Feed
+display: CrowdStrike Indicator Feed DEV
+name: CrowdStrike Indicator Feed DEV
 script:
   commands:
   - arguments:
