@@ -163,7 +163,7 @@ configuration:
   required: false
 - additionalinfo: "Choose which indicator field to fetch indicators by. Default field is 'last updated'."
   display: Indicator field to fetch by
-  name: indicator_field_to_fetch_by
+  name: fetch_by_field
   options:
   - Last Updated
   - Published Date
