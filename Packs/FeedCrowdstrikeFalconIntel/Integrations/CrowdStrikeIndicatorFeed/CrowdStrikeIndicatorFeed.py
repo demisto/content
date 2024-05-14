@@ -87,7 +87,7 @@ FETCH_BY_FIELDS = {
     "Published Date": {
         "field_name": "published_date",
         "filter": "published_date:>",
-        "sort_query": "published_date|asc",
+        "sort": "published_date|asc",
         "response_resources_ref": "published_date",
         "context_value": "last_published_date_time",
     },
@@ -360,7 +360,7 @@ class Client(CrowdStrikeClient):
         # Case 1: This is not the first fetch cycle and there is a last_run value saved in the Integration Context
         if last_run := demisto.getIntegrationContext().get(FETCH_BY_FIELDS[fetch_by_field]["context_value"]):
             filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
-            last_run_query = f"{filter}{last_run}'"
+            last_run_query = f"{filter}{last_run}"
             demisto.info(f"get last_run: {last_run}. filter parameter is: {last_run_query=}")
         # Case 2: fetch_by_field=`Published Date` and its the first fetch cycle, create a timestamp out of `first_fetch` parameter
         elif fetch_by_field == "Published Date":
@@ -368,7 +368,7 @@ class Client(CrowdStrikeClient):
             first_fetch_datetime = arg_to_datetime(first_fetch, required=True)
             first_fetch_timestamp = int(first_fetch_datetime.timestamp()) if first_fetch_datetime else None
             if first_fetch_timestamp:
-                last_run_query = f"{filter}{first_fetch_timestamp}'"
+                last_run_query = f"{filter}{first_fetch_timestamp}"
             else:
                 raise DemistoException(
                     "Could not create timestamp for first fetch. Please verify `First fetch time` parameter validity."
