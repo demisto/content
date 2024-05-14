@@ -2082,9 +2082,36 @@ script:
       description: The maximum number of items to returned.
       defaultValue: 50
     outputs:
-    - contextPath: 
-      description: 
-      type: Number
+      - contextPath: Mimecast.ArchiveSearchLog.meta.pagination.pageSize
+        description: The number of logs per page in the search result.
+        type: Number
+      - contextPath: Mimecast.ArchiveSearchLog.meta.pagination.totalCount
+        description: The total number of logs in the search result.
+        type: Number
+      - contextPath: Mimecast.ArchiveSearchLog.meta.pagination.next
+        description: The link to the next page of logs in the search result.
+        type: String
+      - contextPath: Mimecast.ArchiveSearchLog.meta.status
+        description: The status of the search operation.
+        type: Number
+      - contextPath: Mimecast.ArchiveSearchLog.data.logs.createTime
+        description: The time that the search was executed.
+        type: Date
+      - contextPath: Mimecast.ArchiveSearchLog.data.logs.emailAddr
+        description: The email address of the user who performed the search.
+        type: String
+      - contextPath: Mimecast.ArchiveSearchLog.data.logs.source
+        description: The source of the search.
+        type: String
+      - contextPath: Mimecast.ArchiveSearchLog.data.logs.searchText
+        description: The text used in the search.
+        type: String
+      - contextPath: Mimecast.ArchiveSearchLog.data.logs.searchReason
+        description: The reason for the search.
+        type: String
+      - contextPath: Mimecast.ArchiveSearchLog.data.logs.description
+        description: The description of the search if any.
+        type: String
   - name: mimecast-get-search-logs
     description: Retrieves the search logs.
     arguments:
@@ -2101,6 +2128,46 @@ script:
     - name: limit
       description: The maximum number of items to returned.
       defaultValue: 50
+    outputs:
+      - contextPath: Mimecast.SearchLog.meta.pagination.pageSize
+        description: 'The number of results per page.'
+        type: Number
+      - contextPath: Mimecast.SearchLog.meta.pagination.totalCount
+        description: 'The total number of search results.'
+        type: Number
+      - contextPath: Mimecast.SearchLog.meta.pagination.next
+        description: 'A link to the next page of search results.'
+        type: String
+      - contextPath: Mimecast.SearchLog.meta.status
+        description: 'The status code of the search operation.'
+        type: Number
+      - contextPath: Mimecast.SearchLog.data.logs.createTime
+        description: 'The time that the search was executed.'
+        type: Date
+      - contextPath: Mimecast.SearchLog.data.logs.emailAddr
+        description: 'The email address of the user who performed the search.'
+        type: String
+      - contextPath: Mimecast.SearchLog.data.logs.source
+        description: 'The source context of the search.'
+        type: String
+      - contextPath: Mimecast.SearchLog.data.logs.searchText
+        description: 'The text used in the search.'
+        type: String
+      - contextPath: Mimecast.SearchLog.data.logs.searchPath
+        description: 'The search path used in the search.'
+        type: String
+      - contextPath: Mimecast.SearchLog.data.logs.searchReason
+        description: 'The reason entered when the search was executed.'
+        type: String
+      - contextPath: Mimecast.SearchLog.data.logs.isAdmin
+        description: 'Indicates if the search was an admin search or not.'
+        type: Boolean
+      - contextPath: Mimecast.SearchLog.data.logs.museQuery
+        description: '(Deprecated) The Mimecast search query used, if any.'
+        type: String
+      - contextPath: Mimecast.SearchLog.data.logs.description
+        description: 'The description of the search, if any.'
+        type: String
   - name: mimecast-list-account
     description: This endpoint returns the summary details for an account in Mimecast.
     arguments:
@@ -2121,6 +2188,97 @@ script:
     - name: limit
       description: The maximum number of items to returned.
       defaultValue: 50
+    outputs:
+      - contextPath: Mimecast.Account.region
+        description: 'The region where the account is hosted.'
+        type: String
+      - contextPath: Mimecast.Account.archive
+        description: 'If gateway features are enabled on the account.'
+        type: Boolean
+      - contextPath: Mimecast.Account.gateway
+        description: 'If gateway features are enabled on the account.'
+        type: Boolean
+      - contextPath: Mimecast.Account.passphrase
+        description: 'The passphrase set on the account, used by Mimecast Support when verifying callers during support calls.'
+        type: String
+      - contextPath: Mimecast.Account.supportCode
+        description: 'The support code.'
+        type: String
+      - contextPath: Mimecast.Account.maxRetention
+        description: 'The maximum retention in days configured for the account.'
+        type: Number
+      - contextPath: Mimecast.Account.maxRetentionConfirmed
+        description: 'If the maximum retention value on the account has been confirmed.'
+        type: Boolean
+      - contextPath: Mimecast.Account.minRetentionEnabled
+        description: 'If minimum retention is enabled on the account.'
+        type: Boolean
+      - contextPath: Mimecast.Account.automatedSegmentPurge
+        description: 'If purging of expired storage segments is enabled on the account.'
+        type: Boolean
+      - contextPath: Mimecast.Account.type
+        description: 'The type of account.'
+        type: String
+      - contextPath: Mimecast.Account.policyInheritance
+        description: 'If policy inheritance is enabled on the account.'
+        type: Boolean
+      - contextPath: Mimecast.Account.databaseCode
+        description: 'The database code.'
+        type: String
+      - contextPath: Mimecast.Account.searchReason
+        description: 'The search reason.'
+        type: Boolean
+      - contextPath: Mimecast.Account.contentAdministratorDefaultView
+        description: 'The content administrator default view.'
+        type: String
+      - contextPath: Mimecast.Account.adminSessionTimeout
+        description: 'The admin session timeout.'
+        type: Number
+      - contextPath: Mimecast.Account.exportApi
+        description: 'If the export API is enabled.'
+        type: Boolean
+      - contextPath: Mimecast.Account.exgestAllowQuery
+        description: 'If the exgest allows queries.'
+        type: Boolean
+      - contextPath: Mimecast.Account.exgestAllowExtraction
+        description: 'If the exgest allows extraction.'
+        type: Boolean
+      - contextPath: Mimecast.Account.expressAccount
+        description: 'If the account is an express account.'
+        type: Boolean
+      - contextPath: Mimecast.Account.cybergraphV2Enabled
+        description: 'If Cybergraph v2 is enabled.'
+        type: Boolean
+      - contextPath: Mimecast.Account.accountCode
+        description: 'The unique Mimecast account code for the customer.'
+        type: String
+      - contextPath: Mimecast.Account.accountName
+        description: 'The account name.'
+        type: String
+      - contextPath: Mimecast.Account.adminEmail
+        description: 'The email address of the first administrator created on the account.'
+        type: String
+      - contextPath: Mimecast.Account.contactEmail
+        description: 'The contact email address.'
+        type: String
+      - contextPath: Mimecast.Account.domain
+        description: 'The temporary domain name added to the account. This name is generated by Mimecast and is only used for initial access to the account. It should not be used for mail routing.'
+        type: String
+      - contextPath: Mimecast.Account.userCount
+        description: 'The number of user licenses on the account.'
+        type: Number
+      - contextPath: Mimecast.Account.mimecastId
+        description: 'The unique Mimecast ID of the account.'
+        type: String
+      - contextPath: Mimecast.Account.contactName
+        description: 'The contact name.'
+        type: String
+      - contextPath: Mimecast.Account.telephone
+        description: 'The telephone number.'
+        type: Date
+      - contextPath: Mimecast.Account.packages
+        description: 'An array of packages enabled on the customer account.'
+        type: String
   - name: mimecast-get-view-logs
     description: Retrieves the email view logs.
     arguments:
@@ -2137,6 +2295,34 @@ script:
     - name: limit
       description: The maximum number of items to return.
       defaultValue: 50
+    outputs:
+      - contextPath: Mimecast.SearchLog.viewer
+        description: 'The email address of the user who viewed the message.'
+        type: String
+      - contextPath: Mimecast.SearchLog.source
+        description: 'The source of the message.'
+        type: String
+      - contextPath: Mimecast.SearchLog.viewed
+        description: 'The date and time that the message was viewed.'
+        type: Date
+      - contextPath: Mimecast.SearchLog.from
+        description: 'The sender of the viewed message.'
+        type: String
+      - contextPath: Mimecast.SearchLog.to
+        description: 'The recipient of the viewed message.'
+        type: String
+      - contextPath: Mimecast.SearchLog.subject
+        description: 'The subject of the viewed message.'
+        type: String
+      - contextPath: Mimecast.SearchLog.messageDate
+        description: 'The date and time that the message was received.'
+        type: Date
+      - contextPath: Mimecast.SearchLog.contentViewed
+        description: 'Indicates if the message content was viewed or not.'
+        type: Boolean
+      - contextPath: Mimecast.SearchLog.discoveryCase
+        description: 'Indicates if the viewed message is a part of an existing discovery case.'
+        type: Boolean
   - name: mimecast-create-block-sender-policy
     description: Create a Blocked Sender Policy.
     arguments:
@@ -2326,7 +2512,7 @@ script:
     - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - name: page_size
-      description:  Sets the result to start returning results. Default value is '50'.
+      description: Sets the result to start returning results. Default value is '50'.
     - name: limit
       description: The maximum number of results to return.
       defaultValue: 50
@@ -2471,6 +2657,63 @@ script:
     - name: to_value
       description: Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.
     outputs:
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.option
+        description: The action taken by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.id
+        description: The ID of the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.description
+        description: The description of the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.fromPart
+        description: The part of the email message considered for the sender address by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.from.type
+        description: The type of the sender address considered by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.to.type
+        description: The type of the recipient address considered by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.fromType
+        description: The sender address type considered by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.toType
+        description: The recipient address type considered by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.fromEternal
+        description: Indicates if the sender address should always be considered, regardless of the current date and time, by the Antispoofing Bypass Policy.
+        type: Boolean
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.toEternal
+        description: Indicates if the recipient address should always be considered, regardless of the current date and time, by the Antispoofing Bypass Policy.
+        type: Boolean
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.fromDate
+        description: The start date from which the Antispoofing Bypass Policy should begin to apply.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.toDate
+        description: The end date until which the Antispoofing Bypass Policy should apply.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.override
+        description: Indicates if the Antispoofing Bypass Policy should be applied prior to other policies of the same type, if conditions are met.
+        type: Boolean
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.bidirectional
+        description: Indicates if the Antispoofing Bypass Policy should also apply in reverse email flow.
+        type: Boolean
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.conditions.spfDomains
+        description: The SPF domains considered by the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.enabled
+        description: Indicates if the Antispoofing Bypass Policy should be considered for emails processing through Mimecast.
+        type: Boolean
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.enforced
+        description: Indicates if the Antispoofing Bypass Policy is enforced.
+        type: Boolean
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.createTime
+        description: The creation timestamp of the Antispoofing Bypass Policy.
+        type: String
+      - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.lastUpdated
+        description: The most recent modification timestamp of the Antispoofing Bypass Policy.
+        type: String
   - name: mimecast-update-antispoofing-bypass-policy
     description: This endpoint can be used to update an existing Anti-Spoofing SPF based Bypass policy.
     arguments:
@@ -2677,6 +2920,67 @@ script:
       description: Required if fromType is one of email domain, profile group, individual email address. Expected values If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.
     - name: to_value
       description: Required if toType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.
+    outputs:
+      - contextPath: Mimecast.AddressAlterationPolicy.meta.status
+        description: The status of the Address Alteration Policy.
+        type: Number
+      - contextPath: Mimecast.AddressAlterationPolicy.data.addressAlterationSetId
+        description: The Mimecast secure ID of the Address Alteration Set (folder) that will be applied by this policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.id
+        description: The Mimecast secure ID of the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.description
+        description: The description for the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromPart
+        description: Should the sender address be considered based on the envelope, header, or either address.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.from.type
+        description: The type of sender address considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.to.type
+        description: The type of recipient address considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromType
+        description: The sender address type considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.toType
+        description: The recipient address type considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromEternal
+        description: Should the policy start to apply, regardless of the current date and time, for the sender address.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.toEternal
+        description: Should the policy start to apply, regardless of the current date and time, for the recipient address.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromDate
+        description: The start date that the policy should begin to apply.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.toDate
+        description: The end date that the policy should cease to apply.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.override
+        description: Should the policy be considered for application, and apply if conditions are met, prior to other policies of the same type.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.bidirectional
+        description: Should the policy also apply in reverse email flow.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.conditions
+        description: Conditions of the sending platform to determine if the policy should be considered.
+        type: Unknown
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.enabled
+        description: Should the policy be considered for emails processing through Mimecast.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.enforced
+        description: Is the policy enforced.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.createTime
+        description: The creation timestamp of the policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.lastUpdated
+        description: The most recent modification timestamp of the policy.
+        type: String
   - name: mimecast-update-address-alteration-policy
     description: This API endpoint can be used to update an existing Address Alteration policy.
     arguments:
@@ -2736,6 +3040,64 @@ script:
       predefined:
       - yes
       - no    
+    outputs:
+      - contextPath: Mimecast.AddressAlterationPolicy.meta.status
+        description: The status of the Address Alteration Policy.
+        type: Number
+      - contextPath: Mimecast.AddressAlterationPolicy.data.id
+        description: The Mimecast secure ID of the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.description
+        description: The description for the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromPart
+        description: Should the sender address be considered based on the envelope, header, or either address.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.from.type
+        description: The type of sender address considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.to.type
+        description: The type of recipient address considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromType
+        description: The sender address type considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.toType
+        description: The recipient address type considered by the Address Alteration Policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromEternal
+        description: Should the policy start to apply, regardless of the current date and time, for the sender address.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.toEternal
+        description: Should the policy start to apply, regardless of the current date and time, for the recipient address.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.fromDate
+        description: The start date that the policy should begin to apply.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.toDate
+        description: The end date that the policy should cease to apply.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.override
+        description: Should the policy be considered for application, and apply if conditions are met, prior to other policies of the same type.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.bidirectional
+        description: Should the policy also apply in reverse email flow.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.conditions
+        description: Conditions of the sending platform to determine if the policy should be considered.
+        type: Unknown
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.enabled
+        description: Should the policy be considered for emails processing through Mimecast.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.enforced
+        description: Is the policy enforced.
+        type: Boolean
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.createTime
+        description: The creation timestamp of the policy.
+        type: String
+      - contextPath: Mimecast.AddressAlterationPolicy.data.policy.lastUpdated
+        description: The most recent modification timestamp of the policy.
+        type: String
   isfetch: true
   runonce: false
   script: '-'

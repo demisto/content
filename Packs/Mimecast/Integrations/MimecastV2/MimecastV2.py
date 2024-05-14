@@ -575,11 +575,12 @@ def updating_token_oauth2():
     integration_context = demisto.getIntegrationContext()
     last_update_ts = integration_context.get("last_update")
     current_ts = epoch_seconds()
-    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
-        TOKEN_OAUTH2 = token_oauth2_request()
-        if TOKEN_OAUTH2:
-            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
-            demisto.setIntegrationContext(token_oauth2)
+    'TODO'
+    # if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
+    TOKEN_OAUTH2 = token_oauth2_request()
+    if TOKEN_OAUTH2:
+        token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
+        demisto.setIntegrationContext(token_oauth2)
 
     else:
         TOKEN_OAUTH2 = integration_context.get("value")
@@ -3200,7 +3201,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     limit = arg_to_number(args.get('limit'))
 
     if not any([query, start, end]):
-        raise ValueError('At least one argument must be entered.')
+        raise ValueError('At least one of the following arguments must be entered: query, start, end.')
 
     data = [{}]
     if query:
