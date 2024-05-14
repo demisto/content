@@ -1,0 +1,16 @@
+## Contact Information
+
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- Email: contact@sekoia.io
+- URL: [https://www.sekoia.io/en/contact/](https://www.sekoia.io/en/contact/)
+
+## Additional documentation
+
+The following documentation can be useful to understand the integration:
+
+| Information | Description |
+| --- | --- |
+| [Mirroring](https://xsoar.pan.dev/docs/integrations/mirroring_integration) | Adittional information for mirroring |
+| [Post process scripts](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.5/Cortex-XSOAR-Administrator-Guide/Post-Processing-for-Incidents) | Adittional information for post process scripts |
+| [Sekoia XDR documentation](https://docs.sekoia.io/xdr/) | Sekoia XDR Documentation |
+| [Rest API Documentation](https://docs.sekoia.io/xdr/develop/rest_api/alert/) | Sekoia XDR API Documentation |

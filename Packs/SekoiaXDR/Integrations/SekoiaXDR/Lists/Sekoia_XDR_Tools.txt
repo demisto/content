@@ -1,0 +1,14 @@
+## Troubleshooting
+
+To troubleshoot possible issues with the integration:
+- **Debug mode:** In the integration instance select the option Debug and download the logs under Settings>About>Troubleshooting>Download logs.
+- **Mirror values:** To troubleshoot mirroring issues apart from debug mode is possible to check under context that the dbot fields are set.
+- This fields under context are: dbotMirrorInstance, dbotMirrorDirection and dbotMirrorId. If they are not set please review the mappers.
+- The field dbotMirrorLastSync under context will be updated when the mirroring updates something on the incident, this can be also observed under War Room.
+
+## Best practices
+
+- When mirroring is enable please allow at least 1 minute to see the changes reflected, the mirroring process is executed every 1 minute.
+- When reopening option is marked the XSOAR incident will be reopened under 2 conditions:
+    - The alert is reopened from Sekoia which will reopen the incident in XSOAR.
+    - The XSOAR incident is reopened: when this is done from XSOAR after reopen the incident please quickly change the status of the Sekoia alert or the mirroring will close it automatically due to the mirroring.

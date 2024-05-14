@@ -1,0 +1,55 @@
+# Sekoia XDR - Process
+
+## Configure Sekoia XDR
+
+1. Navigate to **Settings > Integrations > Servers & Services**.
+2. Search for **Sekoia XDR**.
+3. Select the **parameters** of the instance where you can configure:
+    - Fetch alerts from Sekoia XDR (filtering by status or type).
+    - Include events, assets and kill-chain data on the fetching.
+    - Exclude certain fields from the events search.
+    - Replace "dots" symbols from the event field names.
+    - Type of mirroring (None, Incoming, Outgoing or Both).
+    - Allow automatic close of incidents in XSOAR (Mirror).
+    - Allow automatic reopen of incidents in XSOAR (Mirror).
+4. Click Test to validate the URLs, token, and connection.
+
+### Parameters:
+
+| Parameter | Description |
+| --- | --- |
+| Mapper (incoming) and (outgoing) | Important to copy the OOTB mappers for the mirroring to work |
+| Server URL | Sekoia API URL (without backslash at the end): https://api.sekoia.io |
+| API Key | The API Key generated on Sekoia XDR |
+| First fetch time | Filter the first fetching time range, format required i.e: "-3d,now" , "-1w,now" or "2023-01-15,2023-01-17" |
+| Fetch alerts with selected status | You can filter what to fetch by alert type or alert status. |
+| Types of alerts to fetch | You can filter the type of alerts to fetch. |
+| Filert alerts by urgencies | Filter by urgencies range in the following format: MIN_urgency,MAX_urgency. i.e: 80,100. |
+| Max. incidents to fetch | Maximum incidents to fetch per interval (By default set to 10). |
+| Fetch mode | Select with a dropdown if you want to fetch the alerts with or without the events. |
+| Include asset information | Select with a checkbox if you want to include asset information on fetching. |
+| Include kill-chain information | Select with checkboxs if you want to include kill-chain information on fetching. |
+| Replace dots in events | Replace the "dots" from the events by other symbols like _ or - that will be easier to reference as JSON with XSOAR. |
+| Exclude events | You can insert events to be excluded from the search of events, if they are not in the dropdown write and press enter. |
+| Incident mirroring direction | Select the mirroring: None, Incoming, Outgoing or both directions.
+| Reopen mirrored incidents | Mark this checkbox to enable automatic reopening of XSOAR incidents when the alerts are reopened in Sekoia |
+| Close mirrored incidents | Mark this checkbox to enable automatic closing of XSOAR incidents when the alert is closed or rejected in Sekoia |
+| Close notes | Notes to add when the XSOAR incident it automatically closed by mirroring. |
+| Include events in mirroring | Mark this checkbox to include events in the mirroring of the alerts. |
+| Include kill chain information in mirroring | Mark this checkbox to include kill chain information in the mirroring of the alerts. |
+| Timezone | Input your timezone, use the following formats from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones (i.e. 'UTC', 'Europe/Madrid', 'US/Eastern', 'Etc/Greenwich', 'Canada/Eastern'). |
+
+
+### Mirroring:
+
+This integration have the functionality of mirroring **Incoming**, **Outgoing** and **Incoming and Outgoing**.
+Mirroring provides an automatic sync between Sekoia XDR and Cortex XSOAR.
+
+The important parts to configure for mirroring are:
+- **Mirroring direction:** decide the direction to be used for the mirroring (In,Out or Both).
+- **Mappers:** this content pack comes with OOTB mappers that can be used to copy all the mapping fields required.
+- **Layout:** this content comes with a OOTB Layout, please duplicate it as it contain buttons, display scripts, etc.
+- **Post processing script:** used to automatically close or reject the Sekoia Alert when the XSOAR incident is closed.
+>To apply the OOTB post process script duplicate it and apply under the incident type to use:
+> Settings>Objects Setup>Types
+
