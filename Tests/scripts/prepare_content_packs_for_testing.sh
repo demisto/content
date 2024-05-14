@@ -105,13 +105,12 @@ if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
   echo "Finished updating content packs successfully."
 else
   # upload-flow build - production / force / specific packs
-  GCS_PRIVATE_BUCKET="marketplace-dist-private"
   if [ -n "${PACKS_TO_UPLOAD}" ] && [ $FORCE_BUCKET_UPLOAD == "false" ]; then
     # In case there are given pack ids to upload and it is not a force
     echo "Upload the following specific packs: ${PACKS_TO_UPLOAD}"
     UPLOAD_SPECIFIC_PACKS=true
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "${CONTENT_PACKS_TO_UPLOAD_JSON}" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu $BUCKET_UPLOAD -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $FORCE_BUCKET_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "${CONTENT_PACKS_TO_UPLOAD_JSON}" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu $BUCKET_UPLOAD -c $CI_COMMIT_BRANCH -f $FORCE_BUCKET_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
 
   if [ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json" ]; then
     gsutil cp -z json "${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"

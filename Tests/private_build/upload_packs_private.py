@@ -191,7 +191,7 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             pack = Pack(d.name, d.path)
-            update_index_folder(index_folder_path, pack, is_private_pack=True)  # type:ignore[arg-type]
+            update_index_folder(index_folder_path, pack)  # type:ignore[arg-type]
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -476,6 +476,7 @@ def main():
                                                                                  storage_base_path)
 
     # content repo client initialized
+    # WHEN DO WE RUN THIS??
     if not is_private_build:
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
         current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
@@ -510,7 +511,7 @@ def main():
         private_packs = []
 
     # clean index and gcs from non-existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path, [])
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path)
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
@@ -529,7 +530,6 @@ def main():
 
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,
-                           private_packs=private_packs,
                            commit_hash=current_commit_hash,
                            landing_page_sections=landing_page_sections
                            )
@@ -537,13 +537,12 @@ def main():
         upload_index_to_storage(index_folder_path=index_folder_path,
                                 extract_destination_path=extract_destination_path,
                                 index_blob=private_index_blob,
-                                index_generation=index_generation,
-                                is_private=is_private_build)
+                                index_generation=index_generation
+                                )
 
     else:
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,
-                           private_packs=private_packs,
                            commit_hash=current_commit_hash,
                            landing_page_sections=landing_page_sections)
 
