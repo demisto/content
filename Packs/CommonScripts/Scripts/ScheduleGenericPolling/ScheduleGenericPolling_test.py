@@ -26,7 +26,7 @@ def test_parseIds(value, expected_result):
                          ])
 @freeze_time("2023-04-01 00:00:00")
 def test_calculate_end_time(value, expected_result):
-    result = calculate_end_time(datetime.now(), value)
+    result = calculate_end_time(value)
     assert result == expected_result
 
 
