@@ -17,9 +17,54 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: "\n    Args:\n        group_name (String)\n        user_ids (String)\n        connection (String)\n        client_ids (String)\n        page\n        page_size\n        limit\n    "
+    description: ''
     name: ciphertrust-group-list
-    arguments: []
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Group name to filter by.
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: User id to filter by membership. “nil” will return groups with no members.
+      required: false
+      secret: false
+      default: false
+    - name: connection
+      isArray: false
+      description: Connection id or name to filter by.
+      required: false
+      secret: false
+      default: false
+    - name: client_id
+      isArray: false
+      description: Client id to filter by membership. “nil” will return groups with no members.
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: page to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: '1'
+    - name: page_size
+      isArray: false
+      description: number of entries per page.
+      required: false
+      secret: false
+      default: false
+      defaultValue: '50'
+    - name: limit
+      isArray: false
+      description: The max number of resources to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: '50'
     outputs: []
   - deprecated: false
     description: "Tests connectivity with the client.\n    Takes as an argument all client arguments to create a new client\n    "

@@ -94,17 +94,70 @@ def test_module(client: CipherTrustClient):
     return 'ok'
 
 
-@metadata_collector.command(command_name='groups_list_command')
-def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
+@metadata_collector.command(command_name='groups_list_command', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
+def groups_list_command(client: CipherTrustClient, args) -> CommandResults:
     """
+
+
     Args:
-        group_name (String)
-        user_ids (String)
-        connection (String)
-        client_ids (String)
-        page
-        page_size
-        limit
+        client (CipherTrustClient): CipherTrust client to use.
+        group_name (str): Group name to filter by.
+        user_id (str): User id to filter by membership. “nil” will return groups with no members.
+        connection (str): Connection id or name to filter by.
+        client_id (str): Client id to filter by membership. “nil” will return groups with no members.
+        page(int): page to return. default=1
+        page_size(int): number of entries per page. default=50
+        limit(int): The max number of resources to return. default=50
+
+    Returns:
+       A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an groups list.
+    Context Outputs:
+        skip (int):
+        limit (int):
+        total (int):
+        resources.created_at (datetime):
+
+    "resources": [
+        {
+            "created_at": "2024-02-14T10:08:19.228482Z",
+            "email": "admin@local",
+            "last_login": "2024-05-15T13:50:42.891227Z",
+            "logins_count": 98,
+            "name": "admin",
+            "nickname": "admin",
+            "updated_at": "2024-05-15T13:50:42.891557Z",
+            "user_id": "local|1e83aa21-0141-458a-8d77-e7d21192a82f",
+            "username": "admin",
+            "user_metadata": {
+                "current_domain": {
+                    "id": "00000000-0000-0000-0000-000000000000",
+                    "name": "root"
+                }
+            },
+            "failed_logins_count": 0,
+            "account_lockout_at": null,
+            "failed_logins_initial_attempt_at": null,
+            "last_failed_login_at": null,
+            "password_changed_at": "2024-02-14T11:36:13.102117Z",
+            "password_change_required": false,
+            "certificate_subject_dn": "",
+            "enable_cert_auth": false,
+            "auth_domain": "00000000-0000-0000-0000-000000000000",
+            "login_flags": {
+                "prevent_ui_login": false
+            },
+            "auth_domain_name": "root",
+            "allowed_auth_methods": [
+                "password"
+            ],
+            "allowed_client_types": [
+                "unregistered",
+                "public",
+                "confidential"
+            ]
+        }
+    ]
     """
     skip, limit = calculate_skip_and_limit_for_pagination(args.get(ArgAndParamNames.LIMIT), args.get(ArgAndParamNames.PAGE),
                                                           args.get(ArgAndParamNames.PAGE_SIZE))
