@@ -453,6 +453,6 @@ def test_get_url(mocker, request_headers, url_scheme, expected, is_demisto_8):
     TAXIIServer.SERVER = taxii_server
     if request_headers:
         mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
-        mocker.patch('TAXIIServer.is_demisto_version_ge', return_value=is_demisto_8)
+        mocker.patch('TAXIIServer.is_xsiam_or_xsoar_saas', return_value=is_demisto_8)
 
     assert taxii_server.get_url(request_headers) == expected
