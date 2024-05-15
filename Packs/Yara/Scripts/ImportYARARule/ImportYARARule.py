@@ -114,7 +114,7 @@ def parse_metadata(meta: list[dict], key: str) -> str:
     return ''
 
 
-def main():
+def main():  # pragma: no cover
     try:
         # TODO: replace the invoked command function with yours
         args = demisto.args()
