@@ -50,7 +50,7 @@ TOKEN_RETRIEVAL_ENDPOINTS = {
 # Deprecated, prefer using AZURE_CLOUDS
 GRAPH_ENDPOINTS = {
     'com': 'https://graph.microsoft.com',
-    'gcc': 'https://graph.microsoft.com',
+    'gcc': 'https://graph.microsoft.us',
     'gcc-high': 'https://graph.microsoft.us',
     'dod': 'https://dod-graph.microsoft.us',
     'de': 'https://graph.microsoft.de',
