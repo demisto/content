@@ -17,10 +17,6 @@ from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
-print('args:', demisto.args())
-print('params:', demisto.params())
-
-
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
 
@@ -110,7 +106,6 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
 
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
-    print('POST', 'api_endpoint:', api_endpoint, 'payload:', payload, 'headers:', headers, 'is_file:', is_file)
     response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
@@ -186,7 +181,6 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         payload['data'] = data
 
     response = http_request('POST', api_endpoint, payload, headers=headers)
-    print('response:', response)
 
     len_of_results = 0
     results = []
@@ -209,7 +203,6 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         payload['meta']['pagination']['pageToken'] = next_page
         response = http_request('POST', api_endpoint, payload, headers=headers)
 
-    print('len_of_results:', len_of_results)
     if return_page:
         return results[-1 * page_size:]
 
@@ -243,7 +236,6 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
-    print('method:', method, 'url:', url, 'headers:', headers, 'payload:', payload, 'data:', data)
     try:
         res = requests.request(
             method,
@@ -572,16 +564,15 @@ def updating_token_oauth2():
     global TOKEN_OAUTH2
     global USE_SSL
     USE_SSL = False
+        
     integration_context = demisto.getIntegrationContext()
-    last_update_ts = integration_context.get("last_update")
     current_ts = epoch_seconds()
-    'TODO'
-    # if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
-    TOKEN_OAUTH2 = token_oauth2_request()
-    if TOKEN_OAUTH2:
-        token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
-        demisto.setIntegrationContext(token_oauth2)
-
+    last_update_ts = integration_context.get("last_update")
+    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
+        TOKEN_OAUTH2 = token_oauth2_request()
+        if TOKEN_OAUTH2:
+            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
+            demisto.setIntegrationContext(token_oauth2)
     else:
         TOKEN_OAUTH2 = integration_context.get("value")
 
@@ -849,9 +840,14 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
 
 def test_module():
+    if USE_OAUTH2:
+        list_policies_command({'policyType':'blockedsenders','limit':1})
+        return 'ok'
+        
     if not ACCESS_KEY:
         raise Exception('Cannot test valid connection without the Access Key parameter.')
     list_managed_url()
+    
 
 
 def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
@@ -1293,6 +1289,7 @@ def create_or_update_policy_request(policy, option, policy_id=None):
     # write a policy ID on update policy command
     if policy_id:
         payload['data'][0]['id'] = policy_id
+    print('payload',payload)
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
@@ -1857,6 +1854,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'result': 'malicious'
         }
+        demisto.debug(search_params,'search_params')
         attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
                                                      response_param='attachmentLogs')
