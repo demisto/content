@@ -1407,34 +1407,6 @@ def enrich_with_url(output: dict[str, Any], baseUrl: str, id: str) -> dict[str, 
     return output
 
 
-def get_rule_ids(client: Client, values: list[str]) -> list[int]:
-    """Return list of user ids
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type threat_model_names: ``List[str]``
-    :param threat_model_names: A list of threat_model_names
-
-    :return: List of rule ids
-    :rtype: ``List[int]``
-    """
-    ruleIds: list[int] = []
-
-    if not values:
-        return ruleIds
-
-    rules = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
-    for value in values:
-        for rule in rules:
-            if strEqual(rule['ruleName'], value):
-                ruleIds.append(rule['ruleID'])
-                # ruleIds.append(rule['templateID'])
-                break
-
-    return ruleIds
-
-
 def varonis_update_alert(client: Client, close_reason_id: Optional[int], status_id: Optional[int], alert_ids: list, note) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
@@ -2066,7 +2038,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             close_reason_id,
             ALERT_STATUSES["closed"],
             argToList(alert_id),
-            note,
+            note
         )
     elif (
         "Status" in parsed_args.delta
@@ -2086,7 +2058,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             close_reason_id,
             status_id,
             argToList(alert_id),
-            note,
+            note
         )
 
     return alert_id
