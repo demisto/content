@@ -539,8 +539,6 @@ class TAXIIClient:
         if self.initial_interval is None:
             self.initial_interval = 86400
 
-        if discovery_service and not discovery_service.startswith('http'):
-            discovery_service = 'https://' + discovery_service
         self.discovery_service = discovery_service
         self.poll_service = poll_service
         self.collection = collection
