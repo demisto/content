@@ -26,9 +26,9 @@ from QRadar_v2 import (
     get_asset_ips_and_enrich_offense_addresses
 )
 
-with open("TestData/commands_outputs.json", "r") as f:
+with open("TestData/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
-with open("TestData/raw_responses.json", "r") as f:
+with open("TestData/raw_responses.json") as f:
     RAW_RESPONSES = json.load(f)
 
 QRadar_v2.FAILURE_SLEEP = 0
