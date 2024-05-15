@@ -1032,7 +1032,7 @@
                     }
                 ],
                 "Cache": null,
-                "name": "Newly Added Attack Pattern Indicators",
+                "name": "Newly Added Attack Pattern",
                 "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
                 "dataType": "indicators",
                 "widgetType": "table",
@@ -1238,7 +1238,7 @@
         },
         {
             "id": "18049ea0-f1b3-11ee-8324-a33475926ab2",
-            "forceRange": true,
+            "forceRange": false,
             "x": 0,
             "y": 0,
             "i": "18049ea0-f1b3-11ee-8324-a33475926ab2",
@@ -1298,7 +1298,7 @@
         },
         {
             "id": "35e94c30-f745-11ee-97de-f9229fd017f4",
-            "forceRange": true,
+            "forceRange": false,
             "x": 6,
             "y": 0,
             "i": "35e94c30-f745-11ee-97de-f9229fd017f4",
@@ -1325,7 +1325,7 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "Top Attack Patterns by Incident Type",
+                "name": "Top Attack Patterns by time",
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "column",
