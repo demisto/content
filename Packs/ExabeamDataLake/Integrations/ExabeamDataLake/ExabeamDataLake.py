@@ -79,7 +79,7 @@ def _parse_entry(entry: dict) -> dict:
     }
 
 
-def dates_in_range(start_time, end_time):
+def dates_in_range(start_time: Any, end_time: Any) -> list[str]:
     """
      Generate a list of dates within a specified range.
 
@@ -216,7 +216,7 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
     )
 
 
-def test_module(client: Client):
+def test_module(client: Client):    # pragma: no cover
     """test function
 
     Args:
@@ -232,7 +232,7 @@ def test_module(client: Client):
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:    # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
