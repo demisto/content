@@ -1,6 +1,5 @@
-Exabeam Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
-
-This integration was integrated and tested with version DL-i40.3 of Exabeam Data Lake
+Cloud-delivered Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
+This integration was integrated and tested with version xx of Exabeam Data Lake.
 
 ## Configure Exabeam Data Lake on Cortex XSOAR
 
@@ -8,13 +7,14 @@ This integration was integrated and tested with version DL-i40.3 of Exabeam Data
 2. Search for Exabeam Data Lake.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | User Name | True |
-    | Password | True |
-    | Trust any certificate (not secure) |  |
-    | Use system proxy settings |  |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | User Name |  | True |
+    | Password |  | True |
+    | Cluster Name | The default value is usually 'local', suitable for standard setups. For custom cluster deployments, consult Exabeam Support Team. | True |
+    | Trust any certificate (not secure) |  |  |
+    | Use system proxy settings |  |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -23,251 +23,127 @@ This integration was integrated and tested with version DL-i40.3 of Exabeam Data
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### exabeam-data-lake-query
+### exabeam-data-lake-search
 
 ***
 Get events from Exabeam Data Lake.
 
 #### Base Command
 
-`exabeam-data-lake-query`
+`exabeam-data-lake-search`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The search query string to filter the events. (examples in the table below.) | Optional | 
-| start_time | The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z". | Optional | 
-| end_time | The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z". | Optional | 
-| limit | The maximal number of results to return, up to 10,000. | Optional | 
-| all_result | Retrieve all results from an Exabeam Data Lake query, with a maximum of 10,000 results. Possible values are: true, false. | Optional | 
+| query | The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description). | Required | 
+| start_time | The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days. | Required | 
+| end_time | The ending date for the search range. This defines the end of the search range, which should be within one to ten days after the start_time. | Required | 
+| limit | The maximal number of results to return. Maximum value is 3000. | Optional | 
+| page | The page number for pagination. | Optional | 
+| page_size | The maximal number of results to return. Maximum value is 3000. | Optional | 
 
+#### Context Output
 
-## Query Argument - Examples
-
-| **Use Case**   |  **SEARCH** |  
-|----------|:-------------:|
-| Search for all logs ingested in DL: | * |
-| Search for all logs from user "barbara salazar": |  user:"barbara salazar" |
-| Search for all vpn logs:	 | exa_category:VPN |
-| Search for Windows Event logs with the code number 4624 ("An account was successfully logged on"): | exa_category:"Windows Authentication" AND event_code:4624 |
-| Search for successful traffic to the internet: | exa_category:Network AND data_type:networkfw-allow AND NOT dest_ip:[10.0.0.0 TO 10.255.255.255] |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ExabeamDataLake.Event._id | str | The event ID. | 
+| ExabeamDataLake.Event._source.Vendor | str | Vendor of the event. | 
+| ExabeamDataLake.Event._source.Product | str | Product of the event. | 
+| ExabeamDataLake.Event._source.@timestamp | str | The time of the event. | 
+| ExabeamDataLake.Event._source.message | str | The message of the event. | 
 
 #### Command example
-
-```!exabeam-data-lake-query query=VPN limit=3```
-
+```!exabeam-data-lake-search query="risk_score:3" start_time="2024.02.27" end_time="2024.02.28" limit=2```
 #### Context Example
-
 ```json
 {
     "ExabeamDataLake": {
-        "Log": [
+        "Event": [
             {
-                "_id": "test_id_1",
-                "_index": "exabeam-2023",
-                "_routing": "test_routing_1",
+                "_id": "lms.kafka.topic_11_4050563_82063a0a4d1b",
+                "_index": "exabeam-2024.02.28",
+                "_routing": "SfA86vqw",
                 "_score": null,
                 "_source": {
-                    "@timestamp": "2023-07-12T23:59:57.458Z",
+                    "@timestamp": "2024-02-28T16:15:50.614Z",
                     "@version": "1",
-                    "Product": "test_product_1",
-                    "Vendor": "test_vendor_1",
-                    "action": "Accept",
-                    "app_protocol": "test",
-                    "data_type": "network",
-                    "dest_ip": "test_dest_ip_1",
-                    "dest_port": 00,
-                    "dest_translated_ip": "0.0.0.0",
-                    "dest_translated_port": "0",
-                    "direction": "inbound",
-                    "event_name": "Accept",
-                    "exa-message-size": 1006,
+                    "Product": "Exabeam AA",
+                    "Vendor": "Exabeam",
+                    "data_type": "exabeam-security-alert",
                     "exa_activity_type": [
-                        "network"
+                        "alert/security",
+                        "alert"
                     ],
-                    "exa_adjustedEventTime": "2023-07-12T23:55:05.000Z",
-                    "exa_category": "Network",
+                    "exa_adjustedEventTime": "2024-02-28T16:15:29.000Z",
+                    "exa_category": "Exabeam Alerts",
                     "exa_device_type": [
-                        "network",
-                        "network"
+                        "security"
                     ],
-                    "exa_outcome": [
-                        "success"
-                    ],
-                    "exa_parser_name": "test_parser_name_1",
-                    "exa_rawEventTime": "2023-07-12T23:55:05.000Z",
-                    "exa_rsc": {
-                        "hostname": "localhost",
-                        "time_off": 10800,
-                        "timestamp": "2023-07-12T23:59:58.459Z",
-                        "timezone": "+00"
-                    },
-                    "forwarder": "test_forwarder_1",
-                    "host": "local",
-                    "indexTime": "2023-07-12T23:59:59.298Z",
-                    "interface_name": "test",
-                    "is_ransomware_dest_ip": false,
+                    "exa_rawEventTime": "2024-02-28T16:15:29.000Z",
+                    "indexTime": "2024-02-28T16:15:51.626Z",
                     "is_ransomware_src_ip": false,
-                    "is_threat_dest_ip": false,
                     "is_threat_src_ip": false,
-                    "is_tor_dest_ip": false,
                     "is_tor_src_ip": false,
-                    "message": "<134>1 2023-07-12T23:55:05Z",
-                    "origin_ip": "test_origin_ip_1",
-                    "outcome": "Accept",
-                    "product_name": "VPN",
-                    "protocol": "00",
-                    "rule": "test rule",
-                    "rule_id": "test_rule_id_1",
-                    "src_ip": "test_src_ip_1",
-                    "src_port": 000,
-                    "src_translated_ip": "test_src_translated_ip_1",
-                    "src_translated_port": "0",
-                    "time": "2023-07-12T23:55:05.000Z"
+                    "log_type": "dlp-alert",
+                    "message": "<86>1 2024-02-28T16:15:50.609Z exabeam-analytics-master Exabeam - - - timestamp=\"2024-02-28T16:15:29.192Z\" score=\"3\" user=\"ghardin\" event_time=\"2024-02-28 14:35:35\" event_type=\"dlp-alert\" domain=\"kenergy\" time=\"1709130935833\" source=\"ObserveIT\" vendor=\"ObserveIT\" lockout_id=\"NA\" session_id=\"ghardin-20240228143533\" session_order=\"2\" account=\"ghardin\" getvalue('zone_info', src)=\"new york office\" alert_name=\" rule violation\" local_asset=\"lt-ghardin-888\" alert_type=\"DATA EXFILTRATION\" os=\"Win\" rule_name=\"Abnormal DLP alert name for user\" rule_description=\"Exabeam noted that this alert name has been triggered for this user in the past yet it is still considered abnormal activity. This activity may be an early indication of compromise of a user by malware or other malicious actors.\" rule_reason=\"Abnormal DLP alert with name  rule violation for user\" ",
+                    "port": 41590,
+                    "risk_score": "3",
+                    "rule_description": "Exabeam noted that this alert name has been triggered for this user in the past yet it is still considered abnormal activity. This activity may be an early indication of compromise of a user by malware or other malicious actors.",
+                    "rule_name": "Abnormal DLP alert name for user",
+                    "score": "3",
+                    "session_id": "ghardin-20240228143533",
+                    "time": "2024-02-28T16:15:29.000Z",
+                    "user": "ghardin"
                 },
                 "_type": "logs",
                 "sort": [
-                    1689206397458
+                    1709136950614
                 ]
             },
             {
-                "_id": "test_id_2",
-                "_index": "exabeam-2023",
-                "_routing": "test_routing_2",
+                "_id": "lms.kafka.topic_9_4050559_82063a0a4d1b",
+                "_index": "exabeam-2024.02.27",
+                "_routing": "XUXxevyv",
                 "_score": null,
                 "_source": {
-                    "@timestamp": "2023-07-12T23:59:57.458Z",
-                    "@version": "2",
-                    "Product": "test_product_2",
-                    "Vendor": "test_vendor_2",
-                    "action": "Accept",
-                    "app_protocol": "test",
-                    "data_type": "network-connection",
-                    "dest_ip": "test_dest_ip_2",
-                    "dest_port": 00,
-                    "dest_translated_ip": "0.0.0.0",
-                    "dest_translated_port": "0",
-                    "direction": "inbound",
-                    "event_name": "Accept",
-                    "exa-message-size": 1006,
-                    "exa_activity_type": [
-                        "network"
-                    ],
-                    "exa_adjustedEventTime": "2023-07-12T23:55:05.000Z",
-                    "exa_category": "Network",
-                    "exa_device_type": [
-                        "network",
-                        "network"
-                    ],
-                    "exa_outcome": [
-                        "success"
-                    ],
-                    "exa_parser_name": "test_parser_name_2",
-                    "exa_rawEventTime": "2023-07-12T23:55:05.000Z",
-                    "exa_rsc": {
-                        "hostname": "localhost",
-                        "time_off": 10800,
-                        "timestamp": "2023-07-12T23:59:58.459Z",
-                        "timezone": "+00"
-                    },
-                    "forwarder": "test_forwarder_2",
-                    "host": "local",
-                    "indexTime": "2023-07-12T23:59:59.298Z",
-                    "interface_name": "test",
-                    "is_ransomware_dest_ip": false,
-                    "is_ransomware_src_ip": false,
-                    "is_threat_dest_ip": false,
-                    "is_threat_src_ip": false,
-                    "is_tor_dest_ip": false,
-                    "is_tor_src_ip": false,
-                    "message": "<134>1 2023-07-12T23:55:05Z",
-                    "origin_ip": "test_origin_ip_2",
-                    "outcome": "Accept",
-                    "product_name": "VPN",
-                    "protocol": "00",
-                    "rule": "test rule",
-                    "rule_id": "test_rule_id_2",
-                    "src_ip": "test_src_ip_2",
-                    "src_port": 000,
-                    "src_translated_ip": "test_src_translated_ip_2",
-                    "src_translated_port": "0",
-                    "time": "2023-07-12T23:55:05.000Z"
-                },
-                "_type": "logs",
-                "sort": [
-                    1689206397458
-                ]
-            },
-            {
-                "_id": "test_id_3",
-                "_index": "exabeam-2023.07.12",
-                "_routing": "test_routing_3",
-                "_score": null,
-                "_source": {
-                    "@timestamp": "2023-07-12T23:59:57.458Z",
+                    "@timestamp": "2024-02-27T16:21:45.721Z",
                     "@version": "1",
-                    "Product": "test_product_3",
-                    "Vendor": "test_vendor_3",
-                    "action": "Accept",
-                    "app_protocol": "test",
-                    "data_type": "network",
-                    "dest_ip": "test_dest_ip_3",
-                    "dest_port": 00,
-                    "dest_translated_ip": "0.0.0.0",
-                    "dest_translated_port": "0",
-                    "direction": "inbound",
-                    "event_name": "Accept",
-                    "exa-message-size": 1006,
+                    "Product": "Exabeam AA",
+                    "Vendor": "Exabeam",
+                    "data_type": "exabeam-security-alert",
+                    "event_code": "4768",
                     "exa_activity_type": [
-                        "network"
+                        "alert/security",
+                        "alert"
                     ],
-                    "exa_adjustedEventTime": "2023-07-12T23:55:05.000Z",
-                    "exa_category": "Network",
+                    "exa_adjustedEventTime": "2024-02-24T16:16:29.000Z",
+                    "exa_category": "Exabeam Alerts",
                     "exa_device_type": [
-                        "network",
-                        "network"
+                        "security"
                     ],
-                    "exa_outcome": [
-                        "success"
-                    ],
-                    "exa_parser_name": "test_parser_name_3",
-                    "exa_rawEventTime": "2023-07-12T23:55:05.000Z",
-                    "exa_rsc": {
-                        "hostname": "localhost",
-                        "time_off": 10800,
-                        "timestamp": "2023-07-12T23:59:58.459Z",
-                        "timezone": "+00"
-                    },
-                    "forwarder": "test_forwarder_1",
-                    "host": "local",
-                    "indexTime": "2023-07-12T23:59:59.298Z",
-                    "interface_name": "test",
+                    "exa_rawEventTime": "2024-02-24T16:16:29.000Z",
+                    "host": "exabeamdemodc1",
+                    "indexTime": "2024-02-27T16:23:56.271Z",
                     "is_ransomware_dest_ip": false,
-                    "is_ransomware_src_ip": false,
                     "is_threat_dest_ip": false,
-                    "is_threat_src_ip": false,
                     "is_tor_dest_ip": false,
-                    "is_tor_src_ip": false,
-                    "message": "<134>1 2023-07-12T23:55:05Z",
-                    "origin_ip": "test_origin_ip_3",
-                    "outcome": "Accept",
-                    "product_name": "VPN",
-                    "protocol": "00",
-                    "rule": "test rule",
-                    "rule_id": "test_rule_id_3",
-                    "src_ip": "test_src_ip_3",
-                    "src_port": 000,
-                    "src_translated_ip": "test_src_translated_ip_3",
-                    "src_translated_port": "0",
-                    "time": "2023-07-12T23:55:05.000Z"
+                    "log_type": "kerberos-logon",
+                    "message": "<86>1 2024-02-27T16:21:45.539Z exabeam-analytics-master Exabeam - - - timestamp=\"2024-02-24T16:16:29.975Z\" id=\"ghardin-20240224140716\" score=\"3\" user=\"ghardin\" event_time=\"2024-02-24 14:34:42\" event_type=\"kerberos-logon\" host=\"exabeamdemodc1\" domain=\"ktenergy\" time=\"1708785282052\" source=\"DC\" lockout_id=\"NA\" session_id=\"ghardin-20240224140716\" session_order=\"4\" account=\"ghardin\" ticket_options_encryption=\"0x40810010:0x12\" nonmachine_user=\"ghardin\" event_code=\"4768\" ticket_encryption_type=\"0x12\" ticket_options=\"0x40810010\" rule_name=\"IT presence without badge access\" rule_description=\"This user is logged on to the company network but did not use their badge to access a physical location. It is unusual to have IT access without badge access.\" rule_reason=\"IT presence without badge access\" ",
+                    "port": 56920,
+                    "risk_score": "3",
+                    "rule_description": "This user is logged on to the company network but did not use their badge to access a physical location. It is unusual to have IT access without badge access.",
+                    "rule_name": "IT presence without badge access",
+                    "score": "3",
+                    "session_id": "ghardin-20240224140716",
+                    "time": "2024-02-24T16:16:29.000Z",
+                    "user": "ghardin"
                 },
                 "_type": "logs",
                 "sort": [
-                    1689206397458
+                    1709050905721
                 ]
-            },
-            
+            }
         ]
     }
 }
@@ -276,10 +152,8 @@ Get events from Exabeam Data Lake.
 #### Human Readable Output
 
 >### Logs
-
->|Action|Event Name|ID|Product|Time|Vendor|
->|---|---|---|---|---|---|
->| Accept | Accept | test_id_1 | test_product_1 | 2023-07-12T23:55:05.000Z | test_vendor_3 |
->| Accept | Accept | test_id_2 | test_product_2 | 2023-07-12T23:55:05.000Z | test_vendor_3 |
->| Accept | Accept | test_id_3 | test_product_3 | 2023-07-12T23:55:02.000Z | test_vendor_3 |
+>|Created_at|Id|Message|Product|Vendor|
+>|---|---|---|---|---|
+>| 2024-02-28T16:15:50.614Z | lms.kafka.topic_11_4050563_82063a0a4d1b | <86>1 2024-02-28T16:15:50.609Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-28T16:15:29.192Z" id="ghardin-20240228143533" score="3" user="ghardin" event_time="2024-02-28 14:35:35" event_type="dlp-alert" domain="kenergy" time="1709130935833" source="ObserveIT" vendor="ObserveIT" lockout_id="NA" session_id="ghardin-20240228143533" session_order="2" account="ghardin" getvalue('zone_info', src)="new york office" alert_name=" rule violation" local_asset="lt-ghardin-888" alert_type="DATA EXFILTRATION" os="Win" rule_name="Abnormal DLP alert name for user" rule_description="Exabeam noted that this alert name has been triggered for this user in the past yet it is still considered abnormal activity. This activity may be an early indication of compromise of a user by malware or other malicious actors." rule_reason="Abnormal DLP alert with name  rule violation for user"  | Exabeam AA | Exabeam |
+>| 2024-02-27T16:21:45.721Z | lms.kafka.topic_9_4050559_82063a0a4d1b | <86>1 2024-02-27T16:21:45.539Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-24T16:16:29.975Z" id="ghardin-20240224140716" score="3" user="ghardin" event_time="2024-02-24 14:34:42" event_type="kerberos-logon" host="exabeamdemodc1" domain="ktenergy" time="1708785282052" source="DC" lockout_id="NA" session_id="ghardin-20240224140716" session_order="4" account="ghardin" ticket_options_encryption="0x40810010:0x12" nonmachine_user="ghardin" event_code="4768" ticket_encryption_type="0x12" ticket_options="0x40810010" rule_name="IT presence without badge access" rule_description="This user is logged on to the company network but did not use their badge to access a physical location. It is unusual to have IT access without badge access." rule_reason="IT presence without badge access"  | Exabeam AA | Exabeam |
 
