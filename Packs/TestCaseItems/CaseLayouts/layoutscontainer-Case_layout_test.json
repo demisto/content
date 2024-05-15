@@ -7,12 +7,7 @@
                 "type": "overview"
             },
             {
-                "id": "keyAssets",
-                "name": "Key Assets \u0026 Artifacts",
-                "type": "keyAssets"
-            },
-            {
-                "id": "alertInsights",
+                "id": "alerts_and_insights",
                 "name": "Alerts \u0026 Insights",
                 "type": "alertInsights"
             },
@@ -20,11 +15,6 @@
                 "id": "timeline",
                 "name": "Timeline",
                 "type": "timeline"
-            },
-            {
-                "id": "warRoom",
-                "name": "Incident War Room",
-                "type": "warRoom"
             },
             {
                 "id": "executions",
