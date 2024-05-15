@@ -15,7 +15,7 @@ def test_build_iterator(mocker):
     Then: Build iterator of indicators from the API.
 
     """
-    with open('test_data/zoom_endpoint.txt', 'r') as file:
+    with open('test_data/zoom_endpoint.txt') as file:
         response = file.read()
     mocker.patch.object(Client, '_http_request', return_value=response)
     mocker.patch.object(demisto, 'params',
