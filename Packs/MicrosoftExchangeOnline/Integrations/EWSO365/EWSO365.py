@@ -242,6 +242,7 @@ class EWSClient:
         :param (Optional) target_mailbox: Mailbox associated with the requested account
         :return: exchangelib Account
         """
+        demisto.debug("Getting the account object")
         if not target_mailbox:
             target_mailbox = self.account_email
         return Account(
@@ -359,7 +360,9 @@ class EWSClient:
     def send_email(self, message: Message):
         account = self.get_account()
         message.account = account
+        demisto.debug("Sending the message")
         message.send_and_save()
+        demisto.debug("Message was sent")
 
     def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):  # pragma: no cover
         account = self.get_account()
@@ -1693,6 +1696,7 @@ def collect_manual_attachments(manualAttachObj):  # pragma: no cover
 
     attachments = []
     for attachment in manually_attached_objects:
+        demisto.debug(f"Collecting manual attachment from {attachment=}")
         file_res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
 
         path = file_res['path']
@@ -1728,6 +1732,7 @@ def collect_attachments(attachments_ids, attachments_cids, attachments_names):  
 
     for index, file_id in enumerate(files_ids):
         try:
+            demisto.debug(f"Collecting attachment from entry ID {file_id}")
             file_res = demisto.getFilePath(file_id)
             path = file_res['path']
 
@@ -1770,6 +1775,7 @@ def handle_transient_files(transient_files, transient_files_contents, transient_
 
     for index in range(len(files_names)):
         file_name = files_names[index]
+        demisto.debug(f"Adding transient attachment with {file_name=}")
 
         if index >= len(files_contents):
             break
@@ -1862,6 +1868,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         Message. Message object ready to be sent.
     """
     if not html_body:
+        demisto.debug("Creating a message object without html body")
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
 
@@ -1871,6 +1878,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
+        demisto.debug("Creating a message object with html body")
         html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
@@ -1886,6 +1894,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
 
             message.attach(new_attachment)
 
+    demisto.debug("Finished creating the message object")
     return message
 
 
@@ -1898,6 +1907,7 @@ def add_additional_headers(additional_headers):
     Returns:
         Dict. Headers dictionary in the form of: `header_name: header value`
     """
+    demisto.debug("Adding custom headers to Message object")
     headers = {}
 
     for header in argToList(additional_headers):
@@ -1934,6 +1944,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         return_error('You must have at least one recipient')
 
     if raw_message:
+        demisto.debug("Building Message from raw")
         message = Message(
             to_recipients=to,
             cc_recipients=cc,
