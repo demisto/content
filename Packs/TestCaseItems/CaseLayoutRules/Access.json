@@ -7,9 +7,9 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Access"
+            "SEARCH_FIELD": "STATUS",
+            "SEARCH_TYPE": "RELATIVE_TIMESTAMP",
+            "SEARCH_VALUE": "STATUS_030_RESOLVED_THREAT_HANDLED"
         }
       ]
     }
