@@ -62,20 +62,19 @@ run-validations-upload-flow-new-validate-flow:
   extends:
     - .run-validations-new-validate-flow
     - .bucket-upload-rule
-  allow_failure: true
 
-run-unittests-and-lint-upload-flow:
+run-pre-commit-upload-flow:
   cache:
     policy: push
   extends:
-    - .run-unittests-and-lint
+    - .run-pre-commit
     - .bucket-upload-rule
 
 jobs-done-check-upload-flow:
   extends:
     - .jobs-done-check
     - .bucket-upload-rule
-  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server6_11', 'install-packs-in-server6_12', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace', 'upload-packs-to-xsoar-saas-marketplace']
+  needs: ['run-pre-commit-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server6_11', 'install-packs-in-server6_12', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace', 'upload-packs-to-xsoar-saas-marketplace']
   tags:
     - gke
   variables:
@@ -190,6 +189,11 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_start "Install Packs"
     - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
+    - section_start "Get instance ssh-command"
+    - echo "INSTANCE_ROLE -> ${INSTANCE_ROLE}"
+    - INSTANCE_NAME=$(jq -r --arg role "$INSTANCE_ROLE" '.[] | select(.Role == $role) | .InstanceName' $ENV_RESULTS_PATH)
+    - echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"${INSTANCE_NAME}\"  --tunnel-through-iap --project "xsoar-content-build" \e[0m"
+    - section_end "Get instance ssh-command"
     - job-done
     - exit "${EXIT_CODE}"
   after_script:
@@ -314,7 +318,7 @@ install-packs-in-xsiam-ga:
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server6_12", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server6_12", "install-packs-in-server-master", "run-pre-commit-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -409,7 +413,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "mpv2-prepare-testing-bucket-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
+  needs: ["run-validations-upload-flow", "run-pre-commit-upload-flow", "mpv2-prepare-testing-bucket-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -501,7 +505,7 @@ upload-packs-to-marketplace-v2:
 upload-packs-to-xpanse-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xpanse-prepare-testing-bucket-upload-flow"] # "install-packs-in-xpanse-dev"
+  needs: ["run-validations-upload-flow", "run-pre-commit-upload-flow", "xpanse-prepare-testing-bucket-upload-flow"] # "install-packs-in-xpanse-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -593,7 +597,7 @@ upload-packs-to-xpanse-marketplace:
 upload-packs-to-xsoar-saas-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xsoar-saas-prepare-testing-bucket-upload-flow"] # "install-packs-in-xsoar-saas-dev"
+  needs: ["run-validations-upload-flow", "run-pre-commit-upload-flow", "xsoar-saas-prepare-testing-bucket-upload-flow"] # "install-packs-in-xsoar-saas-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs

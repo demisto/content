@@ -43,3 +43,4 @@ tests:
 - DeleteContext-auto-test
 - DeleteContext-auto-subplaybook-test
 - Delete Context Subplaybook Test
+- DeleteContext-test

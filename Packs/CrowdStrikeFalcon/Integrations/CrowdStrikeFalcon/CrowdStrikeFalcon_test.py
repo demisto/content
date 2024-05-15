@@ -4146,7 +4146,8 @@ def test_get_remote_incident_data(mocker):
     incident_entity['status'] = 'New'
     assert mirrored_data == incident_entity
     assert updated_object == {'state': 'closed', 'status': 'New', 'tags': ['Objective/Keep Access'],
-                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident', 'fine_score': 38}
+                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident', 'fine_score': 38,
+                              'incident_id': 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'}
 
 
 def test_get_remote_detection_data(mocker):
@@ -4168,7 +4169,9 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.scenario': 'suspicious_activity',
                               'behaviors.objective': 'Falcon Detection Method',
                               'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR',
-                              'incident_type': 'detection'}
+                              'incident_type': 'detection',
+                              'detection_id': 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668',
+                              'behaviors.display_name': 'SampleTemplateDetection'}
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)

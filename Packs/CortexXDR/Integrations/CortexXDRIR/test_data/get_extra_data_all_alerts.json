@@ -1,10 +1,6 @@
 {
     "reply": {
-        "total_count": 2,
-        "result_count": 2,
-        "alerts_limit_per_incident": 2,
-        "incidents": [
-            {
+            
                 "incident": {
                     "incident_id": "2",
                     "incident_name": null,
@@ -589,76 +585,7 @@
                         }
                     ]
                 }
-            }
-        ],
-        "alerts": {
-            "total_count": 1,
-            "data": [
-                {
-                    "alert_id": "1",
-                    "detection_timestamp": 1575806904222,
-                    "source": "XDR Agent",
-                    "severity": "medium",
-                    "name": "Local Analysis Malware",
-                    "category": "Malware",
-                    "action": "BLOCKED",
-                    "action_pretty": "Prevented (Blocked)",
-                    "description": "Suspicious executable detected",
-                    "host_ip": "1.1.1.1.",
-                    "host_name": "AAAAAA",
-                    "user_name": "Administrator",
-                    "event_type": "Process Execution",
-                    "actor_process_image_name": "wildfire-test-pe-file.exe",
-                    "actor_process_command_line": "address",
-                    "actor_process_signature_status": "N/A",
-                    "actor_process_signature_vendor": "N/A",
-                    "causality_actor_process_image_name": null,
-                    "causality_actor_process_command_line": null,
-                    "causality_actor_process_signature_status": "N/A",
-                    "causality_actor_process_signature_vendor": "N/A",
-                    "causality_actor_causality_id": null,
-                    "action_process_image_name": null,
-                    "action_process_image_command_line": null,
-                    "action_process_image_sha256": null,
-                    "action_process_signature_status": "N/A",
-                    "action_process_signature_vendor": "N/A",
-                    "action_file_path": null,
-                    "action_file_md5": null,
-                    "action_file_sha256": null,
-                    "action_registry_data": null,
-                    "action_registry_full_key": null,
-                    "action_local_ip": null,
-                    "action_local_port": null,
-                    "action_remote_ip": null,
-                    "action_remote_port": null,
-                    "action_external_hostname": null,
-                    "fw_app_id": null,
-                    "is_whitelisted": "No",
-                    "starred": false
-                }
-            ]
-        }
-        },
+            
         
-        "network_artifacts": {
-            "total_count": 0,
-            "data": []
-        },
-        "file_artifacts": {
-            "total_count": 1,
-            "data": [
-                {
-                    "type": "HASH",
-                    "alert_count": 1,
-                    "is_manual": false,
-                    "is_malicious": false,
-                    "is_process": true,
-                    "file_name": "file_name_2.exe",
-                    "file_sha256": "file_sha256_2",
-                    "file_signature_status": "SIGNATURE_UNAVAILABLE",
-                    "file_signature_vendor_name": null,
-                    "file_wildfire_verdict": "UNKNOWN"
-                }
-            ]
-        }
     }
+}

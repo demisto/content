@@ -2174,7 +2174,7 @@ def main():  # pragma: no cover
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    is_fetch = argToBoolean(params.get('isFetch'))
+    is_fetch = argToBoolean(params.get('isFetch') or False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
 
     commands = {

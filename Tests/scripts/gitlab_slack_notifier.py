@@ -722,8 +722,8 @@ def main():
         logging.info(f'Successfully wrote Slack message to {output_file}')
     for channel in channels_to_send_msg(computed_slack_channel):
         try:
-            response = slack_client.chat_postMessage(text="",
-                channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
+            response = slack_client.chat_postMessage(
+                channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True, text=""
             )
             if channel == BUILD_STATUS_SLACK_CHANNEL:
                 #adding the thread id to the message that was saved in the artifacts folder
@@ -737,7 +737,7 @@ def main():
                     slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
                     slack_client.chat_postMessage(text="",
                         channel=channel, attachments=slack_msg, username=SLACK_USERNAME,
-                        thread_ts=thread_ts
+                        thread_ts=thread_ts, text=""
                     )
 
             link = build_link_to_message(response)

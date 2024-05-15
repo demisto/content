@@ -1,0 +1,11 @@
+{
+    "success": {
+        "args": {
+            "details": "true",
+            "deleted": "true",
+            "node_name": "DummyName",
+            "should_force_delete": "false"
+        },
+        "command": "safebreach-delete-simulator"
+    }
+}

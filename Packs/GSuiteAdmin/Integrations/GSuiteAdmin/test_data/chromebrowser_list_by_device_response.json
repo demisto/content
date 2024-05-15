@@ -1,0 +1,14 @@
+{
+    "deviceId": "1111111111",
+    "kind": "admin#directory#browserdevice", 
+    "osPlatform": "Windows", 
+    "osVersion": "10.0.19045.4046", 
+    "machineName": "WIN10-test",
+    "lastRegistrationTime": "2024-02-20T21:16:00.902Z", 
+    "lastActivityTime": "2024-02-20T21:16:00.902Z", 
+    "osPlatformVersion": "Windows 10", 
+    "serialNumber": "1111",
+    "virtualDeviceId": "1111111111",
+    "orgUnitPath": "/testing", 
+    "deviceIdentifiersHistory": {}
+}

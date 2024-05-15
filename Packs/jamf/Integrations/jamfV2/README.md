@@ -5,17 +5,21 @@ JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
 ## Configure jamf v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for jamf v2.
+2. Search for JAMF v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
     | Server URL | True |
-    | Username | True |
+    | Username | False |
+    | Password | False |
+    | Client ID | False |
+    | Client Secret | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ### Required Permissions
 In order to run JAMF V2 commands, the user should have a set of minimum permissions on the Jamf Pro server. Changing permissions on Jamf Pro server can be done using the following steps inside the Jamf Pro management GUI:
@@ -4176,5 +4180,4 @@ Returns information about an endpoint.
 >|Hostname|ID|MACAddress|OS|Vendor|
 >|---|---|---|---|---|
 >| test MacBook Pro | 138 | F0:18:98:3F:DB:8E | Mac | JAMF v2 |
-
 

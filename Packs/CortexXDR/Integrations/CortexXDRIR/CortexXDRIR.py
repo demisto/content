@@ -17,7 +17,7 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
-ALERTS_LIMIT_PER_INCIDENTS = -1
+ALERTS_LIMIT_PER_INCIDENTS: int = -1
 FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
@@ -476,6 +476,10 @@ def update_incident_command(client, args):
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
 
+    if assigned_user_pretty_name and not assigned_user_mail:
+        raise DemistoException('To set a new assigned_user_pretty_name, '
+                               'you must also provide a value for the "assigned_user_mail" argument.')
+
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
@@ -522,6 +526,35 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
+def sort_incident_data(raw_incident):
+    """
+    Sorts and processes the raw incident data into a cleaned incident dict.
+
+    Parameters:
+    -  raw_incident (dict): The raw incident data as provided by the API.
+
+    Returns:
+    - dict: A dictionary containing the processed incident data with:
+            - organized alerts.
+            - file artifact
+            - network artifacts.
+    """
+    incident = raw_incident.get('incident', {})
+    raw_alerts = raw_incident.get('alerts', {}).get('data', None)
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
+    context_alerts = clear_trailing_whitespace(raw_alerts)
+    if context_alerts:
+        for alert in context_alerts:
+            alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
+    incident.update({
+        'alerts': context_alerts,
+        'file_artifacts': file_artifacts,
+        'network_artifacts': network_artifacts
+    })
+    return incident
+
+
 def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
@@ -542,29 +575,20 @@ def get_incident_extra_data_command(client, args):
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
+        demisto.debug(f'for incident:{incident_id} using the old call since "\
+            "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
+            "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    incident = raw_incident.get('incident', {})
-    incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts', {}).get('data', None)
-    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident, removeNull=True)]
-    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
-    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
-    context_alerts = clear_trailing_whitespace(raw_alerts)
-    if context_alerts:
-        for alert in context_alerts:
-            alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-        if len(context_alerts) > 0:
-            readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                                   headers=[key for key in context_alerts[0]
-                                                            if key != 'host_ip'], removeNull=True))
-    readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
-    readable_output.append(tableToMarkdown('File Artifacts', file_artifacts, removeNull=True))
+    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {raw_incident=}")
+    readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
+    incident = sort_incident_data(raw_incident)
+    if incident_alerts := incident.get('alerts'):
+        readable_output.append(tableToMarkdown('Alerts', incident_alerts,
+                                               headers=[key for key in incident_alerts[0]
+                                                        if key != 'host_ip'], removeNull=True))
+    readable_output.append(tableToMarkdown('Network Artifacts', incident.get('network_artifacts'), removeNull=True))
+    readable_output.append(tableToMarkdown('File Artifacts', incident.get('file_artifacts'), removeNull=True))
 
-    incident.update({
-        'alerts': context_alerts,
-        'file_artifacts': file_artifacts,
-        'network_artifacts': network_artifacts
-    })
     account_context_output = assign_params(
         Username=incident.get('users', '')
     )
@@ -578,7 +602,6 @@ def get_incident_extra_data_command(client, args):
             alert_context['ID'] = endpoint_id
         if alert_context:
             endpoint_context_output.append(alert_context)
-
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:
         context_output['Account(val.Username==obj.Username)'] = account_context_output
@@ -695,7 +718,6 @@ def sort_all_list_incident_fields(incident_data):
 
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
-
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
@@ -824,7 +846,8 @@ def get_modified_remote_data_command(client, args):
 
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = dateparser.parse(last_update,
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
     if last_update_utc:
         last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 
@@ -972,17 +995,19 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
     else:
         if statuses:
             raw_incidents = []
             for status in statuses:
-                raw_incidents.append(client.get_multiple_incidents_extra_data(
-                                     gte_creation_time_milliseconds=last_fetch,
-                                     status=status,
-                                     limit=max_fetch, starred=starred,
-                                     starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                     fields_to_exclude=fields_to_exclude))
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['incident']['creation_time'])
+                raw_incident_status = client.get_multiple_incidents_extra_data(
+                    gte_creation_time_milliseconds=last_fetch,
+                    status=status,
+                    limit=max_fetch, starred=starred,
+                    starred_incidents_fetch_window=starred_incidents_fetch_window,
+                    fields_to_exclude=fields_to_exclude)
+                raw_incidents.extend(raw_incident_status)
+            raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
             raw_incidents = client.get_multiple_incidents_extra_data(
                 gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
@@ -1000,16 +1025,15 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         count_incidents = 0
 
         for raw_incident in raw_incidents:
-            incident_data: dict[str, Any] = raw_incident.get('incident') or raw_incident
+            incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
-                incident_data = client.get_incident_extra_data(client, {"incident_id": incident_id,
-                                                                        "alerts_limit": 1000})[0].get('incident')\
-                    or {}
-
+                demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
+                              "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
+                raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
+                incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
@@ -1021,14 +1045,11 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
-
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
             # Update last run and add incident if the incident is newer than last fetch
-            if incident_data['creation_time'] > last_fetch:
+            if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
-
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
@@ -1045,6 +1066,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
+        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
     else:
         next_run['incidents_from_previous_run'] = []
 

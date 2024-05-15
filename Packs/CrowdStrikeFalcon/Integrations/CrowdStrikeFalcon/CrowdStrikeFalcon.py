@@ -240,10 +240,10 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
 
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                     'behaviors.technique', 'device.hostname']
+                                     'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
-                                    'tags', 'hosts.hostname']
+                                    'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -2269,9 +2269,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data = mirrored_data_list[0]
 
     mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+    demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    demisto.debug(f'After set_updated_object {updated_object=}')
     return mirrored_data, updated_object
 
 
@@ -5128,11 +5130,12 @@ def rtr_polling_retrieve_file_command(args: dict):
             args['hosts_and_requests_ids'] = hosts_and_requests_ids
             args.pop('request_ids')
             args.pop('SHA256')
+            polling_timeout = arg_to_number(args.get('polling_timeout', 600))
             scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=args,
-                timeout_in_seconds=600)
+                timeout_in_seconds=polling_timeout)
             command_results = CommandResults(scheduled_command=scheduled_command,
                                              readable_output="Waiting for the polling execution")
             return command_results
