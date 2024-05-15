@@ -61,7 +61,7 @@ Get events from Exabeam Data Lake.
     "ExabeamDataLake": {
         "Event": [
             {
-                "_id": "lms.kafka.topic_11_4050563_82063a0a4d1b",
+                "_id": "some_id",
                 "_index": "exabeam-2024.02.28",
                 "_routing": "SfA86vqw",
                 "_score": null,
@@ -102,7 +102,7 @@ Get events from Exabeam Data Lake.
                 ]
             },
             {
-                "_id": "lms.kafka.topic_9_4050559_82063a0a4d1b",
+                "_id": "another_id",
                 "_index": "exabeam-2024.02.27",
                 "_routing": "XUXxevyv",
                 "_score": null,
@@ -154,6 +154,6 @@ Get events from Exabeam Data Lake.
 >### Logs
 >|Created_at|Id|Message|Product|Vendor|
 >|---|---|---|---|---|
->| 2024-02-28T16:15:50.614Z | lms.kafka.topic_11_4050563_82063a0a4d1b | <86>1 2024-02-28T16:15:50.609Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-28T16:15:29.192Z" id="ghardin-20240228143533" score="3" user="ghardin" event_time="2024-02-28 14:35:35" event_type="dlp-alert" domain="kenergy" time="1709130935833" source="ObserveIT" vendor="ObserveIT" lockout_id="NA" session_id="ghardin-20240228143533" session_order="2" account="ghardin" getvalue('zone_info', src)="new york office" alert_name=" rule violation" local_asset="lt-ghardin-888" alert_type="DATA EXFILTRATION" os="Win" rule_name="Abnormal DLP alert name for user" rule_description="Exabeam noted that this alert name has been triggered for this user in the past yet it is still considered abnormal activity. This activity may be an early indication of compromise of a user by malware or other malicious actors." rule_reason="Abnormal DLP alert with name  rule violation for user"  | Exabeam AA | Exabeam |
->| 2024-02-27T16:21:45.721Z | lms.kafka.topic_9_4050559_82063a0a4d1b | <86>1 2024-02-27T16:21:45.539Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-24T16:16:29.975Z" id="ghardin-20240224140716" score="3" user="ghardin" event_time="2024-02-24 14:34:42" event_type="kerberos-logon" host="exabeamdemodc1" domain="ktenergy" time="1708785282052" source="DC" lockout_id="NA" session_id="ghardin-20240224140716" session_order="4" account="ghardin" ticket_options_encryption="0x40810010:0x12" nonmachine_user="ghardin" event_code="4768" ticket_encryption_type="0x12" ticket_options="0x40810010" rule_name="IT presence without badge access" rule_description="This user is logged on to the company network but did not use their badge to access a physical location. It is unusual to have IT access without badge access." rule_reason="IT presence without badge access"  | Exabeam AA | Exabeam |
+>| 2024-02-28T16:15:50.614Z | some_id | <86>1 2024-02-28T16:15:50.609Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-28T16:15:29.192Z" id="ghardin-20240228143533" score="3" user="ghardin" event_time="2024-02-28 14:35:35" event_type="dlp-alert" domain="kenergy" time="1709130935833" source="ObserveIT" vendor="ObserveIT" lockout_id="NA" session_id="ghardin-20240228143533" session_order="2" account="ghardin" getvalue('zone_info', src)="new york office" alert_name=" rule violation" local_asset="lt-ghardin-888" alert_type="DATA EXFILTRATION" os="Win" rule_name="Abnormal DLP alert name for user" rule_description="Exabeam noted that this alert name has been triggered for this user in the past yet it is still considered abnormal activity. This activity may be an early indication of compromise of a user by malware or other malicious actors." rule_reason="Abnormal DLP alert with name  rule violation for user"  | Exabeam AA | Exabeam |
+>| 2024-02-27T16:21:45.721Z | another_id | <86>1 2024-02-27T16:21:45.539Z exabeam-analytics-master Exabeam - - - timestamp="2024-02-24T16:16:29.975Z" id="ghardin-20240224140716" score="3" user="ghardin" event_time="2024-02-24 14:34:42" event_type="kerberos-logon" host="exabeamdemodc1" domain="ktenergy" time="1708785282052" source="DC" lockout_id="NA" session_id="ghardin-20240224140716" session_order="4" account="ghardin" ticket_options_encryption="0x40810010:0x12" nonmachine_user="ghardin" event_code="4768" ticket_encryption_type="0x12" ticket_options="0x40810010" rule_name="IT presence without badge access" rule_description="This user is logged on to the company network but did not use their badge to access a physical location. It is unusual to have IT access without badge access." rule_reason="IT presence without badge access"  | Exabeam AA | Exabeam |
 
