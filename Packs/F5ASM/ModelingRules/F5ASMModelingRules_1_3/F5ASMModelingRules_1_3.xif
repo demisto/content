@@ -25,7 +25,7 @@ alter
         xdm.observer.unique_identifier = deviceExternalId,
         xdm.alert.original_threat_name = to_string(cs4),
         xdm.session_context_id = suid,
-        xdm.alert.original_alert_id = externalID,
+        xdm.alert.original_alert_id = to_string(externalID),
         xdm.alert.severity = to_string(cefseverity),
         xdm.target.host.hostname = cs3_request_host,
         xdm.network.http.content_type = cs3_request_content_type,
