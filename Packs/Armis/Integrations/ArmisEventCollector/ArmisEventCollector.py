@@ -67,6 +67,8 @@ class Client(BaseClient):
         self._headers = headers
         self._access_token = access_token
 
+    def just_for_test(self):
+        pass
     def perform_fetch(self, params):
         try:
             raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
