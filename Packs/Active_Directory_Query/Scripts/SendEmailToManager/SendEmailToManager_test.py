@@ -6,7 +6,7 @@ from SendEmailToManager import *
 
 
 def executeCommand_mock(command: str, args: dict) -> list:
-    with open("test_data/ad-search.json", "r") as file:
+    with open("test_data/ad-search.json") as file:
         test_data = json.load(file)
 
     if command == "ad-search":
@@ -25,7 +25,7 @@ def executeCommand_mock(command: str, args: dict) -> list:
                                  "employee_request": "employee_request"}),
 ])
 def test_find_additional_incident_info(test_input_path: str, expected_items_in_dict: dict):
-    with open(test_input_path, "r") as file:
+    with open(test_input_path) as file:
         test_input = json.load(file)
 
     additional_info = find_additional_incident_info(test_input)
@@ -56,7 +56,7 @@ def test_find_additional_ad_info(mocker, email: str, manager_attribute: str, exp
 ])
 def test_generate_mail_subject(mocker, test_input_path: str, incident_subject: str,
                                investigation_id: str, allow_reply: bool, entitlement_id: Optional[str]):
-    with open(test_input_path, "r") as file:
+    with open(test_input_path) as file:
         example_entitlement = json.load(file)
 
     mocker.patch.object(demisto, 'executeCommand', return_value=example_entitlement)
