@@ -414,7 +414,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
         # Check if it's a new message, and if it's either all messages (fetch_threads is False) or only thread starters
         if (internal_date > last_fetch_info["internalDate"] or (
             internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"]
-        )) and (not fetch_threads or message_id == thread_id):
+        )) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
             message_dates.append(internal_date)
@@ -462,6 +462,12 @@ def get_email_thread_command(
     """
     # Validate required arguments
     email = args.get("email")
+    if email is None:
+        if not client.default_email:
+            raise ValueError(
+                "No email address was provided and no default email address was set."
+            )
+        email = client.default_email
     thread_id = args.get("thread_id")
     if not thread_id:
         raise ValueError("The 'thread_id' argument is required.")
@@ -519,6 +525,12 @@ def trash_email_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     """
     # Extract required parameters
     email = args.get("email")
+    if email is None:
+        if not client.default_email:
+            raise ValueError(
+                "No email address was provided and no default email address was set."
+            )
+        email = client.default_email
     message_id = args.get("message_id")
     if not message_id:
         raise ValueError("The 'message_id' argument is required.")
@@ -559,6 +571,12 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
                         the API response, and other metadata for use in other parts of the system.
     """
     email = args.get("email")
+    if email is None:
+        if not client.default_email:
+            raise ValueError(
+                "No email address was provided and no default email address was set."
+            )
+        email = client.default_email
 
     max_results = args.get("max_results", "50")
     page_token = args.get("page_token", "")
@@ -655,6 +673,12 @@ def get_email_attachment_command(
         raise ValueError(
             "The 'message_id', and 'attachment_id' arguments are required."
         )
+    if email is None:
+        if not client.default_email:
+            raise ValueError(
+                "No email address was provided and no default email address was set."
+            )
+        email = client.default_email
 
     # API call to get the attachment
     attachment = client.get_email_attachment(email, message_id, attachment_id)
@@ -698,6 +722,12 @@ def get_mailbox_profile_command(
         ValueError: If the 'email' argument is missing.
     """
     email = args.get("email")
+    if email is None:
+        if not client.default_email:
+            raise ValueError(
+                "No email address was provided and no default email address was set."
+            )
+        email = client.default_email
 
     # Retrieve the mailbox profile using the API client
     profile = client.get_mailbox_profile(email)

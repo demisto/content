@@ -1,6 +1,5 @@
 id: ZoomMailTest
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ZoomMailTest
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -211,3 +211,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
+description: Tests the functionality of the ZoomMail integration.

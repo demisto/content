@@ -1032,7 +1032,7 @@ class TestFetchIncidents(unittest.TestCase):
         fetch_incidents(self.client, self.params)
 
         incidents = mock_incidents.call_args[0][0]
-        assert len(incidents) == 3
+        assert len(incidents) == 2
         assert incidents[0]["name"] == "Zoom Encrypted Email"
 
     @patch("ZoomMail.demisto.getLastRun")
@@ -1050,7 +1050,7 @@ class TestFetchIncidents(unittest.TestCase):
         """
         mock_get_last_run.return_value = {
             "last_fetch_info": {"internalDate": 1622440000, "ids": []},
-            "next_page_token": "",
+            "next_page_token": "abc123",
         }
         self.client.list_emails = MagicMock(
             side_effect=[
@@ -1085,6 +1085,129 @@ class TestFetchIncidents(unittest.TestCase):
         # Check that setLastRun was called correctly
         assert len(calls) == 1
         assert calls[0][0][0] == expected_call
+
+    @patch("ZoomMail.demisto.getLastRun")
+    @patch("ZoomMail.demisto.setLastRun")
+    @patch("ZoomMail.demisto.incidents")
+    def test_deduplication_of_ids(self, mock_incidents, mock_set_last_run, mock_get_last_run):
+        """
+        Test deduplication of message IDs.
+
+        When:
+        - Fetched emails include IDs that are already in the last_fetch_info["ids"].
+
+        Then:
+        - Ensure no duplicate incidents are created.
+        """
+        mock_get_last_run.return_value = {
+            "last_fetch_info": {
+                "internalDate": 1622430000,
+                "ids": [
+                    "d9e0967700000000_e8332447bb77d2cc_012",
+                    "d9e0967700000000_e83324610f26fd57_007"
+                ]
+            },
+            "next_page_token": "",
+        }
+        mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
+        self.client.list_emails = MagicMock(return_value=mock_list_response)
+        mock_get_email_message_response_1 = load_test_data(
+            "test_data/fetch/fetch_email_1.json"
+        )
+        mock_get_email_message_response_2 = load_test_data(
+            "test_data/fetch/fetch_email_2.json"
+        )
+        mock_get_email_message_response_3 = load_test_data(
+            "test_data/fetch/fetch_email_3.json"
+        )
+        self.client.get_email_message = MagicMock(
+            side_effect=[
+                mock_get_email_message_response_1,
+                mock_get_email_message_response_2,
+                mock_get_email_message_response_3,
+            ]
+        )
+
+        fetch_incidents(self.client, self.params)
+
+        incidents = mock_incidents.call_args[0][0]
+        assert len(incidents) == 2  # Ensure only new incidents are created
+
+    @patch("ZoomMail.demisto.getLastRun")
+    @patch("ZoomMail.demisto.setLastRun")
+    @patch("ZoomMail.demisto.incidents")
+    def test_filtering_threads(self, mock_incidents, mock_set_last_run, mock_get_last_run):
+        """
+        Test filtering of threads when fetch_threads is false.
+
+        When:
+        - fetch_threads is false.
+        - Emails are available to be fetched.
+
+        Then:
+        - Ensure only thread starter emails are fetched.
+        """
+        self.params["fetch_threads"] = False
+        mock_get_last_run.return_value = {
+            "last_fetch_info": {"internalDate": 1622430000, "ids": []},
+            "next_page_token": "",
+        }
+        mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
+        self.client.list_emails = MagicMock(return_value=mock_list_response)
+        mock_get_email_message_response_1 = load_test_data("test_data/fetch/fetch_email_1.json")
+        mock_get_email_message_response_2 = load_test_data("test_data/fetch/fetch_email_2.json")
+        mock_get_email_message_response_3 = load_test_data("test_data/fetch/fetch_email_3.json")
+
+        self.client.get_email_message = MagicMock(
+            side_effect=[
+                mock_get_email_message_response_1,
+                mock_get_email_message_response_2,
+                mock_get_email_message_response_3,
+            ]
+        )
+
+        fetch_incidents(self.client, self.params)
+
+        incidents = mock_incidents.call_args[0][0]
+        assert len(incidents) == 2  # Ensure only thread starter incidents are created
+
+    @patch("ZoomMail.demisto.getLastRun")
+    @patch("ZoomMail.demisto.setLastRun")
+    @patch("ZoomMail.demisto.incidents")
+    def test_not_filtering_threads(self, mock_incidents, mock_set_last_run, mock_get_last_run):
+        """
+        Test not filtering of threads when fetch_threads is true.
+
+        When:
+        - fetch_threads is false.
+        - Emails are available to be fetched.
+
+        Then:
+        - Ensure all emails are fetched regardless of being thread starters or not.
+        """
+        self.params["fetch_threads"] = True
+        mock_get_last_run.return_value = {
+            "last_fetch_info": {"internalDate": 1, "ids": []},
+            "next_page_token": "",
+        }
+        mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
+        self.client.list_emails = MagicMock(return_value=mock_list_response)
+        mock_get_email_message_response_1 = load_test_data("test_data/fetch/fetch_email_1.json")
+        mock_get_email_message_response_2 = load_test_data("test_data/fetch/fetch_email_2.json")
+        mock_get_email_message_response_3 = load_test_data("test_data/fetch/fetch_email_3.json")
+
+        self.client.get_email_message = MagicMock(
+            side_effect=[
+                mock_get_email_message_response_1,
+                mock_get_email_message_response_2,
+                mock_get_email_message_response_3,
+            ]
+        )
+
+        fetch_incidents(self.client, self.params)
+
+        incidents = mock_incidents.call_args[0][0]
+        assert len(incidents) == 3  # Ensure all emails are fetched
 
 
 class TestGetEmailThreadCommand(unittest.TestCase):
