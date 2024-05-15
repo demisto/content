@@ -93,7 +93,7 @@ def test_vmwuem_device_os_updates_list_command_when_valid_response_is_returned(r
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context.json")
 
-    with open("test_data/vmwuem_device_osupdates_list_command_readable_output.md", 'r') as f:
+    with open("test_data/vmwuem_device_osupdates_list_command_readable_output.md") as f:
         expected_readable_output = f.read()
 
     args = {
@@ -162,7 +162,7 @@ def test_vmwuem_device_osupdates_list_command_when_laptop_device_provided(reques
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
 
-    with open("test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md", 'r') as f:
+    with open("test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md") as f:
         expected_readable_output = f.read()
 
     args = {
