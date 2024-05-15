@@ -32,7 +32,7 @@ from ruamel import yaml
 from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.private_build.upload_packs_private import extract_packs_artifacts
+from Tests.Marketplace.upload_packs import extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_server_numeric_version
