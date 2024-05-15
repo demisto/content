@@ -1,9 +1,0 @@
-{
-    "version": -1,
-    "fromVersion": "6.5.0",
-    "id": "Case",
-    "name": "Case",
-    "pluralName": "Cases",
-    "auditable": false,
-    "rbacSupport": true
-}

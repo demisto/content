@@ -627,6 +627,7 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.ASSETS_MODELING_RULE_XIF,
     FileType.CASE_FIELD,
     FileType.CASE_LAYOUT_RULE,
+    FileType.CASE_LAYOUT,
 }
 
 

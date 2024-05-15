@@ -269,8 +269,6 @@ class PackFolders(enum.Enum):
     XDRC_TEMPLATES = 'XDRCTemplates'
     LAYOUT_RULES = 'LayoutRules'
     ASSETS_MODELING_RULES = 'AssetsModelingRules'
-    CASE_FIELDS = 'CaseFields'
-    CASE_LAYOUT_RULES = 'CaseLayoutRules'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -303,8 +301,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
-            PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value, PackFolders.CASE_LAYOUT_RULES.value,
-            PackFolders.CASE_FIELDS.value,
+            PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
 
@@ -479,9 +476,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
     PackFolders.LAYOUT_RULES.value: "layoutrule",
-    PackFolders.ASSETS_MODELING_RULES.value: "assetsmodelingrule",
-    PackFolders.CASE_LAYOUT_RULES.value: "caselayoutrule",
-    PackFolders.CASE_FIELDS.value: "casefield",
+    PackFolders.ASSETS_MODELING_RULES.value: "assetsmodelingrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -512,7 +507,5 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.ASSETS_MODELING_RULES.value]: "Assets Modeling Rule",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.CASE_FIELDS.value]: "Case Field",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.CASE_LAYOUT_RULES.value]: "Case Layout Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.ASSETS_MODELING_RULES.value]: "Assets Modeling Rule"
 }

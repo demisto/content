@@ -2320,32 +2320,6 @@ class Pack:
                         layout_rule_description = content_item.get('description')
                         if layout_rule_description is not None:
                             metadata_output['description'] = layout_rule_description
-
-                    elif current_directory == PackFolders.CASE_LAYOUT_RULES.value and pack_file_name.startswith(
-                            "external-"):
-                        self.add_pack_type_tags(content_item, 'CaseLayoutRule')
-                        metadata_output = {
-                            'id': content_item.get('rule_id', ''),
-                            'name': content_item.get('rule_name', ''),
-                            'layout_id': content_item.get('layout_id', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-                        layout_rule_description = content_item.get('description')
-                        if layout_rule_description is not None:
-                            metadata_output['description'] = layout_rule_description
-
-                    elif current_directory == PackFolders.CASE_FIELDS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'type': content_item.get('type', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
