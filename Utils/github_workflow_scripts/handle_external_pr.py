@@ -245,11 +245,15 @@ def is_tim_content(pr_files: list[str]) -> bool:
     Returns: returns True or False if tim reviewer needed
     """
     integrations_checked = []
+    print(pr_files)
     for file in pr_files:
         print(f'file is: {file}')
-        if 'CONTRIBUTORS.json' in file:
+        #if 'CONTRIBUTORS.json' in file:
+        #    continue
+        if 'Integrations' not in file:
             continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
+        print(f'Integration is: {integration}')
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
         integrations_checked.append(integration.path)

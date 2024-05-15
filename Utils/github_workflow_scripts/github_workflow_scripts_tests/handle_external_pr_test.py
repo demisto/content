@@ -235,3 +235,10 @@ def test_get_location_of_reviewer(assigned_prs_per_potential_reviewer, possible_
     """
     result = get_location_of_reviewer(assigned_prs_per_potential_reviewer)
     assert result in possible_locations
+
+
+def test_is_tim_content():
+    from Utils.github_workflow_scripts.handle_external_pr import is_tim_content
+    pr_files = ['Packs/Jizo_NDR/Integrations/Jizo_NDR/Jizo_NDR.py', 'Packs/GreyNoise/pack_metadata.json', 'Packs/Jizo_NDR/pack_metadata.json']
+    res = is_tim_content(pr_files)
+    assert 'False' == res
