@@ -8,7 +8,7 @@
       "AND": [
         {
             "SEARCH_FIELD": "STATUS",
-            "SEARCH_TYPE": "RELATIVE_TIMESTAMP",
+            "SEARCH_TYPE": "NEQ",
             "SEARCH_VALUE": "STATUS_030_RESOLVED_THREAT_HANDLED"
         }
       ]
