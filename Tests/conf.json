@@ -316,6 +316,10 @@
             "fromversion": "6.10.0"
         },
         {
+            "integrations": "Exabeam Data Lake",
+            "playbookID": "ExabeamDataLake-test"
+        },
+        {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
             "fromversion": "5.0.0",

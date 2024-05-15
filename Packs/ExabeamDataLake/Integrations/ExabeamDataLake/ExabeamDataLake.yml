@@ -73,4 +73,4 @@ script:
   dockerimage: demisto/python3:3.10.14.92207
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- ExabeamDataLake-test
