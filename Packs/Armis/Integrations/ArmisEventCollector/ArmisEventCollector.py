@@ -120,7 +120,7 @@ class Client(BaseClient):
         try:
             while next and (len(results) < max_fetch):
                 if len(results) < max_fetch:
-                    params['length'] = max_fetch -  len(results)
+                    params['length'] = max_fetch - len(results)
                 params['from'] = next
                 raw_response = self.perform_fetch(params)
                 next = raw_response.get('data', {}).get('next', 0)
@@ -350,11 +350,11 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
 
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
-            new_events, next_run[last_fetch_ids] = dedup_events(
-                response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
-            events.setdefault(event_type.dataset_name, []).extend(new_events)
-            demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
-            demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
+        new_events, next_run[last_fetch_ids] = dedup_events(
+            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
+        events.setdefault(event_type.dataset_name, []).extend(new_events)
+        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
+        demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         last_fetch_time = events[-1].get(event_type.order_by) if events else last_fetch_time
