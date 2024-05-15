@@ -488,6 +488,7 @@ def update_incident_command(client, args):
     assigned_user_mail = args.get('assigned_user_mail')
     assigned_user_pretty_name = args.get('assigned_user_pretty_name')
     status = args.get('status')
+    demisto.debug(f"this_is_the_status {status}")
     severity = args.get('manual_severity')
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
@@ -1019,8 +1020,6 @@ def update_related_alerts(client: Client, args: dict):
     if not new_status:
         raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
                                "no status found")
-    if new_status == 'resolved_duplicate_incident':
-        new_status = 'resolved_duplicate'
     incident_extra_data = client.get_incident_extra_data(incident_id)
     if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
         alerts_array = incident_extra_data['alerts']['data']
