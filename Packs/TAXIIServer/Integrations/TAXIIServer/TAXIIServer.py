@@ -472,7 +472,7 @@ def create_stix_hash_observable(namespace, indicator):
     type_ = indicator.get('indicator_type', '')
 
     file_object = cybox.objects.file_object.File()
-    file_object.add_hash(indicator)
+    file_object.add_hash(value)
 
     observable = Observable(
         title=f'{value}: {type_}',
