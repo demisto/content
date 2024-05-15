@@ -1289,7 +1289,6 @@ def create_or_update_policy_request(policy, option, policy_id=None):
     # write a policy ID on update policy command
     if policy_id:
         payload['data'][0]['id'] = policy_id
-    print('payload',payload)
     response = http_request('POST', api_endpoint, payload)
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
@@ -3599,9 +3598,7 @@ def main():
             fetch_incidents()
         elif command == 'mimecast-query':
             demisto.results(query(args))
-        elif command == 'mimecast-list-blocked-sender-policies':
-            demisto.results(get_policy())
-        elif command == 'mimecast-get-policy':
+        elif command == 'mimecast-get-policy' or command == 'mimecast-list-blocked-sender-policies':
             demisto.results(get_policy())
         elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
             demisto.results(create_policy())
