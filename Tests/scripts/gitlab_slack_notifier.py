@@ -735,7 +735,7 @@ def main():
             if threaded_messages:
                 for slack_msg in threaded_messages:
                     slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
-                    slack_client.chat_postMessage(text="",
+                    slack_client.chat_postMessage(
                         channel=channel, attachments=slack_msg, username=SLACK_USERNAME,
                         thread_ts=thread_ts, text=""
                     )
