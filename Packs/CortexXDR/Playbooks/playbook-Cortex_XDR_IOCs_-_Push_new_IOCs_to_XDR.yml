@@ -64,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2910,
-          "y": 910
+          "x": 2490,
+          "y": 1050
         }
       }
     note: false
@@ -108,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 2170
+          "x": 760,
+          "y": 2240
         }
       }
     note: false
@@ -147,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 2325
+          "x": 760,
+          "y": 2415
         }
       }
     note: false
@@ -233,8 +233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
-          "y": 2510
+          "x": 1370,
+          "y": 2600
         }
       }
     note: false
@@ -258,14 +258,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "44"
+      - "32"
+      - "42"
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 910
+          "x": 1370,
+          "y": 1050
         }
       }
     note: false
@@ -295,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 635,
-          "y": 910
+          "x": 475,
+          "y": 1050
         }
       }
     note: false
@@ -347,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 635,
-          "y": 1070
+          "x": 475,
+          "y": 1220
         }
       }
     note: false
@@ -378,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 1435
+          "x": 20,
+          "y": 1500
         }
       }
     note: false
@@ -406,8 +408,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
-          "y": 2665
+          "x": 1370,
+          "y": 2775
         }
       }
     note: false
@@ -437,8 +439,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2910,
-          "y": 2355
+          "x": 2490,
+          "y": 2445
         }
       }
     note: false
@@ -468,8 +470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 1840
+          "x": 250,
+          "y": 1860
         }
       }
     note: false
@@ -492,9 +494,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
     scriptarguments:
       append:
         simple: "true"
@@ -526,8 +525,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
-          "y": 1420
+          "x": 940,
+          "y": 1470
         }
       }
     note: false
@@ -584,8 +583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2440,
-          "y": 1420
+          "x": 1370,
+          "y": 1470
         }
       }
     note: false
@@ -609,7 +608,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "41"
+      - "45"
       "yes":
       - "31"
     separatecontext: false
@@ -644,8 +643,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 1240
+          "x": 1370,
+          "y": 1220
         }
       }
     note: false
@@ -683,8 +682,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 1585
+          "x": 1800,
+          "y": 1650
         }
       }
     note: false
@@ -775,8 +774,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 635,
-          "y": 1420
+          "x": 475,
+          "y": 1470
         }
       }
     note: false
@@ -841,8 +840,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 1420
+          "x": 1800,
+          "y": 1470
         }
       }
     note: false
@@ -866,7 +865,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "41"
+      - "45"
       "yes":
       - "29"
     separatecontext: false
@@ -901,8 +900,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1820,
-          "y": 1240
+          "x": 940,
+          "y": 1220
         }
       }
     note: false
@@ -947,65 +946,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
-    taskid: ff035979-9918-40de-8716-5165f98f6dd8
-    type: condition
-    task:
-      id: ff035979-9918-40de-8716-5165f98f6dd8
-      version: -1
-      name: Any hashes?
-      description: Checks if there are any new IOCs that we need to push into XDR
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "46"
-      "Yes":
-      - "32"
-      - "42"
-    separatecontext: false
-    conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: foundIndicators
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: foundIndicators.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File
-                accessor: value
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2030,
-          "y": 1050
+          "x": 760,
+          "y": 2000
         }
       }
     note: false
@@ -1035,8 +977,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1790
+          "x": 1370,
+          "y": 1860
         }
       }
     note: false
@@ -1048,25 +990,63 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: bd000989-c0e8-43d7-851b-ce95991005c6
-    type: title
+    taskid: 456ed20a-e2a2-4fed-8b6d-87168c6b62a6
+    type: condition
     task:
-      id: bd000989-c0e8-43d7-851b-ce95991005c6
+      id: 456ed20a-e2a2-4fed-8b6d-87168c6b62a6
       version: -1
-      name: No Hashes
-      type: title
+      name: Save irrelevant hashes in context for marking
+      description: Set a value in context under the key you entered.
+      type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
-      '#none#':
+      '#default#':
       - "45"
+      "yes":
+      - "41"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.md5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.sha256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                transformers:
+                - operator: uniq
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1320,
+          "x": 1800,
           "y": 1220
         }
       }
@@ -1083,13 +1063,13 @@ view: |-
       "32_31_yes": 0.66,
       "42_29_yes": 0.61,
       "43_7_yes": 0.49,
-      "44_42_Yes": 0.56
+      "46_41_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 2360,
-        "width": 3130,
-        "x": 160,
+        "height": 2470,
+        "width": 2850,
+        "x": 20,
         "y": 370
       }
     }
