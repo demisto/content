@@ -36,6 +36,7 @@ INCIDENT_STATUSES = [
 
 ALERT_STATUSES = [
     "new",
+    "reopened",
     "under_investigation",
     "resolved_no_risk",
     "resolved_risk_accepted",
