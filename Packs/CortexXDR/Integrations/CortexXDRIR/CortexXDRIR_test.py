@@ -593,7 +593,10 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     assert response.entries == []
 
 
-def test_get_modified_remote_data_command(requests_mock):
+@pytest.mark.parametrize('last_update',
+                         ['2020-11-18T13:16:52.005381+02:00',
+                          '2024-03-21T17:02:02.000000645Z'])
+def test_get_modified_remote_data_command(requests_mock, last_update):
     """
     Given:
         - an XDR client
@@ -612,7 +615,7 @@ def test_get_modified_remote_data_command(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
-        'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
+        'lastUpdate': last_update
     }
 
     response = get_modified_remote_data_command(client, args)
@@ -785,14 +788,14 @@ def test_get_incident_extra_data(mocker):
                          [
                              ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
 
                              ("Known Issue=Other,Duplicate Incident=Other,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
 
                              ("Duplicate Incident=Other,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
 
                              # Expecting default mapping to be used when no mapping provided.
                              ("", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
@@ -807,7 +810,7 @@ def test_get_incident_extra_data(mocker):
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate Incident=Other, False Positive=Other True Positive=Other",
-                              ["Other", "Other", "False Positive", "Resolved", "Security Testing", "Other",
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Security Testing", "Other",
                                "Resolved"]),
 
                          ],

@@ -40,7 +40,7 @@ def main():
             raise DemistoException('You must set an entryID when using the zip script')
 
         entry_ids = argToList(fileEntryID)
-        file_names = list()
+        file_names = []
         for entry_id in entry_ids:
             res = demisto.executeCommand('getFilePath', {'id': entry_id})
 
