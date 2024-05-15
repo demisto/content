@@ -36,6 +36,8 @@ class ArgAndParamNames:
     USER_ID = 'user_id'
     CONNECTION = 'connection'
     CLIENT_ID = 'client_id'
+    NAME = 'name'
+    DESCRIPTION = 'description'
 
 
 '''CLIENT CLASS'''
@@ -67,6 +69,13 @@ class CipherTrustClient(BaseClient):
             params=params
         )
 
+    def create_group(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=USER_MANAGEMENT_GROUPS_URL_SUFFIX,
+            json_data=request_data
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -95,7 +104,7 @@ def test_module(client: CipherTrustClient):
 
 
 @metadata_collector.command(command_name='groups_list_command', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
-def groups_list_command(client: CipherTrustClient, args) -> CommandResults:
+def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
 
 
@@ -177,6 +186,32 @@ def groups_list_command(client: CipherTrustClient, args) -> CommandResults:
     )
 
 
+@metadata_collector.command(command_name='ciphertrust-group-create', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
+def group_create_command(client: CipherTrustClient, args: dict):
+    """
+    Args:
+        client (CipherTrustClient): CipherTrust client to use.
+        name (str): Name of the group. required=True
+        description(str): description of the group.
+
+    Context Outputs:
+        {'name': 'maya test', 'created_at': '2024-05-15T14:16:03.088821Z', 'updated_at': '2024-05-15T14:16:03.088821Z', 'description': 'mayatest'}
+
+    """
+    # todo: how to handle required args
+    request_data = assign_params(name=args.get(ArgAndParamNames.NAME),
+                                 description=args.get(ArgAndParamNames.DESCRIPTION))
+    raw_response = client.create_group(request_data)
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Group',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@metadata_collector.command(command_name='ciphertrust-group-delete')
+def group_delete_command(client: CipherTrustClient, args: dict):
+
 ''' MAIN FUNCTION '''
 
 
@@ -211,6 +246,8 @@ def main():
             return_results(test_module(client))
         if command == 'ciphertrust-group-list':
             return_results(groups_list_command(client=client, args=args))
+        if command == 'ciphertrust-group-create':
+            return_results(group_create_command(client=client, args=args))
 
     except Exception as e:
         msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"

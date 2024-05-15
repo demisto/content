@@ -17,8 +17,25 @@ configuration:
 script:
   commands:
   - deprecated: false
+    description: "\n    Args:\n        client (CipherTrustClient): CipherTrust client to use.\n        name (str): Name of the group. required=True\n        description(str): description of the group."
+    name: ciphertrust-group-create
+    arguments:
+    - name: name
+      isArray: false
+      description: Name of the group. required=True
+      required: true
+      secret: false
+      default: false
+    - name: description
+      isArray: false
+      description: description of the group.
+      required: false
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
     description: ''
-    name: ciphertrust-group-list
+    name: groups_list_command
     arguments:
     - name: group_name
       isArray: false
@@ -68,7 +85,7 @@ script:
     outputs: []
   - deprecated: false
     description: "Tests connectivity with the client.\n    Takes as an argument all client arguments to create a new client\n    "
-    name: test-module
+    name: test_module
     arguments: []
     outputs: []
   script: '-'
