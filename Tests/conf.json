@@ -311,6 +311,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "AWS - IAM Identity Center",
+            "playbookID": "AWS-IAMIdentityCenter-Test",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
             "fromversion": "5.0.0",
