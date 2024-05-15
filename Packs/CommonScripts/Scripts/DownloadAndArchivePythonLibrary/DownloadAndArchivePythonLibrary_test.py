@@ -36,7 +36,7 @@ class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
         result = installLibrary(dir_path, library_name)
 
         # Asserts
-        mock_popen.assert_called_once_with(shlex.split(f'python3 -m pip install --target {dir_path} {library_name}'),
+        mock_popen.assert_called_once_with(shlex.split(f'python3 -m pip install --target {dir_path} kubernetes'),
                                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         mock_os_walk.assert_called_once_with(dir_path)
         mock_zipfile.assert_called_once_with(dir_path / (library_name + '.zip'), 'w', compression=zipfile.ZIP_DEFLATED,
