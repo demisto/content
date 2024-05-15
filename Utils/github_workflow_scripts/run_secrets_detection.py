@@ -40,7 +40,7 @@ def trigger_generic_webhook(options):
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
 
-    raise Exception(f'{body}')
+
 
     # post to Content Gold
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
