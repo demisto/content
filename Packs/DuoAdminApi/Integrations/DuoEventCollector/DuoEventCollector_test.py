@@ -43,7 +43,7 @@ get_events = GetEvents(
 
 
 def load_json(file: str) -> dict:
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
