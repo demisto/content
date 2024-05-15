@@ -16,7 +16,7 @@ def util_load_json(path):
 
 
 def util_load_csv(path):
-    with open(path, 'r') as f:
+    with open(path) as f:
         lines = f.read()
     the_response = Response()
     the_response._content = str.encode(lines)
