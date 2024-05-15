@@ -15,8 +15,9 @@ configuration:
 - display: First fetch time interval
   name: after
   type: 0
-  defaultvalue: 1 day
+  defaultvalue: 1 minute
   required: false
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
