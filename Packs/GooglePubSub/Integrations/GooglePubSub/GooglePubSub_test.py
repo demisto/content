@@ -418,9 +418,9 @@ class TestCommands:
         def ack_messages(self, a, b):
             return ""
 
-    with open("test_data/commands_outputs.json", "r") as f:
+    with open("test_data/commands_outputs.json") as f:
         COMMAND_OUTPUTS = json.load(f)
-    with open("test_data/raw_responses.json", "r") as f:
+    with open("test_data/raw_responses.json") as f:
         RAW_RESPONSES = json.load(f)
 
     TEST_COMMANDS_LIST = [
