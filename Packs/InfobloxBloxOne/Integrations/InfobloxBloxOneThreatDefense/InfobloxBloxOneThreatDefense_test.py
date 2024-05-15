@@ -9,7 +9,7 @@ TEST_PATH = Path(__file__).parent / "test_data"
 
 def load_json_file(file_description):
     file_path = TEST_PATH / f"{file_description}.json"
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         return f.read()
 
 
