@@ -204,7 +204,8 @@ def test_dates_in_range_invalid(start_time_str, end_time_str, expected_output):
 def test_calculate_page_parameters_valid(args, from_param_expected, size_param_expected):
     """
     GIVEN:
-        args, from_param_expected, and size_param_expected representing input arguments, expected 'from' parameter, and expected 'size' parameter, respectively,
+        args, from_param_expected, and size_param_expected representing input arguments,
+        expected 'from' parameter, and expected 'size' parameter, respectively,
 
     WHEN:
         'calculate_page_parameters' function is called with the provided arguments,
@@ -240,7 +241,8 @@ def test_calculate_page_parameters_invalid(mocker, args):
 def test_parse_entry():
     """
     GIVEN:
-        an entry dictionary representing a log entry with various fields such as '_id', '_source', 'Vendor', '@timestamp', 'Product', and 'message',
+        an entry dictionary representing a log entry with various fields such as '_id', '_source', 'Vendor', '@timestamp',
+        'Product', and 'message',
 
     WHEN:
         '_parse_entry' function is called with the provided entry dictionary,
@@ -291,7 +293,7 @@ def test_query_datalake_request(mocker):
 
     instance = Client(base_url=base_url, username=username, password=password,
                       verify=False, proxy=proxy, headers=headers)
-    
+
     search_query = {"query": "your_query_here"}
     expected_data = '{"query": "your_query_here"}'
 
