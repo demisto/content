@@ -16,7 +16,7 @@ def mock_demisto(mocker):
 
 def atp_mocker(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
-    with open('./test_data/alerts.json', 'r') as f:
+    with open('./test_data/alerts.json') as f:
         alerts = json.loads(f.read())
     mocker.patch.object(atp, 'list_alerts', return_value=alerts)
 
