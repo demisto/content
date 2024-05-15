@@ -113,26 +113,24 @@ class Client(BaseClient):
             params['from'] = from_param
         raw_response = self.perform_fetch(params)
         results = raw_response.get('data', {}).get('results', [])
-        next = raw_response.get('data', {}).get('next')
+        next = raw_response.get('data', {}).get('next', 0)
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
         try:
             while next and (len(results) < max_fetch):
-                if next < max_fetch:
-                    params['length'] = max_fetch - next
+                if len(results) < max_fetch:
+                    params['length'] = max_fetch -  len(results)
                 params['from'] = next
                 raw_response = self.perform_fetch(params)
-                next = raw_response.get('data', {}).get('next')
-                results.extend(raw_response.get('data', {}).get('results', []))
+                next = raw_response.get('data', {}).get('next', 0)
+                current_results = raw_response.get('data', {}).get('results', [])
+                results.extend(current_results)
+                demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
         except Exception as e:
-            demisto.debug(f'debug-log: caught an exception during pagination:\n{str(e)}')
+            demisto.info(f'info-log: caught an exception during pagination:\n{str(e)}')
 
-        finally:
-            if not next:
-                next = 0
-
-            return results, next
+        return results, next
 
     def is_valid_access_token(self, access_token):
         """ Checks if current available access token is valid.
@@ -224,6 +222,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
     # case 1
     if last_fetch_time:
         if isinstance(last_fetch_time, str):
+            demisto.info(f"info-log: calculating_fetch_time for {last_fetch_time=}")
             last_fetch_datetime = arg_to_datetime(last_fetch_time)
         else:
             last_fetch_datetime = last_fetch_time
@@ -351,10 +350,6 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
 
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
-        if last_fetch_next:
-            events.setdefault(event_type.dataset_name, []).extend(response)
-            demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {response[-1]}')
-        else:
             new_events, next_run[last_fetch_ids] = dedup_events(
                 response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
             events.setdefault(event_type.dataset_name, []).extend(new_events)
@@ -362,8 +357,8 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
             demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-        event_type_fetch_start_time = datetime.now().strftime(DATE_FORMAT)
-        next = 0
+        last_fetch_time = events[-1].get(event_type.order_by) if events else last_fetch_time
+        #  can empty the list.
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
