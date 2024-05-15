@@ -5,6 +5,9 @@ name: Zoom Mail
 display: Zoom Mail
 category: Email
 description: Enables interaction with the Zoom Mail API.
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - section: Connect
   display: 'Server URL (e.g., https://api.zoom.us/v2)'

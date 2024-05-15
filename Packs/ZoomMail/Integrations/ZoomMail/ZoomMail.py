@@ -600,12 +600,14 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
         )
 
         if "payload" in message:
-            body, html, attachments = parse_mail_parts([message.get("payload")])
+            payload = message.get("payload")
+            headers_info = parse_email_headers(payload.get('headers'))
+            body, html, attachments = parse_mail_parts([payload])
             human_readable = (
                 f"### Email Message {message_id}\n"
-                f"* **From**: {message.get('from')}\n"
-                f"* **To**: {message.get('to')}\n"
-                f"* **Subject**: {message.get('subject')}\n"
+                f"* **From**: {headers_info.get('From')}\n"
+                f"* **To**: {headers_info.get('To')}\n"
+                f"* **Subject**: {headers_info.get('Subject')}\n"
                 f"* **Date**: {message.get('date')}\n\n"
                 f"**Body:**\n{body}\n\n"
                 f"**HTML:**\n{html}\n\n"
@@ -625,11 +627,12 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     )
 
     if "messages" in response:
-        messages_list = [
-            f'- ID: {msg["id"]} Thread ID: {msg.get("threadId", "N/A")}'
-            for msg in response["messages"]
-        ]
-        readable_output = f"Messages in mailbox {email}:\n" + "\n".join(messages_list)
+        readable_output = tableToMarkdown(
+            name=f'Messages in mailbox {email}',
+            t=response["messages"],
+            removeNull=True,
+            headerTransform=string_to_table_header
+        )
     else:
         readable_output = f"No messages found in mailbox {email}."
 
@@ -1086,9 +1089,47 @@ def process_attachments(
     return file_names
 
 
-def parse_mail_parts(
-    parts: list[dict[str, Any]]
-) -> tuple[str, str, list[dict[str, str]]]:
+def parse_email_headers(headers: List[Dict[str, str]]) -> Dict[str, str]:
+    """
+    Parses the email headers to extract 'Subject', 'From', and 'To'.
+
+    Args:
+        headers (List[Dict[str, str]]): The headers of the email.
+
+    Returns:
+        Dict[str, str]: A dictionary containing the 'Subject', 'From', and 'To' information.
+    """
+    header_map = {header['name'].lower(): header['value'] for header in headers}
+    return {
+        "Subject": header_map.get('subject', ''),
+        "From": header_map.get('from', ''),
+        "To": header_map.get('to', '')
+    }
+
+
+def safe_bytes_to_string(byte_data: bytes, encoding: str = 'utf-8') -> str:
+    """
+    Safely converts bytes to a string using the specified encoding.
+
+    Args:
+        byte_data (bytes): The byte data to convert.
+        encoding (str): The encoding format to use (default is 'utf-8').
+
+    Returns:
+        str: The decoded string.
+    """
+    return byte_data.decode(encoding, errors='ignore')  # Ignores any decoding errors
+
+
+def decode_base64(encoded_data: str) -> str:
+    """Helper function to decode base64 strings."""
+    # Split the string on '-' if it's causing the issue
+    parts = encoded_data.split('-')
+    decoded_bytes = b''.join([base64.b64decode(p + '=' * ((4 - len(p) % 4) % 4)) for p in parts])
+    return safe_bytes_to_string(decoded_bytes)
+
+
+def parse_mail_parts(parts: List[Dict[str, Any]]) -> tuple[str, str, List[Dict[str, str]]]:
     """
     Parses the parts of an email message to extract body, HTML content, and attachments.
 
@@ -1102,19 +1143,26 @@ def parse_mail_parts(
     body = ""
     html = ""
     attachments = []
+
     for part in parts:
-        if "filename" in part:
-            attachments.append(
-                {
-                    "ID": part.get("body", {}).get("attachmentId", ""),
-                    "Name": part.get("filename"),
-                    "Size": part.get("body", {}).get("size", 0),
-                }
-            )
-        elif "text/html" in part.get("mimeType", ""):
-            html += part.get("body", {}).get("data", "")
+        if 'parts' in part and len(parts) > 0:
+            # Recursively parse multipart sections
+            sub_body, sub_html, sub_attachments = parse_mail_parts(part['parts'])
+            body += sub_body
+            html += sub_html
+            attachments.extend(sub_attachments)
+        if part.get("filename"):  # Attachment
+            attachments.append({
+                "ID": part.get("body", {}).get("attachmentId", ""),
+                "Name": part.get("filename", ""),
+                "Size": part.get("body", {}).get("size", 0),
+            })
         else:
-            body += part.get("body", {}).get("data", "")
+            if part.get("mimeType") == "text/plain":
+                body += decode_base64(part.get("body", {}).get("data", ""))
+            elif part.get("mimeType") == "text/html":
+                html += decode_base64(part.get("body", {}).get("data", ""))
+
     return body, html, attachments
 
 
