@@ -1,8 +1,8 @@
 {
   "rule_id": "Access_case_layout_rule",
-  "layout_id": "Access",
+  "layout_id": "Case_Layout_from_pack",
   "description": "",
-  "rule_name": "Access Layout Rule",
+  "rule_name": "Case Layout Rule",
   "incidents_filter": {
     "filter": {
       "AND": [
