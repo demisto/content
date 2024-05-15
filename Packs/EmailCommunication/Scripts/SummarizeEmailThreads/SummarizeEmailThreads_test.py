@@ -3,12 +3,12 @@ import pytest
 
 
 def util_open_file(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
