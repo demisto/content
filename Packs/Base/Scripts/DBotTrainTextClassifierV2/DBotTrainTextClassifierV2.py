@@ -83,7 +83,7 @@ def get_file_entry_id(file_name):
     res = demisto.dt(demisto.context(), f"File(val.Name == '{file_name}')")
     if not res or len(res) == 0:
         return_error(f"Cannot find file entry id in context by filename: {file_name}")
-    if type(res) is list:
+    if isinstance(res, list):
         res = res[0]
     return res['EntryID']
 
@@ -421,30 +421,27 @@ def main():
         if return_predictions_on_test_set:
             return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test,
                                                             y_pred)
-        if 'maxBelowThreshold' in demisto.args():
-            target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
-        else:
-            target_recall = 0
+        target_recall = 1 - float(demisto.args().get('maxBelowThreshold', 1))
         threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
         # show results for the threshold found - last result so it will appear first
         confusion_matrix, metrics_json = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
-                                                                res=threshold_metrics_entry,
-                                                                context_field='DBotPhishingClassifier')
+                                                                 res=threshold_metrics_entry,
+                                                                 context_field='DBotPhishingClassifier')
         actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
         if store_model:
             del phishing_model
             gc.collect()
             if not validate_confusion_matrix(confusion_matrix):
                 return_error("The trained model didn't manage to predict some of the classes. This model won't be stored."
-                            "Please try to retrain the model using a different configuration.")
+                             "Please try to retrain the model using a different configuration.")
             y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
             y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
             threshold = float(threshold_metrics_entry['Contents']['threshold'])
             store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
-                                confusion_matrix=confusion_matrix, threshold=threshold,
-                                y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
-                                target_accuracy=actual_min_accuracy, algorithm=algorithm)
-            demisto.results("Done training on {} samples model stored successfully".format(len(y)))
+                                   confusion_matrix=confusion_matrix, threshold=threshold,
+                                   y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
+                                   target_accuracy=actual_min_accuracy, algorithm=algorithm)
+            demisto.results(f"Done training on {len(y)} samples model stored successfully")
         else:
             demisto.results('Skip storing model')
 
