@@ -1,5 +1,6 @@
 id: VenafiV2_Test
-version: -1
+version: 20
+vcShouldKeepItemLegacyProdMachine: false
 name: VenafiV2_Test
 starttaskid: "0"
 tasks:
@@ -13,10 +14,9 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -27,7 +27,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -35,20 +35,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 17c019b3-349d-43dd-87f6-6a37311319b4
+    taskid: 7234a893-22ea-4ae4-8fc2-7d4a94452a9c
     type: regular
     task:
-      id: 17c019b3-349d-43dd-87f6-6a37311319b4
+      id: 7234a893-22ea-4ae4-8fc2-7d4a94452a9c
       version: -1
       name: venafi-get-certificates
-      description: 'Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm'
-      script: '|||venafi-get-certificates'
+      description: Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z
+        format. Additional fields can be used in the query by adding them in a key=value
+        format.
+      script: Venafi TLS Protect|||venafi-get-certificates
       type: regular
       iscommand: true
-      brand: ""
+      brand: Venafi TLS Protect
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -59,7 +61,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -80,7 +82,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       guid:
         simple: ${Venafi.Certificate.ID}
@@ -94,7 +96,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -120,7 +122,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -134,7 +136,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -153,18 +155,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Venafi.Certificate.ID
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Venafi.Certificate.ID
+                iscontext: true
+              right:
+                value: { }
     continueonerrortype: ""
     view: |-
       {
@@ -174,7 +176,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -191,7 +193,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -202,7 +203,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -222,5 +223,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
-description: Venafi TLS Protect test playbook.
+fromversion: 6.9.0
