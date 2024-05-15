@@ -7,11 +7,11 @@ license = "MIT"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.8,<3.11"
+python = ">=3.11,<3.12"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.29.3"
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "master" }
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
@@ -405,10 +405,15 @@ ignore = [
 
     "W605", # invalid-escape-sequence
 ]
-extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
+extend-exclude = [
+    "CommonServerPython",
+    "test_data",
+    "conftest.py",
+    "demistomock.py",
+]
 
 unfixable = [
-    "RUF001"  # ambiguous-unicode-character-string
+    "RUF001", # ambiguous-unicode-character-string
 ]
 
 line-length = 130
@@ -422,7 +427,7 @@ src = [
 [tool.ruff.per-file-ignores]
 "**/*_test.py" = []
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
-"**/*ApiModule.py"  = [ "UP" ]
+"**/*ApiModule.py" = ["UP"]
 [tool.mypy]
 python_version = "3.10"
 check_untyped_defs = true
@@ -451,7 +456,13 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 relative_files = true
-omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conftest.py"]
+omit = [
+    "*/test_data/*",
+    "*_test.py",
+    "demistomock.py",
+    "conftest.py",
+    "**/conftest.py",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
