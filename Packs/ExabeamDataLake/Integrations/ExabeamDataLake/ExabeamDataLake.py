@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 """ CONSTANTS """
 
 HEADERS = {"Accept": "application/json", "Csrf-Token": "nocheck"}
@@ -130,7 +129,7 @@ def get_date(time: str):
     return date
 
 
-def calculate_page_parameters(args: dict):
+def calculate_page_parameters(args: dict) -> tuple[int, int]:
     """
       Calculate the page parameters for pagination.
 
@@ -152,8 +151,6 @@ def calculate_page_parameters(args: dict):
     if (limit_arg and (page_arg or page_size_arg)) or ((not (page_arg and page_size_arg)) and (page_arg or page_size_arg)):
         raise DemistoException("You can only provide 'limit' alone or 'page' and 'page_size' together.")
 
-    limit = arg_to_number(args.get('limit', '50'))
-    
     if args.get('page') and args.get('page_size'):
         page = arg_to_number(args.get('page', '1'))
         page_size = arg_to_number(args.get('page_size', '50'))
@@ -162,7 +159,7 @@ def calculate_page_parameters(args: dict):
             size_param = page_size
     else:
         from_param = 0
-        size_param = limit
+        size_param = arg_to_number(args.get('limit', '50')) or 50
 
     return from_param, size_param
 

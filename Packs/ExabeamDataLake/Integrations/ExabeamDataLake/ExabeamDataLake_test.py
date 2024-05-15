@@ -24,8 +24,10 @@ def test_query_datalake_command(mocker):
             {
                 "hits": {
                     "hits": [
-                        {"_id":"FIRST_ID","_source": {"@timestamp": "2024-05-01T12:00:00", "message": "example message 1"}},
-                        {"_id":"SECOND_ID","_source": {"@timestamp": "2024-05-02T12:00:00", "message": "example message 2", "only_hr": "nothing"}}
+                        {"_id": "FIRST_ID", "_source": {"@timestamp": "2024-05-01T12:00:00",
+                                                        "message": "example message 1"}},
+                        {"_id": "SECOND_ID", "_source": {"@timestamp": "2024-05-02T12:00:00",
+                                                         "message": "example message 2", "only_hr": "nothing"}}
                     ]
                 }
             }
@@ -38,11 +40,11 @@ def test_query_datalake_command(mocker):
 
     response = query_datalake_command(client, args, cluster_name="local")
 
-    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event(val._id && val._id == obj._id)', {})
+    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event', {})
 
-    assert {'_id':'FIRST_ID','_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
-    assert {'_id':'SECOND_ID','_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
-                        'only_hr': 'nothing'}} in result
+    assert {'_id': 'FIRST_ID', '_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
+    assert {'_id': 'SECOND_ID', '_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
+                                            'only_hr': 'nothing'}} in result
     expected_result = (
         "### Logs\n"
         "|Created_at|Id|Message|Product|Vendor|\n"
@@ -192,3 +194,33 @@ def test_parse_entry():
     assert parsed_entry["Created_at"] == "2024-05-09T12:00:00Z"
     assert parsed_entry["Product"] == "ProductA"
     assert parsed_entry["Message"] == "Some message here"
+
+
+def test_query_datalake_request(mocker):
+    mock_login = mocker.patch('ExabeamDataLake.Client._login')
+    mock_http_request = mocker.patch('ExabeamDataLake.Client._http_request')
+
+    base_url = "http://example.com"
+    username = "user123"
+    password = "password123"
+    headers = {"header1": "value1", "header2": "value2"}
+    proxy = False
+    search_query = {"query": "your_query_here"}
+
+    instance = Client(base_url=base_url, username=username, password=password,
+                      verify=False, proxy=proxy, headers=headers)  # Instantiate YourClass
+    search_query = {"query": "your_query_here"}  # Example search query
+
+    # Expected data to be sent in the request
+    expected_data = '{"query": "your_query_here"}'
+
+    # Call the function
+    instance.query_datalake_request(search_query)
+
+    mock_http_request.assert_called_once_with(
+        "POST",
+        full_url="http://example.com/dl/api/es/search",  # Adjust base URL accordingly
+        data=expected_data,
+        headers={"kbn-version": "5.1.1-SNAPSHOT", "Content-Type": "application/json"}
+    )
+    mock_login.assert_called_once()
