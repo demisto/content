@@ -2,7 +2,7 @@ from CommonServerPython import *
 import json
 import requests
 import urllib3
-from typing import List, Dict, Any, Union
+from typing import Dict, Any, Union
 
 # Disable insecure warnings
 urllib3.disable_warnings()

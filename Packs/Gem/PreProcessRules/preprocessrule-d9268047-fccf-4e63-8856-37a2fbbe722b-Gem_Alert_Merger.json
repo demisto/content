@@ -1,0 +1,97 @@
+{
+    "action": "link",
+    "enabled": true,
+    "existingEventsFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gemthreatid"
+                    }
+                },
+                "operator": "isEqualString",
+                "right": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "incident.gemthreatid"
+                    }
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "id": "Gem Alert Merger",
+    "index": 2,
+    "itemVersion": "",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "Gem Alert Merger",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gemthreatid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "isContext": false,
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "packID": "",
+    "period": {
+        "by": "days",
+        "fromValue": 1
+    },
+    "readyExistingEventsFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gemthreatid"
+                    }
+                },
+                "operator": "isEqualString",
+                "right": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "${incident.gemthreatid}"
+                    }
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gemthreatid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "isContext": false,
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "scriptName": "",
+    "searchClosed": true,
+    "system": false,
+    "toServerVersion": "",
+    "version": -1,
+    "fromVersion": "6.12.0"
+}
