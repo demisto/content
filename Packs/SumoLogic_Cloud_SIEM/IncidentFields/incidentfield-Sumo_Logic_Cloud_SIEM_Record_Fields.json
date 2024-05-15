@@ -51,7 +51,7 @@
         {},
         {}
     ],
-    "description": "Sumo Logic Cloud SIEM Record Fields",
+    "description": "Deprecated. Please use Sumo Logic Cloud SIEM Record Fields JSON instead",
     "editForm": true,
     "group": 0,
     "hidden": false,

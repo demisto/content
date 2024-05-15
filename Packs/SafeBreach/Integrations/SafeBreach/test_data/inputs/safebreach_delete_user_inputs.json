@@ -1,0 +1,63 @@
+{
+    "successful_delete_just_email": {
+        "args": {
+            "user_id": null,
+            "email": "acme@email.com",
+            "name": "acme updated",
+            "user_description": "updated user description",
+            "is_active": "False",
+            "email_post_creation": false,
+            "admin_name": "",
+            "user_role": "operator",
+            "deployments": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        },
+        "command": "safebreach-delete-user"
+    },
+    "successful_delete_id_and_email": {
+        "args": {
+            "user_id": 123456789,
+            "email": "acme@email.com",
+            "name": "acme updated",
+            "user_description": "updated user description",
+            "is_active": "False",
+            "email_post_creation": false,
+            "admin_name": "",
+            "user_role": "operator",
+            "deployments": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        },
+        "command": "safebreach-delete-user"
+    },
+    "failed_delete": {
+        "args": {
+            "user_id": 22,
+            "email": "acme1@email.com",
+            "name": "acme",
+            "is_active": "False",
+            "email_post_creation": "False",
+            "password": "asdf",
+            "admin_name": "",
+            "change_password_on_create": "False",
+            "user_role": "operator",
+            "deployments": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        },
+        "command": "safebreach-delete-user"
+    }
+}

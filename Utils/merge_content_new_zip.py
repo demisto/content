@@ -1,6 +1,6 @@
 import zipfile as z
 import os
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 import argparse
 import shutil
 

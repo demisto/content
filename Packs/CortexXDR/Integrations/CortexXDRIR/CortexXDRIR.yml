@@ -158,6 +158,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: "Whether to fetch only the essential incident's fields and minimize the incident's information."
+  display: Minimize Incident Information
+  name: exclude_fields
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -205,9 +212,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+    - description: Deprecated. Use gte_creation_time instead.
       defaultValue: 3 days
       name: starred_incidents_fetch_window
+      deprecated: true
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
@@ -600,7 +608,7 @@ script:
       - LOW
     - description: Email address of the user to assign to the incident.
       name: assigned_user_mail
-    - description: Full name of the user assigned to the incident.
+    - description: Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument.
       name: assigned_user_pretty_name
     - auto: PREDEFINED
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
@@ -3485,7 +3493,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   isfetch:xpanse: false
   script: ''

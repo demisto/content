@@ -297,15 +297,17 @@ class TestMetadataParsing:
         """
         return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack: Pack, dummy_pack_metadata):
+    def test_validate_all_fields_of_parsed_metadata(self, mocker, dummy_pack: Pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
         dummy_pack._description = 'Description of test pack'
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
         dummy_pack._pack_metadata = dummy_pack_metadata
-        dummy_pack._is_modified = False
+        dummy_pack._is_modified = True
+        dummy_pack._is_metadata_updated = False
         dummy_pack._tags = set(dummy_pack._pack_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
         dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
@@ -319,6 +321,13 @@ class TestMetadataParsing:
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['downloads'] == 10
         assert parsed_metadata['searchRank'] == 20
+
+        assert any(
+            call_args == ((
+                "Updating metadata with statistics, created, updated fields because self._pack_name='Test Pack Name' "
+                "self.is_modified=True self.is_metadata_updated=False"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
 
     def test_enhance_pack_attributes(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
@@ -2080,6 +2089,34 @@ class TestLoadPackMetadata:
         assert not task_status
         assert not dummy_pack.pack_metadata
 
+    def test_update_metadata(self, mocker, dummy_pack, dummy_pack_metadata, tmp_path):
+        """
+        Given:
+            - Pack with changed metadata fields (is_metadata_updated = True)
+        When:
+            - Calling the update_metadata property.
+        Then:
+            - Ensure the correct debug log messages are printed.
+            - Ensure the updated_metadata dictionary is correct.
+        """
+        from demisto_sdk.commands.common.constants import PACK_METADATA_REQUIRE_RN_FIELDS
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
+        metadata_path = os.path.join(tmp_path, 'metadata.json')
+        dummy_pack._pack_path = tmp_path
+        with open(metadata_path, 'w') as metadata_file:
+            metadata_file.write(json.dumps(dummy_pack_metadata))
+        dummy_pack.load_pack_metadata()
+        dummy_pack._is_metadata_updated = True
+        updated_metadata = dummy_pack.update_metadata
+        assert any(
+            call_args == ((
+                "Updating metadata with statistics and metadata changes because self._pack_name='TestPack' self.is_modified=None"
+                " self.is_metadata_updated=True"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
+        for field in PACK_METADATA_REQUIRE_RN_FIELDS:
+            assert field not in updated_metadata
+
 
 class TestSetDependencies:
 
@@ -2667,10 +2704,6 @@ class TestStoreInCircleCIArtifacts:
         return failed_packs
 
     @staticmethod
-    def get_updated_private_packs():
-        return ['TestPack5', 'TestPack6']
-
-    @staticmethod
     def get_successful_dependencies_packs():
         successful_dependencies = [
             Pack(pack_name='TestPack7', pack_path='.'),
@@ -2686,22 +2719,20 @@ class TestStoreInCircleCIArtifacts:
            Given:
                - Successful packs list - TestPack1 , TestPack2
                - Failed packs list - TestPack3 , TestPack4
-               - Private updated packs list - TestPack5 , TestPack6
                - A path to the circle ci artifacts dir
            When:
                - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
-               - Verify that the file content contains the successful, failed and private
+               - Verify that the file content contains the successful and failed
                 packs TestPack1, TestPack2 & TestPack3, TestPack4, TestPack5 & TestPack6 respectively.
        """
         successful_packs = self.get_successful_packs()
         failed_packs = self.get_failed_packs()
-        updated_private_packs = self.get_updated_private_packs()
         successful_uploaded_dependencies = []
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
             packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
-            successful_uploaded_dependencies, failed_packs, updated_private_packs
+            successful_uploaded_dependencies, failed_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2713,10 +2744,6 @@ class TestStoreInCircleCIArtifacts:
                 f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
                     'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
                     'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
-                },
-                f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
-                    'TestPack5': {},
-                    'TestPack6': {}
                 },
             }
         }
@@ -2767,31 +2794,6 @@ class TestStoreInCircleCIArtifacts:
                 f'{BucketUploadFlow.FAILED_PACKS}': {
                     'TestPack3': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
                     'TestPack4': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
-                }
-            }
-        }
-
-    def test_store_successful_and_failed_packs_in_ci_artifacts_updated_private_packs_only(self, tmp_path):
-        """
-           Given:
-               - Updated private packs list - TestPack5 , TestPack6
-               - A path to the circle ci artifacts dir
-           When:
-               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
-           Then:
-               - Verify that the file content contains the successful packs TestPack5 & TestPack6.
-       """
-        updated_private_packs = self.get_updated_private_packs()
-        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
-        store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, [], [], [], updated_private_packs
-        )
-        packs_results_file = load_json(packs_results_file_path)
-        assert packs_results_file == {
-            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
-                f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
-                    'TestPack5': {},
-                    'TestPack6': {}
                 }
             }
         }
@@ -2852,25 +2854,23 @@ class TestGetSuccessfulAndFailedPacks:
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
         assert successful_uploaded_dependencies == {}
         assert failed == {}
-        assert private_packs == {}
         assert images == {}
 
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
         assert successful_uploaded_dependencies == {}
         assert failed == {}
-        assert private_packs == {}
         assert images == {}
 
         # Case 3: assert valid file
@@ -2889,12 +2889,6 @@ class TestGetSuccessfulAndFailedPacks:
                             f"{BucketUploadFlow.AGGREGATED}": True
                         }
                     },
-                    f"{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}": {
-                        "TestPack3": {
-                            f"{BucketUploadFlow.STATUS}": "status3",
-                            f"{BucketUploadFlow.AGGREGATED}": True
-                        }
-                    },
                     f"{BucketUploadFlow.IMAGES}": {
                         "TestPack1": {
                             f"{BucketUploadFlow.AUTHOR}": True,
@@ -2903,7 +2897,7 @@ class TestGetSuccessfulAndFailedPacks:
                     }
                 }
             }))
-        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {"TestPack1": {
@@ -2930,14 +2924,6 @@ class TestGetSuccessfulAndFailedPacks:
         integration_images = test_pack_images.get(BucketUploadFlow.INTEGRATIONS, [])
         assert len(integration_images) == 1
         assert integration_images[0] == "integration_image.png"
-
-        assert private_packs == {"TestPack3": {
-            f"{BucketUploadFlow.STATUS}": "status3",
-            f"{BucketUploadFlow.AGGREGATED}": True
-        }}
-        private_successful_list = [*private_packs]
-        ans = 'TestPack3' in private_successful_list
-        assert ans
 
 
 class TestImageClassification:
@@ -3103,7 +3089,7 @@ def test_get_upload_data(mocker):
         }}
     mocker.patch('Tests.Marketplace.marketplace_services.os.path.exists', return_value=True)
     mocker.patch('Tests.Marketplace.marketplace_services.load_json', return_value=load_json_data)
-    _, _, _, _, pc_uploaded_images = get_upload_data('fake_path', BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+    _, _, _, pc_uploaded_images = get_upload_data('fake_path', BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
     assert pc_uploaded_images == {
         "readme_images": {
             "LogRhythmRest": [],

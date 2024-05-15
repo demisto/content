@@ -9,31 +9,25 @@
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-trigger-private-build:
-  tags:
-    - gke
-  stage: unittests-and-validations
-  extends:
-    - .default-job-settings
+.infrastructure-rules:
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+    - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    - if: '$SDK_RELEASE == "true"'
+      when: never
+    # In sdk nighly we run this separately 
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-  script:
-    - echo "====Trigger Private Build===="
-    - |
-      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t "${GITHUB_TOKEN}" --repo "demisto/content-private" -b "${CI_COMMIT_BRANCH}") ]; then
-        PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
-      else
-        PRIVATE_BRANCH_NAME='master'
-      fi
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
-    - sleep 60
-    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-    - job-done
-  timeout: 2 hours
 
 .create-release-notes-and-common-docs:
   - section_start "Create Release Notes and Common Server Documentation" --collapsed
@@ -79,25 +73,17 @@ stop-running-pipelines:
     - section_end "Stop running pipelines on current branch"
     - job-done
 
-# runs in gitlab for the on-push flow (except for contributors)
-run-unittests-and-lint:
+test-infrastructure:
   extends:
-    - .run-unittests-and-lint
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$SECURITY_SCANS == "true"'
-      when: never
-    - if: '$BUILD_MACHINES_CLEANUP == "true"'
-      when: never
-    - if: '$SDK_RELEASE == "true"'
-      when: never
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
-      when: never
-    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - .infrastructure-rules
+    - .test-infrastructure
+
+run-pre-commit:
+  extends:
+    - .infrastructure-rules
+    - .run-pre-commit
+  cache:
+    policy: pull-push
 
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
@@ -114,7 +100,6 @@ run-validations-new-validate-flow:
   rules:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  allow_failure: true
 
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
@@ -301,7 +286,7 @@ xpanse-prepare-testing-bucket:
       ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     else
       ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
-      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then
         cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
       fi
       ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
@@ -362,6 +347,11 @@ xpanse-prepare-testing-bucket:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
+    - section_start "Get instance ssh-command"
+    - echo "INSTANCE_ROLE -> ${INSTANCE_ROLE}"
+    - INSTANCE_NAME=$(jq -r --arg role "$INSTANCE_ROLE" '.[] | select(.Role == $role) | .InstanceName' ./artifacts/env_results.json)
+    - echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"${INSTANCE_NAME}\"  --tunnel-through-iap --project "xsoar-content-build" \e[0m"
+    - section_end "Get instance ssh-command"
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
@@ -418,9 +408,8 @@ jobs-done-check-nightly:
     - .jobs-done-check
   needs:
     - cloning-content-repo-last-upload-commit
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
-    - trigger-private-build
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
     - xsoar-prepare-testing-bucket
@@ -461,11 +450,10 @@ jobs-done-check-on-push:
     - .push-rule
     - .jobs-done-check
   needs:
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - stop-running-pipelines
     - test-upload-flow
-    - trigger-private-build
     - validate-content-conf
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
@@ -505,10 +493,9 @@ jobs-done-check-on-merge:
     - .jobs-done-check
   needs:
     - merge-dev-secrets
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - test-upload-flow
-    - trigger-private-build
     - validate-content-conf
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
@@ -774,7 +761,7 @@ test-upload-flow:
     # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
     - for _ in {1..3}; do
     -   export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct "${GITLAB_SVC_USER_TOKEN}" -b "${BRANCH}" -dz | jq .id)
-    -   if [ "${pipeline_id}" != "null" ]; then
+    -   if [ "${pipeline_id}" != "null" ] && [ "${pipeline_id}" != \"\" ]; then
     -     break
     -   fi
     -   echo "Sleeping for 10 seconds before retrying"

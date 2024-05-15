@@ -115,3 +115,38 @@ Searches for security rules using the SIQL language query (limit to 10k)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireMonSecurityManager.SIQL.matchId | Unknown | Resposne for the SIQL query | 
+
+
+#### Base Command
+
+`firemon-collector-get-all`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pageSize | Number of results in the page. | Optional | 
+| page | Page in which to retrieve results. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireMonSecurityManager.Collector | Unknown | Firemon Collector Infomation. | 
+
+
+#### Base Command
+
+`firemon-collector-get-status-byid`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Collector id. | true | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireMonSecurityManager.CollectorStatus | Unknown | Firemon Collector Status. | 

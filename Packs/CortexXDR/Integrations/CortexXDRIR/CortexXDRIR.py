@@ -17,6 +17,12 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
+ALERTS_LIMIT_PER_INCIDENTS: int = -1
+FIELDS_TO_EXCLUDE = [
+    'network_artifacts',
+    'file_artifacts'
+]
+
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -56,7 +62,7 @@ def convert_epoch_to_milli(timestamp):
     return int(timestamp)
 
 
-def convert_datetime_to_epoch(the_time=0):
+def convert_datetime_to_epoch(the_time: (int | datetime) = 0):
     if the_time is None:
         return None
     try:
@@ -67,7 +73,7 @@ def convert_datetime_to_epoch(the_time=0):
         return 0
 
 
-def convert_datetime_to_epoch_millis(the_time=0):
+def convert_datetime_to_epoch_millis(the_time: (int | datetime) = 0):
     return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
 
 
@@ -362,10 +368,72 @@ class Client(CoreClient):
         )
         return reply.get('reply', {})
 
+    def get_multiple_incidents_extra_data(self, incident_id_list=[], fields_to_exclude=True, gte_creation_time_milliseconds=0,
+                                          status=None, starred=None, starred_incidents_fetch_window=None,
+                                          page_number=0, limit=100):
+        """
+        Returns incident by id
+        :param incident_id_list: The list ids of incidents
+        :return:
+        Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
+        """
+        global ALERTS_LIMIT_PER_INCIDENTS
+        request_data = {}
+        filters: List[Any] = []
+        if incident_id_list:
+            incident_id_list = argToList(incident_id_list, transform=lambda x: str(x))
+            filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
+            })
+        if demisto.command() == 'fetch-incidents' and fields_to_exclude:
+            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
+
+        if starred and starred_incidents_fetch_window:
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': True
+            })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
+            if demisto.command() == 'fetch-incidents':
+                if len(filters) > 0:
+                    request_data['filters'] = filters
+                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+                return incidents
+        elif gte_creation_time_milliseconds:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
+        if len(filters) > 0:
+            request_data['filters'] = filters
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/incidents/get_multiple_incidents_extra_data/',
+            json_data={'request_data': request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        if ALERTS_LIMIT_PER_INCIDENTS < 0:
+            ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
+            demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
+        incidents = reply.get('reply')
+        return incidents.get('incidents', {}) if isinstance(incidents, dict) else incidents  # type: ignore
+
 
 def get_headers(params: dict) -> dict:
-    api_key = params.get('apikey') or params.get('apikey_creds', {}).get('password', '')
-    api_key_id = params.get('apikey_id') or params.get('apikey_id_creds', {}).get('password', '')
+    api_key = params.get('apikey_creds', {}).get('password', '') or params.get('apikey', '')
+    api_key_id = params.get('apikey_id_creds', {}).get('password', '') or params.get('apikey_id')
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
     auth_key = f"{api_key}{nonce}{timestamp}"
@@ -407,6 +475,10 @@ def update_incident_command(client, args):
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
+
+    if assigned_user_pretty_name and not assigned_user_mail:
+        raise DemistoException('To set a new assigned_user_pretty_name, '
+                               'you must also provide a value for the "assigned_user_mail" argument.')
 
     client.update_incident(
         incident_id=incident_id,
@@ -454,11 +526,40 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
+def sort_incident_data(raw_incident):
+    """
+    Sorts and processes the raw incident data into a cleaned incident dict.
+
+    Parameters:
+    -  raw_incident (dict): The raw incident data as provided by the API.
+
+    Returns:
+    - dict: A dictionary containing the processed incident data with:
+            - organized alerts.
+            - file artifact
+            - network artifacts.
+    """
+    incident = raw_incident.get('incident', {})
+    raw_alerts = raw_incident.get('alerts', {}).get('data', None)
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
+    context_alerts = clear_trailing_whitespace(raw_alerts)
+    if context_alerts:
+        for alert in context_alerts:
+            alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
+    incident.update({
+        'alerts': context_alerts,
+        'file_artifacts': file_artifacts,
+        'network_artifacts': network_artifacts
+    })
+    return incident
+
+
 def get_incident_extra_data_command(client, args):
+    global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
-
     if return_only_updated_incident:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
         last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
@@ -468,43 +569,26 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id])
+    if not raw_incident:
+        raise DemistoException(f'Incident {incident_id} is not found')
+    if isinstance(raw_incident, list):
+        raw_incident = raw_incident[0]
+    if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
+        demisto.debug(f'for incident:{incident_id} using the old call since "\
+            "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
+            "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
+        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
+    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {raw_incident=}")
+    readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
+    incident = sort_incident_data(raw_incident)
+    if incident_alerts := incident.get('alerts'):
+        readable_output.append(tableToMarkdown('Alerts', incident_alerts,
+                                               headers=[key for key in incident_alerts[0]
+                                                        if key != 'host_ip'], removeNull=True))
+    readable_output.append(tableToMarkdown('Network Artifacts', incident.get('network_artifacts'), removeNull=True))
+    readable_output.append(tableToMarkdown('File Artifacts', incident.get('file_artifacts'), removeNull=True))
 
-    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-
-    incident = raw_incident.get('incident')
-    incident_id = incident.get('incident_id')
-    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {incident=}")
-    raw_alerts = raw_incident.get('alerts').get('data')
-    context_alerts = clear_trailing_whitespace(raw_alerts)
-    for alert in context_alerts:
-        alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts').get('data')
-    network_artifacts = raw_incident.get('network_artifacts').get('data')
-
-    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
-
-    if len(context_alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                               headers=[key for key in context_alerts[0] if key != 'host_ip']))
-    else:
-        readable_output.append(tableToMarkdown('Alerts', []))
-
-    if len(network_artifacts) > 0:
-        readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts))
-    else:
-        readable_output.append(tableToMarkdown('Network Artifacts', []))
-
-    if len(file_artifacts) > 0:
-        readable_output.append(tableToMarkdown('File Artifacts', file_artifacts))
-    else:
-        readable_output.append(tableToMarkdown('File Artifacts', []))
-
-    incident.update({
-        'alerts': context_alerts,
-        'file_artifacts': file_artifacts,
-        'network_artifacts': network_artifacts
-    })
     account_context_output = assign_params(
         Username=incident.get('users', '')
     )
@@ -518,15 +602,12 @@ def get_incident_extra_data_command(client, args):
             alert_context['ID'] = endpoint_id
         if alert_context:
             endpoint_context_output.append(alert_context)
-
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:
         context_output['Account(val.Username==obj.Username)'] = account_context_output
     if endpoint_context_output:
         context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
-
     file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
-
     if file_context:
         context_output[Common.File.CONTEXT_PATH] = file_context
     if domain_context:
@@ -637,7 +718,6 @@ def sort_all_list_incident_fields(incident_data):
 
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
-
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
@@ -766,7 +846,8 @@ def get_modified_remote_data_command(client, args):
 
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = dateparser.parse(last_update,
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
     if last_update_utc:
         last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 
@@ -897,12 +978,13 @@ def update_remote_system_command(client, args):
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
-                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
+                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
+                    fields_to_exclude: bool = True):
+    global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
-
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -913,18 +995,25 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
     else:
         if statuses:
             raw_incidents = []
             for status in statuses:
-                raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
-                                                      limit=max_fetch, sort_by_creation_time='asc', starred=starred,
-                                                      starred_incidents_fetch_window=starred_incidents_fetch_window)
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
+                raw_incident_status = client.get_multiple_incidents_extra_data(
+                    gte_creation_time_milliseconds=last_fetch,
+                    status=status,
+                    limit=max_fetch, starred=starred,
+                    starred_incidents_fetch_window=starred_incidents_fetch_window,
+                    fields_to_exclude=fields_to_exclude)
+                raw_incidents.extend(raw_incident_status)
+            raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
-            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                                                 sort_by_creation_time='asc', starred=starred,
-                                                 starred_incidents_fetch_window=starred_incidents_fetch_window)
+            raw_incidents = client.get_multiple_incidents_extra_data(
+                gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+                fields_to_exclude=fields_to_exclude)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -933,37 +1022,34 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     non_created_incidents: list = raw_incidents.copy()
     next_run = {}
     try:
-        # The count of incidents, so as not to pass the limit
         count_incidents = 0
 
         for raw_incident in raw_incidents:
-            incident_id = raw_incident.get('incident_id')
-
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
-
+            incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
+            incident_id = incident_data.get('incident_id')
+            alert_count = arg_to_number(incident_data.get('alert_count')) or 0
+            if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
+                demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
+                              "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
+                raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
+                incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
-
-            description = raw_incident.get('description')
-            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-            incident = {
+            description = incident_data.get('description')
+            occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
+            incident: Dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
-
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
             # Update last run and add incident if the incident is newer than last fetch
-            if raw_incident['creation_time'] > last_fetch:
-                last_fetch = raw_incident['creation_time']
-
+            if incident_data.get('creation_time', 0) > last_fetch:
+                last_fetch = incident_data['creation_time']
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
@@ -980,6 +1066,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
+        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
     else:
         next_run['incidents_from_previous_run'] = []
 
@@ -1105,6 +1192,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
+    fields_to_exclude = params.get('exclude_fields', True)
 
     try:
         timeout = int(params.get('timeout', 120))
@@ -1138,7 +1226,8 @@ def main():  # pragma: no cover
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance,
                                                   demisto.getLastRun().get('next_run'), max_fetch, statuses, starred,
-                                                  starred_incidents_fetch_window)
+                                                  starred_incidents_fetch_window,
+                                                  fields_to_exclude)
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)

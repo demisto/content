@@ -51,6 +51,7 @@ EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
+SAFE_SLEEP_START_TIME = datetime.now()
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -350,6 +351,18 @@ class EntryFormat(object):
         )
 
 
+class FileAttachmentType(object):
+    """
+    Enum: contains the file attachment types,
+          Used to add metadata to the description of the attachment
+          whether the file content is expected to be inline or attached as a file
+
+    :return:: The file attachment type
+    :rtype: ``str``
+    """
+    ATTACHED = "attached_file"
+
+
 brands = {
     'xfe': 'xfe',
     'vt': 'virustotal',
@@ -538,6 +551,7 @@ class FeedIndicatorType(object):
     Identity = "Identity"
     Location = "Location"
     Software = "Software"
+    X509 = "X509 Certificate"
 
     @staticmethod
     def is_valid_type(_type):
@@ -561,7 +575,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
             FeedIndicatorType.Location,
-            FeedIndicatorType.Software
+            FeedIndicatorType.Software,
+            FeedIndicatorType.X509,
         )
 
     @staticmethod
@@ -1756,6 +1771,8 @@ class IntegrationLogger(object):
                 if is_debug_mode():
                     if text.startswith(('send:', 'header:')):
                         try:
+                            # ensures the logged data follows a standard convention
+                            text = text.replace("send: b\"", "send: b'")
                             text = censor_request_logs(text)
                         except Exception as e:  # should fail silently
                             demisto.debug('Failed censoring request logs - {}'.format(str(e)))
@@ -8916,8 +8933,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False,
-                          **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -9275,6 +9291,120 @@ if 'requests' in sys.modules:
                     return_results(cast(CommandResults, self.execution_metrics.metrics))
             except AttributeError:
                 pass
+
+
+def generic_http_request(method,
+                         server_url,
+                         timeout=10,
+                         verify=True,
+                         proxy=False,
+                         client_headers=None,
+                         headers=None,
+                         url_suffix=None,
+                         data=None,
+                         ok_codes=None,
+                         auth=None,
+                         error_handler=None,
+                         files=None,
+                         params=None,
+                         retries=0,
+                         resp_type='json',
+                         status_list_to_retry=None,
+                         json_data=None,
+                         return_empty_response=False,
+                         backoff_factor=5,
+                         raise_on_redirect=False,
+                         raise_on_status=False,
+                         empty_valid_codes=None,
+                         params_parser=None,
+                         with_metrics=False,
+                         **kwargs
+                         ):
+    """
+        A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating a BaseClient object.
+        Note: Avoid using this method if unnecessary. It is more recommended to use the BaseClient class.
+
+        Args:
+            method (str): HTTP request method (e.g., GET, POST, PUT, DELETE).
+            server_url (str): Base URL of the server.
+            timeout (int, optional): Timeout in seconds for the request (defaults to 10).
+            verify (bool, optional): Whether to verify SSL certificates (defaults to True).
+            proxy (bool or str, optional): Use a proxy server. Can be a boolean (defaults to False)
+                                           or a proxy URL string.
+            client_headers (dict, optional): Additional headers to be included in all requests
+                                             made by the client (overrides headers argument).
+            headers (dict, optional): Additional headers for this specific request.
+            url_suffix (str, optional): Path suffix to be appended to the server URL.
+            data (object, optional): Data to be sent in the request body (e.g., dictionary for POST requests).
+            ok_codes (list of int, optional): A list of HTTP status codes that are considered successful responses
+                                               (defaults to [200]).
+            auth (tuple, optional): Authentication credentials (username, password) for the request.
+            error_handler (callable, optional): Function to handle request errors.
+            files (dict, optional): Dictionary of files to be uploaded (for multipart/form-data requests).
+            params (dict, optional): URL parameters to be included in the request.
+            retries (int, optional): Number of times to retry the request on failure (defaults to 0).
+            retries (int, optional): Number of times to retry the request on failure (defaults to 0).
+            status_list_to_retry (int, optional): A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+            resp_type (iterable, optional): Determines which data format to return from the HTTP request. The default
+                is 'json'.
+            json_data (dict, optional): The dictionary to send in a 'POST' request.
+            backoff_factor (float, optional): A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            raise_on_redirect (bool, optional): Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            raise_on_status (bool,optional): Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
+
+            empty_valid_codes (list, optional): A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            return_empty_response (bool, optional): Whether to return an empty response body if the response code is in empty_valid_codes
+
+            params_parser (callable, optional): How to quote the params. By default, spaces are replaced with `+` and `/` to `%2F`.
+            see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+            Note! supported only in python3.
+
+            with_metrics (bool, optional): Whether or not to calculate execution metrics from the response
+
+        Returns:
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
+
+        Raises:
+            exceptions.RequestException: If an error occurs during the request.
+    """
+    client = BaseClient(base_url=server_url,
+                        verify=verify,
+                        proxy=proxy,
+                        ok_codes=ok_codes,
+                        headers=client_headers,
+                        auth=auth,
+                        timeout=timeout
+                        )
+
+    return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
+                                headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
+                                status_list_to_retry=status_list_to_retry, json_data=json_data,
+                                return_empty_response=return_empty_response, backoff_factor=backoff_factor,
+                                raise_on_redirect=raise_on_redirect, raise_on_status=raise_on_status,
+                                empty_valid_codes=empty_valid_codes, params_parser=params_parser, with_metrics=with_metrics,
+                                **kwargs)
 
 
 def batch(iterable, batch_size=1):
@@ -11506,7 +11636,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
+                         add_proxy_to_request=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11537,6 +11668,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
 
+    :type add_proxy_to_request :``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
     :return: None
     :rtype: ``None``
     """
@@ -11549,7 +11683,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         num_of_attempts,
         chunk_size,
         data_type="events",
-        should_update_health_module=should_update_health_module
+        should_update_health_module=should_update_health_module,
+        add_proxy_to_request=add_proxy_to_request,
     )
 
 
@@ -11660,7 +11795,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
+                       add_proxy_to_request=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11694,6 +11830,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
         This can be useful when using send_data_to_xsiam in batches for the same fetch.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :return: None
     :rtype: ``None``
@@ -11778,7 +11917,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    client = BaseClient(base_url=xsiam_url)
+    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)
@@ -11832,6 +11971,42 @@ def comma_separated_mapping_to_dict(raw_text):
         mapping_dict[key] = value
     demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
     return mapping_dict
+
+
+def safe_sleep(duration_seconds):
+    """
+    Sleeps for the given duration, but raises an error if it would exceed the TTL.
+
+        :type duration_seconds: ``float``
+        :param duration_seconds: The desired sleep duration in seconds.
+
+        :return: None
+        :rtype: ``None``
+    """
+    context = demisto.callingContext.get('context', {})
+    if 'runDuration' in context:
+        run_duration = int(context.get('runDuration')) * 60
+        time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
+        if duration_seconds > time_left:
+            raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
+                             .format(duration_seconds, run_duration))
+    else:
+        demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
+    time.sleep(duration_seconds)  # pylint: disable=E9003
+
+
+def is_time_sensitive():
+    """
+    Checks if the command reputation (auto-enrichment) is called as auto-extract=inline.
+    This function checks if the 'isTimeSensitive' attribute exists in the 'demisto' object and if it's set to True.
+
+        :return: bool
+        :rtype: ``bool``
+    """
+    return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+
+
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 ###########################################

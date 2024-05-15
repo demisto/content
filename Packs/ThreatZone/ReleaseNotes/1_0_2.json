@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the ***tz-sandbox-upload-sample***, ***tz-cdr-upload-sample***, ***tz-static-upload-sample*** and ***tz-get-result*** commands' outputs, removed submission URL."
+}

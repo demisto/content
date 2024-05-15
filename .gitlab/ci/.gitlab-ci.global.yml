@@ -3,10 +3,11 @@
     key:
       files:
         - "poetry.lock"
-        - "package-lock.json"
+        - ".pre-commit-config_template.yaml"
       prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
+      - $PRE_COMMIT_HOME
       - .venv/
       - node_modules/
       - .npm/
@@ -71,7 +72,7 @@
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
   - |
-    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]] || [[ "${SDK_RELEASE}" == "true" ]]; then
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]] || [[ "${SDK_RELEASE}" == "true" ]] || [[ "${TRIGGER_CONTRIBUTION_BUILD}" == "true" ]]; then
       echo "Running a build which doesn't require build files check validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
@@ -147,7 +148,7 @@
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
       USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
       BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO
+      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO -gt $GITHUB_TOKEN
     fi
   - section_end "getting contrib packs"
 
@@ -233,7 +234,7 @@
 
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly" --collapsed
-  - | 
+  - |
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
       if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
@@ -288,7 +289,6 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
-
 .default-after-script:
   - source .gitlab/helper_functions.sh
   - *setup-network-certs
@@ -322,7 +322,6 @@
 .trigger-slack-notification:
   stage: .post
   trigger:
-    strategy: depend
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
   inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
@@ -398,7 +397,7 @@
     fi
   - section_end "Validate content-test-conf Branch Merged"
 
-.unittests-and-lint-settings:
+.pre-commit-settings:
   tags:
     - gce
   stage: unittests-and-validations
@@ -424,79 +423,70 @@
     - .default-job-settings
 
 
-.run-unittests-and-lint:
+.test-infrastructure:
+  stage: unittests-and-validations
   extends:
-    - .unittests-and-lint-settings
+    - .default-job-settings
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/tests -v --disable-warnings
-    - python3 -m pytest ./Tests/private_build/ -v --disable-warnings
     - python3 -m pytest Utils -v --disable-warnings
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
-    - rm -rf Packs/MyPack # remove MyPack from the Packs folder, workaround until demisto-sdk 1.27.5 will be released
+
+.run-pre-commit:
+  cache:
+    policy: pull-push
+  extends:
+    - .pre-commit-settings
+  variables:
+    KUBERNETES_MEMORY_REQUEST: 8Gi
+    KUBERNETES_MEMORY_LIMIT: 16Gi
+  script:
     - section_start "Revoking GCP Auth and Configure Docker"
+    # we need to configure the docker with the registry in order to be able to pull the images
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
     - section_end "Revoking GCP Auth and Configure Docker"
-    - section_start "Run Unit Testing and Lint"
+    # temp solution not to spam the build
+    - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+    - PRE_COMMIT_SUCCESS=0
     - |
       if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
-        echo "demisto-sdk version: $(demisto-sdk --version)"
-        echo "mypy version: $(mypy --version)"
-        echo "flake8 py3 version: $(python3 -m flake8 --version)"
-        echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-        set -ex
-        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-        echo "here before mkdir"
-        pwd
-        ls -lh
-        mkdir ./unit-tests
-        echo "here after mkdir"
-        if [[ -n "${SHOULD_LINT_ALL}" || -n "${BUCKET_UPLOAD}" ]]; then
-          echo "In should lint all / bucket upload."
-          if [ $DOCKER == "native:dev,from-yml" ]; then
-            echo "removing native:dev from docker list."
-            DOCKER='from-yml'
-          fi
-        fi
-        if [ -n "$SHOULD_LINT_ALL" ]; then
-          echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 10 -a --test-xml ./unit-tests --log-path "${ARTIFACTS_FOLDER}" --failure-report "${ARTIFACTS_FOLDER}" --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" -dt 120 --time-measurements-dir "${ARTIFACTS_FOLDER}" --docker-image ${DOCKER}
-        fi
         if [[ -n $BUCKET_UPLOAD ]]; then
-          demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path "${ARTIFACTS_FOLDER}" --failure-report "${ARTIFACTS_FOLDER}" --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
+          demisto-sdk pre-commit -g --prev-version $LAST_UPLOAD_COMMIT --mode=nightly || PRE_COMMIT_SUCCESS=1
         else
-          if [[ "$CI_COMMIT_BRANCH" != "master" ]]; then
-            # skip running `lint -g` on master
-            demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
-          fi
-        fi
-      
-        if [[ -f "${ARTIFACTS_FOLDER}/coverage_report/.coverage" ]]; then
-          if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
-            demisto-sdk coverage-analyze -i "${ARTIFACTS_FOLDER}/coverage_report/.coverage" --report-dir "${ARTIFACTS_FOLDER}/coverage_report" --report-type all --allowed-coverage-degradation-percentage 100
-            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" && $DOCKER == "from-yml" ]]; then
-              python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage.json" --minimal_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage-min.json"
-            fi
+          if [[ -n "${SHOULD_LINT_ALL}" ]]; then
+            echo "Pre Commit all files"
+            # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
+            demisto-sdk graph update
+            unset DEMISTO_SDK_GRAPH_FORCE_CREATE  # The graph is already up, no need to force create it
+            demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
           else
-            demisto-sdk coverage-analyze -i "${ARTIFACTS_FOLDER}/coverage_report/.coverage" --report-dir "${ARTIFACTS_FOLDER}/coverage_report" --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+            echo "Pre Commit only changed files"
+            demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
           fi
         fi
       fi
-    - section_end "Run Unit Testing and Lint"
+    - |
+      if [[ -d coverage_report ]]; then
+        cp -r coverage_report artifacts/coverage_report
+      fi
+    - |
+      if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
+        python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage.json" --minimal_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage-min.json"
+      fi
+
+    - echo "PRE_COMMIT_SUCCESS=$PRE_COMMIT_SUCCESS"
     - job-done
-  parallel:
-    matrix:
-      - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
+    - exit $PRE_COMMIT_SUCCESS
 
 .run-validations:
   stage: unittests-and-validations

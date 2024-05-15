@@ -323,3 +323,32 @@ def test_aws_session(mocker, params, args, expected_assume_roles_args):
     aws_client.aws_session(service='ec2', **args)
 
     assert assume_client_mock.call_args_list[0].kwargs == expected_assume_roles_args
+
+
+@pytest.mark.parametrize('sts_regional_endpoint', ['legacy', 'regional', ''])
+def test_sts_regional_endpoint_param(mocker, sts_regional_endpoint):
+    """
+    Given
+        - Configuration param to set in the 'AWS_STS_REGIONAL_ENDPOINTS' variable.
+    When
+        - After creating the AWS client instance.
+    Then
+        - Verify the environment variable was sets correctly.
+    """
+    params = {
+        'aws_default_region': 'us-east-1',
+        'aws_role_arn': 'role_arn_param',
+        'aws_role_session_name': 'role_session_name_param',
+        'aws_access_key_id': 'test_access_key',
+        'aws_role_session_duration': None,
+        'aws_role_policy': None,
+        'aws_secret_access_key': 'test_secret_key',
+        'verify_certificate': False,
+        'timeout': 60,
+        'retries': 3
+    }
+
+    mocker.patch.object(demisto, 'params', return_value={'sts_regional_endpoint': sts_regional_endpoint})
+    os.environ['AWS_STS_REGIONAL_ENDPOINTS'] = ''
+    AWSClient(**params)
+    assert os.environ['AWS_STS_REGIONAL_ENDPOINTS'] == sts_regional_endpoint

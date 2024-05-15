@@ -1,0 +1,59 @@
+{
+    "outputs": {
+        "successful_delete_just_email": {
+            "data": {
+                "mustReadTerms": true,
+                "showStudioDisclaimer": true,
+                "showAdvancedAttacksDisclaimer": true,
+                "showSimulationsBulkIgnoreMessage": true,
+                "showCloudAttacksDisclaimer": true,
+                "showCloneCustomizeDisclaimer": true,
+                "isActive": false,
+                "name": "acme updated",
+                "email": "acme@email.com",
+                "mustChangePassword": true,
+                "role": "operator",
+                "accountId": 123432,
+                "id": 123456789,
+                "roles": {
+                    "read": true
+                },
+                "updatedAt": "2023-08-09T02:19:55.965Z",
+                "createdAt": "2023-09-09T02:19:55.965Z",
+                "extendedData": null,
+                "description": "updated user description",
+                "deletedAt": null,
+                "deployments": []
+            }
+        },
+        "successful_delete_id_and_email": {
+            "data": {
+                "mustReadTerms": true,
+                "showStudioDisclaimer": true,
+                "showAdvancedAttacksDisclaimer": true,
+                "showSimulationsBulkIgnoreMessage": true,
+                "showCloudAttacksDisclaimer": true,
+                "showCloneCustomizeDisclaimer": true,
+                "isActive": false,
+                "name": "acme updated",
+                "email": "acme@email.com",
+                "mustChangePassword": true,
+                "role": "operator",
+                "accountId": 123432,
+                "id": 123456789,
+                "roles": {
+                    "read": true
+                },
+                "updatedAt": "2023-08-09T02:19:55.965Z",
+                "createdAt": "2023-09-09T02:19:55.965Z",
+                "extendedData": null,
+                "description": "updated user description",
+                "deletedAt": null,
+                "deployments": []
+            }
+        },
+        "failed_delete": {
+            "data": {}
+        }
+    }
+}

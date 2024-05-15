@@ -39,6 +39,11 @@ INDICATORS_DATA = [
      "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
      "name": "cmstp.exe /s /ns C:\\Users\\ADMINI~W\\AppData\\Local\\Temp\\XKNqbpzl.txt",
      "pattern": "[process:command_line = 'cmstp.exe",
+     "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"},
+    {"created": "2019-05-06T14:12:22.757Z", "id": "indicator--010c5a3e-823b-4267-8411-e38563fcBBBB",
+     "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
+     "name": "Jrdhtjydhjf.exe",
+     "pattern": "[file:hashes.\'SHA-256\' = \'ca5fb5814ec621f4b79d\']",
      "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"}
 ]
 
@@ -174,20 +179,64 @@ SUB_TECHNIQUE_DATA = [
     }
 ]
 
-SUB_TECHNIQUE_INDICATOR = [{'fields': {'description': 'Adversaries may employ various time-based methods '
-                                                      'to detect and avoid virtualization.',
-                                       'firstseenbysource': '2020-03-06T21:11:11.225Z',
-                                       'killchainphases': [],
-                                       'mitreid': 'T1497.003',
-                                       'modified': '2021-04-01T15:48:28.345Z',
-                                       'operatingsystemrefs': ['Linux', 'macOS', 'Windows'],
-                                       'publications': [],
-                                       'reportedby': 'Unit42',
-                                       'stixid': 'attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0',
-                                       'tags': ['T1497.003']},
-                            'score': 2,
-                            'type': 'Attack Pattern',
-                            'value': 'Virtualization/Sandbox Evasion: Time Based Evasion'}]
+SUB_TECHNIQUE_INDICATOR = [
+    {
+        "fields": {
+            "description": "Adversaries may employ various time-based methods "
+            "to detect and avoid virtualization.",
+            "firstseenbysource": "2020-03-06T21:11:11.225Z",
+            "killchainphases": [],
+            "mitreid": "T1497.003",
+            "modified": "2021-04-01T15:48:28.345Z",
+            "operatingsystemrefs": ["Linux", "macOS", "Windows"],
+            "publications": [],
+            "reportedby": "Unit42",
+            "stixid": "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0",
+            "tags": ["T1497.003"],
+        },
+        "rawJSON": {
+            "type": "attack-pattern",
+            "id": "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "created": "2020-03-06T21:11:11.225Z",
+            "modified": "2021-04-01T15:48:28.345Z",
+            "name": "T1497.003: Time Based Evasion",
+            "description": "Adversaries may employ various time-based methods to detect and avoid virtualization.",
+            "kill_chain_phases": [],
+            "external_references": [
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1497/003",
+                    "external_id": "T1497.003",
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "x_mitre_detection": "Time-based evasion will likely occur in the first steps of an operation.",
+            "x_mitre_platforms": ["Linux", "macOS", "Windows"],
+            "x_mitre_data_sources": [
+                "Command: Command Execution",
+                "Process: OS API Execution",
+                "Process: Process Creation",
+            ],
+            "x_mitre_is_subtechnique": "true",
+            "x_mitre_defense_bypassed": [
+                "Anti-virus",
+                "Host forensic analysis",
+                "Signature-based detection",
+                "Static File Analysis",
+            ],
+            "x_mitre_contributors": ["Deloitte Threat Library Team"],
+            "x_mitre_version": "1.1",
+            "x_panw_parent_technique": "Virtualization/Sandbox Evasion",
+            "x_panw_parent_technique_subtechnique": "Virtualization/Sandbox Evasion: Time Based Evasion",
+        },
+        "score": 2,
+        "type": "Attack Pattern",
+        "value": "Virtualization/Sandbox Evasion: Time Based Evasion",
+    }
+]
 
 MALWARE_DATA = [
     {"created": "2019-10-11T16:13:15.086Z",
@@ -345,7 +394,10 @@ REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
                                   'published': '1994-08-12T11:00:00.000Z',
                                   'reportedby': 'Unit42',
                                   'stixid': 'report--a',
-                                  'tags': ['intrusion-set']},
+                                  'tags': ['intrusion-set'],
+                                  'Report Object References': [{'objectstixid': 'intrusion-set--a'}],
+                                  'report_types': [],
+                                  'modified': '1993-06-17T11:00:00.000Z'},
                        'rawJSON': {'unit42_created_date': '1993-06-17T11:00:00.000Z',
                                    'unit42_description': 'A description of the report',
                                    'unit42_id': 'report--a',
@@ -436,70 +488,207 @@ PUBLICATIONS = [{'link': 'example.com', 'source': 'FireEye WMI 2015', 'title': '
                  'title': 'Wikipedia. (2016, June 12). Server Message Block. Retrieved June '
                           '12, 2016.'}]
 
-ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
-                                        'firstseenbysource': '2018-08-03T19:54:02.821Z',
-                                        'killchainphases': ['Installation', 'Execution'],
-                                        'mitreid': 'T1047',
-                                        'modified': '2020-05-12T13:02:30.000Z',
-                                        'operatingsystemrefs': ['Windows'],
-                                        'publications': [{'link': 'example.com',
-                                                          'source': 'FireEye WMI 2015',
-                                                          'title': 'Ballenthin'},
-                                                         {
-                                                             'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                                                             'source': 'MSDN WMI',
-                                                             'title': 'Microsoft. (n.d.). Windows Management '
-                                                                      'Instrumentation. Retrieved April 27, '
-                                                                      '2016.'},
-                                                         {
-                                                             'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                             'source': 'TechNet RPC',
-                                                             'title': 'Microsoft. (2003, March 28). What Is '
-                                                                      'RPC?. Retrieved June 12, 2016.'},
-                                                         {'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                          'source': 'Wikipedia SMB',
-                                                          'title': 'Wikipedia. (2016, June 12). Server '
-                                                                   'Message Block. Retrieved June 12, '
-                                                                   '2016.'}],
-                                        'reportedby': 'Unit42',
-                                        'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                                        'tags': ['T1047']},
-                             'type': 'Attack Pattern',
-                             "score": 2,
-                             'value': 'Windows Management Instrumentation'}]
+ATTACK_PATTERN_INDICATOR = [
+    {
+        "fields": {
+            "description": "Windows Management",
+            "firstseenbysource": "2018-08-03T19:54:02.821Z",
+            "killchainphases": ["Installation", "Execution"],
+            "mitreid": "T1047",
+            "modified": "2020-05-12T13:02:30.000Z",
+            "operatingsystemrefs": ["Windows"],
+            "publications": [
+                {
+                    "link": "example.com",
+                    "source": "FireEye WMI 2015",
+                    "title": "Ballenthin",
+                },
+                {
+                    "link": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                    "source": "MSDN WMI",
+                    "title": "Microsoft. (n.d.). Windows Management "
+                    "Instrumentation. Retrieved April 27, "
+                    "2016.",
+                },
+                {
+                    "link": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                    "source": "TechNet RPC",
+                    "title": "Microsoft. (2003, March 28). What Is "
+                    "RPC?. Retrieved June 12, 2016.",
+                },
+                {
+                    "link": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                    "source": "Wikipedia SMB",
+                    "title": "Wikipedia. (2016, June 12). Server "
+                    "Message Block. Retrieved June 12, "
+                    "2016.",
+                },
+            ],
+            "reportedby": "Unit42",
+            "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "tags": ["T1047"],
+        },
+        "rawJSON": {
+            "created": "2018-08-03T19:54:02.821Z",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "description": "Windows Management",
+            "external_references": [
+                {
+                    "description": "Ballenthin",
+                    "source_name": "FireEye WMI 2015",
+                    "url": "example.com",
+                },
+                {
+                    "external_id": "T1047",
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1047",
+                },
+                {
+                    "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+                    "source_name": "MSDN WMI",
+                    "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                },
+                {
+                    "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                    "source_name": "TechNet RPC",
+                    "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                },
+                {
+                    "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                    "source_name": "Wikipedia SMB",
+                    "url": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                },
+            ],
+            "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "kill_chain_phases": [
+                {"kill_chain_name": "lockheed", "phase_name": "installation"},
+                {"kill_chain_name": "mitre-attack", "phase_name": "execution"},
+            ],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "T1047: Windows Management Instrumentation",
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "type": "attack-pattern",
+            "x_mitre_data_sources": [
+                "Authentication logs",
+                "Netflow/Enclave netflow",
+                "Process command-line parameters",
+                "Process monitoring",
+            ],
+            "x_mitre_detection": ["Monitor network traffic"],
+            "x_mitre_permissions_required": ["Administrator", "User"],
+            "x_mitre_platforms": ["Windows"],
+            "x_mitre_remote_support": "true",
+            "x_mitre_system_requirements": ["WMI service"],
+            "x_mitre_version": "1.0",
+        },
+        "type": "Attack Pattern",
+        "score": 2,
+        "value": "Windows Management Instrumentation",
+    }
+]
 
-STIX_ATTACK_PATTERN_INDICATOR = [{'fields': {'stixdescription': 'Windows Management',
-                                             'firstseenbysource': '2018-08-03T19:54:02.821Z',
-                                             'stixkillchainphases': ['Installation', 'Execution'],
-                                             'mitreid': 'T1047',
-                                             'modified': '2020-05-12T13:02:30.000Z',
-                                             'operatingsystemrefs': ['Windows'],
-                                             'publications': [{'link': 'example.com',
-                                                               'source': 'FireEye WMI 2015',
-                                                               'title': 'Ballenthin'},
-                                                              {
-                                                                  'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                                                                  'source': 'MSDN WMI',
-                                                                  'title': 'Microsoft. (n.d.). Windows Management '
-                                                                           'Instrumentation. Retrieved April 27, '
-                                                                           '2016.'},
-                                                              {
-                                                                  'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                                  'source': 'TechNet RPC',
-                                                                  'title': 'Microsoft. (2003, March 28). What Is '
-                                                                           'RPC?. Retrieved June 12, 2016.'},
-                                                              {
-                                                                  'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                                  'source': 'Wikipedia SMB',
-                                                                  'title': 'Wikipedia. (2016, June 12). Server '
-                                                                           'Message Block. Retrieved June 12, '
-                                                                           '2016.'}],
-                                             'reportedby': 'Unit42',
-                                             'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                                             'tags': ['T1047']},
-                                  'type': 'STIX Attack Pattern',
-                                  "score": 2,
-                                  'value': 'Windows Management Instrumentation'}]
+STIX_ATTACK_PATTERN_INDICATOR = [
+    {
+        "fields": {
+            "stixdescription": "Windows Management",
+            "firstseenbysource": "2018-08-03T19:54:02.821Z",
+            "stixkillchainphases": ["Installation", "Execution"],
+            "mitreid": "T1047",
+            "modified": "2020-05-12T13:02:30.000Z",
+            "operatingsystemrefs": ["Windows"],
+            "publications": [
+                {
+                    "link": "example.com",
+                    "source": "FireEye WMI 2015",
+                    "title": "Ballenthin",
+                },
+                {
+                    "link": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                    "source": "MSDN WMI",
+                    "title": "Microsoft. (n.d.). Windows Management "
+                    "Instrumentation. Retrieved April 27, "
+                    "2016.",
+                },
+                {
+                    "link": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                    "source": "TechNet RPC",
+                    "title": "Microsoft. (2003, March 28). What Is "
+                    "RPC?. Retrieved June 12, 2016.",
+                },
+                {
+                    "link": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                    "source": "Wikipedia SMB",
+                    "title": "Wikipedia. (2016, June 12). Server "
+                    "Message Block. Retrieved June 12, "
+                    "2016.",
+                },
+            ],
+            "reportedby": "Unit42",
+            "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "tags": ["T1047"],
+        },
+        "rawJSON": {
+            "created": "2018-08-03T19:54:02.821Z",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "description": "Windows Management",
+            "external_references": [
+                {
+                    "description": "Ballenthin",
+                    "source_name": "FireEye WMI 2015",
+                    "url": "example.com",
+                },
+                {
+                    "external_id": "T1047",
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1047",
+                },
+                {
+                    "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+                    "source_name": "MSDN WMI",
+                    "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                },
+                {
+                    "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                    "source_name": "TechNet RPC",
+                    "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                },
+                {
+                    "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                    "source_name": "Wikipedia SMB",
+                    "url": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                },
+            ],
+            "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "kill_chain_phases": [
+                {"kill_chain_name": "lockheed", "phase_name": "installation"},
+                {"kill_chain_name": "mitre-attack", "phase_name": "execution"},
+            ],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "T1047: Windows Management Instrumentation",
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "type": "attack-pattern",
+            "x_mitre_data_sources": [
+                "Authentication logs",
+                "Netflow/Enclave netflow",
+                "Process command-line parameters",
+                "Process monitoring",
+            ],
+            "x_mitre_detection": ["Monitor network traffic"],
+            "x_mitre_permissions_required": ["Administrator", "User"],
+            "x_mitre_platforms": ["Windows"],
+            "x_mitre_remote_support": "true",
+            "x_mitre_system_requirements": ["WMI service"],
+            "x_mitre_version": "1.0",
+        },
+        "type": "STIX Attack Pattern",
+        "score": 2,
+        "value": "Windows Management Instrumentation",
+    }
+]
 
 COURSE_OF_ACTION_DATA = [{
     "type": "course-of-action",
@@ -540,6 +729,11 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
                                            'tags': []},
+                                'rawJSON': {'type': 'course-of-action',
+                                            'id': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
+                                            'name': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
+                                            'created': '2020-06-23T19:50:31.722Z',
+                                            'modified': '2020-09-04T13:59:35.883Z'},
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2'},
@@ -551,10 +745,94 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
                                            'tags': []},
+                                'rawJSON': {'type': 'course-of-action',
+                                            'id': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
+                                            'name': 'Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.',
+                                            'created': '2020-06-23T19:50:31.722Z',
+                                            'modified': '2020-06-26T19:00:21.151Z',
+                                            'description': 'Enable all three scan options in a Zone Protection profile.',
+                                            'x_panw_coa_bp_section_number': '6',
+                                            'x_panw_coa_bp_recommendation_number': '6.18',
+                                            'x_panw_coa_bp_title': 'Ensure that all zones have Zone Protection Profiles.',
+                                            'x_panw_coa_bp_status': 'published',
+                                            'x_panw_coa_bp_scoring_status': 'full',
+                                            'x_panw_coa_bp_description': 'Enable all three scan options in a Zone Protection profile.',
+                                            'x_panw_coa_bp_remediation_procedure': 'Navigate to `Network > Network Profiles > Zone Protection.',
+                                            'x_panw_coa_bp_rationale_statement': 'Port scans and host sweeps are common in the reconnaissance phase.',
+                                            'x_panw_coa_bp_audit_procedure': 'Navigate to `Network > Network Profiles > Zone Protection.',
+                                            'x_panw_coa_bp_impact_statement': 'Not configuring a Network Zone Protection Profile leaves an organization.',
+                                            'x_panw_coa_bp_cis_controls': ['TITLE:Boundary Defense CONTROL:v7 12 DESCRIPTION:Boundary.'],
+                                            'x_panw_coa_bp_references': ['network-network-profiles-zone-protection/reconnaissance-protection.']},
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Ensure that all zones have Zone Protection Profiles with all '
                                          'Reconnaissance Protection settings enabled.'}]
+
+COURSE_OF_ACTION_INDICATORS_WITH_TLP = [
+    {
+        "fields": {
+            "description": "",
+            "firstseenbysource": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-09-04T13:59:35.883Z",
+            "publications": [],
+            "reportedby": "Unit42",
+            "stixid": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+            "tags": [],
+            "trafficlightprotocol": "WHITE",
+        },
+        "rawJSON": {
+            "type": "course-of-action",
+            "id": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+            "name": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+            "created": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-09-04T13:59:35.883Z",
+        },
+        "score": 0,
+        "type": "Course of Action",
+        "value": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+    },
+    {
+        "fields": {
+            "description": "Enable all three scan options in a Zone "
+            "Protection profile.",
+            "firstseenbysource": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-06-26T19:00:21.151Z",
+            "publications": [],
+            "reportedby": "Unit42",
+            "stixid": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+            "tags": [],
+            "trafficlightprotocol": "WHITE",
+        },
+        "rawJSON": {
+            "type": "course-of-action",
+            "id": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+            "name": "Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.",
+            "created": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-06-26T19:00:21.151Z",
+            "description": "Enable all three scan options in a Zone Protection profile.",
+            "x_panw_coa_bp_section_number": "6",
+            "x_panw_coa_bp_recommendation_number": "6.18",
+            "x_panw_coa_bp_title": "Ensure that all zones have Zone Protection Profiles.",
+            "x_panw_coa_bp_status": "published",
+            "x_panw_coa_bp_scoring_status": "full",
+            "x_panw_coa_bp_description": "Enable all three scan options in a Zone Protection profile.",
+            "x_panw_coa_bp_remediation_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+            "x_panw_coa_bp_rationale_statement": "Port scans and host sweeps are common in the reconnaissance phase.",
+            "x_panw_coa_bp_audit_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+            "x_panw_coa_bp_impact_statement": "Not configuring a Network Zone Protection Profile leaves an organization.",
+            "x_panw_coa_bp_cis_controls": [
+                "TITLE:Boundary Defense CONTROL:v7 12 DESCRIPTION:Boundary."
+            ],
+            "x_panw_coa_bp_references": [
+                "network-network-profiles-zone-protection/reconnaissance-protection."
+            ],
+        },
+        "score": 0,
+        "type": "Course of Action",
+        "value": "Ensure that all zones have Zone Protection Profiles with all "
+        "Reconnaissance Protection settings enabled.",
+    },
+]
 
 DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
     'relationships': [{'entityA': '0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92',
@@ -588,3 +866,603 @@ INTRUSION_SET_DATA = [
      "modified": "2020-04-28T14:13:45.924Z",
      "name": "[Endor] Maze Ransomware"}
 ]
+
+
+FETCH_RESULTS = [
+    {
+        "value": "c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839",
+        "type": "File",
+        "score": 3,
+        "rawJSON": {
+            "created": "2019-07-30T09:29:07.724Z",
+            "id": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839",
+            "pattern": "[file:hashes.'SHA-256' = 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839']",
+            "type": "indicator",
+            "valid_from": "2019-07-30T09:29:07.724Z",
+        },
+        "fields": {
+            "firstseenbysource": "2019-07-30T09:29:07.724Z",
+            "indicatoridentification": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e",
+        "type": "File",
+        "score": 3,
+        "rawJSON": {
+            "created": "2019-01-08T16:40:53.572Z",
+            "id": "indicator--002e6e49-8099-42aa-a379-03c927c860a1",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e",
+            "pattern": "[file:hashes.'SHA-256' = 'e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e']",
+            "type": "indicator",
+            "valid_from": "2019-01-08T16:40:53.572Z",
+        },
+        "fields": {
+            "firstseenbysource": "2019-01-08T16:40:53.572Z",
+            "indicatoridentification": "indicator--002e6e49-8099-42aa-a379-03c927c860a1",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "1.1.1.1",
+        "type": "IP",
+        "score": 3,
+        "rawJSON": {
+            "created": "2020-05-05T20:48:16.115Z",
+            "id": "indicator--003b9bb9-947c-458f-94ef-407345018e1a",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "1.1.1.1",
+            "pattern": "[ipv4-addr:value = '1.1.1.1']",
+            "type": "indicator",
+            "valid_from": "2020-05-05T20:48:16.115Z",
+        },
+        "fields": {
+            "firstseenbysource": "2020-05-05T20:48:16.115Z",
+            "indicatoridentification": "indicator--003b9bb9-947c-458f-94ef-407345018e1a",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "3b1da8ad68a5a545977946cad0f798923117ef6db6693f7297950961458356b3",
+        "type": "File",
+        "score": 3,
+        "rawJSON": {
+            "created": "2018-08-03T20:30:58.705Z",
+            "id": "indicator--004b4557-bc08-4373-b467-e8ff3aeafdf8",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "3b1da8ad68a5a545977946cad0f798923117ef6db6693f7297950961458356b3",
+            "pattern": "[file:hashes.'SHA-256' = '3b1da8ad68a5a545977946cad0f798923117ef6db6693f7297950961458356b3']",
+            "type": "indicator",
+            "valid_from": "2018-08-03T20:30:58.705Z",
+        },
+        "fields": {
+            "firstseenbysource": "2018-08-03T20:30:58.705Z",
+            "indicatoridentification": "indicator--004b4557-bc08-4373-b467-e8ff3aeafdf8",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "nf321ap.linkgetapp.nl/x5/",
+        "type": "URL",
+        "score": 3,
+        "rawJSON": {
+            "created": "2018-08-03T20:30:58.705Z",
+            "id": "indicator--0079e6fc-f7cf-406a-ab75-aadbb786d1b1",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "nf321ap.linkgetapp.nl/x5/",
+            "pattern": "[url:value = 'nf321ap.linkgetapp.nl/x5/']",
+            "type": "indicator",
+            "valid_from": "2018-08-03T20:30:58.705Z",
+        },
+        "fields": {
+            "firstseenbysource": "2018-08-03T20:30:58.705Z",
+            "indicatoridentification": "indicator--0079e6fc-f7cf-406a-ab75-aadbb786d1b1",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "2014.zzux.com",
+        "type": "Domain",
+        "score": 3,
+        "rawJSON": {
+            "created": "2019-01-08T16:40:53.572Z",
+            "id": "indicator--00ee4fd8-e48f-4658-822e-797b597e7c87",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "2014.zzux.com",
+            "pattern": "[domain-name:value = '2014.zzux.com']",
+            "type": "indicator",
+            "valid_from": "2019-01-08T16:40:53.572Z",
+        },
+        "fields": {
+            "firstseenbysource": "2019-01-08T16:40:53.572Z",
+            "indicatoridentification": "indicator--00ee4fd8-e48f-4658-822e-797b597e7c87",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "2014.zzux.com",
+        "type": "Domain",
+        "score": 3,
+        "rawJSON": {
+            "created": "2019-01-08T16:40:53.572Z",
+            "id": "indicator--00ee4fd8-e48f-4658-822e-797b597e7c87",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "2014.zzux.com",
+            "pattern": "[domain-name:value = '2014.zzux.com']",
+            "type": "indicator",
+            "valid_from": "2019-01-08T16:40:53.572Z",
+        },
+        "fields": {
+            "firstseenbysource": "2019-01-08T16:40:53.572Z",
+            "indicatoridentification": "indicator--00ee4fd8-e48f-4658-822e-797b597e7c87",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "arubrabank.com",
+        "type": "Domain",
+        "score": 3,
+        "rawJSON": {
+            "created": "2019-07-23T13:50:52.999Z",
+            "id": "indicator--01008cc5-96e6-41af-a3c7-e4fa9262fbc0",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "arubrabank.com",
+            "pattern": "[domain-name:value = 'arubrabank.com']",
+            "type": "indicator",
+            "valid_from": "2019-07-23T13:50:52.999Z",
+        },
+        "fields": {
+            "firstseenbysource": "2019-07-23T13:50:52.999Z",
+            "indicatoridentification": "indicator--01008cc5-96e6-41af-a3c7-e4fa9262fbc0",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "arubrabank.com",
+        "type": "Domain",
+        "score": 3,
+        "rawJSON": {
+            "created": "2019-07-23T13:50:52.999Z",
+            "id": "indicator--01008cc5-96e6-41af-a3c7-e4fa9262fbc0",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "arubrabank.com",
+            "pattern": "[domain-name:value = 'arubrabank.com']",
+            "type": "indicator",
+            "valid_from": "2019-07-23T13:50:52.999Z",
+        },
+        "fields": {
+            "firstseenbysource": "2019-07-23T13:50:52.999Z",
+            "indicatoridentification": "indicator--01008cc5-96e6-41af-a3c7-e4fa9262fbc0",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {
+        "value": "0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92",
+        "type": "File",
+        "score": 3,
+        "rawJSON": {
+            "created": "2020-04-28T07:16:08.649Z",
+            "id": "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce",
+            "labels": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92",
+            "pattern": "[file:hashes.'SHA-256' = '0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92']",
+            "type": "indicator",
+            "valid_from": "2020-04-28T07:16:08.649Z",
+        },
+        "fields": {
+            "firstseenbysource": "2020-04-28T07:16:08.649Z",
+            "indicatoridentification": "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce",
+            "tags": ["malicious-activity"],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "reportedby": "Unit42",
+        },
+    },
+    {'value': 'ca5fb5814ec621f4b79d', 'type': 'File', 'score': 3, 'rawJSON': {'created': '2019-05-06T14:12:22.757Z', 'id': 'indicator--010c5a3e-823b-4267-8411-e38563fcBBBB', 'labels': ['malicious-activity'], 'modified': '2020-05-12T13:02:30.000000Z', 'name': 'Jrdhtjydhjf.exe', 'pattern': "[file:hashes.'SHA-256' = 'ca5fb5814ec621f4b79d']", 'type': 'indicator', 'valid_from': '2019-05-06T14:12:22.757Z'}, 'fields': {
+        'firstseenbysource': '2019-05-06T14:12:22.757Z', 'indicatoridentification': 'indicator--010c5a3e-823b-4267-8411-e38563fcBBBB', 'tags': ['malicious-activity'], 'modified': '2020-05-12T13:02:30.000000Z', 'reportedby': 'Unit42', 'associatedfilenames': 'Jrdhtjydhjf.exe'}},
+    {
+        "value": "$$DummyIndicator$$",
+        "relationships": [
+            {
+                "name": "indicated-by",
+                "reverseName": "indicator-of",
+                "type": "IndicatorToIndicator",
+                "entityA": "0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92",
+                "entityAFamily": "Indicator",
+                "entityAType": "File",
+                "entityB": "Windows Management Instrumentation",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-05-12T13:02:30.000000Z",
+                    "firstseenbysource": "2019-10-11T18:43:46.039Z",
+                },
+            },
+            {
+                "name": "indicated-by",
+                "reverseName": "indicator-of",
+                "type": "IndicatorToIndicator",
+                "entityA": "c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839",
+                "entityAFamily": "Indicator",
+                "entityAType": "File",
+                "entityB": "Muirim",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2020-05-12T13:02:30.000000Z",
+                    "firstseenbysource": "2019-10-11T18:43:46.039Z",
+                },
+            },
+            {},
+        ],
+    },
+    {
+        "type": "Report",
+        "value": "[Unit42 ATOM] Main Report",
+        "score": 3,
+        "fields": {
+            "stixid": "report--a",
+            "firstseenbysource": "1993-06-17T11:00:00.000Z",
+            "modified": "1993-06-17T11:00:00.000Z",
+            "description": "A description of the report",
+            "published": "1994-08-12T11:00:00.000Z",
+            "report_types": [],
+            "tags": ["intrusion-set"],
+            "Report Object References": [
+                {"objectstixid": "intrusion-set--a"},
+            ],
+            "reportedby": "Unit42",
+        },
+        "rawJSON": {
+            "unit42_id": "report--a",
+            "unit42_labels": ["intrusion-set"],
+            "unit42_published": "1994-08-12T11:00:00.000Z",
+            "unit42_created_date": "1993-06-17T11:00:00.000Z",
+            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
+            "unit42_description": "A description of the report",
+            "unit42_object_refs": ["intrusion-set--a", "report--ab"],
+        },
+        "relationships": [],
+    },
+    {
+        "value": "Campaign 1 - [Endor] Maze Ransomware",
+        "type": "Campaign",
+        "rawJSON": {
+            "type": "campaign",
+            "id": "campaign--f69de074-6abd-45a1-909f-51ef8fce808a",
+            "created": "2020-04-24T13:40:41.386Z",
+            "modified": "2020-08-03T14:55:56.362Z",
+            "name": "Campaign 1 - [Endor] Maze Ransomware",
+            "description": "Since the beginning of the calendar year",
+            "first_seen": "2020-04-01T00:00:00.000Z",
+            "last_seen": "2020-04-28T15:48:29.713Z",
+        },
+        "score": 3,
+        "fields": {
+            "stixid": "campaign--f69de074-6abd-45a1-909f-51ef8fce808a",
+            "firstseenbysource": "2020-04-24T13:40:41.386Z",
+            "modified": "2020-08-03T14:55:56.362Z",
+            "description": "Since the beginning of the calendar year",
+            "reportedby": "Unit42",
+            "tags": [],
+        },
+    },
+    {
+        "value": "Windows Management Instrumentation",
+        "type": "STIX Attack Pattern",
+        "score": 2,
+        "fields": {
+            "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "firstseenbysource": "2018-08-03T19:54:02.821Z",
+            "modified": "2020-05-12T13:02:30.000Z",
+            "operatingsystemrefs": ["Windows"],
+            "publications": [
+                {
+                    "link": "example.com",
+                    "title": "Ballenthin",
+                    "source": "FireEye WMI 2015",
+                },
+                {
+                    "link": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                    "title": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+                    "source": "MSDN WMI",
+                },
+                {
+                    "link": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                    "title": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                    "source": "TechNet RPC",
+                },
+                {
+                    "link": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                    "title": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                    "source": "Wikipedia SMB",
+                },
+            ],
+            "mitreid": "T1047",
+            "reportedby": "Unit42",
+            "tags": ["T1047"],
+            "stixkillchainphases": ["Installation", "Execution"],
+            "stixdescription": "Windows Management",
+        },
+        "rawJSON": {
+            "created": "2018-08-03T19:54:02.821Z",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "description": "Windows Management",
+            "external_references": [
+                {
+                    "description": "Ballenthin",
+                    "source_name": "FireEye WMI 2015",
+                    "url": "example.com",
+                },
+                {
+                    "external_id": "T1047",
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1047",
+                },
+                {
+                    "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+                    "source_name": "MSDN WMI",
+                    "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                },
+                {
+                    "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                    "source_name": "TechNet RPC",
+                    "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                },
+                {
+                    "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                    "source_name": "Wikipedia SMB",
+                    "url": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                },
+            ],
+            "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "kill_chain_phases": [
+                {"kill_chain_name": "lockheed", "phase_name": "installation"},
+                {"kill_chain_name": "mitre-attack", "phase_name": "execution"},
+            ],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "T1047: Windows Management Instrumentation",
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "type": "attack-pattern",
+            "x_mitre_data_sources": [
+                "Authentication logs",
+                "Netflow/Enclave netflow",
+                "Process command-line parameters",
+                "Process monitoring",
+            ],
+            "x_mitre_detection": ["Monitor network traffic"],
+            "x_mitre_permissions_required": ["Administrator", "User"],
+            "x_mitre_platforms": ["Windows"],
+            "x_mitre_remote_support": "true",
+            "x_mitre_system_requirements": ["WMI service"],
+            "x_mitre_version": "1.0",
+        },
+    },
+    {
+        "value": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+        "type": "Course of Action",
+        "score": 0,
+        "fields": {
+            "stixid": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+            "firstseenbysource": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-09-04T13:59:35.883Z",
+            "description": "",
+            "publications": [],
+            "reportedby": "Unit42",
+            "tags": [],
+        },
+        "rawJSON": {
+            "type": "course-of-action",
+            "id": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+            "name": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+            "created": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-09-04T13:59:35.883Z",
+        },
+    },
+    {
+        "value": "Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.",
+        "type": "Course of Action",
+        "score": 0,
+        "fields": {
+            "stixid": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+            "firstseenbysource": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-06-26T19:00:21.151Z",
+            "description": "Enable all three scan options in a Zone Protection profile.",
+            "publications": [],
+            "reportedby": "Unit42",
+            "tags": [],
+        },
+        "rawJSON": {
+            "type": "course-of-action",
+            "id": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+            "name": "Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.",
+            "created": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-06-26T19:00:21.151Z",
+            "description": "Enable all three scan options in a Zone Protection profile.",
+            "x_panw_coa_bp_section_number": "6",
+            "x_panw_coa_bp_recommendation_number": "6.18",
+            "x_panw_coa_bp_title": "Ensure that all zones have Zone Protection Profiles.",
+            "x_panw_coa_bp_status": "published",
+            "x_panw_coa_bp_scoring_status": "full",
+            "x_panw_coa_bp_description": "Enable all three scan options in a Zone Protection profile.",
+            "x_panw_coa_bp_rationale_statement": "Port scans and host sweeps are common in the reconnaissance phase.",
+            "x_panw_coa_bp_remediation_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+            "x_panw_coa_bp_audit_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+            "x_panw_coa_bp_impact_statement": "Not configuring a Network Zone Protection Profile leaves an organization.",
+            "x_panw_coa_bp_cis_controls": [
+                "TITLE:Boundary Defense CONTROL:v7 12 DESCRIPTION:Boundary."
+            ],
+            "x_panw_coa_bp_references": [
+                "network-network-profiles-zone-protection/reconnaissance-protection."
+            ],
+        },
+    },
+    {
+        "value": "[Endor] Maze Ransomware",
+        "type": "Intrusion Set",
+        "score": 3,
+        "fields": {
+            "stixid": "intrusion-set--4e3fe19c-cb72-499a-a357-eb44b5717a3a",
+            "firstseenbysource": "2020-04-24T13:40:41.386Z",
+            "modified": "2020-04-28T14:13:45.924Z",
+            "description": "",
+            "publications": [],
+            "reportedby": "Unit42",
+            "tags": [],
+        },
+        "rawJSON": {
+            "type": "intrusion-set",
+            "id": "intrusion-set--4e3fe19c-cb72-499a-a357-eb44b5717a3a",
+            "created": "2020-04-24T13:40:41.386Z",
+            "modified": "2020-04-28T14:13:45.924Z",
+            "name": "[Endor] Maze Ransomware",
+        },
+    },
+]
+
+INDICATOR_WITH_RELATIONSHIP = {
+    "type": "Report",
+    "value": "[Unit42 ATOM] name",
+    "score": 3,
+    "rawJSON": {
+        "unit42_id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "unit42_labels": ["intrusion-set"],
+        "unit42_published": "2020-07-30T16:55:31.554Z",
+        "unit42_created_date": "2019-05-21T18:21:23.421Z",
+        "unit42_modified_date": "2021-09-29T15:55:04.815Z",
+        "unit42_description": "description",
+        "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
+    },
+    "relationships": [
+        {
+            "name": "related-to",
+            "reverseName": "related-to",
+            "type": "IndicatorToIndicator",
+            "entityA": "[Unit42 ATOM] name",
+            "entityAFamily": "Indicator",
+            "entityAType": "Report",
+            "entityB": "Campaign 1 - [Endor] Maze Ransomware",
+            "entityBFamily": "Indicator",
+            "entityBType": "Campaign",
+            "fields": {},
+        }
+    ],
+    "fields": {
+        "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "firstseenbysource": "2019-05-21T18:21:23.421Z",
+        "modified": "2021-09-29T15:55:04.815Z",
+        "description": "description",
+        "published": "2020-07-30T16:55:31.554Z",
+        "report_types": [],
+        "tags": ["intrusion-set"],
+        "Report Object References": [
+            {"objectstixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"}
+        ],
+        "reportedby": "Unit42",
+    },
+}
+
+FETCH_MOCK_RESPONSE = [
+    {
+        "created": "2019-05-21T18:21:23.421Z",
+        "description": "description",
+        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "labels": [
+            "intrusion-set"
+        ],
+        "modified": "2021-09-29T15:55:04.815Z",
+        "name": "name",
+                "object_refs": [
+                    "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"
+        ],
+        "published": "2020-07-30T16:55:31.554Z",
+        "type": "report"
+    },
+    {
+        "created": "2019-05-21T18:21:23.550Z",
+        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1",
+        "labels": [
+            "campaign"
+        ],
+        "modified": "2021-09-29T15:55:04.815Z",
+        "name": "name",
+        "object_refs": [
+                "campaign--f69de074-6abd-45a1-909f-51ef8fce808a"
+        ],
+        "published": "2019-10-11T15:26:10.706Z",
+        "type": "report"
+    }
+
+]
+
+REPORTS_INDICATORS_WITH_RELATIONSHIPS = {
+    "type": "Report",
+    "value": "[Unit42 ATOM] name",
+    "score": 3,
+    "rawJSON": {
+            "unit42_id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+            "unit42_labels": ["intrusion-set"],
+            "unit42_published": "2020-07-30T16:55:31.554Z",
+            "unit42_created_date": "2019-05-21T18:21:23.421Z",
+            "unit42_modified_date": "2021-09-29T15:55:04.815Z",
+            "unit42_description": "description",
+            "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
+    },
+    "relationships": [
+        {
+            "name": "related-to",
+            "reverseName": "related-to",
+            "type": "IndicatorToIndicator",
+            "entityA": "[Unit42 ATOM] name",
+            "entityAFamily": "Indicator",
+            "entityAType": "Report",
+            "entityB": "Campaign 1 - [Endor] Maze Ransomware",
+            "entityBFamily": "Indicator",
+            "entityBType": "Campaign",
+            "fields": {},
+        },
+    ],
+    "fields": {
+        "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "firstseenbysource": "2019-05-21T18:21:23.421Z",
+        "modified": "2021-09-29T15:55:04.815Z",
+        "description": "description",
+        "published": "2020-07-30T16:55:31.554Z",
+        "report_types": [],
+        "tags": ["intrusion-set"],
+        "reportedby": "Unit42",
+    },
+}

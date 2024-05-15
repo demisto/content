@@ -56,7 +56,7 @@ class PrismaCloudComputeClient(BaseClient):
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
-                      timeout=10, resp_type='json', ok_codes=None, **kwargs):
+                      timeout=30, resp_type='json', ok_codes=None, **kwargs):
         """
         Extends the _http_request method of BaseClient.
         If self._project is available, a 'project=projectID' query param is automatically added to all requests.

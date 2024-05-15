@@ -1,7 +1,9 @@
 from DBotPredictURLPhishing import *
 import pytest
 import DBotPredictURLPhishing
+from pytest_mock import MockerFixture
 
+DBotPredictURLPhishing.isCommandAvailable = lambda _: True
 CORRECT_DOMAINS = ['google.com']
 NEW_DOMAINS = ['psg.fr']
 
@@ -14,7 +16,7 @@ class PhishingURLModelMock:
 def executeCommand(command, args=None):
     from datetime import date
     if command == 'whois':
-        domain = args.get('query')
+        domain = args.get('query')[0]
         if not domain:
             return []
         if domain in NEW_DOMAINS:
@@ -24,18 +26,18 @@ def executeCommand(command, args=None):
                     'WHOIS': {
                         'CreationDate': today}}}, "Type": "note"}]
         else:
-            date = "22-03-1989"
+            _date = "22-03-1989"
             return [{'EntryContext': {
                 'Domain(val.Name && val.Name == obj.Name)': {
                     'WHOIS': {
-                        'CreationDate': date}}}, "Type": "note"}]
+                        'CreationDate': _date}}}, "Type": "note"}]
 
     elif command == 'rasterize':
         url = args.get('url')
         html_data = "" if url == "bad_url.com" else "html"
         return [{'Contents': {KEY_IMAGE_RASTERIZE: "iVBORwrkJggg==",
                               KEY_IMAGE_HTML: html_data,
-                              KEY_CURRENT_URL_RASTERIZE: url},
+                              KEY_CURRENT_URL_RASTERIZE: url[0]},
                  'Type': 'note'}]
 
     elif command == 'getMLModel':
@@ -49,7 +51,8 @@ def executeCommand(command, args=None):
         return None
     elif command == 'UnEscapeURLs':
         url = args.get('input')
-        return [{'Contents': url}]
+        return [{'Contents': url[0]}]
+    return None
 
 
 def test_regular_malicious_new_domain(mocker):
@@ -69,7 +72,7 @@ def test_regular_malicious_new_domain(mocker):
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_MALICIOUS_COLOR % MALICIOUS_VERDICT
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_MALICIOUS_COLOR.format(MALICIOUS_VERDICT)
     assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'psg.fr'
     assert detailed_summary[0][KEY_CONTENT_URL] == 'psg.fr'
     assert detailed_summary[0][KEY_CONTENT_LOGO] == 'True'
@@ -157,7 +160,7 @@ def test_regular_benign(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR.format(BENIGN_VERDICT)
     assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'google.com'
     assert detailed_summary[0][KEY_CONTENT_URL] == 'google.com'
     assert detailed_summary[0][KEY_CONTENT_LOGO] == 'False'
@@ -189,24 +192,6 @@ def test_missing_url(mocker):
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
-def test_no_html_data(mocker):
-    """
-    Given: URL without HTML data
-    When: Calling the script
-    Then: Make sure MSG_SOMETHING_WRONG_IN_RASTERIZE is retrieved
-    """
-    url = 'bad_url.com'
-    model_mock = PhishingURLModelMock()
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
-    mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
-    mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
-    mocker.patch.object(model_mock, 'major', return_value=0, create=True)
-    mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
-    general_summary, _, _ = main()
-    assert MSG_MISSING_INFORMATION_RASTERIZE in general_summary[0]['Final Verdict']
-
-
 def test_white_list_not_force(mocker):
     url = 'google.com'
     model_prediction = {MODEL_KEY_URL_SCORE: 0.01,
@@ -225,7 +210,7 @@ def test_white_list_not_force(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT_WHITELIST
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR.format(BENIGN_VERDICT_WHITELIST)
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
@@ -246,15 +231,9 @@ def test_white_list_force(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT
+
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR.format(BENIGN_VERDICT)
     assert not detailed_summary
-    # assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'google.com'
-    # assert detailed_summary[0][KEY_CONTENT_URL] == 'google.com'
-    # assert detailed_summary[0][KEY_CONTENT_LOGO] == 'False'
-    # assert detailed_summary[0][KEY_CONTENT_LOGIN] == 'True'
-    # assert detailed_summary[0][KEY_CONTENT_SEO] == 'False'
-    # assert detailed_summary[0][KEY_CONTENT_AGE] == 'False'
-    # assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == SCORE_BENIGN
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
@@ -278,8 +257,8 @@ def test_new_major_version(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     mocker.patch('DBotPredictURLPhishing.MAJOR_VERSION', 1)
-    general_summary, detailed_summary, msg_list = main()
-    assert MSG_UPDATE_MODEL % (1, 0) in msg_list
+    _, _, msg_list = main()
+    assert MSG_UPDATE_MODEL.format(1, 0) in msg_list
 
 
 def test_get_colored_pred_json():
@@ -299,15 +278,15 @@ def test_get_colored_pred_json():
     res_1 = get_colored_pred_json(pred_json_1)
     res_2 = get_colored_pred_json(pred_json_2)
 
-    assert res_1[MODEL_KEY_SEO] == RED_COLOR % 'Bad'
-    assert res_1[MODEL_KEY_LOGO_FOUND] == RED_COLOR % 'Suspicious'
-    assert res_1[MODEL_KEY_LOGIN_FORM] == RED_COLOR % 'Yes'
-    assert res_1[DOMAIN_AGE_KEY] == RED_COLOR % 'Less than 6 months ago'
+    assert res_1[MODEL_KEY_SEO] == RED_COLOR.format('Bad')
+    assert res_1[MODEL_KEY_LOGO_FOUND] == RED_COLOR.format('Suspicious')
+    assert res_1[MODEL_KEY_LOGIN_FORM] == RED_COLOR.format('Yes')
+    assert res_1[DOMAIN_AGE_KEY] == RED_COLOR.format('Less than 6 months ago')
 
-    assert res_2[MODEL_KEY_SEO] == GREEN_COLOR % 'Good'
-    assert res_2[MODEL_KEY_LOGO_FOUND] == GREEN_COLOR % 'Not Suspicious'
-    assert res_2[MODEL_KEY_LOGIN_FORM] == GREEN_COLOR % 'No'
-    assert res_2[DOMAIN_AGE_KEY] == GREEN_COLOR % 'More than 6 months ago'
+    assert res_2[MODEL_KEY_SEO] == GREEN_COLOR.format('Good')
+    assert res_2[MODEL_KEY_LOGO_FOUND] == GREEN_COLOR.format('Not Suspicious')
+    assert res_2[MODEL_KEY_LOGIN_FORM] == GREEN_COLOR.format('No')
+    assert res_2[DOMAIN_AGE_KEY] == GREEN_COLOR.format('More than 6 months ago')
 
 
 def test_get_score():
@@ -336,4 +315,38 @@ def test_extract_created_date_with_empty_entry():
     Then: Make sure None is returned
     """
     from DBotPredictURLPhishing import extract_created_date
-    assert not extract_created_date(entry_list=[{"EntryContext": None, "Type": 1}])
+    assert not extract_created_date({"EntryContext": None, "Type": 1})
+
+
+def test_weed_rasterize_errors(mocker: MockerFixture):
+    """
+    Given: the results from calling rasterize include errors.
+    When: looking for rasterize error responses in the weed_rasterize_errors function.
+    Then: Make sure the correct errors are weeded out and returned to the user and the rest are used.
+    """
+    return_results_mock = mocker.patch('DBotPredictURLPhishing.return_results')
+    urls = ['1', '2', '3']
+    res_rasterize = [
+        {'Contents': 'error 1'},
+        {'Contents': {'success': True}},
+        {'Contents': 'error 3'},
+    ]
+
+    weed_rasterize_errors(urls, res_rasterize)
+
+    assert urls == ['2']
+    assert res_rasterize == [{'Contents': {'success': True}}]
+    assert 'error 1' in return_results_mock.call_args_list[0].args[0].readable_output
+    assert 'error 3' in return_results_mock.call_args_list[0].args[0].readable_output
+
+
+def test_weed_rasterize_errors_bad_rasterize_response():
+    """
+    Given: the results from calling rasterize are less than the amount of URLs given.
+    When: looking for rasterize error responses in the weed_rasterize_errors function.
+    Then: Make sure the correct error is raised.
+    """
+    with pytest.raises(DemistoException, match=(
+        'Unexpected response from the "rasterize" command. Please make sure the Rasterize pack version is above 2.0.7')
+    ):
+        weed_rasterize_errors(['1', '2'], [{}])

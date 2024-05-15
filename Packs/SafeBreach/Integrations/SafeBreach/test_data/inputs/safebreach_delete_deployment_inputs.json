@@ -1,0 +1,30 @@
+{
+    "successful_delete_just_name": {
+        "args": {
+            "deployment_id": 122,
+            "deployment_name": "acme"
+        },
+        "command": "safebreach-delete-deployment"
+    },
+    "successful_delete_just_ID": {
+        "args": {
+            "deployment_id": 122,
+            "deployment_name": ""
+        },
+        "command": "safebreach-delete-deployment"
+    },
+    "successful_delete_both_name_and_id": {
+        "args": {
+            "deployment_id": 122,
+            "deployment_name": "acme"
+        },
+        "command": "safebreach-delete-deployment"
+    },
+    "failed_delete": {
+        "args": {
+            "deployment_id": 128,
+            "deployment_name": "acme1234"
+        },
+        "command": "safebreach-delete-deployment"
+    }
+}
