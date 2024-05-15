@@ -430,7 +430,7 @@ def test_read_file(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     obj = read_file('231342@343', 'json')
     assert len(obj) >= 1
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
 
@@ -441,7 +441,7 @@ def test_read_file(mocker):
     assert len(obj_from_pickle) >= 1
 
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         obj = read_file(f.read(), 'json_string')
         df = pd.DataFrame.from_dict(obj)
         df.to_csv("./TestData/test.csv", index=False)
@@ -449,7 +449,7 @@ def test_read_file(mocker):
         obj2 = read_file('231342@343', 'csv')
         assert len(obj2) == len(obj)
 
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         b64_input = base64.b64encode(f.read().encode('utf-8'))
         obj = read_file(b64_input, 'json_b64_string')
         assert len(obj) >= 1
