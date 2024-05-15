@@ -309,7 +309,7 @@ class TAXIIServer:
             instance_name = calling_context.get('IntegrationInstance', '')
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
 
-            if is_demisto_version_ge('8.0.0'):
+            if is_xsiam_or_xsoar_saas():
                 prefix = 'ext-'
                 xsoar_path = '/xsoar'
         else:
