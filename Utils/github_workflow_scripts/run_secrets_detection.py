@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 
 import requests
 import urllib3
@@ -38,6 +39,9 @@ def trigger_generic_webhook(options):
         "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
+
+    raise Exception(f'{body}')
+
     # post to Content Gold
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
 
