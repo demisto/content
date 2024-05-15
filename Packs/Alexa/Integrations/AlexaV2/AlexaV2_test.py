@@ -12,7 +12,7 @@ def create_client(proxy: bool = False, verify: bool = False, top_domain_threshol
 
 
 def load_json(file: str) -> Dict:
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
