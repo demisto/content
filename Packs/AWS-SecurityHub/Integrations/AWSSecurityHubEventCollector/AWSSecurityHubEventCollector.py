@@ -10,7 +10,7 @@ from AWSApiModule import *
 # It is not used at runtime, and not exist in the docker image.
 if TYPE_CHECKING:
     from mypy_boto3_securityhub import SecurityHubClient
-    from mypy_boto3_securityhub.type_defs import AwsSecurityFindingTypeDef
+    from mypy_boto3_securityhub.type_defs import AwsSecurityFindingOutputTypeDef
 
 
 VENDOR = 'AWS'
@@ -22,7 +22,7 @@ DEFAULT_MAX_RESULTS = 1000
 API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
 
 
-def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, Any]:
+def generate_last_run(events: list["AwsSecurityFindingOutputTypeDef"]) -> dict[str, Any]:
     """
     Generate the last run object using events data.
 
@@ -40,7 +40,7 @@ def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, An
     ignore_list: list[str] = []
     last_update_date = events[-1].get(TIME_FIELD)
 
-    # Since the "_time" key is added to each event, the event type changes from "AwsSecurityFindingTypeDef" to just dict
+    # Since the "_time" key is added to each event, the event type changes from "AwsSecurityFindingOutputTypeDef" to just dict
     events = cast(list[dict[str, Any]], events)
     for event in events:
         event['_time'] = event[TIME_FIELD]
@@ -56,7 +56,7 @@ def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, An
 
 def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = None,
                end_time: dt.datetime | None = None, id_ignore_list: list[str] | None = None,
-               page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[List["AwsSecurityFindingTypeDef"]]:
+               page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[List["AwsSecurityFindingOutputTypeDef"]]:
     """
     Fetch events from AWS Security Hub.
 
@@ -124,7 +124,7 @@ def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = Non
 
 def fetch_events(client: "SecurityHubClient", last_run: dict, first_fetch_time: dt.datetime | None,
                  page_size: int = API_MAX_PAGE_SIZE, limit: int = 0
-                 ) -> tuple[list["AwsSecurityFindingTypeDef"], dict, Exception | None]:
+                 ) -> tuple[list["AwsSecurityFindingOutputTypeDef"], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
@@ -143,7 +143,7 @@ def fetch_events(client: "SecurityHubClient", last_run: dict, first_fetch_time: 
 
     id_ignore_list: list = last_run.get('last_update_date_finding_ids', [])
 
-    events: list["AwsSecurityFindingTypeDef"] = []
+    events: list["AwsSecurityFindingOutputTypeDef"] = []
     error = None
 
     try:
