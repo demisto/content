@@ -1,6 +1,5 @@
-id: 8c912dae-b766-4dc6-8b15-1b5efb96d9d1
-version: 25
-vcShouldKeepItemLegacyProdMachine: false
+id: VenafiV2_Test
+version: -1
 name: VenafiV2_Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -41,9 +41,7 @@ tasks:
       id: 17c019b3-349d-43dd-87f6-6a37311319b4
       version: -1
       name: venafi-get-certificates
-      description: 'Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z
-        format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm
-        and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm'
+      description: 'Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm'
       script: '|||venafi-get-certificates'
       type: regular
       iscommand: true
@@ -193,6 +191,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -223,3 +222,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+description: ''
