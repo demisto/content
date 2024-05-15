@@ -1,47 +1,44 @@
-from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument,
-                                                                                  YMLMetadataCollector, OutputArgument,
-                                                                                  ParameterTypes)
-from CommonServerPython import BaseClient, CommandResults, datetime
-
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
+                                          conf=[ConfKey(name="server_url",
+                                                        key_type=ParameterTypes.STRING,
+                                                        required=True),
+                                                ConfKey(name="credentials",
+                                                        key_type=ParameterTypes.AUTH,
+                                                        required=True)])
+
+
 ''' IMPORTS '''
 
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+PA_OUTPUT_PREFIX = "CipherTrust."
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 2000
 DEFAULT_LIMIT = 50
+
+
+class ArgAndParamNames:
+    PAGE = 'page'
+    PAGE_SIZE = 'page_size'
+    LIMIT = 'limit'
+    GROUP_NAME = 'group_name'
+    USER_ID = 'user_id'
+    CONNECTION = 'connection'
+    CLIENT_ID = 'client_id'
+
+
 '''CLIENT CLASS'''
-
-
-def handle_pagination(limit, page, page_size=DEFAULT_PAGE_SIZE):
-    if page:
-        if page_size > MAX_PAGE_SIZE:
-            raise ValueError(f'Page size cannot exceed {MAX_PAGE_SIZE}')
-        return {
-            'skip': (page - 1) * page_size,
-            'limit': page_size
-        }
-    elif limit:
-        return {
-            'skip': 0,
-            'limit': limit
-        }
-    else:
-        return {
-            'skip': 0,
-            'limit': DEFAULT_LIMIT
-        }
 
 
 class CipherTrustClient(BaseClient):
@@ -73,18 +70,58 @@ class CipherTrustClient(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+
+def calculate_skip_and_limit_for_pagination(limit, page, page_size):
+    limit = arg_to_number(limit)
+    page = arg_to_number(page)
+    if page:
+        page_size = arg_to_number(page_size) or DEFAULT_PAGE_SIZE
+        if page_size > MAX_PAGE_SIZE:
+            raise ValueError(f'Page size cannot exceed {MAX_PAGE_SIZE}')
+        return (page - 1) * page_size, page_size
+    return 0, limit if limit else DEFAULT_LIMIT
+
+
 ''' COMMAND FUNCTIONS '''
 
 
+@metadata_collector.command(command_name='test_module')
 def test_module(client: CipherTrustClient):
     """Tests connectivity with the client.
     Takes as an argument all client arguments to create a new client
     """
-    pass
+    client.get_groups_list({})
+    return 'ok'
 
 
-def groups_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    pass
+@metadata_collector.command(command_name='groups_list_command')
+def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
+    """
+    Args:
+        group_name (String)
+        user_ids (String)
+        connection (String)
+        client_ids (String)
+        page
+        page_size
+        limit
+    """
+    skip, limit = calculate_skip_and_limit_for_pagination(args.get(ArgAndParamNames.LIMIT), args.get(ArgAndParamNames.PAGE),
+                                                          args.get(ArgAndParamNames.PAGE_SIZE))
+    params = assign_params(
+        skip=skip,
+        limit=limit,
+        name=args.get(ArgAndParamNames.GROUP_NAME),
+        users=args.get(ArgAndParamNames.USER_ID),
+        connection=args.get(ArgAndParamNames.CONNECTION),
+        clients=args.get(ArgAndParamNames.CLIENT_ID)
+    )
+    raw_response = client.get_groups_list(params)
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Group',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -122,11 +159,10 @@ def main():
         if command == 'ciphertrust-group-list':
             return_results(groups_list_command(client=client, args=args))
 
-
     except Exception as e:
         msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
         demisto.error(traceback.format_exc())
-        return_error(message=msg, error=e)
+        return_error(message=msg, error=str(e))
 
 
 ''' ENTRY POINT '''

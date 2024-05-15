@@ -1,0 +1,40 @@
+category: Utilities
+description: ''
+commonfields:
+  id: CipherTrust
+  version: -1
+name: CipherTrust
+display: CipherTrust
+configuration:
+- display: server_url
+  name: server_url
+  type: 0
+  required: true
+- display: credentials
+  name: credentials
+  type: 9
+  required: true
+script:
+  commands:
+  - deprecated: false
+    description: "\n    Args:\n        group_name (String)\n        user_ids (String)\n        connection (String)\n        client_ids (String)\n        page\n        page_size\n        limit\n    "
+    name: ciphertrust-group-list
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: "Tests connectivity with the client.\n    Takes as an argument all client arguments to create a new client\n    "
+    name: test-module
+    arguments: []
+    outputs: []
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:latest
+  feed: false
+  isfetch: false
+  runonce: false
+  longRunning: false
+  longRunningPort: false
+fromversion: 6.0.0
+tests:
+- No tests
