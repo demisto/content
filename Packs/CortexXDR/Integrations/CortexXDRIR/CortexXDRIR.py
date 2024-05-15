@@ -539,7 +539,6 @@ def sort_incident_data(raw_incident):
             - file artifact
             - network artifacts.
     """
-
     incident = raw_incident.get('incident', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data', None)
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
