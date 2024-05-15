@@ -1138,7 +1138,7 @@ def test_fetch_incidents_for_alert_success(
     mock_malware_type = 'malware-type'
     mock_api_token.return_value = API_TOKEN
 
-    with open('TestData/fetch_incidents_alert_response.json', 'r') as f:
+    with open('TestData/fetch_incidents_alert_response.json') as f:
         dummy_response = f.read()
 
     resp = Response()
@@ -1230,7 +1230,7 @@ def test_fetch_incidents_for_event_success(
     mock_fetch_limit = 1
     mock_api_token.return_value = API_TOKEN
 
-    with open('TestData/fetch_incidents_event_response.json', 'r') as f:
+    with open('TestData/fetch_incidents_event_response.json') as f:
         dummy_response = f.read()
 
     resp = Response()
