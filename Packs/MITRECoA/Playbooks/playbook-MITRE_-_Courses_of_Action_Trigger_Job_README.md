@@ -51,4 +51,5 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK - Courses of Action Trigger Job](../doc_files/MITRE_ATT&CK_-_Courses_of_Action_Trigger_Job.png)
+![MITRE ATT&CK - Courses of Action Trigger Job](../doc_files/MITRE_ATTand
+CK_-_Courses_of_Action_Trigger_Job.png)
