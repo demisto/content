@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: HelloWorldEventCollector
+  id: DruvaEventCollector
   version: -1
 configuration:
 - defaultvalue: https://test.com
@@ -37,9 +37,9 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: This is the Hello World event collector integration for Cortex XSIAM.
-display: HelloWorld Event Collector
-name: HelloWorldEventCollector
+description: This is the Druva event collector integration for Cortex XSIAM.
+display: Druva Event Collector
+name: DruvaEventCollector
 script:
   commands:
   - arguments:
@@ -73,10 +73,10 @@ script:
       name: from_date
       required: false
     deprecated: false
-    description: Gets events from Hello World.
+    description: Gets events from Druva.
     execution: false
-    name: hello-world-get-events
-  dockerimage: demisto/python3:3.10.13.87159
+    name: druva-get-events
+  dockerimage: demisto/python3:3.10.13.72123
   isfetchevents: true
   runonce: false
   script: '-'
