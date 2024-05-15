@@ -26,7 +26,7 @@ def test_parseIds(value, expected_result):
                          ])
 @freeze_time("2023-04-01 00:00:00")
 def test_calculate_end_time(value, expected_result):
-    result = calculate_end_time(value)
+    result = calculate_end_time(datetime.now(), value)
     assert result == expected_result
 
 
@@ -299,26 +299,3 @@ def test_main_fail(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, ' \
                       'pollingCommandArgName, pollingCommand is malformed.'
-
-
-# def start_freeze_time(timestamp):
-#     _start_freeze_time = freeze_time(timestamp)
-#     _start_freeze_time.start()
-#     return datetime.now()
-#
-#
-# @pytest.mark.parametrize(
-#     'timestamp, interval, expected_cron_expression',
-#     [
-#         ("2022-05-01 12:52:29", 20, "52,32,12 * * * *"),
-#         ("2022-05-01 12:29:29", 2, "31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,1,3,5,7,9,11,13,15,17,19,21,23,25,27,29 * * * *"),
-#         ("2022-05-01 12:02:01", 3, "5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,2 * * * *"),
-#         ("2022-05-01 12:07:30", 5, "12,17,22,27,32,37,42,47,52,57,2,7 * * * *"),
-#         ("2022-05-01 12:07:30", 1, "8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,1,2,3,4,5,6,7 * * * *"),
-#         ("2022-05-01 12:58:30", 4, "2,6,10,14,18,22,26,30,34,38,42,46,50,54,58 * * * *"),
-#     ]
-# )
-# def test_generate_cron(timestamp: str, interval: int, expected_cron_expression: str):
-#     from ScheduleGenericPolling import generate_cron
-#     start_freeze_time(timestamp)
-#     assert sorted(generate_cron(interval)) == sorted(expected_cron_expression)
