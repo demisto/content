@@ -427,9 +427,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  variables:
-    KUBERNETES_MEMORY_REQUEST: 8Gi
-    KUBERNETES_MEMORY_LIMIT: 16Gi
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
@@ -447,6 +444,9 @@
     policy: pull-push
   extends:
     - .pre-commit-settings
+  variables:
+    KUBERNETES_MEMORY_REQUEST: 8Gi
+    KUBERNETES_MEMORY_LIMIT: 16Gi
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
