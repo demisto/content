@@ -69,7 +69,7 @@ def test_get_deletion_args(integration_name):
     Then:
     return the suitable deletion args
     """
-    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
+    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}')) as file:
         search_results = json.load(file)
     assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == ARGS_FUNC[integration_name](search_results, SEARCH_ARGS)
 
@@ -84,7 +84,7 @@ def test_delete_email(mocker, integration_name):
     Then:
         delete the email
     """
-    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
+    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}')) as file:
         search_results = json.load(file)
     mocker.patch.object(DeleteReportedEmail, 'execute_command', return_value=search_results)
     assert delete_email(SEARCH_ARGS, 'func', ARGS_FUNC[integration_name], 'func', lambda x: False) == 'Success'
