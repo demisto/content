@@ -2899,7 +2899,7 @@ def get_pull_request_numbers_from_file(file_path) -> list[int]:
     return re.findall(PULL_REQUEST_PATTERN, log_info)
 
 
-def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dict, dict, dict, dict]:
+def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
 
     Args:
@@ -2911,7 +2911,6 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dic
         dict: The successful packs dict
         dict: The failed packs dict
         dict: the successful uploaded dependencies zip packs
-        dict : The successful private packs dict
         dict: The images data dict
 
     """
@@ -2922,19 +2921,17 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dic
         successful_uploaded_dependencies_zip_packs_dict = \
             stage_data.get(BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS, {})
         failed_packs_dict = stage_data.get(BucketUploadFlow.FAILED_PACKS, {})
-        successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
-        return successful_packs_dict, successful_uploaded_dependencies_zip_packs_dict, \
-            failed_packs_dict, successful_private_packs_dict, images_data_dict
+        return successful_packs_dict, successful_uploaded_dependencies_zip_packs_dict, failed_packs_dict, images_data_dict
 
     logging.debug(f'{packs_results_file_path} does not exist in artifacts')
-    return {}, {}, {}, {}, {}
+    return {}, {}, {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
                                                       successful_uploaded_dependencies_zip_packs: list,
                                                       failed_packs: list,
-                                                      updated_private_packs: list, images_data: dict = None):
+                                                      images_data: dict = {}):
     """ Write the successful, successful_uploaded_dependencies_zip_packs and failed packs to the correct section in the
         packs_results.json file
 
@@ -2946,7 +2943,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         successful_uploaded_dependencies_zip_packs (list): The list of all packs that successfully updated their
         dependencies zip file.
         failed_packs (list): The list of all failed packs
-        updated_private_packs (list) : The list of all private packs that were updated
         images_data (dict): A dict containing all images that were uploaded for each pack
 
     """
@@ -2992,13 +2988,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
 
         packs_results[stage].update(successful_uploaded_dependencies_zip_packs_dict)
         logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs_dict}")
-
-    if updated_private_packs:
-        successful_private_packs_dict: dict = {
-            BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
-        }
-        packs_results[stage].update(successful_private_packs_dict)
-        logging.debug(f"Successful private packs {successful_private_packs_dict}")
 
     if images_data:
         # adds a list with all the packs that were changed with images
@@ -3174,8 +3163,8 @@ def get_content_git_client(content_repo_path: str):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
-                            is_private_build: bool = False, circle_branch: str = "master"):
+def get_recent_commits_data(content_repo: Any, index_folder_path: str,
+                            is_bucket_upload_flow: bool, circle_branch: str = "master"):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -3189,11 +3178,11 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
         str: last commit hash of head.
         str: previous commit depending on the flow the script is running
     """
-    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow,
-                                                                is_private_build, circle_branch)
+    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path,
+                                                                is_bucket_upload_flow, circle_branch)
 
 
-def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, circle_branch):
     """ If running in bucket upload workflow we want to get the commit in the index which is the index
     We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
     head of origin/master
@@ -3211,10 +3200,6 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
     """
     if is_bucket_upload_flow:
         return get_last_upload_commit_hash(content_repo, index_folder_path)
-    elif is_private_build:
-        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.debug(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
-        return previous_master_head_commit
     else:
         if circle_branch == 'master':
             head_str = "HEAD~1"
