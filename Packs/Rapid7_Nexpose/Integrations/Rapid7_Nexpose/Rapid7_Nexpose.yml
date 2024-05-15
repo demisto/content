@@ -2277,6 +2277,40 @@ script:
       required: true
       description: The asset ID.
     description: Remove asset from tag.
+  - name: nexpose-add-site-included-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    - name: assets
+      description: List of addresses to add to the site's included scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+      isArray: true
+    - name: asset_group_ids
+      isArray: true
+      description: Array of asset group identifiers.
+  - name: nexpose-remove-site-included-target
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    - name: assets
+      isArray: true
+      description: List of address to remove from the sites included scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+    - name: asset_group_ids
+      isArray: true
+      description: Array of asset group identifiers.
+  - name: nexpose-list-site-included-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    description: Return a list of site is related assets.
+  - name: nexpose-list-site-included-asset-group
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    description: Return a list of site is related asset groups.
   runonce: false
   script: '-'
   type: python

@@ -2021,6 +2021,52 @@ class Client(BaseClient):
             resp_type="json"
         )
 
+    def add_site_included_targets(self, site_id: int, assets: list[str]) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/sites/{site_id}/included_targets",
+            json_data=assets,
+            resp_type="json"
+        )
+
+    def add_site_included_asset_group(self, site_id: int, asset_group_ids: list[int]) -> dict:
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"/sites/{site_id}/included_asset_groups",
+            json_data=asset_group_ids,
+            resp_type="json"
+        )
+
+    def remove_site_included_targets(self, site_id: int, assets: list[str]) -> dict:
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/sites/{site_id}/included_targets",
+            json_data=assets,
+            resp_type="json"
+        )
+
+    def remove_site_included_asset_group(self, site_id: int, asset_group_ids: list[int]) -> dict:
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/sites/{site_id}/included_asset_groups",
+            json_data=asset_group_ids,
+            resp_type="json"
+        )
+
+    def list_site_included_targets(self, site_id: int) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/sites/{site_id}/included_targets",
+            resp_type="json"
+        )
+
+    def list_site_included_asset_group(self, site_id: int) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/sites/{site_id}/included_asset_groups",
+            resp_type="json"
+        )
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -5076,6 +5122,63 @@ def remove_tag_asset_command(client: Client, tag_id: str, asset_id: str):
     return CommandResults(readable_output=f"Asset {asset_id_int} was removed from tag {tag_id_int} successfully")
 
 
+def add_site_included_asset_command(client: Client, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if assets_list := argToList(assets):
+        client.add_site_included_targets(site_id_int, assets_list)
+        added_assets = f"assets {', '.join(assets_list)}"
+    elif asset_group_ids_list := argToList(asset_group_ids, transform=int):
+        client.add_site_included_asset_group(site_id_int, asset_group_ids_list)
+        added_assets = f"asset group IDs {', '.join(asset_group_ids_list)}"
+    else:
+        raise DemistoException("must provide at list one assets or asset_group_id")
+
+    return CommandResults(readable_output=f"Added {added_assets} to tag with ID {site_id_int}")
+
+
+def remove_site_included_asset_command(client: Client, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if assets_list := argToList(assets):
+        client.remove_site_included_targets(site_id_int, assets_list)
+        added_assets = f"assets {', '.join(assets_list)}"
+    elif asset_group_ids_list := argToList(asset_group_ids, transform=int):
+        client.remove_site_included_asset_group(site_id_int, asset_group_ids_list)
+        added_assets = f"asset group IDs {', '.join(asset_group_ids_list)}"
+    else:
+        raise DemistoException("must provide at list one assets or asset_group_id")
+
+    return CommandResults(readable_output=f"removed {added_assets} from tag with ID {site_id_int}")
+
+
+def list_site_included_asset(client: Client, site_id: str):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    res = client.list_site_included_targets(site_id_int)
+    return CommandResults(
+        outputs_prefix="Nexpose.IncludedAsset",
+        outputs_key_field="Id",
+        outputs=res,
+        readable_output=tableToMarkdown("Asset_list", res),
+        raw_response=res
+    )
+# TODO handle empty list as value in tableToMarkdown function for example: {"abc":[]}
+
+
+def list_site_included_asset_group(client: Client, site_id: str):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    res = client.list_site_included_asset_group(site_id_int)
+    return CommandResults(
+        outputs_prefix="Nexpose.IncludedAssetGroup",
+        outputs_key_field="Id",
+        outputs=res,
+        readable_output=tableToMarkdown("Asset_group_list", res),
+        raw_response=res
+    )
+
+
 def set_assigned_shared_credential_status_command(client: Client, credential_id: str, enabled: bool,
                                                   site_id: str | None = None,
                                                   site_name: str | None = None) -> CommandResults:
@@ -5780,6 +5883,14 @@ def main():  # pragma: no cover
             results = add_tag_asset_command(client=client, **args)
         elif command == "nexpose-remove-tag-asset":
             results = remove_tag_asset_command(client=client, **args)
+        elif command == "nexpose-add-site-included-asset":
+            results = add_site_included_asset_command(client=client, **args)
+        elif command == "nexpose-remove-site-included-target":
+            results = remove_site_included_asset_command(client=client, **args)
+        elif command == "nexpose-list-site-included-asset":
+            results = list_site_included_asset(client=client, **args)
+        elif command == "nexpose-list-site-included-asset-group":
+            results = list_site_included_asset_group(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
