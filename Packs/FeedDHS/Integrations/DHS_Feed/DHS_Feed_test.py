@@ -39,7 +39,7 @@ class TestTempFile:
     def test_create_file(self):
         data = 'test'
         temp_file = TempFile(data)
-        with open(temp_file.path, 'r') as _file:
+        with open(temp_file.path) as _file:
             assert _file.read() == data, 'temp file content failed'
 
     def test_removing_file(self):
@@ -60,7 +60,7 @@ class TestHelpers:
 
     @pytest.mark.parametrize('path, count', data_test_fix_rsa_data)
     def test_fix_rsa_data(self, path, count):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             data = _file.read()
         demisto_data = data.replace('\n', ' ')
         fixed_data = fix_rsa_data(demisto_data, count)
@@ -83,15 +83,15 @@ class TestHelpers:
 
     @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
     def test_ssl_files_checker(self, input_key, input_public):
-        with open(input_key, 'r') as input_key:
-            with open(input_public, 'r') as input_public:
+        with open(input_key) as input_key:
+            with open(input_public) as input_public:
                 ssl_files_checker(input_public.read(), input_key.read())
 
     @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
     def test_ssl_files_checker_with_invalid_files(self, input_key, input_public):
-        with open(input_key, 'r') as input_key:
+        with open(input_key) as input_key:
             input_key = input_key.read()
-        with open(input_public, 'r') as input_public:
+        with open(input_public) as input_public:
             input_public = input_public.read()
         with pytest.raises(ValueError):
             temp_input_public = input_public.split('\n')[:-6]
@@ -188,7 +188,7 @@ class TestIndicators:
 
     @staticmethod
     def read_json(path):
-        with open(path, 'r') as json_file:
+        with open(path) as json_file:
             json_file = json_file.read()
         return json.loads(json_file)
 
