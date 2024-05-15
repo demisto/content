@@ -871,9 +871,9 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
     Start the taxii server.
     """
 
-    certificate_path = ''
-    private_key_path = ''
-    ssl_args = {}
+    certificate_path = str()
+    private_key_path = str()
+    ssl_args = dict()
 
     try:
 
