@@ -11,7 +11,11 @@ alter
         dst_ipv6 = if(src ~= ":", dst, null),
         dvc_ipv4 = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
         dvc_ipv6 = if(src ~= ":", dvc, null),
-        cn1_response_code = to_string(cn1)
+        cn1_response_code = to_string(cn1),
+        cs5_ipv4 = if(cs5 ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", cs5, null),
+        cs5_ipv6 = if(cs5 ~= ":", cs5, null)
+| alter
+        cs5_domain = if(cs5_ipv4 = null AND cs5_ipv6 = null, cs5, null)         
 | alter
         xdm.event.type = cefName,
         xdm.network.rule = cs1,
@@ -27,8 +31,9 @@ alter
         xdm.network.http.content_type = cs3_request_content_type,
         xdm.network.http.http_header.header = if(cs3_request_cookie = null, null, "Cookie"),
         xdm.network.http.http_header.value = cs3_request_cookie,
-        xdm.source.ipv4 = src_ipv4,
-        xdm.source.ipv6 = src_ipv6,
+        xdm.source.ipv4 = coalesce(src_ipv4, cs5_ipv4),
+        xdm.source.ipv6 = coalesce(src_ipv6, cs5_ipv6),
+        xdm.source.user.domain = cs5_domain, 
         xdm.target.ipv4 = dst_ipv4,
         xdm.target.ipv6 = dst_ipv6,
         xdm.intermediate.ipv4 = dvc_ipv4, 
