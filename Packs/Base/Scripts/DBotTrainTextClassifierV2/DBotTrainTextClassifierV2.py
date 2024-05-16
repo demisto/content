@@ -372,18 +372,18 @@ def validate_confusion_matrix(confusion_matrix):
 
 
 def main():
-    input = demisto.args()['input']
-    input_type = demisto.args()['inputType']
-    model_name = demisto.args()['modelName']
-    store_model = demisto.args()['storeModel'] == 'true'
+    input = demisto.args().get('input')
+    input_type = demisto.args().get('inputType', 'pickle_filename')
+    model_name = demisto.args().get('modelName', 'phishing_model')
+    store_model = demisto.args().get('storeModel') == 'true'
     model_override = demisto.args().get('overrideExistingModel', 'false') == 'true'
-    target_accuracy = float(demisto.args()['targetAccuracy'])
-    text_field = demisto.args()['textField']
-    tag_fields = demisto.args()['tagField'].split(",")
-    labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
-    keyword_min_score = float(demisto.args()['keywordMinScore'])
+    target_accuracy = float(demisto.args().get('targetAccuracy', '0.8'))
+    text_field = demisto.args().get('textField', 'dbot_processed_text')
+    tag_fields = demisto.args().get('tagField').split(",")
+    labels_mapping = get_phishing_map_labels(demisto.args().get('phishingLabels'))
+    keyword_min_score = float(demisto.args().get('keywordMinScore', '0.05'))
     return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
-    original_text_fields = demisto.args().get('originalTextFields', '')
+    original_text_fields = demisto.args().get('originalTextFields', 'emailsubject|name,emailbody|emailbodyhtml')
     algorithm = demisto.args().get('trainingAlgorithm', AUTO_TRAINING_ALGO)
     # FASTTEXT_TRAINING_ALGO and FROM_SCRATCH_TRAINING_ALGO are equivalent, replacement is done because ml_lib
     # expects algorithm as one of (FASTTEXT_TRAINING_ALGO, FINETUNE_TRAINING_ALGO)
