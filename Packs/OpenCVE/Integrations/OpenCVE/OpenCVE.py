@@ -493,6 +493,9 @@ def parse_cve(ocve: OpenCVE, cve: dict):
     parsed_cve['fields']['nodes'] = nodes
     parsed_cve['fields']['cwes'] = cve.get('cwes', [])
 
+    if not parsed_cve['fields'].get('cvssscore'):
+        cvss = cve.get('cvss', {})
+        parsed_cve['fields']['cvssscore'] = cvss.get('v3') or cvss.get('v2')
     return relationships, parsed_cve
 
 
