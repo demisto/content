@@ -89,7 +89,7 @@ def get_file_entry_id(file_name):
 
 
 def read_files_by_name(file_names, input_type):
-    names = filter(None, argToList(file_names))
+    names = filter(None, argToList(file_names))  # type: ignore[var-annotated]
     data = []
     for name in names:
         data += read_file(get_file_entry_id(name), input_type)
