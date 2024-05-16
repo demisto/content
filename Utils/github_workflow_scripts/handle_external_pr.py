@@ -93,6 +93,24 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
     return 0
 
 
+def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) ->  bool:
+    """ Checks if the current PR has the label of "contribution on hold" or pr is in draft state,
+        if so - the PR won't be counted for the PR count to determine reviewer
+
+        Args:
+            pr (PullRequest): The PR
+            pr_labels (list): The PR labels
+
+        Returns:
+            bool: if PR need to be skipped
+    """
+    labels_to_consider = {'Contribution On Hold'}
+    pr_labels_set = set(pr_labels)
+    if pr.draft == 'true' or labels_to_consider.issubset(pr_labels_set):
+        return True
+    return False
+
+
 def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have been assigned to a user
     for each potential reviewer and returns the user with the smallest amount.
@@ -112,6 +130,8 @@ def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) 
         # we only consider 'Contribution' prs when computing who to assign
         pr_labels = [label.name.casefold() for label in pull.labels]
         if label_to_consider not in pr_labels:
+            continue
+        if skip_pr_from_count_for_reviewer(pull, pr_labels):
             continue
         assignees = {assignee.login for assignee in pull.assignees}
         for reviewer in potential_reviewers:
