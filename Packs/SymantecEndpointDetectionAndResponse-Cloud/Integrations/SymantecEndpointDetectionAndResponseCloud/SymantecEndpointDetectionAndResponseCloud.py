@@ -49,10 +49,6 @@ def symantec_edr_update_deny_list_policy(api_token,args,params):
                             'sha2': args.get('sha256'),
                             'name': args.get('filename')
                         },
-                        'file': {
-                            'sha2': '795db7bdad1befdd3ad942be79715f6b0c5083d859901b81657b590c9628790f',
-                            'name': 'deneme.exe'
-                        },
                     },
                 ],
             },"properties":{"policy_name":"Deny List Policy - update name"},
