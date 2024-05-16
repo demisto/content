@@ -7,6 +7,7 @@ In the XDome Instance Settings dialog box, do the following:
 * **XDome public API base URL**: Enter your Claroty base url. For additional information please refer to the Integration Guide inside the Claroty Dashboard.
 * **API Token**: Enter your API token (generated in the xDome dashboard)
 * **The initial time to fetch from**: Define the initial starting time to fetch incidents. For example, if you enter 7 days, the incidents from the previous seven days will be fetched.
+* **Maximum number of incidents per fetch**: Limit the maximum number of incidents to fetch per fetching-interval
 * **Fetch only unresolved Device-Alert Pairs**: Choose this option to only fetch unresolved device-alert pairs.
 * **Alert Types Selection**: Select the required alert types.
 * **Incidents Fetch Interval**: Define how often the incidents should be fetched. For example, if you enter 5 minutes, the incidents will be fetched every five minutes.

@@ -32,9 +32,14 @@ configuration:
   required: false
 - defaultvalue: 7 days
   display: Initial Incidents Fetch Time
-  name: initial_fetch_time
-  required: true
+  name: first_fetch
+  required: false
   type: 0
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: '5000000'
+  type: 0
+  required: false
 - display: Fetch Only Unresolved Device-Alert Pairs
   name: fetch_only_unresolved
   type: 8

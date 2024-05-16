@@ -19,8 +19,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 SMALLEST_TIME_UNIT = timedelta(seconds=1)
 
-MAX_INCIDENTS_PER_INTERVAL = 50000
-
 MAX_REQUEST_LIMIT = 5000
 
 DEFAULT_REQUEST_LIMIT = 1000
@@ -625,7 +623,7 @@ def set_device_alert_relations_command(client: Client, args: dict) -> CommandRes
 
 
 def fetch_incidents(
-    client: Client, last_run: Dict, initial_fetch_time: str, alert_types: Optional[List[str]], fetch_only_unresolved: bool
+    client: Client, last_run: Dict, initial_fetch_time: str, fetch_limit: int, alert_types: Optional[List[str]], fetch_only_unresolved: bool
 ):
     """This function will execute each interval (default is 1 minute)"""
     start_time = last_run.get("last_fetch", initial_fetch_time)
@@ -671,7 +669,7 @@ def fetch_incidents(
                 start_time_filter,
             ),
             sort_by=sort_by_update_time,
-            stop_after=MAX_INCIDENTS_PER_INTERVAL,
+            stop_after=fetch_limit,
         )
     except DemistoException as e:
         demisto.error(f"An error occurred while fetching xDome incidents:\n{str(e)}")
@@ -743,13 +741,15 @@ def main() -> None:
             return_results(set_device_alert_relations_command(client, args))
 
         elif command == 'fetch-incidents':
-            initial_fetch_time = params.get('initial_fetch_time').strip()
+            initial_fetch_time = params.get('first_fetch').strip()
+            fetch_limit = int(params.get('max_fetch', '5_000_000'))
             alert_types = params.get('alert_types')
             fetch_only_unresolved = params.get('fetch_only_unresolved')
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 initial_fetch_time=initial_fetch_time,
+                fetch_limit=fetch_limit,
                 alert_types=alert_types,
                 fetch_only_unresolved=fetch_only_unresolved,
             )
