@@ -1,4 +1,4 @@
-SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness. Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
+For enterprises using SafeBreach and XSOAR, integrating this package streamlines operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach an integral part of the enterprise workflows. This integration includes commands for managing tests, insight indicators, simulators and deployments, users, API keys, integration issues, and more.
 This integration was integrated and tested with version 2024Q1.4 of Safebreach.
 
 ## Configure Safebreach on Cortex XSOAR
