@@ -21,6 +21,23 @@ configuration:
 script:
   commands:
   - deprecated: false
+    description: ""
+    name: ciphertrust-group-update
+    arguments:
+      - name: name
+        isArray: false
+        description: Name of the group to update.
+        required: true
+        secret: false
+        default: false
+      - name: description
+        isArray: false
+        description: description of the group.
+        required: false
+        secret: false
+        default: false
+    outputs: []
+  - deprecated: false
     description: "\n    Args:\n        client (CipherTrustClient): CipherTrust client to use.\n        name (str): Name of the group. required=True\n        description(str): description of the group."
     name: ciphertrust-group-create
     arguments:

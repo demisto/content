@@ -23,12 +23,13 @@ GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
+USER_MANAGEMENT_USERS_URL_SUFFIX = '/usermgmt/users/'
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 2000
 DEFAULT_LIMIT = 50
 
 
-class ArgAndParamNames:
+class CommandArguments:
     PAGE = 'page'
     PAGE_SIZE = 'page_size'
     LIMIT = 'limit'
@@ -51,6 +52,7 @@ class CipherTrustClient(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         res = self._create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
+
 
     def _create_auth_token(self, username, password):  # todo: before each request to make sure isn't expired?
         return self._http_request(
@@ -78,10 +80,30 @@ class CipherTrustClient(BaseClient):
         )
 
     def delete_group(self, group_name: str, request_data: dict):
-        self._http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix=urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name)),
             json_data=request_data,
+            return_empty_response=True
+        )
+
+    def update_group(self, group_name: str, request_data: dict):
+        return self._http_request(
+            method='PATCH',
+            url_suffix=urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name)),
+            json_data=request_data,
+        )
+
+    def add_user_to_group(self, group_name: str, user_id: str):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'{urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name))}/users/{user_id}',
+        )
+
+    def remove_user_from_group(self, group_name: str, user_id: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'{urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name))}/users/{user_id}',
             return_empty_response=True
         )
 
@@ -175,15 +197,15 @@ def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults
         }
     ]
     """
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(ArgAndParamNames.LIMIT), args.get(ArgAndParamNames.PAGE),
-                                                       args.get(ArgAndParamNames.PAGE_SIZE))
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT), args.get(CommandArguments.PAGE),
+                                                       args.get(CommandArguments.PAGE_SIZE))
     params = assign_params(
         skip=skip,
         limit=limit,
-        name=args.get(ArgAndParamNames.GROUP_NAME),
-        users=args.get(ArgAndParamNames.USER_ID),
-        connection=args.get(ArgAndParamNames.CONNECTION),
-        clients=args.get(ArgAndParamNames.CLIENT_ID)
+        name=args.get(CommandArguments.GROUP_NAME),
+        users=args.get(CommandArguments.USER_ID),
+        connection=args.get(CommandArguments.CONNECTION),
+        clients=args.get(CommandArguments.CLIENT_ID)
     )
     raw_response = client.get_groups_list(params)
     return CommandResults(
@@ -205,11 +227,11 @@ def group_create_command(client: CipherTrustClient, args: dict):
         {'name': 'maya test', 'created_at': '2024-05-15T14:16:03.088821Z', 'updated_at': '2024-05-15T14:16:03.088821Z', 'description': 'mayatest'}
 
     """
-    request_data = assign_params(name=args.get(ArgAndParamNames.NAME),
-                                 description=args.get(ArgAndParamNames.DESCRIPTION))
+    request_data = assign_params(name=args.get(CommandArguments.NAME),
+                                 description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.create_group(request_data)
     return CommandResults(
-        outputs_prefix=f'{CONTEXT_OUTPUT_PREFIX}Group',
+        outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response
     )
@@ -217,26 +239,40 @@ def group_create_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-group-delete')
 def group_delete_command(client: CipherTrustClient, args: dict):
-    request_data = assign_params(force=args.get(ArgAndParamNames.FORCE))
-    client.delete_group(args[ArgAndParamNames.GROUP_NAME], request_data)
+    request_data = assign_params(force=args.get(CommandArguments.FORCE))
+    client.delete_group(args[CommandArguments.GROUP_NAME], request_data)
     return CommandResults(
-        readable_output=f'{args.get(ArgAndParamNames.GROUP_NAME)} has been deleted successfully!'
+        readable_output=f'{args.get(CommandArguments.GROUP_NAME)} has been deleted successfully!'
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-group-update')
+@metadata_collector.command(command_name='ciphertrust-group-update', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def group_update_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION))
+    raw_response = client.update_group(args[CommandArguments.GROUP_NAME], request_data)
+    return CommandResults(
+        outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-to-group-add')
+@metadata_collector.command(command_name='ciphertrust-user-to-group-add', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def user_to_group_add_command(client: CipherTrustClient, args: dict):
-    pass
+    raw_response = client.add_user_to_group(args[CommandArguments.GROUP_NAME], args[CommandArguments.USER_ID])
+    return CommandResults(
+        outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-user-to-group-remove')
 def user_to_group_remove_command(client: CipherTrustClient, args: dict):
-    pass
+    client.remove_user_from_group(args[CommandArguments.GROUP_NAME], args[CommandArguments.USER_ID])
+    return CommandResults(
+        readable_output=f'{args[CommandArguments.USER_ID]} has been deleted successfully from {args[CommandArguments.GROUP_NAME]}'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-users-list')
@@ -300,7 +336,7 @@ def certificate_issue_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-certificate-list')
-def certifcate_list_command(client: CipherTrustClient, args: dict):
+def certificate_list_command(client: CipherTrustClient, args: dict):
     pass
 
 
@@ -378,7 +414,7 @@ def main():
         'ciphertrust-local-ca-self-sign': local_ca_self_sign_command,
         'ciphertrust-local-ca-install': local_ca_install_command,
         'ciphertrust-certificate-issue': certificate_issue_command,
-        'ciphertrust-certificate-list': certifcate_list_command,
+        'ciphertrust-certificate-list': certificate_list_command,
         'ciphertrust-local-certificate-delete': local_certificate_delete_command,
         'ciphertrust-certificate-revoke': certificate_revoke_command,
         'ciphertrust-certificate-resume': certificate_resume_command,
