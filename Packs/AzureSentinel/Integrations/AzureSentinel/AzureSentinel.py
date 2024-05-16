@@ -74,7 +74,8 @@ OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status'
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
-CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity'}
+CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity',
+                         'BenignPositive': 'SuspiciousButExpected'}
 
 
 class AzureSentinelClient:
@@ -687,17 +688,19 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
                                f'API: {required_fields}')
-
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
         'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
         'status': 'Active',
-        'labels': [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
-        'owner': demisto.get(fetched_incident_data, 'properties.owner', {})
+        'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),
+        'labels': demisto.get(fetched_incident_data, 'properties.labels', [])
     }
+
+    properties['labels'] += [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])]
+
     if close_ticket:
         properties |= {
             'status': 'Closed',
@@ -711,7 +714,8 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'properties': properties
     }
     demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
-    return client.http_request('PUT', f'incidents/{incident_id}', data=data)
+    response = client.http_request('PUT', f'incidents/{incident_id}', data=data)
+    return response
 
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],

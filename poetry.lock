@@ -1354,13 +1354,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.29.1"
+version = "1.29.3"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = "<3.11,>=3.8"
 files = [
-    {file = "demisto_sdk-1.29.1-py3-none-any.whl", hash = "sha256:b6cdc01ca241e2e61d4df35ce9e04aede8df3486b02e4866f9d3411601ceac61"},
-    {file = "demisto_sdk-1.29.1.tar.gz", hash = "sha256:d5d163bdfed931e136a5601becf58008d78442e94e94560dcabd5134474f99a7"},
+    {file = "demisto_sdk-1.29.3-py3-none-any.whl", hash = "sha256:906890e6b9cd107ed5d6d4644ebb151f62cb76d22937d2b5c64da31c931f1d4c"},
+    {file = "demisto_sdk-1.29.3.tar.gz", hash = "sha256:c800f7ab9cb105694c3cbbb9441a2383e0cd846ae1e3faaacd9111afd171cf28"},
 ]
 
 [package.dependencies]
@@ -1436,7 +1436,6 @@ types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
 types-PyYAML = ">=6.0.5,<7.0.0"
 types-requests = "2.28.11"
-types-setuptools = ">=65.6.0.1,<68.0.0.0"
 types-six = ">=1.16.12,<2.0.0"
 types-tabulate = ">=0.8.6,<0.10.0"
 types-toml = ">=0.10.8.7,<0.11.0.0"
@@ -6504,17 +6503,6 @@ files = [
 ]
 
 [[package]]
-name = "types-setuptools"
-version = "67.8.0.0"
-description = "Typing stubs for setuptools"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-setuptools-67.8.0.0.tar.gz", hash = "sha256:95c9ed61871d6c0e258433373a4e1753c0a7c3627a46f4d4058c7b5a08ab844f"},
-    {file = "types_setuptools-67.8.0.0-py3-none-any.whl", hash = "sha256:6df73340d96b238a4188b7b7668814b37e8018168aef1eef94a3b1872e3f60ff"},
-]
-
-[[package]]
 name = "types-six"
 version = "1.16.21.9"
 description = "Typing stubs for six"
@@ -7172,4 +7160,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1522a15a90235f8d44761ab575c24f0ab26924b5ba46aea33252303ab5f1404a"
+content-hash = "edac1e97b3466fbfcd911571a0f12f69794c11627e67fe8dc172a37e1c844098"
