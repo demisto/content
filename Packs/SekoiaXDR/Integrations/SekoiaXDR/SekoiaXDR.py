@@ -610,6 +610,262 @@ def fetch_incidents(
     return next_run, incidents
 
 
+# =========== Mirroring Mechanism ===========
+
+
+def get_remote_data_command(
+    client: Client,
+    args: dict,
+    close_incident: bool,
+    close_note: str,
+    mirror_events: bool,
+    mirror_kill_chain: bool,
+    reopen_incident: bool,
+):
+    """get-remote-data command: Returns an updated alert and error entry (if needed)
+
+    Args:
+        client (Client): Sekoia XDR client to use.
+        args (dict): The command arguments
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the alert
+            has been closed on Sekoia's end.
+        close_note (str): Indicates the notes to be including when the incident gets closed by mirroring.
+        mirror_events (bool): If the events will be included in the mirroring of the alerts or not.
+        mirror_kill_chain: If the kill chain information from the alerts will be mirrored.
+        reopen_incident: Indicates whether to reopen the corresponding XSOAR incident if the alert
+            has been reopened on Sekoia's end.
+    Returns:
+        GetRemoteDataResponse: The Response containing the update alert to mirror and the entries
+    """
+
+    demisto.debug("#### Entering MIRRORING IN - get_remote_data_command ####")
+
+    parsed_args = GetRemoteDataArgs(args)
+    alert = client.get_alert(alert_uuid=parsed_args.remote_incident_id)
+
+    alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
+    last_update = arg_to_timestamp(
+        arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True
+    )
+    alert_last_update = arg_to_timestamp(
+        arg=alert.get("updated_at"), arg_name="updated_at", required=False
+    )
+
+    demisto.debug(
+        f"Alert {alert_short_id} with status {alert_status} : last_update is {last_update} , alert_last_update is {alert_last_update}"  # noqa: E501
+    )
+
+    entries = []
+
+    # Add the events to the alert
+    if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
+        earliest_time = alert["first_seen_at"]
+        lastest_time = "now"
+        term = "alert_short_ids:" + alert["short_id"]
+        interval_in_seconds = INTERVAL_SECONDS_EVENTS
+        timeout_in_seconds = TIMEOUT_EVENTS
+        max_last_events = MAX_EVENTS
+
+        args = {
+            "earliest_time": earliest_time,
+            "lastest_time": lastest_time,
+            "query": term,
+            "interval_in_seconds": interval_in_seconds,
+            "timeout_in_seconds": timeout_in_seconds,
+            "max_last_events": max_last_events,
+        }
+        events = search_events_command(client, args)
+        alert["events"] = events.outputs
+
+    # Add the kill chain information to the alert
+    if mirror_kill_chain and alert["kill_chain_short_id"]:
+        try:
+            kill_chain = client.get_kill_chain(
+                kill_chain_uuid=alert["kill_chain_short_id"]
+            )
+            alert["kill_chain"] = kill_chain
+        except Exception as e:
+            # Handle the exception if there is any problem with the API call
+            demisto.debug(f"Error fetching kill_chain : {e}")
+
+    # This adds all the information from the XSOAR incident.
+    demisto.debug(
+        f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}"
+    )
+
+    investigation = demisto.investigation()
+    demisto.debug(f"The investigation information is {investigation}")
+
+    incident_id = investigation["id"]
+    incident_status = investigation["status"]
+
+    demisto.debug(
+        f"The XSOAR incident is {incident_id} with status {incident_status} is being mirrored with the alert {alert_short_id} that have the status {alert_status}."  # noqa: E501
+    )
+
+    # Close the XSOAR incident using mirroring
+    if (
+        (close_incident)
+        and (alert_status in ["Closed", "Rejected"])
+        and (investigation["status"] != 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was closed or rejected in Sekoia, closing incident {incident_id} in XSOAR"  # noqa: E501
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": f"{alert_status} - Mirror",
+                    "closeNotes": close_note,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    # Reopen the XSOAR incident using mirroring
+    if (
+        (reopen_incident)
+        and (alert_status not in ["Closed", "Rejected"])
+        and (investigation["status"] == 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, reopening incident {incident_id} in XSOAR"
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    demisto.debug("#### Leaving MIRRORING IN - get_remote_data_command ####")
+
+    return GetRemoteDataResponse(mirrored_object=alert, entries=entries)
+
+
+def get_modified_remote_data_command(client: Client, args):
+    """Gets the list of all alert ids that have change since a given time
+
+    Args:
+        client (Client): Sekoia XDR client to use.
+        args (dict): The command argument
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
+    """
+    modified_alert_ids = []
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    last_update_utc = dateparser.parse(
+        last_update, settings={"TIMEZONE": "UTC"}
+    )  # converts to a UTC timestamp
+    formatted_last_update = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")  # type: ignore
+
+    demisto.debug(formatted_last_update)
+    converted_time = time_converter(formatted_last_update)
+    last_update_time = converted_time + ",now"
+
+    raw_alerts = client.list_alerts(
+        alerts_updatedAt=last_update_time,
+        alerts_limit=100,
+        alerts_status=None,
+        alerts_createdAt=None,
+        alerts_urgency=None,
+        alerts_type=None,
+        sort_by="updated_at",
+    )
+
+    for item in raw_alerts["items"]:
+        modified_alert_ids.append(item["short_id"])
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
+
+
+def update_remote_system_command(client: Client, args):
+    """update-remote-system command: pushes local changes to the remote system
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+        args: A dictionary containing the data regarding a modified incident, including: data, entries, incident_changed,
+         remote_incident_id, inc_status, delta
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+
+    :rtype: ``str``
+    """
+    demisto.debug("#### Entering MIRRORING OUT - update_remote_system_command ####")
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    remote_incident_id = parsed_args.remote_incident_id
+    xsoar_incident = parsed_args.data.get("xsoar_id")
+    demisto.debug(
+        f"Remote_incident_id {remote_incident_id} with local id {xsoar_incident} \
+        had this changes {parsed_args.incident_changed} \
+        with delta {delta} and parsed_args {parsed_args.data}"
+    )
+    try:
+        if parsed_args.incident_changed:
+            sekoia_status = delta.get("status", None)
+            if sekoia_status:
+                demisto.debug(
+                    f"The incident #{xsoar_incident} had the sekoia status of the alert {remote_incident_id} changed to: {sekoia_status}. Sending changes to Sekoia."  # noqa: E501
+                )
+                sekoia_transition = STATUS_TRANSITIONS.get(sekoia_status)
+
+                workflow = client.get_workflow_alert(alert_uuid=remote_incident_id)
+                for action in workflow["actions"]:
+                    if action["name"] == sekoia_transition:
+                        change_status = client.update_status_alert(
+                            alert_uuid=remote_incident_id,
+                            action_uuid=action["id"],
+                            comment=None,
+                        )
+                        demisto.debug(f"Changing status : {change_status}")
+        else:
+            demisto.debug(
+                f"There's no changes in our incident with local id {xsoar_incident}"
+            )
+
+    except Exception as e:
+        demisto.error(
+            f"Error in Sekoia outgoing mirror for incident {remote_incident_id}. "
+            f"Error message: {str(e)}"
+        )
+
+    return remote_incident_id
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+     this command pulls the remote schema for the different incident types, and their associated incident fields,
+     from the remote system.
+    :return: A list of keys you want to map
+    """
+    sekoia_incident_type_scheme = SchemeTypeMapping(type_name=INCIDENT_TYPE_NAME)
+    for argument, description in SEKOIA_INCIDENT_FIELDS.items():
+        sekoia_incident_type_scheme.add_field(name=argument, description=description)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(sekoia_incident_type_scheme)
+
+    return mapping_response
+
+
+# =========== Mirroring Mechanism ===========
+
+
 def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
