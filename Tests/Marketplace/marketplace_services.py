@@ -3386,12 +3386,10 @@ def get_failed_packs_from_previous_upload(service_account, build_bucket_path):
     """
     storage_client = init_storage_client(service_account)
     build_bucket = storage_client.bucket(GCPConfig.CI_BUILD_BUCKET)
-    index_storage_path = os.path.join(build_bucket_path, 'content/packs/', f"{GCPConfig.CONTENT_STATUS}.json")
-    index_blob = build_bucket.blob(index_storage_path)
-    index_string = index_blob.download_as_string()
-    index_json = json.loads(index_string)
-    return index_json.get('packs_to_upload', [])  # TODO change name
-
+    content_status_storage_path = os.path.join(build_bucket_path, 'content/packs/', f"{GCPConfig.CONTENT_STATUS}.json")
+    content_status_blob = build_bucket.blob(content_status_storage_path)
+    content_status_string = content_status_blob.download_as_string()
+    return json.loads(content_status_string)
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:

@@ -125,6 +125,7 @@ class CollectionResult:
         self.modeling_rules_to_test: set[str | Path] = set()
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
+        self.packs_to_update_metadata: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: tuple[Machine, ...] | None = None
         self.packs_to_reinstall: set[str] = set()
@@ -278,7 +279,11 @@ class CollectionResult:
 
 
 class TestCollector(ABC):
-    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
+    def __init__(self, marketplace: MarketplaceVersions,
+                 service_account: str | None,
+                 graph: bool = False,
+                 build_bucket_path: str | None = None,
+                 ):
         self.marketplace = marketplace
         self.id_set: IdSet | Graph
         if graph:
@@ -287,6 +292,8 @@ class TestCollector(ABC):
             self.id_set = IdSet(marketplace, PATHS.id_set_path)
         self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
+        self.service_account = service_account
+        self.build_bucket_path = build_bucket_path
 
     @property
     def sanity_tests(self) -> CollectionResult:
@@ -355,9 +362,43 @@ class TestCollector(ABC):
         if result.packs_to_install:
             result += self._always_installed_packs  # type: ignore[operator]
         result += self._collect_test_dependencies(result.tests if result else ())  # type: ignore[union-attr]
+
         result.machines = Machine.get_suitable_machines(result.version_range)  # type: ignore[union-attr] # TODO MACHINES
 
+        if result.packs_to_upload:
+            result.packs_to_upload, result.packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload)
+
+        self._collect_failed_packs_from_prev_upload(result)
+
         return result
+
+    def _collect_failed_packs_from_prev_upload(self, result: CollectionResult | None):
+        """
+        Updates the result with failed packs from a previous upload.
+
+        Args:
+            result (CollectionResult | None)
+
+        Side Effects:
+            - Adds failed packs to `result.packs_to_upload` and `result.packs_to_update_metadata`.
+            - Removes duplicates from `packs_to_update_metadata`.
+        """
+
+
+        re_upload_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
+        packs_to_re_update_metadata = set(re_upload_packs.get('packs_to_update_metadata', []))
+        packs_to_re_upload = set(re_upload_packs.get('packs_to_upload', []))
+
+        logger.info(f'Collected failed packs from previous upload to install and upload: '
+                    f'packs_to_re_update_metadata:= {packs_to_re_update_metadata},'
+                    f'packs_to_re_upload:= {packs_to_re_upload}')
+
+        result.packs_to_upload |= packs_to_re_upload
+        result.packs_to_update_metadata |= packs_to_re_update_metadata
+
+        result.packs_to_update_metadata -= result.packs_to_upload
+
+        result.packs_to_install |= result.packs_to_upload | result.packs_to_update_metadata
 
     def _collect_test_dependencies(self, test_ids: Iterable[str]) -> CollectionResult | None:
         result = []
@@ -738,11 +779,9 @@ class BranchTestCollector(TestCollector):
         :param marketplace: marketplace value
         :param service_account: used for comparing with the latest upload bucket
         """
-        super().__init__(marketplace, graph)
+        super().__init__(marketplace, service_account, graph, build_bucket_path)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
-        self.service_account = service_account
-        self.build_bucket_path = build_bucket_path
 
     def _collect(self) -> CollectionResult | None:
         collect_from = self._get_git_diff()
@@ -1219,7 +1258,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         changed_packs = CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            self._collect_failed_packs_from_prev_upload()
+            # self._collect_failed_packs_from_prev_upload()
         ])
         if changed_packs:
             logger.info(f"Collect the following packs to upload: {changed_packs.packs_to_upload=}")
@@ -1249,9 +1288,9 @@ class NightlyTestCollector(BranchTestCollector, ABC):
 
         return CollectionResult.union(result)
 
-    def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
-        failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
-        return self._collect_specific_marketplace_compatible_packs(failed_packs, CollectionReason.RE_UPLOAD_FAILED_PACK)
+    # def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
+    #     failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
+    #     return self._collect_specific_marketplace_compatible_packs(failed_packs, CollectionReason.RE_UPLOAD_FAILED_PACK)
 
     def _collect_modeling_rule_packs(self) -> CollectionResult | None:
         """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
@@ -1378,7 +1417,7 @@ class SDKNightlyTestCollector(TestCollector):
         return self.sanity_tests
 
 
-def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
+def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:
     """
     :param: packs_to_upload: The resultant list of packs to upload
     :return:
@@ -1402,8 +1441,6 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
             packs_to_update_metadata.add(pack_id)
 
     packs_to_upload = packs_to_upload - packs_to_update_metadata
-    packs_to_upload = sorted(packs_to_upload, key=lambda x: x.lower()) if packs_to_upload else []
-    packs_to_update_metadata = sorted(packs_to_update_metadata, key=lambda x: x.lower()) if packs_to_update_metadata else []
     return packs_to_upload, packs_to_update_metadata
 
 
@@ -1413,7 +1450,9 @@ def output(result: CollectionResult | None):
     """
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
-    packs_to_upload, packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload) if result else ([], [])
+    # packs_to_upload, packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload) if result else ([], [])
+    packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result.packs_to_upload else []
+    packs_to_update_metadata = sorted(result.packs_to_update_metadata, key=lambda x: x.lower()) if result.packs_to_update_metadata else []
 
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()

@@ -452,7 +452,7 @@ def main():
     pack: Pack
     for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
-        task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
+        task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)  # TODO ADD TO THE FAILED_PACKS FILE
         if task_status:
             pack.status = pack_status  # type: ignore[misc]
             pack.cleanup()
