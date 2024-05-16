@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 import shlex
 import subprocess
+import zipfile
 from tempfile import mkdtemp
 from DownloadAndArchivePythonLibrary import installLibrary, main, DemistoException
 
