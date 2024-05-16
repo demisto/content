@@ -56,12 +56,13 @@ class Client(BaseClient):
         """
         data = json.dumps(data)
         full_url = f"{self._base_url}/search/v2/events"
-        self._http_request(
+        response = self._http_request(
             "POST",
             full_url=full_url,
             data=data,
             headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
         )
+        return response
         
 ''' HELPER FUNCTIONS '''
 
@@ -107,6 +108,32 @@ def adjust_string_pattern(filter_str):
     return adjusted_filter
 
 
+def _parse_entry(entry: dict):
+    """
+    Parse a single entry from the API response to a dictionary.
+    Args:
+        entry: The entry from the API response.
+    Returns:
+        dict: The parsed entry dictionary.
+    """
+    parsed = {
+        "activity": entry.get("activity"),
+        "activity_type": entry.get("activity_type"),
+        "business_criticality": entry.get("business_criticality"),
+        "host": entry.get("host"),
+        "landscape": entry.get("landscape"),
+        "outcome": entry.get("outcome"),
+        "platform": entry.get("platform"),
+        "product": entry.get("product"),
+        "product_category": entry.get("product_category"),
+        "subject": entry.get("subject"),
+        "time": entry.get("time"),
+        "vendor": entry.get("vendor")
+    }
+    final = remove_empty_elements(parsed)
+    return final
+
+
 ''' COMMAND FUNCTIONS '''
 
 def search_command(client: Client, args: dict):
@@ -114,7 +141,7 @@ def search_command(client: Client, args: dict):
     filter = adjust_string_pattern(filter)
     # filter = "alert_subject:\"Inhibit System Recovery\" AND tier:\"Tier 1\" AND process_blocked:TRUE"
     kwargs = {
-        'filter': filter,
+        'filter': "",
         'fields': argToList(args.get('fields', '*')),
         'limit': arg_to_number(args.get('limit', '50')),
         'startTime': get_date(args.get('start_time', '7 days ago')),
@@ -125,17 +152,19 @@ def search_command(client: Client, args: dict):
         
     response = client.search_request(kwargs)
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    if error := response.get("errors", {}):
+        raise DemistoException(error.get("message"))
 
+    data_response = response.get("rows")
 
+    table_to_markdown = [_parse_entry(entry) for entry in data_response]
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Event",
+        outputs=data_response,
+        readable_output=tableToMarkdown(name="Logs", t=table_to_markdown),
+    )
+    
 
 def test_module(client: Client):    # pragma: no cover
     """test function
@@ -146,7 +175,6 @@ def test_module(client: Client):    # pragma: no cover
     Returns:
         ok if successful
     """
-    # client.test_module_request()
     # ADD COMMENT THAT IF WE ARRIVED HERE IT MEANS THAT THE LOGIN SUCCEEDED
     return 'ok'
 
