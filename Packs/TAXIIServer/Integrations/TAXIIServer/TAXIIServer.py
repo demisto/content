@@ -5,7 +5,7 @@ from gevent.pywsgi import WSGIServer
 from urllib.parse import urlparse, ParseResult
 from tempfile import NamedTemporaryFile
 from base64 import b64decode
-from typing import Callable, List, Generator
+from collections.abc import Callable, Generator
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
 from werkzeug.datastructures import Headers
@@ -317,7 +317,7 @@ DEMISTO_LOGGER: Handler = Handler()
 ''' STIX MAPPING '''
 
 
-def create_stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
+def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observable]:
     """
     Create STIX IP observable.
     Args:
@@ -366,7 +366,7 @@ def create_stix_ip_observable(namespace: str, indicator: dict) -> List[Observabl
     return observables
 
 
-def create_stix_email_observable(namespace: str, indicator: dict) -> List[Observable]:
+def create_stix_email_observable(namespace: str, indicator: dict) -> list[Observable]:
     """
     Create STIX Email observable.
     Args:
@@ -761,7 +761,7 @@ def find_indicators_loop(indicator_query: str):
     Returns:
         Indicator query results from Demisto.
     """
-    iocs: List[dict] = []
+    iocs: list[dict] = []
     search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get('iocs') or []
@@ -863,9 +863,9 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
     Start the taxii server.
     """
 
-    certificate_path = str()
-    private_key_path = str()
-    ssl_args = dict()
+    certificate_path = ''
+    private_key_path = ''
+    ssl_args = {}
 
     try:
 
@@ -940,6 +940,7 @@ def main():
                          certificate, private_key, http_server, credentials, service_address)
 
     demisto.debug(f'Command being called is {command}')
+
     commands = {
         'test-module': test_module
     }
@@ -947,6 +948,7 @@ def main():
     try:
         if command == 'long-running-execution':
             run_server(SERVER)
+
         else:
             readable_output, outputs, raw_response = commands[command](SERVER)
             return_outputs(readable_output, outputs, raw_response)
