@@ -228,15 +228,15 @@ class TestHelperFunction:
         "next_pointer, expected_last_run", [
             (4, {'events_last_fetch_ids': ['3'], 'events_last_fetch_next_field': 4,
                  'events_last_fetch_time': '2023-01-01T01:00:20'}),
-            (None, {'events_last_fetch_ids': ['3'], 'events_last_fetch_next_field': 0,
-                    'events_last_fetch_time': '2024-01-01T01:00:00'})]
+            (0, {'events_last_fetch_ids': ['3'], 'events_last_fetch_next_field': 0,
+                 'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00'})]
     )
     @freeze_time("2024-01-01 01:00:00")
     def test_fetch_by_event_type(self, mocker, dummy_client, next_pointer, expected_last_run):
         """
         Given:
             - A valid event type arguments for API request (unique_id_key, aql_query, type) and a mocker for the response data.
-            - Case 1: A response data with a nullified next pointer.
+            - Case 1: A response data with a next pointer = 0.
             - Case 2: A response data with a next pointer = 4.
         When:
             - Iterating over which event types to fetch.

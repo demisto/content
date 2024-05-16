@@ -113,7 +113,7 @@ class Client(BaseClient):
             params['from'] = from_param
         raw_response = self.perform_fetch(params)
         results = raw_response.get('data', {}).get('results', [])
-        next = raw_response.get('data', {}).get('next', 0)
+        next = raw_response.get('data', {}).get('next') or 0
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
@@ -123,7 +123,7 @@ class Client(BaseClient):
                     params['length'] = max_fetch - len(results)
                 params['from'] = next
                 raw_response = self.perform_fetch(params)
-                next = raw_response.get('data', {}).get('next', 0)
+                next = raw_response.get('data', {}).get('next') or 0
                 current_results = raw_response.get('data', {}).get('results', [])
                 results.extend(current_results)
                 demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
@@ -357,7 +357,8 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-        last_fetch_time = events[-1].get(event_type.order_by) if events else last_fetch_time
+        event_type_fetch_start_time = events.get(
+            event_type.dataset_name, [])[-1].get(event_type.order_by) if events.get(event_type.dataset_name) else last_fetch_time
         #  can empty the list.
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
