@@ -82,7 +82,7 @@ class CipherTrustClient(BaseClient):
             method='DELETE',
             url_suffix=url_suffix,
             json_data=request_data,
-            return_empty_response = True
+            return_empty_response=True
         )
 
 
@@ -176,7 +176,7 @@ def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults
     ]
     """
     skip, limit = derive_skip_and_limit_for_pagination(args.get(ArgAndParamNames.LIMIT), args.get(ArgAndParamNames.PAGE),
-                                                          args.get(ArgAndParamNames.PAGE_SIZE))
+                                                       args.get(ArgAndParamNames.PAGE_SIZE))
     params = assign_params(
         skip=skip,
         limit=limit,
