@@ -29,13 +29,63 @@ script:
   commands:
   - arguments:
     - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+      name: start_time
       required: true
+    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: end_time
+      required: true
+    - defaultvalue: ""
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: query
+      required: false
+    - defaultvalue: "*"
+      description: Comma-separated list of fields to be returned from the search.
+      name: fields
+      required: false
+    - description: Comma-separated list of fields to GROUP BY.
+      name: group_by
+      required: false
+    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: limit
+      required: false
     description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
+    name: exabeam-platform-event-search
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: ExabeamPlatform.Event.activity
+      description: Indicates the specific activity performed.
+      type: String
+    - contextPath: ExabeamPlatform.Event.activity_type
+      description: Specifies the type of the activity.
+      type: String
+    - contextPath: ExabeamPlatform.Event.business_criticality
+      description: Reflects the criticality level assigned to the business context of the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.host
+      description: Identifies the host the activity occurred.
+      type: String
+    - contextPath: ExabeamPlatform.Event.landscape
+      description: Describes the landscape in which the event took place.
+      type: String
+    - contextPath: ExabeamPlatform.Event.outcome
+      description: Indicates the outcome of the activity.
+      type: String
+    - contextPath: ExabeamPlatform.Event.platform
+      description: Specifies the platform involved in the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.product
+      description: Indicates the specific product related to the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.product_category
+      description: Specifies the category of the product involved in the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.subject
+      description: Identifies the subject involved in the activity.
+      type: String
+    - contextPath: ExabeamPlatform.Event.time
+      description: Represents the timestamp of occurrence for the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.vendor
+      description: Indicates the vendor associated with the event.
       type: String
   runonce: false
   script: '-'

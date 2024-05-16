@@ -1,21 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerUserPython import *  # noqa
 
 import urllib3
@@ -66,7 +50,7 @@ class Client(BaseClient):
         )
         self.access_token = response.get('access_token')
 
-    def test_module_request(self):
+    def search_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
@@ -78,20 +62,44 @@ class Client(BaseClient):
             "filter": "alert_subject:\"Inhibit System Recovery\" AND tier:\"Tier 1\" AND process_blocked:TRUE"
 
         }
-
-        res = self._http_request(
+        full_url = f"{self._base_url}/search/v2/events"
+        self._http_request(
             "POST",
-            full_url=f"{self._base_url}/search/v2/events",
+            full_url=full_url,
             data=json.dumps(data),
             headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
         )
-        print(res)
         
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+def get_date(time: str):
+    """
+    Get the date from a given time string.
+
+    Args:
+        time (str): The time string to extract the date from.
+
+    Returns:
+        str: The date extracted from the time string formatted in ISO 8601 format (YYYY-MM-DD),
+        or None if the time string is invalid.
+    """
+    date_time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
+    if date_time:
+        date = date_time.strftime(DATE_FORMAT)
+    return date
 
 ''' COMMAND FUNCTIONS '''
+
+def search_command(client: Client, args: dict):
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    query = args.get('query')
+    fields = argToList(args.get('fields'))
+    group_by = argToList(args.get('group_by'))
+    limit = arg_to_number(args.get('limit'))
+    
+    start_time = get_date(args.get("start_time", "7 days ago"))
+    end_time = get_date(args.get("end_time", "today"))
 
 
 
@@ -104,7 +112,8 @@ def test_module(client: Client):    # pragma: no cover
     Returns:
         ok if successful
     """
-    client.test_module_request()
+    # client.test_module_request()
+    # ADD COMMENT THAT IF WE ARRIVED HERE IT MEANS THAT THE LOGIN SUCCEEDED
     return 'ok'
 
 
@@ -136,6 +145,8 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'exabeam-platform-event-search':
+            return_results(search_command(client, args))
         
 
 
