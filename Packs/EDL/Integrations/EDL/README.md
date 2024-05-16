@@ -32,6 +32,20 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 ### Deleted or expired indicators showing in EDL export
 Append `expirationStatus:active` to the end of the query.
 
+### EDL Log
+
+To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
+
+<~XSOAR_SAAS>
+`https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
+</~XSOAR_SAAS>
+<~XSOAR_ON_PREM>
+`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+</~XSOAR_ON_PREM>
+<~XSIAM>
+`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
+</~XSIAM>
+
 ## Use Cases
 
 ---
