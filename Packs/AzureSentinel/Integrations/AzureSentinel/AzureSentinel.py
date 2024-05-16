@@ -74,7 +74,8 @@ OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status'
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
-CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity'}
+CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity',
+                         'BenignPositive': 'SuspiciousButExpected'}
 
 
 class AzureSentinelClient:

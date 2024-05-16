@@ -23,20 +23,20 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
     if metrictype in METRICCOLORS:
         colors = METRICCOLORS[metrictype]
     else:
-        return(wstats)
+        return (wstats)
 
     i = 0
     for w in wstats:
         wstats[i]['color'] = colors[i % len(colors)]
         i += 1
 
-    return(wstats)
+    return (wstats)
 
 
 def MetricWidget(wstats: list, name: str, data: list) -> list:
     w = {'name': name, 'data': [data], 'color': ""}
     wstats.append(w)
-    return(wstats)
+    return (wstats)
 
 
 def LoadList(listname: str) -> dict:
@@ -45,7 +45,7 @@ def LoadList(listname: str) -> dict:
     if "Item not found" not in results and (results is not None or results != ""):
         if results != "":
             fields = json.loads(results)
-    return(fields)
+    return (fields)
 
 
 def BuildIncidentTotal(incidents) -> dict:
@@ -55,7 +55,7 @@ def BuildIncidentTotal(incidents) -> dict:
             if inctype not in table:
                 table[inctype] = 0
             table[inctype] += int(cnt)
-    return(table)
+    return (table)
 
 
 def BuildIncidentAvg(incidents) -> dict:
@@ -74,7 +74,7 @@ def BuildIncidentAvg(incidents) -> dict:
         if count[inctype] > 0:
             table[inctype] = int(table[inctype] / count[inctype] / 60)
 
-    return(table)
+    return (table)
 
 
 def BuildEffortReductionAvg(incidents, efforts) -> dict:
@@ -106,7 +106,7 @@ def BuildEffortReductionAvg(incidents, efforts) -> dict:
         else:
             table[inctype] = 0
 
-    return(table)
+    return (table)
 
 
 def BuildEffortTotal(incidents, efforts) -> dict:
@@ -123,7 +123,7 @@ def BuildEffortTotal(incidents, efforts) -> dict:
                 table["Manual Incident Effort"] += int((int(val) * efforts[inctype][0]) / 60)
                 table["Automated Incident Effort"] += int((int(val) * efforts[inctype][1]) / 60)
 
-    return(table)
+    return (table)
 
 
 def main():

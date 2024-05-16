@@ -451,3 +451,22 @@ def test_get_url(mocker, request_headers, url_scheme, expected):
     if request_headers:
         mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
     assert taxii_server.get_url(request_headers) == expected
+
+
+def test_create_stix_hash_observable():
+    """
+    Given:
+        - namespace: The XML namespace, indicator: The Demisto File indicator.
+
+    When:
+        - Getting a File indicator
+
+    Then:
+        - Ensure the stix hash observable is created
+    """
+
+    from TAXIIServer import create_stix_hash_observable
+    namespace = "namespace"
+    indicator = {'indicator_type': 'File', 'value': '123456789'}
+    observable = create_stix_hash_observable(namespace, indicator)
+    assert observable
