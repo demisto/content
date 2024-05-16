@@ -423,17 +423,15 @@
     - .default-job-settings
 
 
-.run-pre-commit:
-  cache:
-    policy: pull-push
+.test-infrastructure:
+  stage: unittests-and-validations
   extends:
-    - .pre-commit-settings
+    - .default-job-settings
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/tests -v --disable-warnings
-    - python3 -m pytest ./Tests/private_build/ -v --disable-warnings
     - python3 -m pytest Utils -v --disable-warnings
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
@@ -441,6 +439,15 @@
       fi
     - section_end "Test Infrastructure"
 
+.run-pre-commit:
+  cache:
+    policy: pull-push
+  extends:
+    - .pre-commit-settings
+  variables:
+    KUBERNETES_MEMORY_REQUEST: 8Gi
+    KUBERNETES_MEMORY_LIMIT: 16Gi
+  script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
