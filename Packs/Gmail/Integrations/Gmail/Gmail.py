@@ -184,19 +184,14 @@ def parse_mail_parts(parts):
         else:
             if part['body'].get('attachmentId') is not None and part.get('headers'):
                 identifier_id = ""
-                is_inline = False
                 for header in part['headers']:
                     if header.get('name') == 'Content-ID':
-                        identifier_id = header.get('value')
-                        if not identifier_id or identifier_id == "None":
-                            identifier_id = part['body'].get('attachmentId')
-                        identifier_id = identifier_id.strip("<>")
-                    if header.get('name') == 'Content-Disposition':
-                        is_inline = 'inline' in header.get('value')
+                        identifier_id = header.get('value').strip("<>")
+                    if not identifier_id or identifier_id == "None":
+                        identifier_id = part['body'].get('attachmentId').strip("<>")                
                 attachments.append({
                     'ID': part['body']['attachmentId'],
                     'Name': f"{identifier_id}-imageName:{part['filename']}",
-                    'is_inline': is_inline
                 })
 
     return body, html, attachments
@@ -559,11 +554,9 @@ def mail_to_incident(msg, service, user_key):
             demisto.error(file_result['Contents'])
             raise Exception(file_result['Contents'])
 
-        is_file_attached = FileAttachmentType.ATTACHED if not attachment['is_inline'] else ""
         file_names.append({
             'path': file_result['FileID'],
             'name': attachment['Name'],
-            'description': f"{is_file_attached}-{attachment['ID']}",
         })
     # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
 

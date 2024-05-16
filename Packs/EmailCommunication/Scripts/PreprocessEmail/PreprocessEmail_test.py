@@ -217,14 +217,14 @@ def test_get_entry_id_list():
     attachments = [
         {
             "description": "",
-            "name": "image_1.png",
+            "name": "123-imageName:image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
         },
         {
             "description": "",
-            "name": "image_2.png",
+            "name": "456-imageName:image_2.png",
             "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
             "showMediaFile": False,
             "type": ""
@@ -262,7 +262,7 @@ def test_get_entry_id_list():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "image_1.png",
+            "Name": "123-imageName:image_1.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -275,7 +275,7 @@ def test_get_entry_id_list():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "image_2.png",
+            "Name": "456-imageName:image_2.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -283,8 +283,9 @@ def test_get_entry_id_list():
             "Size": 9580,
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
-    expected = [('image_1.png', '35@119'), ('image_2.png', '36@119')]
-    assert expected == get_entry_id_list(attachments, files)
+    email_html = '<src="cid:456"'
+    expected = [('456-imageName:image_2.png', '36@119')]
+    assert expected == get_entry_id_list(attachments, files, email_html)
 
 
 def test_get_entry_id_list_with_attached_file():
@@ -301,7 +302,7 @@ def test_get_entry_id_list_with_attached_file():
     from PreprocessEmail import get_entry_id_list
     attachments = [
         {
-            "description": f"{FileAttachmentType.ATTACHED}-asdfghjk",
+            "description": "",
             "name": "attachment_1.pdf",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
@@ -309,14 +310,14 @@ def test_get_entry_id_list_with_attached_file():
         },
         {
             "description": "",
-            "name": "image_1.png",
+            "name": "123-imageName:image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
         },
         {
             "description": "",
-            "name": "image_2.png",
+            "name": "456-imageName:image_2.png",
             "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
             "showMediaFile": False,
             "type": ""
@@ -354,7 +355,7 @@ def test_get_entry_id_list_with_attached_file():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "image_1.png",
+            "Name": "123-imageName:image_1.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -367,7 +368,7 @@ def test_get_entry_id_list_with_attached_file():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "image_2.png",
+            "Name": "456-imageName:image_2.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -375,9 +376,9 @@ def test_get_entry_id_list_with_attached_file():
             "Size": 9580,
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
-    expected = [('image_1.png', '35@119'), ('image_2.png', '36@119')]
-
-    assert expected == get_entry_id_list(attachments, files)
+    expected = [('123-imageName:image_1.png', '35@119'), ('456-imageName:image_2.png', '36@119')]
+    email_html = '<src="cid:456"><src="cid:123">'
+    assert expected == get_entry_id_list(attachments, files, email_html)
 
 
 FILES = [
@@ -694,13 +695,13 @@ def test_get_attachments_using_instance(labels, email_to, result, mocker):
 
 ATTACHMENTS = [{
     "description": "",
-    "name": "123-image_1.png",
+    "name": "123-imageName:image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
 }, {
     "description": "",
-    "name": "456-image_2.png",
+    "name": "456-imageName:image_2.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
@@ -711,7 +712,7 @@ FILES_TEST1 = [{
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "123-image_1.png",
+    "Name": "123-imageName:image_1.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
@@ -723,7 +724,7 @@ FILES_TEST1 = [{
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "456-image_2.png",
+    "Name": "456-imageName:image_2.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
@@ -737,7 +738,7 @@ FILES_TEST2 = {
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "123-image_1.png",
+    "Name": "123-imageName:image_1.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
@@ -753,13 +754,15 @@ FILES_TEST3 = {}
     "attachments, email_html, email_related_incident, files, expected_result",
     [
         (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST1, ('', [])),
-        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST2, ('456', [{'description': '', 'name': '456-image_2.png',
+        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST2, ('456', [{'description': '', 'name': '456-imageName:image_2.png',
                                                                            'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
                                                                            'showMediaFile': False, 'type': ''}])),
-        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST3, ('123,456', [{'description': '', 'name': '123-image_1.png',
+        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST3, ('123,456', [{'description': '',
+                                                                               'name': '123-imageName:image_1.png',
                                                                               'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
                                                                                'showMediaFile': False, 'type': ''},
-                                                                              {'description': '', 'name': '456-image_2.png',
+                                                                              {'description': '',
+                                                                               'name': '456-imageName:image_2.png',
                                                                               'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
                                                                                'showMediaFile': False, 'type': ''}])),
     ]
