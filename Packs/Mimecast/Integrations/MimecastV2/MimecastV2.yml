@@ -8,20 +8,26 @@ configuration:
   name: baseUrl
   required: true
   type: 0
-- display: App ID
+- display: Client ID (for API 2.0)
+  name: client_id
+  type: 4
+- display: Client Secret (for API 2.0)
+  name: client_secret
+  type: 4
+- display: App ID (for API 1.0)
   name: appId
   type: 0
-- display: User Email Address (Use for auto token refresh)
+- display: User Email Address (Use for auto token refresh) (for API 1.0)
   name: credentials
   type: 9
-  displaypassword: Password
+  displaypassword: Password (for API 1.0)
   required: false
-- display: User Email Address (Use for auto token refresh)
+- display: User Email Address (Use for auto token refresh) (for API 1.0)
   name: email
   type: 0
   hidden: true
   required: false
-- display: Password
+- display: Password (for API 1.0)
   name: password
   type: 4
   hidden: true
@@ -29,25 +35,25 @@ configuration:
 - display: App Key
   name: appKey_creds
   type: 9
-  displaypassword: App Key
+  displaypassword: App Key (for API 1.0)
   hiddenusername: true
   required: false
-- display: App key
+- display: App key (for API 1.0)
   name: appKey
   type: 4
   hidden: true
   required: false
-- display: AccessKey
+- display: AccessKey (for API 1.0)
   name: accessKey
   type: 0
   required: false
 - display: Secret Key
   name: secretKey_creds
   type: 9
-  displaypassword: Secret Key
+  displaypassword: Secret Key (for API 1.0)
   hiddenusername: true
   required: false
-- display: SecretKey
+- display: SecretKey (for API 1.0)
   name: secretKey
   type: 4
   hidden: true
@@ -71,16 +77,11 @@ configuration:
   type: 8
   hidden: true
   required: false
-- display: Use OAuth 2.0
-  name:  use_oauth2
-  type: 8
-  defaultvalue: "true"
-- display: Client ID
-  name: client_id
-  type: 4
-- display: Client Secret
-  name: client_secret
-  type: 4
+# - display: Use OAuth 2.0
+#   name:  use_oauth2
+#   type: 8
+#   defaultvalue: "true"
+
 - additionalinfo: Fetch specific incident types. Default value is "All".
   defaultvalue: All
   display: Fetch incident types

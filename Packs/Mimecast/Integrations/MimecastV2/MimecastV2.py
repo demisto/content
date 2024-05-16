@@ -49,7 +49,7 @@ FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
-USE_OAUTH2 = demisto.params().get("use_oauth2")
+USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
