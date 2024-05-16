@@ -107,14 +107,21 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score=N
         indicators: dict of indicators
     """
     indicator_type = build_indicator_list(indicator_types)
-    filters = [{
-        'key': 'entity_type',
-        'values': indicator_type
-    }]
+    filters = {
+        'mode': 'and',
+        'filters': [{
+            'key': 'entity_type',
+            'values': indicator_type,
+            'operator': 'eq',
+            'mode': 'or'
+        }],
+        'filterGroups': []}
     if score:
-        filters.append({
+        filters["filters"].append({
             'key': 'x_opencti_score',
-            'values': score
+            'values': score,
+            'operator': 'eq',
+            'mode': 'or'
         })
 
     indicators = client.stix_cyber_observable.list(after=last_run_id, first=limit,
@@ -132,7 +139,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
 
     Returns:
         readable_output, raw_response
-    """
+    """    
     indicator_types = argToList(args.get("indicator_types"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))

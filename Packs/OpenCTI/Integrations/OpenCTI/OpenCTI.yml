@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: OpenCTI
+  id: OpenCTI - Dev
   version: -1
 configuration:
 - display: Base URL
@@ -27,8 +27,8 @@ configuration:
   additionalinfo: Used for troubleshooting purposes.
   required: false
 description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
-display: OpenCTI
-name: OpenCTI
+display: OpenCTI - Dev
+name: OpenCTI - Dev
 script:
   commands:
   - arguments:
@@ -293,7 +293,7 @@ script:
     - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
       description: The last ID of the previous fetch to use for pagination.
       type: String
-  dockerimage: demisto/vendors-sdk:1.0.0.76365
+  dockerimage: demisto/vendors-sdk:1.0.0.86440
   runonce: false
   script: '-'
   subtype: python3
