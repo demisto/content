@@ -403,14 +403,14 @@ EXTERNAL_SERVICE_RESULTS = [
             "2600:1900:4000:9664:0:7::"
         ],
         "aws_cloud_tags": [
-                    "Name:AD Lab"
-                ],
+            "Name:AD Lab"
+        ],
         "gcp_cloud_tags": [
-                    "Name:gcp Lab"
-                ],
+            "Name:gcp Lab"
+        ],
         "azure_cloud_tags": [
-                    "Name:azure Lab"
-                ],
+            "Name:azure Lab"
+        ],
         "mac_address": ["00:11:22:33:44:55"],
         "has_bu_overrides": False,
         "has_xdr_agent": "NO",
