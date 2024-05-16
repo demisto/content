@@ -568,7 +568,7 @@ script:
     - contextPath: Axonius.tags
       description: Axonius Tags.
       type: Unknown
-  dockerimage: demisto/axonius:1.1.0.79132
+  dockerimage: demisto/axonius:1.1.0.94077
   runonce: false
   script: '-'
   subtype: python3
