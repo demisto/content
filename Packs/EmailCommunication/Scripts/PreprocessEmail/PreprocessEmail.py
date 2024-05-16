@@ -64,8 +64,8 @@ def create_email_html(email_html='', entry_id_list=None):
     content_id = "None"
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
-        if '-' in image_name.split('-'):
-            content_id = image_name[::-1].split('-', 1)[1][::-1]
+        if '-imageName:' in image_name:
+            content_id = image_name.split('-imageName:', 1)[0]
         if re.search(rf'(src="cid:{content_id}")', email_html):
             email_html = re.sub(f'src="cid:{content_id}"', f'src=entry/download/{image_entry_id}',
                                 email_html)
@@ -80,28 +80,28 @@ def create_email_html(email_html='', entry_id_list=None):
     return email_html
 
 
-def get_entry_id_list(attachments, files):
+def get_entry_id_list(attachments, files, email_html):
     """Get the entry ids for the email attachments from the email's related incident's files entry.
     Args:
         attachments (list): The attachments of the email.
         files (list): The uploaded files in the context of the related incident.
+        email_html: The most recent message in html format
     Returns:
         list of tuples. (attachment_name, file_entry_id).
     """
     if not (attachments and files):
         return []
 
+    matches = re.findall(r'src="cid:([^"]+)"', email_html) or []
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
     for attachment in attachments:
-        is_file_attached = ""
         attachment_name = attachment.get('name', '')
-        for file in files:
-            if '-' in attachment.get('description', ''):
-                is_file_attached = attachment.get('description', '').split('-', 1)[0]
-            if attachment_name == file.get('Name') and is_file_attached != FileAttachmentType.ATTACHED:
-                entry_id_list.append((attachment_name, file.get('EntryID')))
-
+        if '-imageName:' in attachment_name:
+            identifier_id = attachment_name.split('-imageName:', 1)[0]
+            for file in files:
+                if attachment_name == file.get('Name') and identifier_id in matches:
+                    entry_id_list.append((attachment_name, file.get('EntryID')))
     return entry_id_list
 
 
@@ -255,11 +255,9 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
     previous_file_names = [file.get("Name") for file in previous_files]
     for attachment in attachments:
         if attachment.get('name', '') not in previous_file_names:
-            if '-' in attachment.get('name', ''):
-                content_id = attachment.get('name', '')[::-1].split('-', 1)[1][::-1]
-                new_attachment_identifiers_list.append(content_id)
-            else:
-                CommandResults(readable_output=f"Could not find image {attachment.get('name', '')[::-1].split('-', 1)[0][::-1]}")
+            if '-imageName:' in attachment.get('name', ''):
+                identifier_id = attachment.get('name', '').split('-imageName:', 1)[0]
+                new_attachment_identifiers_list.append(identifier_id)
             new_attachments.append(attachment)
     return ",".join(new_attachment_identifiers_list), new_attachments
 
@@ -458,7 +456,7 @@ def main():
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(45)
         files = get_incident_related_files(email_related_incident)
-        entry_id_list = get_entry_id_list(attachments, files)
+        entry_id_list = get_entry_id_list(attachments, files, email_html)
         html_body = create_email_html(email_html, entry_id_list)
 
         if incident_details['type'] == 'Email Communication':

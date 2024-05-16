@@ -346,7 +346,7 @@ script:
     - description: The ID of the message to retrieve.
       name: message-id
       required: true
-    - description: Content IDs of the required attachments.
+    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
       name: identifiers-filter
       required: false
       hidden: true

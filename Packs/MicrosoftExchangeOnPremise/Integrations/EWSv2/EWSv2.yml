@@ -130,7 +130,7 @@ script:
     - description: The attachments ids to get. If none - all attachments will be retrieve from the message. Support multiple attachments with comma-separated value or array.
       isArray: true
       name: attachment-ids
-    - description: identifier ids not download all files to xsoar (for preprocess script).
+    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
       hidden: true
       name: identifiers-filter
       required: false

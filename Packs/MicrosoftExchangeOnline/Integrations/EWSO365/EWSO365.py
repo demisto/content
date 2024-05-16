@@ -588,12 +588,12 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", att
     if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return (f"{identifier_id}-demisto_untitled_attachment.eml"
+        return (f"{identifier_id}-imageName:demisto_untitled_attachment.eml"
                 if eml_extension
-                else f"{identifier_id}-demisto_untitled_attachment")
+                else f"{identifier_id}-imageName:demisto_untitled_attachment")
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'{identifier_id}-{attachment_name.replace("-", "_")}.eml'
-    return f'{identifier_id}-{attachment_name.replace("-", "_")}'
+        return f'{identifier_id}-imageName:{attachment_name}.eml'
+    return f'{identifier_id}-imageName:{attachment_name}'
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):
@@ -2206,13 +2206,11 @@ def parse_incident_from_item(item):  # pragma: no cover
                             demisto.error(file_result["Contents"])
                             raise Exception(file_result["Contents"])
 
-                        is_file_attached = FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                         # save attachment to incident
                         incident["attachment"].append(
                             {
                                 "path": file_result["FileID"],
                                 "name": get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
-                                "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                             }
                         )
                 except TypeError as e:
@@ -2281,13 +2279,11 @@ def parse_incident_from_item(item):  # pragma: no cover
                         demisto.error(file_result["Contents"])
                         raise Exception(file_result["Contents"])
 
-                    is_file_attached = FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                     # save attachment to incident
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
                             "name": get_attachment_name(attachment_name=attachment.name, eml_extension=True, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
-                            "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                         }
                     )
 

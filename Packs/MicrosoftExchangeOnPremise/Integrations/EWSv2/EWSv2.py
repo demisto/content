@@ -606,8 +606,8 @@ def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pr
     if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return f'{identifier_id}-demisto_untitled_attachment'
-    return f'{identifier_id}-{attachment_name.replace("-", "_")}'
+        return f'{identifier_id}-imageName:demisto_untitled_attachment'
+    return f'{identifier_id}-imageName:{attachment_name}'
 
 
 def switch_hr_headers(obj, hr_header_changes):
@@ -1270,14 +1270,12 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                     demisto.error(file_result['Contents'])
                                     raise Exception(file_result['Contents'])
 
-                                is_file_attached = FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                                 # save attachment to incident
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
                                     'name': get_attachment_name(attachment_name=attachment.name,
                                                                 content_id=attachment.content_id,
                                                                 attachment_id=attachment.attachment_id.id),
-                                    "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1318,7 +1316,6 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                                                          attachment_id=attachment.attachment_id.id) + ".eml",
                                                      attached_email.as_string())
 
-                        is_file_attached = FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                         if file_result:
                             # check for error
                             if file_result['Type'] == entryTypes['error']:
@@ -1331,7 +1328,6 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 'name': get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
                                                             attachment_id=attachment.attachment_id.id) + ".eml",
-                                "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                             })
 
                         else:
@@ -1339,7 +1335,6 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 'name': get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
                                                             attachment_id=attachment.attachment_id.id) + ".eml",
-                                "description": f"{is_file_attached}-{attachment.attachment_id.id}"
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment_name=attachment.name,

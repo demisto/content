@@ -263,7 +263,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_identifier_id = attachment.get('contentId')
             if not attachment_identifier_id or attachment_identifier_id == "None":
                 attachment_identifier_id = attachment.get('id', '')
-            attachment_name = f"{attachment_identifier_id}-{attachment.get('name', 'untitled_attachment').replace('-', '_')}"
+            attachment_name = f"{attachment_identifier_id}-imageName:{attachment.get('name', 'untitled_attachment')}"
 
             if not attachment_name.isascii():
                 try:
