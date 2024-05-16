@@ -1,5 +1,5 @@
 [file:DemistoLock.yml]
-ignore=DS107
+ignore=DS107,RM110
 
 [file:README.md]
 ignore=RM106
