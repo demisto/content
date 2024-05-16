@@ -18,7 +18,8 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-PA_OUTPUT_PREFIX = "CipherTrust."
+CONTEXT_OUTPUT_PREFIX = "CipherTrust."
+GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
@@ -77,10 +78,9 @@ class CipherTrustClient(BaseClient):
         )
 
     def delete_group(self, group_name: str, request_data: dict):
-        url_suffix = urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name))
         self._http_request(
             method='DELETE',
-            url_suffix=url_suffix,
+            url_suffix=urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name)),
             json_data=request_data,
             return_empty_response=True
         )
@@ -110,7 +110,7 @@ def test_module(client: CipherTrustClient):
     return 'ok'
 
 
-@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
+@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
 
@@ -187,13 +187,13 @@ def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults
     )
     raw_response = client.get_groups_list(params)
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}Group',
+        outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-group-create', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
+@metadata_collector.command(command_name='ciphertrust-group-create', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def group_create_command(client: CipherTrustClient, args: dict):
     """
     Args:
@@ -205,12 +205,11 @@ def group_create_command(client: CipherTrustClient, args: dict):
         {'name': 'maya test', 'created_at': '2024-05-15T14:16:03.088821Z', 'updated_at': '2024-05-15T14:16:03.088821Z', 'description': 'mayatest'}
 
     """
-    # todo: how to handle required args
     request_data = assign_params(name=args.get(ArgAndParamNames.NAME),
                                  description=args.get(ArgAndParamNames.DESCRIPTION))
     raw_response = client.create_group(request_data)
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}Group',
+        outputs_prefix=f'{CONTEXT_OUTPUT_PREFIX}Group',
         outputs=raw_response,
         raw_response=raw_response
     )
