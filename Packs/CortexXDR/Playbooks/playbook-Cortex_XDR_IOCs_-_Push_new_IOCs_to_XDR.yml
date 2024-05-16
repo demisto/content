@@ -913,12 +913,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 4e43a563-6013-49ac-8e0e-c9e03dcc1e2e
+    taskid: b55480d0-ba6b-4288-835d-981faf6e314f
     type: condition
     task:
-      id: 4e43a563-6013-49ac-8e0e-c9e03dcc1e2e
+      id: b55480d0-ba6b-4288-835d-981faf6e314f
       version: -1
-      name: Indicators to push?
+      name: Are there indicators to push?
       description: Checks if there are any new IOCs that we need to push into XDR
       type: condition
       iscommand: false
@@ -990,12 +990,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 456ed20a-e2a2-4fed-8b6d-87168c6b62a6
+    taskid: 7df5d74a-a0a0-4284-8476-adcba3c048ba
     type: condition
     task:
-      id: 456ed20a-e2a2-4fed-8b6d-87168c6b62a6
+      id: 7df5d74a-a0a0-4284-8476-adcba3c048ba
       version: -1
-      name: Save irrelevant hashes in context for marking
+      name: Are there any irrelevant hashes in the context for marking?
       description: Set a value in context under the key you entered.
       type: condition
       iscommand: false
@@ -1009,7 +1009,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
