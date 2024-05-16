@@ -14,6 +14,10 @@ configuration:
   name: credentials
   type: 9
   required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
 script:
   commands:
   - deprecated: false
@@ -23,7 +27,7 @@ script:
     - name: name
       isArray: false
       description: Name of the group. required=True
-      required: true
+      required: false
       secret: false
       default: false
     - name: description
@@ -35,7 +39,12 @@ script:
     outputs: []
   - deprecated: false
     description: ''
-    name: groups_list_command
+    name: ciphertrust-group-delete
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-group-list
     arguments:
     - name: group_name
       isArray: false
@@ -91,7 +100,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:latest
+  dockerimage: demisto/python3:3.10.13.86272
   feed: false
   isfetch: false
   runonce: false

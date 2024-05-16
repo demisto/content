@@ -11,9 +11,7 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
                                                         key_type=ParameterTypes.AUTH,
                                                         required=True)])
 
-
 ''' IMPORTS '''
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -38,6 +36,7 @@ class ArgAndParamNames:
     CLIENT_ID = 'client_id'
     NAME = 'name'
     DESCRIPTION = 'description'
+    FORCE = 'force'
 
 
 '''CLIENT CLASS'''
@@ -73,6 +72,14 @@ class CipherTrustClient(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=USER_MANAGEMENT_GROUPS_URL_SUFFIX,
+            json_data=request_data
+        )
+
+    def delete_group(self, group_name: str, request_data: dict):
+        url_suffix = urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, group_name)
+        self._http_request(
+            method='DELETE',
+            url_suffix=url_suffix,
             json_data=request_data
         )
 
@@ -211,6 +218,12 @@ def group_create_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-group-delete')
 def group_delete_command(client: CipherTrustClient, args: dict):
+    request_data = assign_params(force=args.get(ArgAndParamNames.FORCE))
+    client.delete_group(args.get(ArgAndParamNames.GROUP_NAME), request_data)
+    return CommandResults(
+        readable_output=f'{args.get(ArgAndParamNames.GROUP_NAME)} has been deleted successfully!'
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -226,7 +239,7 @@ def main():
     server_url = params.get('server_url')
     base_url = urljoin(server_url, BASE_URL_SUFFIX)
 
-    username = params.get('credentials', {}).get('username')
+    username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
     verify = not demisto.params().get('insecure', False)
@@ -244,10 +257,42 @@ def main():
 
         if command == 'test-module':
             return_results(test_module(client))
-        if command == 'ciphertrust-group-list':
+        elif command == 'ciphertrust-group-list':
             return_results(groups_list_command(client=client, args=args))
-        if command == 'ciphertrust-group-create':
+        elif command == 'ciphertrust-group-create':
             return_results(group_create_command(client=client, args=args))
+        elif command == 'ciphertrust-group-delete':
+            return_results(group_delete_command(client=client, args=args))
+        elif command == 'ciphertrust-group-update':
+            return_results(group_update_command(client=client, args=args))
+        elif command == 'ciphertrust-user-to-group-add':
+            return_results(user_to_group_add_command(client=client, args=args))
+        elif command == 'ciphertrust-user-to-group-remove':
+            return_results(user_to_group_remove_command(client=client, args=args))
+        elif command == 'ciphertrust-users-list':
+            return_results(users_list_command(client=client, args=args))
+        elif command == 'ciphertrust-user-create':
+            return_results(user_create_command(client=client, args=args))
+        elif command == 'ciphertrust-user-update':
+            return_results(user_update_command(client=client, args=args))
+        elif command == 'ciphertrust-user-delete':
+            return_results(user_delete_command(client=client, args=args))
+        elif command == 'ciphertrust-user-password-change':
+            return_results(user_password_change_command(client=client, args=args))
+        elif command == 'ciphertrust-local-ca-create':
+            return_results(local_ca_create_command(client=client, args=args))
+        elif command == 'ciphertrust-local-ca-list':
+            return_results(local_ca_list_command(client=client, args=args))
+        elif command == 'ciphertrust-local-ca-update':
+            return_results(local_ca_update_command(client=client, args=args))
+        elif command == 'ciphertrust-local-ca-delete':
+            return_results(local_ca_update_command(client=client, args=args))
+        elif command == 'ciphertrust-local-ca-self-sign':
+            return_results(local_ca_self_sign_command(client=client, args=args))
+        elif command == 'ciphertrust-local-ca-install':
+            return_results(local_ca_install_command(client=client, args=args))
+        elif command == 'ciphertrust-certificate-issue':
+            return_results(certificate_issue_command(client=client, args=args))
 
     except Exception as e:
         msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
