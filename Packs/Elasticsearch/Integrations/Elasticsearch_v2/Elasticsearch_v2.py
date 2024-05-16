@@ -77,8 +77,6 @@ def get_value_by_dot_notation(dictionary, key):
     """
     value = dictionary
     demisto.debug('Trying to get value by dot notation')
-    demisto.debug(f'{dictionary=}')
-    demisto.debug(f'{key=}')
     for k in key.split('.'):
         if isinstance(value, dict):
             value = value.get(k)
