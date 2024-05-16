@@ -44,7 +44,7 @@ class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
         mock_os_walk.assert_called_once_with(dir_path)
         mock_zipfile.assert_called_once_with(dir_path / (library_name + '.zip'), 'w', compression=zipfile.ZIP_DEFLATED,
                                              compresslevel=9)
-        mock_open.assert_called_once_with(dir_path / (library_name + '.zip'), 'rb')
+        mock_open.assert_has_calls([call(dir_path / (library_name + '.zip'), 'rb'), call(dir_path / (library_name + '.zip'), 'rb')])
         self.assertTrue(result.endswith('.zip'))
 
     @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
@@ -56,7 +56,7 @@ class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
         mock_popen.return_value = mock_process
 
         with self.assertRaises(DemistoException):
-            installLibrary(Path('/path/to/dir'), 'library_name')
+            installLibrary(Path('/path/to/dir'), 'kubernetes')
 
     @patch('DownloadAndArchivePythonLibrary.os.walk')
     @patch('DownloadAndArchivePythonLibrary.zipfile.ZipFile')
@@ -95,12 +95,12 @@ class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
         mock_installLibrary.return_value = mock_result
 
         # Set up mock for demisto.args()
-        with patch('DownloadAndArchivePythonLibrary.demisto.args', return_value={'library_name': 'library_name'}):
+        with patch('DownloadAndArchivePythonLibrary.demisto.args', return_value={'library_name': 'kubernetes'}):
             main()
 
         # Asserts
         mock_mkdtemp.assert_called_once_with(prefix='python')
-        mock_installLibrary.assert_called_once_with(Path('/path/to/dir'), 'library_name')
+        mock_installLibrary.assert_called_once_with(Path('/path/to/dir'), 'kubernetes')
         mock_return_results.assert_called_once_with(mock_result)
         mock_return_error.assert_not_called()
 
@@ -116,12 +116,12 @@ class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
         mock_installLibrary.side_effect = Exception("Test exception")
 
         # Set up mock for demisto.args()
-        with patch('DownloadAndArchivePythonLibrary.demisto.args', return_value={'library_name': 'library_name'}):
+        with patch('DownloadAndArchivePythonLibrary.demisto.args', return_value={'library_name': 'kubernetes'}):
             main()
 
         # Asserts
         mock_mkdtemp.assert_called_once_with(prefix='python')
-        mock_installLibrary.assert_called_once_with(Path('/path/to/dir'), 'library_name')
+        mock_installLibrary.assert_called_once_with(Path('/path/to/dir'), 'kubernetes')
         mock_return_error.assert_called_once_with("An error occurred: Test exception")
         mock_return_results.assert_not_called()
 
