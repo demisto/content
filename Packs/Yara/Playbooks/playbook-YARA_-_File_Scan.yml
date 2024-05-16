@@ -108,7 +108,7 @@ tasks:
           root: inputs.EntryID
           transformers:
           - operator: uniq
-      yaraRule:
+      yaraRules:
         complex:
           root: inputs.YARA
           transformers:
@@ -268,10 +268,10 @@ tasks:
           root: inputs.EntryID
           transformers:
           - operator: uniq
-      yaraRule:
+      yaraRules:
         complex:
           root: foundIndicators
-          accessor: rawrule
+          accessor: rawrules
           transformers:
           - operator: uniq
     separatecontext: false

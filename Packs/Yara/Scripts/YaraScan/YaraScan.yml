@@ -8,9 +8,9 @@ tags: []
 comment: Performs a Yara scan on the specified files.
 enabled: true
 args:
-- name: yaraRule
+- name: yaraRules
   required: true
-  description: The Yara rule to use for the file scan.
+  description: The Yara rule(s) to use for the file scan.
 - name: entryIDs
   required: true
   description: A comma-separated list of file entry IDs to scan.

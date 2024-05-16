@@ -5,7 +5,7 @@ from CommonServerPython import entryTypes
 
 
 def test_main(mocker):
-    rule = '''rule PE_file_identifier
+    rule1 = '''rule PE_file_identifier
 {
     meta:
         author = "Adam Burt"
@@ -18,6 +18,18 @@ def test_main(mocker):
     condition:
         $MZ at 0
 }'''
+
+    rule2 = '''rule Always_true
+{
+    meta:
+        author = "Ivan"
+        description = "Always true for testing purposes"
+        date = "16/05/2024"
+
+    condition:
+        true
+}
+    '''
 
     def executeCommand(name, args=None):
         if name == 'getFilePath':
@@ -32,11 +44,11 @@ def test_main(mocker):
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={
         'entryIDs': 'test',
-        'yaraRule': rule
+        'yaraRules': {"rule1": rule1, "rule2": rule2}
     })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
@@ -46,3 +58,4 @@ def test_main(mocker):
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['Contents'][0]['HasMatch']
     assert results[0]['Contents'][0]['Matches'][0]['RuleName'] == 'PE_file_identifier'
+    assert results[0]['Contents'][0]['Matches'][1]['RuleName'] == 'Always_true'

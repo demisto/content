@@ -11,11 +11,11 @@ yaraLogo = "iVBORw0KGgoAAAANSUhEUgAAAR0AAABgCAYAAAAgoabQAAAAGXRFWHRTb2Z0d2FyZQBB
 
 def main():
 
-    entries = list()
+    entries = []
     args = demisto.args()
     entryIDs = argToList(args.get('entryIDs'))
 
-    fileInfos = list()
+    fileInfos = []
     for item in entryIDs:
         res = demisto.executeCommand("getFilePath", {"id": item})
         if is_error(res):
@@ -31,7 +31,7 @@ def main():
     if len(fileInfos) < 1:
         return_error('No files were found for scanning, please check the entry IDs')
 
-    yaraRuleRaw = args.get('yaraRule')
+    yaraRulesRaw = args.get('yaraRules')
 
     for fileInfo in fileInfos:
         with open(fileInfo['path'], 'rb') as fp:
@@ -42,11 +42,11 @@ def main():
                 "HasMatch": False,
                 "HasError": False,
                 "MatchCount": 0,
-                "Matches": list(),
-                "Errors": list()
+                "Matches": [],
+                "Errors": []
             }
             try:
-                cRule = yara.compile(source=yaraRuleRaw)
+                cRule = yara.compile(sources=yaraRulesRaw)
             except Exception as err:
                 thisMatch['HasError'] = True
                 thisMatch['Errors'].append(str(err))
@@ -65,7 +65,7 @@ def main():
             else:
                 thisMatch['HasMatch'] = False
             for match in matches:
-                matchData = dict()
+                matchData = {}
                 matchData['RuleName'] = match.rule
                 matchData['Meta'] = match.meta
                 matchData['Strings'] = str(match.strings)
