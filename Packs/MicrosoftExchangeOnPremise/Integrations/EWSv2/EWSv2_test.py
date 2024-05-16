@@ -816,6 +816,18 @@ def test_get_message_for_body_type_text_body_type_with_no_html_body():
     assert result == Body(body)
 
 
+def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
+    """
+    Given: html_body, no body, the default 'text' as body_type.
+    When: Constructing the message body.
+    Then: Assert that the result is an html body.
+    """
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type('', 'text', html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
 def test_parse_physical_address():
     assert parse_physical_address(PhysicalAddress(city='New York',
                                                   country='USA',

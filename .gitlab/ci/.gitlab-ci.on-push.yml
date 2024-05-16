@@ -9,6 +9,26 @@
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+.infrastructure-rules:
+  rules:
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    - if: '$SDK_RELEASE == "true"'
+      when: never
+    # In sdk nighly we run this separately 
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 .create-release-notes-and-common-docs:
   - section_start "Create Release Notes and Common Server Documentation" --collapsed
   - echo "Creating Release Notes and Content Descriptor"
@@ -53,29 +73,17 @@ stop-running-pipelines:
     - section_end "Stop running pipelines on current branch"
     - job-done
 
+test-infrastructure:
+  extends:
+    - .infrastructure-rules
+    - .test-infrastructure
+
 run-pre-commit:
   extends:
+    - .infrastructure-rules
     - .run-pre-commit
   cache:
     policy: pull-push
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$SECURITY_SCANS == "true"'
-      when: never
-    - if: '$BUILD_MACHINES_CLEANUP == "true"'
-      when: never
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
-      when: never
-    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
-      when: never
-    - if: '$SDK_RELEASE == "true"'
-      when: never
-    # In sdk nighly we run this separately 
-    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
