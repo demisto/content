@@ -6,5 +6,18 @@
 !mimecast-release-hold-message id="eNpVzskOgjAABNB_6RUPpQUBEw8ILkiCuOByMpGWRW0RaKvR-O_C0fObycwHtDSVDS0JGAERLQN8LHPjRmq30nCzWUTels15Hpq-_Xh5eVAU1iwONXN6umZBcsguUoXOKnKjGKHrPtFbQVKKFJzwp3Zy_PC58y2ToWklmI2Nx3v9wrGCsTsGA1DcSd3vWthA0B46xgAIxvsjshW0YTruQoo2bVlxMNI75YR2CiHqoJZU0vNf__sDnRk_cQ"
 !mimecast-list-email-queues from_date="2015-11-16T14:49:18+0000" to_date="2022-11-16T14:49:18+0000"
 !mimecast-search-processing-message
-<!-- !mimecast-create-policy description=test fromPart=both fromType=email_domain fromValue=gmail.com toType=email_domain toValue=gmail.com option=no_action -->
 
+!mimecast-create-policy description=test fromPart=both fromType=email_domain fromValue=gmail.com toType=email_domain toValue=gmail.com option=no_action
+!mimecast-get-archive-search-logs limit=25 query=teste@gmail.com
+!mimecast-get-search-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000  query=teste@gmail.com limit=105
+!mimecast-get-view-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000 query=teste@gmail.com limit=105
+!mimecast-list-account account_code=CUSA111111 account_name="API Networks"
+!mimecast-list-policies policyType="address-alteration" page_size=20 page=4
+!mimecast-create-block-sender-policy description=aa fromType=everyone option=block_sender toType=everyone
+!mimecast-update-block-sender-policy policy_id=eNo1jrsOgjAAAP11111111111111111
+!mimecast-create-antispoofing-bypass-policy description=test from_type=email_domain from_value=mail.google.com option=disable_bypass to_type=everyone spf_domain=google.com
+!mimecast-update-antispoofing-bypass-policy id=eNo1jr0O1111111 option=disable_bypass
+!mimecast-create-address-alteration-policy policy_id=eNoVj111111 from_type=everyone to_type=external_addresses policy_description=test102
+!mimecast-update-address-alteration-policy id=eNo1jrsOgjAA1111111
+!mimecast-get-policy policyType=blockedsenders policyID=eNo1jrsOgjAAAP-lqw6FFkUTB59I1
+!mimecast-get-policy policyType="antispoofing-bypass" policyID=eNo1jr0OgjAY1111
