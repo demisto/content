@@ -5,7 +5,7 @@ import uuid
 import json
 from collections.abc import Callable
 from flask import Flask, request, make_response, jsonify, Response
-from urllib.parse import ParseResult, urlparse, urlunparse
+from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
