@@ -355,7 +355,8 @@ expected_results = ['created']
 
 
 def test_remove_empty_or_short_fields(sample_data):
-    from DBotFindSimilarIncidents import Model
+    from DBotFindSimilarIncidents import Model, FIELD_SKIP_REASON_DOESNT_EXIST, \
+        FIELD_SKIP_REASON_FALSY_VALUE, FIELD_SKIP_REASON_TOO_SHORT
     """
     Given:
         - sample_data: a dataframe with a column of strings
@@ -375,13 +376,13 @@ def test_remove_empty_or_short_fields(sample_data):
     should_proceed, all_skip_reasons = my_instance.remove_empty_or_short_fields()
     assert my_instance.field_for_command_line == expected_results
     assert should_proceed
-    for reason in all_skip_reasons:
-        assert "created" not in reason
-        assert "Name" not in reason or "has length of 1" in reason
-        assert "Id" not in reason or "has length of 1" in reason
-        assert "test" not in reason or "has a falsy value" in reason
-        assert "hello" not in reason or "does not exist in incident" in reason
-        assert "xdralerts" not in reason or "has a falsy value" in reason
+    assert all("created" not in reason for reason in all_skip_reasons)
+    assert f'  - {FIELD_SKIP_REASON_TOO_SHORT.format(field="Name", val="t", len=1)}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_TOO_SHORT.format(field="Id", val=["123"], len=1)}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="test", val=None)}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="test2", val="")}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="xdralerts", val="N/A")}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_DOESNT_EXIST.format(field="hello")}' in all_skip_reasons
 
 
 def test_predict_without_similarity_fields(sample_data):

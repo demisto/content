@@ -18,8 +18,14 @@ from GetIncidentsApiModule import *  # noqa: E402
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
 
+FIELD_SKIP_REASON_DOESNT_EXIST = "The '{field}' field does not exist in incident"
+FIELD_SKIP_REASON_FALSY_VALUE = "The '{field}' field has a falsy value in current incident: '{val}'"
+FIELD_SKIP_REASON_INVALID_TYPE = "Expected type of the '{field}' field is: {valid}, actual type is: {type}"
+FIELD_SKIP_REASON_TOO_SHORT = "Value of the '{field}' field in incident: '{val}' has length of {len}"
+FIELD_SKIP_REASON_LIST_OF_FALSY_VALS = "Value of '{field}' field in incident: '{val}' is a list with only falsy values"
+
 INCIDENT_ALIAS = 'alert' if is_xsiam() else 'incident'
-MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Reasons: {}"
+MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Reasons:\n{}"
 
 MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
 
@@ -419,7 +425,7 @@ class Model:
     def predict(self):
         should_proceed, all_skip_reasons = self.remove_empty_or_short_fields()
         if not should_proceed:
-            raise DemistoException("\n".join(all_skip_reasons) or "No fields were provided for similarity calculation")
+            raise DemistoException("\n".join(all_skip_reasons) or "  * No fields were provided for similarity calculation")
         self.get_score()
         self.compute_final_score()
         return self.prepare_for_display(), self.field_for_command_line + self.field_for_potential_exact_match + \
@@ -436,17 +442,17 @@ class Model:
             skip_reason = None
             # returns a reason to drop field if exists, or None if no such
             if field not in self.incident_to_match.columns:
-                skip_reason = f"{field=} does not exist in incident"
+                skip_reason = FIELD_SKIP_REASON_DOESNT_EXIST.format(field=field)
             else:
                 val = self.incident_to_match[field].values[0]
                 if not val or val in ["None", "N/A"]:
-                    skip_reason = f"{field=} has a falsy value in current incident: {val}"
+                    skip_reason = FIELD_SKIP_REASON_FALSY_VALUE.format(field=field, val=val)
                 elif valid_types and not isinstance(val, valid_types):
-                    skip_reason = f"Expected type of {field=} is: {valid_types}, actual type is: {type(val)}"
+                    skip_reason = FIELD_SKIP_REASON_INVALID_TYPE.format(field=field, valid=valid_types, type=type(val))
                 elif len(val) < 2:
-                    skip_reason = f"Value of {field=} in incident: {val} has length of {len(val)}"
+                    skip_reason = FIELD_SKIP_REASON_TOO_SHORT.format(field=field, val=val, len=len(val))
                 elif isinstance(val, list) and all(not x for x in val):
-                    skip_reason = f"Value of {field=} in incident: {val} is a list with only falsy values"
+                    skip_reason = FIELD_SKIP_REASON_LIST_OF_FALSY_VALS.format(field=field, val=val)
 
             if skip_reason:
                 demisto.debug(f"Skipping - {skip_reason}")
@@ -462,7 +468,7 @@ class Model:
             skip_reasons = []
             for field in fields_list:
                 if skip_reason := find_skip_reason(field, valid_types):
-                    skip_reasons.append(skip_reason)
+                    skip_reasons.append(f"  - {skip_reason}")
                 else:
                     fields_to_use.append(field)
             return fields_to_use, skip_reasons
