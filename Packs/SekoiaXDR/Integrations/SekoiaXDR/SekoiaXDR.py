@@ -788,9 +788,7 @@ def get_modified_remote_data_command(client: Client, args):
     for item in raw_alerts["items"]:
         modified_alert_ids.append(item["short_id"])
 
-    return_results(
-        GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
-    )
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
 
 
 def update_remote_system_command(client: Client, args):
