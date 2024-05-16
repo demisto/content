@@ -26,8 +26,8 @@ script:
     arguments:
     - name: name
       isArray: false
-      description: Name of the group. required=True
-      required: false
+      description: Name of the group.
+      required: true
       secret: false
       default: false
     - name: description
@@ -40,7 +40,19 @@ script:
   - deprecated: false
     description: ''
     name: ciphertrust-group-delete
-    arguments: []
+    arguments: 
+    - name: group_name
+      isArray: false
+      description: Name of the group.
+      required: true
+      secret: false
+      default: false
+    - name: force
+      isArray: false
+      description: When set to true, groupmaps within this group will be deleted
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''

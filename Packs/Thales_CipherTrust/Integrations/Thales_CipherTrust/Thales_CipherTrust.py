@@ -1,4 +1,5 @@
 import urllib3
+from urllib.parse import quote
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -76,18 +77,19 @@ class CipherTrustClient(BaseClient):
         )
 
     def delete_group(self, group_name: str, request_data: dict):
-        url_suffix = urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, group_name)
+        url_suffix = urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name))
         self._http_request(
             method='DELETE',
             url_suffix=url_suffix,
-            json_data=request_data
+            json_data=request_data,
+            return_empty_response = True
         )
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_skip_and_limit_for_pagination(limit, page, page_size):
+def derive_skip_and_limit_for_pagination(limit, page, page_size):
     if page:
         page_size = arg_to_number(page_size) or DEFAULT_PAGE_SIZE
         if page_size > MAX_PAGE_SIZE:
@@ -173,7 +175,7 @@ def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults
         }
     ]
     """
-    skip, limit = calculate_skip_and_limit_for_pagination(args.get(ArgAndParamNames.LIMIT), args.get(ArgAndParamNames.PAGE),
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(ArgAndParamNames.LIMIT), args.get(ArgAndParamNames.PAGE),
                                                           args.get(ArgAndParamNames.PAGE_SIZE))
     params = assign_params(
         skip=skip,
@@ -217,7 +219,7 @@ def group_create_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-group-delete')
 def group_delete_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(force=args.get(ArgAndParamNames.FORCE))
-    client.delete_group(args.get(ArgAndParamNames.GROUP_NAME), request_data)
+    client.delete_group(args[ArgAndParamNames.GROUP_NAME], request_data)
     return CommandResults(
         readable_output=f'{args.get(ArgAndParamNames.GROUP_NAME)} has been deleted successfully!'
     )
