@@ -19,17 +19,9 @@ repos:
   rev: 1.8.2
   hooks:
   - id: poetry-check
-  - id: poetry-lock
     args:
-    - --check
+    - --lock
     files: ^pyproject.toml$
-  - id: poetry-export
-    args:
-    - --with
-    - dev,typing
-    - --without-hashes
-    - -o
-    - requirements.txt
 - repo: https://github.com/hadialqattan/pycln
   rev: v2.1.2
   hooks:
@@ -277,6 +269,7 @@ repos:
     entry: demisto-sdk validate
     args:
     - --skip-pack-dependencies
+    - --config-path=validation_config.toml
     pass_filenames: false
     language: system
     require_serial: true
