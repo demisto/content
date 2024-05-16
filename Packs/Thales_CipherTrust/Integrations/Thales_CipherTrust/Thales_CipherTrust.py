@@ -88,14 +88,12 @@ class CipherTrustClient(BaseClient):
 
 
 def calculate_skip_and_limit_for_pagination(limit, page, page_size):
-    limit = arg_to_number(limit)
-    page = arg_to_number(page)
     if page:
         page_size = arg_to_number(page_size) or DEFAULT_PAGE_SIZE
         if page_size > MAX_PAGE_SIZE:
             raise ValueError(f'Page size cannot exceed {MAX_PAGE_SIZE}')
-        return (page - 1) * page_size, page_size
-    return 0, limit if limit else DEFAULT_LIMIT
+        return (arg_to_number(page) - 1) * page_size, page_size
+    return 0, arg_to_number(limit)
 
 
 ''' COMMAND FUNCTIONS '''

@@ -76,14 +76,12 @@ script:
       required: false
       secret: false
       default: false
-      defaultValue: '1'
     - name: page_size
       isArray: false
       description: number of entries per page.
       required: false
       secret: false
       default: false
-      defaultValue: '50'
     - name: limit
       isArray: false
       description: The max number of resources to return.
