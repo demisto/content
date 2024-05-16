@@ -900,14 +900,14 @@ def test_build_eql_body():
     assert build_eql_body(None, None, None, None, None, None, None) == {}
     assert build_eql_body("query", "fields", "size", "tiebreaker_field",
                           "timestamp_field", "event_category_field", "filter") == {
-               "query": "query",
-               "fields": "fields",
-               "size": "size",
-               "tiebreaker_field": "tiebreaker_field",
-               "timestamp_field": "timestamp_field",
-               "event_category_field": "event_category_field",
-               "filter": "filter"
-           }
+        "query": "query",
+        "fields": "fields",
+        "size": "size",
+        "tiebreaker_field": "tiebreaker_field",
+        "timestamp_field": "timestamp_field",
+        "event_category_field": "event_category_field",
+        "filter": "filter"
+    }
 
 
 first_case_all_with_empty_string = ('', {'a': {'mappings': {'properties': {'example': {}}}}},
@@ -917,8 +917,8 @@ second_case_with_prefix_and_wildcard = ('.internal.alerts-*',
                                         {'.internal.alerts-security': {'mappings': {'properties': {'example': {}}}},
                                          '.internal': {'mappings': {'properties': {'example': {}}}}},
                                         {'.internal.alerts-security':
-                                             {'_id': 'doc_id', '_index': '.internal.alerts-security',
-                                              '_source': {'example': 'type: '}}}
+                                         {'_id': 'doc_id', '_index': '.internal.alerts-security',
+                                          '_source': {'example': 'type: '}}}
                                         )
 third_regular_case = ('a', {'a': {'mappings': {'properties': {'example': {}}}}},
                       {'a': {'_id': 'doc_id', '_index': 'a', '_source': {'example': 'type: '}}})
