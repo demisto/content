@@ -8,7 +8,7 @@ from github import Github
 from git import Repo
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from demisto_sdk.commands.common.tools import get_pack_metadata
+from demisto_sdk.commands.common.tools import get_pack_metadata, get_yaml
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
@@ -234,7 +234,28 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(pr_files: list[str]) -> bool:
+def check_new_yml_for_tim(file, external_pr_branch: str, repo_name: str = 'content'):
+    try:
+        fork_owner = os.getenv('GITHUB_ACTOR')
+        #fork_owner = 'edik24'
+        with Checkout(
+            repo=Repo(Path().cwd(), search_parent_directories=True),
+            branch_to_checkout=external_pr_branch,
+            # in marketplace contributions the name of the owner should be xsoar-contrib
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            repo_name=repo_name
+        ):
+            integration = BaseContent.from_path(CONTENT_PATH / file)
+            print(f'The content path is: {CONTENT_PATH}')
+            print(f'The file is: {file}')
+            print(f'The integration is: {integration}')
+            return integration
+    except Exception as error:
+        print(f'The Exception: {Exception}')
+        return ""
+
+
+def is_tim_content(pr_files: list[str], pr, repo_name) -> bool:
     """
     This is where the actual search for feed:True or relevant tags or categories are being searched
     according to the login in is_tim_reviewer_needed
@@ -252,7 +273,11 @@ def is_tim_content(pr_files: list[str]) -> bool:
         #    continue
         if 'Integrations' not in file:
             continue
+        g = CONTENT_PATH
         integration = BaseContent.from_path(CONTENT_PATH / file)
+        if integration is None:
+            f = check_new_yml_for_tim(file, pr.head.ref, repo_name)
+            print(f'New pack, trying to checkout: {f}')
         print(f'Integration is: {integration}')
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
@@ -267,7 +292,7 @@ def is_tim_content(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
+def is_tim_reviewer_needed(pr_files: list[str], support_label: str, pr, repo_name) -> bool:
     """
     Checks whether the PR need to be reviewed by a TIM reviewer.
     It check the yml file of the integration - if it has the feed: True
@@ -281,7 +306,7 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     Returns: True or false if tim reviewer needed
     """
     if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-        return is_tim_content(pr_files)
+        return is_tim_content(pr_files, pr, repo_name)
     return False
 
 
@@ -468,7 +493,7 @@ def main():
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
-    if is_tim_reviewer_needed(pr_files, support_label):
+    if is_tim_reviewer_needed(pr_files, support_label, pr, repo_name):
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 

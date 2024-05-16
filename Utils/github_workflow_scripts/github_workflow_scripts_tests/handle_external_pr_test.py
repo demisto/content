@@ -239,6 +239,16 @@ def test_get_location_of_reviewer(assigned_prs_per_potential_reviewer, possible_
 
 def test_is_tim_content():
     from Utils.github_workflow_scripts.handle_external_pr import is_tim_content
-    pr_files = ['Packs/Jizo_NDR/Integrations/Jizo_NDR/Jizo_NDR.py', 'Packs/GreyNoise/pack_metadata.json', 'Packs/Jizo_NDR/pack_metadata.json']
+    pr_files = ['/Users/ekatsenelson/dev/demisto/forked_content_repo/content/Packs/Jizo_NDR/Integrations/Jizo_NDR/Jizo_NDR.yml', 'Packs/GreyNoise/pack_metadata.json', 'Packs/Jizo_NDR/pack_metadata.json']
     res = is_tim_content(pr_files)
+    assert 'False' == res
+
+
+
+
+def test_is_tim_content1():
+    from Utils.github_workflow_scripts.handle_external_pr import check_new_yml_for_tim
+    file = '/Users/ekatsenelson/dev/demisto/forked_content_repo/content/Packs/Jizo_NDR/Integrations/Jizo_NDR/Jizo_NDR.yml'
+    head = 'test_for_handle_external_pr_6'
+    res = check_new_yml_for_tim(file, head, 'content')
     assert 'False' == res
