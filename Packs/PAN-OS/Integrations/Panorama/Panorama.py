@@ -14227,9 +14227,8 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[
     # calculate largest unique id for each log type query
     new_largest_id = find_largest_id_per_device(incident_entries)
     # convert incident entries to incident context and filter any empty incidents if exists
-    parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(
-        incident_entry) for incident_entry in incident_entries]
-    filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
+    parsed_incidents: List[Dict[str, Any]] = list(map(incident_entry_to_incident_context, incident_entries))
+    filtered_parsed_incidents = list(filter(None, parsed_incidents))
 
     return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
 
@@ -14334,6 +14333,11 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
     """
     parsed_incident_entries_dict = {}
     for log_type, incident_entries in incident_entries_dict.items():
+        if log_type == 'Correlation':
+            last_id_dict['Correlation'] = dateparser.parse(  # type: ignore
+                incident_entries_dict['Correlation'][-1]['time_generated'],
+                settings={'TIMEZONE': 'UTC'}
+            )
         if incident_entries:
             updated_last_id, updated_last_fetch, incidents = parse_incident_entries(incident_entries)
             demisto.debug(
