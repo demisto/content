@@ -79,15 +79,15 @@ CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families'
 FETCH_BY_FIELDS = {
     "Last Updated": {
         "field_name": "last_updated",
-        "filter": "_marker:>",
         "sort": "_marker|asc",
+        "last_run_query": "_marker:>'{last_run_value}'",
         "response_resources_ref": "_marker",
         "context_value": "last_marker_time",
     },
     "Published Date": {
         "field_name": "published_date",
-        "filter": "published_date:>",
         "sort": "published_date|asc",
+        "last_run_query": "published_date:>{last_run_value}",
         "response_resources_ref": "published_date",
         "context_value": "last_published_date_time",
     },
@@ -359,16 +359,16 @@ class Client(CrowdStrikeClient):
 
         # Case 1: This is not the first fetch cycle and there is a last_run value saved in the Integration Context
         if last_run := demisto.getIntegrationContext().get(FETCH_BY_FIELDS[fetch_by_field]["context_value"]):
-            filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
-            last_run_query = f"{filter}'{last_run}'"
+            last_run_query = FETCH_BY_FIELDS[fetch_by_field]["last_run_query"].format(last_run_value=last_run)
             demisto.info(f"got last_run from Integration Context: {last_run}. filter parameter is: {last_run_query=}")
         # Case 2: fetch_by_field=`Published Date` and its the first fetch cycle, create a timestamp out of `first_fetch` parameter
         elif fetch_by_field == "Published Date":
-            filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
             first_fetch_datetime = arg_to_datetime(first_fetch, required=True)
             first_fetch_timestamp = int(first_fetch_datetime.timestamp()) if first_fetch_datetime else None
             if first_fetch_timestamp:
-                last_run_query = f"{filter}'{first_fetch_timestamp}'"
+                last_run_query = last_run_query = FETCH_BY_FIELDS[fetch_by_field]["last_run_query"].format(
+                    last_run_value=first_fetch_timestamp
+                )
             else:
                 raise DemistoException(
                     "Could not create timestamp for first fetch. Please verify `First fetch time` parameter validity."
