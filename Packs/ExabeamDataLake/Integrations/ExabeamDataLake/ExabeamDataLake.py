@@ -52,7 +52,7 @@ class Client(BaseClient):
             "POST",
             full_url=f"{self._base_url}/dl/api/es/search",
             data=json.dumps(search_query),
-            headers={"kbn-version": "5.1.1-SNAPSHOT", "Content-Type": "application/json"},
+            headers={"Content-Type": "application/json"},
         )
 
 

@@ -303,6 +303,6 @@ def test_query_datalake_request(mocker):
         "POST",
         full_url="http://example.com/dl/api/es/search",  # Adjust base URL accordingly
         data=expected_data,
-        headers={"kbn-version": "5.1.1-SNAPSHOT", "Content-Type": "application/json"}
+        headers={"Content-Type": "application/json"}
     )
     mock_login.assert_called_once()
