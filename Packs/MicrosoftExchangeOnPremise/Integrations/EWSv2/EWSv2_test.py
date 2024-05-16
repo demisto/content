@@ -9,7 +9,7 @@ import logging
 import dateparser
 import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
@@ -846,3 +846,13 @@ def test_parse_item_as_dict_return_json_serializable():
     item_as_json = json.dumps(item_as_dict, ensure_ascii=False)
     assert isinstance((item_as_dict.get("cc_recipients", [])[0]).get("item_id"), dict)
     assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json
+
+
+@pytest.mark.parametrize("attachment_name, content_id, attachment_id, expected_result", [
+    pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
+    pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
+    pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
+    
+])
+def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id, attachment_id=attachment_id) == expected_result

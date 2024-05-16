@@ -25,7 +25,8 @@ from EWSO365 import (
     parse_incident_from_item,
     parse_item_as_dict,
     cast_mime_item_to_message,
-    decode_email_data
+    decode_email_data,
+    get_attachment_name
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -922,3 +923,13 @@ def test_handle_incorrect_message_id(message_id, expected_message_id_output):
 
     """
     assert handle_incorrect_message_id(message_id) == expected_message_id_output
+
+
+@pytest.mark.parametrize("attachment_name, content_id, attachment_id, expected_result", [
+    pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
+    pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
+    pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
+    
+])
+def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id, attachment_id=attachment_id) == expected_result
