@@ -89,10 +89,10 @@ def get_file_entry_id(file_name):
 
 
 def read_files_by_name(file_names, input_type):
-    file_names = filter(None, argToList(file_names))
+    names = filter(None, argToList(file_names))
     data = []
-    for file_name in file_names:
-        data += read_file(get_file_entry_id(file_name), input_type)
+    for name in names:
+        data += read_file(get_file_entry_id(name), input_type)
     return data
 
 
