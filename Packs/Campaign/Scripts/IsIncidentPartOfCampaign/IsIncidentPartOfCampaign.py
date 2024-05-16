@@ -40,7 +40,7 @@ def main():
         else:
             # did not find a relevant campaign
             campaign_id = None
-            readable = "No campaign has found"
+            readable = "No campaign was found"
 
         return CommandResults(readable_output=readable, outputs={"ExistingCampaignID": campaign_id},
                               raw_response=readable)

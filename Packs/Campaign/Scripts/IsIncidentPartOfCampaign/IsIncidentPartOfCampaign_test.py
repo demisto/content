@@ -41,5 +41,5 @@ def test_no_results(mocker):
     """Given a list of incident IDs, but they are not part of a campaign, make sure no results are returned"""
     mocker.patch.object(demisto, "args", return_value={"IncidentIDs": "1"})
     results = main()
-    assert "No campaign has found" in results.readable_output
+    assert "No campaign was found" in results.readable_output
     assert not results.outputs["ExistingCampaignID"]
