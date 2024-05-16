@@ -107,7 +107,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score=N
         indicators: dict of indicators
     """
     indicator_type = build_indicator_list(indicator_types)
-    filters = {
+    filters: dict[str, Any] = {
         'mode': 'and',
         'filters': [{
             'key': 'entity_type',
@@ -139,7 +139,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
 
     Returns:
         readable_output, raw_response
-    """    
+    """
     indicator_types = argToList(args.get("indicator_types"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
@@ -157,7 +157,12 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
             raise DemistoException("Invalid score was provided.")
 
     elif start or end:
-        scores = [str(i) for i in range(start, end + 1)]  # type:ignore
+        if not start:
+            scores = [str(i) for i in range(0, end + 1)]
+        elif not end:
+            scores = [str(i) for i in range(start, 101)]
+        else:
+            scores = [str(i) for i in range(start, end + 1)]
 
     raw_response = get_indicators(
         client=client,
