@@ -10,7 +10,7 @@ configuration:
   name: server_url
   type: 0
   required: true
-- display: credentials
+- display: Username
   name: credentials
   type: 9
   required: true
