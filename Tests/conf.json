@@ -4229,6 +4229,13 @@
             ]
         },
         {
+            "playbookID": "VenafiV2_Test",
+            "fromversion": "6.9.0",
+            "integrations": [
+                "VenafiTLSProtect"
+            ]
+        },
+        {
             "playbookID": "3da36d51-3cdf-4120-882a-cee03b038b89",
             "fromversion": "5.0.0",
             "integrations": [
