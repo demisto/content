@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 import abc
 import dateparser
 from datetime import datetime, timedelta
-from typing import Dict, Any, Collection, Set, Optional, Tuple, Union, Callable
+from typing import Dict, Any, Collection, Set, Optional, Tuple, Union, Callable, List
 import urllib3
 
 # Disable insecure warnings
