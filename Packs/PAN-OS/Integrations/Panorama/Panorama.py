@@ -14120,23 +14120,26 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
     """
     new_entries_dict: Dict = {}
     for log_type in entries_dict:
-        if log_type == 'Correlation':
-            for log in entries_dict['Correlation']:
-                latest_id = arg_to_number(log.get("@logid"))
-                if latest_id > id_dict.get('Correlation'):  # add to dict
-                    new_entries_dict.setdefault('Correlation', []).append(log)
         demisto.debug(f'Filtering {log_type} type enties, recived {len(entries_dict[log_type])} to filter.')
-        for log in entries_dict[log_type]:
-            device_name = log.get("device_name", '')
-            current_log_id = arg_to_number(log.get("seqno"))
-            # get the latest id for that device, if that device is not in the dict, set the id to 0
-            latest_id_per_device = id_dict.get(log_type, {}).get(device_name, 0)
-            demisto.debug(f'{latest_id_per_device=} for {log_type=} and {device_name=}')
-            if not current_log_id or not device_name:
-                demisto.debug(f'Could not parse seqno or device name from log: {log}, skipping.')
-                continue
-            if current_log_id > arg_to_number(latest_id_per_device):  # type: ignore
-                new_entries_dict.setdefault(log_type, []).append(log)
+        if log_type == 'Correlation':
+            last_log_id = id_dict.get('Correlation', 0)
+            first_new_log_index = next(
+                i for i, log in enumerate(entries_dict['Correlation'])
+                if arg_to_number(log.get("@logid")) > last_log_id  # type: ignore
+            )
+            new_entries_dict['Correlation'] = entries_dict['Correlation'][first_new_log_index:]
+        else:
+            for log in entries_dict[log_type]:
+                device_name = log.get("device_name", '')
+                current_log_id = arg_to_number(log.get("seqno"))
+                # get the latest id for that device, if that device is not in the dict, set the id to 0
+                latest_id_per_device = id_dict.get(log_type, {}).get(device_name, 0)
+                demisto.debug(f'{latest_id_per_device=} for {log_type=} and {device_name=}')
+                if not current_log_id or not device_name:
+                    demisto.debug(f'Could not parse seqno or device name from log: {log}, skipping.')
+                    continue
+                if current_log_id > arg_to_number(latest_id_per_device):  # type: ignore
+                    new_entries_dict.setdefault(log_type, []).append(log)
         demisto.debug(f'Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries.')
 
     return new_entries_dict
