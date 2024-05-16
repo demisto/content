@@ -188,7 +188,7 @@ def parse_mail_parts(parts):
                     if header.get('name') == 'Content-ID':
                         identifier_id = header.get('value').strip("<>")
                     if not identifier_id or identifier_id == "None":
-                        identifier_id = part['body'].get('attachmentId').strip("<>")                
+                        identifier_id = part['body'].get('attachmentId').strip("<>")
                 attachments.append({
                     'ID': part['body']['attachmentId'],
                     'Name': f"{identifier_id}-imageName:{part['filename']}",

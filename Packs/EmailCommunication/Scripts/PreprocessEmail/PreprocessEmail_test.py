@@ -1,5 +1,4 @@
 import json
-from CommonServerPython import FileAttachmentType
 import demistomock as demisto
 import pytest
 from datetime import datetime
