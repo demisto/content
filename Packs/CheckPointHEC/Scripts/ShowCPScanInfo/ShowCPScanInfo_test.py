@@ -20,5 +20,5 @@ def test_get_scan_info(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
-    result = get_scan_info('0000')
+    _, result = get_scan_info('0000', 'CheckPointHEC-instance-1')
     assert result == json.dumps({'av': mock_response['responseData'][0]['entitySecurityResult']['av']})

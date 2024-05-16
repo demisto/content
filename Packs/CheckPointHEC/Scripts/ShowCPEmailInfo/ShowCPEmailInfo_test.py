@@ -23,7 +23,7 @@ def test_get_email_info(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
-    email_info = get_email_info('0000')
+    _, email_info = get_email_info('0000', 'CheckPointHEC-instance-1')
     assert email_info == dict_to_md(mock_response['responseData'][0]['entityPayload'])
 
 
