@@ -9,31 +9,25 @@
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-trigger-private-build:
-  tags:
-    - gke
-  stage: unittests-and-validations
-  extends:
-    - .default-job-settings
+.infrastructure-rules:
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+    - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    - if: '$SDK_RELEASE == "true"'
+      when: never
+    # In sdk nighly we run this separately 
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-  script:
-    - echo "====Trigger Private Build===="
-    - |
-      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t "${GITHUB_TOKEN}" --repo "demisto/content-private" -b "${CI_COMMIT_BRANCH}") ]; then
-        PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
-      else
-        PRIVATE_BRANCH_NAME='master'
-      fi
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
-    - sleep 60
-    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-    - job-done
-  timeout: 2 hours
 
 .create-release-notes-and-common-docs:
   - section_start "Create Release Notes and Common Server Documentation" --collapsed
@@ -79,29 +73,17 @@ stop-running-pipelines:
     - section_end "Stop running pipelines on current branch"
     - job-done
 
+test-infrastructure:
+  extends:
+    - .infrastructure-rules
+    - .test-infrastructure
+
 run-pre-commit:
   extends:
+    - .infrastructure-rules
     - .run-pre-commit
   cache:
     policy: pull-push
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$SECURITY_SCANS == "true"'
-      when: never
-    - if: '$BUILD_MACHINES_CLEANUP == "true"'
-      when: never
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
-      when: never
-    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
-      when: never
-    - if: '$SDK_RELEASE == "true"'
-      when: never
-    # In sdk nighly we run this separately 
-    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
@@ -428,7 +410,6 @@ jobs-done-check-nightly:
     - cloning-content-repo-last-upload-commit
     - run-pre-commit
     - run-validations
-    - trigger-private-build
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
     - xsoar-prepare-testing-bucket
@@ -473,7 +454,6 @@ jobs-done-check-on-push:
     - run-validations
     - stop-running-pipelines
     - test-upload-flow
-    - trigger-private-build
     - validate-content-conf
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
@@ -516,7 +496,6 @@ jobs-done-check-on-merge:
     - run-pre-commit
     - run-validations
     - test-upload-flow
-    - trigger-private-build
     - validate-content-conf
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
