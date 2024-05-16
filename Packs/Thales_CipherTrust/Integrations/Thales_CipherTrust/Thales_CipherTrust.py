@@ -108,7 +108,7 @@ def test_module(client: CipherTrustClient):
     return 'ok'
 
 
-@metadata_collector.command(command_name='groups_list_command', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
+@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=f'{PA_OUTPUT_PREFIX}Group')
 def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
 
@@ -223,6 +223,121 @@ def group_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
+@metadata_collector.command(command_name='ciphertrust-group-update')
+def group_update_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-user-to-group-add')
+def user_to_group_add_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-user-to-group-remove')
+def user_to_group_remove_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-users-list')
+def users_list_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-user-create')
+def user_create_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-user-update')
+def user_update_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-user-delete')
+def user_delete_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-user-password-change')
+def user_password_change_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-ca-create')
+def local_ca_create_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-ca-list')
+def local_ca_list_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-ca-update')
+def local_ca_update_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-ca-delete')
+def local_ca_delete_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-ca-self-sign')
+def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-ca-install')
+def local_ca_install_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-certificate-issue')
+def certificate_issue_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-certificate-list')
+def certifcate_list_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-local-certificate-delete')
+def local_certificate_delete_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-certificate-revoke')
+def certificate_revoke_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-certificate-resume')
+def certificate_resume_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-external-certificate-upload')
+def external_certificate_upload_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-external-certificate-delete')
+def external_certificate_delete_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-external-certificate-update')
+def external_certificate_update_command(client: CipherTrustClient, args: dict):
+    pass
+
+
+@metadata_collector.command(command_name='ciphertrust-external-certificate-list')
+def external_certificate_list_command(client: CipherTrustClient, args: dict):
+    pass
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -244,37 +359,32 @@ def main():
     proxy = demisto.params().get('proxy', False)
 
     commands = {
-        'ciphertrust-group-list' : groups_list_command,
-        'ciphertrust-group-create' : group_create_command,
-        'ciphertrust-group-delete' : group_delete_command,
+        'ciphertrust-group-list': groups_list_command,
+        'ciphertrust-group-create': group_create_command,
+        'ciphertrust-group-delete': group_delete_command,
         'ciphertrust-group-update': group_update_command,
-        'ciphertrust-user-to-group-add' : user_to_group_add_command,
-        'ciphertrust-user-to-group-remove' : user_to_group_remove_command,
+        'ciphertrust-user-to-group-add': user_to_group_add_command,
+        'ciphertrust-user-to-group-remove': user_to_group_remove_command,
         'ciphertrust-users-list': users_list_command,
-        'ciphertrust-user-create' : user_create_command,
-        'ciphertrust-user-update' : user_update_command,
-        'ciphertrust-user-delete' : user_delete_command,
+        'ciphertrust-user-create': user_create_command,
+        'ciphertrust-user-update': user_update_command,
+        'ciphertrust-user-delete': user_delete_command,
         'ciphertrust-user-password-change': user_password_change_command,
-        'ciphertrust-local-ca-create' : local_ca_create_command,
-        'ciphertrust-local-ca-list' : local_ca_list_command,
-        'ciphertrust-local-ca-update' : local_ca_update_command,
-        'ciphertrust-local-ca-delete' : local_ca_delete_command,
-        'ciphertrust-local-ca-self-sign' : local_ca_self_sign_command,
-        'ciphertrust-local-ca-install' : local_ca_install_command,
-        'ciphertrust-certificate-issue' : certificate_issue_command,
-        'ciphertrust-certificate-list' : certifcate_list_command,
-        'ciphertrust-local-certificate-delete' : local_certificate_delete_command,
-        'ciphertrust-certificate-revoke' : certificate_revoke_command,
-        'ciphertrust-certificate-resume' : certificate_resume_command,
+        'ciphertrust-local-ca-create': local_ca_create_command,
+        'ciphertrust-local-ca-list': local_ca_list_command,
+        'ciphertrust-local-ca-update': local_ca_update_command,
+        'ciphertrust-local-ca-delete': local_ca_delete_command,
+        'ciphertrust-local-ca-self-sign': local_ca_self_sign_command,
+        'ciphertrust-local-ca-install': local_ca_install_command,
+        'ciphertrust-certificate-issue': certificate_issue_command,
+        'ciphertrust-certificate-list': certifcate_list_command,
+        'ciphertrust-local-certificate-delete': local_certificate_delete_command,
+        'ciphertrust-certificate-revoke': certificate_revoke_command,
+        'ciphertrust-certificate-resume': certificate_resume_command,
         'ciphertrust-external-certificate-upload': external_certificate_upload_command,
-
-
-
-
-
-
-
-
+        'ciphertrust-external-certificate-delete': external_certificate_delete_command,
+        'ciphertrust-external-certificate-update': external_certificate_update_command,
+        'ciphertrust-external-certificate-list': external_certificate_list_command,
     }
 
     try:
