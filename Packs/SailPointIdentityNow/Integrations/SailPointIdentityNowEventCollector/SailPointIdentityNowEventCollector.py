@@ -43,10 +43,9 @@ class Client(BaseClient):
         Returns:
             str: token
         """
-        url = urljoin(self._base_url, "oauth/token")
         resp = self._http_request(
             method='POST',
-            url_suffix=url,
+            url_suffix="oauth/token",
             data={
                 'client_id': self.client_id,
                 'grant_type': 'client_credentials',
