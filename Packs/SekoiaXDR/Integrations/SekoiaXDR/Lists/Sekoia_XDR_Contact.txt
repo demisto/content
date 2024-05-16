@@ -1,7 +1,7 @@
 ## Contact Information
 
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- Email: contact@sekoia.io
+- Email: team-integration@sekoia.io
 - URL: [https://www.sekoia.io/en/contact/](https://www.sekoia.io/en/contact/)
 
 ## Additional documentation
