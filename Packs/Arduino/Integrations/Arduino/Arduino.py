@@ -91,6 +91,7 @@ def arduino_set_pin_command(server: Server, args: dict) -> CommandResults:
 
 def arduino_get_pin_command(server: Server, args: dict) -> CommandResults:
     pin_type = args.get('pin_type')
+    a = 24
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
     try:
