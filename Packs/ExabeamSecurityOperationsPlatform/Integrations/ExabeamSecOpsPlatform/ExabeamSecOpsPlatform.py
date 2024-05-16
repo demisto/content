@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -32,7 +31,7 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
-        
+
         self._login()
 
     def _login(self):
@@ -60,11 +59,13 @@ class Client(BaseClient):
             "POST",
             full_url=full_url,
             data=data,
-            headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
+            headers={"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
         )
         return response
-        
+
+
 ''' HELPER FUNCTIONS '''
+
 
 def get_date(time: str):
     """
@@ -87,7 +88,7 @@ def adjust_string_pattern(filter_str):
     logical_operators = re.findall(r'\bAND\b|\bTO\b|\bNOT\b|\bOR\b', filter_str)
     conditions = re.split(r'\bAND\b|\bTO\b|\bNOT\b|\bOR\b', filter_str)
     adjusted_conditions = []
-    
+
     for condition in conditions:
         parts = condition.split(':')
         if len(parts) == 2:
@@ -136,6 +137,7 @@ def _parse_entry(entry: dict):
 
 ''' COMMAND FUNCTIONS '''
 
+
 def search_command(client: Client, args: dict):
     filter = args.get('query', '')
     filter = adjust_string_pattern(filter)
@@ -149,9 +151,9 @@ def search_command(client: Client, args: dict):
     }
     if args.get('group_by'):
         kwargs.update({'group_by': argToList(args.get('group_by'))})
-        
+
     response = client.search_request(kwargs)
-    
+
     if error := response.get("errors", {}):
         raise DemistoException(error.get("message"))
 
@@ -164,7 +166,7 @@ def search_command(client: Client, args: dict):
         outputs=data_response,
         readable_output=tableToMarkdown(name="Logs", t=table_to_markdown),
     )
-    
+
 
 def test_module(client: Client):    # pragma: no cover
     """test function
@@ -195,7 +197,6 @@ def main() -> None:
     proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
 
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -210,8 +211,6 @@ def main() -> None:
             return_results(test_module(client))
         elif command == 'exabeam-platform-event-search':
             return_results(search_command(client, args))
-        
-
 
     # Log exceptions and return errors
     except Exception as e:
