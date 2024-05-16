@@ -666,7 +666,8 @@ class Notable:
     def submitted(self) -> bool:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
-            self.enrichments) == len(ENABLED_ENRICHMENTS)
+            self.enrichments) >= len(ENABLED_ENRICHMENTS)
+        # TODO: explain the change in cond
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
@@ -969,10 +970,20 @@ def extract_drilldown_search_queries(drilldown_searches: list) -> list[str]:
     search_queries = []
     
     for drilldown_search in drilldown_searches:
+        demisto.debug(f'drilldown search is: {drilldown_search}')
+        demisto.debug(f'drilldown search type is: {type(drilldown_search)}')
+        # raw_drilldown_search = rf'{drilldown_search}'
+        # demisto.debug(f'raw drilldown search is: {raw_drilldown_search}')
+        # demisto.debug(f'raw drilldown search type is: {type(raw_drilldown_search)}')
         search = json.loads(drilldown_search)
+        demisto.debug(f'search is: {search}')
+        demisto.debug(f'search type is: {type(search)}')
         query = search.get("search", '')
+        demisto.debug(f'query is: {query}')
+        demisto.debug(f'query type is: {type(query)}')
         search_queries.append(query)
     
+    demisto.debug(f'search_queries list: {search_queries}')
     return search_queries
 
           
@@ -989,14 +1000,16 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     """
     jobs = []
     demisto.debug(f"notable data is: {notable_data}")
-    if drilldown_search := notable_data.get("drilldown_search") or argToList(notable_data.get("drilldown_searches", [])):
+    if drilldown_search := (notable_data.get("drilldown_search") or argToList(notable_data.get("drilldown_searches", []))):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
         
         if isinstance(drilldown_search, list):
             # there exist more than one drilldown searches to enrich
+            demisto.debug(f'#### drilldown search is a list. - {drilldown_search}')
             searches = extract_drilldown_search_queries(drilldown_search)
         else:
             # only one drilldown search
+            demisto.debug(f'#### drilldown search is a string. - {drilldown_search}')
             searches = [drilldown_search]
         total_searches = len(searches)
         demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches')
