@@ -1242,8 +1242,7 @@ class GraphMailUtils:
         identifier_id = raw_attachment.get('contentId')
         if not identifier_id or identifier_id == "None":
             identifier_id = raw_attachment.get('id', '')
-        name = f"{identifier_id}-{raw_attachment.get('name','').replace('-', '_')}"
-        demisto.debug(f"{name=}")
+        name = f"{identifier_id}-imageName:{raw_attachment.get('name','')}"
         data = raw_attachment.get('contentBytes')
         try:
             data = base64.b64decode(data)  # type: ignore
