@@ -32,7 +32,7 @@ class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
         mock_open.return_value = mock_file
 
         dir_path = Path('/path/to/dir')
-        library_name = 'library_name'
+        library_name = 'kubernetes'
 
         # Call the function to test
         result = installLibrary(dir_path, library_name)
