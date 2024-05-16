@@ -43,15 +43,20 @@ The application must have *user_impersonation* permission and must allow public 
 
 ### Authentication Using the Client Credentials Flow
 
-1. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-2. In the **Authentication Type** field, select the **Client Credentials** option.
-3. In the **Application ID** field, enter your Client/Application ID.
-4. In the **Subscription ID** field, enter your Subscription ID.
-5. In the **Resource Group Name** field, enter you Resource Group Name.
-6. In the **Tenant ID** field, enter your Tenant ID .
-7. In the **Client Secret** field, enter your Client Secret.
-8. Click **Test** to validate the URLs, token, and connection.
-9. Save the instance.
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
+2. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+
+    *Note:* At the 'Select members' section, assign the application you created in step 1.
+
+3. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+4. In the **Authentication Type** field, select the **Client Credentials** option.
+5. In the **Application ID** field, enter your Client/Application ID.
+6. In the **Subscription ID** field, enter your Subscription ID.
+7. In the **Resource Group Name** field, enter you Resource Group Name.
+8. In the **Tenant ID** field, enter your Tenant ID .
+9. In the **Client Secret** field, enter your Client Secret.
+10. Click **Test** to validate the URLs, token, and connection
+11. Save the instance.
 
 ### Azure Managed Identities Authentication
 
