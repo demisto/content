@@ -476,6 +476,10 @@ def update_incident_command(client, args):
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
 
+    if assigned_user_pretty_name and not assigned_user_mail:
+        raise DemistoException('To set a new assigned_user_pretty_name, '
+                               'you must also provide a value for the "assigned_user_mail" argument.')
+
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
@@ -842,7 +846,8 @@ def get_modified_remote_data_command(client, args):
 
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = dateparser.parse(last_update,
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
     if last_update_utc:
         last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 

@@ -13,7 +13,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate_incident',
+    'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
     'Security Testing': 'resolved_security_testing',
@@ -22,6 +22,7 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate_incident': 'Duplicate',
+    'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
@@ -208,7 +209,7 @@ class CoreClient(BaseClient):
                 'value': status
             })
 
-        if starred and starred_incidents_fetch_window:
+        if starred and starred_incidents_fetch_window and demisto.command() == 'fetch-incidents':
             filters.append({
                 'field': 'starred',
                 'operator': 'eq',
@@ -219,47 +220,60 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
-            if demisto.command() == 'fetch-incidents':
-                if len(filters) > 0:
-                    request_data['filters'] = filters
-                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
-                return incidents
 
-        else:
-            if lte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
-                })
+            if len(filters) > 0:
+                request_data['filters'] = filters
+            incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+            return incidents
 
-            if gte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
-                })
+        if starred is not None and demisto.command() != 'fetch-incidents':
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': starred
+            })
 
-            if lte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
-                })
+        if lte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+            })
 
-            if gte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
-                })
+        if gte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+            })
+        elif starred and starred_incidents_fetch_window and demisto.command() != 'fetch-incidents':
+            # backwards compatibility of starred_incidents_fetch_window
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
 
-            if gte_creation_time_milliseconds > 0:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': gte_creation_time_milliseconds
-                })
+        if lte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_creation_time_milliseconds > 0:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
 
         if len(filters) > 0:
             request_data['filters'] = filters
@@ -2862,7 +2876,7 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     :return: XDR close-reason in snake_case format e.g. 'resolved_false_positive'.
     """
     # Initially setting the close reason according to the default mapping.
-    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'Other')
+    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
@@ -4171,7 +4185,7 @@ def get_incidents_command(client, args):
 
     statuses = argToList(args.get('status', ''))
 
-    starred = args.get('starred')
+    starred = argToBoolean(args.get('starred')) if args.get('starred', None) not in ('', None) else None
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 

@@ -880,7 +880,7 @@ def get_domain_command():
             ))
             execution_metrics.success += 1
         except RequestException as r:
-            if r.response.status_code == 429:
+            if r.response.status_code == 429:  # type:ignore[union-attr]
                 execution_metrics.quota_error += 1
                 results.append(
                     CommandResults(
@@ -892,7 +892,7 @@ def get_domain_command():
                 continue
 
             execution_metrics.general_error += 1
-            if r.response.status_code == 404:
+            if r.response.status_code == 404:  # type:ignore[union-attr]
                 human_readable = tableToMarkdown(name='Cisco Umbrella Investigate:',
                                                  t={'DOMAIN': domain, 'Result': 'Not found'},
                                                  headers=['DOMAIN', 'Result'])
@@ -914,7 +914,7 @@ def get_domain_command():
             else:
                 results = append_metrics(execution_metrics, results)
                 return_results(results)
-                return_error(r.response.text)
+                return_error(r.response.text)  # type:ignore[union-attr]
 
     results = append_metrics(execution_metrics, results)
     return results
@@ -1516,12 +1516,12 @@ def get_whois_for_domain_command():
             context['Domain.Umbrella.Whois(val.Name && val.Name == obj.Name)'] = whois
             execution_metrics.success += 1
     except RequestException as r:
-        if r.response.status_code == 429:
+        if r.response.status_code == 429:  # type:ignore[union-attr]
             execution_metrics.quota_error += 1
         else:
             execution_metrics.general_error += 1
         return_results(execution_metrics.metrics)
-        return_error(r.response.text)
+        return_error(r.response.text)  # type:ignore[union-attr]
 
     readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'],
                                      table_whois, headers, date_fields=["Last Retrieved"])  # noqa: W504

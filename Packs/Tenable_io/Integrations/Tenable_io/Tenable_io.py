@@ -1370,8 +1370,6 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         if status == 'FINISHED':
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'vulns')
             command_results = export_vulnerabilities_build_command_result(chunks_details_list)
-            if args.get("should_push_events"):
-                send_data_to_xsiam(command_results.outputs, product=f'{PRODUCT}_vulnerabilities', vendor=VENDOR)
             return PollResult(command_results)
         elif status in ('PROCESSING', 'QUEUED'):
             return PollResult(
@@ -1846,7 +1844,15 @@ def main():  # pragma: no cover
         elif command == 'tenable-io-export-assets':
             return_results(export_assets_command(args))
         elif command == 'tenable-io-export-vulnerabilities':
-            return_results(export_vulnerabilities_command(args))
+            vulnerabilities: list = []
+            results = export_vulnerabilities_command(args)
+            if isinstance(results, CommandResults):
+                if results.raw_response:
+                    vulnerabilities = results.raw_response  # type: ignore
+            return_results(results)
+            if argToBoolean(args.get('should_push_events', 'false')) and is_xsiam():
+                send_data_to_xsiam(vulnerabilities, product=f'{PRODUCT}_vulnerabilities', vendor=VENDOR)
+
         elif command == 'tenable-io-list-scan-filters':
             return_results(list_scan_filters_command(client))
         elif command == 'tenable-io-get-scan-history':
@@ -1862,7 +1868,7 @@ def main():  # pragma: no cover
                                                      limit=args.get('limit'))
             return_results(results)
 
-            if argToBoolean(args.get('should_push_events', 'true')):
+            if argToBoolean(args.get('should_push_events', 'false')) and is_xsiam():
                 send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         # Fetch Commands
         elif command == 'fetch-events':
