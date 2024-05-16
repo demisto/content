@@ -526,8 +526,7 @@ def integration_health_check(proxies):
 
             # get the value in the time field
             source = response.get('hits', {}).get('hits')[0].get('_source', {})
-            hit_date = str(get_value_by_dot_notation(source, str(TIME_FIELD))) if '.' in TIME_FIELD else (
-                str(source.get(str(TIME_FIELD))))
+            hit_date = str(get_value_by_dot_notation(source, str(TIME_FIELD)))
 
             # if not a timestamp test the conversion to datetime object
             if 'Timestamp' not in TIME_METHOD:
