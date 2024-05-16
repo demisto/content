@@ -128,7 +128,10 @@
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
         },
         {
-            "integrations": "Cortex XDR - IR",
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
         },
         {
