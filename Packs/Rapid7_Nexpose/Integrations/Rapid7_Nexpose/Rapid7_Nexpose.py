@@ -2067,6 +2067,17 @@ class Client(BaseClient):
             resp_type="json"
         )
 
+    def send_http_request(self, method, url, data=None) -> dict:
+        request = {
+            "method": method,
+            "url_suffix": url,
+            "resp_type": "json"
+        }
+        if data is not None:
+            request["json_data"] = data
+
+        return self._http_request(**request)
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -5137,7 +5148,7 @@ def add_site_included_asset_command(client: Client, site_id: str, assets: str | 
     return CommandResults(readable_output=f"Added {added_assets} to tag with ID {site_id_int}")
 
 
-def remove_site_included_asset_command(client: Client, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+def remove_site_included_target_command(client: Client, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
     site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
 
     if assets_list := argToList(assets):
@@ -5152,30 +5163,98 @@ def remove_site_included_asset_command(client: Client, site_id: str, assets: str
     return CommandResults(readable_output=f"removed {added_assets} from tag with ID {site_id_int}")
 
 
-def list_site_included_asset(client: Client, site_id: str):
+def list_site_included_asset_command(client: Client, site_id: str):
     site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
 
     res = client.list_site_included_targets(site_id_int)
+    outputs = dict(**res, site_id=site_id_int)
+
     return CommandResults(
         outputs_prefix="Nexpose.IncludedAsset",
         outputs_key_field="Id",
-        outputs=res,
-        readable_output=tableToMarkdown("Asset_list", res),
-        raw_response=res
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Asset list for site Id {site_id_int}", res),
+        raw_response=outputs
     )
 # TODO handle empty list as value in tableToMarkdown function for example: {"abc":[]}
 
 
-def list_site_included_asset_group(client: Client, site_id: str):
+def list_site_included_asset_group_command(client: Client, site_id: str):
     site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
 
     res = client.list_site_included_asset_group(site_id_int)
+    outputs = dict(**res, site_id=site_id_int)
+
     return CommandResults(
         outputs_prefix="Nexpose.IncludedAssetGroup",
         outputs_key_field="Id",
-        outputs=res,
-        readable_output=tableToMarkdown("Asset_group_list", res),
-        raw_response=res
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Asset group list for site Id {site_id_int}", res),
+        raw_response=outputs
+    )
+
+
+def add_site_excluded_target_command(client: Client, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if assets_list := argToList(assets):
+        client.send_http_request("POST", f"/sites/{site_id_int}/excluded_targets", assets_list)
+        added_assets = f"assets {', '.join(assets_list)}"
+
+    elif asset_group_ids_list := argToList(asset_group_ids, transform=int):
+        client.send_http_request("PUT", f"/sites/{site_id_int}/excluded_asset_groups", asset_group_ids_list)
+        added_assets = f"asset group IDs {', '.join(asset_group_ids_list)}"
+
+    else:
+        raise DemistoException("must provide at list one either assets or asset_group_id")
+
+    return CommandResults(readable_output=f"Added {added_assets} to tag with ID {site_id_int}")
+
+
+def remove_site_excluded_target_command(client: Client, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if assets_list := argToList(assets):
+        client.send_http_request("DELETE", f"/sites/{site_id_int}/excluded_targets", assets_list)
+        added_assets = f"assets {', '.join(assets_list)}"
+
+    elif asset_group_ids_list := argToList(asset_group_ids, transform=int):
+        client.send_http_request("DELETE", f"/sites/{site_id_int}/excluded_asset_groups", asset_group_ids_list)
+        added_assets = f"asset group IDs {', '.join(asset_group_ids_list)}"
+
+    else:
+        raise DemistoException("must provide at list one either assets or asset_group_id")
+
+    return CommandResults(readable_output=f"removed {added_assets} from tag with ID {site_id_int}")
+
+
+def list_site_excluded_asset_command(client: Client, site_id: str):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    res = client.send_http_request("GET", f"/sites/{site_id_int}/excluded_targets")
+    outputs = dict(**res, site_id=site_id_int)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.ExcludedAsset",
+        outputs_key_field="Id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Asset list for site Id {site_id_int}", res),
+        raw_response=outputs
+    )
+
+
+def list_site_excluded_asset_group_command(client: Client, site_id: str):
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    res = client.send_http_request("GET", f"/sites/{site_id_int}/excluded_asset_groups")
+    outputs = dict(**res, site_id=site_id_int)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.ExcludedAssetGroup",
+        outputs_key_field="Id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Asset group list for site Id {site_id_int}", res),
+        raw_response=outputs
     )
 
 
@@ -5886,11 +5965,27 @@ def main():  # pragma: no cover
         elif command == "nexpose-add-site-included-asset":
             results = add_site_included_asset_command(client=client, **args)
         elif command == "nexpose-remove-site-included-target":
-            results = remove_site_included_asset_command(client=client, **args)
+            results = remove_site_included_target_command(client=client, **args)
         elif command == "nexpose-list-site-included-asset":
-            results = list_site_included_asset(client=client, **args)
+            results = list_site_included_asset_command(client=client, **args)
         elif command == "nexpose-list-site-included-asset-group":
-            results = list_site_included_asset_group(client=client, **args)
+            results = list_site_included_asset_group_command(client=client, **args)
+        elif command == "nexpose-add-site-excluded-asset":
+            results = add_site_excluded_target_command(client=client, **args)
+        elif command == "nexpose-remove-site-excluded-asset":
+            results = remove_site_excluded_target_command(client=client, **args)
+        elif command == "nexpose-list-site-excluded-asset":
+            results = list_site_excluded_asset_command(client=client, **args)
+        elif command == "nexpose-list-site-excluded-asset-group":
+            results = list_site_excluded_asset_group_command(client=client, **args)
+        elif command == "nexpose-add-site-excluded-target":
+            results = add_site_excluded_target_command(client=client, **args)
+        elif command == "nexpose-remove-site-excluded-target":
+            results = remove_site_excluded_target_command(client=client, **args)
+        elif command == "nexpose-list-site-excluded-asset":
+            results = list_site_excluded_asset_command(client=client, **args)
+        elif command == "nexpose-list-site-excluded-asset-group":
+            results = list_site_excluded_asset_group_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

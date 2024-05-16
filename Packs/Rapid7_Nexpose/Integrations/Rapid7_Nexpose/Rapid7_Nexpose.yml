@@ -2311,6 +2311,38 @@ script:
       required: true
       description: A URL param.
     description: Return a list of site is related asset groups.
+  - name: nexpose-add-site-excluded-target
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    - name: assets
+      description: List of addresses to add to the site's excluded scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+    - name: asset_group_ids
+      description: List of asset group IDs to exclude.
+    description: Add excluded targets to a site.
+  - name: nexpose-remove-site-excluded-target
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    - name: assets
+      description: List of addresses to remove from the sites excluded scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+    - name: asset_group_ids
+      description: List of asset group IDs to remove the sites from exclusion.
+    description: Remove excluded targets from a site.
+  - name: nexpose-list-site-excluded-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    description: Return a list of excluded assets for a site.
+  - name: nexpose-list-site-excluded-asset-group
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL param.
+    description: Return a list of excluded asset groups for a site.
   runonce: false
   script: '-'
   type: python
