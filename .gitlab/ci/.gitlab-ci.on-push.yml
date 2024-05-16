@@ -201,7 +201,7 @@ validate-content-conf:
     - section_end "Copy and Prepare Content Packs for Testing"
     - section_start "for testing content_status.json" # TODO TEST
     - echo "{\"packs_to_upload\":[\"Armis\"],\"packs_to_update_metadata\":[\"Zoom\"]}" > content_status.json
-    - gsutil cp content_status.json gs://marketplace-ci-build/${BUILD_BUCKET_PATH}/content_status.json
+    - gsutil cp content_status.json gs://marketplace-ci-build/${BUILD_BUCKET_PATH}/content/packs/content_status.json
     - section_end "for testing content_status.json"
     
     - section_start "Collect Tests" --collapsed
