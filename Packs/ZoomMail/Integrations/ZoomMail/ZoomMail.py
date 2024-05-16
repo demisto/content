@@ -644,7 +644,7 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
             output.update(
                 {
                     'ZoomMail(val.EmailNextToken == obj.EmailNextToken)': {
-                        'EmailNextToken': response["nextPageToken"]
+                        'EmailNextToken': response["pageToken"]
                     }
                 }
             )
