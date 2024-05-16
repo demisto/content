@@ -1,28 +1,20 @@
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: DruvaEventCollector
   version: -1
 configuration:
-- defaultvalue: apis.druva.com
+- defaultvalue: https://apis.druva.com
   display: Server URL
   name: url
   required: true
   type: 0
   section: Connect
-- section: Connect
-  display: Client ID
-  name: client_id
+- display: Client ID
+  name: credentials
   required: true
-  type: 0
-- section: Connect
-  display: Secret Key
-  name: secret_key
-  required: true
-  hiddenusername: true
   type: 9
+  displaypassword: Secret Key
+  section: Connect
 description: This is the Druva event collector integration for Cortex XSIAM.
 display: Druva Event Collector
 name: DruvaEventCollector

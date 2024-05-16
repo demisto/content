@@ -3,7 +3,10 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
+import base64
 
+
+MAX_EVENTS = 500
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -26,7 +29,18 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
+    def update_headers(self, base_64_string):
+        base_64_string = base_64_string.decode("utf-8")
+        headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {base_64_string}'}
+        data = {'grant_type': 'client_credentials', 'scope': 'read'}
+        response = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data, resp_type='response')
+        response_json = response.json()
+        access_token = response_json.get('access_token')
+        headers = {'Authorization': f'Bearer {access_token}'}
+        self._headers = headers
+
+    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None,
+                      default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -58,40 +72,44 @@ class Client(BaseClient):
         }]
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
-    """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
-
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-    """
-
-    try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-            max_events_per_fetch=1,
-        )
-
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-
+def test_module(client: Client):
     return 'ok'
+
+# TODO
+# def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
+#     """
+#     Tests API connectivity and authentication
+#     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+#     successful.
+#     Raises exceptions if something goes wrong.
+#
+#     Args:
+#         client (Client): Druva client to use.
+#         params (Dict): Integration parameters.
+#         first_fetch_time(str): The first fetch time as configured in the integration params.
+#
+#     Returns:
+#         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+#     """
+#
+#     try:
+#         alert_status = params.get('alert_status', None)
+#
+#         fetch_events(
+#             client=client,
+#             last_run={},
+#             first_fetch_time=first_fetch_time,
+#             alert_status=alert_status,
+#             max_events_per_fetch=1,
+#         )
+#
+#     except Exception as e:
+#         if 'Forbidden' in str(e):
+#             return 'Authorization Error: make sure API Key is correctly set'
+#         else:
+#             raise e
+#
+#     return 'ok'
 
 
 def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
@@ -165,31 +183,36 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
+    proxy = params.get('proxy') == 'false'
     verify_certificate = not params.get('insecure', False)
+
+    druva_client_id = params["credentials"]["identifier"]
+    druva_secret_key = params["credentials"]["password"]
+    druva_base_url = params.get('url')
+    str_to_encode = f'{druva_client_id}:{druva_secret_key}'
+    base_64_string = base64.b64encode(str_to_encode.encode())
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now().isoformat()
-    proxy = params.get('proxy', False)
     alert_status = params.get('alert_status', None)
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
+
+    # Each Events API request returns a response that contains a maximum of 500 inSync events
+    max_events_per_fetch = params.get('max_events_per_fetch', MAX_EVENTS)
 
     demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
-            base_url=base_url,
+            base_url=druva_base_url,
             verify=verify_certificate,
-            headers=headers,
+            headers=None,
             proxy=proxy)
+
+        client.update_headers(base_64_string)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
-            return_results(result)
+            return_results(test_module(client))
+            # result = test_module(client, params, first_fetch_time)
 
         elif command == 'hello-world-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
