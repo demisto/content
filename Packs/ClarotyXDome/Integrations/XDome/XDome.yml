@@ -686,6 +686,7 @@ script:
     - contextPath: XDome.DeviceVulnerability.device_software_or_firmware_version
       description: The application version running on the device.
       type: String
+  isfetch: true
   runonce: false
   script: '-'
   type: python
