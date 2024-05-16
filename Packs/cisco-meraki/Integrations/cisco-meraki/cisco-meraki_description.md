@@ -1,1 +1,1 @@
-Get the API key from the Meraki dashboard.
+Get the API key from the Meraki dashboard. For more info please see: https://cortex.marketplace.pan.dev/marketplace/details/ciscomeraki/
