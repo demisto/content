@@ -73,13 +73,19 @@ def test_get_indicators_command(mocker):
     results: CommandResults = get_indicators_command(client, args)
     assert len(results.raw_response) == 2
     assert "Indicators" in results.readable_output
-    
+
     all_indicators = get_indicators_command(client, args={'indicator_types': 'ALL'})
     default_indicators = get_indicators_command(client)
     assert len(all_indicators) == len(default_indicators)
     
+    args = {
+        
+    }
     
-
+    indicators_with_end = get_indicators_command(client, args={'score_end' : 50})
+    indicators_with_end_start = get_indicators_command(client, args={'score_end' : 50, 'score_start': 0}))
+    assert len(all_indicators) == len(default_indicators)
+    
 
 
 def test_get_indicators_command_with_score(mocker):
