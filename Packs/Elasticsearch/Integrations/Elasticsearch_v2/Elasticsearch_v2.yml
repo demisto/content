@@ -389,6 +389,7 @@ script:
   subtype: python3
   type: python
   ismappable: true
+autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
 tests:
