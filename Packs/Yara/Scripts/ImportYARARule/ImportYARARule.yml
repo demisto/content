@@ -4,7 +4,7 @@ args:
   description: One or more YARA signatures in string format.
 - name: entryID
   required: false
-  description: An entry ID with for a file containing YARA signatures.
+  description: An entry ID for a file containing YARA signatures.
 commonfields:
   id: 'ImportYARARule'
   version: -1

@@ -14,7 +14,7 @@
 | **Argument Name** | **Description** |
 | --- | --- |
 | string | One or more YARA signatures in string format. |
-| entryID | An entry ID with for a file containing YARA signatures. |
+| entryID | An entry ID for a file containing YARA signatures. |
 
 ## Outputs
 
