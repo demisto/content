@@ -99,7 +99,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
     'geo-us': 'https://login.microsoftonline.com',
     'geo-eu': 'https://login.microsoftonline.com',
     'geo-uk': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
 }
