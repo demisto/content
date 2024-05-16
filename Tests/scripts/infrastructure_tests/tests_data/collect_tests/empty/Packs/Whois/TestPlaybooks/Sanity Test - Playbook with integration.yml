@@ -1,0 +1,5 @@
+id: empty
+version: -1
+fromversion: 5.5.0
+vcShouldKeepItemLegacyProdMachine: false
+name: empty
