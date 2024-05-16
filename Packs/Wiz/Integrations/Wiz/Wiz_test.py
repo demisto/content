@@ -533,6 +533,7 @@ def test_get_filtered_issues_bad_arguments(mocker, capfd):
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
 
+
 def test_get_issue_bad_arguments(mocker, capfd):
     from Wiz import get_issue
     with capfd.disabled():
