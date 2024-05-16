@@ -262,7 +262,6 @@ def symantec_edr_cloud_get_file_details(api_token,args,params):
 
 
 def symantec_edr_cloud_get_devices_using_file_hash(api_token,args,params):
-    filehash=str(args.get("filehash"))
     token=args.get('token')
     url = params.get('url')+'/v1/files/'+str(args.get("filehash"))+"/devices"
     headers = {
