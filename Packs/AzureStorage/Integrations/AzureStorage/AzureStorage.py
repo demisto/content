@@ -10,7 +10,8 @@ urllib3.disable_warnings()
 API_VERSION = '2022-09-01'
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
-                       'Authorization Code': "https://management.azure.com/.default"}
+                       'Authorization Code': "https://management.azure.com/.default",
+                       'Client Credentials': "https://management.azure.com/.default"}
 PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
 
@@ -130,7 +131,7 @@ class ASClient:
             json_data_args['properties']['customDomain'] = custom_domain
 
         if 'enc_key_source' in args or 'enc_keyvault_key_name' in args or 'enc_keyvault_key_version' in args or \
-                'enc_keyvault_uri' in args or 'enc_requireInfrastructureEncryption' in args:
+            'enc_keyvault_uri' in args or 'enc_requireInfrastructureEncryption' in args:
             json_data_args['properties']['Encryption'] = {}
 
             if 'enc_key_source' in args:
@@ -156,7 +157,7 @@ class ASClient:
                     args.get('enc_requireInfrastructureEncryption') == 'true'
 
         if 'network_ruleset_bypass' in args or 'network_ruleset_default_action' in args or \
-                'network_ruleset_ipRules' in args or 'virtual_network_rules' in args:
+            'network_ruleset_ipRules' in args or 'virtual_network_rules' in args:
             json_data_args['properties']['networkAcls'] = {}
 
             if 'network_ruleset_bypass' in args:
@@ -246,7 +247,7 @@ class ASClient:
             properties['isVersioningEnabled'] = argToBoolean(args.get('versioning'))
 
         if 'last_access_time_tracking_policy_enabled' in args or 'last_access_time_tracking_policy_blob_types' in args \
-                or 'last_access_time_tracking_policy_days' in args:
+            or 'last_access_time_tracking_policy_days' in args:
             properties['lastAccessTimeTrackingPolicy'] = {}
 
             if 'last_access_time_tracking_policy_enabled' in args:
@@ -262,7 +263,7 @@ class ASClient:
                     args.get('last_access_time_tracking_policy_days')
 
         if 'restore_policy_enabled' in args or 'restore_policy_min_restore_time' in args \
-                or 'restore_policy_days' in args:
+            or 'restore_policy_days' in args:
             properties['restorePolicy'] = {}
 
             if 'restore_policy_enabled' in args:
@@ -387,6 +388,7 @@ class ASClient:
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
                                                    'api-version': API_VERSION})
+
 
 # Storage Account Commands
 
@@ -606,10 +608,11 @@ def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Di
             'Azure Storage Blob Service Properties',
             readable_output,
             ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Change Feed', 'Delete Retention Policy',
-                'Versioning'],
+             'Versioning'],
         ),
         raw_response=response
     )
+
 
 # Blob Containers Commands
 
@@ -895,7 +898,7 @@ def test_module(client: ASClient) -> str:
                                "You can validate the connection by running `!azure-storage-auth-test`\n"
                                "For more details press the (?) button.")
 
-    elif client.connection_type == 'Azure Managed Identities':
+    elif client.connection_type == 'Azure Managed Identities' or client.connection_type == 'Client Credentials':
         client.ms_client.get_access_token()
         return 'ok'
     else:
