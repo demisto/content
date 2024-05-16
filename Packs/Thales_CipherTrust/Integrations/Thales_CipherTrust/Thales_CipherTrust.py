@@ -243,6 +243,40 @@ def main():
     verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
+    commands = {
+        'ciphertrust-group-list' : groups_list_command,
+        'ciphertrust-group-create' : group_create_command,
+        'ciphertrust-group-delete' : group_delete_command,
+        'ciphertrust-group-update': group_update_command,
+        'ciphertrust-user-to-group-add' : user_to_group_add_command,
+        'ciphertrust-user-to-group-remove' : user_to_group_remove_command,
+        'ciphertrust-users-list': users_list_command,
+        'ciphertrust-user-create' : user_create_command,
+        'ciphertrust-user-update' : user_update_command,
+        'ciphertrust-user-delete' : user_delete_command,
+        'ciphertrust-user-password-change': user_password_change_command,
+        'ciphertrust-local-ca-create' : local_ca_create_command,
+        'ciphertrust-local-ca-list' : local_ca_list_command,
+        'ciphertrust-local-ca-update' : local_ca_update_command,
+        'ciphertrust-local-ca-delete' : local_ca_delete_command,
+        'ciphertrust-local-ca-self-sign' : local_ca_self_sign_command,
+        'ciphertrust-local-ca-install' : local_ca_install_command,
+        'ciphertrust-certificate-issue' : certificate_issue_command,
+        'ciphertrust-certificate-list' : certifcate_list_command,
+        'ciphertrust-local-certificate-delete' : local_certificate_delete_command,
+        'ciphertrust-certificate-revoke' : certificate_revoke_command,
+        'ciphertrust-certificate-resume' : certificate_resume_command,
+        'ciphertrust-external-certificate-upload': external_certificate_upload_command,
+
+
+
+
+
+
+
+
+    }
+
     try:
         client = CipherTrustClient(
             username=username,
@@ -255,42 +289,8 @@ def main():
 
         if command == 'test-module':
             return_results(test_module(client))
-        elif command == 'ciphertrust-group-list':
-            return_results(groups_list_command(client=client, args=args))
-        elif command == 'ciphertrust-group-create':
-            return_results(group_create_command(client=client, args=args))
-        elif command == 'ciphertrust-group-delete':
-            return_results(group_delete_command(client=client, args=args))
-        elif command == 'ciphertrust-group-update':
-            return_results(group_update_command(client=client, args=args))
-        elif command == 'ciphertrust-user-to-group-add':
-            return_results(user_to_group_add_command(client=client, args=args))
-        elif command == 'ciphertrust-user-to-group-remove':
-            return_results(user_to_group_remove_command(client=client, args=args))
-        elif command == 'ciphertrust-users-list':
-            return_results(users_list_command(client=client, args=args))
-        elif command == 'ciphertrust-user-create':
-            return_results(user_create_command(client=client, args=args))
-        elif command == 'ciphertrust-user-update':
-            return_results(user_update_command(client=client, args=args))
-        elif command == 'ciphertrust-user-delete':
-            return_results(user_delete_command(client=client, args=args))
-        elif command == 'ciphertrust-user-password-change':
-            return_results(user_password_change_command(client=client, args=args))
-        elif command == 'ciphertrust-local-ca-create':
-            return_results(local_ca_create_command(client=client, args=args))
-        elif command == 'ciphertrust-local-ca-list':
-            return_results(local_ca_list_command(client=client, args=args))
-        elif command == 'ciphertrust-local-ca-update':
-            return_results(local_ca_update_command(client=client, args=args))
-        elif command == 'ciphertrust-local-ca-delete':
-            return_results(local_ca_update_command(client=client, args=args))
-        elif command == 'ciphertrust-local-ca-self-sign':
-            return_results(local_ca_self_sign_command(client=client, args=args))
-        elif command == 'ciphertrust-local-ca-install':
-            return_results(local_ca_install_command(client=client, args=args))
-        elif command == 'ciphertrust-certificate-issue':
-            return_results(certificate_issue_command(client=client, args=args))
+        elif command in commands:
+            return_results(commands[command](client, args))
 
     except Exception as e:
         msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
