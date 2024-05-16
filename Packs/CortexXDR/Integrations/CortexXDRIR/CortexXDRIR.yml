@@ -212,9 +212,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+    - description: Deprecated. Use gte_creation_time instead.
       defaultValue: 3 days
       name: starred_incidents_fetch_window
+      deprecated: true
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
@@ -607,7 +608,7 @@ script:
       - LOW
     - description: Email address of the user to assign to the incident.
       name: assigned_user_mail
-    - description: Full name of the user assigned to the incident.
+    - description: Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument.
       name: assigned_user_pretty_name
     - auto: PREDEFINED
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
