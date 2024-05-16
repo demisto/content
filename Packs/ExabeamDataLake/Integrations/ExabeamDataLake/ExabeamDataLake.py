@@ -180,8 +180,8 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
     """
     from_param, size_param = calculate_page_parameters(args)
 
-    start_time = get_date(args.get("start_time", ""))
-    end_time = get_date(args.get("end_time", ""))
+    start_time = get_date(args.get("start_time", "7 days ago"))
+    end_time = get_date(args.get("end_time", "today"))
     dates = dates_in_range(start_time, end_time)
     dates_in_format = ["exabeam-" + date for date in dates]
 

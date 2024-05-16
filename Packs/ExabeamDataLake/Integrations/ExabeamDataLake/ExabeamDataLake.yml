@@ -35,10 +35,12 @@ script:
     - description: The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description).
       name: query
       required: true
-    - description: The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days.
+    - defaultvalue: 7 days ago
+      description: The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days.
       name: start_time
       required: true
-    - description: The ending date for the search range. This defines the end of the search range, which should be within one to ten days after the start_time.
+    - defaultvalue: today
+      description: The ending date for the search range. This defines the end of the search range, which should be within one to ten days after the start_time.
       name: end_time
       required: true
     - description: The maximal number of results to return. Maximum value is 3000.
