@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 from typing import Any
@@ -639,7 +639,7 @@ def main():
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
-        engine = Client(dialect=dialect, host=host, username=user, password=password,
+        client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
                         pool_ttl=pool_ttl, use_ldap=use_ldap)
