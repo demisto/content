@@ -8,7 +8,7 @@ description: Cloud controlled WiFi, routing, and security.
 configuration:
 - display: API Key
   name: apiKey
-  defaultvalue: ''
+  defaultvalue: ""
   type: 4
   hidden: true
 - name: apikey_creds
@@ -97,7 +97,7 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Uplink
-      description: List of device uplink. Each includes Status and Interface
+      description: List of device uplink. Each includes Status and Interface.
       type: list
     description: List of uplink information for a device.
   - name: meraki-fetch-ssids
@@ -119,7 +119,7 @@ script:
       description: Device serial number.
     - name: timespan
       required: true
-      description: The timespan (in seconds) during which clients will be fetched. Must be at most one month and in seconds (e.g., 1 day is 86400 seconds).
+      description: 'The timespan (in seconds) during which clients will be fetched. Must be at most one month and in seconds (e.g., 1 day is 86400 seconds).'
     - name: headers
       description: Table's headers to be shown by order.
     outputs:
@@ -163,7 +163,7 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Device
-      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
     description: Get a single device.
   - name: meraki-update-device
     arguments:
@@ -203,14 +203,14 @@ script:
       description: Network ID.
     - name: number
       required: true
-      description: SSID number
+      description: SSID number.
       defaultValue: ' '
     - name: allowLanAccess
       required: true
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
       description: 'Whether to allow or deny wireless client access to the local LAN. True allows access and false denies access. Possible values: true, false.'
     - name: policy
       required: true
@@ -230,7 +230,7 @@ script:
       description: 'The type of protocol. Possi ble values: "tcp", "udp", "icmp", and "any".'
     - name: destPort
       required: true
-      description: The destination port. Can be "any" or an integer within the range of 1-65535.
+      description: 'The destination port. Can be "any" or an integer within the range of 1-65535.'
     - name: destCidr
       required: true
       description: The destination IP address or subnet in CIDR form. Can also be "any".
@@ -240,12 +240,12 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
       description: 'Whether to remove all other rules. True removes all other rules. False only adds the rule. Possible values: "true" and "false".'
     outputs:
     - contextPath: Firewall
-      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment
+      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment.
       type: list
     description: Update rule to L3 firewall rules of an SSID.
 tests:
