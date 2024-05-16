@@ -367,7 +367,7 @@ def bucket_upload_results(bucket_artifact_folder: Path,
     pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
-    successful_packs, _, failed_packs, successful_private_packs, _ = get_upload_data(
+    successful_packs, _, failed_packs, _ = get_upload_data(
         pack_results_path.as_posix(), BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
@@ -384,25 +384,6 @@ def bucket_upload_results(bucket_artifact_folder: Path,
             'fields': [{
                 'title': '',
                 'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
-                'short': False
-            }]
-        })
-
-    if successful_private_packs and should_include_private_packs:
-        # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
-        slack_msg_append.append({
-            'fallback': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
-            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
-            'color': 'good',
-        })
-        threaded_messages.append({
-            'fallback': f'Successfully uploaded to {marketplace_name} Private Pack(s): '
-                        f'{", ".join(sorted({*successful_private_packs}, key=lambda s: s.lower()))}',
-            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private packs:',
-            'color': 'good',
-            'fields': [{
-                'title': '',
-                'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
                 'short': False
             }]
         })
