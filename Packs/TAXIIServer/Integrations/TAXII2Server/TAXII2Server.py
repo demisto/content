@@ -901,7 +901,7 @@ def edit_server_info(server_info: dict) -> dict:
 
 
 def alter_url(url: str) -> str:
-    """Alters the URL's netloc with the "ext-" prefix.
+    """Alters the URL's netloc with the "ext-" prefix, and the path with the "/xsoar" path.
 
     Args:
         url (str): The URL to alter.
@@ -909,8 +909,8 @@ def alter_url(url: str) -> str:
     parsed_url = urlparse(url)
     new_netloc = "ext-" + parsed_url.netloc
     new_path = '/xsoar' + parsed_url.path
-    new_url_tuple = (parsed_url.scheme, new_netloc, new_path, parsed_url.params, parsed_url.query, parsed_url.fragment)
-    new_url = urlunparse(new_url_tuple)
+    new_url = f'{parsed_url.scheme}://{new_netloc}{new_path}'
+
     return new_url
 
 
