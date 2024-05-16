@@ -1,0 +1,177 @@
+category: Endpoint
+commonfields:
+  id: Symantec Endpoint Detection and Response - Cloud
+  version: -1
+configuration:
+- defaultvalue: https://api.sep.securitycloud.symantec.com/v1/oauth2/tokens
+  display: Server URL (e.g. https://api.sep.securitycloud.symantec.com)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ''
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+description: This API lets you fetch incidents from Symantec Cloud EDR platform. Take actions such as updating deny list based on sha256 value, quarantine/unquarantine devices, initiate device scan.
+display: Symantec Endpoint Detection and Response - Cloud
+name: Symantec Endpoint Detection and Response - Cloud
+script:
+  commands:
+  - arguments:
+    - description: Bearer token gained after authenticaiton.
+      name: token
+      required: true
+    - description: Incident id of an incident on the Symantec Cloud EDR.
+      name: incidentid
+      required: true
+    description: Get a specific incident from Symantec EDR Cloud.
+    name: symantec-edr-cloud-get-specific-incident
+  - arguments:
+    - description: Authentication token is required argument to get the bearer token.
+      name: authtoken
+      required: true
+    description: Initial authentication to gather bearer token. Bearer token is an essential argument to execute any other command on Symantec EDR Cloud.
+    name: symantec-edr-cloud-auth
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: File hash to be queried through endpoints.
+      name: filehash
+      required: true
+    description: Find Devices on the Cloud EDR platform that the queried file hash exists.
+    name: symantec-edr-cloud-get-devices-using-file-hash
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: 'SHA256 is of the file to search for. '
+      name: filehash
+      required: true
+    description: Retrieve the details of a file based on hash value.
+    name: symantec-edr-cloud-get-file-details
+  - arguments:
+    - defaultValue: '2024-04-09T14:36:56.938340Z'
+      description: Start date of query.
+      name: start_date
+      required: true
+    - defaultValue: ' 2024-04-19T13:36:56.938206Z'
+      description: End date of query.
+      name: end_date
+      required: true
+    - description: Bearer token.
+      name: token
+      required: true
+    description: 'Get incidents from symantec platform based on the provided time range. '
+    name: symantec-edr-cloud-get-incidents
+  - arguments:
+    - description: Bearer token that must be gathered after authentication.
+      name: token
+      required: true
+    - description: 'File to queried on EDR platform. '
+      name: filehash
+    description: This API provides related IOC information for a given a file. Related IOC values and types (domain,ip,file) with this hash will be returned.
+    name: symantec-edr-cloud-threat-intel-data-related
+  - arguments:
+    - description: 'SHA256 is the only valid format. '
+      name: filehash
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: This API returns file insight enrichments for given file sha256. Enrichment includes top countries, top industries, last seen, first seen data, reputation and prevalence.
+    name: symantec-edr-cloud-threat-intel-insight
+  - arguments:
+    - description: SHA256 is the only valid format.
+      name: filehash
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: The Process Chain API provides top K sha256 lineages along with their process names for provided sha256. The lineage information contains all the ancestors as well as descendants. The top K sha256 lineages are ordered and ranked based on the number of occurrences across Symantec's global telemetry.
+    name: symantec-edr-cloud-threat-intel-process-chain
+  - arguments:
+    - description: SHA256 is the only valid format.
+      name: filehash
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: The Protection APIs provide information whether a given file has been blocked by any of Symantec technologies. These technologies include Antivirus (AV), Intrusion Prevention System (IPS) and Behavioral Analysis & System Heuristics (BASH).
+    name: symantec-edr-cloud-threat-intel-protection-file
+  - arguments:
+    - description: CVE to query through Symantec technology database.
+      name: CVE
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: This API returns information whether a given CVE has been blocked by any Symantec technologies.
+    name: symantec-edr-cloud-threat-intel-protection-cve
+  - arguments:
+    - defaultValue: -1sHc2_IQnCc3Hq2WN3_ow
+      description: The id of the device that will be quarantined.
+      name: deviceid
+      required: true
+    - description: Bearer token.
+      name: token
+      required: true
+    description: This API lets you quarantine devices managed by your Integrate Cyber Defense Manager.
+    name: symantec-edr-cloud-quarantine-device
+  - arguments:
+    - description: Bearer token that will be gathered after authentication.
+      name: token
+      required: true
+    description: This API lets you retrieve the list of devices.
+    name: symantec-edr-cloud-get-devices
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: The id of the device that will be quarantined.
+      name: deviceid
+      required: true
+    description: This API lets you unquarantine devices managed by your Integrate Cyber Defense Manager.
+    name: symantec-edr-cloud-unquarantine-device
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    description: This API lets you retrieve a list of your policies.
+    name: symantec-edr-cloud-get-policies
+  - arguments:
+    - description: "Policy uid which is to be patched."
+      name: policy_uid
+      required: true
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: Sha256 of the file that will be added to the deny list.
+      name: sha256
+      required: true
+    - name: policy_version
+      required: true
+    - name: filename
+      required: true
+    description: This API lets you perform update of Deny list policy. Target updated policy to apply new changes.
+    name: symantec-edr-cloud-update-deny-list-policy
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: The id of the device that will be scanned on Symantec EDR Cloud platform.
+      name: deviceid
+      required: true
+    description: This API lets you initiate a full scan on devices managed by your Integrated Cyber Defense Manager.
+    name: symantec-edr-cloud-scan-device
+  dockerimage: demisto/python3:3.10.14.92207
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

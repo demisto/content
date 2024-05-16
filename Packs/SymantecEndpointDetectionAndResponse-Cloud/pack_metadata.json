@@ -1,0 +1,21 @@
+{
+    "name": "Symantec Endpoint Detection and Response - Cloud",
+    "description": "This API lets you fetch incidents from Symantec Cloud EDR platform. Take actions such as updating deny list based on sha256 value, quarantine/unquarantine devices, initiate device scan and utilize Symantec Cloud's Threat Intelligence.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Asim Sarp Kurt",
+    "url": "",
+    "email": "",
+    "created": "2024-05-16T13:39:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "asimsarpkurt"
+    ]
+}

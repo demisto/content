@@ -1,0 +1,571 @@
+category: Endpoint
+commonfields:
+  id: Symantec Endpoint Detection and Response - Cloud
+  version: -1
+configuration:
+- defaultvalue: https://api.sep.securitycloud.symantec.com/v1/oauth2/tokens
+  display: Server URL (e.g. https://api.sep.securitycloud.symantec.com)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+description: This API lets you fetch incidents from Symantec Cloud EDR platform. Take actions such as updating deny list based on sha256 value, quarantine/unquarantine devices, initiate device scan.
+detaileddescription: |-
+  ### Community Contributed Integration
+   #### Integration Author: Cortex XSOAR
+   No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
+  ***
+  ## Hello World
+  - This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
+  - You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
+display: Symantec Endpoint Detection and Response - Cloud
+image: data:image/jpeg;base64,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
+name: Symantec Endpoint Detection and Response - Cloud
+script:
+  commands:
+  - arguments:
+    - description: Bearer token gained after authenticaiton.
+      name: token
+      required: true
+    - description: Incident id of an incident on the Symantec Cloud EDR.
+      name: incidentid
+      required: true
+    description: Get a specific incident from Symantec EDR Cloud.
+    name: symantec-edr-cloud-get-specific-incident
+  - arguments:
+    - description: Authentication token is required argument to get the bearer token.
+      name: authtoken
+      required: true
+    description: Initial authentication to gather bearer token. Bearer token is an essential argument to execute any other command on Symantec EDR Cloud.
+    name: symantec-edr-cloud-auth
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: File hash to be queried through endpoints.
+      name: filehash
+      required: true
+    description: Find Devices on the Cloud EDR platform that the queried file hash exists.
+    name: symantec-edr-cloud-get-devices-using-file-hash
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: 'SHA256 is of the file to search for. '
+      name: filehash
+      required: true
+    description: Retrieve the details of a file based on hash value.
+    name: symantec-edr-cloud-get-file-details
+  - arguments:
+    - defaultValue: "2024-04-09T14:36:56.938340Z"
+      description: Start date of query.
+      name: start_date
+      required: true
+    - defaultValue: ' 2024-04-19T13:36:56.938206Z'
+      description: End date of query.
+      name: end_date
+      required: true
+    - description: Bearer token.
+      name: token
+      required: true
+    description: 'Get incidents from symantec platform based on the provided time range. '
+    name: symantec-edr-cloud-get-incidents
+  - arguments:
+    - description: Bearer token that must be gathered after authentication.
+      name: token
+      required: true
+    - description: 'File to queried on EDR platform. '
+      name: filehash
+    description: This API provides related IOC information for a given a file. Related IOC values and types (domain,ip,file) with this hash will be returned.
+    name: symantec-edr-cloud-threat-intel-data-related
+  - arguments:
+    - description: 'SHA256 is the only valid format. '
+      name: filehash
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: This API returns file insight enrichments for given file sha256. Enrichment includes top countries, top industries, last seen, first seen data, reputation and prevalence.
+    name: symantec-edr-cloud-threat-intel-insight
+  - arguments:
+    - description: SHA256 is the only valid format.
+      name: filehash
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: The Process Chain API provides top K sha256 lineages along with their process names for provided sha256. The lineage information contains all the ancestors as well as descendants. The top K sha256 lineages are ordered and ranked based on the number of occurrences across Symantec's global telemetry.
+    name: symantec-edr-cloud-threat-intel-process-chain
+  - arguments:
+    - description: SHA256 is the only valid format.
+      name: filehash
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: The Protection APIs provide information whether a given file has been blocked by any of Symantec technologies. These technologies include Antivirus (AV), Intrusion Prevention System (IPS) and Behavioral Analysis & System Heuristics (BASH).
+    name: symantec-edr-cloud-threat-intel-protection-file
+  - arguments:
+    - description: CVE to query through Symantec technology database.
+      name: CVE
+      required: true
+    - description: Bearer token that is gathered after authentication must be entered.
+      name: token
+      required: true
+    description: This API returns information whether a given CVE has been blocked by any Symantec technologies.
+    name: symantec-edr-cloud-threat-intel-protection-cve
+  - arguments:
+    - defaultValue: -1sHc2_IQnCc3Hq2WN3_ow
+      description: The id of the device that will be quarantined.
+      name: deviceid
+      required: true
+    - description: Bearer token.
+      name: token
+      required: true
+    description: This API lets you quarantine devices managed by your Integrate Cyber Defense Manager.
+    name: symantec-edr-cloud-quarantine-device
+  - arguments:
+    - description: Bearer token that will be gathered after authentication.
+      name: token
+      required: true
+    description: This API lets you retrieve the list of devices.
+    name: symantec-edr-cloud-get-devices
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: The id of the device that will be quarantined.
+      name: deviceid
+      required: true
+    description: This API lets you unquarantine devices managed by your Integrate Cyber Defense Manager.
+    name: symantec-edr-cloud-unquarantine-device
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    description: This API lets you retrieve a list of your policies.
+    name: symantec-edr-cloud-get-policies
+  - arguments:
+    - description: "Policy uid which is to be patched."
+      name: policy_uid
+      required: true
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: Sha256 of the file that will be added to the deny list.
+      name: sha256
+      required: true
+    - name: policy_version
+      required: true
+    - name: filename
+      required: true
+    description: This API lets you perform update of Deny list policy. Target updated policy to apply new changes.
+    name: symantec-edr-cloud-update-deny-list-policy
+  - arguments:
+    - description: Bearer token.
+      name: token
+      required: true
+    - description: The id of the device that will be scanned on Symantec EDR Cloud platform.
+      name: deviceid
+      required: true
+    description: This API lets you initiate a full scan on devices managed by your Integrated Cyber Defense Manager.
+    name: symantec-edr-cloud-scan-device
+  dockerimage: demisto/python3:3.10.14.92207
+  runonce: false
+  script: |-
+    import requests
+
+
+    def symantec_edr_cloud_full_device_scan(api_token,args,params):
+        url=params.get('url')+'/v1/commands/scans/full'
+        token=args.get('token')
+        device_id = args.get('deviceid')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        data = {
+            "device_ids": [device_id]
+        }
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        if response.status_code == 200:
+            try:
+                response_json = response.json()
+                scandevice = {"symantecedrcloudscandevice": response_json}
+                result = CommandResults(outputs=scandevice)
+                return_results(result)
+            except json.JSONDecodeError:
+                # Handle non-JSON response
+                scandevice = {"symantecedrcloudscandevice": response.text}
+                result = CommandResults(outputs=scandevice)
+                return_results(result)
+        else:
+            return_error(f"Failed to unquarantine device. Status code: {response.status_code}, Response: {response.text}")
+
+
+
+    def symantec_edr_update_deny_list_policy(api_token,args,params):
+        url=params.get('url')+'/v1/policies/deny-list/'+args.get('policy_uid')+'/versions/'+args.get('policy_version')
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        json_data = {
+        'features': [
+            {
+                'configuration': {
+                    'blacklistrules': [
+                        {
+                            'processfile': {
+                                'sha2': args.get('sha256'),
+                                'name': args.get('filename')
+                            },
+                            'file': {
+                                'sha2': '795db7bdad1befdd3ad942be79715f6b0c5083d859901b81657b590c9628790f',
+                                'name': 'deneme.exe'
+                            },
+                        },
+                    ],
+                },"properties":{"policy_name":"Deny List Policy - update name"},
+                "state":{"locked":False}
+            },
+        ],
+        }
+        response=requests.patch(url,headers=headers,json=json_data)
+        denypolicy={"symantecedrcloudupdatedenypolicy":response.json()}
+        result=CommandResults(outputs=denypolicy)
+        return_results(result)
+        print(response.status_code)
+
+
+
+    def symantec_edr_cloud_get_policies(api_token,args,params):
+
+        url=params.get('url')+'/v1/policies'
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        response=requests.get(url,headers=headers)
+        policies={"symantecedrcloudpolicies":response.json()}
+        result=CommandResults(outputs=policies)
+        return_results(result)
+
+
+    def symantec_edr_cloud_get_devices(api_token,args,params):
+
+
+        url = params.get('url')+"/v1/devices"
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        response = requests.get(url, headers=headers)
+        devices={"symanteccloudedrdevices":response.json()}
+        result=CommandResults(outputs=devices)
+        return_results(result)
+
+
+    def symantec_edr_cloud_quarantine_device(api_token, args, params):
+        url = params.get("url") + "/v1/commands/contain"
+        token = args.get('token')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+        device_id = args.get('deviceid')
+        data = {
+            "device_ids": [device_id]
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        if response.status_code == 200:
+            try:
+                response_json = response.json()
+                quarantinedevice = {"symantecedrcloudquarantinedevice": response_json}
+                result = CommandResults(outputs=quarantinedevice)
+                return_results(result)
+            except json.JSONDecodeError:
+                # Handle non-JSON response
+                quarantinedevice = {"symantecedrcloudquarantinedevice": response.text}
+                result = CommandResults(outputs=quarantinedevice)
+                return_results(result)
+        else:
+            return_error(f"Failed to unquarantine device. Status code: {response.status_code}, Response: {response.text}")
+
+
+    def symantec_edr_cloud_unquarantine_device(api_token, args, params):
+        url = params.get("url") + "/v1/commands/allow"
+        token = args.get('token')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+        device_id = args.get('deviceid')
+        data = {
+            "device_ids": [device_id]
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        if response.status_code == 200:
+            try:
+                response_json = response.json()
+                unquarantinedevice = {"symantecedrcloudunquarantinedevice": response_json}
+                result = CommandResults(outputs=unquarantinedevice)
+                return_results(result)
+            except json.JSONDecodeError:
+                # Handle non-JSON response
+                unquarantinedevice = {"symantecedrcloudunquarantinedevice": response.text}
+                result = CommandResults(outputs=unquarantinedevice)
+                return_results(result)
+        else:
+            return_error(f"Failed to unquarantine device. Status code: {response.status_code}, Response: {response.text}")
+
+
+    def symantec_edr_cloud_threat_intel_protection_cve(api_token,args,params):
+        url=params.get('url')+'/v1/threat-intel/protection/cve/'+str(args.get("CVE"))
+        token=args.get("token")
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        response = requests.get(url, headers=headers)
+        relatedfiledetails={"symantecedrcloudthreatintelprotectioncve":response.json()}
+        result=CommandResults(outputs=relatedfiledetails)
+        return_results(result)
+
+
+    def symantec_edr_cloud_threat_intel_protection_file(api_token,args,params):
+        url=params.get('url')+'/v1/threat-intel/protection/file/'+str(args.get("filehash"))
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+
+        response = requests.get(url, headers=headers)
+
+        relatedfiledetails={"symantecedrcloudthreatintelprotection":response.json()}
+        result=CommandResults(outputs=relatedfiledetails)
+        return_results(result)
+
+
+    def symantec_edr_cloud_threat_intel_process_chain(api_token,args,params):
+        url=params.get('url')+'/v1/threat-intel/processchain/file/'+str(args.get("filehash"))
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+
+        response = requests.get(url, headers=headers)
+
+        relatedfiledetails={"symantecedrcloudthreatintelprocesschain":response.json()}
+        result=CommandResults(outputs=relatedfiledetails)
+        return_results(result)
+
+
+    def symantec_edr_cloud_threat_intel_insight(api_token,args,params):
+        url=params.get('url')+'/v1/threat-intel/insight/file/'+str(args.get("filehash"))
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        response = requests.get(url, headers=headers)
+
+        filedetails={"symantecedrcloudthreatintelinsight":response.json()}
+        result=CommandResults(outputs=filedetails)
+        return_results(result)
+
+
+    def symantec_edr_cloud_threat_intel_data_related(api_token,args,params):
+        url=params.get("url")+'/v1/threat-intel/related/file/'+str(args.get("filehash"))
+        token=args.get('token')
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+token
+        }
+        response = requests.get(url, headers=headers)
+        relatedfiledetails={"symantecedrcloudthreatintelrelated":response.json()}
+        result=CommandResults(outputs=relatedfiledetails)
+        return_results(result)
+
+    def symantec_edr_cloud_get_incidents(api_token,args,params):
+        url = params.get("url")+'/v1/incidents'
+        token=args.get('token')
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer '+token
+        }
+
+        data = {
+            "start_date": args.get("start_date"),
+            "end_date": args.get("end_date"),
+            "next": 0,
+            "limit": 5,
+            "include_events": True,
+            "query": ""
+        }
+
+        response = requests.post(url, headers=headers, json=data)
+        incidents={"symantec_edr_cloud_incidents":response.json()}
+        result=CommandResults(outputs=incidents)
+        return_results(result)
+
+
+
+    def symantec_edr_cloud_get_file_details(api_token,args,params):
+        token=args.get('token')
+        url = params.get("url")+'/v1/files/'+str(args.get("filehash"))
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+token
+        }
+
+        response = requests.get(url, headers=headers)
+
+        filedetails={"symantecedrcloudfiledetails":response.json()}
+        result=CommandResults(outputs=filedetails)
+        return_results(result)
+
+
+
+    def symantec_edr_cloud_get_devices_using_file_hash(api_token,args,params):
+        filehash=str(args.get("filehash"))
+        token=args.get('token')
+        url = params.get('url')+'/v1/files/'+str(args.get("filehash"))+"/devices"
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+token
+        }
+        params= { 'limit':'2','pageOffset':'0'}
+        response = requests.get(url, params, headers=headers)
+
+        deviceresults={"symantecedrclouddeviceresultsfromfilehash":response.json()}
+        result=CommandResults(outputs=deviceresults)
+        return_results(result)
+
+
+    def symantec_edr_cloud_auth(api_token,args,params):
+        url = params.get("url")+"/v1/oauth2/tokens"
+
+        headers = {
+            "accept": "application/json",
+            "authorization": "Basic "+api_token,
+            "content-type": "application/x-www-form-urlencoded"
+        }
+        response = requests.post(url, headers=headers, verify=False)
+        token={"bearertoken":response.json()}
+        result=CommandResults(outputs=token)
+        return_results(result)
+
+
+    def symantec_edr_cloud_get_specific_incident(api_token,args,params):
+
+        args=demisto.args()
+
+        url = params.get("url")+"/v1/incidents/"+str(args.get("incidentid"))
+        token=str(args.get("token"))
+
+        headers = {
+            'Authorization': 'Bearer '+token
+        }
+        response = requests.get(url, headers=headers)
+        incident={"symantecedrcloudincidentdata":response.json()}
+        result=CommandResults(outputs=incident)
+        return_results(result)
+
+
+
+    def test_module(api_token,args, params):
+        url = params.get("url")+"/v1/oauth2/tokens"
+
+        headers = {
+            "accept": "application/json",
+            "authorization": "Basic "+api_token,
+            "content-type": "application/x-www-form-urlencoded"
+        }
+        try:
+            response = requests.post(url, headers=headers, verify=False)
+            if response.status_code==200:
+                return_results("ok")
+            elif response.status_code==401 or response.status_code==400 or response.status_code==403:
+                return_results(f"Make sure your API Key and URL is correct, error status code:{response.status_code}")
+            else:
+                return_results(f"Error status code: {response.status_code}")
+        except Exception as e:
+            return_error(f"Failed to execute test command.\nError:\n{str(e)}")
+
+
+
+
+    def main():
+        command=demisto.command()
+        params=demisto.params()
+        args=demisto.args()
+        api_token=params.get('credentials',{}).get('password')
+        api_token=str(api_token)
+        try:
+            if command=="test-module":
+                test_module(api_token,args,params)
+            elif command=="symantec-edr-cloud-get-specific-incident":
+                symantec_edr_cloud_get_specific_incident(api_token,args,params)
+            elif command=="symantec-edr-cloud-auth":
+                symantec_edr_cloud_auth(api_token,args,params)
+            elif command=="symantec-edr-cloud-get-devices-using-file-hash":
+                symantec_edr_cloud_get_devices_using_file_hash(api_token,args,params)
+            elif command=="symantec-edr-cloud-get-file-details":
+                symantec_edr_cloud_get_file_details(api_token,args,params)
+            elif command=="symantec-edr-cloud-get-incidents":
+                symantec_edr_cloud_get_incidents(api_token,args,params)
+            elif command=="symantec-edr-cloud-threat-intel-data-related":
+                symantec_edr_cloud_threat_intel_data_related(api_token,args,params)
+            elif command=="symantec-edr-cloud-threat-intel-insight":
+                symantec_edr_cloud_threat_intel_insight(api_token,args,params)
+            elif command=="symantec-edr-cloud-threat-intel-process-chain":
+                symantec_edr_cloud_threat_intel_process_chain(api_token,args,params)
+            elif command=="symantec-edr-cloud-threat-intel-protection-file":
+                symantec_edr_cloud_threat_intel_protection_file(api_token,args,params)
+            elif command=="symantec-edr-cloud-threat-intel-protection-cve":
+                symantec_edr_cloud_threat_intel_protection_cve(api_token,args,params)
+            elif command=="symantec-edr-cloud-quarantine-device":
+                symantec_edr_cloud_quarantine_device(api_token,args,params)
+            elif command=="symantec-edr-cloud-unquarantine-device":
+                symantec_edr_cloud_unquarantine_device(api_token,args,params)
+            elif command=="symantec-edr-cloud-get-devices":
+                symantec_edr_cloud_get_devices(api_token,args,params)
+            elif command=="symantec-edr-cloud-get-policies":
+                symantec_edr_cloud_get_policies(api_token,args,params)
+            elif command=="symantec-edr-cloud-update-deny-list-policy":
+                symantec_edr_update_deny_list_policy(api_token,args,params)
+            elif command=="symantec-edr-cloud-scan-device":
+                symantec_edr_cloud_full_device_scan(api_token,args,params)
+
+
+        except Exception as e:
+            return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+
+    if __name__ in ("__main__", "__builtin__", "builtins"):
+        main()
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
