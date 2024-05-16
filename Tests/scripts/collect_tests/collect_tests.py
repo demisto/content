@@ -1535,7 +1535,8 @@ if __name__ == '__main__':
         collector = NightlyTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
                                          graph=graph, build_bucket_path=build_bucket_path)
     else:
-        collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
+        collector = BranchTestCollector(branch_name=branch_name, marketplace=marketplace, service_account=service_account,
+                                        graph=graph, build_bucket_path=build_bucket_path)
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files
