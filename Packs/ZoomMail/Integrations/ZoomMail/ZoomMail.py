@@ -489,20 +489,26 @@ def get_email_thread_command(
         readable_output = f"Email Thread {thread_id} in mailbox {email}:\n" + "\n".join(
             messages_list
         )
+        output = {
+            'ZoomMail.Thread(val.id && val.id == obj.id)': response["messages"]
+        }
+        if "pageToken" in response:
+            output.update(
+                {'ZoomMail(val.ThreadNextToken == obj.ThreadNextToken)': {
+                    'ThreadNextToken': response["nextPageToken"]
+                }
+                }
+            )
     else:
+        output = {}
         readable_output = (
             f"Email Thread {thread_id} in mailbox {email} has no messages."
         )
 
-    if "pageToken" in response:
-        response.update({"ThreadNextToken": response["pageToken"]})
-
     # Return command results
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="ZoomMail.Thread",
-        outputs_key_field="id",
-        outputs=response,
+        outputs=output,
     )
 
 
@@ -544,8 +550,6 @@ def trash_email_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     # Return the results with structured data
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="ZoomMail.TrashedEmail",
-        outputs_key_field="id",
         outputs=response,
     )
 
@@ -633,17 +637,24 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
             removeNull=True,
             headerTransform=string_to_table_header
         )
+        output = {
+            'ZoomMail.Email(val.id && val.id == obj.id)': response["messages"]
+        }
+        if "pageToken" in response:
+            output.update(
+                {
+                    'ZoomMail(val.EmailNextToken == obj.EmailNextToken)': {
+                        'EmailNextToken': response["nextPageToken"]
+                    }
+                }
+            )
     else:
+        output = {}
         readable_output = f"No messages found in mailbox {email}."
-
-    if "pageToken" in response:
-        response.update({"EmailNextToken": response["pageToken"]})
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="ZoomMail.Email",
-        outputs_key_field="id",
-        outputs=response,
+        outputs=output,
     )
 
 
@@ -809,15 +820,22 @@ def list_users_command(client: ZoomMailClient, args: dict[str, str]) -> CommandR
         )
     )
 
+    output = {
+        'ZoomMail.User(val.id && val.id == obj.id)': users
+    }
     if "pageToken" in response:
-        response.update({"UserNextToken": response["pageToken"]})
+        output.update(
+            {
+                'ZoomMail(val.UserNextToken == obj.UserNextToken)': {
+                    'UserNextToken': response["nextPageToken"]
+                }
+            }
+        )
 
     # Return command results with structured data
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="ZoomMail.User",
-        outputs_key_field="id",
-        outputs=users,
+        outputs=output,
     )
 
 
