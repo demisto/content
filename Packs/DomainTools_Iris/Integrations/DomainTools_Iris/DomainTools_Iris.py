@@ -1592,6 +1592,8 @@ def main():
     Main Demisto function.
     """
     try:
+        if not (USERNAME and API_KEY):
+            raise DemistoException("The parameters 'API Username' and 'API Key' are required.")
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'domain':
