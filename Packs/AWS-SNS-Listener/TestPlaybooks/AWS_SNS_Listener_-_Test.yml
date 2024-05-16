@@ -51,11 +51,11 @@ tasks:
     scriptarguments:
       body:
         simple: '{"Type": "Notification", "MessageId": "8b2d1fb3-991d-5620-94db-4122378cde65",
-          "TopicArn": "arn:aws:sns:eu-central-1:794065701450:demisto", "Subject":
+          "TopicArn": "arn:aws:sns:eu-central-1:123456789012:demisto", "Subject":
           "SNS-test-subject", "Message": "SNS-test-subject", "Timestamp": "2024-04-11T09:24:33.550Z",
           "SignatureVersion": "1", "Signature": "URJNiNbbC3YJAiAL8UGzyTfbwTEh1yKgx1uPdLQ7lPRt5UmQhlgjCsuh76Tjl6IB9bTHrqsWznC6yKYXEABNMnJxpMx8EssnofmmTH+5sEB5nd/yz9U8qMCPP22mSmkGtkAAFwxi0fBo9Pg3mzhitO2l7yo3v//V4KVQu03ggbSqTXnLZNXpN3sAjgrKFfye8x9OJ0NGMdDWrnFOEYMbJEGgetkxjJV/H7L+BCz01W1V+xjPFzbfmWFIyKArjEv7cI2dytQBdIf9QhB7zOYIpKPNz/NMp0a+3e/hxt2rarBLx/sqii5yWDCT/jAVAWBNyv6ZiGQwScWgjuu8ICnzDQ==",
           "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-60eadc530605d63b8e62a523676ef735.pem",
-          "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-central-1:794065701450:demisto:81273f59-b8ce-423b-842c-31cc19b81cb9"}'
+          "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-central-1:123456789012:demisto:81273f59-b8ce-423b-842c-31cc19b81cb9"}'
       headers:
         simple: x-amz-sns-message-type:Notification
       method:
@@ -366,8 +366,8 @@ tasks:
     task:
       id: 571fff3d-701c-4697-87b4-5645267da22c
       version: -1
-      name: GetServerInfo_copy
-      scriptName: GetServerInfo_copy
+      name: GetServerInfo
+      scriptName: GetServerInfo
       type: regular
       iscommand: false
       brand: ""
