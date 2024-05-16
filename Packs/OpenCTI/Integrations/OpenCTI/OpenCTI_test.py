@@ -77,15 +77,10 @@ def test_get_indicators_command(mocker):
     all_indicators = get_indicators_command(client, args={'indicator_types': 'ALL'})
     default_indicators = get_indicators_command(client)
     assert len(all_indicators) == len(default_indicators)
-    
-    args = {
-        
-    }
-    
-    indicators_with_end = get_indicators_command(client, args={'score_end' : 50})
-    indicators_with_end_start = get_indicators_command(client, args={'score_end' : 50, 'score_start': 0}))
-    assert len(all_indicators) == len(default_indicators)
-    
+
+    indicators_with_end = get_indicators_command(client, args={'score_end': 50})
+    indicators_with_end_start = get_indicators_command(client, args={'score_end': 50, 'score_start': 0})
+    assert len(indicators_with_end) == len(indicators_with_end_start)
 
 
 def test_get_indicators_command_with_score(mocker):
@@ -145,9 +140,9 @@ def test_indicator_delete_command(mocker):
     assert "Indicator deleted" in results.readable_output
 
 
-@pytest.mark.parametrize(argnames="field, value",
-                         argvalues=[('score', '50'),
-                                    ('description', 'new description')])
+@ pytest.mark.parametrize(argnames="field, value",
+                          argvalues=[('score', '50'),
+                                     ('description', 'new description')])
 def test_indicator_field_update_command(mocker, field, value):
     """Tests indicator_field_update_command function
     Given
