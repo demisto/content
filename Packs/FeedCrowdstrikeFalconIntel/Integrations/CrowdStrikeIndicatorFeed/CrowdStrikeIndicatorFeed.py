@@ -210,7 +210,7 @@ class Client(CrowdStrikeClient):
 
         if fetch_command:
             if last_run := self.get_last_run(self.fetch_by_field, self.first_fetch):
-                filter_string = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
+                filter_string = f"{filter_string}+({last_run})" if filter_string else f"({last_run})"
             elif self.fetch_by_field == "Last Updated":
                 # pre 2.1.0 use-case is only relevant when fetching indicators by the "Last Updated" field.
                 filter_string, indicators = self.handle_first_fetch_context_or_pre_2_1_0(filter_string)
@@ -286,7 +286,7 @@ class Client(CrowdStrikeClient):
         """
         context_value = FETCH_BY_FIELDS[self.fetch_by_field]["context_value"]
         if resources := response.get("resources", []):
-            new_last_run_timestamp = resources[-1].get(FETCH_BY_FIELDS[self.fetch_by_field]["response_resources_ref"])
+            new_last_run_timestamp = str(resources[-1].get(FETCH_BY_FIELDS[self.fetch_by_field]["response_resources_ref"]))
             demisto.debug(f"There are new indicators, new last_run is {context_value}={new_last_run_timestamp}")
         else:
             new_last_run_timestamp = demisto.getIntegrationContext().get(context_value)
@@ -360,15 +360,15 @@ class Client(CrowdStrikeClient):
         # Case 1: This is not the first fetch cycle and there is a last_run value saved in the Integration Context
         if last_run := demisto.getIntegrationContext().get(FETCH_BY_FIELDS[fetch_by_field]["context_value"]):
             filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
-            last_run_query = f"{filter}{last_run}"
-            demisto.info(f"get last_run: {last_run}. filter parameter is: {last_run_query=}")
+            last_run_query = f"{filter}'{last_run}'"
+            demisto.info(f"got last_run from Integration Context: {last_run}. filter parameter is: {last_run_query=}")
         # Case 2: fetch_by_field=`Published Date` and its the first fetch cycle, create a timestamp out of `first_fetch` parameter
         elif fetch_by_field == "Published Date":
             filter = FETCH_BY_FIELDS[fetch_by_field]["filter"]
             first_fetch_datetime = arg_to_datetime(first_fetch, required=True)
             first_fetch_timestamp = int(first_fetch_datetime.timestamp()) if first_fetch_datetime else None
             if first_fetch_timestamp:
-                last_run_query = f"{filter}{first_fetch_timestamp}"
+                last_run_query = f"{filter}'{first_fetch_timestamp}'"
             else:
                 raise DemistoException(
                     "Could not create timestamp for first fetch. Please verify `First fetch time` parameter validity."
