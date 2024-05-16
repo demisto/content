@@ -372,6 +372,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     last_run = demisto.getLastRun()
     last_fetch_info = last_run.get("last_fetch_info", {"internalDate": 0, "ids": []})
     last_page_fetch_token = last_run.get("next_page_token")
+    last_fetched_ids = last_fetch_info.get("ids", [])
 
     if not last_fetch_info["internalDate"]:
         first_fetch_dt = parse(first_fetch_time)
@@ -386,7 +387,10 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     if last_page_fetch_token:
         demisto.info(f"Fetching additional messages from previous fetch run, {last_page_fetch_token}")
         messages_response = client.list_emails(
-            email=fetch_from, page_token=last_page_fetch_token, label_ids=fetch_labels
+            email=fetch_from,
+            page_token=last_page_fetch_token,
+            label_ids=fetch_labels,
+            max_results=str(max_fetch),
         )
     else:
         messages_response = client.list_emails(
@@ -413,7 +417,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
         # Check if it's a new message, and if it's either all messages (fetch_threads is False) or only thread starters
         if (internal_date > last_fetch_info["internalDate"] or (
-            internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"]
+            internal_date == last_fetch_info["internalDate"] and message_id not in last_fetched_ids
         )) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
@@ -421,11 +425,23 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
     if message_dates:
         new_internal_date = max(message_dates)
-        new_ids = [
-            msg["id"] for msg in messages if msg["internalDate"] == new_internal_date
+        newly_fetched_ids = [
+            msg["id"] for msg in messages
         ]
 
-        last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
+        last_fetched_ids.extend(newly_fetched_ids)
+
+        last_fetch_info = {
+            "internalDate": new_internal_date,
+            "ids": last_fetched_ids
+        }
+
+    # If we don't collect any new messages, but we have a next fetch token,
+    # we are fetching old messages and need to stop.
+
+    if len(incidents) == 0 and next_page_token:
+        demisto.info("No new messages found, stopping fetch.")
+        next_page_token = None
 
     demisto.info(f"Found {len(incidents)} incidents to create and {len(messages) - len(incidents)} messages to skip.")
     demisto.debug(f"Last fetch info: {last_fetch_info}")
