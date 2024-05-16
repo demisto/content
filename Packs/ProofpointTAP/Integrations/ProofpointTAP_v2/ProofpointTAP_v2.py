@@ -537,22 +537,21 @@ def get_events_command(client, args):
     )
 
 
-def validate_start_query_time(start_query_time: str):
+def validate_first_fetch_time(first_fetch_time: str):
     """
         validate that the start time is less than 7 days ago
         Args:
-            start_query_time(str) - the start date time that needs to be validated.
+            first_fetch_time(str) - the start date time that needs to be validated.
         Returns:
             A valid datetime for the start_query_time
         """
-    dt_start_query_time = datetime.strptime(start_query_time, DATE_FORMAT) if start_query_time else get_now() - timedelta(hours=1)
+    dt_start_query_time = arg_to_datetime(first_fetch_time) or get_now() - timedelta(hours=1)
     seven_days_ago = get_now() - timedelta(days=7)
     if dt_start_query_time <= seven_days_ago:
-        new_start_query_time = get_now() - timedelta(days=6, hours=23, minutes=59)
-        demisto.debug(f'The {start_query_time=} is more than 7 days ago. Replacing it with {new_start_query_time=}')
-        return new_start_query_time
-    demisto.debug(f'The {start_query_time=} is less than 7 days ago. Returning {dt_start_query_time=}')
-    return dt_start_query_time
+        raise DemistoException('The First fetch time range is more than 7 days ago. Please update this parameter since '
+                               'Proofpoint supports a maximum 1 week fetch back.')
+    else:
+        demisto.debug(f'The {first_fetch_time=} is less than 7 days ago.')
 
 
 def fetch_incidents(
@@ -579,11 +578,7 @@ def fetch_incidents(
     start_query_time = last_run.get("last_fetch")
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
-        dt_start_query_time = dateparser.parse(date_string=first_fetch_time, settings={'TIMEZONE': 'UTC'})
-        start_query_time = dt_start_query_time.strftime(DATE_FORMAT) if dt_start_query_time else ''
-
-    # validate that the start time is no more than 7 days ago
-    start_query_time = validate_start_query_time(start_query_time)
+        start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
     fetch_times = get_fetch_times(start_query_time)
     for i in range(len(fetch_times) - 1):
@@ -1258,6 +1253,7 @@ def main():
             'proofpoint-get-forensics': get_forensic_command
         }
         if command == 'test-module':
+            validate_first_fetch_time(fetch_time)
             return_outputs(test_module(client))
 
         elif demisto.command() == 'fetch-incidents':

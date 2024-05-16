@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from freezegun import freeze_time
 
@@ -343,6 +343,10 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     mocker.patch(
         'ProofpointTAP_v2.get_now',
         return_value=get_mocked_time()
+    )
+    mocker.patch(
+        'ProofpointTAP_v2.parse_date_range',
+        return_value=("2010-01-01T00:00:00Z", 'never mind')
     )
     requests_mock.get(
         MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
@@ -1087,51 +1091,37 @@ def test_list_issues_command(requests_mock):
 
 
 @freeze_time("2024-05-03T11:00:00")
-def test_validate_start_query_time_valid_str():
+def test_validate_first_fetch_time_valid_str():
     """
         Given:
-         - A valid str start_query_time
+         - A valid str first_fetch_time
         When:
-         - running fetch_incidents.
+         - running test_module.
         Then:
-         - Ensure that the datetime representation of start_query_time is returned.
+         - No exception is thrown.
     """
-    from ProofpointTAP_v2 import validate_start_query_time
-    start_query_time = '2024-05-03T10:00:00Z'
-    datetime_start_query_time = datetime.strptime(start_query_time, DATE_FORMAT)
-    validated_start_query_time = validate_start_query_time(start_query_time)
-    assert datetime_start_query_time == validated_start_query_time
+    from ProofpointTAP_v2 import validate_first_fetch_time
+    first_fetch_time = '1 day ago'
+    try:
+        validate_first_fetch_time(first_fetch_time)
+    except Exception as e:
+        raise AssertionError(f"validate_first_fetch_time raised an exception {e}")  # noqa: PT015
 
 
-@freeze_time("2024-05-03T11:00:00", tz_offset=0)
-def test_validate_start_query_time_not_valid():
+@freeze_time("2024-05-03T11:00:00")
+def test_validate_first_fetch_time_not_valid():
     """
         Given:
-         - A not valid start_query_time
+         - A first_fetch_time bigger than 7 days ago
         When:
-         - running fetch_incidents.
+         - running test_module.
         Then:
-         - Ensure that a valid datetime object is returned (less than 7 days ago).
+         - Exception is thrown.
     """
-    from ProofpointTAP_v2 import validate_start_query_time
-    start_query_time = '2024-04-20T10:00:00Z'
-    expected_start_query_time = datetime.now() - timedelta(days=6, hours=23, minutes=59)
-    validated_start_query_time = validate_start_query_time(start_query_time)
-    assert expected_start_query_time == validated_start_query_time
-
-
-@freeze_time("2024-05-03T11:00:00", tz_offset=0)
-def test_validate_start_query_time_empty():
-    """
-        Given:
-         - An empty string as start_query_time
-        When:
-         - running fetch_incidents.
-        Then:
-         - Ensure that a valid datetime object is returned (less than 7 days ago).
-    """
-    from ProofpointTAP_v2 import validate_start_query_time
-    start_query_time = ''
-    expected_start_query_time = datetime.now() - timedelta(hours=1)
-    validated_start_query_time = validate_start_query_time(start_query_time)
-    assert expected_start_query_time == validated_start_query_time
+    from ProofpointTAP_v2 import validate_first_fetch_time
+    first_fetch_time = '8 days ago'
+    try:
+        validate_first_fetch_time(first_fetch_time)
+    except Exception as e:
+        assert ('The First fetch time range is more than 7 days ago. Please update this parameter since '
+                'Proofpoint supports a maximum 1 week fetch back.') in str(e)
