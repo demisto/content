@@ -999,7 +999,7 @@ def panorama_command(args: dict):
     """
     params = {}
 
-    for arg in args.keys():
+    for arg in args:
         params[arg] = args[arg]
 
     is_xml = argToBoolean(params.get("is_xml", "false"))
@@ -3663,7 +3663,7 @@ def prettify_rule(rule: dict):
             'LogAtSessionStart': rule.get('log-start', ''),
             'LogForwarding': rule.get('log-setting', ''),
             'Schedule': rule.get('schedule', ''),
-            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),  # pylint: disable=E1124
+            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={})), None),  # pylint: disable=E1124
             'DisableServerResponseInspection': rule_get(['option', 'disable-server-response-inspection']),
         }
     }
@@ -4518,7 +4518,7 @@ def prettify_edls_arr(edls_arr: Union[list, dict]):
     for edl in edls_arr:
         pretty_edl = {
             'Name': edl['@name'],
-            'Type': ''.join(edl['type'].keys())
+            'Type': ''.join(edl['type'])
         }
         edl_type = pretty_edl['Type']
 
@@ -4528,7 +4528,7 @@ def prettify_edls_arr(edls_arr: Union[list, dict]):
             if 'certificate-profile' in edl['type'][edl_type]:
                 pretty_edl['CertificateProfile'] = edl['type'][edl_type]['certificate-profile']
             if 'recurring' in edl['type'][edl_type]:
-                pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'].keys())
+                pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'])
             if 'description' in edl['type'][edl_type]:
                 pretty_edl['Description'] = edl['type'][edl_type]['description']
 
@@ -4580,7 +4580,7 @@ def panorama_list_edls_command():
 def prettify_edl(edl: dict):
     pretty_edl = {
         'Name': edl['@name'],
-        'Type': ''.join(edl['type'].keys())
+        'Type': ''.join(edl['type'])
     }
     edl_type = pretty_edl['Type']
 
@@ -4590,7 +4590,7 @@ def prettify_edl(edl: dict):
         if 'certificate-profile' in edl['type'][edl_type]:
             pretty_edl['CertificateProfile'] = edl['type'][edl_type]['certificate-profile']
         if 'recurring' in edl['type'][edl_type]:
-            pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'].keys())
+            pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'])
         if 'description' in edl['type'][edl_type]:
             pretty_edl['Description'] = edl['type'][edl_type]['description']
 
@@ -4705,7 +4705,7 @@ def panorama_edit_edl(edl_name: str, element_to_change: str, element_value: str)
     if '@dirtyId' in edl_prev:
         LOG(f'Found uncommitted item:\n{edl_prev}')
         raise Exception('Please commit the instance prior to editing the External Dynamic List')
-    edl_type = ''.join(edl_prev['type'].keys())
+    edl_type = ''.join(edl_prev['type'])
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
         edl_output['DeviceGroup'] = DEVICE_GROUP
@@ -4810,7 +4810,7 @@ def panorama_refresh_edl(edl_name: str, edl_type: str, location: str, vsys: str)
     # if refreshing an EDL on the FW
     if not edl_type and not location and not vsys:
         edl = panorama_get_edl(edl_name)
-        edl_type = ''.join(edl['type'].keys())
+        edl_type = ''.join(edl['type'])
     # if refreshing an EDL on the Panorama
     else:
         if not edl_type or not location or not vsys:
@@ -12013,7 +12013,7 @@ def parse_list_templates_response(entries):
         return [
             {
                 'Name': variable.get('@name'),
-                'Type': list(variable.get('type').keys())[0] if variable.get('type') else None,
+                'Type': list(variable.get('type'))[0] if variable.get('type') else None,
                 'Value': list(variable.get('type').values())[0] if variable.get('type') else None,
                 'Description': variable.get('description')
             }
@@ -12649,7 +12649,7 @@ def parse_pan_os_list_redistribution_profiles(entries):
         {
             'Name': entry.get('@name'),
             'Priority': extract_objects_info_by_key(entry, 'priority'),
-            'Action': list(entry.get('action', {}).keys())[0] if entry.get('action') else None,
+            'Action': list(entry.get('action', {}))[0] if entry.get('action') else None,
             'FilterInterface': extract_objects_info_by_key(entry.get('filter', {}), 'interface'),
             'FilterType': extract_objects_info_by_key(entry.get('filter', {}), 'type'),
             'FilterDestination': extract_objects_info_by_key(entry.get('filter', {}), 'destination'),
@@ -12744,7 +12744,7 @@ def pan_os_create_redistribution_profile(args):
         if {
             'filter_source_type', 'destination', 'nexthop', 'interface', 'filter_ospf_area', 'filter_ospf_tag',
             'filter_ospf_path_type', 'filter_bgp_community', 'filter_bgp_extended_community'
-        }.intersection(set(args.keys())):
+        }.intersection(set(args)):
             _body_request['filter'] = {}
             _body_request['filter'].update(_set_up_ospf_filter_body_request())
             _body_request['filter'].update(_set_up_bgp_filter_body_request())
@@ -12928,7 +12928,7 @@ def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
                 'Source Address': source_address,
                 'Source User': source_user,
                 'Destination Address': destination_address,
-                'Action': list(entry['action'].keys())[0] if entry.get('action') else None,
+                'Action': list(entry['action'])[0] if entry.get('action') else None,
                 'Disabled': disabled
             }
         )
@@ -14103,7 +14103,7 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
         if not device_name or not incident_id:
             continue
         # Upsert the device's id if it's a new device, or it's a larger id
-        if device_name not in new_largest_id.keys() or int(incident_id) > int(new_largest_id[device_name]):
+        if device_name not in new_largest_id or int(incident_id) > int(new_largest_id[device_name]):
             new_largest_id[device_name] = incident_id
     demisto.debug(f'{new_largest_id=}')
     return new_largest_id
