@@ -357,8 +357,7 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-        event_type_fetch_start_time = events.get(
-            event_type.dataset_name, [])[-1].get(event_type.order_by) if events.get(event_type.dataset_name) else last_fetch_time
+        event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
         #  can empty the list.
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
