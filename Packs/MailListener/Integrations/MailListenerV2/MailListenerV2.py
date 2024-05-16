@@ -80,10 +80,14 @@ class Email:
         if msg:
             demisto.debug(f'ML: {type(msg)=}')
             for part in msg.walk():
+                demisto.debug(f'ML: {type(part)=}')
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
                 filename = part.get_filename()
+                demisto.debug(f'ML: {part.get_filename()=}')
                 if filename and filename.endswith('.eml'):
+                    demisto.debug(f'ML: {type(part.get_payload(decode=False))=}, {len(part.get_payload(decode=False))}')
+                    demisto.debug(f'ML: {type(part.get_payload(decode=False)[0])=}')
                     eml_attachments.append({
                         "filename": filename,
                         "payload": part.get_payload(decode=False)[0].as_bytes(),
