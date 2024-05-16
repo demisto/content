@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any
-
+import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -50,23 +50,16 @@ class Client(BaseClient):
         )
         self.access_token = response.get('access_token')
 
-    def search_request(self):
+    def search_request(self, data):
         """
         Performs basic get request to check if the server is reachable.
         """
-        data = {
-            "limit": 50,
-            "fields": ["*"],
-            "startTime": "2023-12-08T13:05:07.774Z",
-            "endTime": "2024-02-06T13:05:07.774Z",
-            "filter": "alert_subject:\"Inhibit System Recovery\" AND tier:\"Tier 1\" AND process_blocked:TRUE"
-
-        }
+        data = json.dumps(data)
         full_url = f"{self._base_url}/search/v2/events"
         self._http_request(
             "POST",
             full_url=full_url,
-            data=json.dumps(data),
+            data=data,
             headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
         )
         
@@ -88,18 +81,59 @@ def get_date(time: str):
         date = date_time.strftime(DATE_FORMAT)
     return date
 
+
+def adjust_string_pattern(filter_str):
+    logical_operators = re.findall(r'\bAND\b|\bTO\b|\bNOT\b|\bOR\b', filter_str)
+    conditions = re.split(r'\bAND\b|\bTO\b|\bNOT\b|\bOR\b', filter_str)
+    adjusted_conditions = []
+    
+    for condition in conditions:
+        parts = condition.split(':')
+        if len(parts) == 2:
+            field, value = parts
+            if value.strip().lower() in ['true', 'false']:
+                adjusted_conditions.append(condition.strip())
+            else:
+                adjusted_conditions.append(f'{field.strip()}:\\"{value.strip()}\\"')
+        else:
+            adjusted_conditions.append(condition.strip())
+
+    adjusted_filter = ''
+    for i in range(len(adjusted_conditions)):
+        adjusted_filter += adjusted_conditions[i]
+        if i < len(logical_operators):
+            adjusted_filter += ' ' + logical_operators[i] + ' '
+
+    return adjusted_filter
+
+
 ''' COMMAND FUNCTIONS '''
 
 def search_command(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    query = args.get('query')
-    fields = argToList(args.get('fields'))
-    group_by = argToList(args.get('group_by'))
-    limit = arg_to_number(args.get('limit'))
+    filter = args.get('query', '')
+    filter = adjust_string_pattern(filter)
+    # filter = "alert_subject:\"Inhibit System Recovery\" AND tier:\"Tier 1\" AND process_blocked:TRUE"
+    kwargs = {
+        'filter': filter,
+        'fields': argToList(args.get('fields', '*')),
+        'limit': arg_to_number(args.get('limit', '50')),
+        'startTime': get_date(args.get('start_time', '7 days ago')),
+        'endTime': get_date(args.get('end_time', 'today')),
+    }
+    if args.get('group_by'):
+        kwargs.update({'group_by': argToList(args.get('group_by'))})
+        
+    response = client.search_request(kwargs)
     
-    start_time = get_date(args.get("start_time", "7 days ago"))
-    end_time = get_date(args.get("end_time", "today"))
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 
@@ -132,6 +166,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
+
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:

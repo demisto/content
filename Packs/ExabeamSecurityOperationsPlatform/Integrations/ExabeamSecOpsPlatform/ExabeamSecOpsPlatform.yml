@@ -45,7 +45,8 @@ script:
     - description: Comma-separated list of fields to GROUP BY.
       name: group_by
       required: false
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - defaultvalue: "50"
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
       name: limit
       required: false
     description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
