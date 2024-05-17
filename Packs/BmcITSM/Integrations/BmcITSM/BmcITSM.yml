@@ -700,7 +700,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
       defaultValue: ""
-    - name: assigned_support_group
+    - name: assigned_support_group_name
       description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
       defaultValue: ""
     - name: assignee
@@ -1235,7 +1235,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue:
-    - name: assigned_support_group
+    - name: assigned_support_group_name
       description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue: ""
     - name: impact
