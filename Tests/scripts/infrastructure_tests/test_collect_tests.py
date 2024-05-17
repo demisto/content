@@ -301,7 +301,7 @@ NIGHTLY_TESTS: tuple = (
     # (23) Checks that tests are collected according to the marketplace entry they hold - xsoar_saas
     (MockerCases.conf_marketplaces_entry, NightlyTestCollector,
      {'myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_saas', 'myTestPlaybook_two_entries'},
-     ('myPack',), None, None, XSOAR_SAAS_BRANCH_ARGS),
+     ('myPack',), None, None, XSOAR_SAAS_BRANCH_ARGS, (), (), []),
 
 
 )
