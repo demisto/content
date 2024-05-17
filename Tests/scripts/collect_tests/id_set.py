@@ -139,7 +139,7 @@ class IdSet(DictFileBased):
         yield from self.id_to_test_playbook.values()
 
     @property
-    def modeling_rules(self) -> Iterable[IdSetItem]:
+    def modeling_rules(self) -> Iterable[IdSetItem]: # todo parsing rules?
         yield from self.path_to_modeling_rule.values()
 
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:

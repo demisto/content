@@ -280,9 +280,7 @@ class CollectionResult:
 
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions,
-                 service_account: str | None,
                  graph: bool = False,
-                 build_bucket_path: str | None = None,
                  ):
         self.marketplace = marketplace
         self.id_set: IdSet | Graph
@@ -292,8 +290,6 @@ class TestCollector(ABC):
             self.id_set = IdSet(marketplace, PATHS.id_set_path)
         self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
-        self.service_account = service_account
-        self.build_bucket_path = build_bucket_path
 
     @property
     def sanity_tests(self) -> CollectionResult:
@@ -365,40 +361,8 @@ class TestCollector(ABC):
 
         result.machines = Machine.get_suitable_machines(result.version_range)  # type: ignore[union-attr] # TODO MACHINES
 
-        if result.packs_to_upload:
-            result.packs_to_upload, result.packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload)
-
-        self._collect_failed_packs_from_prev_upload(result)
-
         return result
 
-    def _collect_failed_packs_from_prev_upload(self, result: CollectionResult | None):
-        """
-        Updates the result with failed packs from a previous upload.
-
-        Args:
-            result (CollectionResult | None)
-
-        Side Effects:
-            - Adds failed packs to `result.packs_to_upload` and `result.packs_to_update_metadata`.
-            - Removes duplicates from `packs_to_update_metadata`.
-        """
-
-
-        re_upload_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
-        packs_to_re_update_metadata = set(re_upload_packs.get('packs_to_update_metadata', []))
-        packs_to_re_upload = set(re_upload_packs.get('packs_to_upload', []))
-
-        logger.info(f'Collected failed packs from previous upload to install and upload: '
-                    f'packs_to_re_update_metadata:= {packs_to_re_update_metadata},'
-                    f'packs_to_re_upload:= {packs_to_re_upload}')
-
-        result.packs_to_upload |= packs_to_re_upload
-        result.packs_to_update_metadata |= packs_to_re_update_metadata
-
-        result.packs_to_update_metadata -= result.packs_to_upload
-
-        result.packs_to_install |= result.packs_to_upload | result.packs_to_update_metadata
 
     def _collect_test_dependencies(self, test_ids: Iterable[str]) -> CollectionResult | None:
         result = []
@@ -764,6 +728,31 @@ class TestCollector(ABC):
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
 
+def sort_packs_to_upload(result: CollectionResult | None):
+    """
+    :param: result contains packs_to_upload: The resultant list of packs to upload
+
+    the function sorts the packs_to_upload into 2 sets: packs_to_upload, packs_to_update_metadata sets:
+        packs_to_upload: set of packs to upload (hard upload - changed files with RN and version bump)
+        packs_to_update_metadata: set of packs to update
+         (soft upload - changed only to packmetadata file without RN and version bump)
+    """
+    git_util = GitUtil()
+    changed_files = git_util._get_all_changed_files()
+    for pack_id in result.packs_to_upload:
+        current_version = PACK_MANAGER.get_current_version(pack_id) or ""
+        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
+        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
+
+        if pack_metadata_path in git_util.added_files():  # first version
+            continue
+
+        if rn_path not in changed_files and pack_metadata_path in changed_files:
+            result.packs_to_update_metadata.add(pack_id)
+
+    result.packs_to_upload = result.packs_to_upload - result.packs_to_update_metadata
+
+
 class BranchTestCollector(TestCollector):
     def __init__(
             self,
@@ -779,18 +768,53 @@ class BranchTestCollector(TestCollector):
         :param marketplace: marketplace value
         :param service_account: used for comparing with the latest upload bucket
         """
-        super().__init__(marketplace, service_account, graph, build_bucket_path)
+        super().__init__(marketplace, graph)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
+        self.service_account = service_account
+        self.build_bucket_path = build_bucket_path
+
+    def _collect_failed_packs_from_prev_upload(self, result: CollectionResult | None):
+        """
+        Updates the result with failed packs from a previous upload.
+
+        Args:
+            result (CollectionResult | None)
+
+        Side Effects:
+            - Adds failed packs to `result.packs_to_upload` and `result.packs_to_update_metadata`.
+            - Removes duplicates from `packs_to_update_metadata`.
+        """
+
+
+        re_upload_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
+        packs_to_re_update_metadata = set(re_upload_packs.get('packs_to_update_metadata', []))
+        packs_to_re_upload = set(re_upload_packs.get('packs_to_upload', []))
+
+        logger.info(f'Collected failed packs from previous upload to install and upload: '
+                    f'packs_to_re_update_metadata:= {packs_to_re_update_metadata},'
+                    f'packs_to_re_upload:= {packs_to_re_upload}')
+
+        result.packs_to_upload |= packs_to_re_upload
+        result.packs_to_update_metadata |= packs_to_re_update_metadata
+
+        result.packs_to_update_metadata -= result.packs_to_upload
+
+        result.packs_to_install |= result.packs_to_upload | result.packs_to_update_metadata
 
     def _collect(self) -> CollectionResult | None:
         collect_from = self._get_git_diff()
 
-        return CollectionResult.union([
+        result = CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
             self._collect_packs_diff_master_bucket()
         ])
+        if result.packs_to_upload:
+            sort_packs_to_upload(result)
+
+        self._collect_failed_packs_from_prev_upload(result)
+        return result
 
     def _collect_packs_diff_master_bucket(self) -> CollectionResult | None:
         """
@@ -1268,7 +1292,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
 
         if self.marketplace in [MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2]:
             nightly_packs = CollectionResult.union([
-                self._collect_packs_nightly(self.conf.nightly_packs),
+                self._collect_packs_nightly(),
                 self._id_set_tests_matching_marketplace_value()
             ])
             if nightly_packs:
@@ -1286,7 +1310,12 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 logger.info(f"Collect the following packs to install modeling rules: {modeling_rules.packs_to_install=}")
                 result.append(modeling_rules)
 
-        return CollectionResult.union(result)
+        result = CollectionResult.union(result)
+        if result.packs_to_upload:
+            sort_packs_to_upload(result)
+
+        self._collect_failed_packs_from_prev_upload(result)
+        return result
 
     # def _collect_failed_packs_from_prev_upload(self) -> CollectionResult | None:
     #     failed_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
@@ -1363,9 +1392,9 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 logger.debug(f"{playbook.id_} - {str(e)}")
         return CollectionResult.union(result)
 
-    def _collect_packs_nightly(self, packs: tuple[str, ...] | set[str]) -> CollectionResult | None:
+    def _collect_packs_nightly(self) -> CollectionResult | None:
         result = []
-        for pack in packs:
+        for pack in self.conf.nightly_packs:
             try:
                 pack_metadata = PACK_MANAGER.get_pack_metadata(pack)
 
@@ -1415,33 +1444,6 @@ class SDKNightlyTestCollector(TestCollector):
         if self.marketplace == MarketplaceVersions.XPANSE:
             return None
         return self.sanity_tests
-
-
-def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:
-    """
-    :param: packs_to_upload: The resultant list of packs to upload
-    :return:
-     Tuple[list, list]:
-        packs_to_upload: list of packs to upload (hard upload - changed files with RN and version bump)
-        packs_to_update_metadata: list of packs to update
-         (soft upload - changed only to packmetadata file without RN and version bump)
-    """
-    packs_to_update_metadata = set()
-    git_util = GitUtil()
-    changed_files = git_util._get_all_changed_files()
-    for pack_id in packs_to_upload:
-        current_version = PACK_MANAGER.get_current_version(pack_id) or ""
-        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
-        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
-
-        if pack_metadata_path in git_util.added_files():  # first version
-            continue
-
-        if rn_path not in changed_files and pack_metadata_path in changed_files:
-            packs_to_update_metadata.add(pack_id)
-
-    packs_to_upload = packs_to_upload - packs_to_update_metadata
-    return packs_to_upload, packs_to_update_metadata
 
 
 def output(result: CollectionResult | None):

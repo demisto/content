@@ -1,6 +1,6 @@
 name: myIntegration
 tests:
-  - myTestPlaybook
+  - no tests
 marketplaces:
 - marketplacev2
 subtype: python3
