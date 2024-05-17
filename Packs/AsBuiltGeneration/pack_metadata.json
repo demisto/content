@@ -1,0 +1,21 @@
+{
+    "name": "AsBuiltGeneration",
+    "description": "Automation script for generating configuration file for Cortex XSOAR As-Built document.\nUsers can create and download a Json type file with all the custom data in the Cortex Environment.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "AyushPalo",
+    "url": "",
+    "email": "",
+    "created": "2024-05-17T12:36:38Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "AyushPalo"
+    ]
+}
