@@ -28,6 +28,7 @@ class Client(BaseClient):
         self.token = token
 
         try:
+            demisto.debug('in Client - Getting token.')
             self.token = self.get_token()
             self.headers = {
                 'Content-Type': 'application/json',
@@ -43,15 +44,15 @@ class Client(BaseClient):
         Returns:
             str: token
         """
+        demisto.debug('in generate_token - starting to generate token.')
         resp = self._http_request(
             method='POST',
             url_suffix="oauth/token",
             data={
-                'client_id': self.client_id,
                 'grant_type': 'client_credentials',
-                'client_secret': self.client_secret
             },
-            headers={"scope": "sp:scope:all"}
+            headers={"scope": "sp:scope:all"},
+            auth=(self.client_id, self.client_secret)
         )
 
         token = resp.get('access_token')
@@ -74,7 +75,7 @@ class Client(BaseClient):
         Returns:
             str: token that will be added to authorization header.
         """
-
+        demisto.debug('in get_token - starting to get token.')
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         valid_until = integration_context.get('expires')
@@ -256,6 +257,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy)
+        demisto.debug("finished initializing client, starting execution")
 
         if command == 'test-module':
             result = test_module(client)
