@@ -5,7 +5,7 @@ from gevent.pywsgi import WSGIServer
 from urllib.parse import urlparse, ParseResult
 from tempfile import NamedTemporaryFile
 from base64 import b64decode
-from collections.abc import Callable, Generator
+from typing import Callable, List, Generator
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
 from werkzeug.datastructures import Headers
@@ -297,8 +297,6 @@ class TAXIIServer:
         Returns:
             The service URL according to the protocol.
         """
-        prefix = ''
-        xsoar_path = ''
         if self.service_address:
             return self.service_address
         if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
@@ -308,15 +306,9 @@ class TAXIIServer:
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
-
-            if is_xsiam_or_xsoar_saas():
-                prefix = 'ext-'
-                xsoar_path = '/xsoar'
         else:
             endpoint = f':{self.port}'
-
-        demisto.debug(f'The url is: {self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}')
-        return f'{self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}'
+        return f'{self.url_scheme}://{self.host}{endpoint}'
 
 
 SERVER: TAXIIServer
@@ -325,7 +317,7 @@ DEMISTO_LOGGER: Handler = Handler()
 ''' STIX MAPPING '''
 
 
-def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observable]:
+def create_stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
     """
     Create STIX IP observable.
     Args:
@@ -374,7 +366,7 @@ def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observabl
     return observables
 
 
-def create_stix_email_observable(namespace: str, indicator: dict) -> list[Observable]:
+def create_stix_email_observable(namespace: str, indicator: dict) -> List[Observable]:
     """
     Create STIX Email observable.
     Args:
@@ -769,7 +761,7 @@ def find_indicators_loop(indicator_query: str):
     Returns:
         Indicator query results from Demisto.
     """
-    iocs: list[dict] = []
+    iocs: List[dict] = []
     search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get('iocs') or []
@@ -871,9 +863,9 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
     Start the taxii server.
     """
 
-    certificate_path = ''
-    private_key_path = ''
-    ssl_args = {}
+    certificate_path = str()
+    private_key_path = str()
+    ssl_args = dict()
 
     try:
 

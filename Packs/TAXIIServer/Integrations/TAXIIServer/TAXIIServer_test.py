@@ -423,16 +423,13 @@ def test_validate_indicators(indicator):
     assert sdv.validate_xml(tree)
 
 
-@pytest.mark.parametrize('request_headers, url_scheme, expected, is_demisto_8',
+@pytest.mark.parametrize('request_headers, url_scheme, expected',
                          [
-                             ({}, 'http', 'http://host:9000', False),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
-                              'https://host/instance/execute/eyy', False),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
-                              'https://ext-host/xsoar/instance/execute/eyy', True)
+                             ({}, 'http', 'http://host:9000'),
+                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https', 'https://host/instance/execute/eyy')
                          ]
                          )
-def test_get_url(mocker, request_headers, url_scheme, expected, is_demisto_8):
+def test_get_url(mocker, request_headers, url_scheme, expected):
     """
     Given:
         - Case 1: Empty requests headers and http URL scheme
@@ -453,8 +450,6 @@ def test_get_url(mocker, request_headers, url_scheme, expected, is_demisto_8):
     TAXIIServer.SERVER = taxii_server
     if request_headers:
         mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
-        mocker.patch('TAXIIServer.is_xsiam_or_xsoar_saas', return_value=is_demisto_8)
-
     assert taxii_server.get_url(request_headers) == expected
 
 
