@@ -329,7 +329,6 @@ def test_nightly(mocker, monkeypatch, case_mocker: CollectTestsMocker, collector
 
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
-    mocker.patch.object(NightlyTestCollector, '_collect_failed_packs_from_prev_upload', return_value=None)
     _test(mocker, monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_packs_to_upload=expected_packs_to_upload,
           expected_machines=expected_machines,
@@ -586,6 +585,8 @@ def test_branch(
 ):
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
+    mocker.patch.object(BranchTestCollector, '_collect_failed_packs_from_prev_upload')
+
     _test(mocker, monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs,
           expected_packs_to_upload=expected_packs_to_upload,
@@ -844,8 +845,8 @@ def test_sort_packs_to_upload(mocker):
     mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.1")
     packs_to_upload, packs_to_update_metadata = sort_packs_to_upload({"myPack", "myPack2"})
 
-    assert packs_to_upload == ["myPack2"], "myPack should be marked for hard upload"
-    assert packs_to_update_metadata == ["myPack"], "myPack should be marked for metadata update"
+    assert packs_to_upload == {"myPack2"}, "myPack should be marked for hard upload"
+    assert packs_to_update_metadata == {"myPack"}, "myPack should be marked for metadata update"
 
 
 def test_sort_packs_to_upload_new_pack(mocker):
@@ -865,5 +866,5 @@ def test_sort_packs_to_upload_new_pack(mocker):
     mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.0")
     packs_to_upload, packs_to_update_metadata = sort_packs_to_upload({"myPack"})
 
-    assert packs_to_upload == ["myPack"], "myPack should be marked for hard upload"
-    assert packs_to_update_metadata == [], "myPack should not be marked for metadata update"
+    assert packs_to_upload == {"myPack"}, "myPack should be marked for hard upload"
+    assert packs_to_update_metadata == {}, "myPack should not be marked for metadata update"
