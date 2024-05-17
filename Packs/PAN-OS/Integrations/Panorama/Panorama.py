@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
+from typing_extensions import TypedDict, NotRequired  # needs to be changed to "from typing" when updating to python 3.11
 from functools import partial
 import enum
 import html
@@ -27,17 +28,11 @@ from urllib.error import HTTPError
 import shutil
 
 ''' IMPORTS '''
-import json
 import uuid
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
-import re
-import requests
-import urllib3
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator, Literal
 from urllib.parse import urlparse
 
 # disable insecure warnings
-urllib3.disable_warnings()
 
 ''' GLOBALS '''
 URL = ''
@@ -219,6 +214,55 @@ RULE_TYPES_MAP = {
     "NAT Rule": "nat",
     "PBF Rule": "pbf"
 }
+
+class QueryMap(TypedDict):
+    '''Contains the log types mapped to the query
+       used to fetch them from PAN-OS.
+    '''
+    Traffic: NotRequired[str]
+    Threat: NotRequired[str]
+    Url: NotRequired[str]
+    Data: NotRequired[str]
+    Correlation: NotRequired[str]
+    System: NotRequired[str]
+    Wildfire: NotRequired[str]
+    Decryption: NotRequired[str]
+
+class DeviceMap(dict[str, int]):  # TODO int?????
+    '''Maps devices to the "seqno" of the last log
+       associated with the device.
+    '''
+
+class LastFetch(QueryMap):
+    ''''''
+    
+class LastIDs(TypedDict):
+    ''''''
+    Traffic: DeviceMap
+    Threat: DeviceMap
+    Url: DeviceMap
+    Data: DeviceMap
+    Correlation: int  # contains the last "@logid"
+    System: DeviceMap
+    Wildfire: DeviceMap
+    Decryption: DeviceMap
+
+class MaxFetch(TypedDict):
+    '''Contains the log types mapped to the max fetch.
+    '''
+    Traffic: NotRequired[int]
+    Threat: NotRequired[int]
+    Url: NotRequired[int]
+    Data: NotRequired[int]
+    Correlation: NotRequired[int]
+    System: NotRequired[int]
+    Wildfire: NotRequired[int]
+    Decryption: NotRequired[int]
+
+class LastRun(TypedDict):
+    last_fetch_dict: LastFetch
+    last_id_dict: LastIDs
+    max_fetch_dict: MaxFetch
 
 
 class PAN_OS_Not_Found(Exception):
@@ -14109,12 +14153,12 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     return new_largest_id
 
 
-def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dict: Dict[str, Dict[str, str]]):
+def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dict: LastIDs):
     """
     This function removes entries that have already been fetched in the previous fetch cycle.
     Args:
         entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
-        id_dict (Dict[str, Dict[str, str]]): a dictionary of devices and their largest id so far
+        id_dict (LastIDs): a dictionary of devices and their largest id so far
     Returns:
         new_entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle
     """
@@ -14145,16 +14189,16 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
     return new_entries_dict
 
 
-def create_max_fetch_dict(queries_dict: Dict[str, str], configured_max_fetch: int):
+def create_max_fetch_dict(queries_dict: QueryMap, configured_max_fetch: int) -> MaxFetch:
     """
     This function creates a dictionary of log type and its max fetch value - AKA the max number of entries to fetch.
     Args:
-        queries_dict (Dict[str, str]): a dictionary of log type and its query
+        queries_dict (QueryMap): a dictionary of log type and its query
         configured_max_fetch (int): the max fetch value for the first fetch cycle
     Returns:
-        max_fetch_dict (Dict[str, int]): a dictionary of log type and its max fetch value
+        max_fetch_dict (MaxFetch): a dictionary of log type and its max fetch value
     """
-    return {key: configured_max_fetch for key in queries_dict}
+    return dict.fromkeys(queries_dict, configured_max_fetch)  # type: ignore
 
 
 def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, int], last_fetch_dict: Dict[str, str]) -> Dict[
@@ -14181,14 +14225,14 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, i
     return max_fetch_dict
 
 
-def fetch_incidents_request(queries_dict: Optional[Dict[str, str]], max_fetch_dict: Dict,
+def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
                             fetch_start_datetime_dict: Dict[str, datetime],
                             fetch_job_polling_max_num_attempts: int) -> Dict[str, List[Dict[str, Any]]]:
     """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
 
     Args:
-        queries_dict (Optional[Dict[str, str]]): chosen log type queries dictionaries
-        max_fetch_dict (Dict): max incidents per fetch parameter per log type dictionary
+        queries_dict (QueryMap): chosen log type queries dictionaries
+        max_fetch_dict (MaxFetch): max incidents per fetch parameter per log type dictionary
         fetch_start_datetime_dict (Dict[str,datetime]): updated last fetch time per log type dictionary
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
 
@@ -14255,17 +14299,18 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     return incident_context
 
 
-def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
-                                  first_fetch: str, queries_dict: Optional[Dict[str, str]]) -> Dict[str, datetime]:
+def get_fetch_start_datetime_dict(last_fetch_dict: LastFetch,
+                                  first_fetch: str, queries_dict: QueryMap
+                                  ) -> Dict[str, datetime]:
     """calculate fetch start time for each log type query.
     - if last fetch time already exists for a log type, it will not be changed (only converted to datetime object).
     - if last fetch time does not exist for the log_type, it will be changed into first_fetch parameter (and converted to datetime object).
     - example: {'log_name':'2022-12-18T05:58:17'} --> {'log_name': datetime.datetime(2022, 12, 18, 5, 58, 17)}
 
     Args:
-        last_fetch_dict (Dict[str,str]): last fetch dictionary
+        last_fetch_dict (LastFetch): last fetch dictionary
         first_fetch (str): first fetch parameter
-        queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
+        queries_dict (QueryMap): queries per log type dictionary
 
     Returns:
         Dict[str,datetime]: log_type:datetime pairs dictionary
@@ -14294,7 +14339,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
     return fetch_start_datetime_dict
 
 
-def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
+def log_types_queries_to_dict(params: Dict[str, str]) -> QueryMap:
     """converts chosen log type queries from parameters to a queries dictionary.
     Example:
     for parameters: log_types=['X_log_type'], X_log_type_query='(example query for X_log_type)'
@@ -14306,7 +14351,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     Returns:
         Dict[str, str]: queries per log type dictionary
     """
-    queries_dict = {}
+    queries_dict = QueryMap()
     if log_types := params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
@@ -14318,8 +14363,8 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     return queries_dict
 
 
-def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str, str],
-                                last_id_dict: Dict[str, Dict]) -> Dict[str, Any]:
+def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: LastFetch,
+                                last_id_dict: LastIDs) -> Dict[str, Any]:
     """for each log type incident entries array, parse the raw incidents into context incidents.
     if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
 
@@ -14358,20 +14403,21 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
     return parsed_incident_entries_dict
 
 
-def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dict[str, str]],
-                    max_fetch_dict: Dict,
-                    fetch_job_polling_max_num_attempts: int) -> Tuple[Dict[str, str], Dict[str, str], List[Dict[str, list]]]:
+def fetch_incidents(last_run: LastRun, first_fetch: str,
+                    queries_dict: QueryMap, max_fetch_dict: MaxFetch,
+                    fetch_job_polling_max_num_attempts: int
+                    ) -> tuple[LastFetch, LastIDs, List[Dict[str, list]]]:
     """run one cycle of fetch incidents.
 
     Args:
-        last_run (Dict): contains last run information
+        last_run (LastMap): contains last run information
         first_fetch (str): first time to fetch from (First fetch timestamp parameter)
-        queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
-        max_fetch_dict (Dict): max incidents per fetch parameter per log type dictionary
+        queries_dict (QueryMap): queries per log type dictionary
+        max_fetch_dict (MaxFetch): max incidents per fetch parameter per log type dictionary
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
 
     Returns:
-        (Dict[str, str], Dict[str,str], List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
+        (LastFetch, LastIDs, List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
     """
     last_fetch_dict = last_run.get('last_fetch_dict', {})
     last_id_dict = last_run.get('last_id_dict', {})
@@ -14438,7 +14484,7 @@ def main():  # pragma: no cover
 
         # Fetch incidents
         elif command == 'fetch-incidents':
-            last_run = demisto.getLastRun()
+            last_run: LastRun = demisto.getLastRun()  # type: ignore
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
             configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
@@ -14453,8 +14499,10 @@ def main():  # pragma: no cover
                                                         max_fetch_dict=max_fetch_dict,
                                                         last_fetch_dict=last_fetch_dict)
 
-            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict,
-                                'max_fetch_dict': next_max_fetch_dict})
+            demisto.setLastRun(LastRun(
+                last_fetch_dict=last_fetch_dict,
+                last_id_dict=last_id_dict,
+                max_fetch_dict=next_max_fetch_dict))
             demisto.incidents(incident_entries_list)
 
         elif command == 'panorama' or command == 'pan-os':
