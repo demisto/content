@@ -31,7 +31,7 @@ def main():
     if len(fileInfos) < 1:
         return_error('No files were found for scanning, please check the entry IDs')
 
-    yaraRulesRaw = json.loads(args.get('yaraRules'))
+    yaraRulesRaw = args.get('yaraRules')
 
     for fileInfo in fileInfos:
         with open(fileInfo['path'], 'rb') as fp:
@@ -46,8 +46,8 @@ def main():
                 "Errors": []
             }
             try:
-                cRule = yara.compile(sources=yaraRulesRaw)
-            except Exception as err:
+                cRule = yara.compile(sources=json.loads(yaraRulesRaw))
+            except (Exception, TypeError, json.JSONDecodeError) as err:
                 thisMatch['HasError'] = True
                 thisMatch['Errors'].append(str(err))
                 entries.append(thisMatch)
