@@ -75,3 +75,14 @@ harfanglab-telemetry-processes hostname="DC-01" hash=3541d189d1bd3341a72769d43bf
 harfanglab-telemetry-processes hostname="DC-01" limit=5
 harfanglab-telemetry-processes hash=3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 limit=5
 harfanglab-telemetry-processes hostname="DC-01" from_date="2022-07-22T20:26:10" to_date="2022-07-22T20:26:20" limit=5
+harfanglab-telemetry-dns requested_name=download.windowsupdate.com hostname=webserver
+harfanglab-telemetry-authentication-windows limit=5 target_username=vagrant
+harfanglab-telemetry-process-graph process_uuid=37d378de-b558-4597-e820-009fa44c4c03
+
+harfanglab-whitelist-add target=all field=process.hashes.sha256 operator=eq value=dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2514 comment="Example of whitelist for all detection engines" case_insensitive=true
+harfanglab-whitelist-add-criterion id=2518 field=process.commandline operator=contains value=cmd.exe
+harfanglab-whitelist-search keyword=cmd.exe
+harfanglab-whitelist-delete id=2518
+
+harfanglab-api-call api_method=GET api_endpoint=/api/version
+!harfanglab-telemetry-authentication-users hostname=CL-Ep2-Win11 limit=4

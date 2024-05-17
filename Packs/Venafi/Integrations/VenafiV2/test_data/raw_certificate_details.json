@@ -1,0 +1,61 @@
+{
+    "Approver": [
+        "local:{Approver}"
+    ],
+    "CertificateAuthorityDN": "path/to/certificate",
+    "CertificateDetails": {
+        "AIACAIssuerURL": [
+            "https://test.certificates.com"
+        ],
+        "AIAKeyIdentifier": "key",
+        "CN": "CN",
+        "EnhancedKeyUsage": "Server Authentication, Client Authentication",
+        "Issuer": "Issuer",
+        "KeyAlgorithm": "RSA",
+        "KeySize": 2048,
+        "KeyUsage": "DigitalSignature, KeyEncipherment",
+        "OU": [],
+        "PublicKeyHash": "Hash",
+        "SKIKeyIdentifier": "Hash",
+        "Serial": "Serial_Number",
+        "SignatureAlgorithm": "sha256RSA",
+        "SignatureAlgorithmOID": "Signature",
+        "StoreAdded": "2024-03-18T15:33:35.0410982Z",
+        "Subject": "CN=test.certificates.com",
+        "SubjectAltNameDNS": [
+            "test.certificates.com"
+        ],
+        "SubjectAltNameEmail": [],
+        "SubjectAltNameIPAddress": [],
+        "SubjectAltNameOtherNameUPN": [],
+        "SubjectAltNameURI": [],
+        "Thumbprint": "Thumbprint",
+        "ValidFrom": "2024-02-02T14:46:46.0000000Z",
+        "ValidTo": "2025-02-02T14:46:46.0000000Z"
+    },
+    "Contact": [
+        "local:{Contact}"
+    ],
+    "CreatedBy": [
+        "test.certificates.com"
+    ],
+    "CreatedOn": "2024-03-18T16:35:00.7592811Z",
+    "DN": "path/to/certificate",
+    "Guid": "{certificate_details_guid}",
+    "ManagementType": "Enrollment",
+    "Name": "test.certificates.com",
+    "Origin": "test.certificates.com",
+    "ParentDn": "path/to/certificate",
+    "ProcessingDetails": {},
+    "RenewalDetails": {
+        "Subject": "test.certificates.com",
+        "SubjectAltNameDNS": [
+           "test.certificates.com"
+        ]
+    },
+    "SchemaClass": "X509 Server Certificate",
+    "ValidationDetails": {
+        "LastValidationStateUpdate": "2024-04-25T07:08:23.0000000Z",
+        "ValidationState": "Success"
+    }
+}
