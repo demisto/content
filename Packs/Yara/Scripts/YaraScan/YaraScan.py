@@ -31,7 +31,7 @@ def main():
     if len(fileInfos) < 1:
         return_error('No files were found for scanning, please check the entry IDs')
 
-    yaraRulesRaw = args.get('yaraRules')
+    yaraRulesRaw = json.loads(args.get('yaraRules'))
 
     for fileInfo in fileInfos:
         with open(fileInfo['path'], 'rb') as fp:
