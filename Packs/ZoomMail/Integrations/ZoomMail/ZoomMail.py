@@ -449,10 +449,6 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
         demisto.info("No new messages found, stopping fetch.")
         next_page_token = None
 
-    # If we dont have a token, we are fetching new messages and need to update the last fetch info
-    if next_page_token is None:
-        last_fetch_info["internalDate"] = now_epoch
-
     demisto.info(f"Found {len(incidents)} incidents to create and {len(messages) - len(incidents)} messages to skip.")
     demisto.debug(f"Last fetch info: {last_fetch_info}")
     demisto.setLastRun(
