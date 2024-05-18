@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $CI_COMMIT_BRANCH
+  CURRENT_BRANCH_NAME: test_move_all_ci_content
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: move_all_ci_content
+    ref: test_move_all_ci_content
     project: "${CI_PROJECT_NAMESPACE}/infra"
