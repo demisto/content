@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The output filename of the **rasterize-email** command was change to omit the 'RasterizeType' suffix. e.g. before: **Incidents.RasterizeType.PDF**, after: **Incidents.PDF**."}
