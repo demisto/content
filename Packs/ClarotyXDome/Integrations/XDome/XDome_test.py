@@ -272,7 +272,7 @@ def test_fetch_incidents(xdome_client_mock):
     from XDome import fetch_incidents
 
     next_run, incidents = fetch_incidents(
-        xdome_client_mock(), last_run={}, initial_fetch_time="1 day", alert_types=None, fetch_only_unresolved=True
+        xdome_client_mock(), last_run={}, initial_fetch_time="1 day", fetch_limit=1, alert_types=None, fetch_only_unresolved=True
     )
 
     mock_pair = DEVICE_ALERT_SUCCESS_RESPONSE["devices_alerts"][0]

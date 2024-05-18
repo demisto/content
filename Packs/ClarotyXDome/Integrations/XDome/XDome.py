@@ -23,6 +23,9 @@ MAX_REQUEST_LIMIT = 5000
 
 DEFAULT_REQUEST_LIMIT = 1000
 
+MAX_FETCH_LIMIT = 50_000
+DEFAULT_FETCH_LIMIT = 50_000
+
 DEVICE_ALERT_FIELDS = {
     "alert_assignees",
     "alert_category",
@@ -742,7 +745,9 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             initial_fetch_time = params.get('first_fetch').strip()
-            fetch_limit = int(params.get('max_fetch', '5_000_000'))
+            fetch_limit = params.get('max_fetch')
+            fetch_limit = int(fetch_limit) if fetch_limit is not None else DEFAULT_FETCH_LIMIT
+            fetch_limit = min(fetch_limit, MAX_FETCH_LIMIT)
             alert_types = params.get('alert_types')
             fetch_only_unresolved = params.get('fetch_only_unresolved')
             next_run, incidents = fetch_incidents(
