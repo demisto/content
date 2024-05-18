@@ -1,13 +1,11 @@
 # type: ignore[attr-defined]
 # pylint: disable=no-member
-import copy
 import json
 import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import (get_packs_ids_to_upload, get_updated_private_packs, is_private_packs_updated,
-                                            get_packs_ids_to_upload_and_update)
+from Tests.Marketplace.upload_packs import (get_packs_ids_to_upload, get_packs_ids_to_upload_and_update)
 
 from Tests.Marketplace.marketplace_services import Pack
 from Tests.Marketplace.marketplace_constants import Metadata
@@ -369,7 +367,7 @@ class TestCleanPacks:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
 
-        skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
+        skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path",
                                                    storage_bucket=dummy_storage_bucket,
                                                    storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
                                                    content_packs=[])
@@ -399,7 +397,7 @@ class TestCleanPacks:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = "dummy_bucket"
 
-        skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
+        skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path",
                                                    storage_bucket=dummy_storage_bucket,
                                                    storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
                                                    content_packs=[])
@@ -432,12 +430,10 @@ class TestCleanPacks:
 
         index_folder_path = "dummy_index_path"
         public_pack = "public_pack"
-        private_pack = "private_pack"
         invalid_pack = "invalid_pack"
 
         dirs = scan_dir([
             (os.path.join(index_folder_path, public_pack), public_pack, True),
-            (os.path.join(index_folder_path, private_pack), private_pack, True),
             (os.path.join(index_folder_path, invalid_pack), invalid_pack, True)
         ])
 
@@ -446,11 +442,8 @@ class TestCleanPacks:
         mocker.patch('Tests.Marketplace.upload_packs.shutil.rmtree')
         mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
 
-        private_packs = [{'id': private_pack, 'price': 120}]
-
         skipped_cleanup = clean_non_existing_packs(
             index_folder_path=index_folder_path,
-            private_packs=private_packs,
             storage_bucket=dummy_storage_bucket,
             storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
             content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack",
@@ -531,89 +524,3 @@ class TestUpdatedPrivatePacks:
     def get_index_folder_path():
         index_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
         return index_json_path
-
-    def test_content_commit_hash_diff(self):
-        """
-         Scenario: as part of upload packs flow, we want to find all private packs that were updated during current
-         build run.
-
-         Given
-         - valid public index json
-         - valid 3 metadata of private packs
-
-         When
-         - 2 packs were not updated during current build run
-         - 1 pack was updated during current build run - has (in metadata file) an updated different contentCommitHash
-
-         Then
-         - Ensure that only the last pack was recognized as updated private pack
-         """
-
-        index_folder_path = self.get_index_folder_path()
-        private_packs = []
-
-        # index json has no contentCommitHash for this pack
-        metadata_no_commit_hash = self.get_pack_metadata()
-        metadata_no_commit_hash.update({"contentCommitHash": ""})
-        metadata_no_commit_hash.update({"id": "first_non_updated_pack"})
-        private_packs.append(metadata_no_commit_hash)
-
-        # index json has the same contentCommitHash for this pack (nothing was updated)
-        metadata_not_updated_commit_hash = self.get_pack_metadata()
-        metadata_not_updated_commit_hash.update({"contentCommitHash": "111"})
-        metadata_not_updated_commit_hash.update({"id": "second_non_updated_pack"})
-        private_packs.append(metadata_not_updated_commit_hash)
-
-        # index json has an old contentCommitHash for this pack (should be recognize as an updated pack)
-        metadata_updated_commit_hash = self.get_pack_metadata()
-        metadata_updated_commit_hash.update({"contentCommitHash": "222"})
-        metadata_updated_commit_hash.update({"id": "updated_pack"})
-        private_packs.append(metadata_updated_commit_hash)
-
-        updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
-        assert len(updated_private_packs) == 1
-        assert updated_private_packs[0] == "updated_pack"
-        assert updated_private_packs[0] != "first_non_updated_pack"
-        assert updated_private_packs[0] != "second_non_updated_pack"
-
-    def test_is_private_packs_updated(self, mocker):
-        """
-         Scenario: as part of upload packs flow, we want to check if there is at least one private pack was updated
-         by comparing "content commit hash" in the public index and in the private index files.
-
-         Given
-         - valid public index json
-         - valid private index json
-
-         When
-         - first check - there is no private pack that changed.
-         - second check - private pack was deleted
-         - third check - one commit hash was changed.
-         - forth check - private pack was added
-
-         Then
-         - Ensure that the function recognises successfully the updated private pack.
-         """
-        index_folder_path = self.get_index_folder_path()
-        index_file_path = os.path.join(index_folder_path, "index.json")
-        with open(index_file_path) as public_index_json_file:
-            public_index_json = json.load(public_index_json_file)
-
-        private_index_json = copy.deepcopy(public_index_json)
-        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
-        assert not is_private_packs_updated(public_index_json, index_file_path)
-
-        # private pack was deleted
-        del private_index_json.get("packs")[0]
-        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
-        assert is_private_packs_updated(public_index_json, index_file_path)
-
-        # changed content commit hash of one private pack
-        private_index_json.get("packs").append({"id": "first_non_updated_pack", "contentCommitHash": "111"})
-        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
-        assert is_private_packs_updated(public_index_json, index_file_path)
-
-        # private pack was added
-        private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
-        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
-        assert is_private_packs_updated(public_index_json, index_file_path)
