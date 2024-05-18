@@ -626,7 +626,12 @@ def set_device_alert_relations_command(client: Client, args: dict) -> CommandRes
 
 
 def fetch_incidents(
-    client: Client, last_run: Dict, initial_fetch_time: str, fetch_limit: int, alert_types: Optional[List[str]], fetch_only_unresolved: bool
+    client: Client,
+    last_run: Dict,
+    initial_fetch_time: str,
+    fetch_limit: int,
+    alert_types: Optional[List[str]],
+    fetch_only_unresolved: bool,
 ):
     """This function will execute each interval (default is 1 minute)"""
     start_time = last_run.get("last_fetch", initial_fetch_time)
