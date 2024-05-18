@@ -1079,7 +1079,7 @@ class TestFetchIncidents(unittest.TestCase):
         # Verify if nextPageToken is handled correctly
         calls = mock_set_last_run.call_args_list
         expected_call = {
-            "last_fetch_info": {"internalDate": 1714987142.591, "ids": ["123"]},
+            "last_fetch_info": {"internalDate": 1622440000, "ids": []},
             "next_page_token": "abc123",
         }
         # Check that setLastRun was called correctly

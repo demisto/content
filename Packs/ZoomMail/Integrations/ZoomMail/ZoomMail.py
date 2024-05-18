@@ -15,6 +15,7 @@ from email import encoders
 from collections.abc import Callable
 
 ZOOM_MAIL_COMMAND_PREFIX = "zoom-mail"
+DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class ZoomMailClient(BaseClient):
@@ -354,6 +355,12 @@ def the_testing_module(client: ZoomMailClient, params: dict) -> str:
     return "ok"
 
 
+def convert_to_utc(epoch_time: float) -> str:
+    """Convert epoch time to UTC format string."""
+    dt = datetime.fromtimestamp(epoch_time, tz=timezone.utc)
+    return dt.strftime(DATE_TIME_FORMAT)
+
+
 def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     """
     Fetches email messages from ZoomMail API and creates incidents based on the specified criteria.
@@ -372,7 +379,9 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     last_run = demisto.getLastRun()
     last_fetch_info = last_run.get("last_fetch_info", {"internalDate": 0, "ids": []})
     last_page_fetch_token = last_run.get("next_page_token")
-    last_fetched_ids = last_fetch_info.get("ids", [])
+
+    now_epoch = datetime.now().timestamp()
+    now_utc = convert_to_utc(now_epoch)
 
     if not last_fetch_info["internalDate"]:
         first_fetch_dt = parse(first_fetch_time)
@@ -383,7 +392,9 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
     incidents: list[dict[str, Any]] = []
 
-    query = f"{fetch_query} after:{int(last_fetch_info['internalDate'])}"
+    last_fetch_time_utc = convert_to_utc(last_fetch_info["internalDate"])
+    query = f"{fetch_query} after:{last_fetch_time_utc} before:{now_utc}"
+
     if last_page_fetch_token:
         demisto.info(f"Fetching additional messages from previous fetch run, {last_page_fetch_token}")
         messages_response = client.list_emails(
@@ -417,31 +428,30 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
         # Check if it's a new message, and if it's either all messages (fetch_threads is False) or only thread starters
         if (internal_date > last_fetch_info["internalDate"] or (
-            internal_date == last_fetch_info["internalDate"] and message_id not in last_fetched_ids
+            internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"]
         )) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
-            message_dates.append(internal_date)
+            if not last_page_fetch_token:
+                message_dates.append(internal_date)
 
-    if message_dates:
+    if message_dates and not next_page_token:
         new_internal_date = max(message_dates)
-        newly_fetched_ids = [
-            msg["id"] for msg in messages
+        new_ids = [
+            msg["id"] for msg in messages if msg["internalDate"] == new_internal_date
         ]
 
-        last_fetched_ids.extend(newly_fetched_ids)
-
-        last_fetch_info = {
-            "internalDate": new_internal_date,
-            "ids": last_fetched_ids
-        }
+        last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
 
     # If we don't collect any new messages, but we have a next fetch token,
     # we are fetching old messages and need to stop.
-
     if len(incidents) == 0 and next_page_token:
         demisto.info("No new messages found, stopping fetch.")
         next_page_token = None
+
+    # If we dont have a token, we are fetching new messages and need to update the last fetch info
+    if next_page_token is None:
+        last_fetch_info["internalDate"] = now_epoch
 
     demisto.info(f"Found {len(incidents)} incidents to create and {len(messages) - len(incidents)} messages to skip.")
     demisto.debug(f"Last fetch info: {last_fetch_info}")
