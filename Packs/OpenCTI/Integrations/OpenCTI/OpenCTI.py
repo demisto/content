@@ -157,7 +157,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
             raise DemistoException("Invalid score was provided.")
 
     elif start or end:
-        scores = [str(i) for i in range(start or 0, (end or 100) + 1)]  # type:ignore
+        scores = [str(i) for i in range(start, end + 1)]  # type:ignore
 
     raw_response = get_indicators(
         client=client,
