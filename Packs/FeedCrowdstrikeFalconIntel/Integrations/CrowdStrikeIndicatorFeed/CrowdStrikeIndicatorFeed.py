@@ -76,6 +76,10 @@ INDICATOR_TO_CROWDSTRIKE_RELATION_DICT: Dict[str, Any] = {
 }
 CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families', 'vulnerabilities', 'relations']
 
+"""
+`FETCH_BY_FIELDS` is used to dynamically retrieve indicators based on the 'Last Updated'/'Published Date' indicator fields,
+according to the `fetch_by_field` parameter. Both of them considered valid last_run values.
+"""
 FETCH_BY_FIELDS = {
     "Last Updated": {
         "field_name": "last_updated",
@@ -182,7 +186,7 @@ class Client(CrowdStrikeClient):
         to fetch by (`Last Updated`, `Published Date`).
         The flow for each option is slightly different and documented where needed.
         Different values for said options are set in the `FETCH_BY_FIELDS` constant,
-        which is used in this function wherever the differentiation between the two options is needed.
+        which is used dynamically in this function wherever the differentiation between the two options is needed.
 
         Args:
             limit(int): number of indicators to return
