@@ -429,19 +429,19 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
         # Check if it's a new message, and if it's either all messages (fetch_threads is False) or only thread starters
         if (internal_date > last_fetch_info["internalDate"] or (
             internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"]
-        )) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
+        ) or last_page_fetch_token) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
             if not last_page_fetch_token:
                 message_dates.append(internal_date)
 
-    if message_dates and not next_page_token:
+    if message_dates:
         new_internal_date = max(message_dates)
         new_ids = [
             msg["id"] for msg in messages if msg["internalDate"] == new_internal_date
         ]
-
-        last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
+        if new_internal_date > last_fetch_info["internalDate"]:
+            last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
 
     # If we don't collect any new messages, but we have a next fetch token,
     # we are fetching old messages and need to stop.
