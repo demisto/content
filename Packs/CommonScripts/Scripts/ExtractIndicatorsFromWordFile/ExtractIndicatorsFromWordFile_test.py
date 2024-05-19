@@ -8,28 +8,36 @@ expected_partial_all_data = 'Lorem ipsum dolor sit amet, an quas nostro posidoni
 
 
 @pytest.mark.parametrize('file_name,file_path', [
-    ('docwithindicators.doc', 'test_data/docwithindicators'),
-    ('docxwithindicators.docx', 'test_data/docxwithindicators')
+    ('docwithindicators.doc', 'test_data/docwithindicators.doc'),
+    ('docxwithindicators.docx', 'test_data/docxwithindicators.docx')
 ])
 def test_parse_word(file_name, file_path, request):
-    basename = os.path.basename(file_path)
-    shutil.copy(file_path, os.getcwd())
+    # Ensure the file_path is correct
+    src_path = os.path.abspath(file_path)
+    dst_path = os.path.join(os.getcwd(), file_name)
+
+    # Copy the file to the current working directory
+    shutil.copy(src_path, dst_path)
 
     def cleanup():
         try:
-            os.remove(basename + ".docx")
-            os.remove(basename)
+            os.remove(dst_path)
         except OSError:
             pass
 
     request.addfinalizer(cleanup)
+
+    # Ensure the current working directory is correct
     if os.getcwd().endswith('test_data'):
         os.chdir('..')
+
     parser = WordParser()
-    parser.get_file_details = lambda: None
+    parser.get_file_details = lambda: None  # Mock the method if needed
     parser.file_name = file_name
-    parser.file_path = basename
+    parser.file_path = dst_path
     parser.parse_word()
+
+    # Ensure expected_partial_all_data is defined and imported
     assert (expected_partial_all_data in parser.all_data)
 
 
