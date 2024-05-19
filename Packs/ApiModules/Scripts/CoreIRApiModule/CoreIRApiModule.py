@@ -659,7 +659,7 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201, 500,),
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -676,9 +676,13 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/remove/',
             json_data={'request_data': request_data},
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
-        return reply.get('reply')
+        res = reply.get('reply')
+        if isinstance(res, dict) and res.get('err_code') == 500:
+            raise DemistoException(f"{res.get('err_msg')}\nThe requested hash might not be in the blocklist.")
+        return res
 
     def allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
@@ -2312,8 +2316,15 @@ def restore_file_command(client, args):
     )
 
 
+def validate_sha256_hashes(hash_list):
+    for hash_value in hash_list:
+        if detect_file_indicator_type(hash_value) != 'sha256':
+            raise DemistoException(f'The provided hash {hash_value} is not a valid sha256.')
+
+
 def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
@@ -2346,6 +2357,7 @@ def blocklist_files_command(client, args):
 
 def remove_blocklist_files_command(client: CoreClient, args: Dict) -> CommandResults:
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
