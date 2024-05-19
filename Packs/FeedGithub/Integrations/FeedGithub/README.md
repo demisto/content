@@ -1,0 +1,58 @@
+This is the Feed GitHub integration for getting started with your feed integration.
+This integration was integrated and tested with version xx of Github Feed.
+
+## Configure Github Feed on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Github Feed.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Fetch indicators |  | False |
+    | Server URL | The URL to the github repository | False |
+    | Owner | Username of the repository owner | True |
+    | Repository / Path to fetch | The repository name | True |
+    | Feed type | Predefined list of indicator types | True |
+    | Head branch name/sha | The name of the main branch to which you would like to compare | True |
+    | files extensions To Fetch | Choosing an extension for the file names you want to target | True |
+    | API Token |  | False |
+    | since commit SHA |  | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+    | Source Reliability | Reliability of the source providing the intelligence data | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Feed Fetch Interval |  | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    |  |  | False |
+    |  |  | False |
+    | Tags | Supports CSV values. | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### github-get-indicators
+
+***
+Gets indicators from the feed.
+
+#### Base Command
+
+`github-get-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| since |  Default is 7 days. | Optional | 
+| until |  | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
