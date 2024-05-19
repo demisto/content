@@ -70,6 +70,7 @@ class AllowedAuthMethods(enum.Enum):
     PASSWORD = "password"
     USER_CERTIFICATE = "user_certificate"
     TWO_FACTOR = 'password_with_user_certificate'
+    EMPTY = 'empty'
 
 
 class AllowedClientTypes(enum.Enum):

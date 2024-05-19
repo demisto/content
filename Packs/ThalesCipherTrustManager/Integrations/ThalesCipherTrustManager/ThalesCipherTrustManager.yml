@@ -143,7 +143,7 @@ script:
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page. defaults to 50 in case only page was provided.
+      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
       required: false
       secret: false
       default: false
@@ -252,7 +252,108 @@ script:
   - deprecated: false
     description: ''
     name: ciphertrust-users-list
-    arguments: []
+    arguments:
+    - name: name
+      isArray: false
+      description: User’s name
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: If provided, get the user with the specified id
+      required: false
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: username
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: false
+      description: User’s email
+      required: false
+      secret: false
+      default: false
+    - name: groups
+      isArray: true
+      description: Filter by users in the given group name. Provide multiple groups  to get users in all of those groups. Using nil as the group name will return users that are not part of any group.
+      required: false
+      secret: false
+      default: false
+    - name: exclude_groups
+      isArray: true
+      description: User associated with certain group will be excluded
+      required: false
+      secret: false
+      default: false
+    - name: auth_domain_name
+      isArray: false
+      description: Filter by user’s auth domain
+      required: false
+      secret: false
+      default: false
+    - name: account_expired
+      isArray: false
+      description: Filter the expired users (Boolean)
+      required: false
+      secret: false
+      default: false
+    - name: allowed_auth_methods
+      isArray: true
+      description: Filter by the authentication method allowed to the users. It is a list of values. specified to get users to whom no authentication method is allowed.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - password
+      - user_certificate
+      - password_with_user_certificate
+      auto: PREDEFINED
+    - name: allowed_client_types
+      isArray: true
+      description: allowed_client_types
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - unregistered
+      - public
+      - confidential
+      auto: PREDEFINED
+    - name: password_policy
+      isArray: false
+      description: Filter based on assigned password policy
+      required: false
+      secret: false
+      default: false
+    - name: return_groups
+      isArray: false
+      description: If set to ‘true’ it will return the group’s name in which user is associated, Boolean
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The max number of resources to return. defaults to 50
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
     outputs: []
   script: '-'
   type: python
