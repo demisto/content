@@ -79,7 +79,7 @@ def test_get_commit_files(mocker):
     current_repo_head_sha = 'ad3e0503765479e9ee09bac5dee726eb918b9ebd'
     mocker.patch.object(client, 'get_files_between_commits', return_value=(all_commits_files, current_repo_head_sha))
     relevant_files, current_repo_head_sha = get_commits_files(client, base, head, is_first_fetch)
-    assert relevant_files == util_load_json('test_data/relevent-files.json')
+    assert relevant_files == util_load_json('test_data/relevant-files.json')
 
 
 def test_filter_out_files_by_status():
