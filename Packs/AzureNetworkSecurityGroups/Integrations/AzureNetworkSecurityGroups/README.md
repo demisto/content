@@ -6,20 +6,20 @@ This integration was integrated and tested with version 2022-09-01 of Azure Netw
 2. Search for Azure Network Security Groups.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                      | **Description** | **Required** |
-    |------------------------------------| --- | --- |
-    | Application ID                     |  | False |
+    | **Parameter**                      | **Description**                                                                                                                                                                                    | **Required** |
+    |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+    | Application ID                     |                                                                                                                                                                                                    | False |
      | Default Subscription ID            | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
-    | Default Resource Group Name        |There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.  | True |
-    | Azure AD endpoint                  | Azure AD endpoint associated with a national cloud. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings          |  | False |
-    | Authentication Type                | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
-    | Tenant ID                          |  | False |
-    | Client Secret                      |  | False |
-    | Application redirect URI           |  | False |
-    | Authorization code                 | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. |False |
+    | Default Resource Group Name        | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
+    | Azure AD endpoint                  | Azure AD endpoint associated with a national cloud.                                                                                                                                                | False |
+    | Trust any certificate (not secure) |                                                                                                                                                                                                    | False |
+    | Use system proxy settings          |                                                                                                                                                                                                    | False |
+    | Authentication Type                | Type of authentication - can be Authorization Code flow \(recommended\), Client Credentials, Device Code Flow, or Azure Managed Identities.                                                        | True |
+    | Tenant ID                          |                                                                                                                                                                                                    | False |
+    | Client Secret                      |                                                                                                                                                                                                    | False |
+    | Application redirect URI           |                                                                                                                                                                                                    | False |
+    | Authorization code                 | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section.                                                                                                | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                                                                                     |False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -682,7 +682,7 @@ Get a specific rule.
 
 ### azure-nsg-generate-login-url
 ***
-Generate the login url used for Authorization code flow.
+Generate the login url used for Authorization code flow or Client Credentials flow.
 
 #### Base Command
 
