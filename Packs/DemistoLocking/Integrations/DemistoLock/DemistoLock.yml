@@ -7,7 +7,7 @@ sectionOrder:
 name: Demisto Lock Polling
 display: Demisto Lock Polling
 category: Utilities
-description: Locking mechanism that prevents concurrent execution of different tasks
+description: Locking mechanism that prevents concurrent execution of different tasks.
 configuration:
 - display: Default timeout (seconds) for wait on locks to be released
   name: timeout
@@ -33,9 +33,9 @@ script:
     arguments:
     - name: name
       default: true
-      description: Name of lock. When omitted, name is set to Default
+      description: Name of lock. When omitted, name is set to Default.
     - name: info
-      description: Additional information to provide for the lock instance
+      description: Additional information to provide for the lock instance.
     - name: timeout
       description: Timeout (seconds) for wait on lock to be freed
     - name: guid
@@ -49,15 +49,17 @@ script:
     arguments:
     - name: name
       default: true
-      description: Name of lock to release. When omitted, name is set to Default
-    description: Release a lock
+      description: Name of lock to release. When omitted, name is set to Default.
+    description: Release a lock.
   - name: demisto-lock-info
     arguments:
     - name: name
       default: true
-      description: Specific lock to show info for. If not specified, shows info for all locks
-    description: Show information on locks
+      description: Specific lock to show info for. If not specified, shows info for all locks.
+    description: Show information on locks.
   - name: demisto-lock-release-all
     arguments: []
-    description: Release all locks
+    description: Release all locks.
+marketplaces:
+- xsoar
 fromversion: 5.0.0

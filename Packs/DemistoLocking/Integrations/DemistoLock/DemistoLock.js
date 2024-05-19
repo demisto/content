@@ -49,6 +49,12 @@ switch (command) {
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
             // check if the process already holds the lock
             [lock, version] = getLock();
+
+            if (typeof version === 'object') {
+                version = JSON.stringify(version)
+            }
+            logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
+
             if (lock.guid === guid) {
                 var md = '### Demisto Locking Mechanism\n';
                 md += 'Lock acquired successfully\n';
@@ -109,6 +115,7 @@ switch (command) {
         }
 
     case 'demisto-lock-release':
+        logDebug('Releasing lock lockName: ' + lockName);
         if(sync)   {
             mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
         } else {
@@ -116,6 +123,9 @@ switch (command) {
             delete integrationContext[lockName];
             setVersionedIntegrationContext(integrationContext, sync);
         }
+        [lock, version] = getLock();
+        logDebug('Current lock is: ' + JSON.stringify(lock) + ', version: ' + JSON.stringify(version));
+
 
         var md = '### Demisto Locking Mechanism\n';
         md += 'Lock released successfully';

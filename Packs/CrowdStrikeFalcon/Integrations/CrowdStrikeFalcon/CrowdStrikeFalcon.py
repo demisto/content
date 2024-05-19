@@ -240,10 +240,10 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
 
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                     'behaviors.technique', 'device.hostname']
+                                     'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
-                                    'tags', 'hosts.hostname']
+                                    'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -295,6 +295,29 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 ''' HELPER FUNCTIONS '''
 
 
+def error_handler(res):
+    res_json = res.json()
+    reason = res.reason
+    demisto.debug(f'CrowdStrike Falcon error handler {res.status_code=} {reason=}')
+    resources = res_json.get('resources', {})
+    extracted_error_message = ''
+    if resources:
+        if isinstance(resources, list):
+            extracted_error_message += f'\n{str(resources)}'
+        else:
+            for host_id, resource in resources.items():
+                errors = resource.get('errors', []) if isinstance(resource, dict) else ''
+                if errors:
+                    error_message = errors[0].get('message')
+                    extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+    elif res_json.get('errors') and not extracted_error_message:
+        errors = res_json.get('errors', [])
+        for error in errors:
+            extracted_error_message += f"\n{error.get('message')}"
+    reason += extracted_error_message
+    raise DemistoException(f'Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}')
+
+
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
                  get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
@@ -340,79 +363,70 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
-    url = SERVER + url_suffix
 
     headers['User-Agent'] = 'PANW-XSOAR'
+    int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
+
+    # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
+    valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
+    # Handling a case when we want to return an entry for 404 status code.
+    if status_code:
+        # To cover the condition when status_code is a list of status codes
+        if isinstance(status_code, list):
+            valid_status_codes = valid_status_codes + status_code
+        else:
+            valid_status_codes.append(status_code)
 
     try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            params=params,
-            data=data,
+        res = generic_http_request(
+            method=method,
+            server_url=SERVER,
             headers=headers,
+            url_suffix=url_suffix,
+            data=data,
             files=files,
-            json=json,
-            timeout=timeout,
+            params=params,
+            resp_type='response',
+            verify=USE_SSL,
+            error_handler=error_handler,
+            json_data=json,
+            timeout=int_timeout,
+            ok_codes=valid_status_codes
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
-        valid_status_codes = {200, 201, 202, 204}
-        # Handling a case when we want to return an entry for 404 status code.
-        if status_code:
-            # To cover the condition when status_code is a list of status codes
-            if isinstance(status_code, list):
-                valid_status_codes.update(status_code)
-            else:
-                valid_status_codes.add(status_code)
+        # removing 401,403,429 status codes, now we want to generate a new token and try again
+        valid_status_codes.remove(401)
+        valid_status_codes.remove(403)
+        valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
-            res_json = res.json()
-            reason = res.reason
-            resources = res_json.get('resources', {})
-            extracted_error_message = ''
-            if resources:
-                if isinstance(resources, list):
-                    extracted_error_message += f'\n{str(resources)}'
-                else:
-                    for host_id, resource in resources.items():
-                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
-                        if errors:
-                            error_message = errors[0].get('message')
-                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors') and not extracted_error_message:
-                errors = res_json.get('errors', [])
-                for error in errors:
-                    extracted_error_message += f"\n{error.get('message')}"
-            reason += extracted_error_message
-            err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
-                code=res.status_code,
-                reason=reason
-            )
             # try to create a new token
-            if res.status_code in (401, 403) and get_token_flag:
-                LOG(err_msg)
+            if res.status_code in (401, 403, 429) and get_token_flag:
+                demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
-                return http_request(
+                demisto.debug('calling generic_http_request with retries=5 and status_list_to_retry=[429]')
+                res = generic_http_request(
                     method=method,
-                    url_suffix=url_suffix,
-                    params=params,
-                    data=data,
+                    server_url=SERVER,
                     headers=headers,
+                    url_suffix=url_suffix,
+                    data=data,
                     files=files,
-                    json=json,
-                    safe=safe,
-                    get_token_flag=False,
-                    status_code=status_code,
-                    no_json=no_json,
-                    timeout=timeout,
+                    params=params,
+                    retries=5,
+                    status_list_to_retry=[429],
+                    resp_type='response',
+                    error_handler=error_handler,
+                    json_data=json,
+                    timeout=int_timeout,
+                    ok_codes=valid_status_codes
                 )
+                return res if no_json else res.json()
             elif safe:
                 return None
-            raise DemistoException(err_msg)
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -1241,15 +1255,19 @@ def get_token(new_token=False):
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
         passed_mins = get_passed_mins(now, ctx.get('time'))
+        demisto.debug(f'{passed_mins=}')
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
+            demisto.debug('token expired')
             auth_token = get_token_request()
             demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
         else:
             # token hasn't expired
+            demisto.debug("token hasn't expired")
             auth_token = ctx.get('auth_token')
     else:
         # there is no token
+        demisto.debug('there is no token')
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
     return auth_token
@@ -1275,6 +1293,7 @@ def get_token_request():
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
         raise Exception(err_msg)
+    demisto.debug(f'{token_res.get("expires_in")=}')
     return token_res.get('access_token')
 
 
@@ -2269,9 +2288,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data = mirrored_data_list[0]
 
     mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+    demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    demisto.debug(f'After set_updated_object {updated_object=}')
     return mirrored_data, updated_object
 
 
@@ -2710,7 +2731,7 @@ def fetch_incidents():
                                                                id_field='name',
                                                                date_format=DETECTION_DATE_FORMAT,
                                                                new_offset=detections_offset)
-        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(detections) if detections else 0}")
+        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         incidents_offset: int = current_fetch_info_incidents.get('offset') or 0
