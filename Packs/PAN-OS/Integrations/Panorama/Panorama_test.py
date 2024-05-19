@@ -2,6 +2,7 @@ import json
 from defusedxml import ElementTree
 import pytest
 import requests_mock
+from pytest_mock import MockerFixture
 
 import demistomock as demisto
 from unittest.mock import patch, MagicMock
@@ -7435,3 +7436,16 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
+
+
+def test_fetch_incidents_correlation(mocker: MockerFixture):
+    '''
+    Given:
+        - 
+    When:
+        - 
+    Then:
+        - 
+    '''
+    load_json('test_data/corr_logs.json')
+    mocker.patch()
