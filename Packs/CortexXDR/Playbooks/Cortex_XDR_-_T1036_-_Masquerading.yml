@@ -1,0 +1,1843 @@
+id: Cortex XDR - T1036 - Masquerading
+version: -1
+name: Cortex XDR - T1036 - Masquerading
+description: |-
+  This playbook handles masquerading alerts based on the MITRE T1036 technique.
+  An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
+
+  **Attacker's Goals:**
+
+  An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
+
+  **Investigative Actions:**
+
+  Investigate the executed process image and verify if it is malicious using:
+
+  * XDR trusted signers
+  * VT trusted signers
+  * VT detection rate
+  * NSRL DB
+
+  **Response Actions**
+
+  The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+  * Auto block indicators
+  * Auto file quarantine
+  * Manual endpoint isolation
+
+  When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication, is executed.
+
+  This phase will execute the following containment actions:
+
+  * Manual block indicators
+  * Manual file quarantine
+  * Auto endpoint isolation
+  * Auto process termination
+
+  External resources:
+
+  [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
+
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7f5c6709-7120-4524-80c5-659ff670cd95
+    type: start
+    task:
+      id: 7f5c6709-7120-4524-80c5-659ff670cd95
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 188910d3-a21e-49eb-8647-c48b7390d613
+    type: title
+    task:
+      id: 188910d3-a21e-49eb-8647-c48b7390d613
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 322d76a5-aff3-482d-80da-8caed305bf00
+    type: title
+    task:
+      id: 322d76a5-aff3-482d-80da-8caed305bf00
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+      - "115"
+      - "116"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f1720d5a-2a32-4145-8c37-dbc129d0a637
+    type: title
+    task:
+      id: f1720d5a-2a32-4145-8c37-dbc129d0a637
+      version: -1
+      name: 'Findings '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d4c8a1aa-59aa-4bc3-889e-8c7908453eb2
+    type: condition
+    task:
+      id: d4c8a1aa-59aa-4bc3-889e-8c7908453eb2
+      version: -1
+      name: Manuel Review - Should continue to investigate?
+      description: Whether to continue the investigation in case the verdict is a possible false positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Continue Investigation:
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cce9baed-7ba7-4651-897d-4f6be8cd397f
+    type: title
+    task:
+      id: cce9baed-7ba7-4651-897d-4f6be8cd397f
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "101"
+      - "103"
+      - "104"
+      - "102"
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 1ad0d067-c67d-4882-8938-e4865797ee43
+    type: condition
+    task:
+      id: 1ad0d067-c67d-4882-8938-e4865797ee43
+      version: -1
+      name: Are there investigation findings?
+      description: Checks if there are results for the Endpoint Investigation Plan.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "112"
+      "No":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "No"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 4c08e773-0dd7-4f49-81fb-484808490cac
+    type: title
+    task:
+      id: 4c08e773-0dd7-4f49-81fb-484808490cac
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 4230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 90c06611-956b-43b3-8532-aa1bb000c576
+    type: title
+    task:
+      id: 90c06611-956b-43b3-8532-aa1bb000c576
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 1b7db857-deca-4bab-889f-c408711864b1
+    type: condition
+    task:
+      id: 1b7db857-deca-4bab-889f-c408711864b1
+      version: -1
+      name: Got possible verdict?
+      description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "7"
+      Possible False Positive:
+      - "118"
+      True Positive:
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: VTFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: malicious
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: FileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: suspicious
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    - label: Possible False Positive
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: VTFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: malicious
+          ignorecase: true
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: NSRLFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: isNotNSRL
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: VTFileSigners
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: XDRFileSigners
+                      iscontext: true
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: unTrusted
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: False Positive
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: VTFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: benign
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSRLFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: isNSRL
+          ignorecase: true
+        - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: VTFileSigners
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: XDRFileSigners
+                      iscontext: true
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: unTrusted
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: bd77e209-ba25-4b42-8105-570d9ffe2374
+    type: title
+    task:
+      id: bd77e209-ba25-4b42-8105-570d9ffe2374
+      version: -1
+      name: Enrichment & Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 84ebd375-1e7b-438a-82de-9b21a46512ff
+    type: regular
+    task:
+      id: 84ebd375-1e7b-438a-82de-9b21a46512ff
+      version: -1
+      name: Set Incident Severity to High
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 5332c7d6-f2f8-46ab-8c43-25cd94169a43
+    type: playbook
+    task:
+      id: 5332c7d6-f2f8-46ab-8c43-25cd94169a43
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      UseReputationCommand:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: c9fcea4a-a536-4c2e-8df0-b05fcb369d28
+    type: title
+    task:
+      id: c9fcea4a-a536-4c2e-8df0-b05fcb369d28
+      version: -1
+      name: Disable Account
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "107"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 3f8be055-e7bc-498b-8df9-798bcafe72bd
+    type: title
+    task:
+      id: 3f8be055-e7bc-498b-8df9-798bcafe72bd
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: fdfa166c-1e1f-4f11-812c-9b8bfae5aeec
+    type: title
+    task:
+      id: fdfa166c-1e1f-4f11-812c-9b8bfae5aeec
+      version: -1
+      name: Isolate Device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: f47843c3-e56b-44c1-8f8a-42ba582ca624
+    type: title
+    task:
+      id: f47843c3-e56b-44c1-8f8a-42ba582ca624
+      version: -1
+      name: Quarantine File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 7d1695db-2c53-4ce5-86b8-05fa2804e9d6
+    type: title
+    task:
+      id: 7d1695db-2c53-4ce5-86b8-05fa2804e9d6
+      version: -1
+      name: Clear User Sessions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: f1c4346e-4cad-4b2a-8bcc-cbc0993ad5f5
+    type: playbook
+    task:
+      id: f1c4346e-4cad-4b2a-8bcc-cbc0993ad5f5
+      version: -1
+      name: Block Account - Generic v2
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+        * SailPoint
+        * PingOne
+        * AWS IAM
+        * Clarizen IAM
+        * Envoy IAM
+        * ExceedLMS IAM
+        * Okta
+        * Microsoft Graph User (Azure Active Directory Users)
+        * Google Workspace Admin
+        * Slack IAM
+        * ServiceNow IAM
+        * Prisma Cloud IAM
+        * Zoom IAM
+        * Atlassian IAM
+        * GitHub IAM.
+      playbookName: Block Account - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      Tag:
+        simple: Bad Account
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: inputs.EndpointID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 84d425f2-9e70-4b01-876f-a66cd7f371a3
+    type: playbook
+    task:
+      id: 84d425f2-9e70-4b01-876f-a66cd7f371a3
+      version: -1
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      Endpoint_hostname:
+        complex:
+          root: inputs.EndpointID
+      Endpoint_id:
+        complex:
+          root: inputs.EndpointID
+      Endpoint_ip:
+        complex:
+          root: inputs.EndpointID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: b44fc011-4ac2-4a99-8a1d-adde453d9711
+    type: playbook
+    task:
+      id: b44fc011-4ac2-4a99-8a1d-adde453d9711
+      version: -1
+      name: Cortex XDR - Quarantine File v2
+      description: "This playbook accepts \"file path\", \"file hash\" and \"endpoint id\" to quarantine a selected file and wait until the action is done. All 3 inputs are required to quarantine a single file. This playbook does not support the quarantine of multiple files.  \n"
+      playbookName: Cortex XDR - Quarantine File v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.Endpoint_ID
+      file_hash:
+        complex:
+          root: inputs.FileSHA256
+      file_path:
+        complex:
+          root: inputs.FilePath
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 6dd94190-01bf-47e0-8af5-5b365b0fc81b
+    type: playbook
+    task:
+      id: 6dd94190-01bf-47e0-8af5-5b365b0fc81b
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |-
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2.
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "True"
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 41b67ea8-e300-4c3e-8913-81d9b5326923
+    type: regular
+    task:
+      id: 41b67ea8-e300-4c3e-8913-81d9b5326923
+      version: -1
+      name: Terminate User Sessions
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 97a13170-2562-4cc9-882f-868cc7e33ce0
+    type: regular
+    task:
+      id: 97a13170-2562-4cc9-882f-868cc7e33ce0
+      version: -1
+      name: Set Incident Severity to High
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 084eb352-77c2-47df-8a44-1ce073dc19a1
+    type: playbook
+    task:
+      id: 084eb352-77c2-47df-8a44-1ce073dc19a1
+      version: -1
+      name: Command-Line Analysis
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: Process
+          accessor: CommandLine
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: d13baf3b-a24f-41db-819d-0980df3c5305
+    type: playbook
+    task:
+      id: d13baf3b-a24f-41db-819d-0980df3c5305
+      version: -1
+      name: Search and Compare Process Executions - Generic
+      description: |-
+        This playbook is a generic playbook that receives a process name and a command-line argument. It searches for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
+
+        - Cortex XDR XQL Engine
+        - Cortex XDR IR(Search executions inside XDR alerts)
+        - Microsoft Defender For Endpoint
+
+        Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        - commands: *command-line arguments*
+      playbookName: Search and Compare Process Executions - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      HuntingTimeFrame:
+        simple: 7 days
+      Processes:
+        simple: |-
+          - value: ${Process.Name}
+          - commands: ${Process.CommandLine}
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 1520e100-ac67-409c-8ed9-eff3fd00e98d
+    type: playbook
+    task:
+      id: 1520e100-ac67-409c-8ed9-eff3fd00e98d
+      version: -1
+      name: Cortex XDR - Endpoint Investigation
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Cortex XDR - Endpoint Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "False"
+      agentID:
+        simple: ${inputs.EndpointID}
+      timeRange:
+        simple: 7 days ago
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 6db444f5-0226-4c30-8c84-70d64be99e92
+    type: condition
+    task:
+      id: 6db444f5-0226-4c30-8c84-70d64be99e92
+      version: -1
+      name: Auto Containment Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "119"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 90c3d931-18e5-4275-8168-ea3530a98097
+    type: condition
+    task:
+      id: 90c3d931-18e5-4275-8168-ea3530a98097
+      version: -1
+      name: Manual Review Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ManualReview
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 837ebb82-6ef2-46d9-8a10-04a8cd83256b
+    type: regular
+    task:
+      id: 837ebb82-6ef2-46d9-8a10-04a8cd83256b
+      version: -1
+      name: Waiting for manual containment
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 8093d75f-8aa9-4c0b-8e75-dcf7ed127fa6
+    type: condition
+    task:
+      id: 8093d75f-8aa9-4c0b-8e75-dcf7ed127fa6
+      version: -1
+      name: Auto Remediation Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "121"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoEradication
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: notContainsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.action
+            iscontext: true
+          right:
+            value:
+              simple: Blocked
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: f8503562-c9d9-4113-8965-1c1a69d1ebbb
+    type: regular
+    task:
+      id: f8503562-c9d9-4113-8965-1c1a69d1ebbb
+      version: -1
+      name: Terminate Suspicious Process
+      description: Initiates a new endpoint script execution action using the provided snippet code.
+      script: '|||xdr-snippet-code-script-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${inputs.EndpointID}
+      snippet_code:
+        simple: taskkill /F /PID ${PaloAltoNetworksXDR.Incident.alerts.actor_process_os_pid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "72_7_False Positive": 0.52,
+      "72_95_True Positive": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3285,
+        "width": 2680,
+        "x": 330,
+        "y": 1010
+      }
+    }
+  }
+inputs:
+- key: FileRemediation
+  value:
+    simple: Quarantine
+  required: true
+  description: Should be either 'Quarantine' or 'Delete'.
+  playbookInputQuery:
+- key: AutoCloseAlert
+  value:
+    simple: "False"
+  required: false
+  description: Whether to close the alert automatically or manually, after an analyst's review.
+  playbookInputQuery:
+- key: AutoRecovery
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the Recovery playbook.
+  playbookInputQuery:
+- key: AutoContainment
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.
+    Whether to execute automatically or manually the containment plan tasks:
+    * Isolate endpoint
+    * Block indicators
+    * Quarantine file
+    * Disable user
+  playbookInputQuery:
+- key: AutoEradication
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to execute automatically or manually the eradication plan tasks:
+    * Terminate process
+    * Delete file
+    * Reset the user's password
+  playbookInputQuery:
+- key: FileSHA256
+  value:
+    complex:
+      root: alert
+      accessor: initiatorsha256
+  required: false
+  description: The file SHA256 to investigate.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: alert
+      accessor: initiatorpath
+  required: false
+  description: The file path to investigate.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: alert
+      accessor: hostip
+  required: false
+  description: The IP address to investigate.
+  playbookInputQuery:
+- key: Username
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+            iscontext: true
+          right:
+            value:
+              simple: inputs.alert_id
+            iscontext: true
+          ignorecase: true
+      accessor: user_name
+      transformers:
+      - operator: uniq
+  required: false
+  description: The alert's username.
+  playbookInputQuery:
+- key: EndpointID
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+            iscontext: true
+          right:
+            value:
+              simple: inputs.alert_id
+          ignorecase: true
+      accessor: endpoint_id
+      transformers:
+      - operator: uniq
+      - operator: StringifyArray
+  required: false
+  description: The IP, Hostname or ID of the Endpoint
+  playbookInputQuery:
+- key: ManualReview
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Require manual review by an analyst for further investigation and approval.
+    (True/False)
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - FileRemediation
+  - AutoCloseAlert
+  - AutoRecovery
+  - AutoContainment
+  - AutoEradication
+  - FileSHA256
+  - FilePath
+  - IP
+  - Username
+  - EndpointID
+  - ManualReview
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- Test Playbook - Cortex XDR - Endpoint Investigation
+- Test XDR Playbook execute script commands
+- Test XDR Playbook
+fromversion: 6.10.0
