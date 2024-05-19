@@ -235,7 +235,8 @@ NIGHTLY_TESTS: tuple = (
     # (7) xsiam - Checks that non api+Nightly tests are collected to install and the changed pack to install and upload
     (MockerCases.C, NightlyTestCollector,
      {'myXSIAMOnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration', 'onlyXSIAMIntegrationTestPlaybook'},
-     {'bothMarketplacesPack', 'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS,
+     {'bothMarketplacesPack', 'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration',
+         'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS,
      ("Packs/CoreAlertFields/Integrations/myIntegration/myIntegration.py",), ("CoreAlertFields",)),
 
     # (8) xsiam - Checks that non api+Nightly tests are collected to install when no packs have changed
@@ -263,7 +264,8 @@ NIGHTLY_TESTS: tuple = (
      None, None, XSOAR_SAAS_BRANCH_ARGS, (), []),
 
     # (13) xsoar_saas - Checks that non api tests are collected to install as expected
-    (MockerCases.I_xsoar, NightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None, None, XSOAR_SAAS_BRANCH_ARGS, (), []),
+    (MockerCases.I_xsoar, NightlyTestCollector, {'myTestPlaybook'}, {
+     'myXSOAROnlyPack'}, None, None, XSOAR_SAAS_BRANCH_ARGS, (), []),
 
     # (14) cases where nightly_packs doesn't hold all packs (the second pack is not installed because it is not in nightly_packs)
     (MockerCases.limited_nightly_packs, NightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
@@ -791,8 +793,8 @@ def test_number_of_file_types():
          ('myXSOAROnlyPack', 'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois')),
 
         (MockerCases.C, None, (
-             'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
-             'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois'), None, None,
+            'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
+            'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois'), None, None,
          (MarketplaceVersions.MarketplaceV2, None), (), (), (
              'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
              'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois')),
@@ -850,17 +852,18 @@ def test_sort_packs_to_upload(mocker):
     from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
 
     result = CollectionResult(
-            test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-            version_range=None, reason_description='', conf=None, id_set=None
-        )
+        test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
+        version_range=None, reason_description='', conf=None, id_set=None
+    )
     result.packs_to_upload = {"myPack", "myPack2"}
 
     input_files = {Path("Packs/myPack/pack_metadata.json"),
                    Path("Packs/myPack2/ReleaseNotes/1_0_1.md"),
                    Path("Packs/myPack2/pack_metadata.json")}
+    added_files = {Path("Packs/myPack2/ReleaseNotes/1_0_1.md")}
 
     mocker.patch.object(GitUtil, "_get_all_changed_files", return_value=input_files)
-    mocker.patch.object(GitUtil, "added_files", return_value={})
+    mocker.patch.object(GitUtil, "added_files", return_value=added_files)
     mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.1")
     sort_packs_to_upload(result)
 
@@ -878,9 +881,9 @@ def test_sort_packs_to_upload_new_pack(mocker):
     from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
 
     result = CollectionResult(
-            test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-            version_range=None, reason_description='', conf=None, id_set=None
-        )
+        test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
+        version_range=None, reason_description='', conf=None, id_set=None
+    )
     result.packs_to_upload = {"myPack"}
 
     input_files = {Path("Packs/myPack/pack_metadata.json")}
@@ -895,5 +898,40 @@ def test_sort_packs_to_upload_new_pack(mocker):
     assert result.packs_to_update_metadata == set(), "myPack should not be marked for metadata update"
 
 
-def test_nightly_failed_packs_from_prev_upload():
-    pass
+@pytest.mark.parametrize(
+    "changed_files, added_files, content_status, expected_packs_to_upload, expected_packs_to_update_metadata",
+    [
+        (("Packs/myPack/pack_metadata.json",), {}, {"packs_to_upload": ["myPack"], "packs_to_update_metadata": []},
+         {"myPack"}, set()),
+        (("Packs/myPack/pack_metadata.json", "Packs/myPack/ReleaseNotes/2_1_3.md"), {Path("Packs/myPack2/ReleaseNotes/2_1_3.md")},
+         {"packs_to_upload": [], "packs_to_update_metadata": ["myPack"]}, {"myPack"}, set()),
+        (("Packs/myPack/pack_metadata.json",), {}, {"packs_to_upload": [], "packs_to_update_metadata": ["myPack"]},
+         set(), {"myPack"}),
+    ], ids=('update_upload', 'upload_update', 'update_update')
+)
+def test_nightly_failed_packs_from_prev_upload(mocker, monkeypatch, changed_files, added_files, content_status,
+                                               expected_packs_to_upload, expected_packs_to_update_metadata):
+    """
+    given: Mocked GitUtil with simulated changed files
+    when: NightlyTestCollector is called:
+            update_upload - pack today for update, yesterday for upload > expected pack to upload
+            upload_update - pack today for upload, yesterday for update > expected pack to upload
+            update_update - pack today for update, yesterday for update > expected pack to update
+    then: Ensure packs_to_upload, packs_to_update_metadata contain the expected packs
+    """
+    from demisto_sdk.commands.common.git_util import GitUtil
+    from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
+    monkeypatch.chdir(MockerCases.RN_CONFIG.path_manager.content_path)
+
+    mocker.patch.object(BranchTestCollector, '_get_git_diff',
+                        return_value=FilesToCollect(changed_files, ()))
+    mocker.patch('Tests.scripts.collect_tests.collect_tests.get_failed_packs_from_previous_upload', return_value=content_status)
+
+    mocker.patch.object(GitUtil, "_get_all_changed_files", return_value={Path(file_path) for file_path in changed_files})
+    mocker.patch.object(GitUtil, "added_files", return_value=added_files)
+    mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="2.1.3")
+    with MockerCases.RN_CONFIG:
+        collector = NightlyTestCollector(*XSOAR_SAAS_BRANCH_ARGS)
+        collected = collector.collect()
+    assert collected.packs_to_upload == expected_packs_to_upload
+    assert collected.packs_to_update_metadata == expected_packs_to_update_metadata

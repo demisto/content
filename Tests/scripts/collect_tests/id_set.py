@@ -106,6 +106,7 @@ class IdSet(DictFileBased):
         self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
         self.path_to_modeling_rule: dict[str, IdSetItem] = self._parse_items('ModelingRules')
+        self.path_to_parsing_rule: dict[str, IdSetItem] = self._parse_items('ParsingRules')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
         self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
@@ -139,8 +140,12 @@ class IdSet(DictFileBased):
         yield from self.id_to_test_playbook.values()
 
     @property
-    def modeling_rules(self) -> Iterable[IdSetItem]: # todo parsing rules?
+    def modeling_rules(self) -> Iterable[IdSetItem]:
         yield from self.path_to_modeling_rule.values()
+
+    @property
+    def parsing_rules(self) -> Iterable[IdSetItem]:
+        yield from self.path_to_parsing_rule.values()
 
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result: dict[str, IdSetItem] = {}

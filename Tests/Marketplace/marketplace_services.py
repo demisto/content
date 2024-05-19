@@ -3376,6 +3376,7 @@ def get_failed_packs_from_previous_upload(service_account, build_bucket_path):
     content_status_string = content_status_blob.download_as_string()
     return json.loads(content_status_string)
 
+
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
         res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
