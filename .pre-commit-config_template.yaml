@@ -116,7 +116,7 @@ repos:
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
-    - /src/Tests/scripts/script_runner.py
+    - /src/.pre-commit/script_runner.py
     - coverage
     - run
     - -p
