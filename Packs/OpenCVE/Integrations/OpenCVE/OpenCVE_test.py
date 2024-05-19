@@ -141,10 +141,21 @@ def test_parse_cpes(nodes, expected):
                             'Modified': '2021-06-03T18:15:00Z',
                             'Description': "A remote code execution vulnerability exists in Remote Desktop Services formerly known as Terminal Services when an unauthenticated attacker connects to the target system using RDP and sends specially crafted requests, aka 'Remote Desktop Services Remote Code Execution Vulnerability'."  # noqa: E501
                             }
+                           ),
+                          (util_load_json('test_data/CVE-2023-3421.json'),
+                           {'ID': 'CVE-2023-3421',
+                            'CVSS Score': 8.8,
+                            'Published': '2023-06-26T21:15:00Z',
+                            'Modified': '2024-01-31T17:15:12Z',
+                            'Description': "Dummy description"
+                            }
                            )
                           ]
                          )
 def test_cve_to_warroom(response, expected):
+    # Regarding the "CVE-2023-3421" case, the API response will hold the CVSS score under the "metrics" key,
+    # and we don't parse the data under that key, so in order to extract the CVSS score, we do so by accessing
+    # the scores under the key "cvss", and give precedence to v3 over v2
     _, parsed_cve = parse_cve(OPEN_CVE, response)
     warroom_output = cve_to_warroom(parsed_cve)
     assert warroom_output == expected
