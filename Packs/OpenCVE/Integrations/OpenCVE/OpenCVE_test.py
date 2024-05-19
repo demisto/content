@@ -69,7 +69,7 @@ test_cases = [
                     "children": [], "operator": "OR",
                     "cpe_match": [
                         {
-                                    "cpe23Uri": "dummy_cpe",
+                                    "cpe23Uri": "cpe:2.3:o:siemens:sppa-t3000_ses3000_firmware:*:*:*:*:*:*:*:*",
                                     "cpe_name": [],
                                     "vulnerable": True
                         }
