@@ -30,7 +30,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
 
-The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+The application must have *user_impersonation* and *offline_access* permissions and must allow public client flows (can be found under the **Authentication** section of the app).
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
@@ -44,10 +44,9 @@ The application must have *user_impersonation* permission and must allow public 
 
 ### Authentication Using the Client Credentials Flow
 
-
 1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 
-    *Note:* At the 'Select members' section, assign the application you created before.
+   *Note:* At the 'Select members' section, assign the application you created before.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
 3. In the **Authentication Type** field, select the **Client Credentials** option.
