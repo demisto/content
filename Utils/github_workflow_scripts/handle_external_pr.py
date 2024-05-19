@@ -94,7 +94,7 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
 
 
 def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bool:
-    """ Checks if the current PR has the label of "contribution on hold" or pr is in draft state,
+    """ Checks if the current PR has the label "contribution on hold" or pr is in draft state,
         if so - the PR won't be counted for the PR count to determine reviewer
 
         Args:
@@ -106,11 +106,8 @@ def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bo
     """
     labels_to_consider = {'contribution on hold'}
     pr_labels_set = set(pr_labels)
-    print(f'pr labels are: {pr_labels_set}')
-    print(f'pr draft status is {pr.draft}')
     if pr.draft or labels_to_consider.issubset(pr_labels_set):
-        print(f'only prints this if the pr is draft and status is {pr.draft}')
-        print(f'only prints this if the pr has the label on hold:  {pr_labels_set}')
+        print(f'PR number {pr.number} with draft status {pr.draft} and labels {pr_labels_set} will be skipped from count ')
         return True
     return False
 
