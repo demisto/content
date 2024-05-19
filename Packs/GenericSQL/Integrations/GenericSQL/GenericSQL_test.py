@@ -224,6 +224,7 @@ EMPTY_OUTPUT = {
 
 GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
 
+
 @pytest.mark.parametrize('command, args, response, expected_result, header', [
     # Classic sql query, showing a table from database and convert it to readable data
     (sql_query_execute, ARGS1, RAW1, EXPECTED_OUTPUT1, HEADER1),
@@ -639,6 +640,7 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
 
+
 def create_engine_and_connect_init(mocker, global_cache, cache_string):
     """
     An init helper function for testing the cache mechanism when creating an engine
@@ -647,6 +649,7 @@ def create_engine_and_connect_init(mocker, global_cache, cache_string):
     mocker.patch.object(Client, '_generate_db_url')
     mocker.patch.object(Client, '_get_global_cache', return_value=global_cache)
     mocker.patch.object(Client, '_get_cache_string', return_value=cache_string)
+
 
 def test_create_engine_and_connect_engine_exists(mocker):
     """
@@ -662,8 +665,9 @@ def test_create_engine_and_connect_engine_exists(mocker):
 
     client = Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
                     database='', ssl_connect=False, use_pool=True)
-        
+
     assert client.connection == 'Demo Engine'
+
 
 def test_create_engine_and_connect_new_engine(mocker):
     """
