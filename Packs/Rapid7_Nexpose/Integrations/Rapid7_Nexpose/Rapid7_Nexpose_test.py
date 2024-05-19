@@ -1293,7 +1293,7 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, 
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    results = search_assets_command(client=mock_client, risk_score="8000")
+    results = search_assets_command(client=mock_client, risk_score_higher_than="8000")
 
     assert isinstance(results, list)  # Assure a list of CommandResults has been received instead of a single one.
     # Using `sorted` to not fail test in case the order of CommandResults changes
