@@ -76,11 +76,11 @@ def test_get_indicators_command(mocker):
 
     all_indicators = get_indicators_command(client, args={'indicator_types': 'ALL'})
     default_indicators = get_indicators_command(client, {})
-    assert len(all_indicators) == len(default_indicators)
+    assert len(all_indicators.raw_response) == len(default_indicators.raw_response)
 
     indicators_with_end = get_indicators_command(client, args={'score_end': 50})
     indicators_with_end_start = get_indicators_command(client, args={'score_end': 50, 'score_start': 0})
-    assert len(indicators_with_end) == len(indicators_with_end_start)
+    assert len(indicators_with_end.raw_response) == len(indicators_with_end_start.raw_response)
 
 
 def test_get_indicators_command_with_score(mocker):
