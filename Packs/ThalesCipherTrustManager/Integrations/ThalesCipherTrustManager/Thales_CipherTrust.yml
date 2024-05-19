@@ -1,44 +1,63 @@
-category: Utilities
-description: ''
+category: Authentication & Identity Management
+description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 commonfields:
   id: CipherTrust
   version: -1
 name: CipherTrust
-display: CipherTrust
+display: Thales CipherTrust Manager
 configuration:
 - display: server_url
   name: server_url
   type: 0
   required: true
-- display: Username
+- display: credentials
   name: credentials
   type: 9
   required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
 script:
   commands:
   - deprecated: false
-    description: ""
-    name: ciphertrust-group-update
-    arguments:
-      - name: name
-        isArray: false
-        description: Name of the group to update.
-        required: true
-        secret: false
-        default: false
-      - name: description
-        isArray: false
-        description: description of the group.
-        required: false
-        secret: false
-        default: false
+    description: ''
+    name: ciphertrust-certificate-issue
+    arguments: []
     outputs: []
   - deprecated: false
-    description: "\n    Args:\n        client (CipherTrustClient): CipherTrust client to use.\n        name (str): Name of the group. required=True\n        description(str): description of the group."
+    description: ''
+    name: ciphertrust-certificate-list
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-certificate-resume
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-certificate-revoke
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-external-certificate-delete
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-external-certificate-list
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-external-certificate-update
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-external-certificate-upload
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
     name: ciphertrust-group-create
     arguments:
     - name: name
@@ -57,10 +76,10 @@ script:
   - deprecated: false
     description: ''
     name: ciphertrust-group-delete
-    arguments: 
-    - name: group_name
+    arguments:
+    - name: name
       isArray: false
-      description: Name of the group.
+      description: Name of the group
       required: true
       secret: false
       default: false
@@ -73,6 +92,23 @@ script:
     outputs: []
   - deprecated: false
     description: ''
+    name: ciphertrust-group-update
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group.
+      required: true
+      secret: false
+      default: false
+    - name: description
+      isArray: false
+      description: description of the group.
+      required: false
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: "\n    "
     name: ciphertrust-group-list
     arguments:
     - name: group_name
@@ -107,21 +143,115 @@ script:
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page.
+      description: number of entries per page. defaults to 50 in case only page was provided.
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of resources to return.
+      description: The max number of resources to return. defaults to 50
       required: false
       secret: false
       default: false
-      defaultValue: '50'
+      defaultValue: 50
     outputs: []
   - deprecated: false
-    description: "Tests connectivity with the client.\n    Takes as an argument all client arguments to create a new client\n    "
+    description: ''
+    name: ciphertrust-local-ca-create
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-local-ca-delete
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-local-ca-install
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-local-ca-list
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-local-ca-self-sign
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-local-ca-update
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-local-certificate-delete
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: Tests API connectivity and authentication
     name: test_module
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-user-create
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-user-delete
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-user-password-change
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-user-to-group-add
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group.By default it will be added to the Key Users Group.
+      required: true
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: User id. Can be retrieved by using the command ciphertrust-users-list
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-user-to-group-remove
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group.By default it will be added to the Key Users Group.
+      required: true
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: User id. Can be retrieved by using the command ciphertrust-users-list
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-user-update
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: ''
+    name: ciphertrust-users-list
     arguments: []
     outputs: []
   script: '-'
@@ -129,7 +259,7 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.13.86272
   feed: false
-  isfetch: false
+  isfetch: true
   runonce: false
   longRunning: false
   longRunningPort: false

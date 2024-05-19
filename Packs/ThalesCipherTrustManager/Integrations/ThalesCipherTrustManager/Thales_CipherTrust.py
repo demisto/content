@@ -161,27 +161,14 @@ GROUPS_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, descriptio
                       InputArgument(name=CommandArguments.PAGE_SIZE,
                                     description='number of entries per page. defaults to 50 in case only page was provided.'),
                       InputArgument(name=CommandArguments.LIMIT,
-                                    description='The max number of resources to return. defaults to 50', default='50')
+                                    description='The max number of resources to return. defaults to 50', default=DEFAULT_LIMIT)
                       ]
 
 
 @metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
                             inputs_list=GROUPS_LIST_INPUTS)
-def groups_list_command(client: CipherTrustClient, args: Dict[str, Any]) -> CommandResults:
+def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
-        client (CipherTrustClient): CipherTrust client to use.
-        group_name (str): Group name to filter by.
-        user_id (str): User id to filter by membership. “nil” will return groups with no members.
-        connection (str): Connection id or name to filter by.
-        client_id (str): Client id to filter by membership. “nil” will return groups with no members.
-        page(int): page to return. default=1
-        page_size(int): number of entries per page. default=50
-        limit(int): The max number of resources to return. default=50
-
-    Returns:
-       A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains an groups list.
-
     """
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT), args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
@@ -201,11 +188,12 @@ def groups_list_command(client: CipherTrustClient, args: Dict[str, Any]) -> Comm
     )
 
 
-GROUPS_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group.'),
-                        InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.')]
+GROUP_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group.'),
+                       InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.')]
 
 
-@metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUPS_CREATE_INPUTS, outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+@metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUP_CREATE_INPUTS,
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def group_create_command(client: CipherTrustClient, args: dict):
     """
 
@@ -226,10 +214,13 @@ def group_create_command(client: CipherTrustClient, args: dict):
         raw_response=raw_response
     )
 
-GROUP_DELETE_INPUTS = [InputArgument(name = CommandArguments.NAME , required=True, description='Name of the group'),
-                       InputArgument(name = CommandArguments.FORCE, description='When set to true, groupmaps within this group will be deleted')]
 
-@metadata_collector.command(command_name='ciphertrust-group-delete')
+GROUP_DELETE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group'),
+                       InputArgument(name=CommandArguments.FORCE,
+                                     description='When set to true, groupmaps within this group will be deleted')]
+
+
+@metadata_collector.command(command_name='ciphertrust-group-delete', inputs_list=GROUP_DELETE_INPUTS)
 def group_delete_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(force=args.get(CommandArguments.FORCE))
     client.delete_group(args[CommandArguments.GROUP_NAME], request_data)
@@ -238,7 +229,12 @@ def group_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-group-update', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+GROUP_UPDATE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True, description='Name of the group.'),
+                       InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.')]
+
+
+@metadata_collector.command(command_name='ciphertrust-group-update', inputs_list=GROUP_UPDATE_INPUTS,
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def group_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.update_group(args[CommandArguments.GROUP_NAME], request_data)
@@ -249,7 +245,14 @@ def group_update_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-to-group-add', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+USER_TO_GROUP_ADD_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True,
+                                          description='Name of the group.By default it will be added to the Key Users Group.'),
+                            InputArgument(name=CommandArguments.USER_ID, required=True,
+                                          description='User id. Can be retrieved by using the command ciphertrust-users-list')]
+
+
+@metadata_collector.command(command_name='ciphertrust-user-to-group-add', inputs_list=USER_TO_GROUP_ADD_INPUTS,
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def user_to_group_add_command(client: CipherTrustClient, args: dict):
     raw_response = client.add_user_to_group(args[CommandArguments.GROUP_NAME], args[CommandArguments.USER_ID])
     return CommandResults(
@@ -259,13 +262,18 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-to-group-remove')
+USER_TO_GROUP_REMOVE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True,
+                                             description='Name of the group.By default it will be added to the Key Users Group.'),
+                               InputArgument(name=CommandArguments.USER_ID, required=True,
+                                             description='User id. Can be retrieved by using the command ciphertrust-users-list')]
+
+
+@metadata_collector.command(command_name='ciphertrust-user-to-group-remove', inputs_list=USER_TO_GROUP_REMOVE_INPUTS)
 def user_to_group_remove_command(client: CipherTrustClient, args: dict):
     client.remove_user_from_group(args[CommandArguments.GROUP_NAME], args[CommandArguments.USER_ID])
     return CommandResults(
         readable_output=f'{args[CommandArguments.USER_ID]} has been deleted successfully from {args[CommandArguments.GROUP_NAME]}'
     )
-
 
 @metadata_collector.command(command_name='ciphertrust-users-list')
 def users_list_command(client: CipherTrustClient, args: dict):
@@ -388,7 +396,7 @@ def main():
     proxy = demisto.params().get('proxy', False)
 
     commands = {
-        'ciphertrust-group-list': groups_list_command,
+        'ciphertrust-groups-list': groups_list_command,
         'ciphertrust-group-create': group_create_command,
         'ciphertrust-group-delete': group_delete_command,
         'ciphertrust-group-update': group_update_command,
