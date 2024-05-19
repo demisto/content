@@ -5,12 +5,23 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
+                                          description="Manage Secrets and Protect Sensitive Data through HashiCorp Vault.",
+                                          display="Thales CipherTrust Manager",
+                                          category="Authentication & Identity Management",
+                                          docker_image="demisto/python3:3.10.13.86272",
+                                          is_fetch=True,
+                                          long_running=False,
+                                          long_running_port=False,
+                                          is_runonce=False,
+                                          integration_subtype="python3",
+                                          integration_type="python",
+                                          fromversion="6.0.0",
                                           conf=[ConfKey(name="server_url",
                                                         key_type=ParameterTypes.STRING,
                                                         required=True),
                                                 ConfKey(name="credentials",
                                                         key_type=ParameterTypes.AUTH,
-                                                        required=True)])
+                                                        required=True)], )
 
 ''' IMPORTS '''
 
@@ -52,7 +63,6 @@ class CipherTrustClient(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         res = self._create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
-
 
     def _create_auth_token(self, username, password):  # todo: before each request to make sure isn't expired?
         return self._http_request(
@@ -125,15 +135,29 @@ def derive_skip_and_limit_for_pagination(limit, page, page_size):
 
 @metadata_collector.command(command_name='test_module')
 def test_module(client: CipherTrustClient):
-    """Tests connectivity with the client.
-    Takes as an argument all client arguments to create a new client
+    """Tests API connectivity and authentication
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``CipherTrustClient``
+    :param client: CipherTrust client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
     """
     client.get_groups_list({})
     return 'ok'
 
 
-@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
-def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
+GROUPS_LIST_INPUTS = [InputArgument(name='group_name', description='Group name to filter by.' , input_type=)
+                      ]
+
+
+@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
+                            inputs_list=GROUPS_LIST_INPUTS)
+def groups_list_command(client: CipherTrustClient, args: Dict[str, Any]) -> CommandResults:
     """
 
 
