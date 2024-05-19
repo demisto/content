@@ -75,7 +75,7 @@ def test_get_indicators_command(mocker):
     assert "Indicators" in results.readable_output
 
     all_indicators = get_indicators_command(client, args={'indicator_types': 'ALL'})
-    default_indicators = get_indicators_command(client)
+    default_indicators = get_indicators_command(client, {})
     assert len(all_indicators) == len(default_indicators)
 
     indicators_with_end = get_indicators_command(client, args={'score_end': 50})
