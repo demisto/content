@@ -110,6 +110,7 @@ def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bo
     print(f'pr draft status is {pr.draft}')
     if pr.draft or labels_to_consider.issubset(pr_labels_set):
         print(f'only prints this if the pr is draft and status is {pr.draft}')
+        print(f'only prints this if the pr has the label on hold:  {pr_labels_set}')
         return True
     return False
 
