@@ -4,8 +4,6 @@ from CommonServerUserPython import *
 
 """ CONSTANTS """
 
-HEADERS = {"Accept": "application/json", "Csrf-Token": "nocheck"}
-
 ISO_8601_FORMAT = "%Y-%m-%d"
 
 
@@ -18,8 +16,9 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers):
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=False, proxy=proxy, timeout=20)
+                 proxy: bool):
+        headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy, timeout=20)
         self.username = username
         self.password = password
 
@@ -31,13 +30,11 @@ class Client(BaseClient):
         This function must be called before any other API calls.
         Note: the session is automatically closed in BaseClient's __del__
         """
-        headers = {"Csrf-Token": "nocheck"}
         data = {"username": self.username, "password": self.password}
-
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
-            headers=headers,
+            headers=self._headers,
             data=data,
         )
 
@@ -47,12 +44,29 @@ class Client(BaseClient):
         """
         self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
-    def query_datalake_request(self, search_query: dict) -> dict:
+    def query_datalake_request(self, args, from_param, size_param ,cluster_name ,dates_in_format) -> dict:      
+        """
+        Queries the Exabeam Data Lake API with the provided search query and returns the response.
+        """
+        search_query = {
+            "sortBy": [
+                {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
+            ],
+            "query": args.get("query", "*"),
+            "from": from_param,
+            "size": size_param,
+            "clusterWithIndices": [
+                {
+                    "clusterName": cluster_name,
+                    "indices": dates_in_format,
+                }
+            ]
+        }
         return self._http_request(
             "POST",
             full_url=f"{self._base_url}/dl/api/es/search",
             data=json.dumps(search_query),
-            headers={"Content-Type": "application/json"},
+            headers={'Content-Type': 'application/json', 'Csrf-Token': 'nocheck'},
         )
 
 
@@ -124,9 +138,27 @@ def get_date(time: str):
         or None if the time string is invalid.
     """
     date_time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
-    if date_time:
-        date = date_time.strftime(ISO_8601_FORMAT)
+    if not date_time:
+        raise DemistoException("There was an issue parsing the start time provided.")
+    date = date_time.strftime(ISO_8601_FORMAT)
     return date
+
+
+def get_limit(args: dict) -> int:
+    """
+    Get the limit value specified in the arguments.
+
+    Args:
+        args: A dictionary containing the 'limit' argument.
+
+    Returns:
+        int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit. 
+        If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
+    """
+    if limit := args.get('limit'):
+        return min(int(limit), 3000)
+
+    return 50
 
 
 def calculate_page_parameters(args: dict) -> tuple[int, int]:
@@ -151,7 +183,7 @@ def calculate_page_parameters(args: dict) -> tuple[int, int]:
     if (limit_arg and (page_arg or page_size_arg)) or ((not (page_arg and page_size_arg)) and (page_arg or page_size_arg)):
         raise DemistoException("You can only provide 'limit' alone or 'page' and 'page_size' together.")
 
-    if args.get('page') and args.get('page_size'):
+    if page_arg and page_size_arg:
         page = arg_to_number(args.get('page', '1'))
         page_size = arg_to_number(args.get('page_size', '50'))
         if page and page_size:
@@ -159,7 +191,7 @@ def calculate_page_parameters(args: dict) -> tuple[int, int]:
             size_param = page_size
     else:
         from_param = 0
-        size_param = arg_to_number(args.get('limit', '50')) or 50
+        size_param = get_limit(args)
 
     return from_param, size_param
 
@@ -167,7 +199,7 @@ def calculate_page_parameters(args: dict) -> tuple[int, int]:
 """ COMMAND FUNCTIONS """
 
 
-def query_datalake_command(client: Client, args: dict, cluster_name: str) -> CommandResults:
+def query_data_lake_command(client: Client, args: dict, cluster_name: str) -> CommandResults:
     """
     Query the datalake command and return the results in a formatted table.
 
@@ -185,34 +217,16 @@ def query_datalake_command(client: Client, args: dict, cluster_name: str) -> Com
     dates = dates_in_range(start_time, end_time)
     dates_in_format = ["exabeam-" + date for date in dates]
 
-    search_query = {
-        "sortBy": [
-            {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
-        ],
-        "query": args.get("query", "*"),
-        "from": from_param,
-        "size": size_param,
-        "clusterWithIndices": [
-            {
-                "clusterName": cluster_name,
-                "indices": dates_in_format,
-            }
-        ]
-    }
-
-    response = client.query_datalake_request(search_query).get("responses", [{}])
-
-    if error := response[0].get("error", {}):
-        raise DemistoException(f"Error in query: {error.get('root_cause', [{}])[0].get('reason', 'Unknown error occurred')}")
+    response = client.query_datalake_request(args, from_param, size_param, cluster_name, dates_in_format).get("responses", [{}])
 
     data_response = response[0].get("hits", {}).get("hits", [])
 
-    table_to_markdown = [_parse_entry(entry) for entry in data_response]
+    human_readable = [_parse_entry(entry) for entry in data_response]
 
     return CommandResults(
         outputs_prefix="ExabeamDataLake.Event",
         outputs=data_response,
-        readable_output=tableToMarkdown(name="Logs", t=table_to_markdown),
+        readable_output=tableToMarkdown(name="Logs", t=human_readable),
     )
 
 
@@ -240,20 +254,18 @@ def main() -> None:    # pragma: no cover
     credentials = params.get('credentials', {})
     username = credentials.get('identifier')
     password = credentials.get('password')
-    base_url = params.get('url', '')
+    base_url: str = params.get('url', '')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
     cluster_name = params.get('cluster_name', 'local')
 
     try:
         client = Client(
             base_url.rstrip('/'),
-            verify=verify_certificate,
             username=username,
             password=password,
-            proxy=proxy,
-            headers=headers
+            verify=verify_certificate,
+            proxy=proxy
         )
 
         demisto.debug(f"Command being called is {command}")
@@ -261,7 +273,7 @@ def main() -> None:    # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         elif command == "exabeam-data-lake-search":
-            return_results(query_datalake_command(client, args, cluster_name))
+            return_results(query_data_lake_command(client, args, cluster_name))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

@@ -317,7 +317,8 @@
         },
         {
             "integrations": "Exabeam Data Lake",
-            "playbookID": "ExabeamDataLake-test"
+            "playbookID": "ExabeamDataLake-test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "GoogleDrive",

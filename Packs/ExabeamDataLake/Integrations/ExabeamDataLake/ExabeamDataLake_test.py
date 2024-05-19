@@ -1,23 +1,24 @@
+import json
 import pytest
 from CommonServerPython import DemistoException
-from ExabeamDataLake import Client, query_datalake_command, get_date, dates_in_range, calculate_page_parameters, _parse_entry
+from ExabeamDataLake import Client, query_data_lake_command, get_date, dates_in_range, calculate_page_parameters, _parse_entry
 
 
 class MockClient(Client):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         pass
 
-    def query_datalake_command(self) -> None:
+    def query_data_lake_command(self) -> None:
         return
 
 
-def test_query_datalake_command(mocker):
+def test_query_data_lake_command(mocker):
     """
     GIVEN:
         a mocked Client with an empty response,
 
     WHEN:
-        'query_datalake_command' function is called with the provided arguments,
+        'query_data_lake_command' function is called with the provided arguments,
 
     THEN:
         it should query the data lake, return log entries, and format them into readable output.
@@ -48,9 +49,9 @@ def test_query_datalake_command(mocker):
 
     client = MockClient("", "", "", False, False)
 
-    response = query_datalake_command(client, args, cluster_name="local")
+    response = query_data_lake_command(client, args, cluster_name="local")
 
-    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event', {})
+    result = response.to_context().get('EntryContext', {}).get('ExabeamDataLake.Event', [])
 
     assert {'_id': 'FIRST_ID', '_source': {'@timestamp': '2024-05-01T12:00:00', 'message': 'example message 1'}} in result
     assert {'_id': 'SECOND_ID', '_source': {'@timestamp': '2024-05-02T12:00:00', 'message': 'example message 2',
@@ -65,12 +66,12 @@ def test_query_datalake_command(mocker):
     assert expected_result in response.readable_output
 
 
-def test_query_datalake_command_no_response(mocker):
+def test_query_data_lake_command_no_response(mocker):
     """
     GIVEN:
         a mocked Client with an empty response,
     WHEN:
-        'query_datalake_command' function is called with the provided arguments,
+        'query_data_lake_command' function is called with the provided arguments,
     THEN:
         it should return a readable output indicating no results found.
 
@@ -85,38 +86,9 @@ def test_query_datalake_command_no_response(mocker):
 
     mocker.patch.object(Client, "query_datalake_request", return_value={})
 
-    response = query_datalake_command(MockClient("", "", "", False, False), args, "local")
+    response = query_data_lake_command(MockClient("", "", "", False, False), args, "local")
 
     assert response.readable_output == '### Logs\n**No entries.**\n'
-
-
-def test_query_datalake_command_raise_error(mocker):
-    """
-    Test case for the 'query_datalake_command' function when it raises a DemistoException due to an error in the query.
-
-    GIVEN:
-        a mocked Client that returns an error response,
-    WHEN:
-        'query_datalake_command' function is called with an invalid query,
-    THEN:
-        it should raise a DemistoException with the appropriate error message.
-    """
-    args = {
-        'page': 1,
-        'page_size': 50,
-        'start_time': '2024-05-01T00:00:00',
-        'end_time': '2024-05-08T00:00:00',
-        'query': '*'
-    }
-    mocker.patch.object(
-        Client,
-        "query_datalake_request",
-        return_value={
-            "responses": [{"error": {"root_cause": [{"reason": "test response"}]}}]
-        },
-    )
-    with pytest.raises(DemistoException, match="Error in query: test response"):
-        query_datalake_command(MockClient("", "", "", False, False), args, "local")
 
 
 def test_get_date(mocker):
@@ -287,22 +259,30 @@ def test_query_datalake_request(mocker):
     base_url = "http://example.com"
     username = "user123"
     password = "password123"
-    headers = {"header1": "value1", "header2": "value2"}
     proxy = False
-    search_query = {"query": "your_query_here"}
+    args = {"query": "*"}
+    from_param = 0
+    size_param = 10
+    cluster_name = "example_cluster"
+    dates_in_format = ["index1", "index2"]
 
     instance = Client(base_url=base_url, username=username, password=password,
-                      verify=False, proxy=proxy, headers=headers)
+                      verify=False, proxy=proxy)
 
-    search_query = {"query": "your_query_here"}
-    expected_data = '{"query": "your_query_here"}'
+    expected_search_query = {
+        "sortBy": [{"field": "@timestamp", "order": "desc", "unmappedType": "date"}],
+        "query": "*",
+        "from": 0,
+        "size": 10,
+        "clusterWithIndices": [{"clusterName": "example_cluster", "indices": ["index1", "index2"]}]
+    }
 
-    instance.query_datalake_request(search_query)
+    instance.query_datalake_request(args, from_param, size_param, cluster_name, dates_in_format)
 
     mock_http_request.assert_called_once_with(
         "POST",
-        full_url="http://example.com/dl/api/es/search",  # Adjust base URL accordingly
-        data=expected_data,
-        headers={"Content-Type": "application/json"}
+        full_url="http://example.com/dl/api/es/search",
+        data=json.dumps(expected_search_query),
+        headers={'Content-Type': 'application/json', 'Csrf-Token': 'nocheck'}
     )
     mock_login.assert_called_once()
