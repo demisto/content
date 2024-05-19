@@ -136,8 +136,9 @@ def main():  # pragma: no cover
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
         schedule_command_args['command'] = command_string
         # Set the times to be the number of times the polling command should run (using the cron job functionally).
-        # Adding extra iteration to verify that the polling command will stop the schedule entry.
-        schedule_command_args['times'] = (timeout // interval) + 1
+        # Adding extra iterations to verify that the polling command will stop the schedule entry.
+        # See XSUP-36162 for the reason adding 2
+        schedule_command_args['times'] = (timeout // interval) + 2
         schedule_command_args['scheduledEntryGuid'] = entryGuid
 
     res = demisto.executeCommand("ScheduleCommand",
