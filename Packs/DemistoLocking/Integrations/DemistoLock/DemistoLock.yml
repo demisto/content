@@ -1,11 +1,11 @@
 commonfields:
-  id: Demisto Lock Polling
+  id: Demisto Lock
   version: -1
 sectionOrder:
 - Connect
 - Collect
-name: Demisto Lock Polling
-display: Demisto Lock Polling
+name: Demisto Lock
+display: Demisto Lock
 category: Utilities
 description: Locking mechanism that prevents concurrent execution of different tasks.
 configuration:
@@ -37,7 +37,7 @@ script:
     - name: info
       description: Additional information to provide for the lock instance.
     - name: timeout
-      description: Timeout (seconds) for wait on lock to be freed
+      description: Timeout (seconds) for wait on lock to be freed.
     - name: guid
       description: guid unique value of the lock.
       hidden: true
