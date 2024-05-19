@@ -138,7 +138,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data={}, headers={}) -> list[dict]:
+def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data: dict = {}, headers={}) -> list[dict]:
     """
     Makes a paginated request to an API using OAuth2 authentication and retrieves all results up to a specified limit.
 
@@ -170,15 +170,16 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
     if page_size and page:
         limit = page * page_size
 
-    payload: dict[str, dict[str, dict[str, Any]]] = {
+    payload: dict[str, dict[str, dict[str, Any]] | list] = {
         'meta': {
             'pagination': {
                 'pageSize': page_size
             }
         },
+
     }
 
-    if data != {}:
+    if data:
         payload['data'] = [data]
 
     response = http_request('POST', api_endpoint, payload, headers=headers)
@@ -237,7 +238,6 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
-    print('payload', payload)
     try:
         res = requests.request(
             method,
@@ -974,13 +974,13 @@ def url_decode_request(url):
     return response.get('data')[0].get('url')
 
 
-def get_policy():
+def get_policy(args):
     headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
     contents = []
     context = {}
-    title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
-    policy_id = demisto.args().get('policyID')
-    policy_type = demisto.args().get('policyType')
+    policy_id = args.get('policyID')
+    policy_type = args.get('policyType')
+    title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
 
     if policy_id:
         title = 'Mimecast Get Policy'
@@ -3313,7 +3313,7 @@ def list_policies_command(args: dict) -> CommandResults:
         })
     headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
 
-    title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
+    title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
 
     return CommandResults(
         outputs_prefix='Mimecast.Policies',
@@ -3580,11 +3580,13 @@ def main():
     args = demisto.args()
 
     try:
+        if USE_OAUTH2 and any([APP_KEY, APP_ID, SECRET_KEY, ACCESS_KEY]):
+            raise ValueError("When you use API 2.0 (Client ID and Client Secret) do not enter values in api 1.0 fields.")
         handle_proxy()
         determine_ssl_usage()
         if USE_OAUTH2:
             updating_token_oauth2()
-        if ACCESS_KEY:
+        elif ACCESS_KEY:
             auto_refresh_token()
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -3595,7 +3597,7 @@ def main():
         elif command == 'mimecast-query':
             demisto.results(query(args))
         elif command == 'mimecast-get-policy' or command == 'mimecast-list-blocked-sender-policies':
-            demisto.results(get_policy())
+            return_results(get_policy(args))
         elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
             demisto.results(create_policy())
         elif command == 'mimecast-update-policy' or command == 'mimecast-update-block-sender-policy':

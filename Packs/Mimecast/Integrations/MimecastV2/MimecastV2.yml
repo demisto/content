@@ -1,4 +1,7 @@
 category: Email
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: MimecastV2 - dev
   version: -1
@@ -8,56 +11,86 @@ configuration:
   name: baseUrl
   required: true
   type: 0
-- display: Client ID (for API 2.0)
+- display: Client ID
+  additionalinfo: for API 2.0
   name: client_id
   type: 4
-- display: Client Secret (for API 2.0)
+  section: Connect
+- display: Client Secret
+  additionalinfo: for API 2.0
   name: client_secret
   type: 4
-- display: App ID (for API 1.0)
+  section: Connect
+- display: App ID
+  additionalinfo: for API 1.0
   name: appId
   type: 0
-- display: User Email Address (Use for auto token refresh) (for API 1.0)
+  section: Connect
+  advanced: true
+- display: User Email Address (Use for auto token refresh)
+  additionalinfo: for API 1.0
   name: credentials
   type: 9
-  displaypassword: Password (for API 1.0)
+  displaypassword: Password
   required: false
-- display: User Email Address (Use for auto token refresh) (for API 1.0)
+  section: Connect
+  advanced: true
+- display: User Email Address (Use for auto token refresh)
+  additionalinfo: for API 1.0
   name: email
   type: 0
   hidden: true
   required: false
-- display: Password (for API 1.0)
+  section: Connect
+- display: Password
+  additionalinfo: for API 1.0
   name: password
   type: 4
   hidden: true
   required: false
+  section: Connect
+  advanced: true
 - display: App Key
   name: appKey_creds
   type: 9
-  displaypassword: App Key (for API 1.0)
+  displaypassword: App Key
+  additionalinfo: for API 1.0
   hiddenusername: true
   required: false
-- display: App key (for API 1.0)
+  section: Connect
+  advanced: true
+- display: App key
+  additionalinfo: for API 1.0
   name: appKey
   type: 4
   hidden: true
   required: false
-- display: AccessKey (for API 1.0)
+  section: Connect
+  advanced: true
+- display: AccessKey
+  additionalinfo: for API 1.0
   name: accessKey
   type: 0
   required: false
+  section: Connect
+  advanced: true
 - display: Secret Key
   name: secretKey_creds
   type: 9
-  displaypassword: Secret Key (for API 1.0)
+  displaypassword: Secret Key
+  additionalinfo: for API 1.0
   hiddenusername: true
   required: false
-- display: SecretKey (for API 1.0)
+  section: Connect
+  advanced: true
+- display: SecretKey
+  additionalinfo: for API 1.0
   name: secretKey
   type: 4
   hidden: true
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -77,11 +110,6 @@ configuration:
   type: 8
   hidden: true
   required: false
-# - display: Use OAuth 2.0
-#   name:  use_oauth2
-#   type: 8
-#   defaultvalue: "true"
-
 - additionalinfo: Fetch specific incident types. Default value is "All".
   defaultvalue: All
   display: Fetch incident types

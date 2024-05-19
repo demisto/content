@@ -1,4 +1,4 @@
-### API 2.0 Settings
+### API 2.0 Authentication
 To use API 2.0, you need to generate a **Client ID** and **Client Secret** from the Mimecast admin console:
 
 1. **Navigate to:** Admin | Services | API and Platform Integrations | Available integrations.
@@ -7,7 +7,7 @@ To use API 2.0, you need to generate a **Client ID** and **Client Secret** from 
 Make sure you have provided the Client ID and Client Secret, checked the set the BaseUrl to `https://api.services.mimecast.com`.
 
 
-### API 1.0 Settings
+### API 1.0 Authentication
 1. In order to refresh token / discover auth types of the account / create new access & secret keys, 
 you are required to provide: App ID, Account email address & password, and BaseUrl is https://developer.mimecast.com/apis.
 These parameters support the following integration commands: 
@@ -15,7 +15,7 @@ mimecast-login -> fetches new access key & secret key
 mimecast-discover -> lists supported auth types of user
 mimecast-refresh-token -> refreshes the validity duration of access key & secret key (3 days)
 
-1. In order to use the rest of the commands, you are required to provide: App ID, App Key, Access Key & Secret Key.
+2. In order to use the rest of the commands, you are required to provide: App ID, App Key, Access Key & Secret Key.
 For detailed information about creating these fields, please refer to the [Mimecast Documentation](https://integrations.mimecast.com/documentation/api-overview/authentication-scripts-server-apps/).
 
 
