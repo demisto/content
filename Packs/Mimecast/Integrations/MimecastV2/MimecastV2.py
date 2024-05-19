@@ -55,6 +55,7 @@ DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
 PAGE_SIZE_MAX = 100
 DEFAULT_PAGE_SIZE = 50
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -137,7 +138,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data=[{}], headers={}) -> list[dict]:
+def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data={}, headers={}) -> list[dict]:
     """
     Makes a paginated request to an API using OAuth2 authentication and retrieves all results up to a specified limit.
 
@@ -169,7 +170,7 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
     if page_size and page:
         limit = page * page_size
 
-    payload = {
+    payload: dict[str, dict[str, dict[str, Any]]] = {
         'meta': {
             'pagination': {
                 'pageSize': page_size
@@ -177,8 +178,8 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         },
     }
 
-    if data != [{}]:
-        payload['data'] = data
+    if data != {}:
+        payload['data'] = [data]
 
     response = http_request('POST', api_endpoint, payload, headers=headers)
 
@@ -236,6 +237,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    print('payload', payload)
     try:
         res = requests.request(
             method,
@@ -564,7 +566,7 @@ def updating_token_oauth2():
     global TOKEN_OAUTH2
     global USE_SSL
     USE_SSL = False
-        
+
     integration_context = demisto.getIntegrationContext()
     current_ts = epoch_seconds()
     last_update_ts = integration_context.get("last_update")
@@ -841,13 +843,13 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
 def test_module():
     if USE_OAUTH2:
-        list_policies_command({'policyType':'blockedsenders','limit':1})
+        list_policies_command({'policyType': 'blockedsenders', 'limit': 1})
         return 'ok'
-        
+
     if not ACCESS_KEY:
         raise Exception('Cannot test valid connection without the Access Key parameter.')
     list_managed_url()
-    
+    return 'ok'
 
 
 def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
@@ -1853,7 +1855,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'result': 'malicious'
         }
-        demisto.debug(search_params,'search_params')
+        demisto.debug(search_params, 'search_params')
         attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
                                                      response_param='attachmentLogs')
@@ -3171,10 +3173,10 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    data = [{}]
+    data = {}
 
     if query:
-        data[0]['query'] = query
+        data['query'] = query
 
     result_list = request_with_pagination_api2('/api/archive/get-archive-search-logs',
                                                limit, page, page_size, data)  # type: ignore
@@ -3187,11 +3189,8 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
 def get_search_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
-    start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
-    end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
-
-    if start and end and start > end:
-        raise ValueError('Start date cannot be greater than end date.')
+    start = arg_to_datetime(args.get('start')).strftime(DATE_FORMAT) if args.get('start') else None  # type: ignore
+    end = arg_to_datetime(args.get('end')).strftime(DATE_FORMAT) if args.get('end') else None  # type: ignore
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -3200,13 +3199,13 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if not any([query, start, end]):
         raise ValueError('At least one of the following arguments must be entered: query, start, end.')
 
-    data = [{}]
+    data = {}
     if query:
-        data[0]['query'] = query
+        data['query'] = query
     if start:
-        data[0]['start'] = start
+        data['start'] = start
     if end:
-        data[0]['end'] = end
+        data['end'] = end
 
     result_list = request_with_pagination_api2('/api/archive/get-search-logs', limit, page, page_size, data)  # type: ignore
 
@@ -3218,26 +3217,23 @@ def get_search_logs_command(args: dict) -> CommandResults:
 
 def get_view_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
-    start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
-    end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
+    start = arg_to_datetime(args.get('start')).strftime(DATE_FORMAT) if args.get('start') else None  # type: ignore
+    end = arg_to_datetime(args.get('end')).strftime(DATE_FORMAT) if args.get('end') else None  # type: ignore
 
     if not any([query, start, end]):
         raise ValueError('At least one argument must be entered.')
-
-    if start and end and start > end:
-        raise ValueError('Start date cannot be greater than end date.')
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    data = [{}]
+    data = {}
     if query:
-        data[0]['query'] = query
+        data['query'] = query
     if start:
-        data[0]['start'] = start
+        data['start'] = start
     if end:
-        data[0]['end'] = end
+        data['end'] = end
 
     response = request_with_pagination_api2('/api/archive/get-view-logs', limit, page, page_size, data)  # type: ignore
 
@@ -3258,17 +3254,17 @@ def list_account_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    data = [{}]
+    data = {}
     if account_name:
-        data[0]['accountName'] = account_name
+        data['accountName'] = account_name
     if account_code:
-        data[0]['accountCode'] = account_code
+        data['accountCode'] = account_code
     if admin_email:
-        data[0]['adminEmail'] = admin_email
+        data['adminEmail'] = admin_email
     if region:
-        data[0]['region'] = region
+        data['region'] = region
     if user_count:
-        data[0]['userCount'] = user_count
+        data['userCount'] = user_count
 
     response = request_with_pagination_api2('/api/account/get-account', limit, page, page_size, data)  # type: ignore
 
@@ -3417,7 +3413,7 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
         bidirectional = argToBoolean(args.get('bidirectional'))
     option = args.get('option')
 
-    data = {
+    data: dict[str, Any] = {
         'id': id,
         'option': option,
         'policy': {}
@@ -3536,7 +3532,7 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
     to_eternal = argToBoolean(args.get('to_eternal'))  # default value
     override = args.get('override')
 
-    data = {
+    data: dict[str, Any] = {
         'id': id,
         'policy': {
             'description': policy_description,

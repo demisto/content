@@ -2074,7 +2074,7 @@ script:
     description: Retrieves archive search logs.
     arguments:
     - name: query
-      description: Text to search within the logs, which can contain email addresses. See query examples https://integrations.mimecast.com/documentation/tutorials/building-search-queries/
+      description: Text to search within the logs, which can contain email addresses.
     - name: page
       description: Page number for pagination.
     - name: page_size
@@ -2120,8 +2120,10 @@ script:
       description: Text to search within the logs, which can contain email addresses.
     - name: start
       description: The earliest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the start of the current day.
+      defaultValue: now
     - name: end
       description: The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day.
+      defaultValue: now
     - name: page
       description: Page number for pagination.
     - name: page_size
@@ -2287,8 +2289,10 @@ script:
       description: Text to search within the logs, which can contain email addresses.
     - name: start
       description: The earliest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the start of the current day.
+      defaultValue: now
     - name: end
       description: The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day.
+      defaultValue: now
     - name: page
       description: Page number for pagination.
     - name: page_size
