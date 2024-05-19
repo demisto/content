@@ -1502,10 +1502,14 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
     packs_to_update_metadata = set()
     git_util = GitUtil()
     changed_files = git_util._get_all_changed_files()
+    logger.info(f"michal {changed_files=}")
     for pack_id in packs_to_upload:
         current_version = PACK_MANAGER.get_current_version(pack_id) or ""
+        logger.info(f"michal {current_version=}")
+
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
+        logger.info(f"michal {git_util.added_files()=}")
 
         if pack_metadata_path in git_util.added_files():  # first version
             continue
