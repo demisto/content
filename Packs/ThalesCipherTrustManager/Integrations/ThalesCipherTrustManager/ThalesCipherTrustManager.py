@@ -31,6 +31,7 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+USER_EXPIRES_AT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
 GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
@@ -64,6 +65,11 @@ class CommandArguments:
     ALLOWED_CLIENT_TYPES = 'allowed_client_types'
     PASSWORD_POLICY = 'password_policy'
     RETURN_GROUPS = 'return_groups'
+    CERTIFICATE_SUBJECT_DN = 'certificate_subject_dn'
+    EXPIRES_AT = 'expires_at'
+    IS_DOMAIN_USER = 'is_domain_user'
+    PREVENT_UI_LOGIN = 'prevent_ui_login'
+    PASSWORD_CHANGE_REQUIRED = 'password_change_required'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -156,6 +162,13 @@ class CipherTrustClient(BaseClient):
             url_suffix=urljoin(USER_MANAGEMENT_USERS_URL_SUFFIX, user_id),
         )
 
+    def create_user(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=USER_MANAGEMENT_USERS_URL_SUFFIX,
+            json_data=request_data,
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -209,7 +222,7 @@ GROUPS_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, descriptio
                       ] + PAGINATION_INPUTS
 
 
-@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
+@metadata_collector.command(command_name='ciphertrust-groups-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
                             inputs_list=GROUPS_LIST_INPUTS)
 def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
@@ -228,7 +241,8 @@ def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=tableToMarkdown('groups', raw_response.get('resources'))
     )
 
 
@@ -373,7 +387,7 @@ def users_list_command(client: CipherTrustClient, args: dict):
             allowed_auth_methods=args.get(CommandArguments.ALLOWED_AUTH_METHODS),
             allowed_client_types=args.get(CommandArguments.ALLOWED_CLIENT_TYPES),
             password_policy=args.get(CommandArguments.PASSWORD_POLICY),
-            return_groups=optional_arg_to_bool(args.get(CommandArguments.RETURN_GROUPS)),)
+            return_groups=optional_arg_to_bool(args.get(CommandArguments.RETURN_GROUPS)), )
         raw_response = client.get_users_list(params=params)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -382,9 +396,81 @@ def users_list_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-create')
+USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
+                      InputArgument(name=CommandArguments.USER_ID),
+                      InputArgument(name=CommandArguments.USERNAME),
+                      InputArgument(name=CommandArguments.EMAIL, description='Users email'),
+                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True, input_type=AllowedAuthMethods,
+                                    description='Filter by the login'
+                                                'authentication '
+                                                'method allowed to '
+                                                'the users. It is a '
+                                                'list of values. A '
+                                                '[]'
+                                                'can be'
+                                                'specified to get '
+                                                'users to whom no '
+                                                'authentication '
+                                                'method is allowed.'),
+                      InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True, input_type=AllowedClientTypes,
+                                    description=""),
+                      InputArgument(name=CommandArguments.CERTIFICATE_SUBJECT_DN,
+                                    description='The Distinguished Name of the user in certificate'),
+                      InputArgument(name=CommandArguments.CONNECTION, default='local_account',
+                                    description='Can be the name of a connection or "local_account" for a local user'),
+                      InputArgument(name=CommandArguments.EXPIRES_AT,
+                                    description="The expires_at field is applicable only for local user account. Only members "
+                                                "of the 'admin' and 'User Admins' groups can add expiration to an existing "
+                                                "local user account or modify the expiration date. Once the expires_at date is "
+                                                "reached, the user account gets disabled and the user is not able to perform "
+                                                "any actions. Setting the expires_at field to empty, removes the expiration "
+                                                "date of the user account.The supported date-time format is "
+                                                "2025-03-02T06:13:27.71402Z"),
+                      InputArgument(name=CommandArguments.IS_DOMAIN_USER, description="This flag can be used to create the user "
+                                                                                      "in a non-root domain where user "
+                                                                                      "management is allowed."),
+                      InputArgument(name=CommandArguments.PREVENT_UI_LOGIN, default='false',
+                                    description='If true, user is not allowed to login from Web UI. '),
+                      InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED, description='Password change required '
+                                                                                                'flag. If set to true, '
+                                                                                                'user will be required to '
+                                                                                                'change their password on '
+                                                                                                'next successful login.'),
+                      InputArgument(name=CommandArguments.PASSWORD_POLICY,
+                                    description='The password policy applies only to local user accounts and overrides the '
+                                                'global password policy. By default, the global password policy is applied to '
+                                                'the users.')
+
+                      ]
+
+USER_CREATE_DESCRIPTION = ('Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
+                           'are always created in the local, internal user database, but might have references to external '
+                           'identity providers.')
+
+
+@metadata_collector.command(command_name='ciphertrust-user-create', description=USER_CREATE_DESCRIPTION, inputs_list=USER_CREATE_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX)
 def user_create_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        allowed_auth_methods=argToList(args.get(CommandArguments.ALLOWED_AUTH_METHODS)),
+        allowed_client_types=argToList(args.get(CommandArguments.ALLOWED_CLIENT_TYPES)),
+        certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
+        connection=args.get(CommandArguments.CONNECTION),
+        email=args.get(CommandArguments.EMAIL),
+        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)),
+        is_domain_user=optional_arg_to_bool(args.get(CommandArguments.IS_DOMAIN_USER)),
+        login_flags={"prevent_ui_login": argToBoolean(args.get(CommandArguments.PREVENT_UI_LOGIN))},
+        name=args.get(CommandArguments.NAME),
+        password_change_required=optional_arg_to_bool(args.get(CommandArguments.PASSWORD_CHANGE_REQUIRED)),
+        password_policy=args.get(CommandArguments.PASSWORD_POLICY),
+        user_id = args.get(CommandArguments.USER_ID),
+        username = args.get(CommandArguments.USERNAME),
+    )
+    raw_response = client.create_user(request_data=request_data)
+    return CommandResults(
+        outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-user-update')

@@ -109,7 +109,7 @@ script:
     outputs: []
   - deprecated: false
     description: "\n    "
-    name: ciphertrust-group-list
+    name: ciphertrust-groups-list
     arguments:
     - name: group_name
       isArray: false
@@ -196,7 +196,7 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: ''
+    description: Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.
     name: ciphertrust-user-create
     arguments: []
     outputs: []
@@ -303,7 +303,7 @@ script:
       default: false
     - name: allowed_auth_methods
       isArray: true
-      description: Filter by the authentication method allowed to the users. It is a list of values. specified to get users to whom no authentication method is allowed.
+      description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
       required: false
       secret: false
       default: false
@@ -311,6 +311,7 @@ script:
       - password
       - user_certificate
       - password_with_user_certificate
+      - empty
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
