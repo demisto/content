@@ -10,6 +10,17 @@ from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
 
+class Engine:
+    def __init__(self, name: str):
+        self.name = name
+
+    def connect(self):
+        return self.name
+
+    def dispose(self):
+        return ""
+
+
 class ResultMock:
     def __init__(self):
         pass
@@ -211,6 +222,7 @@ EMPTY_OUTPUT = {
     }
 }
 
+GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
 
 @pytest.mark.parametrize('command, args, response, expected_result, header', [
     # Classic sql query, showing a table from database and convert it to readable data
@@ -626,3 +638,55 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
+
+def create_engine_and_connect_init(mocker, global_cache, cache_string):
+    """
+    An init helper function for testing the cache mechanism when creating an engine
+    """
+    mocker.patch.object(Client, '_convert_dialect_to_module')
+    mocker.patch.object(Client, '_generate_db_url')
+    mocker.patch.object(Client, '_get_global_cache', return_value=global_cache)
+    mocker.patch.object(Client, '_get_cache_string', return_value=cache_string)
+
+def test_create_engine_and_connect_engine_exists(mocker):
+    """
+    Given
+    - An engine is in the cache
+    When
+    - running create_engine_and_connect
+    Then
+    - Ensure it uses the exists engine which should be cached
+    """
+
+    create_engine_and_connect_init(mocker, {'1': Engine('Demo Engine')}, '1')
+
+    client = Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
+                    database='', ssl_connect=False, use_pool=True)
+        
+    assert client.connection == 'Demo Engine'
+
+def test_create_engine_and_connect_new_engine(mocker):
+    """
+    Given
+    - No engine is in the cache
+    When
+    - running create_engine_and_connect
+    Then
+    - Ensure a new engine is created
+    - Ensure the old engine is disposed and removed from the cache
+    """
+
+    create_engine_and_connect_init(mocker, {}, '1')
+
+    mocker.patch.object(sqlalchemy, 'create_engine')
+    old_engine = Engine('Old Engine')
+    setattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {'1': old_engine})
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine', return_value=Engine('New Engine'))
+
+    client = Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
+                    database='', ssl_connect=False, use_pool=True)
+
+    mock_create_engine.assert_called_once()
+    cache = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR)
+    assert client.connection == 'New Engine'
+    assert cache['1'] != old_engine
