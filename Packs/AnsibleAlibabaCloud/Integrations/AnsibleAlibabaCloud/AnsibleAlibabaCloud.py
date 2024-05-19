@@ -6,7 +6,7 @@ import ssh_agent_setup
 from AnsibleApiModule import *  # noqa: E402
 
 host_type = 'local'
-
+fd = 24
 # MAIN FUNCTION
 
 
