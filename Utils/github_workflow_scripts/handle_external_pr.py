@@ -472,8 +472,7 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    #content_reviewer = find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers)
-    content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
+    content_reviewer = find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers)
 
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
