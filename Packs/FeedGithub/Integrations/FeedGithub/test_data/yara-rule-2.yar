@@ -16,8 +16,3 @@ rule HvS_APT27_HyperBro_Decrypted_Stage2 {
       $lznt1_compressed_pe_header_large_4 = { 54 68 00 69 73 20 70 72 6f 67 72 00 61 6d 20 63 }
       $lznt1_compressed_pe_header_large_5 = { 61 6e 6e 6f 00 74 20 62 65 20 72 75 6e 00 20 69 }
       $lznt1_compressed_pe_header_large_6 = { 6e 20 44 4f 53 20 00 6d 6f 64 65 2e 0d 0d 0a 02 }
-
-   condition:
-      filesize < 200KB and
-      ($lznt1_compressed_pe_header_small at 0x9ce) or (all of ($lznt1_compressed_pe_header_large_*))
-}

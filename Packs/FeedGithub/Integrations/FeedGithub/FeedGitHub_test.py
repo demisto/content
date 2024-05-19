@@ -37,22 +37,89 @@ def test_get_base_head_commits_sha(mocker):
     pass
 
 def test_extract_commits(mocker):
-    response = util_load_json('test_data/extract_commit_response.json')
-    client = mock_client()
-    list_commits = client.extract_commits(response)
-    
     pass
 
+def test_get_content_files_from_repo(mocker):
+    """
+    Given:
+     - A list of relevant files to fetch content from.
+     - Parameters specifying the feed type and extensions to fetch.
+     - A mock response for the content files from the repository.
+    When:
+     - Calling get_content_files_from_repo to fetch the content of the relevant files.
+    Then:
+     - Returns the content of the relevant files matching the expected results.
+    """
+    from FeedGitHub import get_content_files_from_repo
+    client = mock_client()
+    params = {'feedType':'IOCs', 'extensions_to_fetch': ['txt']}
+    relevant_files = util_load_json('test_data/relevant-files.json')
+    return_data = util_load_json('test_data/content_files_from_repo.json')
+    mocker.patch.object(client, '_http_request', return_value=return_data)
+    content_files = get_content_files_from_repo(client, relevant_files, params)
+    assert content_files == util_load_json('test_data/get_content-files-from-repo-result.json')
+    
+
+def test_get_commit_files(mocker):
+    """
+    Given:
+     - A base commit SHA, a head commit SHA, and a flag indicating if it is the first fetch.
+     - A mock response for the list of all commit files between the base and head commits.
+    When:
+     - Calling get_commits_files to retrieve the relevant files and the current repo head SHA.
+    Then:
+     - Returns the list of relevant files and the current repo head SHA matching the expected results.
+    """
+    from FeedGitHub import get_commits_files
+    client = mock_client()
+    base = 'ad3e0503765479e9ee09bac5dee726eb918b9ebd'
+    head = '9a611449423b9992c126c20e47c5de4f58fc1c0e'
+    is_first_fetch = True
+    all_commits_files = util_load_json('test_data/all-commit-files-res.json')
+    current_repo_head_sha = 'ad3e0503765479e9ee09bac5dee726eb918b9ebd'
+    mocker.patch.object(client, 'get_files_between_commits', return_value=(all_commits_files, current_repo_head_sha))
+    relevant_files, current_repo_head_sha = get_commits_files(client, base, head, is_first_fetch)
+    assert relevant_files == util_load_json('test_data/relevent-files.json')
+
+
 def test_filter_out_files_by_status():
-    pass
+    """
+    Given:
+     - A list of dictionaries representing commit files, each containing a status and a raw_url.
+    When:
+     - Filtering out files by their status using the filter_out_files_by_status function.
+    Then:
+     - Returns a list of URLs for files that are added or modified.
+    """
+    from FeedGitHub import filter_out_files_by_status
+    commits_files = [
+        {"status": "added", "raw_url": "http://example.com/file1"},
+        {"status": "modified", "raw_url": "http://example.com/file2"},
+        {"status": "removed", "raw_url": "http://example.com/file3"},
+        {"status": "renamed", "raw_url": "http://example.com/file4"},
+        {"status": "added", "raw_url": "http://example.com/file5"}
+    ]
     
-    
-def test_get_content_files_from_repo():
-    pass
+    expected_output = [
+        "http://example.com/file1",
+        "http://example.com/file2",
+        "http://example.com/file5"
+    ]
+    actual_output = filter_out_files_by_status(commits_files)
+    assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
 
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_parse_and_map_yara_content():
     """
+    Given:
+     - YARA rule files as input from different sources.
+     rule-1 = classic yara rule
+     rule-2 = broken yara rule
+     rule-3 = yara rule has a unique structure that contains curly brackets inside the rule strings field
+    When:
+     - Parsing and mapping YARA content using the parse_and_map_yara_content function.
+    Then:
+     - Returns the parsed YARA rules in JSON format matching the expected results.
     """
     from FeedGitHub import parse_and_map_yara_content
     rule_1_input = {'example.com': util_load_txt("test_data/yara-rule-1.yar")}
@@ -70,6 +137,15 @@ def test_parse_and_map_yara_content():
     
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_extract_text_indicators():
+    """
+    Given:
+     - A dictionary containing file paths and their respective contents with IOC indicators.
+     - Parameters specifying the repository owner and name.
+    When:
+     - Calling extract_text_indicators to extract IOC indicators from the file contents.
+    Then:
+     - Returns the extracted IOC indicators matching the expected results.
+    """
     from FeedGitHub import extract_text_indicators
     ioc_indicators_input = {"example.com": util_load_txt("test_data/test-ioc-indicators.txt")}
     params = {"owner": "example.owner", "repo": "example.repo"}
@@ -93,9 +169,12 @@ def test_get_stix_indicators():
     
 def test_negative_limit():
     """
-        Given: A negative limit.
-        When: Calling get_indicators.
-        Then: Ensure ValueError is raised with the right message.
+        Given:
+            - A negative limit.
+        When:
+            - Calling get_indicators.
+        Then:
+            - Ensure ValueError is raised with the right message.
     """
     from FeedGitHub import get_indicators_command
     args = {'limit' : '-1'}
