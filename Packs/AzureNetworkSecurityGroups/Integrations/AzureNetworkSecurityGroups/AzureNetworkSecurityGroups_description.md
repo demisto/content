@@ -11,7 +11,14 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
 
-The application must have *user_impersonation* and *offline_access* permissions and must allow public client flows (can be found under the **Authentication** section of the app).
+### Required permissions
+
+- Azure Service Management - permission `user_impersonation` of type Delegated
+- Microsoft Graph - permission `offline_access` of type Delegated
+
+In order to add permission navigate:
+
+Home -> App registrations -> Search for you App under 'all applications' -> API permissions -> Add permission -> search for the specific Microsoft API -> select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
