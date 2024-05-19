@@ -12,6 +12,9 @@ app_id = 'app_id'
 subscription_id = 'subscription_id'
 resource_group_name = 'resource_group_name'
 
+AUTHORIZATION_CODE = 'Authorization Code'
+CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
+
 
 @pytest.fixture()
 def client(mocker):
@@ -126,7 +129,7 @@ def test_storage_blob_service_properties_get(client, mocker):
                                                  params={'subscription_id': subscription_id,
                                                          'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
-                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n'\
+                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n' \
                   '|---|---|---|---|---|---|---|\n' \
                   '| default | account_name | subscription_id | resource_group_name |  | false ' \
                   '|  |\n'
@@ -325,7 +328,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
-def test_generate_login_url(mocker):
+@pytest.mark.parametrize('authentication_type', [AUTHORIZATION_CODE, CLIENT_CREDENTIALS_FLOW])
+def test_generate_login_url(mocker, authentication_type):
     """
     Given:
         - Self-deployed are true and auth code are the auth flow
@@ -344,7 +348,7 @@ def test_generate_login_url(mocker):
     client_id = 'client_id'
     mocked_params = {
         'redirect_uri': redirect_uri,
-        'auth_type': 'Authorization Code',
+        'auth_type': authentication_type,
         'tenant_id': tenant_id,
         'app_id': client_id,
         'credentials': {
