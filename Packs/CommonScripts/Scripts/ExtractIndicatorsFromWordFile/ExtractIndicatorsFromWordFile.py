@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+# mypy: ignore-errors
 import subprocess
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
