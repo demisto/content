@@ -14,6 +14,7 @@ CrowdStrike Falcon Intel Indicator Feed
     | Type | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
     | First fetch time | The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator. | False |
     | Max. indicators per fetch | Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout. | False |
+    | Indicator field to fetch by | Choose which indicator field to fetch indicators by. Note: pagination is not supported when fetching by `Published Date` field. Default field is 'Last Updated'. | False |
     | Malicious confidence | Malicious confidence level to filter by. | False |
     | Include deleted indicators |  | False |
     | Filter | Advanced: FQL query. For more information visit the CrowdStrike documentation. | False |
@@ -27,7 +28,7 @@ CrowdStrike Falcon Intel Indicator Feed
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 **Note**: To change the fetch start time , use the `crowdstrike-reset-fetch-indicators` command after setting the desired time in `First Fetch Time` parameter.
@@ -48,30 +49,30 @@ Gets indicators from the CrowdStrike Falcon Intel Feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional | 
-| offset | The index of the first indicator to fetch. | Optional | 
+| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| offset | The index of the first indicator to fetch. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrikeFalconIntel.Indicators.id | String | Indicator ID. | 
-| CrowdStrikeFalconIntel.Indicators.value | String | Indicator value. | 
-| CrowdStrikeFalconIntel.Indicators.type | String | Indicator type. | 
-| CrowdStrikeFalconIntel.Indicators.fields.reports | Unknown | Indicator reports. | 
-| CrowdStrikeFalconIntel.Indicators.fields.actors | Unknown | Actors related to the indicator. | 
-| CrowdStrikeFalconIntel.Indicators.fields.malwarefamily | Unknown | Indicator malware families. | 
-| CrowdStrikeFalconIntel.Indicators.fields.stixkillchainphases | Unknown | Indicator kill chains. | 
-| CrowdStrikeFalconIntel.Indicators.fields.maliciousconfidence | String | Indicator malicious confidence. | 
-| CrowdStrikeFalconIntel.Indicators.fields.tags | Unknown | Indicator labels. | 
-| CrowdStrikeFalconIntel.Indicators.fields.targets | Unknown | Targets of the indicator. | 
-| CrowdStrikeFalconIntel.Indicators.fields.threattypes | Unknown | Indicator threat types. | 
-| CrowdStrikeFalconIntel.Indicators.fields.vulnerabilities | Unknown | Indicator vulnerabilities. | 
-| CrowdStrikeFalconIntel.Indicators.fields.ipaddress | Unknown | Indicator related IP address. | 
-| CrowdStrikeFalconIntel.Indicators.fields.domainname | Unknown | Indicator related domains. | 
-| CrowdStrikeFalconIntel.Indicators.fields.updateddate | Date | Indicator update date. | 
-| CrowdStrikeFalconIntel.Indicators.fields.creationdate | Unknown | Indicator creation date. | 
-| CrowdStrikeFalconIntel.Indicators.rawJSON | Unknown | Raw response. | 
+| CrowdStrikeFalconIntel.Indicators.id | String | Indicator ID. |
+| CrowdStrikeFalconIntel.Indicators.value | String | Indicator value. |
+| CrowdStrikeFalconIntel.Indicators.type | String | Indicator type. |
+| CrowdStrikeFalconIntel.Indicators.fields.reports | Unknown | Indicator reports. |
+| CrowdStrikeFalconIntel.Indicators.fields.actors | Unknown | Actors related to the indicator. |
+| CrowdStrikeFalconIntel.Indicators.fields.malwarefamily | Unknown | Indicator malware families. |
+| CrowdStrikeFalconIntel.Indicators.fields.stixkillchainphases | Unknown | Indicator kill chains. |
+| CrowdStrikeFalconIntel.Indicators.fields.maliciousconfidence | String | Indicator malicious confidence. |
+| CrowdStrikeFalconIntel.Indicators.fields.tags | Unknown | Indicator labels. |
+| CrowdStrikeFalconIntel.Indicators.fields.targets | Unknown | Targets of the indicator. |
+| CrowdStrikeFalconIntel.Indicators.fields.threattypes | Unknown | Indicator threat types. |
+| CrowdStrikeFalconIntel.Indicators.fields.vulnerabilities | Unknown | Indicator vulnerabilities. |
+| CrowdStrikeFalconIntel.Indicators.fields.ipaddress | Unknown | Indicator related IP address. |
+| CrowdStrikeFalconIntel.Indicators.fields.domainname | Unknown | Indicator related domains. |
+| CrowdStrikeFalconIntel.Indicators.fields.updateddate | Date | Indicator update date. |
+| CrowdStrikeFalconIntel.Indicators.fields.creationdate | Unknown | Indicator creation date. |
+| CrowdStrikeFalconIntel.Indicators.rawJSON | Unknown | Raw response. |
 
 #### Command Example
 ```!crowdstrike-indicators-list limit=3```
@@ -361,6 +362,7 @@ Gets indicators from the CrowdStrike Falcon Intel Feed.
 ### crowdstrike-reset-fetch-indicators
 ***
 Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.
+Pagination is not supported when setting the `Indicator field to fetch by` parameter to `Published Date`.
 
 #### Base Command
 

@@ -51,7 +51,7 @@ configuration:
   type: 0
   additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
   required: false
-- additionalinfo: "Choose which indicator field to fetch indicators by. Default field is 'Last Updated'."
+- additionalinfo: "Choose which indicator field to fetch indicators by. Note: pagination is not supported when fetching by `Published Date` field. Default field is 'Last Updated'."
   display: Indicator field to fetch by
   name: fetch_by_field
   options:
