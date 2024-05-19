@@ -8898,7 +8898,7 @@ if 'requests' in sys.modules:
                 method_whitelist = "allowed_methods" if hasattr(
                     Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
-                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
                 }
                 retry = Retry(
                     total=retries,
