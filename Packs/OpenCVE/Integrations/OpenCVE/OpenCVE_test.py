@@ -69,7 +69,7 @@ test_cases = [
                     "children": [], "operator": "OR",
                     "cpe_match": [
                         {
-                                    "cpe23Uri": "cpe:2.3:o:siemens:sppa-t3000_ses3000_firmware:*:*:*:*:*:*:*:*",
+                                    "cpe23Uri": "dummy_cpe",
                                     "cpe_name": [],
                                     "vulnerable": True
                         }
@@ -140,6 +140,14 @@ def test_parse_cpes(nodes, expected):
                             'Published': '2019-05-16T19:29:00Z',
                             'Modified': '2021-06-03T18:15:00Z',
                             'Description': "A remote code execution vulnerability exists in Remote Desktop Services formerly known as Terminal Services when an unauthenticated attacker connects to the target system using RDP and sends specially crafted requests, aka 'Remote Desktop Services Remote Code Execution Vulnerability'."  # noqa: E501
+                            }
+                           ),
+                          (util_load_json('test_data/CVE-2023-3421.json'),
+                           {'ID': 'CVE-2023-3421',
+                            'CVSS Score': 8.8,
+                            'Published': '2023-06-26T21:15:00Z',
+                            'Modified': '2024-01-31T17:15:12Z',
+                            'Description': "Dummy description"
                             }
                            )
                           ]
