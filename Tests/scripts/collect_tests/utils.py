@@ -66,7 +66,7 @@ class Machine(Enum):
         result: list[Machine] = [Machine.MASTER]
 
         if not version_range:
-            version_range = VersionRange(version.NegativeInfinity, version.Infinity)
+            version_range = [Machine.MASTER]
 
         result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
 
