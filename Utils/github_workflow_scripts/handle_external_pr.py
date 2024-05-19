@@ -104,7 +104,7 @@ def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bo
         Returns:
             bool: if PR need to be skipped
     """
-    labels_to_consider = {'Contribution On Hold'}
+    labels_to_consider = {'contribution on hold'}
     pr_labels_set = set(pr_labels)
     print(f'pr labels are: {pr_labels_set}')
     print(f'pr draft status is {pr.draft}')
