@@ -63,12 +63,16 @@ class Machine(Enum):
         :param version_range: range of versions. If None, all versions are returned.
         :return: Master, as well as all Machine items matching the input.
         """
-        result: list[Machine] = [Machine.MASTER]
+        result: list[Machine] = []
 
         if not version_range:
-            version_range = [Machine.MASTER]
+            return (Machine.MASTER,)
+        elif version_range.is_max_default:
+            return (Machine.MASTER,)
 
-        result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
+        result =
+        # result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
+
 
         return tuple(result)
 
@@ -105,7 +109,7 @@ class DictBased:
     def __contains__(self, item):
         return item in self.content
 
-    def _calculate_from_version(self) -> Version | NegativeInfinityType:
+    def _calculate_from_version(self) -> Version | None:
         # all three options are equivalent
         if value := (
                 self.get('fromversion', warn_if_missing=False)
@@ -114,9 +118,10 @@ class DictBased:
                 or self.get('serverMinVersion', warn_if_missing=False)
         ):
             return Version(value)
-        return version.NegativeInfinity
+        return None
 
-    def _calculate_to_version(self) -> Version | InfinityType:
+
+    def _calculate_to_version(self) -> Version | None:
         # all three options are equivalent
         if value := (
                 self.get('toversion', warn_if_missing=False)
@@ -124,7 +129,7 @@ class DictBased:
                 or self.get('toServerVersion', warn_if_missing=False)
         ):
             return Version(value)
-        return version.Infinity
+        return None
 
     def _handle_xsoar_marketplaces(self) -> tuple[MarketplaceVersions, ...] | None:
         """

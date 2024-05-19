@@ -1502,6 +1502,7 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
     return packs_to_upload, packs_to_update_metadata
 
 
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files

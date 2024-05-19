@@ -21,7 +21,7 @@ class VersionRange:
         if other is None or other.is_default or self.is_default:
             return self
 
-        self.min_version = min(self.min_version, other.min_version)
+        self.min_version = min(self.max_version, other.max_version)
         self.max_version = max(self.max_version, other.max_version)
 
         return self
@@ -32,3 +32,11 @@ class VersionRange:
         :return: whether the range is (-Infinity -> Infinity)
         """
         return self.min_version == version.NegativeInfinity and self.max_version == version.Infinity
+
+    @property
+    def is_min_default(self):
+        return self.min_version == version.NegativeInfinity
+
+    @property
+    def is_max_default(self):
+        return self.max_version == version.Infinity
