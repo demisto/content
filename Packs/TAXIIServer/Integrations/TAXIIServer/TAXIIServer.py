@@ -314,7 +314,6 @@ class TAXIIServer:
         else:
             endpoint = f':{self.port}'
 
-        demisto.debug(f'The url is: {self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}')
         return f'{self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}'
 
 
