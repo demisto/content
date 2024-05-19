@@ -5,6 +5,11 @@ import pytest
 import demistomock as demisto
 from AzureNetworkSecurityGroups import AzureNSGClient
 
+AUTHORIZATION_CODE = 'Authorization Code'
+CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
+SNAKED_CASE_AUTHORIZATION_CODE = 'authorization_code'
+SNAKED_CASE_CLIENT_CREDENTIALS_FLOW = 'client_credentials'
+
 
 def mock_client(mocker, http_request_result=None):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'current_refresh_token': 'refresh_token'})
@@ -61,7 +66,7 @@ def test_create_rule_command(mocker):
     from AzureNetworkSecurityGroups import create_rule_command
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
     create_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'test_rule',
-                        'direction': 'Inbound', 'action': 'Allow', 'protocol': 'Any', 'source': 'Any',
+                                      'direction': 'Inbound', 'action': 'Allow', 'protocol': 'Any', 'source': 'Any',
                                       'source_ports': '900-1000', 'destination_ports': '1,2,3,4-6'},
                         params={'subscription_id': 'subscriptionID',
                                 'resource_group_name': 'resourceGroupName'})
@@ -84,7 +89,7 @@ def test_update_rule_command(mocker):
     from AzureNetworkSecurityGroups import update_rule_command
     client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
     update_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'wow', 'direction': 'Inbound',
-                        'action': 'Allow', 'protocol': 'Any', 'source': 'Any', 'source_ports': '900-1000',
+                                      'action': 'Allow', 'protocol': 'Any', 'source': 'Any', 'source_ports': '900-1000',
                                       'destination_ports': '1,2,3,4-6'}, params={'subscription_id': 'subscriptionID',
                                                                                  'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
@@ -157,7 +162,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
-def test_generate_login_url(mocker):
+@pytest.mark.parametrize('authentication_type', [AUTHORIZATION_CODE, CLIENT_CREDENTIALS_FLOW])
+def test_generate_login_url(mocker, authentication_type):
     """
     Given:
         - Self-deployed are true and auth code are the auth flow
@@ -176,7 +182,7 @@ def test_generate_login_url(mocker):
     client_id = 'client_id'
     mocked_params = {
         'redirect_uri': redirect_uri,
-        'auth_type': 'Authorization Code',
+        'auth_type': authentication_type,
         'tenant_id': tenant_id,
         'app_id': client_id,
         'credentials': {
@@ -198,7 +204,11 @@ def test_generate_login_url(mocker):
     assert expected_url in res
 
 
-def test_auth_code_params(mocker):
+@pytest.mark.parametrize('authentication_type, grant_type', [
+    (AUTHORIZATION_CODE, SNAKED_CASE_AUTHORIZATION_CODE),
+    (CLIENT_CREDENTIALS_FLOW, SNAKED_CASE_CLIENT_CREDENTIALS_FLOW)
+])
+def test_auth_code_params(mocker, authentication_type, grant_type):
     """
     Given:
         - The auth_type is Authorization Code
@@ -213,7 +223,7 @@ def test_auth_code_params(mocker):
     client_id = 'client_id'
     mocked_params = {
         'redirect_uri': redirect_uri,
-        'auth_type': 'Authorization Code',
+        'auth_type': authentication_type,
         'tenant_id': tenant_id,
         'app_id': client_id,
         'credentials': {
@@ -226,7 +236,7 @@ def test_auth_code_params(mocker):
     expected_args = {
         'self_deployed': True,
         'auth_id': 'client_id',
-        'grant_type': 'authorization_code',
+        'grant_type': grant_type,
         'base_url': 'https://management.azure.com/subscriptions//resourceGroups//providers/Microsoft.Network/'
                     'networkSecurityGroups',
         'verify': True,
