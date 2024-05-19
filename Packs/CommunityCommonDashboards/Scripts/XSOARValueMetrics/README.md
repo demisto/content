@@ -46,7 +46,7 @@ The "computeduration" argument allows the overall incident open duration to be c
 | query | Query string for incidents using Lucene/Bleve. Do not include any date related fields - those are controlled by the "firstday" and "lastday" arguments.  Ignores the "filter" argument. |
 | windowstart | Timer field name to use as the start time for a user defined duration. |
 | windowend | Timer field name to use as the end time for a user defined duration. |
-| computeduration | Set to "yes" to compute incident duration |
+| computeduration | Compute the incident open duration from the created and closed dates. |
 
 ## Outputs
 

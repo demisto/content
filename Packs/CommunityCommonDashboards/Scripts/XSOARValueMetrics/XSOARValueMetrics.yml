@@ -37,7 +37,7 @@ args:
   name: windowend
 - auto: PREDEFINED
   defaultValue: no
-  description: Set to "yes" to compute incident duration.
+  description: Compute the incident open duration from the created and closed dates.
   name: computeduration
   predefined:
   - no
