@@ -84,29 +84,37 @@ def get_date(time: str):
     return date
 
 
-def adjust_string_pattern(filter_str):
-    logical_operators = re.findall(r'\bAND\b|\bTO\b|\bNOT\b|\bOR\b', filter_str)
-    conditions = re.split(r'\bAND\b|\bTO\b|\bNOT\b|\bOR\b', filter_str)
-    adjusted_conditions = []
+def transform_string(input_str):
+    key, value = input_str.split(':', 1)
+    if value.lower() in ['true', 'false']:
+        return f'{key}:{value.lower()}'
+    else:
+        return f'{key}:"{value}"'
 
-    for condition in conditions:
-        parts = condition.split(':')
-        if len(parts) == 2:
-            field, value = parts
-            if value.strip().lower() in ['true', 'false']:
-                adjusted_conditions.append(condition.strip())
-            else:
-                adjusted_conditions.append(f'{field.strip()}:\\"{value.strip()}\\"')
-        else:
-            adjusted_conditions.append(condition.strip())
 
-    adjusted_filter = ''
-    for i in range(len(adjusted_conditions)):
-        adjusted_filter += adjusted_conditions[i]
-        if i < len(logical_operators):
-            adjusted_filter += ' ' + logical_operators[i] + ' '
+def process_string(input_str):
+    logical_operators = ['AND', 'OR', 'NOT', 'TO']
+    transformed_parts = []
+    start_index = 0
+    
+    for end_index, char in enumerate(input_str):
+        if any(op in input_str[start_index:end_index] for op in logical_operators):
+            part = input_str[start_index:end_index].strip()
+            if part:
+                operator = next((op for op in logical_operators if op in part), None)
+                if operator:
+                    part = part.replace(operator, "").strip()
+                transformed_parts.append(transform_string(part))
+                transformed_parts.append(operator)
+            start_index = end_index + 1
+    
+    if start_index < len(input_str):
+        remaining_part = input_str[start_index:].strip()
+        if remaining_part:
+            transformed_parts.append(transform_string(remaining_part))
+    
+    return ' '.join(transformed_parts)
 
-    return adjusted_filter
 
 
 def _parse_entry(entry: dict):
@@ -132,18 +140,16 @@ def _parse_entry(entry: dict):
         "vendor": entry.get("vendor")
     }
     final = remove_empty_elements(parsed)
-    return final
-
+    return final if final else None
+    
 
 ''' COMMAND FUNCTIONS '''
 
 
 def search_command(client: Client, args: dict):
-    filter = args.get('query', '')
-    filter = adjust_string_pattern(filter)
-    # filter = "alert_subject:\"Inhibit System Recovery\" AND tier:\"Tier 1\" AND process_blocked:TRUE"
+    filter = process_string(args.get('query',''))
     kwargs = {
-        'filter': "",
+        'filter': filter,
         'fields': argToList(args.get('fields', '*')),
         'limit': arg_to_number(args.get('limit', '50')),
         'startTime': get_date(args.get('start_time', '7 days ago')),
@@ -159,12 +165,16 @@ def search_command(client: Client, args: dict):
 
     data_response = response.get("rows")
 
-    table_to_markdown = [_parse_entry(entry) for entry in data_response]
+    human_readable = []
+    for entry in data_response:
+        parsed_entry = _parse_entry(entry)
+        if parsed_entry:
+            human_readable.append(parsed_entry)
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Event",
         outputs=data_response,
-        readable_output=tableToMarkdown(name="Logs", t=table_to_markdown),
+        readable_output=tableToMarkdown(name="Logs", t=human_readable),
     )
 
 
@@ -177,7 +187,7 @@ def test_module(client: Client):    # pragma: no cover
     Returns:
         ok if successful
     """
-    # ADD COMMENT THAT IF WE ARRIVED HERE IT MEANS THAT THE LOGIN SUCCEEDED
+    # If we've reached this point, it indicates that the login process was successful.
     return 'ok'
 
 
