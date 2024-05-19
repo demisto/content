@@ -8,7 +8,8 @@ import urllib3
 urllib3.disable_warnings()
 
 API_VERSION = '2022-09-01'
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE,
+                       'Client Credentials': CLIENT_CREDENTIALS}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
                        'Authorization Code': "https://management.azure.com/.default",
                        'Client Credentials': "https://management.azure.com/.default"}
@@ -29,7 +30,8 @@ class ASClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+                                                                                                       connection_type else None,
             grant_type=GRANT_BY_CONNECTION.get(connection_type),
             base_url=f'{PREFIX_URL}{subscription_id}',
             verify=verify,
