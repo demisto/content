@@ -2,8 +2,8 @@ In order to connect to the Azure Network Security Groups use one of the followin
 
 1. *Authorization Code Flow* (Recommended).
 2. *Client Credentials Flow*
-2. *Device Code Flow*.
-3. *Azure Managed Identities Flow*.
+3. *Device Code Flow*.
+4. *Azure Managed Identities Flow*.
 
 ## Self-Deployed Azure App
 

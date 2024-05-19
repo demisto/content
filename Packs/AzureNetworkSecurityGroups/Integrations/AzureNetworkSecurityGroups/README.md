@@ -8,7 +8,7 @@ Use one of the following methods:
 
 1. *Authorization Code Flow* (Recommended).
 2. *Client Credentials*
-2. *Device Code Flow*.
+   3. *Device Code Flow*.
 
 ## Self-Deployed Azure App
 
@@ -766,7 +766,7 @@ Get a specific rule.
 ### azure-nsg-generate-login-url
 
 ***
-Generate the login url used for Authorization code flow or Client Credentials flow.
+Generate the login url used for Authorization code.
 
 #### Base Command
 
