@@ -493,7 +493,7 @@ def parse_cve(ocve: OpenCVE, cve: dict):
     parsed_cve['fields']['nodes'] = nodes
     parsed_cve['fields']['cwes'] = cve.get('cwes', [])
 
-    # To handle the case where the CVSS score is found under "metrics"
+    # To handle the case where the CVSS score is found under the "metrics" key
     if not parsed_cve['fields'].get('cvssscore'):
         cvss = cve.get('cvss', {})
         parsed_cve['fields']['cvssscore'] = cvss.get('v3') or cvss.get('v2')

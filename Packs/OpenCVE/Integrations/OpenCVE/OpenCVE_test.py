@@ -153,6 +153,9 @@ def test_parse_cpes(nodes, expected):
                           ]
                          )
 def test_cve_to_warroom(response, expected):
+    # Regarding the "CVE-2023-3421" case, the API response will hold the CVSS score under the "metrics" key,
+    # and we don't parse the data under that key, so in order to extract the CVSS score, we do so by accessing
+    # the scores under the key "cvss", and give precedence to v3 over v2
     _, parsed_cve = parse_cve(OPEN_CVE, response)
     warroom_output = cve_to_warroom(parsed_cve)
     assert warroom_output == expected
