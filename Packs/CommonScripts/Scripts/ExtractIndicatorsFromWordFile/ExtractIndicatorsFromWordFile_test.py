@@ -12,32 +12,24 @@ expected_partial_all_data = 'Lorem ipsum dolor sit amet, an quas nostro posidoni
     ('docxwithindicators.docx', 'test_data/docxwithindicators')
 ])
 def test_parse_word(file_name, file_path, request):
-    # Ensure the file_path is correct
-    src_path = os.path.abspath(file_path)
-    dst_path = os.path.join(os.getcwd(), file_name)
-
-    # Copy the file to the current working directory
-    shutil.copy(src_path, dst_path)
+    basename = os.path.basename(file_path)
+    shutil.copy(file_path, os.getcwd())
 
     def cleanup():
         try:
-            os.remove(dst_path)
+            os.remove(basename + ".docx")
+            os.remove(basename)
         except OSError:
             pass
 
     request.addfinalizer(cleanup)
-
-    # Ensure the current working directory is correct
     if os.getcwd().endswith('test_data'):
         os.chdir('..')
-
     parser = WordParser()
-    parser.get_file_details = lambda: None  # Mock the method if needed
+    parser.get_file_details = lambda: None
     parser.file_name = file_name
-    parser.file_path = dst_path
+    parser.file_path = basename
     parser.parse_word()
-
-    # Ensure expected_partial_all_data is defined and imported
     assert (expected_partial_all_data in parser.all_data)
 
 
