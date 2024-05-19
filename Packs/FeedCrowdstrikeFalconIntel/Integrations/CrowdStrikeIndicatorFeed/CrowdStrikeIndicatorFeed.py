@@ -234,22 +234,9 @@ class Client(CrowdStrikeClient):
 
             response = self.get_indicators(params=params)
 
-            # need to fetch all indicators after the limit
-            # if resources := response.get('resources', []):
-            #     new_last_marker_time = resources[-1].get('_marker')
-            # else:
-            #     new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
-            #     last_marker_time_for_debug = new_last_marker_time or 'No data yet'
-            #     demisto.debug('There are no indicators, '
-            #                   f'using last_marker_time={last_marker_time_for_debug} from Integration Context')
             new_last_run_timestamp = self.get_updated_last_run_time(response)
 
             if fetch_command:
-                # context = demisto.getIntegrationContext()
-                # demisto.info(f"last_marker_time before updating: {context.get('last_marker_time')}")
-                # context.update({'last_marker_time': new_last_marker_time})
-                # demisto.setIntegrationContext(context)
-                # demisto.info(f'set last_run to: {new_last_marker_time}')
                 self.set_integration_context_with_updated_last_run(new_last_run_timestamp)
 
             indicators.extend(self.create_indicators_from_response(response,
