@@ -10,7 +10,13 @@ from os.path import isfile
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
 
 
-def compress_multiple_with_password(file_names: List[str], zip_name: str, password: str = None):
+def unzip(zip_file_path: str, password: str = None):
+    with pyzipper.AESZipFile(zip_file_path) as zf:
+        zf.pwd = bytes(password, 'utf-8') if password else None
+        zf.extractall()
+
+
+def compress_multiple(file_names: List[str], zip_name: str, password: str = None):
     compression = pyzipper.ZIP_DEFLATED
     encryption = pyzipper.WZ_AES if password else None
 
@@ -26,6 +32,7 @@ def compress_multiple_with_password(file_names: List[str], zip_name: str, passwo
         if ret is not None:
             raise DemistoException('There was a problem with the zipping, file: ' + ret + ' is corrupted')
     zf.close()
+
 
 def escape_illegal_characters_in_file_name(file_name: str) -> str:
     if file_name:
@@ -87,7 +94,7 @@ def main():
             zipName = fileCurrentName + '.zip'
 
         # zipping the file
-        compress_multiple_with_password(zipName, file_names, password)
+        compress_multiple(zipName, file_names, password)
 
         with open(zipName, 'rb') as f:
             file_data = f.read()
