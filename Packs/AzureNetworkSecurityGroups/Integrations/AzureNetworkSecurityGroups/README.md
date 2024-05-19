@@ -10,6 +10,14 @@ Use one of the following methods:
 2. *Client Credentials*
 2. *Device Code Flow*.
 
+## Self-Deployed Azure App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+
+To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
+
+The application must have *user_impersonation* and *offline_access* permissions and must allow public client flows (can be found under the **Authentication** section of the app).
+
 ### Authentication Using the Authorization Code Flow (recommended)
 
 1. In the **Authentication Type** field, select the **Authorization Code** option.
@@ -51,15 +59,9 @@ At end of the process you'll see a message that you've logged in successfully.
 
 #### Cortex XSOAR Azure App
 
-In order to use the Cortex XSOAR Azure application, use the default application ID (55f9764e-300a-474a-a2bb-549cece85439).
+In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
 
-You only need to fill in your subscription ID and resource group name. For more details, follow [Azure Integrations Parameters](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
-
-#### Self-Configured Azure App
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
-
-The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+You only need to fill in your subscription ID and resource group name.
 
 ## Configure Azure Network Security Groups on Cortex XSOAR
 

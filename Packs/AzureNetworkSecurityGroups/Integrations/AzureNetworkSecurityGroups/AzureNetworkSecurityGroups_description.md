@@ -5,26 +5,7 @@ In order to connect to the Azure Network Security Groups use one of the followin
 2. *Device Code Flow*.
 3. *Azure Managed Identities Flow*.
 
-### Authentication Using the Device Code Flow
-
-Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
-
-In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
-
-1. Fill in the required parameters.
-2. Run the ***!azure-nsg-auth-start*** command.
-3. Follow the instructions that appear.
-4. Run the ***!azure-nsg-auth-complete*** command.
-
-At end of the process you'll see a message that you've logged in successfully.
-
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
-
-You only need to fill in your subscription ID and resource group name.
-
-#### Self-Deployed Azure App
+## Self-Deployed Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
@@ -57,6 +38,25 @@ The application must have *user_impersonation* and *offline_access* permissions 
 8. In the **Client Secret** field, enter your Client Secret.
 9. Click **Test** to validate the URLs, token, and connection
 10. Save the instance.
+
+### Authentication Using the Device Code Flow
+
+Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
+
+In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+
+1. Fill in the required parameters.
+2. Run the ***!azure-nsg-auth-start*** command.
+3. Follow the instructions that appear.
+4. Run the ***!azure-nsg-auth-complete*** command.
+
+At end of the process you'll see a message that you've logged in successfully.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
+
+You only need to fill in your subscription ID and resource group name.
 
 ### Azure Managed Identities Authentication
 
