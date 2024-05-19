@@ -176,7 +176,7 @@ class Client:
 
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
-                engines[cache_key] = engine
+                engines[cache_key] = engine  # Keep in cache to allow disposing later
 
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
