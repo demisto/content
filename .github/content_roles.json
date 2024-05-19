@@ -1,9 +1,10 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "anas-yousef",
-        "mmhw"
+        "RotemAmit",
+        "jlevypaloalto",
+        "Shellyber"
     ],
-    "CONTRIBUTION_TL": "JasBeilin",
+    "CONTRIBUTION_TL": "BEAdi",
     "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
     "ON_CALL_DEVS": [
         "adaud",
