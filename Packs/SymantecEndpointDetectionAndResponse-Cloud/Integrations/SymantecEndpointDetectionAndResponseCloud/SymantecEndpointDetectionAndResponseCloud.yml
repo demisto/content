@@ -152,9 +152,11 @@ script:
     - description: Sha256 of the file that will be added to the deny list.
       name: sha256
       required: true
-    - name: policy_version
+    - description: Policy version
+      name: policy_version
       required: true
-    - name: filename
+    - description: The filename
+      name: filename
       required: true
     description: This API lets you perform update of Deny list policy. Target updated policy to apply new changes.
     name: symantec-edr-cloud-update-deny-list-policy
