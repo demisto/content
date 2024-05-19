@@ -379,7 +379,7 @@ class XSOAR2STIXParser:
             is_sdo = True
         else:
             demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
-            return {}, {}
+            return {}, {}, {}
 
         created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
 
