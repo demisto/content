@@ -11,7 +11,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-
+gh = 24
 DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 FETCH_LIMIT = 200
