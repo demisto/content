@@ -1,6 +1,10 @@
 Mimecast unified email management offers cloud email services for email security, continuity and archiving emails.
 Please read detailed instructions in order to understand how to set the integration's parameters.
 
+## Rate Limiting
+https://developer.services.mimecast.com/api-overview#rate-limiting
+Mimecast uses quotas per period of time (i.e. rate limits) that apply to every API function, per registered App. A typical quota is a number of API calls per unit of time (but could also be expressed as the size of data returned, etc.). When the quota has been exhausted, further requests will fail until the new time period restarts the count of API calls. The rate limit reset value is the length of time in milliseconds before a minimum of 1 API will be permitted.
+
 ## Configure Mimecast v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -10,6 +14,8 @@ Please read detailed instructions in order to understand how to set the integrat
    | **Parameter** | **Required** |
    | --- | --- |
    | BaseUrl - API url including region, For example https://api.services.mimecast.com | True |
+   | Client ID | False |
+   | Client Secret | False |
    | App ID | False |
    | User Email Address (Use for auto token refresh) | False |
    | Password | False |
@@ -22,9 +28,6 @@ Please read detailed instructions in order to understand how to set the integrat
    | Fetch URL incidents | False |
    | Fetch attachment incidents | False |
    | Fetch impersonation incidents | False |
-   | Use OAuth 2.0 | False |
-   | Client ID | False |
-   | Client Secret | False |
    | Incident type | False |
    | Hours before first fetch to retrieve incidents | False |
    | Incident type | False |
@@ -1307,3 +1310,985 @@ Get the count of the inbound and outbound email queues at specified times.
 >| 4                         | 2022-07-19T08:20:00+0000 |
 >| 4                         | 2022-07-19T08:30:00+0000 |
 >| 4                         | 2022-07-19T08:40:00+0000 |
+
+### mimecast-get-archive-search-logs
+
+***
+Retrieves archive search logs.
+
+#### Base Command
+
+`mimecast-get-archive-search-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Text to search within the logs, which can contain email addresses. | Optional | 
+| page | Page number for pagination. | Optional | 
+| page_size | Number of items per page for pagination. Default value is 50. | Optional | 
+| limit | The maximum number of items to returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.ArchiveSearchLog.meta.pagination.pageSize | Number | The number of logs per page in the search result. | 
+| Mimecast.ArchiveSearchLog.meta.pagination.totalCount | Number | The total number of logs in the search result. | 
+| Mimecast.ArchiveSearchLog.meta.pagination.next | String | The link to the next page of logs in the search result. | 
+| Mimecast.ArchiveSearchLog.meta.status | Number | The status of the search operation. | 
+| Mimecast.ArchiveSearchLog.data.logs.createTime | Date | The time that the search was executed. | 
+| Mimecast.ArchiveSearchLog.data.logs.emailAddr | String | The email address of the user who performed the search. | 
+| Mimecast.ArchiveSearchLog.data.logs.source | String | The source of the search. | 
+| Mimecast.ArchiveSearchLog.data.logs.searchText | String | The text used in the search. | 
+| Mimecast.ArchiveSearchLog.data.logs.searchReason | String | The reason for the search. | 
+| Mimecast.ArchiveSearchLog.data.logs.description | String | The description of the search if any. | 
+
+#### Command example
+```!mimecast-get-archive-search-logs limit=1 query=user@gmail.com```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "ArchiveSearchLog": [
+            {
+                "createTime": "2024-03-04T12:27:02+0000",
+                "description": "Audit [Page 1] - Depth 100",
+                "emailAddr": "user@gmail.com",
+                "searchReason": "",
+                "searchText": "test@gmail.com",
+                "source": "archive"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|createTime|description|emailAddr|searchReason|searchText|source|
+>|---|---|---|---|---|---|
+>| 2024-03-04T12:27:02+0000 | Audit [Page 1] - Depth 100 | user@gmail.com |  | test@gmail.com | archive |
+
+
+### mimecast-get-search-logs
+
+***
+Retrieves the search logs.
+
+#### Base Command
+
+`mimecast-get-search-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Text to search within the logs, which can contain email addresses. | Optional | 
+| start | The earliest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the start of the current day. Default is 'now'. | Optional | 
+| end | The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day. Default is 'now'. | Optional | 
+| page | Page number for pagination. | Optional | 
+| page_size | Number of items per page for pagination. Default value is 50. | Optional | 
+| limit | The maximum number of items to returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.SearchLog.meta.pagination.pageSize | Number | The number of results per page. | 
+| Mimecast.SearchLog.meta.pagination.totalCount | Number | The total number of search results. | 
+| Mimecast.SearchLog.meta.pagination.next | String | A link to the next page of search results. | 
+| Mimecast.SearchLog.meta.status | Number | The status code of the search operation. | 
+| Mimecast.SearchLog.data.logs.createTime | Date | The time that the search was executed. | 
+| Mimecast.SearchLog.data.logs.emailAddr | String | The email address of the user who performed the search. | 
+| Mimecast.SearchLog.data.logs.source | String | The source context of the search. | 
+| Mimecast.SearchLog.data.logs.searchText | String | The text used in the search. | 
+| Mimecast.SearchLog.data.logs.searchPath | String | The search path used in the search. | 
+| Mimecast.SearchLog.data.logs.searchReason | String | The reason entered when the search was executed. | 
+| Mimecast.SearchLog.data.logs.isAdmin | Boolean | Indicates if the search was an admin search or not. | 
+| Mimecast.SearchLog.data.logs.museQuery | String | \(Deprecated\) The Mimecast search query used, if any. | 
+| Mimecast.SearchLog.data.logs.description | String | The description of the search, if any. | 
+
+#### Command example
+```!mimecast-get-search-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000  query=user@gmail.com limit=1```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "SearchLog": [
+            {
+                "createTime": "2024-05-06T12:01:42+0000",
+                "description": "Admin Search",
+                "emailAddr": "user@gmail.com",
+                "isAdmin": true,
+                "museQuery": "<?xml version=\"1.0\"?> \n    <xmlquery trace=\"iql,muse\">\n    <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">\n        <smartfolders/>\n        <return-fields>\n            <return-field>attachmentcount</return-field>\n            <return-field>status</return-field>\n            <return-field>subject</return-field>\n            <return-field>size</return-field>\n            <return-field>receiveddate</return-field>\n            <return-field>displayfrom</return-field>\n            <return-field>id</return-field>\n            <return-field>displayto</return-field>\n            <return-field>smash</return-field>\n        </return-fields>\n    </metadata>\n    <muse>\n        <text></text>\n        <date select=\"last_year\"/>\n        \n        <docs select=\"optional\"></docs>\n        <route/>\n    </muse>\n</xmlquery>",
+                "searchPath": "",
+                "searchReason": "",
+                "searchText": "{\"query\":\"\"}",
+                "source": "archive"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|createTime|description|emailAddr|isAdmin|museQuery|searchPath|searchReason|searchText|source|
+>|---|---|---|---|---|---|---|---|---|
+>| 2024-05-06T12:01:42+0000 | Admin Search | user@gmail.com | true | <?xml version="1.0"?> <br/>    <xmlquery trace="iql,muse"><br/>    <metadata query-type="emailarchive" archive="true" active="false" page-size="25" startrow="0"><br/>        <smartfolders/><br/>        <return-fields><br/>            <return-field>attachmentcount</return-field><br/>            <return-field>status</return-field><br/>            <return-field>subject</return-field><br/>            <return-field>size</return-field><br/>            <return-field>receiveddate</return-field><br/>            <return-field>displayfrom</return-field><br/>            <return-field>id</return-field><br/>            <return-field>displayto</return-field><br/>            <return-field>smash</return-field><br/>        </return-fields><br/>    </metadata><br/>    <muse><br/>        <text></text><br/>        <date select="last_year"/><br/>        <br/>        <docs select="optional"></docs><br/>        <route/><br/>    </muse><br/></xmlquery> |  |  | {"query":""} | archive |
+
+
+### mimecast-get-view-logs
+
+***
+Retrieves the email view logs.
+
+#### Base Command
+
+`mimecast-get-view-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Text to search within the logs, which can contain email addresses. | Optional | 
+| start | The earliest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the start of the current day. Default is now. | Optional | 
+| end | The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day. Default is now. | Optional | 
+| page | Page number for pagination. | Optional | 
+| page_size | Number of items per page for pagination. Default value is 50. | Optional | 
+| limit | The maximum number of items to return. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.SearchLog.viewer | String | The email address of the user who viewed the message. | 
+| Mimecast.SearchLog.source | String | The source of the message. | 
+| Mimecast.SearchLog.viewed | Date | The date and time that the message was viewed. | 
+| Mimecast.SearchLog.from | String | The sender of the viewed message. | 
+| Mimecast.SearchLog.to | String | The recipient of the viewed message. | 
+| Mimecast.SearchLog.subject | String | The subject of the viewed message. | 
+| Mimecast.SearchLog.messageDate | Date | The date and time that the message was received. | 
+| Mimecast.SearchLog.contentViewed | Boolean | Indicates if the message content was viewed or not. | 
+| Mimecast.SearchLog.discoveryCase | Boolean | Indicates if the viewed message is a part of an existing discovery case. | 
+
+#### Command example
+```!mimecast-get-view-logs start="1 day"  end=2024-09-16T14:49:18+0000 query=user@gmail.com limit=1```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "ViewLog": [
+            {
+                "contentViewed": false,
+                "discoveryCase": false,
+                "from": "admin@gmail.com",
+                "messageDate": "2023-08-03T10:59:31+0000",
+                "source": "Message Tracking",
+                "subject": "Re",
+                "to": "admin2@gmail.com",
+                "viewed": "2023-08-03T12:06:01+0000",
+                "viewer": "user@gmail.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|contentViewed|discoveryCase|from|messageDate|source|subject|to|viewed|viewer|
+>|---|---|---|---|---|---|---|---|---|
+>| false | false | admin@gmail.com | 2023-08-03T10:59:31+0000 | Message Tracking | Re | admin2@gmail.com | 2023-08-03T12:06:01+0000 | user@gmail.com |
+
+
+### mimecast-list-account
+
+***
+This endpoint returns the summary details for an account in Mimecast.
+
+#### Base Command
+
+`mimecast-list-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_name | The account name. | Optional | 
+| account_code | The unique Mimecast account code for the customer. | Optional | 
+| admin_email | The email address of the first administrator created on the account. | Optional | 
+| region | The region where the account is hosted. | Optional | 
+| user_count | The number of user licenses on the account. | Optional | 
+| page | Page number for pagination. | Optional | 
+| page_size | Number of items per page for pagination. Default value is 50. | Optional | 
+| limit | The maximum number of items to returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Account.region | String | The region where the account is hosted. | 
+| Mimecast.Account.archive | Boolean | If gateway features are enabled on the account. | 
+| Mimecast.Account.gateway | Boolean | If gateway features are enabled on the account. | 
+| Mimecast.Account.passphrase | String | The passphrase set on the account, used by Mimecast Support when verifying callers during support calls. | 
+| Mimecast.Account.supportCode | String | The support code. | 
+| Mimecast.Account.maxRetention | Number | The maximum retention in days configured for the account. | 
+| Mimecast.Account.maxRetentionConfirmed | Boolean | If the maximum retention value on the account has been confirmed. | 
+| Mimecast.Account.minRetentionEnabled | Boolean | If minimum retention is enabled on the account. | 
+| Mimecast.Account.automatedSegmentPurge | Boolean | If purging of expired storage segments is enabled on the account. | 
+| Mimecast.Account.type | String | The type of account. | 
+| Mimecast.Account.policyInheritance | Boolean | If policy inheritance is enabled on the account. | 
+| Mimecast.Account.databaseCode | String | The database code. | 
+| Mimecast.Account.searchReason | Boolean | The search reason. | 
+| Mimecast.Account.contentAdministratorDefaultView | String | The content administrator default view. | 
+| Mimecast.Account.adminSessionTimeout | Number | The admin session timeout. | 
+| Mimecast.Account.exportApi | Boolean | If the export API is enabled. | 
+| Mimecast.Account.exgestAllowQuery | Boolean | If the exgest allows queries. | 
+| Mimecast.Account.exgestAllowExtraction | Boolean | If the exgest allows extraction. | 
+| Mimecast.Account.expressAccount | Boolean | If the account is an express account. | 
+| Mimecast.Account.cybergraphV2Enabled | Boolean | If Cybergraph v2 is enabled. | 
+| Mimecast.Account.accountCode | String | The unique Mimecast account code for the customer. | 
+| Mimecast.Account.accountName | String | The account name. | 
+| Mimecast.Account.adminEmail | String | The email address of the first administrator created on the account. | 
+| Mimecast.Account.contactEmail | String | The contact email address. | 
+| Mimecast.Account.domain | String | The temporary domain name added to the account. This name is generated by Mimecast and is only used for initial access to the account. It should not be used for mail routing. | 
+| Mimecast.Account.userCount | Number | The number of user licenses on the account. | 
+| Mimecast.Account.mimecastId | String | The unique Mimecast ID of the account. | 
+| Mimecast.Account.contactName | String | The contact name. | 
+| Mimecast.Account.telephone | Date | The telephone number. | 
+| Mimecast.Account.packages | String | An array of packages enabled on the customer account. | 
+
+#### Command example
+```!mimecast-list-account account_code=CUSA123456 account_name="api test"```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "Account": [
+            {
+                "accountCode": "CUSA123456",
+                "accountName": "api test",
+                "adminEmail": "",
+                "adminSessionTimeout": 60,
+                "archive": false,
+                "automatedSegmentPurge": true,
+                "contactEmail": "admin2@gmail.com",
+                "contactName": "Adnan Kharuf",
+                "contentAdministratorDefaultView": "Metadata",
+                "cybergraphV2Enabled": false,
+                "databaseCode": "usterm13",
+                "domain": "",
+                "exgestAllowExtraction": true,
+                "exgestAllowQuery": false,
+                "exportApi": false,
+                "expressAccount": false,
+                "gateway": true,
+                "maxRetention": 30,
+                "maxRetentionConfirmed": true,
+                "mimecastId": "01-0102-00236",
+                "minRetentionEnabled": false,
+                "packages": [
+                    "Stationery 1.0 (Site) [1042]",
+                    "Journal Services [1053]",
+                    "Email Encryption and Privacy (Site) [1023]",
+                    "Attachment Protection (Site) [1056]",
+                    "Attachment Management (Site) [1004]",
+                    "Attachment Protection (Pro) [1059]",
+                    "Threat Remediation [1075]",
+                    "Desktop Apps - Outlook (Pro) [1016]",
+                    "BYO: Threat Intelligence [1089]",
+                    "Secure Email Gateway (Site) [1039]",
+                    "Desktop Apps - Mac (Pro) [1051]",
+                    "Message Recovery Service (Site) [1031]",
+                    "Enhanced Logging [1061]",
+                    "Mimecast Platform [1033]",
+                    "URL Protection (Site) [1043]",
+                    "Auto Responders (Site) [1005]",
+                    "Configuration Backup & Restore [1106]",
+                    "Content Control and Data Leak Prevention (Site) [1013]",
+                    "Mimecast Mobile Pro (Pro) [1055]",
+                    "Branding [1003]",
+                    "Metadata Track and Trace (Site) [1032]",
+                    "Message Recovery Service - User [1058]",
+                    "Internal Email Protect [1064]",
+                    "Content Control and Data Leak Prevention (Pro) [1015]",
+                    "Impersonation Protection [1060]",
+                    "Mobile Apps (Pro) [1036]",
+                    "Advanced MTA (Site) [1002]"
+                ],
+                "passphrase": "",
+                "policyInheritance": false,
+                "region": "us",
+                "searchReason": false,
+                "supportCode": "A967",
+                "telephone": "1234569",
+                "type": "full",
+                "userCount": 10
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|accountCode|accountName|adminEmail|adminSessionTimeout|archive|automatedSegmentPurge|contactEmail|contactName|contentAdministratorDefaultView|cybergraphV2Enabled|databaseCode|domain|exgestAllowExtraction|exgestAllowQuery|exportApi|expressAccount|gateway|maxRetention|maxRetentionConfirmed|mimecastId|minRetentionEnabled|packages|passphrase|policyInheritance|region|searchReason|supportCode|telephone|type|userCount|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| CUSA123456 | api test |  | 60 | false | true | admin2@gmail.com | Adnan Kharuf | Metadata | false | usterm13 |  | true | false | false | false | true | 30 | true | 01-0102-00236 | false | Stationery 1.0 (Site) [1042],<br/>Journal Services [1053].... |  | false | us | false | A967 | 1234569 | full | 10 |
+
+### mimecast-list-policies
+
+***
+List all existing Mimecast blocked sender policies.
+
+#### Base Command
+
+`mimecast-list-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Sets the result to start returning results. Default value is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Policy.ID | string | Policy ID. | 
+| Mimecast.Policy.Sender.Address | string | Block Sender by email address. | 
+| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. | 
+| Mimecast.Policy.Sender.Group | string | Block Sender by group. | 
+| Mimecast.Policy.Bidirectional | boolean | Blocked policy is bidirectional or not. | 
+| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
+| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
+| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
+| Mimecast.Policy.FromDate | date | Policy validation start date. | 
+| Mimecast.Policy.ToDate | date | Policy expiration date. | 
+| Mimecast.Policy.Sender.Type | string | Block emails to sender type. | 
+| Mimecast.Policy.Receiver.Type | string | Block emails to receiver type. | 
+
+#### Command example
+```!mimecast-list-policies policyType="address-alteration" page_size=1 page=1```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "Policies": [
+            {
+                "addressAlterationSetId": "eNoVjr0OgjA111111",
+                "id": "eNo1jsESgU121111",
+                "policy": {
+                    "bidirectional": false,
+                    "conditions": {},
+                    "createTime": "2024-05-07T14:24:06+0000",
+                    "description": "שש",
+                    "enabled": true,
+                    "enforced": false,
+                    "from": {
+                        "type": "everyone"
+                    },
+                    "fromDate": "1900-01-01T00:00:00+0000",
+                    "fromEternal": true,
+                    "fromPart": "envelope_from",
+                    "fromType": "everyone",
+                    "lastUpdated": "2024-05-07T14:24:06+0000",
+                    "override": false,
+                    "to": {
+                        "type": "everyone"
+                    },
+                    "toDate": "2100-01-01T23:59:59+0000",
+                    "toEternal": true,
+                    "toType": "everyone"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Mimecast list blocked sender policies: 
+> These are the existing Blocked Sender Policies:
+>|Policy ID|Sender|Reciever|Bidirectional|Start|End|
+>|---|---|---|---|---|---|
+>| eNo1jsESgU121111 | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+
+### mimecast-create-block-sender-policy
+
+***
+Create a Blocked Sender Policy.
+
+#### Base Command
+
+`mimecast-create-block-sender-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Policy description. | Required | 
+| fromPart | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from. | Optional | 
+| fromType | Blocked Sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Required | 
+| fromValue | Required if fromType is one of email domain, profile group, individual email address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. | Optional | 
+| toType | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Required | 
+| toValue | Required if fromType is one of email domain, profile group, individual email address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. | Optional | 
+| option | The block option, must be one of: no_action, block_sender. Possible values are: no_action, block_sender. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Policy.ID | string | Policy ID. | 
+| Mimecast.Policy.Sender.Address | string | Block Sender by email address. | 
+| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. | 
+| Mimecast.Policy.Sender.Group | string | Block Sender by group. | 
+| Mimecast.Policy.Bidirectional | unknown | Blocked policy is bidirectional or not. | 
+| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
+| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
+| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
+| Mimecast.Policy.Fromdate | date | Policy validation start date. | 
+| Mimecast.Policy.Todate | date | Policy expiration date. | 
+| Mimecast.Policy.Sender.Type | String | The sender type. | 
+| Mimecast.Policy.Receiver.Type | String | The receiver type. | 
+
+#### Command example
+```!mimecast-create-block-sender-policy description=aa fromType=everyone option=block_sender toType=everyone```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "Policy": {
+            "Bidirectional": false,
+            "Description": "test",
+            "FromDate": "1900-01-01T00:00:00+0000",
+            "ID": "eNo1jsESgU1234sE11111111111",
+            "Receiver": {
+                "Address": null,
+                "Domain": null,
+                "Group": null,
+                "Type": "everyone"
+            },
+            "Reciever": {
+                "Domain": null,
+                "Email Address": null,
+                "Group": null,
+                "Type": "everyone"
+            },
+            "Sender": {
+                "Address": null,
+                "Domain": null,
+                "Group": null,
+                "Type": "everyone"
+            },
+            "ToDate": "2100-01-01T23:59:59+0000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Mimecast Create Policy: 
+> Policy Was Created Successfully!
+>|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
+>|---|---|---|---|---|---|---|
+>| eNo1jsESgU1234sE11111111111 | test | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+
+### mimecast-update-block-sender-policy
+
+***
+Updates the specified policy.
+
+#### Base Command
+
+`mimecast-update-block-sender-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The ID of the policy to update. | Required | 
+| description | A new description for the policy. | Optional | 
+| fromType | The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Optional | 
+| toType | The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Optional | 
+| option | The block action. Possible values are: no_action, block_sender. | Optional | 
+| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain. | Optional | 
+| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain. | Optional | 
+| fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Policy.ID | string | Policy ID. | 
+| Mimecast.Policy.Sender.Address | string | Block sender by email address value. | 
+| Mimecast.Policy.Sender.Domain | string | Block sender by domain value. | 
+| Mimecast.Policy.Sender.Group | string | Block sender by group value. | 
+| Mimecast.Policy.Bidirectional | boolean | Whether the blocked policy is bidirectional. | 
+| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
+| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
+| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
+| Mimecast.Policy.Fromdate | date | The policy validation start date. | 
+| Mimecast.Policy.Todate | date | The policy expiration date. | 
+| Mimecast.Policy.Sender.Type | String | The sender type. | 
+| Mimecast.Policy.Receiver.Type | String | The receiver type. | 
+
+#### Command example
+```!mimecast-update-block-sender-policy policy_id=eNo1jsESgU1234```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "Policy": {
+            "Bidirectional": false,
+            "Description": "test policy",
+            "FromDate": "1900-01-01T00:00:00+0000",
+            "ID": "eNo1jsESgU1234",
+            "Receiver": {
+                "Address": null,
+                "Domain": "gmail.com",
+                "Group": null,
+                "Type": "email_domain"
+            },
+            "Sender": {
+                "Address": null,
+                "Domain": "gmail.com",
+                "Group": null,
+                "Type": "email_domain"
+            },
+            "ToDate": "2100-01-01T23:59:59+0000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Mimecast Update Policy: 
+> Policy Was Updated Successfully!
+>|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
+>|---|---|---|---|---|---|---|
+>| eNo1jsESgU1234 | test policy | Group: null<br/>Email Address: null<br/>Domain: gmail.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: gmail.com<br/>Type: email_domain | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+
+### mimecast-create-antispoofing-bypass-policy
+
+***
+This endpoint can be used to create a new Anti-Spoofing SPF based Bypass policy.
+
+#### Base Command
+
+`mimecast-create-antispoofing-bypass-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| option | The policy action to be taken. Possible values are: disable_bypass, enable_bypass. | Required | 
+| bidirectional | Determines if the policy should apply in both email directions, where the sender and recipient configurations are reversed. Possible values are: yes, no. | Optional | 
+| comment | Comment about the policy. This field is not visible within the Administration Console. | Optional | 
+| spf_domain | Source IP Ranges for a policy it will only apply when the source IP address used to transmit the email data falls inside/matches the range(s) configured. IP ranges should be entered in CIDR notation. | Required | 
+| description | Narrative to describe the policy for future reference. | Required | 
+| enabled | Determines if the policy should be enabled to process messages. Possible values are: yes, no. Default is yes. | Optional | 
+| enforced | Determines if the policy enforcement option is enabled. Possible values are: yes, no. Default is no. | Optional | 
+| from_attribute_id | The secure id of the address attribute. | Optional | 
+| from_attribute_name | Name of address attribute. | Optional | 
+| from_attribute_value | Value to which address attribute is equal to. | Optional | 
+| from_date | Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false. | Optional | 
+| from_eternal | Specifies if the policy should have no start date. Possible values are: yes, no. Default is yes. | Optional | 
+| from_part | Policy from part. Possible values are: envelope_from, header_from, both. | Optional | 
+| to_date | Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false. | Optional | 
+| to_eternal | Specifies if the policy should have no expiration date. Possible values are: yes, no. Default is yes. | Optional | 
+| override | Specifies if the policy should be set as an override, to be considered prior to equally-specific policies. Possible values are: yes, no. | Optional | 
+| from_type | The scope for which the policy should should be applied. Possible values are everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required | 
+| from_value | Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. | Optional | 
+| to_type | The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required | 
+| to_value | Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.AntispoofingBypassPolicy.data.option | String | The action taken by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.id | String | The ID of the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.description | String | The description of the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromPart | String | The part of the email message considered for the sender address by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.from.type | String | The type of the sender address considered by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.to.type | String | The type of the recipient address considered by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromType | String | The sender address type considered by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.toType | String | The recipient address type considered by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromEternal | Boolean | Indicates if the sender address should always be considered, regardless of the current date and time, by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.toEternal | Boolean | Indicates if the recipient address should always be considered, regardless of the current date and time, by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromDate | String | The start date from which the Antispoofing Bypass Policy should begin to apply. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.toDate | String | The end date until which the Antispoofing Bypass Policy should apply. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.override | Boolean | Indicates if the Antispoofing Bypass Policy should be applied prior to other policies of the same type, if conditions are met. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.bidirectional | Boolean | Indicates if the Antispoofing Bypass Policy should also apply in reverse email flow. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.conditions.spfDomains | String | The SPF domains considered by the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.enabled | Boolean | Indicates if the Antispoofing Bypass Policy should be considered for emails processing through Mimecast. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.enforced | Boolean | Indicates if the Antispoofing Bypass Policy is enforced. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.createTime | String | The creation timestamp of the Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.lastUpdated | String | The most recent modification timestamp of the Antispoofing Bypass Policy. | 
+
+#### Command example
+```!mimecast-create-antispoofing-bypass-policy description=test from_type=email_domain from_value=mail.google.com option=disable_bypass to_type=everyone spf_domain=google.com```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "AntispoofingBypassPolicy": {
+            "data": [
+                {
+                    "id": "eNo1jsESgU1234",
+                    "option": "disable_bypass",
+                    "policy": {
+                        "bidirectional": false,
+                        "conditions": {
+                            "spfDomains": [
+                                "google.com"
+                            ]
+                        },
+                        "createTime": "2024-05-16T13:37:44+0000",
+                        "description": "test",
+                        "enabled": false,
+                        "enforced": false,
+                        "from": {
+                            "emailDomain": "mail.google.com",
+                            "type": "email_domain"
+                        },
+                        "fromDate": "1900-01-01T00:00:00+0000",
+                        "fromEternal": true,
+                        "fromPart": "envelope_from",
+                        "fromType": "email_domain",
+                        "fromValue": "mail.google.com",
+                        "lastUpdated": "2024-05-16T13:37:44+0000",
+                        "override": false,
+                        "to": {
+                            "type": "everyone"
+                        },
+                        "toDate": "2100-01-01T23:59:59+0000",
+                        "toEternal": true,
+                        "toType": "everyone"
+                    }
+                }
+            ],
+            "fail": [],
+            "meta": {
+                "status": 200
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Anti-Spoofing  Bypass policy was created successfully
+### mimecast-update-antispoofing-bypass-policy
+
+***
+This endpoint can be used to update an existing Anti-Spoofing SPF based Bypass policy.
+
+#### Base Command
+
+`mimecast-update-antispoofing-bypass-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Narrative to describe the policy for future reference. | Optional | 
+| id | The Mimecast secure id of an existing policy. Use /api/policy/antispoofing-bypass/get-policy to obtain the id. | Required | 
+| enabled | Determines if the policy should be enabled to process messages. The default value is true. Possible values are: yes, no. Default is yes. | Optional | 
+| from_date | (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false. | Optional | 
+| from_eternal | Specifies if the policy should have no start date. Possible values are: yes, no. Default is yes. | Optional | 
+| from_part | Policy from part - envelope_from , header_from, both. Possible values are: envelope_from, header_from, both. | Optional | 
+| to_date | Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false. | Optional | 
+| to_eternal | Specifies if the policy should have no expiration date. Possible values are: yes, no. Default is yes. | Optional | 
+| bidirectional | Determines if the policy should apply in both email directions, where the sender and recipient configurations are reversed. Possible values are: yes, no. | Optional | 
+| option | The policy action to be taken. Must be disable_bypass or enable_bypass. Possible values are: disable_bypass, enable_bypass. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.AntispoofingBypassPolicy.meta.status | Number | The status of the Mimecast Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.option | String | The action taken by the Mimecast Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.id | String | The Mimecast secure id of the Address Alteration Set \(folder\) applied by the policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.description | String | The description for the Mimecast Antispoofing Bypass Policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromPart | String | The part of the sender's address considered by the policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.from.type | String | The sender address type \(envelope or header\). | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.to.type | String | The recipient address type \(envelope or header\). | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromType | String | The sender address type used by the policy \(envelope_from, header_from, or both\). | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.toType | String | The recipient address component scoped by the policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromEternal | Boolean | Determines if the policy applies regardless of the current date and time. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.toEternal | Boolean | Determines if the policy continues to apply regardless of the current date and time. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.fromDate | Date | The start date for the policy to apply. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.toDate | Date | The end date for the policy to cease application. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.override | Boolean | Determines if the policy applies and takes precedence over other policies of the same type. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.bidirectional | Boolean | Determines if the policy applies to reverse email flow. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.conditions | Unknown | Conditions used to determine if the policy should be considered. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.enabled | Boolean | Determines if the policy is considered for emails processing through Mimecast. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.enforced | Boolean | Determines if the policy is enforced. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.createTime | Date | The creation timestamp of the policy. | 
+| Mimecast.AntispoofingBypassPolicy.data.policy.lastUpdated | Date | The most recent modification timestamp of the policy. | 
+
+#### Command example
+```!mimecast-update-antispoofing-bypass-policy id=eNo1jsESgU1234 option=disable_bypass```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "AntispoofingBypassPolicy": {
+            "data": [
+                {
+                    "id": "eNo1jsESgU1234sESgU1234",
+                    "option": "disable_bypass",
+                    "policy": {
+                        "bidirectional": false,
+                        "conditions": {},
+                        "createTime": "2024-05-06T13:48:16+0000",
+                        "description": "test_1",
+                        "enabled": true,
+                        "enforced": false,
+                        "from": {
+                            "type": "everyone"
+                        },
+                        "fromDate": "1900-01-01T00:00:00+0000",
+                        "fromEternal": true,
+                        "fromPart": "envelope_from",
+                        "fromType": "everyone",
+                        "lastUpdated": "2024-05-16T13:37:47+0000",
+                        "override": false,
+                        "to": {
+                            "type": "everyone"
+                        },
+                        "toDate": "2100-01-01T23:59:59+0000",
+                        "toEternal": true,
+                        "toType": "everyone"
+                    }
+                }
+            ],
+            "fail": [],
+            "meta": {
+                "status": 200
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>eNo1jsESgU1234sESgU1234 has been updated successfully
+### mimecast-create-address-alteration-policy
+
+***
+This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
+
+#### Base Command
+
+`mimecast-create-address-alteration-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The Mimecast secure id of the Address Alteration Set (folder) that will be applied by this policy. | Required | 
+| policy_description | A description of the policies for future reference. | Required | 
+| bidirectional | Determines if the policy should apply in both directions, where the from and to configurations are reversed. Possible values are: yes, no. | Optional | 
+| comment | Comment about the policy. This field is not visible within the Administration Console. | Optional | 
+| conditions | Policy application based on email transmission requirements. | Optional | 
+| enabled | Determines if the policy should be enabled to process messages. Possible values are: yes, no. Default is yes. | Optional | 
+| enforced | Determines if the policy enforcement option is enabled. Possible values are: yes, no. Default is no. | Optional | 
+| from_date | string (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false. | Optional | 
+| from_eternal | Specifies if the policy should have no start date. Possible values are: yes, no. Default is yes. | Optional | 
+| from_part | Policy from part - envelope_from , header_from, both. Possible values are: envelope_from, header_from, both. | Optional | 
+| to_date | Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false. | Optional | 
+| to_eternal | Specifies if the policy should have no expiration date. Possible values are: yes, no. Default is yes. | Optional | 
+| override | Specifies if the policy should be set as an override, to be considered prior to equally-specific policies. Possible values are: yes, no. | Optional | 
+| from_type | The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required | 
+| to_type | The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required | 
+| from_value | Required if fromType is one of email domain, profile group, individual email address. Expected values If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. | Optional | 
+| to_value | Required if toType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.AddressAlterationPolicy.meta.status | Number | The status of the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.addressAlterationSetId | String | The Mimecast secure ID of the Address Alteration Set \(folder\) that will be applied by this policy. | 
+| Mimecast.AddressAlterationPolicy.data.id | String | The Mimecast secure ID of the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.description | String | The description for the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromPart | String | Should the sender address be considered based on the envelope, header, or either address. | 
+| Mimecast.AddressAlterationPolicy.data.policy.from.type | String | The type of sender address considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.to.type | String | The type of recipient address considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromType | String | The sender address type considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.toType | String | The recipient address type considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromEternal | Boolean | Should the policy start to apply, regardless of the current date and time, for the sender address. | 
+| Mimecast.AddressAlterationPolicy.data.policy.toEternal | Boolean | Should the policy start to apply, regardless of the current date and time, for the recipient address. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromDate | String | The start date that the policy should begin to apply. | 
+| Mimecast.AddressAlterationPolicy.data.policy.toDate | String | The end date that the policy should cease to apply. | 
+| Mimecast.AddressAlterationPolicy.data.policy.override | Boolean | Should the policy be considered for application, and apply if conditions are met, prior to other policies of the same type. | 
+| Mimecast.AddressAlterationPolicy.data.policy.bidirectional | Boolean | Should the policy also apply in reverse email flow. | 
+| Mimecast.AddressAlterationPolicy.data.policy.conditions | Unknown | Conditions of the sending platform to determine if the policy should be considered. | 
+| Mimecast.AddressAlterationPolicy.data.policy.enabled | Boolean | Should the policy be considered for emails processing through Mimecast. | 
+| Mimecast.AddressAlterationPolicy.data.policy.enforced | Boolean | Is the policy enforced. | 
+| Mimecast.AddressAlterationPolicy.data.policy.createTime | String | The creation timestamp of the policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.lastUpdated | String | The most recent modification timestamp of the policy. | 
+
+#### Command example
+```!mimecast-create-address-alteration-policy policy_id=eNoVjr0OgjA111111 from_type=everyone to_type=external_addresses policy_description=test102```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "AddressAlterationPolicy": {
+            "data": [
+                {
+                    "addressAlterationSetId": "eNoVjr0OgjA111111",
+                    "id": "eNo1jsESgU1234",
+                    "policy": {
+                        "bidirectional": false,
+                        "conditions": {},
+                        "createTime": "2024-05-16T13:37:50+0000",
+                        "description": "test102",
+                        "enabled": true,
+                        "enforced": false,
+                        "from": {
+                            "type": "everyone"
+                        },
+                        "fromDate": "1900-01-01T00:00:00+0000",
+                        "fromEternal": true,
+                        "fromPart": "envelope_from",
+                        "fromType": "everyone",
+                        "lastUpdated": "2024-05-16T13:37:50+0000",
+                        "override": false,
+                        "to": {
+                            "type": "external_addresses"
+                        },
+                        "toDate": "2100-01-01T23:59:59+0000",
+                        "toEternal": true,
+                        "toType": "external_addresses"
+                    }
+                }
+            ],
+            "fail": [],
+            "meta": {
+                "status": 200
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Address Alteration policy was created successfully
+### mimecast-update-address-alteration-policy
+
+***
+This API endpoint can be used to update an existing Address Alteration policy.
+
+#### Base Command
+
+`mimecast-update-address-alteration-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The Mimecast secure id of the Address Alteration policy to be modified. | Required | 
+| policy_description | A description of the policies for future reference. | Optional | 
+| bidirectional | Determines if the policy should apply in both directions, where the from and to configurations are reversed. Possible values are: yes, no. | Optional | 
+| comment | Comment about the policy. This field is not visible within the Administration Console. | Optional | 
+| conditions | Policy application based on email transmission requirements. | Optional | 
+| enabled | Determines if the policy should be enabled to process messages. Possible values are: yes, no. Default is yes. | Optional | 
+| enforced | Determines if the policy enforcement option is enabled. Possible values are: yes, no. Default is no. | Optional | 
+| from_date | string (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false. | Optional | 
+| from_eternal | Specifies if the policy should have no start date. Possible values are: yes, no. Default is yes. | Optional | 
+| from_part | Policy from part - envelope_from , header_from, both. Possible values are: envelope_from, header_from, both. | Optional | 
+| to_date | Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false. | Optional | 
+| to_eternal | Specifies if the policy should have. Default is yes. | Optional | 
+| override | Specifies if the policy should be set as an override, to be considered prior to equally-specific policies. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.AddressAlterationPolicy.meta.status | Number | The status of the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.id | String | The Mimecast secure ID of the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.description | String | The description for the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromPart | String | Should the sender address be considered based on the envelope, header, or either address. | 
+| Mimecast.AddressAlterationPolicy.data.policy.from.type | String | The type of sender address considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.to.type | String | The type of recipient address considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromType | String | The sender address type considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.toType | String | The recipient address type considered by the Address Alteration Policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromEternal | Boolean | Should the policy start to apply, regardless of the current date and time, for the sender address. | 
+| Mimecast.AddressAlterationPolicy.data.policy.toEternal | Boolean | Should the policy start to apply, regardless of the current date and time, for the recipient address. | 
+| Mimecast.AddressAlterationPolicy.data.policy.fromDate | String | The start date that the policy should begin to apply. | 
+| Mimecast.AddressAlterationPolicy.data.policy.toDate | String | The end date that the policy should cease to apply. | 
+| Mimecast.AddressAlterationPolicy.data.policy.override | Boolean | Should the policy be considered for application, and apply if conditions are met, prior to other policies of the same type. | 
+| Mimecast.AddressAlterationPolicy.data.policy.bidirectional | Boolean | Should the policy also apply in reverse email flow. | 
+| Mimecast.AddressAlterationPolicy.data.policy.conditions | Unknown | Conditions of the sending platform to determine if the policy should be considered. | 
+| Mimecast.AddressAlterationPolicy.data.policy.enabled | Boolean | Should the policy be considered for emails processing through Mimecast. | 
+| Mimecast.AddressAlterationPolicy.data.policy.enforced | Boolean | Is the policy enforced. | 
+| Mimecast.AddressAlterationPolicy.data.policy.createTime | String | The creation timestamp of the policy. | 
+| Mimecast.AddressAlterationPolicy.data.policy.lastUpdated | String | The most recent modification timestamp of the policy. | 
+
+#### Command example
+```!mimecast-update-address-alteration-policy id=eNo1jsESgU1234```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "AddressAlterationPolicy": {
+            "data": [
+                {
+                    "id": "eNo1jsESgU1234",
+                    "policy": {
+                        "bidirectional": false,
+                        "conditions": {},
+                        "createTime": "2024-05-15T08:31:58+0000",
+                        "description": "test",
+                        "enabled": true,
+                        "enforced": false,
+                        "from": {
+                            "type": "everyone"
+                        },
+                        "fromDate": "1900-01-01T00:00:00+0000",
+                        "fromEternal": true,
+                        "fromPart": "envelope_from",
+                        "fromType": "everyone",
+                        "lastUpdated": "2024-05-16T13:37:53+0000",
+                        "override": false,
+                        "to": {
+                            "type": "everyone"
+                        },
+                        "toDate": "2100-01-01T23:59:59+0000",
+                        "toEternal": true,
+                        "toType": "everyone"
+                    }
+                }
+            ],
+            "fail": [],
+            "meta": {
+                "status": 200
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>eNo1jsESgU1234 has been updated successfully
