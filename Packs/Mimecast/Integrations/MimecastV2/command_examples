@@ -6,7 +6,6 @@
 !mimecast-release-hold-message id="eNpVzskOgjAABNB_6RUPpQUBEw8ILkiCuOByMpGWRW0RaKvR-O_C0fObycwHtDSVDS0JGAERLQN8LHPjRmq30nCzWUTels15Hpq-_Xh5eVAU1iwONXN6umZBcsguUoXOKnKjGKHrPtFbQVKKFJzwp3Zy_PC58y2ToWklmI2Nx3v9wrGCsTsGA1DcSd3vWthA0B46xgAIxvsjshW0YTruQoo2bVlxMNI75YR2CiHqoJZU0vNf__sDnRk_cQ"
 !mimecast-list-email-queues from_date="2015-11-16T14:49:18+0000" to_date="2022-11-16T14:49:18+0000"
 !mimecast-search-processing-message
-
 !mimecast-create-policy description=test fromPart=both fromType=email_domain fromValue=gmail.com toType=email_domain toValue=gmail.com option=no_action
 !mimecast-get-archive-search-logs limit=25 query=teste@gmail.com
 !mimecast-get-search-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000  query=teste@gmail.com limit=105

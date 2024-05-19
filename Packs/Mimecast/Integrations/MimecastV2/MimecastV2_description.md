@@ -22,3 +22,7 @@ For detailed information about creating these fields, please refer to the [Mimec
 ### Fetch Incidents
 the integration has the ability to fetch 3 types of incidents: url, attachment & impersonation.
 In order to activate them first tick "fetch incidents" box, then tick the relevant boxes for each fetch type you want.
+
+### Rate Limiting
+https://developer.services.mimecast.com/api-overview#rate-limiting
+Mimecast uses quotas per period of time (i.e. rate limits) that apply to every API function, per registered App. A typical quota is a number of API calls per unit of time (but could also be expressed as the size of data returned, etc.). When the quota has been exhausted, further requests will fail until the new time period restarts the count of API calls. The rate limit reset value is the length of time in milliseconds before a minimum of 1 API will be permitted.
