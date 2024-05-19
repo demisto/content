@@ -39,7 +39,7 @@ script:
     - name: timeout
       description: Timeout (seconds) for wait on lock to be freed.
     - name: guid
-      description: guid unique value of the lock.
+      description: Unique identifier value of the lock.
       hidden: true
     - name: timeout_err_msg
       description: Polling Timeout error message.
