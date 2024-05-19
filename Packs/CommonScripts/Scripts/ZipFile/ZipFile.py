@@ -1,5 +1,3 @@
-import pyzipper
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -7,6 +5,7 @@ from CommonServerUserPython import *
 import re
 import shutil
 import zipfile
+import pyzipper
 from os.path import isfile
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
@@ -77,20 +76,22 @@ def main():
 
         # zipping the file
         if password:
-            zf = pyzipper.AESZipFile(zipName, mode='w', encryption=pyzipper.WZ_AES)
-            zf.setpassword(str.encode(password))
+            with pyzipper.AESZipFile(zipName, mode='w', encryption=pyzipper.WZ_AES) as zf:
+                zf.setpassword(str.encode(password))
+                for file_name in file_names:
+                    zf.write(file_name, compress_type=compression)
         else:
             zf = zipfile.ZipFile(zipName, mode='w')
-        try:
-            for file_name in file_names:
-                zf.write(file_name, compress_type=compression)
-            # testing for file integrity
-            ret = zf.testzip()
-            if ret is not None:
-                raise DemistoException('There was a problem with the zipping, file: ' + ret + ' is corrupted')
+            try:
+                for file_name in file_names:
+                    zf.write(file_name, compress_type=compression)
+                # testing for file integrity
+                ret = zf.testzip()
+                if ret is not None:
+                    raise DemistoException('There was a problem with the zipping, file: ' + ret + ' is corrupted')
 
-        finally:
-            zf.close()
+            finally:
+                zf.close()
 
         with open(zipName, 'rb') as f:
             file_data = f.read()
