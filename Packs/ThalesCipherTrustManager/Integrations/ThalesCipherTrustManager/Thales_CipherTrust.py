@@ -151,7 +151,17 @@ def test_module(client: CipherTrustClient):
     return 'ok'
 
 
-GROUPS_LIST_INPUTS = [InputArgument(name='group_name', description='Group name to filter by.' , input_type=)
+GROUPS_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Group name to filter by.'),
+                      InputArgument(name=CommandArguments.USER_ID,
+                                    description='User id to filter by membership. “nil” will return groups with no members.'),
+                      InputArgument(name=CommandArguments.CONNECTION, description='Connection id or name to filter by.'),
+                      InputArgument(name=CommandArguments.CLIENT_ID,
+                                    description='Client id to filter by membership. “nil” will return groups with no members.'),
+                      InputArgument(name=CommandArguments.PAGE, description='page to return.'),
+                      InputArgument(name=CommandArguments.PAGE_SIZE,
+                                    description='number of entries per page. defaults to 50 in case only page was provided.'),
+                      InputArgument(name=CommandArguments.LIMIT,
+                                    description='The max number of resources to return. defaults to 50', default='50')
                       ]
 
 
@@ -159,9 +169,6 @@ GROUPS_LIST_INPUTS = [InputArgument(name='group_name', description='Group name t
                             inputs_list=GROUPS_LIST_INPUTS)
 def groups_list_command(client: CipherTrustClient, args: Dict[str, Any]) -> CommandResults:
     """
-
-
-    Args:
         client (CipherTrustClient): CipherTrust client to use.
         group_name (str): Group name to filter by.
         user_id (str): User id to filter by membership. “nil” will return groups with no members.
@@ -174,52 +181,7 @@ def groups_list_command(client: CipherTrustClient, args: Dict[str, Any]) -> Comm
     Returns:
        A ``CommandResults`` object that is then passed to ``return_results``,
         that contains an groups list.
-    Context Outputs:
-        skip (int):
-        limit (int):
-        total (int):
-        resources.created_at (datetime):
 
-    "resources": [
-        {
-            "created_at": "2024-02-14T10:08:19.228482Z",
-            "email": "admin@local",
-            "last_login": "2024-05-15T13:50:42.891227Z",
-            "logins_count": 98,
-            "name": "admin",
-            "nickname": "admin",
-            "updated_at": "2024-05-15T13:50:42.891557Z",
-            "user_id": "local|1e83aa21-0141-458a-8d77-e7d21192a82f",
-            "username": "admin",
-            "user_metadata": {
-                "current_domain": {
-                    "id": "00000000-0000-0000-0000-000000000000",
-                    "name": "root"
-                }
-            },
-            "failed_logins_count": 0,
-            "account_lockout_at": null,
-            "failed_logins_initial_attempt_at": null,
-            "last_failed_login_at": null,
-            "password_changed_at": "2024-02-14T11:36:13.102117Z",
-            "password_change_required": false,
-            "certificate_subject_dn": "",
-            "enable_cert_auth": false,
-            "auth_domain": "00000000-0000-0000-0000-000000000000",
-            "login_flags": {
-                "prevent_ui_login": false
-            },
-            "auth_domain_name": "root",
-            "allowed_auth_methods": [
-                "password"
-            ],
-            "allowed_client_types": [
-                "unregistered",
-                "public",
-                "confidential"
-            ]
-        }
-    ]
     """
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT), args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
@@ -239,10 +201,14 @@ def groups_list_command(client: CipherTrustClient, args: Dict[str, Any]) -> Comm
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-group-create', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+GROUPS_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group.'),
+                        InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.')]
+
+
+@metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUPS_CREATE_INPUTS, outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def group_create_command(client: CipherTrustClient, args: dict):
     """
-    Args:
+
         client (CipherTrustClient): CipherTrust client to use.
         name (str): Name of the group. required=True
         description(str): description of the group.
@@ -260,6 +226,8 @@ def group_create_command(client: CipherTrustClient, args: dict):
         raw_response=raw_response
     )
 
+GROUP_DELETE_INPUTS = [InputArgument(name = CommandArguments.NAME , required=True, description='Name of the group'),
+                       InputArgument(name = CommandArguments.FORCE, description='When set to true, groupmaps within this group will be deleted')]
 
 @metadata_collector.command(command_name='ciphertrust-group-delete')
 def group_delete_command(client: CipherTrustClient, args: dict):
