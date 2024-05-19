@@ -1,0 +1,1 @@
+This API lets you fetch incidents from Symantec Cloud EDR platform. Take actions such as updating deny list based on sha256 value, quarantine/unquarantine devices, initiate device scan and utilize Symantec Cloud's Threat Intelligence.
