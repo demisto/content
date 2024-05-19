@@ -118,7 +118,7 @@ tasks:
       - "4"
     scriptarguments:
       thread_id:
-        simple: ${ZoomMail.Email.messages.[0].threadId}
+        simple: ${ZoomMail.Email.[0].threadId}
     separatecontext: false
     continueonerrortype: ""
     view: |-
