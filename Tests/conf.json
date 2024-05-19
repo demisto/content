@@ -5666,6 +5666,10 @@
             "playbookID": "Fortimail"
         },
         {
+            "integrations": "Zoom Mail",
+            "playbookID": "ZoomMailTest"
+        },
+        {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
