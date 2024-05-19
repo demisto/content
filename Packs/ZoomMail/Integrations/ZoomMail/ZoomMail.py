@@ -443,7 +443,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
         if new_internal_date > last_fetch_info["internalDate"]:
             last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
 
-    # If we don't collect any new messages, but we have a next fetch token,
+    # If we don't collect any new messages, but we have a next fetch token
     # we are fetching old messages and need to stop.
     if len(incidents) == 0 and next_page_token:
         demisto.info("No new messages found, stopping fetch.")
