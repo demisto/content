@@ -283,7 +283,8 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     E2E_TEST_FOLDER: "general"
-  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  needs:
+    - demisto-sdk-nightly:xsoar-prepare-testing-bucket
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -324,7 +325,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     FAIL_ON_ERROR: "true"
     E2E_TEST_FOLDER: "xsoar"
-  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  needs:
+    - demisto-sdk-nightly:xsoar-prepare-testing-bucket
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -410,7 +412,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       PRODUCT_TYPE: "XSIAM"
       ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
       ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
-  needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
+  needs:
+    - demisto-sdk-nightly:mpv2-prepare-testing-bucket
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -473,7 +476,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
     CLOUD_API_TOKENS: $XSIAM_TOKENS
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
-  needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
+  needs:
+    - demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket
   stage: run-instances
   script:
     - EXIT_CODE=0
