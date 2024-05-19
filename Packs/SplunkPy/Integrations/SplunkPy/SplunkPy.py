@@ -655,9 +655,20 @@ class Notable:
     def to_incident(self, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
+        demisto.debug("in to_incident function")
+        demisto.debug(f"self.enrichments is: {self.enrichments}")
 
         for e in self.enrichments:
-            self.data[e.type] = e.data
+            demisto.debug(f"in the loop: enrichment is: {e}")
+            if e.type == DRILLDOWN_ENRICHMENT:
+                if not self.data.get(e.type, {}): # first drilldown enrichment result to add
+                    self.data[e.type] = {e.id : e.data}
+                    
+                else: # there are previous drilldown enrichments in the notable's data
+                    self.data[e.type][e.id] = e.data
+                    
+            else: # asset or identity enrichments
+                self.data[e.type] = e.data
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
         return self.create_incident(self.data, self.occurred, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
@@ -1032,7 +1043,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                     if earliest_offset:
                         kwargs['earliest_time'] = earliest_offset
                     query = build_search_query({"query": searchable_query})
-                    demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]}: {query}")
+                    demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]} is: {query}")
                     try:
                         job = service.jobs.create(query, **kwargs)
                         jobs.append(job)
