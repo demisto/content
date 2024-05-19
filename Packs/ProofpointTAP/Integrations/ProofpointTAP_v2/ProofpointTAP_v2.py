@@ -579,7 +579,6 @@ def fetch_incidents(
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-
     fetch_times = get_fetch_times(start_query_time)
     for i in range(len(fetch_times) - 1):
         start_query_time = fetch_times[i]
