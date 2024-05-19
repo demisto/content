@@ -96,8 +96,8 @@ def process_string(input_str):
     logical_operators = ['AND', 'OR', 'NOT', 'TO']
     transformed_parts = []
     start_index = 0
-    
-    for end_index, char in enumerate(input_str):
+
+    for end_index, _char in enumerate(input_str):
         if any(op in input_str[start_index:end_index] for op in logical_operators):
             part = input_str[start_index:end_index].strip()
             if part:
@@ -107,14 +107,13 @@ def process_string(input_str):
                 transformed_parts.append(transform_string(part))
                 transformed_parts.append(operator)
             start_index = end_index + 1
-    
+
     if start_index < len(input_str):
         remaining_part = input_str[start_index:].strip()
         if remaining_part:
             transformed_parts.append(transform_string(remaining_part))
-    
-    return ' '.join(transformed_parts)
 
+    return ' '.join(transformed_parts)
 
 
 def _parse_entry(entry: dict):
@@ -141,13 +140,13 @@ def _parse_entry(entry: dict):
     }
     final = remove_empty_elements(parsed)
     return final if final else None
-    
+
 
 ''' COMMAND FUNCTIONS '''
 
 
 def search_command(client: Client, args: dict):
-    filter = process_string(args.get('query',''))
+    filter = process_string(args.get('query', ''))
     kwargs = {
         'filter': filter,
         'fields': argToList(args.get('fields', '*')),
