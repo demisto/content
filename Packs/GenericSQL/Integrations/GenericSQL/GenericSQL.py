@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Any
@@ -31,7 +31,7 @@ except Exception:  # noqa: S110
 pymysql.install_as_MySQLdb()
 
 GLOBAL_CACHE_ATTR = '_generic_sql_engine_cache'
-ENGINES = '_generic_sql_engines'
+GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
 DEFAULT_POOL_TTL = 600
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -117,7 +117,7 @@ class Client:
         if cache is None:
             cache = ExpiringDict(100, max_age_seconds=self.pool_ttl)
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
-            setattr(sqlalchemy, ENGINES, {})
+            setattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
         return cache
 
     def _generate_db_url(self, module):
@@ -168,15 +168,15 @@ class Client:
             engine = cache.get(cache_key, None)
             if engine is None:  # (first time or expired) need to initialize
 
-                engines = getattr(sqlalchemy, ENGINES, {})
+                cached_engines = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
 
-                if cache_key in engines:
-                    engines[cache_key].dispose()
-                    engines.pop(cache_key)
+                if cache_key in cached_engines:
+                    cached_engines[cache_key].dispose()
+                    cached_engines.pop(cache_key)
 
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
-                engines[cache_key] = engine
+                cached_engines[cache_key] = engine
 
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
