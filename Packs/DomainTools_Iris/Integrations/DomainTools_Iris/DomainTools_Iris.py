@@ -95,6 +95,8 @@ def http_request(method, params=None):
 
     """
     proxy_url = PROXIES.get('https') if PROXIES.get('https') != '' else PROXIES.get('http')
+    if not (USERNAME and API_KEY):
+        raise DemistoException("The 'API Username' and 'API Key' parameters are required.")
     api = API(
         USERNAME,
         API_KEY,
