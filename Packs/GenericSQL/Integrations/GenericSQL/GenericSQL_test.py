@@ -676,7 +676,7 @@ def test_create_engine_and_connect_new_engine(mocker):
     When
     - running create_engine_and_connect
     Then
-    - Ensure a new engine is created
+    - Ensure a new engine is created and replaces the old one in cache
     - Ensure the old engine is disposed and removed from the cache
     """
 
