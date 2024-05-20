@@ -43,6 +43,16 @@ jobs:
           cd Utils/github_workflow_scripts
           poetry run ./handle_external_pr.py
           echo "Finished Handling External PR"
+
+      - name: Add Contribution Form Filled for Marketplace Contributions
+        if: contains(github.event.pull_request.title, '[Marketplace Contribution]') == true
+        run: gh pr edit $"PR_NUMBER" --add-label "$LABEL"
+        env:
+          GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LABEL: "Contribution Form Filled"
+  
       - name: Send Notification
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
