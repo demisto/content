@@ -389,7 +389,7 @@ class Client(CoreClient):
                 'operator': 'eq',
                 'value': status
             })
-        if demisto.command() == 'fetch-incidents' and exclude_artifacts:
+        if exclude_artifacts:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
 
         if starred and starred_incidents_fetch_window:
@@ -540,9 +540,9 @@ def sort_incident_data(raw_incident):
             - network artifacts.
     """
     incident = raw_incident.get('incident', {})
-    raw_alerts = raw_incident.get('alerts', {}).get('data', None)
-    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
-    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
+    raw_alerts = raw_incident.get('alerts', {}).get('data', [])
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data', [])
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data', [])
     context_alerts = clear_trailing_whitespace(raw_alerts)
     if context_alerts:
         for alert in context_alerts:
@@ -580,9 +580,10 @@ def get_incident_extra_data_command(client, args):
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {raw_incident=}")
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
+
     incident = sort_incident_data(raw_incident)
+
     if incident_alerts := incident.get('alerts'):
         readable_output.append(tableToMarkdown('Alerts', incident_alerts,
                                                headers=[key for key in incident_alerts[0]
