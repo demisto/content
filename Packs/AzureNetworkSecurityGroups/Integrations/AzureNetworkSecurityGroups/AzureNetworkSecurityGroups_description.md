@@ -75,7 +75,7 @@ You only need to fill in your subscription ID and resource group name.
 Follow one of these steps for authentication based on Azure Managed Identities:
 
 - ##### To use System Assigned Managed Identity
-    - In the **Authentication Type** drop-down list, select **Azure Managed Identities**  and leave the **Azure Managed Identities Client ID** field empty.
+    - In the *Authentication Type* drop-down list, select **Azure Managed Identities**  and leave the *Azure Managed Identities Client ID* field empty.
 
 - ##### To use User Assigned Managed Identity
     1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
