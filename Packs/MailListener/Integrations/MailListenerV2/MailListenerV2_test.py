@@ -327,11 +327,11 @@ def test_get_eml_attachments():
 
     # Test an email with EML attachment with an EML attachment
     with open(
-            'test_data/eml-with-eml-attachment-with-eml-attachment.eml', "rb") as f:
+            'test_data/eml_test_with_attachment_with_eml_attachment.eml', "rb") as f:
         msg = email.message_from_bytes(f.read())
     res = Email.get_eml_attachments(msg.as_bytes())
 
-    assert res[0]['filename'] == 'Mail Attachment.eml'
+    assert res[0]['filename'] == 'Fwd: MOIS DE MARSè.eml'
     assert isinstance(res[0]['payload'], bytes)
 
 

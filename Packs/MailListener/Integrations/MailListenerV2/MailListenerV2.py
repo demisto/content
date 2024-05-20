@@ -64,11 +64,9 @@ class Email:
         def get_attachment_payload(part: Message) -> bytes:
             """Returns the payload of the email attachment as bytes object"""
             payload = part.get_payload(decode=False)
-            demisto.debug('ML: the payload instance is list')
             if isinstance(payload, list) and isinstance(payload[0], Message):
                 payload = payload[0].as_bytes()
             elif isinstance(payload, str):
-                demisto.debug('ML: the payload instance is str and not list')
                 payload = payload.encode('utf-8')
             else:
                 raise DemistoException(f'Could not parse the email attachment: {part.get_filename()}')
@@ -286,7 +284,6 @@ def fetch_incidents(client: IMAPClient,
         incidents: Incidents that will be created in Demisto
     """
     logger(fetch_incidents)
-    demisto.debug("ML: Starting to fetch incidents")
     time_to_fetch_from = None
     # First fetch - using the first_fetch_time
     demisto.debug(f"{last_run=}")
@@ -308,12 +305,12 @@ def fetch_incidents(client: IMAPClient,
         uid_to_fetch_from=uid_to_fetch_from     # type: ignore[arg-type]
     )
     incidents = []
-    demisto.debug(f'ML: fetched {len(incidents)} incidents')
+    demisto.debug(f'fetched {len(incidents)} incidents')
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
     next_run = {'last_uid': str(uid_to_fetch_from)} if uid_to_fetch_from != 0 else None
-    demisto.debug(f"ML: {next_run=}")
+    demisto.debug(f"{next_run=}")
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
