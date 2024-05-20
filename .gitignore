@@ -32,7 +32,7 @@ Integrations/*/*_unified.yml
 Beta_Integrations/*/*_unified.yml
 Packs/*/*/*/*_unified.yml
 conftest.py
-!Utils/pre-commit-script/pytest/conftest.py
+!Tests/scripts/pytest/conftest.py
 !Tests/tests_e2e/conftest.py
 venv
 failed_unittests.txt
