@@ -703,4 +703,4 @@ def test_generate_bind_vars_exception():
     try:
         generate_bind_vars('variable_name1', STR_VARIABLES_VALUE, QUERY, 'SAP HANA')
     except Exception as e:
-        assert str(e) == 'The bind variables lists are not is the same length'
+        assert str(e) == 'Bind variables length must match the variable count.Got 1 variables and 3 values'
