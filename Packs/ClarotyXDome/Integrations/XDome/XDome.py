@@ -506,13 +506,10 @@ class XDomeCommand(abc.ABC):
 
     def _parse_filter_by(self, raw_filter_by: Optional[str]) -> QueryFilterType:
         """parse the raw filter input and make sure to always exclude retired devices"""
-        if raw_filter_by:
-            filter_by = json.loads(raw_filter_by)
-            filter_by = _and(filter_by, self.exclude_retired_filter(), self._constant_filter())
-            assert filter_by
-            return filter_by
-        else:
-            return self.exclude_retired_filter()
+        filter_by = json.loads(raw_filter_by) if raw_filter_by else None
+        filter_by = _and(filter_by, self.exclude_retired_filter(), self._constant_filter())
+        assert filter_by
+        return filter_by
 
     @abc.abstractmethod
     def _get_data(self) -> List:
