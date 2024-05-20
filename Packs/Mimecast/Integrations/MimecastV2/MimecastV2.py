@@ -156,19 +156,17 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
     Raises:
         Exception: If the API returns an error response.
     """
-
-    if page_size and not page:
-        raise ValueError('If you provide page_size must also provide page,')
-    elif page and not page_size:
+    if page and page_size:
+        limit = page * page_size
+    elif page:
         page_size = DEFAULT_PAGE_SIZE
-
-    return_page = True
-    if not page:  # if only limit
-        return_page = False
+        limit = page *  page_size
+    elif page_size:
+        page  = 1
+        limit = page_size
+    else:   # if only limit
         page_size = limit if limit < PAGE_SIZE_MAX else PAGE_SIZE_MAX
 
-    if page_size and page:
-        limit = page * page_size
 
     payload: dict[str, dict[str, dict[str, Any]] | list] = {
         'meta': {
@@ -205,7 +203,7 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         payload['meta']['pagination']['pageToken'] = next_page
         response = http_request('POST', api_endpoint, payload, headers=headers)
 
-    if return_page:
+    if page:
         return results[-1 * page_size:]
 
     return results
@@ -979,7 +977,7 @@ def get_policy(args):
     contents = []
     context = {}
     policy_id = args.get('policyID')
-    policy_type = args.get('policyType')
+    policy_type = args.get('policyType','blockedsenders')
     title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
 
     if policy_id:
@@ -1097,8 +1095,7 @@ def get_arguments_for_policy_command(args):
 
     return policy_obj, option
 
-
-def create_policy():
+def create_block_sender_policy_command():
     headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
     context = {}
     policy_args = demisto.args()
@@ -1106,7 +1103,7 @@ def create_policy():
     policy_list = create_or_update_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
-    title = 'Mimecast Create Policy: \n Policy Was Created Successfully!'
+    title = 'Mimecast Create block sender Policy: \n Policy Was Created Successfully!'
     sender = policy.get('from')
     receiver = policy.get('to')
     description = policy.get('description')
@@ -3196,8 +3193,6 @@ def get_search_logs_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    if not any([query, start, end]):
-        raise ValueError('At least one of the following arguments must be entered: query, start, end.')
 
     data = {}
     if query:
@@ -3396,7 +3391,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
         outputs=response,
-        readable_output='Anti-Spoofing  Bypass policy was created successfully'
+        readable_output='Anti-Spoofing Bypass policy was created successfully'
     )
 
 
@@ -3599,7 +3594,7 @@ def main():
         elif command == 'mimecast-get-policy' or command == 'mimecast-list-blocked-sender-policies':
             return_results(get_policy(args))
         elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
-            demisto.results(create_policy())
+            demisto.results(create_block_sender_policy_command())
         elif command == 'mimecast-update-policy' or command == 'mimecast-update-block-sender-policy':
             demisto.results(update_policy())
         elif command == 'mimecast-delete-policy':
