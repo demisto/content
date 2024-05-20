@@ -75,6 +75,10 @@ SUCCEEDED = "succeeded"
 SCAN_ACTION = "scan_action"
 RISK_LEVEL = "risk_level"
 EXPIRY_DAYS = "expiry_days"
+DETECTED_END = "detected_end"
+DETECTED_START = "detected_start"
+INGESTED_END = "ingested_end"
+INGESTED_START = "ingested_start"
 TASKID = "task_id"
 REPORT_ID = "report_id"
 OBJECT_TYPE = "object_type"
@@ -170,6 +174,7 @@ TABLE_UPDATE_CUSTOM_SCRIPT = "Update custom script "
 TABLE_DELETE_CUSTOM_SCRIPT = "Delete custom script "
 TABLE_GET_CUSTOM_SCRIPT_LIST = "Get custom script list "
 TABLE_DOWNLOAD_CUSTOM_SCRIPT = "Download custom script "
+TABLE_GET_OBSERVED_ATTACK_TECHNIQUES = "Get Observed Attack Techniques "
 # COMMAND NAMES
 ENABLE_USER_ACCOUNT_COMMAND = "trendmicro-visionone-enable-user-account"
 DISABLE_USER_ACCOUNT_COMMAND = "trendmicro-visionone-disable-user-account"
@@ -229,6 +234,9 @@ UPDATE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-update-custom-script"
 DELETE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-delete-custom-script"
 DOWNLOAD_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-download-custom-script"
 GET_CUSTOM_SCRIPT_LIST_COMMAND = "trendmicro-visionone-get-custom-script-list"
+GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = (
+    "trendmicro-visionone-get-observed-attack-techniques"
+)
 FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
 
@@ -271,6 +279,7 @@ table_name = {
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
     GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_EMAIL_ACTIVITY_DATA_COUNT,
+    GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND: TABLE_GET_OBSERVED_ATTACK_TECHNIQUES,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
     GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT,
@@ -2703,6 +2712,78 @@ def delete_custom_script(
     )
 
 
+def get_observed_attack_techniques(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Displays a list of Observed Attack Techniques events that match the specified criteria
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required params
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    # Optional params
+    top = args.get(TOP, EMPTY_STRING)
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    detected_end_time = args.get(DETECTED_END, EMPTY_STRING)
+    ingested_end_time = args.get(INGESTED_END, EMPTY_STRING)
+    detected_start_time = args.get(DETECTED_START, EMPTY_STRING)
+    ingested_start_time = args.get(INGESTED_START, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    else:
+        query_op = pytmv1.QueryOp.AND
+    # Make rest call
+    resp = v1_client.oat.list(
+        detected_start_date_time=detected_start_time,
+        detected_end_date_time=detected_end_time,
+        ingested_start_date_time=ingested_start_time,
+        ingested_end_date_time=ingested_end_time,
+        top=top,
+        op=query_op,
+        **fields,
+    )
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    resp_type: pytmv1.ListOatsResp = unwrap(resp.response)
+    if resp_type.total_count > 50:
+        return_error("Please refine search, this query returns more than 50 results.")
+    # Add results to message to be sent to the War Room
+    message: list[dict[str, Any]] = []
+    for item in resp_type.items:
+        message.append(
+            {
+                "id": item.uuid,
+                "source": item.source,
+                "detail": item.detail,
+                "filters": item.filters,
+                "endpoint": item.endpoint,
+                "entity_name": item.entity_name,
+                "entity_type": item.entity_type,
+                "detected_date_time": item.detected_date_time,
+                "ingested_date_time": item.ingested_date_time,
+            }
+        )
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Get_Observed_Attack_Techniques",
+        outputs_key_field="id",
+        outputs=message,
+    )
+
+
 def main():  # pragma: no cover
     try:
         """GLOBAL VARS"""
@@ -2847,6 +2928,9 @@ def main():  # pragma: no cover
                     return_results(cmd_res)
             else:
                 return_results(status_check(v1_client, args))
+
+        elif command == GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND:
+            return_results(get_observed_attack_techniques(v1_client, args))
 
         else:
             demisto.error(f"{command} command is not implemented.")
