@@ -1875,7 +1875,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
-        html_body, html_attachments = handle_html(html_body)
+        html_body, html_attachments, file_results = handle_html(html_body)
         attachments += html_attachments
 
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
@@ -1890,7 +1890,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
 
             message.attach(new_attachment)
 
-    return message
+    return message, file_results
 
 
 def add_additional_headers(additional_headers):
@@ -1964,19 +1964,20 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to, importance)
+        message, file_results = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+                                               reply_to, importance)
 
     client.send_email(message)
 
-    results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
+    results = []
+    results.append(file_results)
+    results.append(CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully'))
     if render_body:
         results.append(CommandResults(
             entry_type=EntryType.NOTE,
             content_format=EntryFormat.HTML,
             raw_response=htmlBody,
         ))
-
     return results
 
 
