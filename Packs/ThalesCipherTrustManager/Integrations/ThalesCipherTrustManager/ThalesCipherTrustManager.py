@@ -37,8 +37,12 @@ GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
+CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
 USER_MANAGEMENT_USERS_URL_SUFFIX = '/usermgmt/users/'
+LOCAL_CAS_URL_SUFFIX = '/ca/local-cas/'
+EXTERNAL_CAS_URL_SUFFIX = '/ca/external-cas/'
+
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 2000
 DEFAULT_LIMIT = 50
@@ -72,6 +76,8 @@ class CommandArguments:
     PASSWORD_CHANGE_REQUIRED = 'password_change_required'
     PASSWORD = 'password'
     FAILED_LOGINS_COUNT = 'failed_logins_count'
+    NEW_PASSWORD = 'new_password'
+    AUTH_DOMAIN = 'auth_domain'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -252,14 +258,20 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
 
                       ]
 USER_DELETE_INPUTS = [InputArgument(name=CommandArguments.USER_ID, required=True), ]
-
+USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True),
+                               InputArgument(name=CommandArguments.PASSWORD, required=True),
+                               InputArgument(name=CommandArguments.USERNAME, required=True, description='The login name of the current user.'),
+                               InputArgument(name=CommandArguments.AUTH_DOMAIN,  description= 'The domain where user needs to '
+                                                                                              'be authenticated. This is the '
+                                                                                              'domain where user is created. '
+                                                                                              'Defaults to the root domain.'), ]
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
     'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
     'are always created in the local, internal user database, but might have references to external '
     'identity providers.')
 USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
-
+USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
 '''CLIENT CLASS'''
 
 
@@ -355,6 +367,14 @@ class CipherTrustClient(BaseClient):
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(USER_MANAGEMENT_USERS_URL_SUFFIX, user_id),
+            return_empty_response=True,
+        )
+
+    def change_current_user_password(self, request_data: dict):
+        return self._http_request(
+            method='PATCH',
+            url_suffix=CHANGE_PASSWORD_URL_SUFFIX,
+            json_data=request_data,
             return_empty_response=True,
         )
 
@@ -581,7 +601,7 @@ def user_update_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-delete')
+@metadata_collector.command(command_name='ciphertrust-user-delete', description=USER_DELETE_DESCRIPTION, inputs_list=USER_DELETE_INPUTS)
 def user_delete_command(client: CipherTrustClient, args: dict):
     client.delete_user(args[CommandArguments.USER_ID])
     return CommandResults(
@@ -589,9 +609,18 @@ def user_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-password-change')
+@metadata_collector.command(command_name='ciphertrust-user-password-change', description=USER_PASSWORD_CHANGE_DESCRIPTION, inputs_list=USER_PASSWORD_CHANGE_INPUTS)
 def user_password_change_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        new_password=args[CommandArguments.NEW_PASSWORD],
+        password=args[CommandArguments.PASSWORD],
+        username=args[CommandArguments.USERNAME],
+        auth_domain=args.get(CommandArguments.AUTH_DOMAIN)
+    )
+    client.change_current_user_password(request_data=request_data)
+    return CommandResults(
+        readable_output=f'Password has been changed successfully for {args[CommandArguments.USERNAME]}!'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-create')

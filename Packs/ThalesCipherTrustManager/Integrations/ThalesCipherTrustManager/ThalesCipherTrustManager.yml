@@ -298,9 +298,15 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to.
     name: ciphertrust-user-delete
-    arguments: []
+    arguments:
+    - name: user_id
+      isArray: false
+      description: user_id
+      required: true
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
