@@ -717,10 +717,13 @@ def rasterize_email_command():  # pragma: no cover
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
     offline = demisto.args().get('offline', 'false') == 'true'
-    rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
+
+    rasterize_type_arg = demisto.args().get('type', 'png').lower()
     file_name = demisto.args().get('file_name', 'email')
+    file_name = f'{file_name}.{rasterize_type_arg}'
+    rasterize_type = RasterizeType(rasterize_type_arg)
+
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
-    file_name = f'{file_name}.{rasterize_type}'
 
     with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
