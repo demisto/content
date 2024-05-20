@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "PhishLabs IOC"
+    "defaultDataSource": "PhishLabs IOC"
 }

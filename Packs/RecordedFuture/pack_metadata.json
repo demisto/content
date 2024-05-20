@@ -42,5 +42,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Recorded Future Event Collector"
+    "defaultDataSource": "RecordedFutureEventCollector"
 }

@@ -29,5 +29,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Darktrace Event Collector"
+    "defaultDataSource": "Darktrace Event Collector"
 }

@@ -18,5 +18,5 @@
         "marketplacev2",
         "xpanse"
     ],
-    "defaultDataSourceName": "ServiceNow v2"
+    "defaultDataSource": "ServiceNow v2"
 }

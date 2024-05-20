@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "O365 Outlook Mail (Using Graph API)"
+    "defaultDataSource": "MicrosoftGraphMail"
 }

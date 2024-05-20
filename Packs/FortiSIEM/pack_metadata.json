@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "FortiSIEM v2"
+    "defaultDataSource": "FortiSIEMV2"
 }

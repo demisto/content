@@ -85,5 +85,5 @@
         "xpanse"
     ],
     "hybrid": true,
-    "defaultDataSourceName": "Prisma Cloud v2"
+    "defaultDataSource": "PrismaCloud v2"
 }

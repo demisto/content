@@ -23,5 +23,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Github Event Collector"
+    "defaultDataSource": "Github Event Collector"
 }

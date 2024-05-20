@@ -26,5 +26,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "MobileIronCORE"
+    "defaultDataSource": "MobileIronCORE"
 }

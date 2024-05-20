@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Carbon Black Endpoint Standard Event Collector"
+    "defaultDataSource": "CarbonBlackEndpointStandardEventCollector"
 }

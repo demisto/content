@@ -19,5 +19,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Cymulate v2"
+    "defaultDataSource": "cymulate_v2"
 }

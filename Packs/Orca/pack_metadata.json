@@ -18,5 +18,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Orca Event Collector"
+    "defaultDataSource": "Orca Event Collector"
 }

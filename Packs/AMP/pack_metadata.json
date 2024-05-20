@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Cisco AMP Event Collector"
+    "defaultDataSource": "CiscoAMPEventCollector"
 }

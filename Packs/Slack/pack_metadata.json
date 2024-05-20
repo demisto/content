@@ -40,5 +40,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Slack Event Collector"
+    "defaultDataSource": "Slack Event Collector"
 }

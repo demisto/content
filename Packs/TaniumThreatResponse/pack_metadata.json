@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Tanium Threat Response v2"
+    "defaultDataSource": "Tanium Threat Response v2"
 }

@@ -28,5 +28,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Cofense Triage v3"
+    "defaultDataSource": "Cofense Triage v3"
 }

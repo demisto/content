@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "FireEye ETP Event Collector"
+    "defaultDataSource": "FireEye ETP Event Collector"
 }

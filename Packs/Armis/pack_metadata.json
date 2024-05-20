@@ -18,5 +18,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Armis Event Collector"
+    "defaultDataSource": "ArmisEventCollector"
 }

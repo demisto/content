@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Proofpoint Threat Response Event Collector"
+    "defaultDataSource": "ProofpointThreatResponseEventCollector"
 }

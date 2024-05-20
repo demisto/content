@@ -26,5 +26,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Trend Micro Vision One Event Collector"
+    "defaultDataSource": "TrendMicroVisionOneEventCollector"
 }

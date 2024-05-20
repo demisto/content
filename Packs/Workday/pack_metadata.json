@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Workday Event Collector"
+    "defaultDataSource": "Workday Event Collector"
 }

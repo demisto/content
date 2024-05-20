@@ -21,5 +21,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "AWS - GuardDuty Event Collector"
+    "defaultDataSource": "AWS - GuardDuty Event Collector"
 }

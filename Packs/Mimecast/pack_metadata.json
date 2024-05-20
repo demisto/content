@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Mimecast Event Collector"
+    "defaultDataSource": "Mimecast Event Collector"
 }

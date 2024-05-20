@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Netskope Event Collector"
+    "defaultDataSource": "NetskopeEventCollector"
 }

@@ -19,5 +19,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "DeepInstinct v3"
+    "defaultDataSource": "DeepInstinct v3"
 }

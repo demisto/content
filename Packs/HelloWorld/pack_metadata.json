@@ -30,5 +30,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "HelloWorld Event Collector"
+    "defaultDataSource": "HelloWorldEventCollector"
 }

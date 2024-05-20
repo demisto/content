@@ -16,5 +16,6 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Safewalk Management"
+    "defaultDataSource": "SafewalkManagement",
+    "created": "2024-05-20T13:52:26Z"
 }

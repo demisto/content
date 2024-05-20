@@ -19,5 +19,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Zimperium v2"
+    "defaultDataSource": "Zimperium v2"
 }

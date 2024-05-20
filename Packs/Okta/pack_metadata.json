@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Okta Event Collector"
+    "defaultDataSource": "Okta Event Collector"
 }

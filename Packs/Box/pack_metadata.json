@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Box Event Collector"
+    "defaultDataSource": "BoxEventsCollector"
 }

@@ -65,5 +65,5 @@
         "CommonTypes",
         "CrowdStrikeFalcon"
     ],
-    "defaultDataSourceName": "Code42 Event Collector"
+    "defaultDataSource": "Code42 Event Collector"
 }

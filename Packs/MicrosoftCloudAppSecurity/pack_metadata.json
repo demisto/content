@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "Microsoft Defender for Cloud Apps Event Collector"
+    "defaultDataSource": "Microsoft Defender for Cloud Apps Event Collector"
 }

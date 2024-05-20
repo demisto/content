@@ -129,7 +129,7 @@ class Pack:
         self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
-        self._default_data_source_name = None  # initialized in load_pack_metadata function
+        self._default_data_source = {}  # initialized in load_pack_metadata function
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -188,11 +188,11 @@ class Pack:
         self._is_siem = is_siem
 
     @property
-    def default_data_source_name(self):
+    def default_data_source(self):
         """
-        str: the pack data source name, if the pack has a data source
+        str: the pack data source, if the pack has a data source
         """
-        return self._default_data_source_name
+        return self._default_data_source
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -433,7 +433,7 @@ class Pack:
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
-                                    pack_dependencies_by_download_count: list, default_data_source_name: str | None):
+                                    pack_dependencies_by_download_count: list, default_data_source: dict):
         """ By Issue #32038
         1. Sort pack integration images by alphabetical order
         2. Sort pack dependencies by download count
@@ -443,6 +443,7 @@ class Pack:
             pack_integration_images (list): list of pack integration images
             pack_dependencies_integration_images_dict: a mapping of pack dependency name to its integration images
             pack_dependencies_by_download_count: a list of pack dependencies sorted by download count
+            default_data_source: a dict of name and id of the default data source integration in the pack
 
         Returns:
             list: list of sorted integration images
@@ -455,8 +456,8 @@ class Pack:
         # data source should be first in the list
         data_source_integration = ([integration
                                     for integration in pack_integration_images
-                                    if integration.get('name') == default_data_source_name]
-                                   if default_data_source_name else [])
+                                    if integration.get('name') == default_data_source.get('name')]
+                                   if default_data_source else [])
         if data_source_integration:
             pack_integration_images.remove(data_source_integration[0])
 
@@ -477,7 +478,7 @@ class Pack:
 
     @staticmethod
     def _get_all_pack_images(index_folder_path, pack_integration_images: list, display_dependencies_images: list,
-                             pack_dependencies_by_download_count, default_data_source_name):
+                             pack_dependencies_by_download_count, default_data_source: dict):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
 
@@ -512,7 +513,7 @@ class Pack:
 
         return Pack.organize_integration_images(
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count,
-            default_data_source_name
+            default_data_source
         )
 
     @staticmethod
@@ -1750,7 +1751,7 @@ class Pack:
             self.display_name = pack_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._pack_metadata = pack_metadata
             self._content_items = pack_metadata.get(Metadata.CONTENT_ITEMS, {})
-            self._default_data_source_name = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE_NAME)
+            self._default_data_source = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE)
             self._eula_link = pack_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = pack_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = pack_metadata.get(Metadata.MODULES, [])
@@ -1830,7 +1831,7 @@ class Pack:
             self._displayed_integration_images = self.build_integration_images_metadata()
             self._related_integration_images = self._get_all_pack_images(
                 index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
-                pack_dependencies_by_download_count, self._default_data_source_name
+                pack_dependencies_by_download_count, self._default_data_source
             )
             logging.debug(f"Finished enhancing pack's object attributes for pack '{self.name}'")
             task_status = True

@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSourceName": "SentinelOne Event Collector"
+    "defaultDataSource": "SentinelOneEventCollector"
 }
