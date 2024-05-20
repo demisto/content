@@ -1,7 +1,6 @@
-import json
 import pytest
 from CommonServerPython import DemistoException, CommandResults
-from ExabeamSecOpsPlatform import Client, search_command, get_date, _parse_entry
+from ExabeamSecOpsPlatform import Client, search_command, get_date, transform_string, process_string
 
 
 class MockClient(Client):
@@ -10,7 +9,6 @@ class MockClient(Client):
 
     def search_command(self) -> None:
         return
-
 
 
 def test_search_command_success(mocker):
@@ -27,7 +25,7 @@ def test_search_command_success(mocker):
     """
     # Mock the response from the client's search_request method
     mock_response = {
-                "rows": [
+        "rows": [
                     {
                         "id": "123",
                         "time": "2024-01-30T11:20:07.000000+00:00",
@@ -36,7 +34,7 @@ def test_search_command_success(mocker):
                         "platform": "blackberry protect",
                         "vendor": "BlackBerry"
                     },
-                    {
+            {
                         "id": "456",
                         "time": "2024-01-30T11:21:06.976000+00:00",
                         "message": "Log message 2",
@@ -44,11 +42,11 @@ def test_search_command_success(mocker):
                         "platform": "blackberry protect",
                         "vendor": "BlackBerry"
                     }
-                ]
-            }
-    
+        ]
+    }
+
     client = MockClient("", "", "", False, False)
-    
+
     mocker.patch.object(client, "search_request", return_value=mock_response)
 
     # Define test arguments
@@ -63,10 +61,117 @@ def test_search_command_success(mocker):
     # Call the search_command function
     response = search_command(client, args)
 
-    print(response)
+    assert isinstance(response, CommandResults)
+    assert response.outputs_prefix == "ExabeamPlatform.Event"
+    assert response.outputs == mock_response["rows"]
+    expected_readable_output = (
+        "### Logs\n"
+        "|activity|platform|time|vendor|\n"
+        "|---|---|---|---|\n"
+        "| trigger | blackberry protect | 2024-01-30T11:20:07.000000+00:00 | BlackBerry |\n"
+        "| trigger | blackberry protect | 2024-01-30T11:21:06.976000+00:00 | BlackBerry |\n"
+    )
+    assert expected_readable_output in response.readable_output
 
 
+def test_search_command_failure(mocker):
+    """
+    GIVEN:
+        A mocked Exabeam client and invalid search query arguments.
 
+    WHEN:
+        'search_command' function is called with invalid arguments.
+
+    THEN:
+        It should raise a DemistoException.
+    """
+    # Mocking the client to simulate a response with errors
+    client = MockClient("", "", "", False, False)
+    mocker.patch.object(client, "search_request", return_value={"errors": {"message": "Error occurred"}})
+
+    args = {
+        'query': '',
+        'fields': 'message',
+        'limit': '50',
+        'start_time': '2024-05-01T00:00:00',
+        'end_time': '2024-05-08T00:00:00'
+    }
+
+    with pytest.raises(DemistoException, match="Error occurred"):
+        search_command(client, args)
+
+
+def test_get_date(mocker):
+    """
+    GIVEN:
+        a mocked CommonServerPython.arg_to_datetime function returning a specific time string,
+
+    WHEN:
+        'get_date' function is called with the provided time string,
+
+    THEN:
+        it should return the date part of the provided time string in the 'YYYY-MM-DD' format.
+    """
+    time = '2024.05.01T14:00:00'
+    expected_result = '2024-05-01T14:00:00Z'
+
+    with mocker.patch("CommonServerPython.arg_to_datetime", return_value=time):
+        result = get_date(time)
+
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('input_str, expected_output', [
+    (
+        "key:Some Value",
+        'key:"Some Value"'
+    ),
+    (
+        "key:TrUe",
+        "key:true"
+    ),
+    (
+        "key:false",
+        "key:false"
+    )
+])
+def test_transform_string(input_str, expected_output):
+    """
+    GIVEN:
+        An input string to be transformed.
+    WHEN:
+        The 'transform_string' function is called with the input string.
+    THEN:
+        It should transform the input string according to the specified rules.
+    """
+    assert transform_string(input_str) == expected_output
+
+
+@pytest.mark.parametrize('input_str, expected_output', [
+    (
+        "key1:true AND key2:false OR key3:true TO key4:false",
+        'key1:true AND key2:false OR key3:true TO key4:false'
+    ),
+    (
+        "key1:true",
+        'key1:true'
+    ),
+    (
+        "",
+        ''
+    )
+])
+def test_process_string(input_str, expected_output):
+    """
+    GIVEN:
+        An input string to be processed.
+    WHEN:
+        The 'process_string' function is called with the input string.
+    THEN:
+        It should correctly process the input string, splitting it based on logical operators and transforming each part using
+        the 'transform_string' function.
+    """
+    assert process_string(input_str) == expected_output
 
 
 # def test_query_data_lake_command(mocker):

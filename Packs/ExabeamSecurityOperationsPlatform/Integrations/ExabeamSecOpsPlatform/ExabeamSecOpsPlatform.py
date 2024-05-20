@@ -85,7 +85,7 @@ def get_date(time: str):
     return date
 
 
-def transform_string(input_str:str) -> str:
+def transform_string(input_str: str) -> str:
     """
     Transform the input string into a formatted string.
 
@@ -103,7 +103,7 @@ def transform_string(input_str:str) -> str:
         return f'{key}:"{value}"'
 
 
-def process_string(input_str:str) -> str:
+def process_string(input_str: str) -> str:
     """
     Process the input string by splitting it based on logical operators and transforming each part.
 
@@ -124,8 +124,8 @@ def process_string(input_str:str) -> str:
                 operator = next((op for op in logical_operators if op in part), None)
                 if operator:
                     part = part.replace(operator, "").strip()
-                transformed_parts.append(transform_string(part))
-                transformed_parts.append(operator)
+                    transformed_parts.append(transform_string(part))
+                    transformed_parts.append(operator)
             start_index = end_index + 1
 
     if start_index < len(input_str):
