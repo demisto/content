@@ -54,6 +54,9 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
 
+os.environ["SCRIPT_NAME"] = "MY_SCRIPT_NAME"
+
+
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
         Register a module in the line mapping for the traceback line correction algorithm.
