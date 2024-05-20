@@ -31,7 +31,7 @@ To add a permission:
 4. In the *Tenant ID* field, enter your Tenant ID .
 5. In the *Application redirect URI* field, enter your Application redirect URI.
 6. Save the instance.
-7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instruction.
+7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instructions.
 
 ### Authentication Using the Client Credentials Flow
 
