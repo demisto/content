@@ -86,6 +86,8 @@ def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
                 result = service.users().messages().attachments().get(**action_kwargs).execute()
             case "list":
                 result = service.users().messages().list(**action_kwargs).execute()
+            case _:
+                raise ValueError(f"Unsupported action: {action}")
 
     except HttpError as error:
         if error.status_code == 429:
