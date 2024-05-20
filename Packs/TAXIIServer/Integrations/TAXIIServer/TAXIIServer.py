@@ -464,7 +464,7 @@ def create_stix_hash_observable(namespace, indicator):
     type_ = indicator.get('indicator_type', '')
 
     file_object = cybox.objects.file_object.File()
-    file_object.add_hash(indicator)
+    file_object.add_hash(value)
 
     observable = Observable(
         title=f'{value}: {type_}',
@@ -574,7 +574,7 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
         id_ = f'{NAMESPACE}:indicator-{uuid.uuid4()}'
 
         if type_ == 'URL':
-            indicator_value = werkzeug.urls.iri_to_uri(value, safe_conversion=True)
+            indicator_value = werkzeug.urls.iri_to_uri(value)
         else:
             indicator_value = value
 

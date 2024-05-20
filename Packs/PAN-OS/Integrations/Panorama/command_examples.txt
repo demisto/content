@@ -145,3 +145,7 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"
 !pan-os-delete-tag name="testtag"
 !pan-os-export-tech-support-file
+!pan-os-list-security-profile-group group_name="test_security_pg"
+!pan-os-create-security-profile-group group_name="test_security_pg" antivirus_profile="default" anti_spyware_profile="default" data_filtering_profile="test data filtering" file_blocking_profile="test file blocking" URL_filtering_profile="default" vulnerability_protection_profile="default" wildfire_analysis_profile="test wildfire analysis"
+!pan-os-edit-security-profile-group group_name="test_security_pg" profile_to_change="Antivirus Profile" profile_value="default"
+!pan-os-delete-security-profile-group group_name="test_security_pg"

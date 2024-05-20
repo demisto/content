@@ -1,5 +1,8 @@
 {
     "reply": {
+        "incidents":
+        [
+        {
         "incident": {
             "incident_id": "2",
             "creation_time": 1575806909185,
@@ -91,5 +94,7 @@
                 }
             ]
         }
+    }
+    ]
     }
 }

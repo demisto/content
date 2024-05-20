@@ -84,7 +84,7 @@ Creates a user.
 ```!iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"surname\":\"Test\",\"givenname\":\"Demisto\"}```
 
 #### Human Readable Output
-### Create User Results (Okta IAM)
+##### Create User Results (Okta IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
 | Okta IAM | Okta IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"suspend": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/suspend", "method": "POST"}, "schema": {"href": "https://panw-test.oktapreview.com/api/v1/meta/schemas/user/osc8zfz6plq7b0r830h7"}, "resetPassword": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reset_password", "method": "POST"}, "reactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reactivate", "method": "POST"}, "self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}, "type": {"href": "https://panw-test.oktapreview.com/api/v1/meta/types/user/oty8zfz6plq7b0r830h7"}, "deactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/deactivate", "method": "POST"}} |
@@ -127,7 +127,7 @@ Updates an existing user with the data passed in the user-profile argument.
 ```!iam-update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"givenname\":\"Demisto-Test\"}```
 
 #### Human Readable Output
-### Update User Results (Okta IAM)
+##### Update User Results (Okta IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
 | Okta IAM | Okta IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"suspend": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/suspend", "method": "POST"}, "schema": {"href": "https://panw-test.oktapreview.com/api/v1/meta/schemas/user/osc8zfz6plq7b0r830h7"}, "resetPassword": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reset_password", "method": "POST"}, "reactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reactivate", "method": "POST"}, "self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}, "type": {"href": "https://panw-test.oktapreview.com/api/v1/meta/types/user/oty8zfz6plq7b0r830h7"}, "deactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/deactivate", "method": "POST"}} |
@@ -169,7 +169,7 @@ Retrieves a single user resource.
 ```!iam-get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
-### Get User Results (Okta IAM)
+##### Get User Results (Okta IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
 | Okta IAM | Okta IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"suspend": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/suspend", "method": "POST"}, "schema": {"href": "https://panw-test.oktapreview.com/api/v1/meta/schemas/user/osc8zfz6plq7b0r830h7"}, "resetPassword": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reset_password", "method": "POST"}, "reactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reactivate", "method": "POST"}, "self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}, "type": {"href": "https://panw-test.oktapreview.com/api/v1/meta/types/user/oty8zfz6plq7b0r830h7"}, "deactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/deactivate", "method": "POST"}} |
@@ -212,7 +212,7 @@ Disable an active user.
 ```!iam-disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
-### Disable User Results (Okta IAM)
+##### Disable User Results (Okta IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
 | Okta IAM | Okta IAM_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}} |
@@ -248,7 +248,7 @@ Gets a specific user assignment for an application by id.
 ```!okta-get-app-user-assignment user_id=00uuv6y8t1iy8YXm94h7 application_id=0oae3ioe51sQ64Aui2h7```
 
 #### Human Readable Output
-### App User Assignment
+##### App User Assignment
 |App ID|Is Assigned|User ID|
 |---|---|---|
 | 0oae3ioe51sQ64Aui2h7 | true | 00uuv6y8t1iy8YXm94h7 |
@@ -285,7 +285,7 @@ Returns a list of Okta applications data.
 ``` !okta-iam-list-applications limit=5 query="Workday" ```
 
 #### Human Readable Output
-### Okta Applications (1 - 3)
+##### Okta Applications (1 - 3)
 |ID|Name|Label|Logo|
 |---|---|---|---|
 | 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
@@ -322,7 +322,7 @@ Returns a list of Okta applications data.
 ``` !okta-iam-list-user-applications user_id=00ux9v19bvTfQIjur0h7" ```
 
 #### Human Readable Output
-### Okta User Applications
+##### Okta User Applications
 |ID|Name|Label|Status|
 |---|---|---|---|
 | 0ob8zlypk6GVPRr2T0h7 | active_directory | pantest.local | ACTIVE|
@@ -356,7 +356,7 @@ There are no input arguments for this command.
 ```!okta-iam-get-configuration using="Okta IAM_instance_1_copy"```
 
 #### Human Readable Output
-### Okta IAM Configuration
+##### Okta IAM Configuration
 |ApplicationID|Instance|Label|Logo|Name|
 |---|---|---|---|---|
 | 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](https://op1static.oktacdn.com/fs/bcg/4/gfskliw1i51ScX6pf0h7) | servicenow |

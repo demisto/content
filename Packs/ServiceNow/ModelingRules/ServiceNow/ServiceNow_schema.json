@@ -1,0 +1,37 @@
+
+{
+    "servicenow_servicenow_raw": {
+      "documentkey": {
+        "type": "string",
+        "is_array": false
+      },
+      "fieldname": {
+        "type": "string",
+        "is_array": false
+      },
+      "oldvalue": {
+        "type": "string",
+        "is_array": false
+      },
+      "newvalue": {
+        "type": "string",
+        "is_array": false
+      },
+      "reason": {
+        "type": "string",
+        "is_array": false
+      },
+      "sys_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "tablename": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

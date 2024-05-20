@@ -12,18 +12,20 @@ This integration was integrated and tested with version 2 of the Netskope API.
     | Server URL |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | API token | Netskope API access token \(make sure to generate token for the following endpoints: api/v2/events/data/application, api/v2/events/data/audit, api/v2/events/data/page, api/v2/events/data/network, api/v2/events/data/infrastructure, api/v2/events/data/alert, api/v2/policy/urllist \(read \+ write\), api/v2/policy/urllist/deploy \(read \+ write\), api/v2/scim/Users\). | True |
-    | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
+    | API token | Netskope API access token \(make sure to generate token for the required endpoints\). | True |
+    | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago". | False |
     | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
     | Maximum events as incidents per fetch. Max value is 200. |  | False |
     | Fetch Events | Fetch events as incidents, in addition to the alerts. | False |
     | Event types to fetch. | The event types to fetch as incidents. | False |
-    | Alerts Query | Free text query to filter the fetched alerts. | False |
-    | Events Query | Free text query to filter the fetched events \(if configured\). | False |
+    | Alerts Query | Free text query to filter the fetched alerts. For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\). | False |
+    | Events Query | Free text query to filter the fetched events \(if configured\). For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\). | False |
     | Incident type |  | False |
-    | Fetch incidents |  |  |
+    | Fetch incidents |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
@@ -938,3 +940,35 @@ Get information about Netskope SCIM users. The command provides a list of users 
 >|---|---|---|---|---|---|
 >| 6a4dbb07-f465-4a6c-8af2-1c84ced65010 | upn1 | first_name | last_name | email1@netskope.local | true |
 >| f8d26597-e4a4-400d-a24b-40318a9e80e5 | upn2 | first_name1 | last_name1 | email11@netskope.local | true |
+### netskope-url-list-add
+
+***
+Update the URL list with the values provided. Note that this command appends the list.
+
+#### Base Command
+
+`netskope-url-list-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url_list_id | The URL list ID to update (use netskope-url-list-list command to get URL list ID). | Required | 
+| urls | The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line). | Required | 
+| list_type | The updated URL list type. Possible values are: exact, regex. | Required | 
+| deploy | Whether to deploy URL list changes or not. Possible values are: True, False. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Netskope.URLList.id | Number | Netskope URL list ID. | 
+| Netskope.URLList.name | String | Netskope URL list name. | 
+| Netskope.URLList.data.urls | String | Netskope URL list data URLs. | 
+| Netskope.URLList.data.type | String | Netskope URL list data type. | 
+| Netskope.URLList.data.json_version | Number | Netskope URL list data JSON version. | 
+| Netskope.URLList.modify_by | String | Netskope URL list modify by. | 
+| Netskope.URLList.modify_time | Date | Netskope URL list modify time. | 
+| Netskope.URLList.modify_type | String | Netskope URL list modify type. | 
+| Netskope.URLList.pending | Number | Netskope URL list pending. | 
+

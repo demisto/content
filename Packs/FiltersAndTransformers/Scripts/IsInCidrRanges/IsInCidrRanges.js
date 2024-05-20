@@ -1,4 +1,5 @@
-// pack version: 1.2.37
+// NOTE: A copy of the code below is in IsNotInCidrRanges script, they should be kept identical
+
 function isIPv6(ip) {
   return ip.indexOf(':') !== -1;
 }
@@ -71,24 +72,31 @@ function validateCIDR(cidrRange) {
   return true; // CIDR range is well-formed
 }
 
+function getCIDRNetworkAddress(cidrRange) {
+  return cidrRange.split('/')[0]
+}
+
+function getCIDRSubnetMask(cidrRange) {
+  return cidrRange.split('/')[1]
+}
+
 function isIPInCIDR(ipAddress, cidrRange) {
   if (!validateCIDR(cidrRange)) {
       return false;
   }
 
-  var parts = cidrRange.split('/');
-  var networkAddress = parts[0];
-  var subnetMask = parts[1];
+  var networkAddress = getCIDRNetworkAddress(cidrRange);
+  var cidrSubnetMask = getCIDRSubnetMask(cidrRange);
 
   // Convert IP address and network address to binary
   var ipBinary = ipToBinary(ipAddress);
   var networkBinary = ipToBinary(networkAddress);
 
   // Get the network part of the IP address based on the subnet mask
-  var networkPart = ipBinary.slice(0, parseInt(subnetMask, 10));
+  var networkPart = ipBinary.slice(0, parseInt(cidrSubnetMask, 10));
 
   // Check if the network parts match
-  return networkPart === networkBinary.slice(0, parseInt(subnetMask, 10));
+  return networkPart === networkBinary.slice(0, parseInt(cidrSubnetMask, 10));
 }
 
 function isIPInAnyCIDR(ipAddresses, cidrRanges) {
@@ -98,7 +106,12 @@ for (let i = 0; i < ipAddresses.length; i++) {
   isInRange = false;
 
   for (let j = 0; j < cidrRanges.length; j++) {
-    if (isIPInCIDR(ipAddresses[i], cidrRanges[j])) {
+
+    // Mismatches are always false
+    if ((!isIPv6(ipAddresses[i]) &&  isIPv6(getCIDRNetworkAddress(cidrRanges[j])))
+     || ( isIPv6(ipAddresses[i]) && !isIPv6(getCIDRNetworkAddress(cidrRanges[j])))) {
+      results[i] = 'False';
+    } else if (isIPInCIDR(ipAddresses[i], cidrRanges[j])) {
       isInRange = true;
       results[i] = 'True';
       break;
@@ -116,4 +129,5 @@ return results;
 ipAddresses = argToList(args.left)
 cidrRanges = argToList(args.right)
 
+// NOTE: A copy of the code above is in IsNotInCidrRanges script, they should be kept identical
 return isIPInAnyCIDR(ipAddresses, cidrRanges);

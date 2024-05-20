@@ -380,3 +380,44 @@ def test_handle_html(mocker):
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+
+
+def test_handle_html_image_with_new_line(mocker):
+    """
+    Given:
+        - html body of a message with an attached base64 image.
+    When:
+        - run handle_html function.
+    Then:
+        - Ensure attachments list contains correct data, name and cid fields.
+    """
+    client = Client()
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    htmlBody = """
+<html>
+    <body>
+        <img\n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
+    </body>
+</html>"""
+
+    expected_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": base64.b64decode("Aa=="),
+            "name": "image0.png",
+            "cid": "image0.png",
+        }
+    ]
+    expected_cleanBody = """
+<html>
+    <body>
+        <img
+\t\t\t\t\t  src="cid:image0.png"/>
+    </body>
+</html>"""
+
+    cleanBody, attachments = client.handle_html(htmlBody)
+
+    assert expected_cleanBody == cleanBody
+    assert expected_attachments == attachments

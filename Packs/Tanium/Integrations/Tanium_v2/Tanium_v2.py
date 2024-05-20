@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Dict
 
 import urllib3
 
@@ -24,7 +23,7 @@ class Client(BaseClient):
         self.session = ''
         self.api_token = api_token
         self.check_authentication()
-        super(Client, self).__init__(base_url, **kwargs)
+        super().__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None):
         if not self.session:
@@ -119,7 +118,7 @@ class Client(BaseClient):
             parameter_conditions (List): list of dictionaries
         """
         parameters_list = parameters.split(';')
-        parameter_conditions: List[Dict[str, str]] = list()
+        parameter_conditions: List[dict[str, str]] = []
         add_to_the_previous_pram = ''
         # Goes over the parameters from the end and any param that does not contain a key and value is added to the previous param
         for param in reversed(parameters_list):
@@ -218,7 +217,7 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                item_value_lst = list(map(lambda x: x.get('text', ''), item))
+                item_value_lst = [x.get('text', '') for x in item]
                 if "[current result unavailable]" in item_value_lst:
                     break
                 item_value = ', '.join(item_value_lst)
@@ -734,7 +733,7 @@ def get_question_result(client, data_args):
 
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
-        return f'Question is still executing, Question id: {str(id_)}',\
+        return f'Question is still executing, Question id: {str(id_)}', \
             {f'Tanium.QuestionResult(val.QuestionID == {id_})': context}, res
 
     context = {'QuestionID': id_, 'Status': 'Completed', 'Results': rows}
@@ -790,7 +789,7 @@ def get_saved_question_result(client, data_args):
     rows = client.parse_question_results(res, completion_percentage)
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
-        return f'Question is still executing, Question id: {str(id_)}',\
+        return f'Question is still executing, Question id: {str(id_)}', \
             {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id_})': context}, res
 
     context = {'SavedQuestionID': id_, 'Status': 'Completed', 'Results': rows}
@@ -1096,8 +1095,8 @@ def get_action_result(client, data_args):
 
 def main():
     params = demisto.params()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     domain = params.get('domain')
     # Remove trailing slash to prevent wrong URL path to service
     server = params['url'].strip('/')
@@ -1105,12 +1104,12 @@ def main():
     base_url = server + '/api/v2/'
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
+    proxy = argToBoolean(params.get('proxy', False))
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
 
-    # Remove proxy if not set to true in params
-    handle_proxy()
     command = demisto.command()
-    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl)
+    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl, proxy=proxy)
+    handle_proxy()
     demisto.info(f'Command being called is {command}')
 
     commands = {

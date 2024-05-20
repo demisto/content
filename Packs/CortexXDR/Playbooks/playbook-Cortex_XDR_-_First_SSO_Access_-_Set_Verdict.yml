@@ -2,11 +2,13 @@ id: Cortex XDR - First SSO Access - Set Verdict
 version: -1
 name: Cortex XDR - First SSO Access - Set Verdict
 description: |-
+  Deprecated. Use `Cortex XDR - Identity Analytics` instead.
   This playbook determines the alert’s verdict based on the results of multiple checks.
   By default, if at least two of the checks' results are true, the verdict is set to malicious.
   else if only one check's results are true, the verdict is set to suspicious.
   If none of the conditions is true, the verdict is set to non-malicious.
   It is possible to change the threshold value of the inputs to change the sensitivity of the verdict.
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

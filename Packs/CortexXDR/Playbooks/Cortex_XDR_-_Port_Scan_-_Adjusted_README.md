@@ -12,7 +12,7 @@ This playbook supports the following Cortex XDR alert names:
 - Suspicious port scan
 - Port scan by suspicious process
 - Highly suspicious port scan
-- Port scan
+- Port scan.
 
 ## Dependencies
 
@@ -20,16 +20,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Indicators - Generic v3
-* Account Enrichment - Generic v2.1
-* File Enrichment - Generic v2
-* Threat Hunting - Generic
-* Cortex XDR - Isolate Endpoint
 * Cortex XDR - Endpoint Investigation
-* User Investigation - Generic
-* IP Enrichment - Generic v2
+* Account Enrichment - Generic v2.1
+* Cortex XDR - Isolate Endpoint
 * TIM - Indicator Relationships Analysis
+* User Investigation - Generic
 * Command-Line Analysis
+* Block Indicators - Generic v3
+* File Enrichment - Generic v2
+* IP Enrichment - Generic v2
+* Threat Hunting - Generic
 
 ### Integrations
 
@@ -37,9 +37,9 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * IsIPInRanges
 * GetTime
+* Set
 
 ### Commands
 
@@ -51,7 +51,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Required |
+| InternalIPRanges | A list of IP ranges to check the IP against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | Username | The user name used for port scanning. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
 | SrcIPAddress | The source IP address from which the port scanning was initiated. | PaloAltoNetworksXDR.Incident.alerts.action_local_ip | Optional |
 | DstIPAddress | Scanned destination IP address. | PaloAltoNetworksXDR.Incident.alerts.action_remote_ip | Optional |
@@ -76,7 +76,7 @@ This playbook does not use any integrations.
 | PortScan.AttackerUsername | Attacker username from the port scan alert. | unknown |
 | PortScan.FileArtifacts | File artifacts from the port scan alert. | unknown |
 | PortScan.LateralMovementFirstDatetime | Lateral Movement First Date time from the port scan alert. | unknown |
-| PortScan.PortScanFirstDatetime | Port Scan First Date time | unknown |
+| PortScan.PortScanFirstDatetime | Port Scan First Date time. | unknown |
 
 ## Playbook Image
 

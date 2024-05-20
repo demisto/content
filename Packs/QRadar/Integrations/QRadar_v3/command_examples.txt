@@ -23,5 +23,16 @@
 !qradar-get-custom-properties filter="id between 90 and 100" range=1-1231
 !qradar-reset-last-run
 !qradar-ips-source-get filter=`source_ip="192.168.0.15"` range=0-2
-!qradar-ips-local-destination-get filter=`local_destination_ip="172.42.18.211"`
+!qradar-ips-local-destination-get filter=`local_destination_ip="1.1.1.1"`
 !qradar-search-retrieve-events offense_id=14
+!qradar-event-collectors-list id=7
+!qradar-wincollect-destinations-list
+!qradar-disconnected-log-collectors-list
+!qradar-log-source-types-list
+!qradar-log-source-protocol-types-list id=0
+!qradar-log-source-extensions-list
+!qradar-log-source-languages-list
+!qradar-log-source-groups-list
+!qradar-log-source-delete name=example
+!qradar-log-source-create type_id=11 name=example protocol_type_id=0 protocol_parameters="identifier=id,incomingPayloadEncoding=UTF-8" target_event_collector_id=7
+!qradar-log-source-update id=1900 description="A demo log source"

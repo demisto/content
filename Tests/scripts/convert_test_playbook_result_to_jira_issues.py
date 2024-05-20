@@ -65,7 +65,7 @@ def generate_description_for_test_playbook(playbook_id: str,
 
 
 def create_jira_issue(jira_server: JIRA,
-                      jira_issue: Issue,
+                      jira_issue: Issue | None,
                       xml: JUnitXml,
                       playbook_id: str,
                       build_number: str,

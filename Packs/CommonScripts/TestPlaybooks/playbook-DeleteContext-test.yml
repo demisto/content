@@ -1,0 +1,787 @@
+id: DeleteContext-test
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: DeleteContext-test
+description: 'Testing DeleteContext automation.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9c8be592-ad95-4c1a-8f25-12ddd71fb5ae
+    type: start
+    task:
+      id: 9c8be592-ad95-4c1a-8f25-12ddd71fb5ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bc1776f3-8db6-43b6-8929-6bd0264396ec
+    type: regular
+    task:
+      id: bc1776f3-8db6-43b6-8929-6bd0264396ec
+      version: -1
+      name: 'Set key #1'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: key1
+      value:
+        simple: '{"key1_0": null}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 602c58bc-685b-4063-8614-669886d221fd
+    type: regular
+    task:
+      id: 602c58bc-685b-4063-8614-669886d221fd
+      version: -1
+      name: 'Delete all keys except '
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: key2.key2_1, key4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8581c22b-d5c9-4475-87a1-b525dbdef3d1
+    type: condition
+    task:
+      id: 8581c22b-d5c9-4475-87a1-b525dbdef3d1
+      version: -1
+      name: Check if excluded key exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: key2.key2_1
+            iscontext: true
+          right:
+            value:
+              simple: value2_1
+      - - operator: isExists
+          left:
+            value:
+              simple: key4
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a19da4e2-47b4-4948-8a90-be6c68fd6e0a
+    type: regular
+    task:
+      id: a19da4e2-47b4-4948-8a90-be6c68fd6e0a
+      version: -1
+      name: FAIL - Excluded key deleted
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: 'Test1 exists: ${test1}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 34fec89a-2150-4686-8026-a6b8991c2d00
+    type: title
+    task:
+      id: 34fec89a-2150-4686-8026-a6b8991c2d00
+      version: -1
+      name: all good
+      description: Prints text to war room (Markdown supported)
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f99db4d0-904a-44c5-8a34-19662fca7e77
+    type: regular
+    task:
+      id: f99db4d0-904a-44c5-8a34-19662fca7e77
+      version: -1
+      name: Print current playbook id
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: 'playbook id: ${currentPlaybookID}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: aa565577-547b-46e3-81ef-2860423b8647
+    type: regular
+    task:
+      id: aa565577-547b-46e3-81ef-2860423b8647
+      version: -1
+      name: 'Set key #2'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: key2
+      value:
+        simple: '{"key2_0": "notnull", "key2_1": "value2_1" }'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 223c9463-0dee-457d-8020-e6c0b1c46525
+    type: regular
+    task:
+      id: 223c9463-0dee-457d-8020-e6c0b1c46525
+      version: -1
+      name: Set object key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: '{"okey1":"value1", "okey2":"value2", "okey3":"value3"}'
+      stringify:
+        simple: "true"
+      value:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7d5be9c7-a10d-415a-871a-704f5936b7d9
+    type: regular
+    task:
+      id: 7d5be9c7-a10d-415a-871a-704f5936b7d9
+      version: -1
+      name: Delete object key
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: '{"okey1":"value1", "okey2":"value2", "okey3":"value3"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8814b33b-a61a-4b41-8cfe-3d468d26c635
+    type: condition
+    task:
+      id: 8814b33b-a61a-4b41-8cfe-3d468d26c635
+      version: -1
+      name: Check if object key deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: '{"okey1":"value1", "okey2":"value2", "okey3":"value3"}'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 882a0eb2-86dc-4a99-80be-234fa398b91d
+    type: regular
+    task:
+      id: 882a0eb2-86dc-4a99-80be-234fa398b91d
+      version: -1
+      name: FAIL - Object key not deleted
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: FAIL - Object key not deleted
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 83631094-d5a4-42d9-8c5f-d1e027e43ce8
+    type: regular
+    task:
+      id: 83631094-d5a4-42d9-8c5f-d1e027e43ce8
+      version: -1
+      name: 'Set key #3'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: key3
+      value:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e3aea8d2-1884-43be-80b1-7f8ad0d97604
+    type: regular
+    task:
+      id: e3aea8d2-1884-43be-80b1-7f8ad0d97604
+      version: -1
+      name: 'Set key #4'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: key4
+      value:
+        simple: '[0, 1, 2, 3]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 09fe4449-af00-4842-84c7-7c500f64fa40
+    type: regular
+    task:
+      id: 09fe4449-af00-4842-84c7-7c500f64fa40
+      version: -1
+      name: Delete csv keys
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: key2.key2_1, key4.[0], key4.[1]
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 630b55d4-2737-46a9-84f4-8efad3f56c8d
+    type: condition
+    task:
+      id: 630b55d4-2737-46a9-84f4-8efad3f56c8d
+      version: -1
+      name: ' Check if key deleted #1'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: key2.key2_1
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c44295fa-715c-4b93-8549-65c780887929
+    type: regular
+    task:
+      id: c44295fa-715c-4b93-8549-65c780887929
+      version: -1
+      name: FAIL - Check keys deleted
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: FAIL - Check keys deleted
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b8893174-f8e0-4732-8096-6b1e0d353a51
+    type: condition
+    task:
+      id: b8893174-f8e0-4732-8096-6b1e0d353a51
+      version: -1
+      name: 'Check if key deleted #2'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: key4.[2]
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a0733baf-2c9e-4107-8278-48b34f60326b
+    type: title
+    task:
+      id: a0733baf-2c9e-4107-8278-48b34f60326b
+      version: -1
+      name: DISABLED - Can not set & delete an object key
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e64a3f12-5537-4e1c-8255-2082e78f4441
+    type: regular
+    task:
+      id: e64a3f12-5537-4e1c-8255-2082e78f4441
+      version: -1
+      name: Test py script - executeCommand 'DeleteContext'
+      scriptName: test-executecommand-deletecontext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9290362a-d8b3-42c8-8ae0-bac11d638c1d
+    type: regular
+    task:
+      id: 9290362a-d8b3-42c8-8ae0-bac11d638c1d
+      version: -1
+      name: 'Set key #5'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: key5
+      value:
+        simple: value5
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_16_yes": 0.23,
+      "3_4_#default#": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2905,
+        "width": 1550,
+        "x": -40,
+        "y": -10
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0

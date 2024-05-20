@@ -1,12 +1,13 @@
 import json
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from TrendMicroDeepSecurity import Client, convert_args
+from CommonServerPython import *
 
 BASE_URL = "https://test.api.deepsecurity.trendmicro.com"
 
 
-def load_mock_response(filename: str) -> Union[List[Any], Dict[str, Any]]:
+def load_mock_response(filename: str) -> list[Any] | dict[str, Any]:
     return json.loads(open(f"test_data/{filename}.json").read())
 
 
@@ -1002,3 +1003,84 @@ def test_trendmicro_create_policy_command(requests_mock):
 
     assert result.outputs_prefix == "TrendMicro.Policies"
     assert result.outputs["name"] == "TestPolicy"
+
+
+def test_create_once_only_scan_scheduled_task_command(requests_mock):
+    """
+    Scenario: Create a new scheduled task for a computer ID
+
+    Given:
+        - name, type and computer ID arguments
+    When:
+        - create_once_only_scheduled_task_command is called.
+    Then:
+        - Ensure outputs prefix is correct.
+        - Ensure the context is valid (simply the raw api response)
+    """
+    from TrendMicroDeepSecurity import create_once_only_scan_scheduled_task_command
+    requests_mock.post(f'{BASE_URL}/api/scheduledtasks', json=load_mock_response("scheduled_task"))
+    client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
+    args = convert_args(
+        create_once_only_scan_scheduled_task_command,
+        {"name": "test", "type": "scan-for-open-ports", "computer_id": "123"}
+    )
+    result = create_once_only_scan_scheduled_task_command(client, **args)
+
+    assert result.outputs
+    assert result.outputs_prefix == "TrendMicro.ScheduledTask"
+
+
+def test_delete_scheduled_task_command(mocker, requests_mock):
+    """
+    Scenario: Deletes scheduled task by task-ID
+
+    Given:
+        - 1 task ID which was deleted successfully
+        - 1 task ID which wasn't deleted successfully (error from the api)
+        - 1 task ID which wasn't deleted successfully (not an integer)
+    When:
+        - delete_scheduled_task_command is called
+    Then:
+        - Ensure ID 1 has readable output
+        - Ensure ID 2 returns error entry
+        - Ensure ID c returns error entry
+    """
+    from TrendMicroDeepSecurity import delete_scheduled_task_command
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=204)
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', exc=Exception("error"))
+    mocker.patch.object(demisto, 'error')
+    client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
+    args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2,c"})
+    result = delete_scheduled_task_command(client, **args)
+
+    assert "successfully deleted" in result[0].readable_output
+    assert result[0].entry_type == EntryType.NOTE
+    assert result[1].entry_type == EntryType.ERROR
+    assert result[2].entry_type == EntryType.ERROR
+
+
+def test_list_scheduled_task_command(requests_mock):
+    """
+    Scenario: Lists scheduled tasks
+
+    Given:
+        - task-id argument
+    When:
+        - list_scheduled_task_command is called.
+    Then:
+        - Ensure context output and human readable are parsed successfully
+    """
+
+    from TrendMicroDeepSecurity import list_scheduled_task_command
+
+    mock_response = load_mock_response("scheduled_task")
+    requests_mock.get(f"{BASE_URL}/api/scheduledtasks/1", json=mock_response)
+
+    client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
+    args = convert_args(list_scheduled_task_command, {"task_id": "1"})
+    result = list_scheduled_task_command(client, **args)
+
+    assert result.outputs
+    assert isinstance(result.outputs, list)
+    assert result.readable_output
+    assert result.outputs_prefix == "TrendMicro.ScheduledTask"

@@ -10,7 +10,8 @@
 		"incident": "CrowdStrike Falcon Incident",
 		"IDP detection": "CrowdStrike Falcon IDP Detection",
 		"iom_configurations": "CrowdStrike Falcon IOM Event",
-		"ioa_events": "CrowdStrike Falcon IOA Event"
+		"ioa_events": "CrowdStrike Falcon IOA Event",
+        "MOBILE detection": "CrowdStrike Falcon Mobile Detection"
 	},
 	"transformer": {
 		"complex": null,

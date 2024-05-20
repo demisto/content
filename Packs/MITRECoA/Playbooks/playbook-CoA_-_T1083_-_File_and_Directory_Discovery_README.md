@@ -48,4 +48,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1083 - File and Directory Discovery](../doc_files/MITRE_ATT&CK_CoA_-_T1083_-_File_and_Directory_Discovery.png)
+![MITRE ATT&CK CoA - T1083 - File and Directory Discovery](../doc_files/MITRE_ATTandCK_CoA_-_T1083_-_File_and_Directory_Discovery.png)

@@ -1,4 +1,4 @@
-Use Remedy On-Demand to manage tickets
+Deprecated. use BMC Helix ITSM instead.
 
 This integration was integrated and tested with version 9.1 of Remedy On-Demand
 ## Configure Remedy On-Demand on Cortex XSOAR

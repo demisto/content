@@ -1,8 +1,8 @@
 import demistomock as demisto
-import json
 import numpy as np
 import pandas as pd
 import pytest
+from copy import deepcopy
 
 CURRENT_INCIDENT_NOT_EMPTY = [
     {'id': '123', 'commandline': 'powershell IP=1.1.1.1', 'CustomFields': {"nested_field": 'value_nested_field'},
@@ -45,11 +45,11 @@ def executeCommand(command, args):
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     if command == 'DBotFindSimilarIncidentsByIndicators':
         return [[], {'Contents': SIMILAR_INDICATORS, 'Type': 'note', 'Tags': [TAG_SCRIPT_INDICATORS]}]
-    if command == 'GetIncidentsByQuery':
-        if 'limit' in args:
-            return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
-        else:
-            return [{'Contents': json.dumps(CURRENT_INCIDENT), 'Type': 'note'}]
+    if command == 'getIncidents':
+        if '-id:' in args.get("query"):  # query for similar incidents
+            return [{'Contents': {"data": FETCHED_INCIDENT}, 'Type': 'note'}]
+        else:  # query for current incident
+            return [{'Contents': {"data": CURRENT_INCIDENT}, 'Type': 'note'}]
     return None
 
 
@@ -102,9 +102,9 @@ def test_euclidian_similarity_capped():
 def test_main_regular(mocker):
     from DBotFindSimilarIncidents import SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, main, COLUMN_ID, COLUMN_TIME
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
-    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
+    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
@@ -122,7 +122,6 @@ def test_main_regular(mocker):
                             'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
-    mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res, _ = main()
     assert ('empty_current_incident_field' not in res.columns)
@@ -142,9 +141,9 @@ def test_main_no_indicators_found(mocker):
     """
     from DBotFindSimilarIncidents import SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, main, COLUMN_ID, COLUMN_TIME
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
-    SIMILAR_INDICATORS = SIMILAR_INDICATORS_EMPTY
+    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_EMPTY)
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
@@ -162,7 +161,6 @@ def test_main_no_indicators_found(mocker):
                             'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
-    mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res, _ = main()
     assert ('empty_current_incident_field' not in res.columns)
@@ -180,9 +178,9 @@ def test_main_no_fetched_incidents_found(mocker):
     """
     from DBotFindSimilarIncidents import MESSAGE_NO_INCIDENT_FETCHED, main
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_EMPTY
-    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
-    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
+    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_EMPTY)
+    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
@@ -200,7 +198,6 @@ def test_main_no_fetched_incidents_found(mocker):
                             'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
-    mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res = main()
     assert (not res[0])
@@ -229,9 +226,9 @@ def test_main_all_incorrect_field(mocker):
     """
     from DBotFindSimilarIncidents import MESSAGE_INCORRECT_FIELD, main
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
-    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
+    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
     wrong_field_1 = 'wrong_field_1'
     wrong_field_2 = 'wrong_field_2'
     wrong_field_3 = 'wrong_field_3'
@@ -252,7 +249,6 @@ def test_main_all_incorrect_field(mocker):
                             'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
-    mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     df, msg = main()
     assert (not df)
@@ -268,9 +264,9 @@ def test_main_incident_truncated(mocker):
     """
     from DBotFindSimilarIncidents import main, MESSAGE_WARNING_TRUNCATED
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
-    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
+    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
     correct_field_1 = 'commandline'
     wrong_field_2 = 'wrong_field_2'
     wrong_field_3 = 'wrong_field_3'
@@ -291,7 +287,6 @@ def test_main_incident_truncated(mocker):
                             'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
-    mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     df, msg = main()
     limit = demisto.args()['limit']
@@ -301,29 +296,27 @@ def test_main_incident_truncated(mocker):
 
 def test_main_incident_nested(mocker):
     """
-    Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
-    :param mocker:
-    :return:
+    Given: Same test case as in test_main_regular but with a nested field as a similarTextField
+    When: Running main()
+    Then: Ensure the nested field exists in the results
     """
     from DBotFindSimilarIncidents import main
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
-    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
-    wrong_field_2 = 'wrong_field_2'
-    wrong_field_3 = 'wrong_field_3'
-    wrong_field_4 = 'wrong_field_4'
-    nested_field = 'xdralerts.cmd'
+    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+    nested_field = 'CustomFields.nested_field'
 
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
-                            'similarTextField': nested_field,
-                            'similarCategoricalField': wrong_field_2,
-                            'similarJsonField': wrong_field_3,
-                            'limit': 3,
+                            'similarTextField': f'{nested_field},incident.commandline, commandline, command, '
+                                                'empty_current_incident_field, empty_fetched_incident_field',
+                            'similarCategoricalField': 'signature, filehash, incident.commandline',
+                            'similarJsonField': '',
+                            'limit': 10000,
                             'fieldExactMatch': '',
-                            'fieldsToDisplay': wrong_field_4,
+                            'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
                             'showIncidentSimilarityForAllFields': True,
                             'minimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
@@ -331,11 +324,10 @@ def test_main_incident_nested(mocker):
                             'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
-    mocker.patch.object(demisto, 'dt', return_value=['nested_val_1', 'nested_val_2'])
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     df, _ = main()
     assert not df.empty
-    assert (df['similarity %s' % nested_field] == [1.0, 1.0, 1.0]).all()
+    assert (df[f"similarity {nested_field}"] > 0).all()
 
 
 def test_get_get_data_from_indicators_automation():

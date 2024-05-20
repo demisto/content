@@ -46,14 +46,19 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
     df = pd.DataFrame(columns=['Class', 'Precision', 'Recall', 'TP', 'FP', 'Coverage', 'Total'])
     for class_ in sorted(y_pred_per_class):
         row = calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class)
-        df = df.append(row, ignore_index=True)
-    df = df.append({'Class': 'All',
-                    'Precision': df["Precision"].mean(),
-                    'Recall': df["Recall"].mean(),
-                    'TP': df["TP"].sum(),
-                    'FP': df["FP"].sum(),
-                    'Coverage': df["Coverage"].sum(),
-                    'Total': df["Total"].sum()}, ignore_index=True)
+        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+    df = pd.concat([
+        df,
+        pd.DataFrame([{
+            'Class': 'All',
+            'Precision': df["Precision"].mean(),
+            'Recall': df["Recall"].mean(),
+            'TP': df["TP"].sum(),
+            'FP': df["FP"].sum(),
+            'Coverage': df["Coverage"].sum(),
+            'Total': df["Total"].sum()}
+        ]),
+    ], ignore_index=True)
     df = df[['Class', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
     explained_metrics = ['Precision', 'TP (true positive)', 'FP (false positive)', 'Coverage', 'Total']
     explanation = ['{} {}'.format(bold_hr(metric), METRICS[metric]) for metric in explained_metrics]
@@ -289,7 +294,7 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
         for threshold in sorted(class_to_thresholds[class_]):
             row = calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class)
             row['Threshold'] = threshold
-            class_threshold_df = class_threshold_df.append(row, ignore_index=True)
+            class_threshold_df = pd.concat([class_threshold_df, pd.DataFrame([row])], ignore_index=True)
         class_threshold_df = reformat_df_fractions_to_percentage(class_threshold_df)
         class_threshold_df['Threshold'] = class_threshold_df['Threshold'].apply(lambda p: '{:.2f}'.format(p))
         class_threshold_df = class_threshold_df[['Threshold', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]

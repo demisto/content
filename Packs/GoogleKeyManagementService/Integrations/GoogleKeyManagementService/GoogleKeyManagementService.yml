@@ -820,7 +820,7 @@ script:
         Keyword 'default' uses the default KeyRing.
       name: key_ring
       required: true
-    - description: The ID for the crypto-key to enable
+    - description: The ID for the crypto-key to enable.
       name: crypto_key
       required: true
     - defaultValue: default
@@ -941,17 +941,17 @@ script:
       name: base64_plaintext
     - description: The entry ID of the file to encrypt.
       name: entry_id
-    description: Encrypts data using a asymmetric CryptoKey
+    description: Encrypts data using a asymmetric CryptoKey.
     name: google-kms-asymmetric-encrypt
     outputs:
     - contextPath: GoogleKMS.AsymmetricEncrypt.CryptoKey
-      description: The CryptoKey used
+      description: The CryptoKey used.
       type: String
     - contextPath: GoogleKMS.AsymmetricEncrypt.IsBase64
-      description: Is the original plaintext in base 64
+      description: Is the original plaintext in base 64.
       type: Boolean
     - contextPath: GoogleKMS.AsymmetricEncrypt.Ciphertext
-      description: The encrypted ciphertext
+      description: The encrypted ciphertext.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1171,7 +1171,7 @@ script:
       description: The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
-      description: The algorithm in use in the primary CryptoKeyVersion
+      description: The algorithm in use in the primary CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
@@ -1235,9 +1235,9 @@ script:
       description: The PEM of the public key.
       type: String
     - contextPath: GoogleKMS.PublicKey.Algorithm
-      description: The algorithm used in the CryptoKey
+      description: The algorithm used in the CryptoKey.
       type: String
-  dockerimage: demisto/google-kms:1.0.0.86683
+  dockerimage: demisto/google-kms:1.0.0.89771
   runonce: false
   script: '-'
   type: python

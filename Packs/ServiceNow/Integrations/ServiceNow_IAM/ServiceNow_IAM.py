@@ -157,7 +157,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
             user_profile.set_result(
                 action=IAMActions.GET_USER,
                 success=True,
-                active=True if service_now_user.get('active') == 'true' else False,
+                active=service_now_user.get('active') == 'true',
                 iden=service_now_user.get('sys_id'),
                 email=service_now_user.get('email'),
                 username=service_now_user.get('user_name'),
@@ -235,7 +235,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                 user_profile.set_result(
                     action=IAMActions.CREATE_USER,
                     success=True,
-                    active=True if created_user.get('active') == 'true' else False,
+                    active=created_user.get('active') == 'true',
                     iden=created_user.get('sys_id'),
                     email=created_user.get('email'),
                     username=created_user.get('user_name'),
@@ -275,7 +275,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                 user_profile.set_result(
                     action=IAMActions.UPDATE_USER,
                     success=True,
-                    active=True if updated_user.get('active') == 'true' else False,
+                    active=updated_user.get('active') == 'true',
                     iden=updated_user.get('sys_id'),
                     email=updated_user.get('email'),
                     username=updated_user.get('user_name'),
@@ -362,6 +362,7 @@ def main():
     except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
+
 
 from IAMApiModule import *  # noqa E402
 

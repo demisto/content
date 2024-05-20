@@ -24,12 +24,6 @@ configuration:
   section: Connect
   hidden: true
   required: false
-- display: Tenant ID
-  name: tenant_id
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
 - display: Authentication Type
   name: auth_type
   type: 15
@@ -712,7 +706,10 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.86933
+  - description: Run this command if you need to rerun the authentication process.
+    name: microsoft-teams-auth-reset
+    arguments: []
+  dockerimage: demisto/teams:1.0.0.89409
   longRunning: true
   longRunningPort: true
   script: ''

@@ -67,6 +67,12 @@ def test_parse_tree_by_root_to_leaf_paths():
 def test_build_where_clause():
     from CortexDataLake import build_where_clause
     test_cases = [({'query': 'Test'}, 'Test'),
+                  ({'rule': 'rule'}, '(rule_matched = "rule")'),
+                  ({'rule': 'rule,another_rule'}, '(rule_matched = "rule" OR rule_matched = "another_rule")'),
+                  ({'rule': 'rule',
+                    'from_zone': 'UTC'},
+                   '(rule_matched = "rule") '
+                   'AND (from_zone = "UTC")'),
                   ({'source_ip': 'ip1,ip2',
                     'dest_ip': 'ip3,ip4',
                     'rule_matched': 'rule1',

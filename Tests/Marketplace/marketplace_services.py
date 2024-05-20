@@ -29,7 +29,8 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
+from demisto_sdk.commands.common.constants import (MarketplaceVersions, MarketplaceVersionToMarketplaceName,
+                                                   PACK_METADATA_REQUIRE_RN_FIELDS)
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -67,7 +68,7 @@ class Pack:
     RELEASE_NOTES = "ReleaseNotes"
     INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
-    def __init__(self, pack_name, pack_path, is_modified=None):
+    def __init__(self, pack_name, pack_path, is_modified=None, is_metadata_updated=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
@@ -125,6 +126,7 @@ class Pack:
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_modified = is_modified
+        self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -381,6 +383,10 @@ class Pack:
         return self._is_modified
 
     @property
+    def is_metadata_updated(self):
+        return self._is_metadata_updated
+
+    @property
     def marketplaces(self):
         return self._marketplaces
 
@@ -389,13 +395,41 @@ class Pack:
         return self._all_levels_dependencies
 
     @property
-    def statistics_metadata(self):
-        return {
-            Metadata.DOWNLOADS: self.downloads_count,
-            Metadata.SEARCH_RANK: self._search_rank,
+    def update_metadata(self):
+        """
+        Returns a dictionary containing updated metadata fields.
+        This function updates the statistics_metadata fields (downloads, searchRank, tags, and integrations).
+        If is_metadata_updated is True, it also updates the fields that are not listed in PACK_METADATA_REQUIRE_RN_FIELDS.
+        Returns:
+            dict: Updated metadata fields.
+        """
+        update_statistics_metadata = {
+            Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
-            Metadata.INTEGRATIONS: self._related_integration_images
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.INTEGRATIONS: self._related_integration_images,
         }
+
+        update_metadata_fields = {}
+        if self.is_metadata_updated:
+            update_metadata_fields = {f: self.pack_metadata.get(f) for f in self.pack_metadata
+                                      if f not in PACK_METADATA_REQUIRE_RN_FIELDS}
+            logging.debug(
+                f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
+                f"{self.is_modified=} {self.is_metadata_updated=}")
+        elif self.is_modified:
+            update_metadata_fields = {Metadata.CREATED: self._create_date, Metadata.UPDATED: self._update_date}
+            logging.debug(
+                f"Updating metadata with statistics, created, updated fields because {self._pack_name=} "
+                f"{self.is_modified=} {self.is_metadata_updated=}")
+        else:
+            logging.debug(
+                f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} "
+                f"{self.is_metadata_updated=}")
+
+        updated_metadata = update_metadata_fields | update_statistics_metadata
+        logging.debug(f"Updating the following metadata fields: {updated_metadata}")
+        return updated_metadata
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
@@ -485,15 +519,7 @@ class Pack:
         Returns:
             dict: parsed pack metadata.
         """
-        pack_metadata = {
-            Metadata.CREATED: self._create_date,
-            Metadata.UPDATED: self._update_date,
-            Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags or []),
-            Metadata.SEARCH_RANK: self._search_rank,
-            Metadata.INTEGRATIONS: self._related_integration_images,
-        }
-
+        pack_metadata = self.update_metadata
         if parse_dependencies:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 
@@ -2864,7 +2890,7 @@ def get_pull_request_numbers_from_file(file_path) -> list[int]:
     return re.findall(PULL_REQUEST_PATTERN, log_info)
 
 
-def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dict, dict, dict, dict]:
+def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
 
     Args:
@@ -2876,7 +2902,6 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dic
         dict: The successful packs dict
         dict: The failed packs dict
         dict: the successful uploaded dependencies zip packs
-        dict : The successful private packs dict
         dict: The images data dict
 
     """
@@ -2887,19 +2912,17 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dic
         successful_uploaded_dependencies_zip_packs_dict = \
             stage_data.get(BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS, {})
         failed_packs_dict = stage_data.get(BucketUploadFlow.FAILED_PACKS, {})
-        successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
-        return successful_packs_dict, successful_uploaded_dependencies_zip_packs_dict, \
-            failed_packs_dict, successful_private_packs_dict, images_data_dict
+        return successful_packs_dict, successful_uploaded_dependencies_zip_packs_dict, failed_packs_dict, images_data_dict
 
     logging.debug(f'{packs_results_file_path} does not exist in artifacts')
-    return {}, {}, {}, {}, {}
+    return {}, {}, {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
                                                       successful_uploaded_dependencies_zip_packs: list,
                                                       failed_packs: list,
-                                                      updated_private_packs: list, images_data: dict = None):
+                                                      images_data: dict = {}):
     """ Write the successful, successful_uploaded_dependencies_zip_packs and failed packs to the correct section in the
         packs_results.json file
 
@@ -2911,7 +2934,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         successful_uploaded_dependencies_zip_packs (list): The list of all packs that successfully updated their
         dependencies zip file.
         failed_packs (list): The list of all failed packs
-        updated_private_packs (list) : The list of all private packs that were updated
         images_data (dict): A dict containing all images that were uploaded for each pack
 
     """
@@ -2957,13 +2979,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
 
         packs_results[stage].update(successful_uploaded_dependencies_zip_packs_dict)
         logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs_dict}")
-
-    if updated_private_packs:
-        successful_private_packs_dict: dict = {
-            BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
-        }
-        packs_results[stage].update(successful_private_packs_dict)
-        logging.debug(f"Successful private packs {successful_private_packs_dict}")
 
     if images_data:
         # adds a list with all the packs that were changed with images
@@ -3139,8 +3154,8 @@ def get_content_git_client(content_repo_path: str):
     return git.Repo(content_repo_path)
 
 
-def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
-                            is_private_build: bool = False, circle_branch: str = "master"):
+def get_recent_commits_data(content_repo: Any, index_folder_path: str,
+                            is_bucket_upload_flow: bool, circle_branch: str = "master"):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -3154,11 +3169,11 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
         str: last commit hash of head.
         str: previous commit depending on the flow the script is running
     """
-    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow,
-                                                                is_private_build, circle_branch)
+    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path,
+                                                                is_bucket_upload_flow, circle_branch)
 
 
-def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, circle_branch):
     """ If running in bucket upload workflow we want to get the commit in the index which is the index
     We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
     head of origin/master
@@ -3176,10 +3191,6 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
     """
     if is_bucket_upload_flow:
         return get_last_upload_commit_hash(content_repo, index_folder_path)
-    elif is_private_build:
-        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.debug(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
-        return previous_master_head_commit
     else:
         if circle_branch == 'master':
             head_str = "HEAD~1"

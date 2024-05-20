@@ -86,14 +86,19 @@
     fi
   - section_end "Cleanup env results from artifacts folder"
 
-demisto-sdk-nightly:run-unittests-and-lint:
+demisto-sdk-nightly:run-pre-commit:
   extends:
-    - .run-unittests-and-lint
+    - .run-pre-commit
     - .sdk-nightly-schedule-rule
 
 demisto-sdk-nightly:run-validations:
   extends:
     - .run-validations
+    - .sdk-nightly-schedule-rule
+
+demisto-sdk-nightly:run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
     - .sdk-nightly-schedule-rule
 
 demisto_sdk_nightly:check_idset_dependent_commands:
@@ -171,7 +176,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -197,7 +201,6 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -221,7 +224,6 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -244,7 +246,6 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -255,7 +256,7 @@ demisto-sdk-nightly:test-upload-flow:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV,$GCS_MARKET_XSOAR_SAAS_BUCKET_DEV"
   needs: []
   stage: unittests-and-validations
   script:
