@@ -74,7 +74,7 @@ class Machine(Enum):
             machine
             for machine in Machine.numeric_machines()
             if machine.value
-            in [version_range.min_version, version_range.max_varsion]
+            in [version_range.min_version, version_range.max_version]
         )
 
         return tuple(result)
