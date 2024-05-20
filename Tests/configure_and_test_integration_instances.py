@@ -533,17 +533,20 @@ class Build(ABC):
         for instance in all_module_instances:
             integration_of_instance = instance.get('brand', '')
             instance_name = instance.get('name', '')
-            # If there is a failure, test_integration_instance will print it
+            
             if integration_of_instance not in self.unmockable_integrations and use_mock:
                 success = self.test_integration_with_mock(instance, pre_update)
             else:
                 testing_client = self.servers[0].reconnect_client()
                 success, _ = test_integration_instance(testing_client, instance)
-            if not success:
+            
+            if success:
+                logging.success(f"Succeeded instance test of {instance_name} ({integration_of_instance})")
+                successful_tests.add((instance_name, integration_of_instance))
+            else:
+                # test_integration_instance will print the failure
                 failed_tests.add((instance_name, integration_of_instance))
                 failed_instances.append(instance)
-            else:
-                successful_tests.add((instance_name, integration_of_instance))
 
         # in case some tests failed post update, wait a 15 secs, runs the tests again
         if failed_instances and not pre_update and first_call:
