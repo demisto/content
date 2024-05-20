@@ -325,6 +325,15 @@ def test_get_eml_attachments():
     res = Email.get_eml_attachments(msg.as_bytes())
     assert res[0]['filename'] == 'Test with an image.eml'
 
+    # Test an email with EML attachment with an EML attachment
+    with open(
+            'test_data/eml-with-eml-attachment-with-eml-attachment.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+
+    assert res[0]['filename'] == 'Mail Attachment.eml'
+    assert isinstance(res[0]['payload'], bytes)
+
 
 @pytest.mark.parametrize('cert_and_key', [
     # - cert and key are in the integration instance parameters

@@ -1,3 +1,5 @@
+import uuid
+
 from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
@@ -8,7 +10,7 @@ WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
-WIZ_VERSION = '1.2.11'
+WIZ_VERSION = '1.2.12'
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
 
 
@@ -86,6 +88,7 @@ query IssuesTable(
           serviceType
         }
       }
+      type
       createdAt
       updatedAt
       dueAt
@@ -474,6 +477,8 @@ class WizInputParam:
     SEVERITY = 'severity'
     REJECT_REASON = 'reject_reason'
     REJECT_NOTE = 'reject_note'
+    RESOLUTION_REASON = 'resolution_reason'
+    RESOLUTION_NOTE = 'resolution_note'
     REOPEN_NOTE = 'reopen_note'
     NOTE = 'note'
     DUE_AT = 'due_at'
@@ -567,9 +572,9 @@ def checkAPIerrors(query, variables):
 
     error_message = ""
     if "errors" in result.json():
-        error_message = f"Error details: {get_error_output(result.json())}"
+        error_message = f"Wiz API error details: {get_error_output(result.json())}"
 
-    if "data" in result.json() and "issues" in result.json()['data'] and len(result.json()['data']['issues'].get('nodes')) == 0:
+    elif "data" in result.json() and "issues" in result.json()['data'] and len(result.json()['data']['issues'].get('nodes')) == 0:
         demisto.info("No Issue(/s) available to fetch.")
 
     if error_message:
@@ -578,7 +583,7 @@ def checkAPIerrors(query, variables):
                       f"\tVariables: {variables}\n"
                       f"\t{error_message}")
         demisto.error(error_message)
-        raise Exception(f"{error_message}\nCheck 'server.log' file to get additional information")
+        raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
     return result.json()
 
 
@@ -781,6 +786,10 @@ def get_filtered_issues(issue_type, resource_id, severity, limit, issue_id=''):
                     "upper or lower case.")
 
     if issue_id:
+        is_valid_id, message = is_valid_issue_id(issue_id)
+        if not is_valid_id:
+            return message
+
         issue_variables = {
             "first": 5,
             "filterBy": {
@@ -853,27 +862,54 @@ def reject_issue(issue_id, reject_reason, reject_comment):
     """
     Reject a Wiz Issue
     """
-    demisto.debug("reject_issue, enter")
+    return reject_or_resolve_issue(issue_id, reject_reason, reject_comment, 'REJECTED')
 
-    if not issue_id or not reject_reason or not reject_comment:
-        demisto.error("You should pass all of: Issue ID, rejection reason and comment.")
-        return "You should pass all of: Issue ID, rejection reason and note."
+
+def resolve_issue(issue_id, resolution_reason, resolution_note):
+    """
+    Reject a Wiz Issue
+    """
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
+
+    issue_object = _get_issue(issue_id, is_evidence=False)
+
+    issue_type = issue_object['data']['issues']['nodes'][0]['type']
+
+    if issue_type != 'THREAT_DETECTION':
+        demisto.error(f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}.")
+        return f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}."
+
+    return reject_or_resolve_issue(issue_id, resolution_reason, resolution_note, 'RESOLVED')
+
+
+def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolve_comment, status):
+    """
+    Reject a Wiz Issue
+    """
+    demisto.debug(f"reject_issue with status: {status}, enter")
+    operation = "reject" if status == 'REJECTED' else "resolution"
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
+
+    if not reject_or_resolve_reason or not reject_or_resolve_comment:
+        demisto.error(f"You should pass all of: Issue ID, {operation} reason and {operation} note.")
+        return f"You should pass all of: Issue ID, {operation} reason and {operation} note."
 
     variables = {
         'issueId': issue_id,
         'patch': {
-            'status': 'REJECTED',
-            'note': reject_comment,
-            'resolutionReason': reject_reason
+            'status': status,
+            'note': reject_or_resolve_comment,
+            'resolutionReason': reject_or_resolve_reason
         }
     }
     query = UPDATE_ISSUE_QUERY
 
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
+    response = checkAPIerrors(query, variables)
 
     return response
 
@@ -885,9 +921,9 @@ def reopen_issue(issue_id, reopen_note):
 
     demisto.debug("reopen_issue, enter")
 
-    if not issue_id:
-        demisto.error("You should pass an Issue ID.")
-        return "You should pass an Issue ID."
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
 
     variables = {
         'issueId': issue_id,
@@ -910,16 +946,24 @@ def issue_in_progress(issue_id):
     Set a Wiz Issue to In Progress
     """
 
-    demisto.debug("issue_in_progress, enter")
+    return _set_status(issue_id, "IN_PROGRESS")
 
-    if not issue_id:
-        demisto.error("You should pass an Issue ID.")
-        return "You should pass an Issue ID."
+
+def _set_status(issue_id, status):
+    """
+    Set a Wiz Issue to In Progress
+    """
+
+    demisto.debug(f"_set_status to {status}, enter")
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
 
     variables = {
         'issueId': issue_id,
         'patch': {
-            'status': 'IN_PROGRESS'
+            'status': status
         }
     }
     query = UPDATE_ISSUE_QUERY
@@ -930,6 +974,10 @@ def issue_in_progress(issue_id):
 
 
 def _get_issue(issue_id, is_evidence=False):
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
+
     issue_variables = {
         'first': 1,
         'filterBy': {
@@ -949,11 +997,9 @@ def set_issue_comment(issue_id, comment):
     Set a note on Wiz Issue
     """
 
-    demisto.debug("set_issue_comment, enter")
-
-    if not issue_id or not comment:
-        demisto.error("You should pass an Issue ID and note.")
-        return "You should pass an Issue ID and note."
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
 
     issue_variables = {
         "input": {
@@ -970,10 +1016,19 @@ def set_issue_comment(issue_id, comment):
 
 def get_error_output(wiz_api_response):
     error_output_message = ''
+    first_error_message = ''
     if 'errors' in wiz_api_response:
-        for error_message in wiz_api_response['errors']:
-            if 'message' in error_message:
-                error_output_message = error_output_message + error_message['message']
+        for error_dict in wiz_api_response['errors']:
+            if 'message' in error_dict:
+                error_message = error_dict['message']
+
+                # Do not print duplicate errors
+                if first_error_message and first_error_message == error_message:
+                    continue
+                if not first_error_message:
+                    first_error_message = error_message
+
+                error_output_message = error_output_message + error_message + '\n'
 
     return error_output_message if error_output_message else wiz_api_response
 
@@ -985,9 +1040,9 @@ def clear_issue_note(issue_id):
 
     demisto.debug("clear_issue_note, enter")
 
-    if not issue_id:
-        demisto.error("You should pass an Issue ID.")
-        return "You should pass an Issue ID."
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
 
     issue_object = _get_issue(issue_id)
 
@@ -1014,7 +1069,11 @@ def set_issue_due_date(issue_id, due_at):
 
     demisto.debug("set_issue_due_date, enter")
 
-    if not issue_id or not due_at:
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
+
+    if not due_at:
         demisto.error("issue_id and due_at parameters must be provided.")
         return "issue_id and due_at parameters must be provided."
 
@@ -1051,9 +1110,9 @@ def clear_issue_due_date(issue_id):
 
     demisto.debug("clear_issue_due_date, enter")
 
-    if not issue_id:
-        demisto.error("You should pass an Issue ID.")
-        return "You should pass an Issue ID."
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
 
     issue_query = UPDATE_ISSUE_QUERY
     issue_variables = {
@@ -1075,14 +1134,17 @@ def get_issue_evidence(issue_id):
 
     demisto.debug("get_issue_evidence, enter")
 
-    if not issue_id:
-        demisto.error("You should pass an Issue ID.")
-        return "You should pass an Issue ID."
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
 
     # Getting the Issue Evidence Query
     issue_object = _get_issue(issue_id, is_evidence=True)
 
     query_for_evidence = issue_object['data']['issues']['nodes'][0]['evidenceQuery']
+
+    if not query_for_evidence:
+        return f"No issue evidence for Issue ID: {issue_id}"
 
     # Creating the query/variables to get the Issue Evidence
     query = PULL_ISSUE_EVIDENCE_QUERY
@@ -1292,6 +1354,30 @@ def get_project_team(project_name):
         return project_team
 
 
+def is_valid_uuid(uuid_string):
+    if not isinstance(uuid_string, str):
+        uuid_string = str(uuid_string)
+    try:
+        uuid_obj = uuid.UUID(uuid_string)
+        return str(uuid_obj) == uuid_string
+    except ValueError:
+        return False
+    except Exception:
+        return False
+
+
+def is_valid_issue_id(issue_id):
+    if not issue_id:
+        demisto.error("You should pass an Issue ID.")
+        return False, "You should pass an Issue ID."
+
+    if not is_valid_uuid(issue_id):
+        demisto.error("Wrong format: The Issue ID should be in UUID format.")
+        return False, "Wrong format: The Issue ID should be in UUID format."
+
+    return True, f"The Issue ID {issue_id} is in a valid format"
+
+
 def main():
     params = demisto.params()
     set_authentication_endpoint(params.get('auth_endpoint'))
@@ -1344,12 +1430,12 @@ def main():
         elif command == 'wiz-reject-issue':
             demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            reject_reason = demisto_args.get(WizInputParam.REJECT_REASON)
-            reject_note = demisto_args.get(WizInputParam.REJECT_NOTE)
+            resolution_reason = demisto_args.get(WizInputParam.REJECT_REASON)
+            resolution_note = demisto_args.get(WizInputParam.REJECT_NOTE)
             issue_response = reject_issue(
                 issue_id=issue_id,
-                reject_reason=reject_reason,
-                reject_comment=reject_note
+                reject_reason=resolution_reason,
+                reject_comment=resolution_note
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
@@ -1361,6 +1447,19 @@ def main():
             issue_response = reopen_issue(
                 issue_id=issue_id,
                 reopen_note=reopen_note
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-resolve-issue':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resolution_reason = demisto_args.get(WizInputParam.RESOLUTION_REASON)
+            resolution_note = demisto_args.get(WizInputParam.RESOLUTION_NOTE)
+            issue_response = resolve_issue(
+                issue_id=issue_id,
+                resolution_reason=resolution_reason,
+                resolution_note=resolution_note
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
@@ -1445,7 +1544,7 @@ def main():
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(str(err))
+        return_error(f"An error occurred: {str(err)}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -5,7 +5,7 @@ import ssl
 import email
 from datetime import timezone
 from typing import Any
-
+from email.message import Message
 from dateparser import parse
 from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
@@ -25,21 +25,18 @@ class Email:
         """
         self.mail_bytes = message_bytes
         try:
-            demisto.debug('ML: trying to parse email from bytes')
             email_object = parse_from_bytes(message_bytes)
-            demisto.debug('ML: success to parse email from bytes')
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-        except TypeError:
-            demisto.debug('ML: Trying to parse email from str')
+        except TypeError as e:
+            demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
+                         '\nWill try to parse from string')
             message_string = message_bytes.decode('ISO-8859-1')
-            demisto.debug('ML: Managed to decode message_string with ISO-8859-1')
             email_object = parse_from_string(message_string)
-            demisto.debug('ML: Success to parse email from str')
-            
+
         eml_attachments = self.get_eml_attachments(message_bytes)
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
@@ -63,40 +60,41 @@ class Email:
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
-        demisto.debug('ML: get_eml_attachments')
-        eml_attachments = []
-        try:
-            demisto.debug('ML: trying to parse attachment from bytes')
-            msg = email.message_from_bytes(message_bytes)
-            demisto.debug('ML: success to parse attachment from bytes')
-        except TypeError:
-            demisto.debug('ML: trying to parse attachment from str')
-            message_string = message_bytes.decode('ISO-8859-1')
-            demisto.debug('ML: Managed to decode attachment with ISO-8859-1')
-            msg = email.message_from_string(message_string)
-            demisto.debug('ML: success to parse attachment from str')
 
-        demisto.debug('ML: Managed to decode attachments')
+        def get_attachment_payload(part: Message) -> bytes:
+            """Returns the payload of the email attachment as bytes object"""
+            payload = part.get_payload(decode=False)
+            demisto.debug('ML: the payload instance is list')
+            if isinstance(payload, list) and isinstance(payload[0], Message):
+                payload = payload[0].as_bytes()
+            elif isinstance(payload, str):
+                demisto.debug('ML: the payload instance is str and not list')
+                payload = payload.encode('utf-8')
+            else:
+                raise DemistoException(f'Could not parse the email attachment: {part.get_filename()}')
+
+            return payload
+
+        eml_attachments = []
+        msg = email.message_from_bytes(message_bytes)
+
         if msg:
-            demisto.debug(f'ML: {type(msg)=}')
             for part in msg.walk():
-                demisto.debug(f'ML: {type(part)=}')
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
+
                 filename = part.get_filename()
-                demisto.debug(f'ML: {part.get_filename()=}')
                 if filename and filename.endswith('.eml'):
-                    demisto.debug(f'ML: {type(part.get_payload(decode=False))=}, {len(part.get_payload(decode=False))}')
-                    demisto.debug(f'ML: {type(part.get_payload(decode=False)[0])=}')
                     eml_attachments.append({
                         "filename": filename,
-                        "payload": part.get_payload(decode=False)[0].as_bytes(),
+                        "payload": get_attachment_payload(part),
                         "binary": False,
                         "mail_content_type": part.get_content_subtype(),
                         "content-id": part.get('content-id'),
                         "content-disposition": part.get('content-disposition'),
                         "charset": part.get_content_charset(),
                         "content_transfer_encoding": part.get_content_charset()})
+
         return eml_attachments
 
     @staticmethod
@@ -398,7 +396,7 @@ def fetch_mails(client: IMAPClient,
         except Exception as e:
             demisto.debug(f"ML: {mail_id=}: Failed creating Email object, skipping. Error: {e}")
             continue
-        
+
         demisto.debug(f"ML: {mail_id=}: Created email object successfully.")
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):

@@ -95,7 +95,7 @@ Retrieve all secrets.
                 },
                 "SecretList": [
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc",
                         "CreatedDate": "2022-09-04T09:10:12",
                         "LastAccessedDate": "2022-10-23T00:00:00",
                         "LastChangedDate": "2022-10-23T13:40:55",
@@ -108,7 +108,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:gmail-oF08mg",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:gmail-oF08mg",
                         "CreatedDate": "2022-08-31T09:47:24",
                         "LastAccessedDate": "2022-10-23T00:00:00",
                         "LastChangedDate": "2022-08-31T09:47:24",
@@ -121,7 +121,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:DB_credentials-3ic9K7",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:DB_credentials-3ic9K7",
                         "CreatedDate": "2022-08-31T09:45:33",
                         "LastAccessedDate": "2022-10-23T00:00:00",
                         "LastChangedDate": "2022-08-31T09:45:33",
@@ -134,7 +134,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:test_for_moishy-fVYXb6",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account",
                         "CreatedDate": "2022-08-21T13:54:05",
                         "Description": "new description",
                         "LastAccessedDate": "2022-10-23T00:00:00",
@@ -162,10 +162,10 @@ Retrieve all secrets.
 >### AWS Secrets List
 >|ARN|Description|LastAccessedDate|Name|
 >|---|---|---|---|
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc |  | 2022-10-23T13:40:55 | fdff |
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:gmail-oF08mg |  | 2022-08-31T09:47:24 | gmail |
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:DB_credentials-3ic9K7 |  | 2022-08-31T09:45:33 | DB_credentials |
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:test_for_moishy-fVYXb6 | new description | 2022-09-08T07:14:13 | test_for_moishy |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc |  | 2022-10-23T13:40:55 | fdff |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:gmail-oF08mg |  | 2022-08-31T09:47:24 | gmail |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:DB_credentials-3ic9K7 |  | 2022-08-31T09:45:33 | DB_credentials |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account | new description | 2022-09-08T07:14:13 | test_for_moishy |
 
 
 ### aws-secrets-manager-secret–value-get
@@ -215,7 +215,7 @@ Retrieve a secret value by key.
         "SecretsManager": {
             "Secret": {
                 "SecretValue": {
-                    "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc",
+                    "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc",
                     "CreatedDate": "2022-09-04T09:10:13",
                     "Name": "fdff",
                     "ResponseMetadata": {
@@ -246,7 +246,7 @@ Retrieve a secret value by key.
 >### AWS Get Secret
 >|ARN|CreatedDate|Name|SecretBinary|SecretString|
 >|---|---|---|---|---|
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc | 2022-09-04T09:10:13 | fdff |  | {"password":"cvcvcv","username":"cvcvcv"} |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | 2022-09-04T09:10:13 | fdff |  | {"password":"cvcvcv","username":"cvcvcv"} |
 
 
 ### aws-secrets-manager-secret–delete
@@ -345,7 +345,7 @@ Get the Secret Manager policy for a specific secret.
     "AWS": {
         "SecretsManager": {
             "Policy": {
-                "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc",
+                "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc",
                 "Name": "fdff",
                 "ResponseMetadata": {
                     "HTTPHeaders": {
@@ -369,5 +369,5 @@ Get the Secret Manager policy for a specific secret.
 >### AWS Secret Policy
 >|ARN|Name|Policy|
 >|---|---|---|
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc | fdff |  |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | fdff |  |
 
