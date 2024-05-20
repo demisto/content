@@ -39,95 +39,53 @@ class Client(BaseClient):
         headers = {'Authorization': f'Bearer {access_token}'}
         self._headers = headers
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None,
-                      default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
+    def search_events(self) -> List[Dict]:  # noqa: E501
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
-
-        Args:
-            prev_id: previous id that was fetched.
-            alert_status:
-            limit: limit.
-            from_date: get events from from_date.
-
+        Searches for Druva events.
         Returns:
-            List[Dict]: the next event
+            List[Dict]: List of events
         """
-        # use limit & from date arguments to query the API
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'protocol': default_Protocol,
-            't_port': prev_id + 1,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType',
-                'requested_limit': limit,
-                'requested_From_date': from_date
-            }
-        }]
+
+        data = {}
+        headers = {'Authorization': self._headers.get('Authorization'), 'accept': 'application/json'}
+        response = self._http_request(method='GET', url_suffix='/insync/eventmanagement/v2/events', headers=headers,
+                                      data=data, resp_type='response')
+        return [response]
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> str:
+    """
+    Tests API connectivity and authentication
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
+    Raises exceptions if something goes wrong.
+
+    Args:
+        client (Client): Druva client to use.
+        params (Dict): Integration parameters.
+        first_fetch_time(str): The first fetch time as configured in the integration params.
+
+    Returns:
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+    """
+
+    try:
+        client.search_events()
+    except Exception as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
     return 'ok'
 
-# TODO
-# def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
-#     """
-#     Tests API connectivity and authentication
-#     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-#     successful.
-#     Raises exceptions if something goes wrong.
-#
-#     Args:
-#         client (Client): Druva client to use.
-#         params (Dict): Integration parameters.
-#         first_fetch_time(str): The first fetch time as configured in the integration params.
-#
-#     Returns:
-#         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-#     """
-#
-#     try:
-#         alert_status = params.get('alert_status', None)
-#
-#         fetch_events(
-#             client=client,
-#             last_run={},
-#             first_fetch_time=first_fetch_time,
-#             alert_status=alert_status,
-#             max_events_per_fetch=1,
-#         )
-#
-#     except Exception as e:
-#         if 'Forbidden' in str(e):
-#             return 'Authorization Error: make sure API Key is correctly set'
-#         else:
-#             raise e
-#
-#     return 'ok'
 
-
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', 50)
-    from_date = args.get('from_date')
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status,
-        limit=limit,
-        from_date=from_date,
-    )
+def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
+    events = client.search_events()
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, last_run: dict[str, int]) -> tuple[Dict, List[Dict]]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -140,16 +98,11 @@ def fetch_events(client: Client, last_run: dict[str, int],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
+    prev_id = last_run.get('prev_id')
     if not prev_id:
         prev_id = 0
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
+    events = client.search_events()
     demisto.debug(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
@@ -212,11 +165,10 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
-            # result = test_module(client, params, first_fetch_time)
 
-        elif command == 'hello-world-get-events':
+        elif command == 'druva-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status, demisto.args())
+            events, results = get_events(client, alert_status)
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
@@ -230,10 +182,7 @@ def main() -> None:  # pragma: no cover
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
-                last_run=last_run,
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                max_events_per_fetch=max_events_per_fetch,
+                last_run=last_run
             )
 
             add_time_to_events(events)
