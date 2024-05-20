@@ -177,9 +177,8 @@ def search_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the search results in both structured and human-readable formats.
     """
-    filter = process_string(args.get('query', ''))
     kwargs = {
-        'filter': filter,
+        'filter': process_string(args.get('query', '')),
         'fields': argToList(args.get('fields', '*')),
         'limit': arg_to_number(args.get('limit', '50')),
         'startTime': get_date(args.get('start_time', '7 days ago')),
