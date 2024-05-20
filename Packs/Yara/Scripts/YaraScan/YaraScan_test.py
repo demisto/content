@@ -2,34 +2,13 @@
 from YaraScan import main
 import demistomock as demisto
 from CommonServerPython import entryTypes
+import json
 
 
 def test_main(mocker):
-    rule1 = '''rule PE_file_identifier
-{
-    meta:
-        author = "Adam Burt"
-        description = "Detects PE files"
-        date = "12/08/2016"
+    rule1 = "rule PE_file_identifier {meta: author = \"Adam Burt\" description = \"Detects PE files\" date = \"12/08/2016\" strings: $MZ = \"MZ\" ascii condition: $MZ at 0}"  # noqa: E501
 
-    strings:
-        $MZ = "MZ" ascii
-
-    condition:
-        $MZ at 0
-}'''
-
-    rule2 = '''rule Always_true
-{
-    meta:
-        author = "Ivan"
-        description = "Always true for testing purposes"
-        date = "16/05/2024"
-
-    condition:
-        true
-}
-    '''
+    rule2 = "rule Always_true {meta:author = \"Ivan\" description = \"Always true for testing purposes\" date = \"16/05/2024\" condition:true}"  # noqa: E501
 
     def executeCommand(name, args=None):
         if name == 'getFilePath':
@@ -48,7 +27,7 @@ def test_main(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={
         'entryIDs': 'test',
-        'yaraRules': {"rule1": rule1, "rule2": rule2}
+        'yaraRules': json.dumps({"rule1": rule1, "rule2": rule2})
     })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
