@@ -74,6 +74,7 @@ def test_get_indicators_command(mocker):
     assert len(results.raw_response) == 2
     assert "Indicators" in results.readable_output
 
+
 def test_get_indicators_command_no_parameters(mocker):
     """Test get_indicators_command function where there is no parameters to filter by
     Given
@@ -88,7 +89,8 @@ def test_get_indicators_command_no_parameters(mocker):
     all_indicators = get_indicators_command(client, args={'indicator_types': 'ALL'})
     default_indicators = get_indicators_command(client, {})
     assert len(all_indicators.raw_response) == len(default_indicators.raw_response)
-    
+
+
 def test_get_indicators_command_with_just_score_end(mocker):
     """Test get_indicators_command function where there is just score_end parameter
     Given
@@ -103,7 +105,8 @@ def test_get_indicators_command_with_just_score_end(mocker):
     indicators_with_end = get_indicators_command(client, args={'score_end': 50})
     indicators_with_end_start = get_indicators_command(client, args={'score_end': 50, 'score_start': 0})
     assert len(indicators_with_end.raw_response) == len(indicators_with_end_start.raw_response)
-    
+
+
 def test_get_indicators_command_with_just_score_start(mocker):
     """Test get_indicators_command function where there is just score_end parameter
     Given
@@ -118,6 +121,7 @@ def test_get_indicators_command_with_just_score_start(mocker):
     indicators_with_end = get_indicators_command(client, args={'score_start': 50})
     indicators_with_end_start = get_indicators_command(client, args={'score_start': 50, 'score_end': 100})
     assert len(indicators_with_end.raw_response) == len(indicators_with_end_start.raw_response)
+
 
 def test_get_indicators_command_with_score(mocker):
     """Tests get_indicators_command function with a specified score
