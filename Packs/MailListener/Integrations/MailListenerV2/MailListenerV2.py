@@ -64,9 +64,16 @@ class Email:
                     continue
                 filename = part.get_filename()
                 if filename and filename.endswith('.eml'):
+                    payload = part.get_payload(decode=False)[0]
+                    if part.is_multipart():
+                        # According to docs, this indicates rather the EML file is a Message object or a string
+                        payload = payload.as_bytes()
+                    else:
+                        demisto.debug('is_multipart')
+                        payload = payload.encode()
                     eml_attachments.append({
                         "filename": filename,
-                        "payload": part.get_payload(decode=False)[0].as_bytes(),
+                        "payload": payload,
                         "binary": False,
                         "mail_content_type": part.get_content_subtype(),
                         "content-id": part.get('content-id'),
