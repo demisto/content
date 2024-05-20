@@ -567,7 +567,7 @@ There is no context output for this command.
 
 > To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 > and enter the code CODECODE to authenticate.
-> Run the !azure-nsg-auth-complete command in the War Room.
+> Run the ***!azure-nsg-auth-complete*** command in the War Room.
 
 ### azure-nsg-auth-complete
 
