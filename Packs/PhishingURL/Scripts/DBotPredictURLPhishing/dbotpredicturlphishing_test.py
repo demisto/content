@@ -326,27 +326,26 @@ def test_weed_rasterize_errors(mocker: MockerFixture):
     """
     return_results_mock = mocker.patch('DBotPredictURLPhishing.return_results')
     urls = ['1', '2', '3']
-    res_rasterize = [
-        {'Contents': 'error 1'},
-        {'Contents': {'success': True}},
-        {'Contents': 'error 3'},
-    ]
+    res_rasterize = ['error 1', {'success': True}, 'error 3']
 
     weed_rasterize_errors(urls, res_rasterize)
 
     assert urls == ['2']
-    assert res_rasterize == [{'Contents': {'success': True}}]
+    assert res_rasterize == [{'success': True}]
     assert 'error 1' in return_results_mock.call_args_list[0].args[0].readable_output
     assert 'error 3' in return_results_mock.call_args_list[0].args[0].readable_output
 
 
-def test_weed_rasterize_errors_bad_rasterize_response():
+def test_rasterize_urls_bad_rasterize_response(mocker: MockerFixture):
     """
     Given: the results from calling rasterize are less than the amount of URLs given.
     When: looking for rasterize error responses in the weed_rasterize_errors function.
-    Then: Make sure the correct error is raised.
+    Then: Make sure the command is called for each URL.
     """
-    with pytest.raises(DemistoException, match=(
-        'Unexpected response from the "rasterize" command. Please make sure the Rasterize pack version is above 2.0.7')
-    ):
-        weed_rasterize_errors(['1', '2'], [{}])
+    rasterize_command_mock = mocker.patch(
+        'DBotPredictURLPhishing.rasterize_command', return_value=[{'Contents': ''}]
+    )
+
+    rasterize_urls(['1', '2'], 0)
+
+    assert rasterize_command_mock.call_count == 3
