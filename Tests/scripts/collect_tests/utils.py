@@ -66,13 +66,16 @@ class Machine(Enum):
         result: list[Machine] = []
 
         if not version_range:
-            return (Machine.MASTER,)
-        elif version_range.is_max_default:
-            return (Machine.MASTER,)
+            return ()
+        if version_range.min_version or version_range.max_version:
+            result = [Machine.MASTER]
 
-        result =
-        # result.extend(machine for machine in Machine.numeric_machines() if machine.value in version_range)
-
+        result.extend(
+            machine
+            for machine in Machine.numeric_machines()
+            if machine.value
+            in [version_range.min_version, version_range.max_varsion]
+        )
 
         return tuple(result)
 
@@ -109,7 +112,7 @@ class DictBased:
     def __contains__(self, item):
         return item in self.content
 
-    def _calculate_from_version(self) -> Version | None:
+    def _calculate_from_version(self) -> Version | NegativeInfinityType:
         # all three options are equivalent
         if value := (
                 self.get('fromversion', warn_if_missing=False)
@@ -118,10 +121,9 @@ class DictBased:
                 or self.get('serverMinVersion', warn_if_missing=False)
         ):
             return Version(value)
-        return None
+        return version.NegativeInfinity
 
-
-    def _calculate_to_version(self) -> Version | None:
+    def _calculate_to_version(self) -> Version | InfinityType:
         # all three options are equivalent
         if value := (
                 self.get('toversion', warn_if_missing=False)
@@ -129,7 +131,7 @@ class DictBased:
                 or self.get('toServerVersion', warn_if_missing=False)
         ):
             return Version(value)
-        return None
+        return version.Infinity
 
     def _handle_xsoar_marketplaces(self) -> tuple[MarketplaceVersions, ...] | None:
         """

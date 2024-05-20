@@ -126,7 +126,7 @@ class CollectionResult:
         self.modeling_rules_to_test: set[str | Path] = set()
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
-        self.version_range = None if version_range and version_range.is_default else version_range
+        self.version_range = None
         self.machines: tuple[Machine, ...] | None = None
         self.packs_to_reinstall: set[str] = set()
 
@@ -167,22 +167,16 @@ class CollectionResult:
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            if only_to_upload == only_to_install:
-
-                if only_to_upload and only_to_install:
-                    raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
-
+            if os.getenv('NIGHTLY') or test:
+                logger.info(f"MICHAL PACK WITH TPB - {pack=}")
                 self.packs_to_install = {pack}
-                self.packs_to_upload = {pack}
-                logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
-
-            elif only_to_install:
+                self.version_range = version_range # TODO OF WHO WIIL BE
+            if only_to_install:
                 self.packs_to_install = {pack}
                 logger.info(f'collected {pack=} only to install, {reason} ({reason_description}, {version_range=})')
-
-            elif only_to_upload:
+            else:
                 self.packs_to_upload = {pack}
-                logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
+                logger.info(f'collected {pack=} to upload, {reason} ({reason_description}, {version_range=})')
 
         if modeling_rule_to_test:
             self.modeling_rules_to_test = {modeling_rule_to_test}
