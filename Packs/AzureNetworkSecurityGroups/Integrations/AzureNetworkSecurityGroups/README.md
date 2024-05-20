@@ -41,7 +41,7 @@ To add a permission:
 
 1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 
-   *Note:* At the 'Select members' section, assign the application you created before.
+   *Note:* In the *Select members* section, assign the application you created earlier.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
 3. In the **Authentication Type** field, select the **Client Credentials** option.
