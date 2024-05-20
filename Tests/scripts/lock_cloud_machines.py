@@ -286,7 +286,7 @@ def get_and_lock_all_needed_machines(storage_client: storage.Client,
     logging.debug('getting all machines lock files')
     machines_locks = get_machines_locks_details(storage_client, LOCKS_BUCKET,
                                                 gcs_locks_path, MACHINES_LOCKS_REPO)
-
+    list_machines = ['qa2-test-9994488073644']
     locked_machine_list = []
     while number_machines_to_lock > 0:
         busy_machines = []

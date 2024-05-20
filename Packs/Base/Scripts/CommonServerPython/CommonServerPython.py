@@ -1862,6 +1862,7 @@ def formatCell(data, is_pretty=True, json_transform=None):
        :rtype: ``str``
     """
     if json_transform is None:
+        just_for_test = 10
         json_transform = JsonTransformer(flatten=True)
 
     return json_transform.json_to_str(data, is_pretty)
