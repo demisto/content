@@ -1,0 +1,26 @@
+{
+    "objects": [
+      {
+        "id": 950961,
+        "domain": "test",
+        "from": 1703258128000,
+        "to": 1703261728000,
+        "filter": "src:\"127.0.0.1\"",
+        "targetDomain": "test",
+        "type": "Behavioral",
+        "insight": "Behavioral.Geo.Bulgaria",
+        "count": 1,
+        "data": {
+          "discovery_date": "1703387402954"
+        },
+        "user": "Analytics",
+        "created": 1703387404364,
+        "updated": 1703387404364,
+        "mdr": false,
+        "probability": 64,
+        "externalId": null,
+        "editable": true
+      }
+    ],
+    "count": 1
+}
