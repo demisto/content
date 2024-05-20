@@ -171,8 +171,8 @@ class Client:
                 cached_engines = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
 
                 if cache_key in cached_engines:
-                # engine is None, but cache_key in cached_engines, so the ttl must have passed - let's dispose the engine to make sure the connection is closed.
-                # engine is None, but cache_key in cached_engines, so the ttl must have passed - let's dispose the engine to make sure the connection is closed.
+                    # engine is None, but cache_key in cached_engines, so the ttl must have passed.
+                    # let's dispose the engine to make sure the connection is closed.
                     cached_engines[cache_key].dispose()
                     cached_engines.pop(cache_key)
 
