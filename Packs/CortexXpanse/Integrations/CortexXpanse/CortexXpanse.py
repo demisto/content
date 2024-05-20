@@ -292,6 +292,29 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def append_search_param(search_params, field, operator, value):
+    """
+    Appends a search parameter to the given list of search parameters.
+
+    Args:
+        search_params (list): The list of search parameters to append to.
+        field (str): The name of the field to search on.
+        operator (str): The operator to use for the search (e.g. "eq", "contains", "in").
+        value (any): The value to search for.
+
+    Returns:
+        None
+    """
+
+    search_params.append(
+        {
+            "field": field,
+            "operator": operator,
+            "value": value
+        }
+    )
+
+
 def format_asm_id(formatted_response: list[dict]) -> list[dict]:
     """
     Takes the response from the asm-list-asset-internet-exposure command and converts `asm_id` key from list to str
@@ -589,16 +612,64 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
     has_active_external_services = args.get('has_active_external_services')
     search_from = int(args.get('search_from', 0))
     search_to = int(args.get('search_to', DEFAULT_SEARCH_LIMIT))
+    asm_id_list = args.get("asm_id_list")
+    ipv6_address = args.get("ipv6_address")
+    gcp_cloud_tags = args.get("gcp_cloud_tags")
+    azure_cloud_tags = args.get("azure_cloud_tags")
+    aws_cloud_tags = args.get("aws_cloud_tags")
+    has_xdr_agent = args.get("has_xdr_agent")
+    externally_detected_providers = args.get("externally_detected_providers")
+    externally_inferred_cves = args.get("externally_inferred_cves")
+    business_units_list = args.get("business_units_list")
+    has_bu_overrides = args.get("has_bu_overrides")
+    mac_addresses = args.get("mac_addresses")
     # create list of search parameters or pass empty list.
-    search_params = []
+    search_params: List[Dict[str, Any]] = []
+
     if ip_address:
-        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
+        append_search_param(search_params, "ip_address", "eq", ip_address)
+
     if name:
-        search_params.append({"field": "name", "operator": "contains", "value": name})
+        append_search_param(search_params, "name", "contains", name)
+
     if asm_type:
-        search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
+        append_search_param(search_params, "type", "in", [asm_type])
+
     if has_active_external_services:
-        search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
+        append_search_param(search_params, "has_active_external_services", "in", [has_active_external_services])
+
+    if asm_id_list:
+        append_search_param(search_params, "asm_id_list", "in", str(asm_id_list).split(","))
+
+    if ipv6_address:
+        append_search_param(search_params, "ipv6_address", "eq", str(ipv6_address))
+
+    if aws_cloud_tags:
+        append_search_param(search_params, "aws_cloud_tags", "in", str(aws_cloud_tags).split(","))
+
+    if gcp_cloud_tags:
+        append_search_param(search_params, "gcp_cloud_tags", "in", str(gcp_cloud_tags).split(","))
+
+    if azure_cloud_tags:
+        append_search_param(search_params, "azure_cloud_tags", "in", str(azure_cloud_tags).split(","))
+
+    if has_xdr_agent:
+        append_search_param(search_params, "has_xdr_agent", "in", str(has_xdr_agent).split(","))
+
+    if externally_detected_providers:
+        append_search_param(search_params, "externally_detected_providers", "contains", externally_detected_providers)
+
+    if externally_inferred_cves:
+        append_search_param(search_params, "externally_inferred_cves", "contains", str(externally_inferred_cves))
+
+    if business_units_list:
+        append_search_param(search_params, "business_units_list", "in", str(business_units_list).split(","))
+
+    if has_bu_overrides:
+        append_search_param(search_params, "has_bu_overrides", "eq", False if has_bu_overrides.lower() == 'false' else True)
+
+    if mac_addresses:
+        append_search_param(search_params, "mac_addresses", "contains", mac_addresses)
 
     response = client.list_asset_internet_exposure_request(
         search_params=search_params, search_to=search_to, search_from=search_from)

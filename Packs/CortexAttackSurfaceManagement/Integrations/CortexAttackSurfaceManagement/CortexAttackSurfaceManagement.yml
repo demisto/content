@@ -224,7 +224,33 @@ script:
       predefined:
       - "yes"
       - "no"
-    description: Get a list of all your internet exposure filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
+    - description: List of asm ids.
+      name: asm_id_list
+    - description: IPv6 address on which to search.
+      name: ipv6_address
+    - description: Search based on GCP cloud tags.
+      name: gcp_cloud_tags
+    - description: Search based on AWS cloud tags.
+      name: aws_cloud_tags
+    - description: Search based on AZURE cloud tags.
+      name: azure_cloud_tags
+    - description: Search based on xdr agent.
+      name: has_xdr_agent
+    - description: Search on externally detected providers.
+      name: externally_detected_providers
+    - description: Search on externally inferred cve.
+      name: externally_inferred_cves
+    - description: Search on Business units list.
+      name: business_units_list
+    - auto: PREDEFINED
+      description: Whether it has BU overrides.
+      name: has_bu_overrides
+      predefined:
+      - "True"
+      - "False"
+    - description: Search based on MAC address.
+      name: mac_address
+    description: Get a list of all your internet exposure filtered by IP address, domain, type, asm id, IPv6 address, AWS/GCP/Azure tags, has XDR agent, Externally detected providers, Externally inferred cves, Business units list, has BU overrides and/or if there is an active external service. Maximum result limit is 100 assets.
     name: asm-list-asset-internet-exposure
     outputs:
     - contextPath: ASM.AssetInternetExposure.asm_ids
@@ -404,7 +430,7 @@ script:
     - auto: PREDEFINED
       description: Whether to poll until there is at least one result.
       name: polling
-      defaultValue: true
+      defaultValue: "true"
       predefined:
       - "true"
       - "false"
@@ -442,7 +468,7 @@ script:
       description: Attack surface rule priority.
     - contextPath: ASM.AttackSurfaceRule.remediation_guidance
       description: Remediation guidance of attack surface rule.
-  dockerimage: demisto/python3:3.10.13.85415
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: ''
   subtype: python3
