@@ -704,32 +704,6 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-
-def sort_packs_to_upload(result: CollectionResult):
-    """
-    :param: result contains packs_to_upload: The resultant list of packs to upload
-
-    the function sorts the packs_to_upload into 2 sets: packs_to_upload, packs_to_update_metadata sets:
-        packs_to_upload: set of packs to upload (hard upload - changed files with RN and version bump)
-        packs_to_update_metadata: set of packs to update
-         (soft upload - changed only to packmetadata file without RN and version bump)
-    """
-    git_util = GitUtil()
-    changed_files = git_util._get_all_changed_files()
-    for pack_id in result.packs_to_upload:
-        current_version = PACK_MANAGER.get_current_version(pack_id) or ""
-        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
-        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
-
-        if pack_metadata_path in git_util.added_files():  # first version
-            continue
-
-        if rn_path not in changed_files and pack_metadata_path in changed_files:
-            result.packs_to_update_metadata.add(pack_id)
-
-    result.packs_to_upload = result.packs_to_upload - result.packs_to_update_metadata
-
-
 class BranchTestCollector(TestCollector):
     def __init__(
             self,
@@ -750,6 +724,31 @@ class BranchTestCollector(TestCollector):
         self.branch_name = branch_name
         self.service_account = service_account
         self.build_bucket_path = build_bucket_path
+        self.changed_files: list[str] = []
+        self.added_files: list[str] = []
+
+    def _sort_packs_to_upload(self, result: CollectionResult):
+        """
+        :param: result contains packs_to_upload: The resultant list of packs to upload
+
+        the function sorts the packs_to_upload into 2 sets: packs_to_upload, packs_to_update_metadata sets:
+            packs_to_upload: set of packs to upload (hard upload - changed files with RN and version bump)
+            packs_to_update_metadata: set of packs to update
+             (soft upload - changed only to packmetadata file without RN and version bump)
+        """
+        logger.info(f"michal {self.added_files=}, {self.changed_files=}")
+        for pack_id in result.packs_to_upload:
+            current_version = PACK_MANAGER.get_current_version(pack_id) or ""
+            rn_path = f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md"
+            pack_metadata_path = f"Packs/{pack_id}/pack_metadata.json"
+
+            if pack_metadata_path in self.added_files:  # first version
+                continue
+
+            if rn_path not in self.changed_files and pack_metadata_path in self.changed_files:
+                result.packs_to_update_metadata.add(pack_id)
+
+        result.packs_to_upload = result.packs_to_upload - result.packs_to_update_metadata
 
     def _collect_failed_packs_from_prev_upload(self, result: CollectionResult | None):
         """
@@ -793,7 +792,7 @@ class BranchTestCollector(TestCollector):
         ])
 
         if result and result.packs_to_upload:
-            sort_packs_to_upload(result)
+            self._sort_packs_to_upload(result)
         self._collect_failed_packs_from_prev_upload(result)
         return result
 
@@ -1130,6 +1129,7 @@ class BranchTestCollector(TestCollector):
         """
         repo = PATHS.content_repo
         changed_files: list[str] = []
+        added_files: list[str] = []
         packs_files_were_removed_from: set[str] = set()
 
         previous_commit = 'origin/master'
@@ -1187,7 +1187,12 @@ class BranchTestCollector(TestCollector):
                     packs_files_were_removed_from.add(pack_file_removed_from)
                 continue  # not adding to changed files list
 
+            if git_status == 'A':
+                added_files.append(file_path)
+
             changed_files.append(file_path)  # non-deleted files (added, modified)
+        self.changed_files.extend(changed_files)
+        self.added_files.extend(added_files)
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
@@ -1286,7 +1291,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
         result = CollectionResult.union(result)
         # todo result none
         if result and result.packs_to_upload:
-            sort_packs_to_upload(result)
+            self._sort_packs_to_upload(result)
         self._collect_failed_packs_from_prev_upload(result)
         return result
 
