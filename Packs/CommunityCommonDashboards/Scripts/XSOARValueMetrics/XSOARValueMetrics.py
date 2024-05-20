@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 import csv
 import pandas as pd
 from datetime import datetime
@@ -36,13 +37,18 @@ def LogMessage(message: str) -> str:
     return ""
 
 
-def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str) -> dict:
+def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str, computeduration: str) -> dict:
+    if computeduration == "yes":
+        deltatime = ToDatetime(str(inc.get('closed'))) - ToDatetime(str(inc.get('created')))
+        duration = int(deltatime.total_seconds())
+    else:
+        duration = int(inc.get('openDuration', 0))
     record = {
         'type': inc.get('type'),
         'status': inc.get('status'),
         'created': inc.get('created'),
         'occurred': inc.get('occurred'),
-        'duration': inc.get('openDuration'),
+        'duration': duration,
         'contime': "-1",
         'dettime': "-1",
         'remtime': "-1",
@@ -320,13 +326,13 @@ def GetIncLargeWindow(w, page: int, filters: dict, userquery: str):
     return execute_command("getIncidents", query, extract_contents=False)
 
 
-def ProcessResponse(w, response, monthly, period, inccount, slatimers, windowstart, windowend):
+def ProcessResponse(w, response, monthly, period, inccount, slatimers, windowstart, windowend, computeduration):
     curmonth = w[0]
     if curmonth not in monthly:
         monthly[curmonth] = {}
 
     for inc in response[0]['Contents']['data']:
-        rec = IncidentRecord(inc, slatimers, windowstart, windowend)
+        rec = IncidentRecord(inc, slatimers, windowstart, windowend, computeduration)
         inccount += 1
         inctype = rec['type']
 
@@ -501,6 +507,7 @@ def main():
         lastyear_list = arguments['lastyearlist']
         windowstart = arguments.get('windowstart', "")
         windowend = arguments.get('windowend', "")
+        computeduration = arguments.get('computeduration', "no")
         mode = arguments['mode']
         query = arguments.get("query", "")
         filters = BuildFilters([item.strip().lower() for item in arguments.get('filters', "").split(",")])
@@ -521,7 +528,7 @@ def main():
                     if not FoundIncidents(response):
                         break
                     inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount,
-                                                                slatimers, windowstart, windowend)
+                                                                slatimers, windowstart, windowend, computeduration)
                     page += 1
                 # Switch to 4 hour window if the ES flag is set since it thows error next page if
                 # 10000 or more incidents were found even while paging through a smaller size page
@@ -535,7 +542,7 @@ def main():
                         response = GetIncSmallWindow(w, page, curday, curhour, filters, query)
                         if FoundIncidents(response):
                             inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount,
-                                                                        slatimers, windowstart, windowend)
+                                                                        slatimers, windowstart, windowend, computeduration)
                             page += 1
                         # If no incidents found, step to the next 4 hour window
                         else:
