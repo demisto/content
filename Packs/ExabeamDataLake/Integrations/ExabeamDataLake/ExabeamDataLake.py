@@ -44,7 +44,7 @@ class Client(BaseClient):
         """
         self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
-    def query_datalake_request(self, args, from_param, size_param ,cluster_name ,dates_in_format) -> dict:      
+    def query_datalake_request(self, args, from_param, size_param, cluster_name, dates_in_format) -> dict:
         """
         Queries the Exabeam Data Lake API with the provided search query and returns the response.
         """
@@ -152,7 +152,7 @@ def get_limit(args: dict) -> int:
         args: A dictionary containing the 'limit' argument.
 
     Returns:
-        int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit. 
+        int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
     """
     if limit := args.get('limit'):
