@@ -13,10 +13,10 @@ ESCAPE_CHARACTERS_PACK = [
 
 
 def unzip(zip_file_path: str, password: str = None):
-    unzip_file_path = f'{os.getcwd()}/unzipped_test_data'
-    with pyzipper.AESZipFile(zip_file_path) as zf:
-        zf.pwd = bytes(password, 'utf-8') if password else None
-        zf.extractall(path=unzip_file_path)
+    with tempfile.TemporaryDirectory() as unzip_dir:
+        with pyzipper.AESZipFile(zip_file_path) as zf:
+            zf.pwd = bytes(password, 'utf-8') if password else None
+            zf.extractall(path=unzip_dir)
 
 
 @pytest.mark.parametrize(('input_name', 'output_name'), ESCAPE_CHARACTERS_PACK)
@@ -25,20 +25,26 @@ def test_escape_characters_in_file_name(input_name, output_name):
 
 
 def test_compress_multiple_with_password():
+    test_data_dir = './test_data'
+    file_names = [os.path.join(test_data_dir, f) for f in os.listdir(test_data_dir) if
+                  os.path.isfile(os.path.join(test_data_dir, f))]
     with tempfile.NamedTemporaryFile(suffix='.zip') as tmp_zip:
         zip_name = tmp_zip.name
         compress_multiple(
-            file_names=['./test_data/test_txt.txt', './test_data/test_image.png', './test_data/test_image.svg'],
+            file_names=file_names,
             zip_name=zip_name,
             password='123'
         )
 
 
 def test_unzip():
+    test_data_dir = './test_data'
+    file_names = [os.path.join(test_data_dir, f) for f in os.listdir(test_data_dir) if
+                  os.path.isfile(os.path.join(test_data_dir, f))]
     with tempfile.NamedTemporaryFile(suffix='.zip') as tmp_zip:
         zip_name = tmp_zip.name
         compress_multiple(
-            file_names=['./test_data/test_txt.txt', './test_data/test_image.png', './test_data/test_image.svg'],
+            file_names=file_names,
             zip_name=zip_name,
             password='123'
         )
@@ -46,10 +52,13 @@ def test_unzip():
 
 
 def test_unzip_wrong_password():
+    test_data_dir = './test_data'
+    file_names = [os.path.join(test_data_dir, f) for f in os.listdir(test_data_dir) if
+                  os.path.isfile(os.path.join(test_data_dir, f))]
     with tempfile.NamedTemporaryFile(suffix='.zip') as tmp_zip:
         zip_name = tmp_zip.name
         compress_multiple(
-            file_names=['./test_data/test_txt.txt', './test_data/test_image.png', './test_data/test_image.svg'],
+            file_names=file_names,
             zip_name=zip_name,
             password='123'
         )
