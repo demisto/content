@@ -1,12 +1,9 @@
 import pytest
-from CommonServerPython import string_to_table_header, tableToMarkdown
 
 
 import json
-import plyara
-import dateparser
 from freezegun import freeze_time
-
+import demistomock as demisto
 
 URL = "https://openphish.com/feed.txt"
 
@@ -15,9 +12,11 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
+
 def util_load_txt(path):
     with open(path, encoding="utf-8") as f:
         return f.read()
+
 
 def mock_client():
     """
@@ -32,12 +31,15 @@ def mock_client():
         repo="",
         headers={},
     )
-    
+
+
 def test_get_base_head_commits_sha(mocker):
     pass
 
+
 def test_extract_commits(mocker):
     pass
+
 
 def test_get_content_files_from_repo(mocker):
     """
@@ -52,13 +54,13 @@ def test_get_content_files_from_repo(mocker):
     """
     from FeedGitHub import get_content_files_from_repo
     client = mock_client()
-    params = {'feedType':'IOCs', 'extensions_to_fetch': ['txt']}
+    params = {'feedType': 'IOCs', 'extensions_to_fetch': ['txt']}
     relevant_files = util_load_json('test_data/relevant-files.json')
     return_data = util_load_json('test_data/content_files_from_repo.json')
     mocker.patch.object(client, '_http_request', return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
     assert content_files == util_load_json('test_data/get_content-files-from-repo-result.json')
-    
+
 
 def test_get_commit_files(mocker):
     """
@@ -99,7 +101,7 @@ def test_filter_out_files_by_status():
         {"status": "renamed", "raw_url": "http://example.com/file4"},
         {"status": "added", "raw_url": "http://example.com/file5"}
     ]
-    
+
     expected_output = [
         "http://example.com/file1",
         "http://example.com/file2",
@@ -108,8 +110,9 @@ def test_filter_out_files_by_status():
     actual_output = filter_out_files_by_status(commits_files)
     assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
 
+
 @freeze_time("2024-05-12T15:30:49.330015")
-def test_parse_and_map_yara_content():
+def test_parse_and_map_yara_content(mocker):
     """
     Given:
      - YARA rule files as input from different sources.
@@ -122,19 +125,20 @@ def test_parse_and_map_yara_content():
      - Returns the parsed YARA rules in JSON format matching the expected results.
     """
     from FeedGitHub import parse_and_map_yara_content
+    mocker.patch.object(demisto, 'error')
     rule_1_input = {'example.com': util_load_txt("test_data/yara-rule-1.yar")}
     rule_2_input = {'example.com': util_load_txt("test_data/yara-rule-2.yar")}
     rule_3_input = {'example.com': util_load_txt("test_data/yara-rule-3.yar")}
-    
+
     parsed_rule1 = parse_and_map_yara_content(rule_1_input)
     parsed_rule2 = parse_and_map_yara_content(rule_2_input)
     parsed_rule3 = parse_and_map_yara_content(rule_3_input)
-    
+
     assert parsed_rule1 == util_load_json("test_data/yara-rule-1-res.json")
     assert parsed_rule2 == util_load_json("test_data/yara-rule-2-res.json")
     assert parsed_rule3 == util_load_json("test_data/yara-rule-3-res.json")
-    
-    
+
+
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_extract_text_indicators():
     """
@@ -151,7 +155,7 @@ def test_extract_text_indicators():
     params = {"owner": "example.owner", "repo": "example.repo"}
     res_indicators = extract_text_indicators(ioc_indicators_input, params)
     assert res_indicators == util_load_json("test_data/iocs-res.json")
-    
+
 
 def test_get_stix_indicators():
     """
@@ -166,8 +170,9 @@ def test_get_stix_indicators():
     stix_indicators_input = util_load_json("test_data/taxii_test.json")
     res_indicators = get_stix_indicators(stix_indicators_input)
     assert res_indicators == util_load_json("test_data/taxii_test_res.json")
-    
-def test_negative_limit():
+
+
+def test_negative_limit(mocker):
     """
         Given:
             - A negative limit.
@@ -176,17 +181,16 @@ def test_negative_limit():
         Then:
             - Ensure ValueError is raised with the right message.
     """
+    mocker.patch.object(demisto, 'error')
     from FeedGitHub import get_indicators_command
-    args = {'limit' : '-1'}
+    args = {'limit': '-1'}
     client = mock_client()
 
     with pytest.raises(ValueError) as ve:
         get_indicators_command(client, {}, args)
     assert ve.value.args[0] == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
-    
-    
 
-    
+
 # def test_build_iterator(requests_mock):
 #     """
 
@@ -256,4 +260,3 @@ def test_negative_limit():
 #         removeNull=True,
 #     )
 #     assert results.readable_output == human_readable
-    

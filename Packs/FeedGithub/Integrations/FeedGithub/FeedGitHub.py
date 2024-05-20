@@ -360,7 +360,7 @@ def filtering_stix_files(content_files: list) -> list:
     return stix_files
 
 
-def create_stix_generator(content_files:list[dict]):
+def create_stix_generator(content_files: list[dict]):
     """
     Create a generator for iterating over STIX files.
 
