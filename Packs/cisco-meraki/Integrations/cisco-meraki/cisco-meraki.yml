@@ -683,7 +683,7 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Uplink
-      description: List of device uplink. Each includes Status and Interface
+      description: List of device uplink. Each includes Status and Interface.
       type: list
     description: List of uplink information for a device.
   - name: meraki-fetch-ssids
@@ -749,7 +749,7 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Device
-      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
     description: Get a single device.
   - name: meraki-update-device
     arguments:
@@ -789,7 +789,7 @@ script:
       description: Network ID.
     - name: number
       required: true
-      description: SSID number
+      description: SSID number.
       defaultValue: ' '
     - name: allowLanAccess
       required: true
@@ -831,7 +831,7 @@ script:
       description: 'Whether to remove all other rules. True removes all other rules. False only adds the rule. Possible values: "true" and "false".'
     outputs:
     - contextPath: Firewall
-      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment
+      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment.
       type: list
     description: Update rule to L3 firewall rules of an SSID.
 tests:
