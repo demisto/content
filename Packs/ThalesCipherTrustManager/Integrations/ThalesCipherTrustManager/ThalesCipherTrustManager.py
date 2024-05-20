@@ -380,6 +380,13 @@ def optional_arg_to_datetime_string(arg, date_format):
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
+def add_expires_at_param(request_data: dict, expires_at_arg: str):
+    if expires_at_arg == "":
+        request_data['expires_at'] = expires_at_arg
+    else:
+        request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg, USER_EXPIRES_AT_DATE_FORMAT)
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -531,7 +538,6 @@ def user_create_command(client: CipherTrustClient, args: dict):
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         connection=args.get(CommandArguments.CONNECTION),
         email=args.get(CommandArguments.EMAIL),
-        expires_at=optional_arg_to_datetime_string(args.get(CommandArguments.EXPIRES_AT),USER_EXPIRES_AT_DATE_FORMAT),
         is_domain_user=optional_arg_to_bool(args.get(CommandArguments.IS_DOMAIN_USER)),
         login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
@@ -541,6 +547,7 @@ def user_create_command(client: CipherTrustClient, args: dict):
         user_id=args.get(CommandArguments.USER_ID),
         username=args.get(CommandArguments.USERNAME),
     )
+    add_expires_at_param(request_data, args.get(CommandArguments.EXPIRES_AT))
     raw_response = client.create_user(request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -557,7 +564,6 @@ def user_update_command(client: CipherTrustClient, args: dict):
         allowed_client_types=argToList(args.get(CommandArguments.ALLOWED_CLIENT_TYPES)),
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         email=args.get(CommandArguments.EMAIL),
-        expires_at=optional_arg_to_datetime_string(args.get(CommandArguments.EXPIRES_AT),USER_EXPIRES_AT_DATE_FORMAT),
         failed_logins_count=arg_to_number(args.get(CommandArguments.FAILED_LOGINS_COUNT)),
         login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
@@ -566,6 +572,7 @@ def user_update_command(client: CipherTrustClient, args: dict):
         password_policy=args.get(CommandArguments.PASSWORD_POLICY),
         username=args.get(CommandArguments.USERNAME),
     )
+    add_expires_at_param(request_data, args.get(CommandArguments.EXPIRES_AT))
     raw_response = client.update_user(user_id=args[CommandArguments.USER_ID], request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
