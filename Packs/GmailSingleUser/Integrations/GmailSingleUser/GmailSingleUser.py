@@ -54,13 +54,52 @@ EXECUTION_METRICS = ExecutionMetrics()
 ''' HELPER FUNCTIONS '''
 
 
-def metrics_http_error_response(error: HttpError):
-    if error.status_code == 429:
-        EXECUTION_METRICS.quota_error += 1
-    elif error.reason == 'Unauthorized':
-        EXECUTION_METRICS.auth_error += 1
-    else:
+def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
+    """Executes a specified action on the Gmail API.
+
+    This function dynamically executes an action such as sending an email, retrieving an email,
+    getting attachments, or listing emails based on the specified action and its arguments.
+
+    Args:
+        service: The Gmail API service instance.
+        action (str): The action to perform. Supported actions are "send", "get",
+                      "get_attachments", and "list".
+        action_kwargs (dict): The keyword arguments required for the specified action.
+
+    Returns:
+        dict: The result from the Gmail API call.
+
+    Raises:
+        HttpError: If an error occurs from the Gmail API request.
+        Exception: If a general error occurs during the function execution.
+
+    Note:
+        This function updates execution metrics counters based on the outcome of the API call.
+    """
+    try:
+        match action:
+            case "send":
+                return service.users().messages().send(**action_kwargs).execute()
+            case "get":
+                result = service.users().messages().get(**action_kwargs).execute()
+            case "get_attachments":
+                result = service.users().messages().attachments().get(**action_kwargs).execute()
+            case "list":
+                result = service.users().messages().list(**action_kwargs).execute()
+
+    except HttpError as error:
+        if error.status_code == 429:
+            EXECUTION_METRICS.quota_error += 1
+        elif error.reason == 'Unauthorized':
+            EXECUTION_METRICS.auth_error += 1
+        else:
+            EXECUTION_METRICS.general_error += 1
+        raise error
+    except Exception as error:
         EXECUTION_METRICS.general_error += 1
+        raise error
+    EXECUTION_METRICS.success += 1
+    return result
 
 
 def return_metrics():
@@ -223,7 +262,6 @@ class Client:
             msg = 'Error obtaining access token. Try checking the credentials you entered.'
             try:
                 demisto.info(f'Authentication failure from server: {resp.status} {resp.reason} {content}')
-                EXECUTION_METRICS.auth_error += 1
                 msg += f' Server message: {content}'
             except Exception as ex:
                 demisto.error(f'Failed parsing error response - Exception: {ex}')
@@ -282,15 +320,7 @@ class Client:
         service = self.get_service(
             'gmail',
             'v1')
-        try:
-            result = service.users().messages().get(**mail_args).execute()
-        except HttpError as e:
-            metrics_http_error_response(e)
-            raise e
-        except Exception as e:
-            EXECUTION_METRICS.general_error += 1
-            raise e
-        EXECUTION_METRICS.success += 1
+        result = execute_gmail_action(service, "get", mail_args)
         result = self.get_email_context(result, user_id)[0]
 
         command_args = {
@@ -300,15 +330,7 @@ class Client:
         files = []
         for attachment in result['Attachments']:
             command_args['id'] = attachment['ID']
-            try:
-                result = service.users().messages().attachments().get(**command_args).execute()
-            except HttpError as e:
-                metrics_http_error_response(e)
-                raise e
-            except Exception as e:
-                EXECUTION_METRICS.general_error += 1
-                raise e
-            EXECUTION_METRICS.success += 1
+            result = execute_gmail_action(service, "get_attachments", command_args)
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
 
@@ -354,7 +376,7 @@ class Client:
         if not headers or not isinstance(headers, list):
             demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
         else:
-            # use x-received or recvived. We want to use x-received first and fallback to received.
+            # use x-received or received. We want to use x-received first and fallback to received.
             for name in ['x-received', 'received', ]:
                 header = next(filter(lambda ht: ht.get('name', '').lower() == name, headers), None)
                 if header:
@@ -367,7 +389,7 @@ class Client:
         internalDate = email_data.get('internalDate')
         demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
         if internalDate and internalDate != '0':
-            # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+            # internalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
             # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
             timestamp_len = len(str(int(time.time())))
             if len(str(internalDate)) > timestamp_len:
@@ -381,12 +403,12 @@ class Client:
         """Get the email context from email data
 
         Args:
-            email_data (dics): the email data received from the gmail api
+            email_data (dict): the email data received from the gmail api
             mailbox (str): mail box name
 
         Returns:
-            (context_gmail, headers, context_email, received_date, is_valid_recieved): note that if received date is not
-                resolved properly is_valid_recieved will be false
+            (context_gmail, headers, context_email, received_date, is_valid_received): note that if received date is not
+                resolved properly is_valid_received will be false
 
         """
         occurred, occurred_is_valid = Client.get_occurred_date(email_data)
@@ -518,13 +540,13 @@ class Client:
             user_key
 
         Raises:
-            Exception: when problem getting attachements
+            Exception: when problem getting attachments
 
         Returns:
             Tuple[dict, datetime, bool]: incident object, occurred datetime, boolean indicating if date is valid or not
         """
         parsed_msg, headers, _, occurred, occurred_is_valid = self.get_email_context(msg, user_key)
-        # conver occurred to gmt and then isoformat + Z
+        # convert occurred to gmt and then isoformat + Z
         occurred_str = Client.get_date_isoformat_server(occurred)
         file_names = []
         command_args = {
@@ -534,15 +556,7 @@ class Client:
 
         for attachment in parsed_msg['Attachments']:
             command_args['id'] = attachment['ID']
-            try:
-                result = service.users().messages().attachments().get(**command_args).execute()
-            except HttpError as e:
-                metrics_http_error_response(e)
-                raise e
-            except Exception as e:
-                EXECUTION_METRICS.general_error += 1
-                raise e
-            EXECUTION_METRICS.success += 1
+            result = execute_gmail_action(service, "get_attachments", command_args)
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
 
             # save the attachment
@@ -640,15 +654,7 @@ class Client:
             'includeSpamTrash': include_spam_trash,
         }
         service = self.get_service('gmail', 'v1')
-        try:
-            result = service.users().messages().list(**command_args).execute()
-        except HttpError as e:
-            metrics_http_error_response(e)
-            raise e
-        except Exception as e:
-            EXECUTION_METRICS.general_error += 1
-            raise e
-        EXECUTION_METRICS.success += 1
+        result = execute_gmail_action(service, "list", command_args)
 
         return [self.get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
 
@@ -660,16 +666,7 @@ class Client:
         }
 
         service = self.get_service('gmail', 'v1')
-        try:
-            result = service.users().messages().get(**command_args).execute()
-        except HttpError as e:
-            metrics_http_error_response(e)
-            raise e
-        except Exception as e:
-            EXECUTION_METRICS.general_error += 1
-            raise e
-        EXECUTION_METRICS.success += 1
-        return result
+        return execute_gmail_action(service, "get", command_args)
 
     '''MAIL SENDER FUNCTIONS'''
 
@@ -1014,16 +1011,12 @@ class Client:
         Returns:
             dict: the email send response.
         """
-        try:
-            result = self.get_service('gmail', 'v1').users().messages().send(userId=email_from, body=body).execute()
-        except HttpError as e:
-            metrics_http_error_response(e)
-            raise e
-        except Exception as e:
-            EXECUTION_METRICS.general_error += 1
-            raise e
-        EXECUTION_METRICS.success += 1
-        return result
+        command_args = {
+            "userId": email_from,
+            "body": body
+        }
+        service = self.get_service('gmail', 'v1')
+        return execute_gmail_action(service, "send", command_args)
 
     def generate_auth_link(self):
         """Generate an auth2 link.
@@ -1065,11 +1058,11 @@ class Client:
         return link
 
 
-def test_module(client: Client):
+def test_module(client):
     demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
 
 
-def mail_command(client: Client, args, email_from, send_as, subject_prefix='', in_reply_to=None, references=None):
+def mail_command(client: Client, args: dict, email_from, send_as, subject_prefix='', in_reply_to=None, references=None):
     email_to = args.get('to')
     body = args.get('body')
     subject = f"{subject_prefix}{args.get('subject')}"
@@ -1166,13 +1159,13 @@ def fetch_incidents(client: Client):
         max_results = 200
     demisto.debug(f'GMAIL: fetch parameters: user: {user_key} query={query}'
                   f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
-    try:
-        result = service.users().messages().list(
-            userId=user_key, maxResults=max_results, pageToken=page_token, q=query).execute()
-    except HttpError as e:
-        metrics_http_error_response(e)
-        raise e
-    EXECUTION_METRICS.success += 1
+    list_command_args = {
+        "userId": user_key,
+        "maxResults": max_results,
+        "pageToken": page_token,
+        "q": query
+    }
+    result = execute_gmail_action(service, "list", list_command_args)
 
     incidents = []
     # so far, so good
@@ -1183,16 +1176,11 @@ def fetch_incidents(client: Client):
             demisto.info(f'Ignoring msg id: {msg_id} as it is in the ignore list')
             ignore_list_used = True
             continue
-        try:
-            msg_result = service.users().messages().get(
-                id=msg_id, userId=user_key).execute()
-        except HttpError as e:
-            metrics_http_error_response(e)
-            raise e
-        except Exception as e:
-            EXECUTION_METRICS.general_error += 1
-            raise e
-        EXECUTION_METRICS.success += 1
+        command_kwargs = {
+            'userId': user_key,
+            'id': msg_id
+        }
+        msg_result = execute_gmail_action(service, "get", command_kwargs)
         incident, occurred, is_valid_date = client.mail_to_incident(msg_result, service, user_key)
         if not is_valid_date:  # if  we can't trust the date store the msg id in the ignore list
             demisto.info(f'appending to ignore list msg id: {msg_id}. name: {incident.get("name")}')
@@ -1219,7 +1207,7 @@ def fetch_incidents(client: Client):
         demisto.debug(f'will use new last fetch date (no next page token): {next_last_fetch}')
         # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
         if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
-            demisto.info(f'reseting igonre list of len: {len(ignore_ids)}')
+            demisto.info(f'resetting ignore list of len: {len(ignore_ids)}')
             ignore_ids = []
         last_fetch = next_last_fetch
     demisto.setLastRun({
