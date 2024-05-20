@@ -1673,30 +1673,32 @@ def random_word_generator(length):
     return ''.join(random.choice(letters) for i in range(length))
 
 
-def handle_html(html_body):
+def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
     We might not have Beautiful Soup so just do regex search
     """
     attachments = []
+    file_results = []
     clean_body = ''
     last_index = 0
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
+        name = f'image{i}'
+        cid = (f'{name}@{random_word_generator(8)}_{random_word_generator(8)}')
         attachment = {
             'data': base64.b64decode(m.group(3)),
-            'name': f'image{i}'
+            'name': f'{cid}-imageName:{name}'
         }
-        attachment['cid'] = f'{attachment["name"]}@{random_word_generator(8)}.{random_word_generator(8)}'
-
+        attachment['cid'] = cid
         attachments.append(attachment)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
+        file_results.append(fileResult(attachment['name'], attachment['data']))
 
     clean_body += html_body[last_index:]
-    return clean_body, attachments
-
+    return clean_body, attachments, file_results
 
 def collect_manual_attachments(manualAttachObj):  # pragma: no cover
     """Collect all manual attachments' data
@@ -1889,7 +1891,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
-        html_body, html_attachments = handle_html(html_body)
+        html_body, html_attachments, file_results = handle_html(html_body)
         attachments += html_attachments
 
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
@@ -1899,12 +1901,15 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
             if not attachment.get('cid'):
                 new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
             else:
+                demisto.debug(f"{attachment.get('name')=}, {attachment.get('cid')=}")
+                demisto.debug(f"{html_body=}")
                 new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                                 is_inline=True, content_id=attachment.get('cid'))
 
+            demisto.debug(f"{new_attachment=}")
             message.attach(new_attachment)
 
-    return message
+    return message, file_results
 
 
 def add_additional_headers(additional_headers):
@@ -1978,19 +1983,20 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to, importance)
+        message, file_results = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+                                               reply_to, importance)
 
     client.send_email(message)
 
-    results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
+    results = []
+    results.append(file_results)
+    results.append(CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully'))
     if render_body:
         results.append(CommandResults(
             entry_type=EntryType.NOTE,
             content_format=EntryFormat.HTML,
             raw_response=htmlBody,
         ))
-
     return results
 
 
