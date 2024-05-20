@@ -1331,35 +1331,17 @@ class SecurityAndComplianceClient {
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
         $this.CreateDelegatedSession("Set-CaseHoldPolicy")
-        $cmd_params = @{}
-
-        if ($identity) {
-            $cmd_params.Identity = $identity
-        }
-        if ($enabled) {
-            $cmd_params.Enabled = $enabled
-        }
-        if($add_exchange_locations){
-            $cmd_params.AddExchangeLocation = $add_exchange_locations
-        }
-        if($add_sharepoint_locations){
-            $cmd_params.AddSharePointLocation  = $add_sharepoint_locations
-        }
-        if($add_public_locations){
-            $cmd_params.AddPublicFolderLocation  = $add_public_locations
-        }
-        if($remove_exchange_locations){
-            $cmd_params.RemoveExchangeLocation  = $remove_exchange_locations
-        }
-        if($remove_sharepoint_locations){
-            $cmd_params.RemoveSharePointLocation  = $remove_sharepoint_locations
-        }
-        if($remove_public_locations){
-            $cmd_params.RemovePublicFolderLocation  = $remove_public_locations
-        }
-        if($comment){
-            $cmd_params.comment  = $comment
-        }
+      $cmd_params = @{}
+  
+      if ($identity) { $cmd_params.Identity = $identity }
+      if ($enabled) { $cmd_params.Enabled = $enabled }
+      if ($add_exchange_locations) { $cmd_params.AddExchangeLocation = $add_exchange_locations }
+      if ($add_sharepoint_locations) { $cmd_params.AddSharePointLocation = $add_sharepoint_locations }
+      if ($add_public_locations) { $cmd_params.AddPublicFolderLocation = $add_public_locations }
+      if ($remove_exchange_locations) { $cmd_params.RemoveExchangeLocation = $remove_exchange_locations }
+      if ($remove_sharepoint_locations) { $cmd_params.RemoveSharePointLocation = $remove_sharepoint_locations }
+      if ($remove_public_locations) { $cmd_params.RemovePublicFolderLocation = $remove_public_locations }
+      if ($comment) { $cmd_params.Comment = $comment }
 
         #Write-Output @cmd_params
 
