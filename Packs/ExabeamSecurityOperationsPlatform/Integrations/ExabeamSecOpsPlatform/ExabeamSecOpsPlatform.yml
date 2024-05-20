@@ -92,4 +92,4 @@ script:
   dockerimage: demisto/python3:3.10.14.92207
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- ExabeamSecurityOperationsPlatform-test
