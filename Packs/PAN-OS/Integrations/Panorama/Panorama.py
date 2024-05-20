@@ -236,7 +236,7 @@ class LastFetchTimes(QueryMap):
     '''
     
 class LastIDs(TypedDict):
-    ''''''
+    '''dict[str, DeviceMap | int]'''
     Traffic: DeviceMap
     Threat: DeviceMap
     Url: DeviceMap
@@ -247,7 +247,8 @@ class LastIDs(TypedDict):
     Decryption: DeviceMap
 
 class MaxFetch(TypedDict):
-    '''Contains the log types mapped to the max fetch.
+    '''dict[str, int]
+    Contains the log types mapped to the max fetch.
     '''
     Traffic: NotRequired[int]
     Threat: NotRequired[int]
@@ -14481,10 +14482,7 @@ def main():  # pragma: no cover
             last_fetch, last_ids, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)
             next_max_fetch = update_max_fetch_dict(configured_max_fetch, max_fetch, last_fetch)
 
-            demisto.setLastRun(LastRun(
-                last_fetch_dict=last_fetch,
-                last_id_dict=last_ids,
-                max_fetch_dict=next_max_fetch))
+            demisto.setLastRun(LastRun(last_fetch_dict=last_fetch, last_id_dict=last_ids, max_fetch_dict=next_max_fetch))
             demisto.incidents(incident_entries)
 
         elif command == 'panorama' or command == 'pan-os':
