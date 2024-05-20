@@ -375,6 +375,11 @@ def optional_arg_to_bool(arg):
     return argToBoolean(arg) if arg is not None else arg
 
 
+def optional_arg_to_datetime_string(arg, date_format):
+    datetime_object = arg_to_datetime(arg)
+    return datetime_object.strftime(date_format)
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -526,7 +531,7 @@ def user_create_command(client: CipherTrustClient, args: dict):
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         connection=args.get(CommandArguments.CONNECTION),
         email=args.get(CommandArguments.EMAIL),
-        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)).strftime(USER_EXPIRES_AT_DATE_FORMAT),
+        expires_at=optional_arg_to_datetime_string(args.get(CommandArguments.EXPIRES_AT),USER_EXPIRES_AT_DATE_FORMAT),
         is_domain_user=optional_arg_to_bool(args.get(CommandArguments.IS_DOMAIN_USER)),
         login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
@@ -552,7 +557,7 @@ def user_update_command(client: CipherTrustClient, args: dict):
         allowed_client_types=argToList(args.get(CommandArguments.ALLOWED_CLIENT_TYPES)),
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         email=args.get(CommandArguments.EMAIL),
-        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)).strftime(USER_EXPIRES_AT_DATE_FORMAT),
+        expires_at=optional_arg_to_datetime_string(args.get(CommandArguments.EXPIRES_AT),USER_EXPIRES_AT_DATE_FORMAT),
         failed_logins_count=arg_to_number(args.get(CommandArguments.FAILED_LOGINS_COUNT)),
         login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
