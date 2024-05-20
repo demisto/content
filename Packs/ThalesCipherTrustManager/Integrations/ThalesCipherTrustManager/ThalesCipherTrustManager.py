@@ -201,7 +201,8 @@ PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='page
                      InputArgument(name=CommandArguments.PAGE_SIZE,
                                    description=f'number of entries per page. defaults to {MAX_PAGE_SIZE} in case only page was provided. max is {MAX_PAGE_SIZE}'),
                      InputArgument(name=CommandArguments.LIMIT,
-                                   description='The max number of resources to return. defaults to 50', default=DEFAULT_LIMIT), ]
+                                   description='The max number of resources to return. defaults to 50',
+                                   default=DEFAULT_LIMIT), ]
 
 
 @metadata_collector.command(command_name='test_module')
@@ -225,7 +226,8 @@ def test_module(client: CipherTrustClient):
 GROUPS_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Group name to filter by.'),
                       InputArgument(name=CommandArguments.USER_ID,
                                     description='User id to filter by membership. “nil” will return groups with no members.'),
-                      InputArgument(name=CommandArguments.CONNECTION, description='Connection id or name to filter by.'),
+                      InputArgument(name=CommandArguments.CONNECTION,
+                                    description='Connection id or name to filter by.'),
                       InputArgument(name=CommandArguments.CLIENT_ID,
                                     description='Client id to filter by membership. “nil” will return groups with no members.'),
                       ] + PAGINATION_INPUTS
@@ -236,7 +238,8 @@ GROUPS_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, descriptio
 def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
     """
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT), args.get(CommandArguments.PAGE),
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+                                                       args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
     params = assign_params(
         skip=skip,
@@ -321,7 +324,8 @@ USER_TO_GROUP_ADD_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, requ
 @metadata_collector.command(command_name='ciphertrust-user-to-group-add', inputs_list=USER_TO_GROUP_ADD_INPUTS,
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def user_to_group_add_command(client: CipherTrustClient, args: dict):
-    raw_response = client.add_user_to_group(group_name=args[CommandArguments.GROUP_NAME], user_id=args[CommandArguments.USER_ID])
+    raw_response = client.add_user_to_group(group_name=args[CommandArguments.GROUP_NAME],
+                                            user_id=args[CommandArguments.USER_ID])
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
@@ -344,7 +348,8 @@ def user_to_group_remove_command(client: CipherTrustClient, args: dict):
 
 
 USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
-                     InputArgument(name=CommandArguments.USER_ID, description='If provided, get the user with the specified id'),
+                     InputArgument(name=CommandArguments.USER_ID,
+                                   description='If provided, get the user with the specified id'),
                      InputArgument(name=CommandArguments.USERNAME, description='username'),
                      InputArgument(name=CommandArguments.EMAIL, description='User’s email'),
                      InputArgument(name=CommandArguments.GROUPS, is_array=True,
@@ -354,8 +359,10 @@ USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User
                      InputArgument(name=CommandArguments.EXCLUDE_GROUPS, is_array=True,
                                    description='User associated with certain group will be excluded'),
                      InputArgument(name=CommandArguments.AUTH_DOMAIN_NAME, description='Filter by user’s auth domain'),
-                     InputArgument(name=CommandArguments.ACCOUNT_EXPIRED, description='Filter the expired users (Boolean)'),
-                     InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True, input_type=AllowedAuthMethods,
+                     InputArgument(name=CommandArguments.ACCOUNT_EXPIRED,
+                                   description='Filter the expired users (Boolean)'),
+                     InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
+                                   input_type=AllowedAuthMethods,
                                    description='Filter by the login'
                                                'authentication '
                                                'method allowed to '
@@ -367,9 +374,11 @@ USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User
                                                'users to whom no '
                                                'authentication '
                                                'method is allowed.'),
-                     InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True, input_type=AllowedClientTypes,
+                     InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True,
+                                   input_type=AllowedClientTypes,
                                    description=""),
-                     InputArgument(name=CommandArguments.PASSWORD_POLICY, description='Filter based on assigned password policy'),
+                     InputArgument(name=CommandArguments.PASSWORD_POLICY,
+                                   description='Filter based on assigned password policy'),
                      InputArgument(name=CommandArguments.RETURN_GROUPS,
                                    description='If set to ‘true’ it will return the group’s name in which user is associated, Boolean'),
                      ] + PAGINATION_INPUTS
@@ -381,7 +390,8 @@ def users_list_command(client: CipherTrustClient, args: dict):
     if user_id := args.get(CommandArguments.USER_ID):
         raw_response = client.get_user(user_id=user_id)
     else:
-        skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT), args.get(CommandArguments.PAGE),
+        skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+                                                           args.get(CommandArguments.PAGE),
                                                            args.get(CommandArguments.PAGE_SIZE))
         params = assign_params(
             skip=skip,
@@ -411,7 +421,8 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                       InputArgument(name=CommandArguments.USERNAME),
                       InputArgument(name=CommandArguments.PASSWORD),
                       InputArgument(name=CommandArguments.EMAIL, description='Users email'),
-                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True, input_type=AllowedAuthMethods,
+                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
+                                    input_type=AllowedAuthMethods,
                                     description='Filter by the login'
                                                 'authentication '
                                                 'method allowed to '
@@ -423,7 +434,8 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 'users to whom no '
                                                 'authentication '
                                                 'method is allowed.'),
-                      InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True, input_type=AllowedClientTypes,
+                      InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True,
+                                    input_type=AllowedClientTypes,
                                     description=""),
                       InputArgument(name=CommandArguments.CERTIFICATE_SUBJECT_DN,
                                     description='The Distinguished Name of the user in certificate'),
@@ -437,16 +449,18 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 "any actions. Setting the expires_at field to empty, removes the expiration "
                                                 "date of the user account.The supported date-time format is "
                                                 "2025-03-02T06:13:27.71402Z"),
-                      InputArgument(name=CommandArguments.IS_DOMAIN_USER, description="This flag can be used to create the user "
-                                                                                      "in a non-root domain where user "
-                                                                                      "management is allowed."),
+                      InputArgument(name=CommandArguments.IS_DOMAIN_USER,
+                                    description="This flag can be used to create the user "
+                                                "in a non-root domain where user "
+                                                "management is allowed."),
                       InputArgument(name=CommandArguments.PREVENT_UI_LOGIN, default='false',
                                     description='If true, user is not allowed to login from Web UI. '),
-                      InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED, description='Password change required '
-                                                                                                'flag. If set to true, '
-                                                                                                'user will be required to '
-                                                                                                'change their password on '
-                                                                                                'next successful login.'),
+                      InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED,
+                                    description='Password change required '
+                                                'flag. If set to true, '
+                                                'user will be required to '
+                                                'change their password on '
+                                                'next successful login.'),
                       InputArgument(name=CommandArguments.PASSWORD_POLICY,
                                     description='The password policy applies only to local user accounts and overrides the '
                                                 'global password policy. By default, the global password policy is applied to '
@@ -454,9 +468,10 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
 
                       ]
 
-USER_CREATE_DESCRIPTION = ('Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
-                           'are always created in the local, internal user database, but might have references to external '
-                           'identity providers.')
+USER_CREATE_DESCRIPTION = (
+    'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
+    'are always created in the local, internal user database, but might have references to external '
+    'identity providers.')
 
 
 @metadata_collector.command(command_name='ciphertrust-user-create', description=USER_CREATE_DESCRIPTION,
@@ -468,7 +483,7 @@ def user_create_command(client: CipherTrustClient, args: dict):
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         connection=args.get(CommandArguments.CONNECTION),
         email=args.get(CommandArguments.EMAIL),
-        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)),
+        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)).strftime(USER_EXPIRES_AT_DATE_FORMAT),
         is_domain_user=optional_arg_to_bool(args.get(CommandArguments.IS_DOMAIN_USER)),
         login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
@@ -498,7 +513,8 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 'user will be required to '
                                                 'change their password on '
                                                 'next successful login.'),
-                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True, input_type=AllowedAuthMethods,
+                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
+                                    input_type=AllowedAuthMethods,
                                     description='Filter by the login'
                                                 'authentication '
                                                 'method allowed to '
@@ -510,7 +526,8 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 'users to whom no '
                                                 'authentication '
                                                 'method is allowed.'),
-                      InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True, input_type=AllowedClientTypes,
+                      InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True,
+                                    input_type=AllowedClientTypes,
                                     description=""),
                       InputArgument(name=CommandArguments.CERTIFICATE_SUBJECT_DN,
                                     description='The Distinguished Name of the user in certificate'),
@@ -537,14 +554,13 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
 
 @metadata_collector.command(command_name='ciphertrust-user-update', description=USER_UPDATE_DESCRIPTION,
                             inputs_list=UPDATE_USER_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX)
-#
 def user_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         allowed_auth_methods=argToList(args.get(CommandArguments.ALLOWED_AUTH_METHODS)),
         allowed_client_types=argToList(args.get(CommandArguments.ALLOWED_CLIENT_TYPES)),
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         email=args.get(CommandArguments.EMAIL),
-        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)),
+        expires_at=arg_to_datetime(args.get(CommandArguments.EXPIRES_AT)).strftime(USER_EXPIRES_AT_DATE_FORMAT),
         failed_logins_count=arg_to_number(args.get(CommandArguments.FAILED_LOGINS_COUNT)),
         login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
@@ -559,6 +575,9 @@ def user_update_command(client: CipherTrustClient, args: dict):
         outputs=raw_response,
         raw_response=raw_response
     )
+
+
+USER_DELETE_INPUTS = []
 
 
 @metadata_collector.command(command_name='ciphertrust-user-delete')
