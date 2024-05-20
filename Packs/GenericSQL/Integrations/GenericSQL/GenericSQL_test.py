@@ -18,7 +18,7 @@ class Engine:
         return self.name
 
     def dispose(self):
-        return ""
+        return
 
 
 class ResultMock:
