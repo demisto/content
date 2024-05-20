@@ -21,9 +21,11 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Azure Service Management - permission `user_impersonation` of type Delegated
 - Microsoft Graph - permission `offline_access` of type Delegated
 
-In order to add permission navigate:
-
-Home -> App registrations -> Search for you App under 'all applications' -> API permissions -> Add permission -> search for the specific Microsoft API -> select the specific permission of type Delegated.
+To add a permission:
+1. Navigate to **Home** > **App registrations**.
+2. Search for your app under 'all applications'.
+3. Click **API permissions** > **Add permission**.
+4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
