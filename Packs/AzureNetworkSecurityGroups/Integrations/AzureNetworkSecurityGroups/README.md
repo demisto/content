@@ -29,11 +29,11 @@ To add a permission:
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
-1. In the **Authentication Type** field, select the **Authorization Code** option.
-2. In the **Application ID** field, enter your Client/Application ID.
-3. In the **Client Secret** field, enter your Client Secret.
-4. In the **Tenant ID** field, enter your Tenant ID .
-5. In the **Application redirect URI** field, enter your Application redirect URI.
+1. In the *Authentication Type* field, select the **Authorization Code** option.
+2. In the *Application ID* field, enter your Client/Application ID.
+3. In the *Client Secret* field, enter your Client Secret.
+4. In the *Tenant ID* field, enter your Tenant ID .
+5. In the *Application redirect URI* field, enter your Application redirect URI.
 6. Save the instance.
 7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instruction.
 
