@@ -108,7 +108,7 @@ tasks:
           root: inputs.EntryID
           transformers:
           - operator: uniq
-      yaraRules:
+      yaraRule:
         complex:
           root: inputs.YARA
           transformers:
@@ -268,7 +268,7 @@ tasks:
           root: inputs.EntryID
           transformers:
           - operator: uniq
-      yaraRules:
+      yaraRule:
         complex:
           root: foundIndicators
           accessor: rawrules
