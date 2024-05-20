@@ -357,7 +357,7 @@ class XSOAR2STIXParser:
             entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
         return entry
 
-    def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple:
+    def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple[dict, dict, dict]:
         """
 
         Args:
@@ -379,7 +379,7 @@ class XSOAR2STIXParser:
             is_sdo = True
         else:
             demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
-            return {}, {}
+            return {}, {}, {}
 
         created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
 
