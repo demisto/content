@@ -121,11 +121,11 @@ image: ''
 name: FeedNVDv2
 script:
   commands:
-  - description: Manually retrieve CVEs from NVD using the history parameter for the number of days back to fetch.
+  - description: Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
     name: nvd-get-indicators
     arguments:
     - auto: PREDEFINED
-      description: Number of days back to retrieve CVEs.
+      description: Time back to retrieve CVEs, e.g. `7 days`.
       name: history
       predefined:
       - "7 days"
