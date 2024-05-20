@@ -93,7 +93,7 @@ Query Mimecast emails. This is an archive search command.
 ### mimecast-list-blocked-sender-policies
 
 ***
-List all existing Mimecast blocked sender policies
+Deprecate - use mimecast-list-policies instead
 
 #### Base Command
 
@@ -124,7 +124,7 @@ List all existing Mimecast blocked sender policies
 ### mimecast-get-policy
 
 ***
-Get a blocked sender policy by ID
+Get a policy by ID.
 
 #### Base Command
 
@@ -132,30 +132,66 @@ Get a blocked sender policy by ID
 
 #### Input
 
-| **Argument Name** | **Description**      | **Required** |
-|-------------------|----------------------|--------------|
-| policyID          | Filter by policy ID. | Required     | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyID | policy ID. The policy ID can be retrieved using mimecast-list-policies data.id field. For type address-alteration enter folderId data.addressAlterationSetId field. | Required | 
+| policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional | 
 
 #### Context Output
 
-| **Path**                         | **Type** | **Description**                        |
-|----------------------------------|----------|----------------------------------------|
-| Mimecast.Policy.ID               | string   | Policy ID                              | 
-| Mimecast.Policy.Sender.Address   | string   | Block Sender by email address          | 
-| Mimecast.Policy.Sender.Domain    | string   | Block Sender by domain                 | 
-| Mimecast.Policy.Sender.Group     | string   | Block Sender by group                  | 
-| Mimecast.Policy.Bidirectional    | boolean  | Blocked policy is bidirectional or not | 
-| Mimecast.Policy.Receiver.Address | string   | Block emails to receiver type address  | 
-| Mimecast.Policy.Receiver.Domain  | string   | Block emails to receiver type domain   | 
-| Mimecast.Policy.Receiver.Group   | string   | Block emails to receiver type group    | 
-| Mimecast.Policy.Fromdate         | date     | Policy validation start date           | 
-| Mimecast.Policy.Todate           | date     | Policy expiration date                 | 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Policy.ID | string | Policy ID. | 
+| Mimecast.Policy.Sender.Address | string | Block Sender by email address. | 
+| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. | 
+| Mimecast.Policy.Sender.Group | string | Block Sender by group. | 
+| Mimecast.Policy.Bidirectional | boolean | Blocked policy is bidirectional or not. | 
+| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
+| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
+| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
+| Mimecast.Policy.Fromdate | date | Policy validation start date. | 
+| Mimecast.Policy.Todate | date | Policy expiration date. | 
+
+#### Command example
+```!mimecast-get-policy policyType=blockedsenders policyID=eNo1jrsOgj111```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "Policy": {
+            "Bidirectional": false,
+            "FromDate": "1900-01-01T00:00:00+0000",
+            "ID": "eNo1jrsOgj111",
+            "Reciever": {
+                "Address": null,
+                "Domain": "gmail.com",
+                "Group": null,
+                "Type": "email_domain"
+            },
+            "Sender": {
+                "Address": null,
+                "Domain": "gmail.com",
+                "Group": null,
+                "Type": "email_domain"
+            },
+            "ToDate": "2100-01-01T23:59:59+0000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Mimecast Get Policy
+>|Policy ID|Sender|Reciever|Bidirectional|Start|End|
+>|---|---|---|---|---|---|
+>| eNo1jrsOgj111 | Group: null<br/>Email Address: null<br/>Domain: gmail.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: gmail.com<br/>Type: email_domain | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+
 
 ### mimecast-create-policy
 
 ***
-Create a Blocked Sender Policy
-
+Deprecated. Please use mimecast-create-block-sender-policy
 #### Base Command
 
 `mimecast-create-policy`
@@ -192,7 +228,7 @@ Create a Blocked Sender Policy
 ### mimecast-delete-policy
 
 ***
-Delete a Blocked Sender Policy
+Delete a Blocked Sender Policy.
 
 #### Base Command
 
@@ -201,14 +237,15 @@ Delete a Blocked Sender Policy
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------|-----------------|--------------|
-| policyID          | Policy ID.      | Required     | 
+| --- | --- | --- |
+| policyID | policy ID. The policy ID can be retrieved using mimecast-list-policies data.id field. For type address-alteration enter folderId data.addressAlterationSetId field. | Required | 
+| policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Required | 
 
 #### Context Output
 
-| **Path**           | **Type** | **Description** |
-|--------------------|----------|-----------------|
-| Mimecast.Policy.ID | string   | Policy ID       | 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mimecast.Policy.ID | string | Policy ID. | 
 
 ### mimecast-manage-sender
 
@@ -474,6 +511,7 @@ Decodes a given url from mimecast
 
 ***
 discover authentication types that are supported for your account and which base URL to use for the requesting user.
+only for API 1.0 users.
 
 #### Base Command
 
@@ -495,6 +533,7 @@ There are no input arguments for this command.
 
 ***
 Refresh access key validity
+only for API 1.0 users
 
 #### Base Command
 
@@ -512,6 +551,7 @@ There is no context output for this command.
 
 ***
 Login to generate Access Key and Secret Key
+only for API 1.0 users
 
 #### Base Command
 
