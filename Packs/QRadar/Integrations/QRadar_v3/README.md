@@ -1488,11 +1488,29 @@ Retrieves search results.
 ### qradar-search-delete
 
 ***
-Delete search from Qradar, based on the search ID.
+Deleted search from Qradar, based on the search ID.
 
 #### Base Command
 
 `qradar-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
+### qradar-reference-sets-list
+
+### qradar-search-cancel
+
+***
+Cancelled search in QRadar based on search_id.
+
+#### Base Command
+
+`qradar-search-cancel`
 
 #### Input
 

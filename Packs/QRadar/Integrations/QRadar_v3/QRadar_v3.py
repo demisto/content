@@ -661,6 +661,12 @@ class Client(BaseClient):
             url_suffix=f'/ariel/searches/{search_id}',
         )
 
+    def search_cancel(self, search_id: str):
+        return self.http_request(
+            method='POST',
+            url_suffix=f'/ariel/searches/{search_id}?status=CANCELED',
+        )
+
     def search_results_get(self, search_id: str, range_: Optional[str] = None):
         return self.http_request(
             method='GET',
@@ -3163,6 +3169,29 @@ def qradar_search_delete_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def qradar_search_cancel_command(client: Client, args: dict) -> CommandResults:
+    """
+    Cancelled search from QRadar service.
+    possible arguments:
+    - search_id (Required): The search ID to delete.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    search_id: str = args.get('search_id', '')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.search_cancel(search_id)
+
+    return CommandResults(
+        readable_output=f'Search ID {search_id} was successfully cancelled.',
+        raw_response=response
+    )
+
+
 def qradar_search_results_get_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves search results from QRadar service.
@@ -5162,6 +5191,9 @@ def main() -> None:  # pragma: no cover
             'qradar-get-search-results',
         ]:
             return_results(qradar_search_results_get_command(client, args))
+
+        elif command == 'qradar-search-cancel':
+            return_results(qradar_search_cancel_command(client, args))
 
         elif command == 'qradar-search-delete':
             return_results(qradar_search_delete_command(client, args))

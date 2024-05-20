@@ -881,7 +881,13 @@ script:
       description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
   - name: qradar-search-delete
-    description: Delete Search from Qradar base on search_id.
+    description: Deleted search from Qradar base on search_id.
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
+  - name: qradar-search-cancel
+    description: Cancelled search in QRadar based on search_id.
     arguments:
     - name: search_id
       required: true
