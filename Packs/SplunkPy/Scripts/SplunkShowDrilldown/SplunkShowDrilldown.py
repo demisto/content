@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+MAX_RESULTS_TO_DISPLAY = 50 # TODO: need to consult the number and the concept
+
 
 def main():
     drilldown_results = []
@@ -26,15 +28,15 @@ def main():
 
     if isinstance(drilldown_results, list):
         events_arr = []
-        for event in drilldown_results: #TODO: I think that this loop does nothing
+        for event in drilldown_results: #TODO: I think that this loop does nothing, in addition need to limit the number of results
             events_arr.append(event)
         markdown = tableToMarkdown("", events_arr, headers=events_arr[0].keys())
         
     elif isinstance(drilldown_results, dict):
         markdown = ""
         for key, value in drilldown_results.items():
-            markdown += f"Drilldown search results for search id: {key}\n"
-            markdown += tableToMarkdown("", value, headers=value[0].keys())
+            markdown += f"Drilldown search results for search query: {key}\n"
+            markdown += tableToMarkdown("", value[:MAX_RESULTS_TO_DISPLAY], headers=value[0].keys())
             markdown += "\n\n"
             
     else:
