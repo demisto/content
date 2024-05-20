@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import re
 import shutil
 import zipfile
-import pyzipper
+import zipencrypt
 from os.path import isfile
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
@@ -76,10 +76,10 @@ def main():
 
         # zipping the file
         if password:
-            with pyzipper.AESZipFile(zipName, mode='w', encryption=pyzipper.WZ_AES) as zf:
-                zf.setpassword(str.encode(password))
+            with zipencrypt.ZipFile(zipName, mode="w") as zf:
                 for file_name in file_names:
-                    zf.write(file_name, compress_type=compression)
+                    zf.write(file_name, compress_type=compression, pwd=password.encode('utf-8'))
+
         else:
             zf = zipfile.ZipFile(zipName, mode='w')
             try:
