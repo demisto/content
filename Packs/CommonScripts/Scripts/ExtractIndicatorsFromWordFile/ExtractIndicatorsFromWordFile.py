@@ -37,6 +37,8 @@ class WordParser:
             ['soffice', '--headless', '-env:UserInstallation=file:///tmp/.config/extractindicators', '--convert-to',
              'docx', self.file_path], stderr=subprocess.STDOUT)
         demisto.debug(f"soffice output: [{str(output)}]")
+        print(f"soffice output: [{str(output)}]")
+        assert f"soffice output: [{str(output)}]"
         # Requires office-utils docker image
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"
