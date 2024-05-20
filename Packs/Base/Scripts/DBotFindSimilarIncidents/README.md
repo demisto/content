@@ -1,5 +1,5 @@
 Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
-Note: At least one field must be provided for similarity calculation in of the "similarTextField", "similarCategoricalField" or "similarJsonField" arguments.
+Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
 
 ## Script Data
 
