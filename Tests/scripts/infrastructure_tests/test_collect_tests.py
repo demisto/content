@@ -234,15 +234,15 @@ NIGHTLY_TESTS: tuple = (
 
     # (7) xsiam - Checks that non api+Nightly tests are collected to install and the changed pack to install and upload
     (MockerCases.C, NightlyTestCollector,
-     {'myXSIAMOnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration', 'onlyXSIAMIntegrationTestPlaybook'},
-     {'bothMarketplacesPack', 'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration',
+     {'myXSIAMOnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'bothMarketplacesPack', 'myXSIAMOnlyPack',
          'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS,
      ("Packs/CoreAlertFields/Integrations/myIntegration/myIntegration.py",), ("CoreAlertFields",)),
 
     # (8) xsiam - Checks that non api+Nightly tests are collected to install when no packs have changed
     (MockerCases.C, NightlyTestCollector,
-     {'myXSIAMOnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration', 'onlyXSIAMIntegrationTestPlaybook'},
-     {'bothMarketplacesPack', 'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS, (), []),
+     {'myXSIAMOnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'bothMarketplacesPack', 'myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS, (), []),
 
     # (9) Case D: pack change, expect its pack to be collected without tests
     (MockerCases.D, NightlyTestCollector, {}, {'myPack'},

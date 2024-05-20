@@ -47,14 +47,6 @@
         "marketplaces": [
           "xsoar"
         ]
-      },
-      "onlyXSIAMIntegrationTestPlaybook": {
-        "name": "onlyXSIAMIntegrationTestPlaybook",
-        "file_path": "Packs/bothMarketplacesPackOnlyXSIAMIntegration/TestPlaybooks/onlyXSIAMIntegrationTestPlaybook.yml",
-        "pack": "bothMarketplacesPackOnlyXSIAMIntegration",
-        "marketplaces": [
-          "marketplacev2"
-        ]
       }
     }
   ],

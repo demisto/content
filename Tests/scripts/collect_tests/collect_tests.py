@@ -439,14 +439,14 @@ class TestCollector(ABC):
                 logger.debug(str(e))
         return CollectionResult.union(result)
 
-    def _collect_specific_marketplace_compatible_packs(self, packs_to_upload, reason) -> CollectionResult | None:
+    def _collect_specific_marketplace_compatible_packs(self, packs_to_upload) -> CollectionResult | None:
         result = []
         for pack_id in packs_to_upload:
             try:
                 result.append(self._collect_pack(
                     pack_id=pack_id,
-                    reason=reason,
-                    reason_description=""
+                    reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
+                    reason_description="",
                 ))
             except (NothingToCollectException, IncompatibleMarketplaceException) as e:
                 logger.debug(str(e))
@@ -1241,8 +1241,7 @@ class SpecificPacksTestCollector(TestCollector):
         self.packs_to_upload = packs_to_upload
 
     def _collect(self) -> CollectionResult | None:
-        result: CollectionResult | None = (super()._collect_specific_marketplace_compatible_packs
-                                           (self.packs_to_upload, CollectionReason.PACK_CHOSEN_TO_UPLOAD))
+        result: CollectionResult | None = super()._collect_specific_marketplace_compatible_packs(self.packs_to_upload)
         return result
 
 
@@ -1265,7 +1264,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
 
         if self.marketplace in [MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2]:
             nightly_packs = CollectionResult.union([
-                self._collect_packs_nightly(),
+                self._collect_nightly_packs(),
                 self._id_set_tests_matching_marketplace_value()
             ])
             if nightly_packs:
@@ -1273,12 +1272,11 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 result.append(nightly_packs)
 
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
-            modeling_rules = CollectionResult.union((
+            modeling_rules = CollectionResult.union([
                 self._collect_modeling_rule_packs(),
-                self.sanity_tests_xsiam(),
-                self._collect_specific_marketplace_compatible_packs(
-                    self.id_set.parsing_rules, CollectionReason.PARSING_RULE_NIGHTLY)  # TODO
-            ))
+                self._collect_parsing_rule_packs(),
+                self.sanity_tests_xsiam()
+            ])
             if modeling_rules:
                 modeling_rules.packs_to_upload = set()
                 modeling_rules.packs_to_reinstall = set()
@@ -1310,6 +1308,28 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                     reason=CollectionReason.MODELING_RULE_NIGHTLY,
                     reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
                     content_item_range=modeling_rule.version_range
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
+
+        return CollectionResult.union(result)
+
+    def _collect_parsing_rule_packs(self) -> CollectionResult | None:
+        """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
+
+        Returns:
+            Optional[CollectionResult]: pack collection result.
+        """
+        result = []
+        for parsing_rule in self.id_set.parsing_rules:
+            try:
+                logger.debug(f'collecting parsing rule with id: {parsing_rule.id_}, with name: {parsing_rule.name}')
+                pack_id = parsing_rule.pack_id
+                result.append(self._collect_pack(
+                    pack_id=pack_id,  # type: ignore[arg-type]
+                    reason=CollectionReason.MODELING_RULE_NIGHTLY,
+                    reason_description=f'{parsing_rule.file_path_str} ({parsing_rule.id_})',
+                    content_item_range=parsing_rule.version_range
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
@@ -1363,7 +1383,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
                 logger.debug(f"{playbook.id_} - {str(e)}")
         return CollectionResult.union(result)
 
-    def _collect_packs_nightly(self) -> CollectionResult | None:
+    def _collect_nightly_packs(self) -> CollectionResult | None:
         result = []
         for pack in self.conf.nightly_packs:
             try:

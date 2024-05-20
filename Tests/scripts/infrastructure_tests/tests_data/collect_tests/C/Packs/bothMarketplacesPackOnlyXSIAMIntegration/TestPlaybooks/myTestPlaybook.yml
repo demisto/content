@@ -1,8 +1,8 @@
-id: onlyXSIAMIntegrationTestPlaybook
+id: myTestPlaybook
 version: -1
 fromversion: 5.5.0
 vcShouldKeepItemLegacyProdMachine: false
-name: onlyXSIAMIntegrationTestPlaybook
+name: myTestPlaybook
 starttaskid: "0"
 tasks:
   "0":
