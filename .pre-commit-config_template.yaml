@@ -130,7 +130,7 @@ repos:
     - --color=yes
     - --files
     copy_files:
-    - pre-commit-script/pytest/conftest.py
+    - Utils/pre-commit-script/pytest/conftest.py
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
