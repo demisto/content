@@ -37,6 +37,13 @@ class Client(BaseClient):
             headers=self._headers,
             data=data,
         )
+        
+    def _logout(self) -> None:
+        """
+        The _logout method initiates a logout request, utilizing a GET HTTP request to the specified endpoint for 
+        user session termination.
+        """
+        self._http_request('GET', full_url=f"{self._base_url}/api/auth/logout")
 
     def test_module_request(self):
         """
@@ -280,6 +287,8 @@ def main() -> None:    # pragma: no cover
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
+    finally:
+        client._logout()
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
