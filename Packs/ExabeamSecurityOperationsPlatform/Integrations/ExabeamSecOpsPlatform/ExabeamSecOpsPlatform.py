@@ -26,8 +26,9 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool,
-                 proxy: bool, headers):
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=False, proxy=proxy, timeout=20)
+                 proxy: bool):
+        headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy, timeout=20)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
@@ -36,7 +37,7 @@ class Client(BaseClient):
 
     def _login(self):
         """
-        Logs in to the Exabeam API using the provided username and password.
+        Logs in to the Exabeam API using the provided client_id and client_password.
         This function must be called before any other API calls.
         Note: the session is automatically closed in BaseClient's __del__
         """
@@ -49,11 +50,11 @@ class Client(BaseClient):
         )
         self.access_token = response.get('access_token')
 
-    def search_request(self, data):
+    def search_request(self, data_dict: dict) -> dict:
         """
         Performs basic get request to check if the server is reachable.
         """
-        data = json.dumps(data)
+        data = json.dumps(data_dict)
         full_url = f"{self._base_url}/search/v2/events"
         response = self._http_request(
             "POST",
@@ -84,7 +85,17 @@ def get_date(time: str):
     return date
 
 
-def transform_string(input_str):
+def transform_string(input_str:str) -> str:
+    """
+    Transform the input string into a formatted string.
+
+    Args:
+        input_str (str): The input string to be transformed. It should be in the format "key:value".
+
+    Returns:
+        str: The transformed string where the value part is converted to lowercase if it's "true" or "false",
+        otherwise it's enclosed in double quotes.
+    """
     key, value = input_str.split(':', 1)
     if value.lower() in ['true', 'false']:
         return f'{key}:{value.lower()}'
@@ -92,7 +103,16 @@ def transform_string(input_str):
         return f'{key}:"{value}"'
 
 
-def process_string(input_str):
+def process_string(input_str:str) -> str:
+    """
+    Process the input string by splitting it based on logical operators and transforming each part.
+
+    Args:
+        input_str: The input string to be processed. It may contain logical operators such as 'AND', 'OR', 'NOT', 'TO'.
+
+    Returns:
+        str: The processed string where each part is transformed using the transform_string function.
+    """
     logical_operators = ['AND', 'OR', 'NOT', 'TO']
     transformed_parts = []
     start_index = 0
@@ -145,7 +165,17 @@ def _parse_entry(entry: dict):
 ''' COMMAND FUNCTIONS '''
 
 
-def search_command(client: Client, args: dict):
+def search_command(client: Client, args: dict) -> CommandResults:
+    """
+    Search for logs using the Exabeam client with the provided arguments.
+
+    Args:
+        client: An instance of the Exabeam client used to make the search request.
+        args: A dictionary containing search query parameters and options.
+
+    Returns:
+        CommandResults: A CommandResults object containing the search results in both structured and human-readable formats.
+    """
     filter = process_string(args.get('query', ''))
     kwargs = {
         'filter': filter,
@@ -162,7 +192,7 @@ def search_command(client: Client, args: dict):
     if error := response.get("errors", {}):
         raise DemistoException(error.get("message"))
 
-    data_response = response.get("rows")
+    data_response = response.get("rows", {})
 
     human_readable = []
     for entry in data_response:
@@ -177,16 +207,17 @@ def search_command(client: Client, args: dict):
     )
 
 
-def test_module(client: Client):    # pragma: no cover
+def test_module(client: Client) -> str:    # pragma: no cover
     """test function
 
     Args:
         client: Client
 
     Returns:
-        ok if successful
+        'ok' if successful
+        If we've reached this point, it indicates that the login process was successful.
+
     """
-    # If we've reached this point, it indicates that the login process was successful.
     return 'ok'
 
 
@@ -204,7 +235,6 @@ def main() -> None:
     base_url = params.get('url', '')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -213,8 +243,7 @@ def main() -> None:
             verify=verify_certificate,
             client_id=client_id,
             client_secret=client_secret,
-            proxy=proxy,
-            headers=headers)
+            proxy=proxy)
 
         if command == 'test-module':
             return_results(test_module(client))
