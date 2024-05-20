@@ -6,15 +6,6 @@
         "Varonis SaaS Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "mirror_direction": {
-                    "simple": "dbotMirrorDirection"
-                },
-                "mirror_instance": {
-                    "simple": "dbotMirrorInstance"
-                },
-                "ID": {
-                    "simple": "dbotMirrorId"
-                },
                 "Status": {
                     "simple": "varonissaasalertstatus"
                 },
