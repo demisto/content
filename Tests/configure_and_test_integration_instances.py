@@ -533,13 +533,13 @@ class Build(ABC):
         for instance in all_module_instances:
             integration_of_instance = instance.get('brand', '')
             instance_name = instance.get('name', '')
-            
+
             if integration_of_instance not in self.unmockable_integrations and use_mock:
                 success = self.test_integration_with_mock(instance, pre_update)
             else:
                 testing_client = self.servers[0].reconnect_client()
                 success, _ = test_integration_instance(testing_client, instance)
-            
+
             if success:
                 logging.success(f"Succeeded instance test of {instance_name} ({integration_of_instance})")
                 successful_tests.add((instance_name, integration_of_instance))
