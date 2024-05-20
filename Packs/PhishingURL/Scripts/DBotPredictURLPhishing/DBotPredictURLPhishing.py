@@ -458,25 +458,21 @@ def extract_created_date(entry: dict):
     return None
 
 
-def weed_rasterize_errors(urls: list[str], res_rasterize: list[dict]):
+def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]):
     '''Remove the URLs that failed rasterization and return them.'''
-    if len(urls) != len(res_rasterize):
-        demisto.debug(f'{res_rasterize=}')
-        raise DemistoException('Unexpected response from the "rasterize" command. '
-                               'Please make sure the Rasterize pack version is above 2.0.7')
     error_idx = [
         i for (i, res) in enumerate(res_rasterize)
-        if isinstance(res['Contents'], str)
+        if isinstance(res, str)
     ][::-1]  # reverse the list as it will be used to remove elements.
     if error_idx:
         return_results(CommandResults(readable_output=tableToMarkdown(
             'The following URLs failed rasterize and were skipped:',
-            [{'URL': urls.pop(i), 'Message': res_rasterize.pop(i)['Contents']} for i in error_idx],
+            [{'URL': urls.pop(i), 'Message': res_rasterize.pop(i)} for i in error_idx],
             ['URL', 'Message']
         )))
 
 
-def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
+def rasterize_command(urls: list[str], rasterize_timeout: int) -> list[Union[dict, str]]:
     res_rasterize: list[dict] = demisto.executeCommand(  # type: ignore
         'rasterize',
         {
@@ -487,8 +483,16 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
         }
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
-    weed_rasterize_errors(urls, res_rasterize)
     return [res['Contents'] for res in res_rasterize]
+
+
+def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
+    res_rasterize = rasterize_command(urls, rasterize_timeout)
+    if len(res_rasterize) < len(urls):  # check for errors in the response
+        rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
+        res_rasterize = sum(rasterize_runs, [])
+    weed_rasterize_errors(urls, res_rasterize)
+    return res_rasterize
 
 
 def get_whois_verdict(domains: list[dict]) -> list:
