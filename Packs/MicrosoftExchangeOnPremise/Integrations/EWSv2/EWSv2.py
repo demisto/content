@@ -1473,11 +1473,11 @@ def prepare_args(d):  # pragma: no cover
     return d
 
 
-def get_limited_number_of_messages_from_qs(qs, limit, folder = ''):  # pragma: no cover
+def get_limited_number_of_messages_from_qs(qs, limit, folder=''):  # pragma: no cover
     count = 0
     results = []
     counter_items = 0
-    
+
     for item in qs:
         if count == limit:
             break
@@ -1486,7 +1486,7 @@ def get_limited_number_of_messages_from_qs(qs, limit, folder = ''):  # pragma: n
         if isinstance(item, Message):
             count += 1
             results.append(item)
-        counter_items +=1
+        counter_items += 1
     return results
 
 
@@ -1669,7 +1669,8 @@ def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
             'EWS.Folders(val.id == obj.id)': folders
         }
     }
-#check
+# check
+
 
 def mark_item_as_junk(item_id, move_items, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
