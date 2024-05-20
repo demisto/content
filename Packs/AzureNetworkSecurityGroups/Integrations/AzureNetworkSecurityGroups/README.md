@@ -8,7 +8,7 @@ Use one of the following methods:
 
 1. *Authorization Code Flow* (Recommended).
 2. *Client Credentials*
-   3. *Device Code Flow*.
+3. *Device Code Flow*.
 
 ## Self-Deployed Azure App
 
@@ -21,17 +21,19 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Azure Service Management - permission `user_impersonation` of type Delegated
 - Microsoft Graph - permission `offline_access` of type Delegated
 
-In order to add permission navigate:
-
-Home -> App registrations -> Search for you App under 'all applications' -> API permissions -> Add permission -> search for the specific Microsoft API -> select the specific permission of type Delegated.
+To add a permission:
+1. Navigate to **Home** > **App registrations**.
+2. Search for your app under 'all applications'.
+3. Click **API permissions** > **Add permission**.
+4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
-1. In the **Authentication Type** field, select the **Authorization Code** option.
-2. In the **Application ID** field, enter your Client/Application ID.
-3. In the **Client Secret** field, enter your Client Secret.
-4. In the **Tenant ID** field, enter your Tenant ID .
-5. In the **Application redirect URI** field, enter your Application redirect URI.
+1. In the *Authentication Type* field, select the **Authorization Code** option.
+2. In the *Application ID* field, enter your Client/Application ID.
+3. In the *Client Secret* field, enter your Client Secret.
+4. In the *Tenant ID* field, enter your Tenant ID .
+5. In the *Application redirect URI* field, enter your Application redirect URI.
 6. Save the instance.
 7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instruction.
 
@@ -39,17 +41,17 @@ Home -> App registrations -> Search for you App under 'all applications' -> API 
 
 1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 
-   *Note:* At the 'Select members' section, assign the application you created before.
+   *Note:* In the *Select members* section, assign the application you created earlier.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-3. In the **Authentication Type** field, select the **Client Credentials** option.
-4. In the **Application ID** field, enter your Client/Application ID.
-5. In the **Subscription ID** field, enter your Subscription ID.
-6. In the **Resource Group Name** field, enter you Resource Group Name.
-7. In the **Tenant ID** field, enter your Tenant ID .
-8. In the **Client Secret** field, enter your Client Secret.
-9. Click **Test** to validate the URLs, token, and connection
-10. Save the instance.
+   a. In the *Authentication Type* field, select the **Client Credentials** option.
+   b. In the *Application ID* field, enter your Client/Application ID.
+   c. In the *Subscription ID* field, enter your Subscription ID.
+   d. In the *Resource Group Name* field, enter you Resource Group Name.
+   e. In the *Tenant ID* field, enter your Tenant ID .
+   f. In the *Client Secret* field, enter your Client Secret.
+   g. Click **Test** to validate the URLs, token, and connection
+   h. Save the instance.
 
 ### Authentication Using the Device Code Flow
 
@@ -565,7 +567,7 @@ There is no context output for this command.
 
 > To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 > and enter the code CODECODE to authenticate.
-> Run the !azure-nsg-auth-complete command in the War Room.
+> Run the ***!azure-nsg-auth-complete*** command in the War Room.
 
 ### azure-nsg-auth-complete
 

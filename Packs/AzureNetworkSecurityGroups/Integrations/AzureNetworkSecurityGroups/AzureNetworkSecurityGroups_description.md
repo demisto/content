@@ -16,35 +16,38 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Azure Service Management - permission `user_impersonation` of type Delegated
 - Microsoft Graph - permission `offline_access` of type Delegated
 
-In order to add permission navigate:
+To add a permission:
 
-Home -> App registrations -> Search for you App under 'all applications' -> API permissions -> Add permission -> search for the specific Microsoft API -> select the specific permission of type Delegated.
+1. Navigate to **Home** > **App registrations**.
+2. Search for your app under 'all applications'.
+3. Click **API permissions** > **Add permission**.
+4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
-1. In the **Authentication Type** field, select the **Authorization Code** option.
-2. In the **Application ID** field, enter your Client/Application ID.
-3. In the **Client Secret** field, enter your Client Secret.
-4. In the **Tenant ID** field, enter your Tenant ID .
-5. In the **Application redirect URI** field, enter your Application redirect URI.
+1. In the *Authentication Type* field, select the **Authorization Code** option.
+2. In the *Application ID* field, enter your Client/Application ID.
+3. In the *Client Secret* field, enter your Client Secret.
+4. In the *Tenant ID* field, enter your Tenant ID .
+5. In the *Application redirect URI* field, enter your Application redirect URI.
 6. Save the instance.
-7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instruction.
+7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instructions.
 
 ### Authentication Using the Client Credentials Flow
 
 1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
 
-   *Note:* At the 'Select members' section, assign the application you created before.
+   *Note:* In the *Select members* section, assign the application you created earlier.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-3. In the **Authentication Type** field, select the **Client Credentials** option.
-4. In the **Application ID** field, enter your Client/Application ID.
-5. In the **Subscription ID** field, enter your Subscription ID.
-6. In the **Resource Group Name** field, enter you Resource Group Name.
-7. In the **Tenant ID** field, enter your Tenant ID .
-8. In the **Client Secret** field, enter your Client Secret.
-9. Click **Test** to validate the URLs, token, and connection
-10. Save the instance.
+   a. In the *Authentication Type* field, select the **Client Credentials** option.
+   b. In the *Application ID* field, enter your Client/Application ID.
+   c. In the *Subscription ID* field, enter your Subscription ID.
+   d. In the *Resource Group Name* field, enter you Resource Group Name.
+   e. In the *Tenant ID* field, enter your Tenant ID .
+   f. In the *Client Secret* field, enter your Client Secret.
+   g. Click **Test** to validate the URLs, token, and connection
+   h. Save the instance.
 
 ### Authentication Using the Device Code Flow
 
@@ -72,11 +75,11 @@ You only need to fill in your subscription ID and resource group name.
 Follow one of these steps for authentication based on Azure Managed Identities:
 
 - ##### To use System Assigned Managed Identity
-    - In the **Authentication Type** drop-down list, select **Azure Managed Identities**  and leave the **Azure Managed Identities Client ID** field empty.
+    - In the *Authentication Type* drop-down list, select **Azure Managed Identities**  and leave the *Azure Managed Identities Client ID* field empty.
 
 - ##### To use User Assigned Managed Identity
-    1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-    2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client ID** field in the instance configuration.
-    3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
+    1. Go to [Azure Portal](https://portal.azure.com/) > **Managed Identities**
+    2. Select your User Assigned Managed Identity > copy the Client ID and paste it in the *Azure Managed Identities client ID* field in the instance configuration.
+    3. In the *Authentication Type* drop-down list, select **Azure Managed Identities**.
 
 For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
