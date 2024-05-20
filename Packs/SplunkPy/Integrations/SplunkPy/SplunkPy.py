@@ -505,7 +505,7 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_
 # =========== Enriching Fetch Mechanism ===========
 
 class Enrichment:
-    """ A class to represent an Enrichment. Each notable has 3 possible enrichments: Drilldown, Asset & Identity
+    """ A class to represent an Enrichment. Each notable has 3 possible enrichment types: Drilldown, Asset & Identity
 
     Attributes:
         type (str): The enrichment type. Possible values are: Drilldown, Asset & Identity.
@@ -656,29 +656,43 @@ class Notable:
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
         demisto.debug("in to_incident function")
-        demisto.debug(f"self.enrichments is: {self.enrichments}")
+        
+        total_drilldown_searches = self.drilldown_searches_counter()
 
         for e in self.enrichments:
-            demisto.debug(f"in the loop: enrichment is: {e}")
-            if e.type == DRILLDOWN_ENRICHMENT:
-                if not self.data.get(e.type, {}): # first drilldown enrichment result to add
+            if e.type == DRILLDOWN_ENRICHMENT and total_drilldown_searches > 1:
+                # A notable can have more than one drilldown search enrichment, in that case we will keep the searches results in
+                # a dictionary instead of a list
+                if not self.data.get(e.type, {}): # first drilldown enrichment result to add - initiate the dict
                     self.data[e.type] = {e.id : e.data}
                     
                 else: # there are previous drilldown enrichments in the notable's data
                     self.data[e.type][e.id] = e.data
                     
-            else: # asset or identity enrichments
+            else: # asset enrichment, identity enrichment or a single drilldown enrichment (BC)
                 self.data[e.type] = e.data
+                
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
         return self.create_incident(self.data, self.occurred, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                                     comment_tag_from_splunk=comment_tag_from_splunk)
+        
+    def drilldown_searches_counter(self):
+        """ Counts the drilldown searches of a notable """
+        drilldown_search_cnt = 0
+        
+        for e in self.enrichments:
+            if e.type == DRILLDOWN_ENRICHMENT:
+                drilldown_search_cnt += 1
+        
+        return drilldown_search_cnt
 
     def submitted(self) -> bool:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
             self.enrichments) >= len(ENABLED_ENRICHMENTS)
-        # TODO: explain the change in cond
+        # The number of notable enrichments could be bigger than the enabled enrichments
+        # because there could be more than one drilldown search.
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
