@@ -36,10 +36,10 @@ class Client(BaseClient):
             headers=self._headers,
             data=data,
         )
-        
+
     def _logout(self) -> None:
         """
-        The _logout method initiates a logout request, utilizing a GET HTTP request to the specified endpoint for 
+        The _logout method initiates a logout request, utilizing a GET HTTP request to the specified endpoint for
         user session termination.
         """
         self._http_request('GET', full_url=f"{self._base_url}/api/auth/logout")
@@ -50,7 +50,8 @@ class Client(BaseClient):
         """
         self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
-    def query_datalake_request(self, args, from_param, size_param, cluster_name, dates_in_format) -> dict:
+    def query_datalake_request(self, args: dict, from_param: int, size_param: int, cluster_name: str,
+                               dates_in_format: list) -> dict:
         """
         Queries the Exabeam Data Lake API with the provided search query and returns the response.
         """
@@ -288,6 +289,7 @@ def main() -> None:    # pragma: no cover
 
     finally:
         client._logout()
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
