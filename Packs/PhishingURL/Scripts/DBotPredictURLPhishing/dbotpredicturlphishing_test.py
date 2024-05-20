@@ -343,9 +343,10 @@ def test_rasterize_urls_bad_rasterize_response(mocker: MockerFixture):
     Then: Make sure the command is called for each URL.
     """
     rasterize_command_mock = mocker.patch(
-        'DBotPredictURLPhishing.rasterize_command', return_value=[{'Contents': ''}]
+        'DBotPredictURLPhishing.rasterize_command', return_value=[{}]
     )
 
-    rasterize_urls(['1', '2'], 0)
+    res = rasterize_urls(['1', '2'], 0)
 
+    assert res == [{}, {}]
     assert rasterize_command_mock.call_count == 3

@@ -489,7 +489,7 @@ def rasterize_command(urls: list[str], rasterize_timeout: int) -> list[Union[dic
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
     res_rasterize = rasterize_command(urls, rasterize_timeout)
     if len(res_rasterize) < len(urls):  # check for errors in the response
-        demisto.debug(f'Rasterize response is too short, running command for each URL\n{res_rasterize=}\n{urls=}')
+        demisto.info(f'Rasterize response is too short, running command for each URL\n{res_rasterize=}\n{urls=}')
         rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
         res_rasterize = sum(rasterize_runs, [])
     weed_rasterize_errors(urls, res_rasterize)
