@@ -44,14 +44,14 @@ To add a permission:
    *Note:* In the *Select members* section, assign the application you created earlier.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-3. In the **Authentication Type** field, select the **Client Credentials** option.
-4. In the **Application ID** field, enter your Client/Application ID.
-5. In the **Subscription ID** field, enter your Subscription ID.
-6. In the **Resource Group Name** field, enter you Resource Group Name.
-7. In the **Tenant ID** field, enter your Tenant ID .
-8. In the **Client Secret** field, enter your Client Secret.
-9. Click **Test** to validate the URLs, token, and connection
-10. Save the instance.
+   a. In the *Authentication Type* field, select the **Client Credentials** option.
+   b. In the *Application ID* field, enter your Client/Application ID.
+   c. In the *Subscription ID* field, enter your Subscription ID.
+   d. In the *Resource Group Name* field, enter you Resource Group Name.
+   e. In the *Tenant ID* field, enter your Tenant ID .
+   f. In the *Client Secret* field, enter your Client Secret.
+   g. Click **Test** to validate the URLs, token, and connection
+   h. Save the instance.
 
 ### Authentication Using the Device Code Flow
 
