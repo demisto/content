@@ -1485,6 +1485,22 @@ Retrieves search results.
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
 
+### qradar-search-delete
+
+***
+Delete search from Qradar, based on the search ID.
+
+#### Base Command
+
+`qradar-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
 ### qradar-reference-sets-list
 
 ***
