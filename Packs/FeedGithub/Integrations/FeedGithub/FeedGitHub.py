@@ -23,9 +23,14 @@ class Client(BaseClient):
         Returns:
             str: The SHA of the base commit of the repository.
         """
+        parsed_since = dateparser.parse(since)
+        parsed_until = dateparser.parse(until)
+        if parsed_since is None or parsed_until is None:
+            demisto.debug(f"Unable to parse date string: since:{since} until:{until}")
+            raise ValueError(f"Unable to parse date string: since:{since} until:{until}")
         params = {
-            "since": dateparser.parse(since).isoformat(),
-            "until": dateparser.parse(until).isoformat(),
+            "since": parsed_since.isoformat(),
+            "until": parsed_until.isoformat(),
         }
         response = self._http_request("GET", full_url=f"{self._base_url}/commits", params=params, resp_type="response")
         demisto.debug(f"The base get_base_head_commits_sha() raw response: {response}")
@@ -218,7 +223,7 @@ def detect_domain_type(domain: str):
         Optional[FeedIndicatorType]: The type of the indicator, or None if detection fails.
     """
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None) # type: ignore
 
         if no_cache_extract(domain).suffix:
             if "*" in domain:
@@ -312,7 +317,7 @@ def arrange_iocs_indicator_to_xsoar(file_path: str, parsed_indicators: list, par
 def get_stix_indicators(repo_files_content):
     stix_client = STIX2XSOARParser({})
     generator_stix_files = create_stix_generator(repo_files_content)
-    indicators = stix_client.load_stix_objects_from_envelope(generator_stix_files)
+    indicators = stix_client.load_stix_objects_from_envelope(generator_stix_files) # type: ignore
     return indicators
 
 
@@ -389,7 +394,7 @@ def test_module(client: Client, params) -> str:
         Outputs.
     """
     try:
-        dateparser.parse(params.get("fetch_since")).isoformat()
+        dateparser.parse(params.get("fetch_since"))
     except Exception as e:
         return str(f"error in 'First fetch time' parameter: {e}")
     try:
