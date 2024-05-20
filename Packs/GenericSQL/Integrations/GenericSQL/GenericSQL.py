@@ -19,6 +19,7 @@ POSTGRES_SQL = "PostgreSQL"
 MY_SQL = "MySQL"
 MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
 MICROSOFT_SQL_SERVER = "Microsoft SQL Server"
+SAP_HANA = "SAP HANA"
 FETCH_DEFAULT_LIMIT = '50'
 
 try:
@@ -102,6 +103,8 @@ class Client:
             module = "oracle"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
+        elif dialect == SAP_HANA:
+            module = "hana"
         else:
             module = str(dialect)
         return module
@@ -238,7 +241,8 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
                              MS_ODBC_DRIVER: ("\\?", "?"),
                              POSTGRES_SQL: ("%s", "%s"),
                              MY_SQL: ("%s", "%s"),
-                             ORACLE: ("%s", "%s")
+                             ORACLE: ("%s", "%s"),
+                             SAP_HANA: ("\\?", "?")
                              }
 
     # dialect is a configuration parameter with multiple choices, so it should be one of the keys in the mapping
@@ -264,6 +268,7 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
     """
     bind_variables_names_list = argToList(bind_variables_names)
     bind_variables_values_list = argToList(bind_variables_values)
+    demisto.debug(f'{bind_variables_names_list=} {bind_variables_values_list=}')
 
     if bind_variables_values and not bind_variables_names:
         return generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
@@ -375,6 +380,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         bind_variables_names = args.get('bind_variables_names', "")
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables, sql_query = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query, client.dialect)
+        demisto.debug(f'{bind_variables=} {sql_query=}')
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 

@@ -773,13 +773,13 @@ tasks:
     nexttasks:
       '#default#':
       - "23"
-      mssql:
+      mssql or SAP HANA:
       - "3"
       oracle:
       - "26"
     separatecontext: false
     conditions:
-    - label: mssql
+    - label: mssql or SAP HANA
       condition:
       - - operator: containsString
           left:
@@ -788,6 +788,14 @@ tasks:
           right:
             value:
               simple: Microsoft
+        - operator: containsString
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.InstanceName}
+            iscontext: true
+          right:
+            value:
+              simple: SAP
     - label: oracle
       condition:
       - - operator: containsString

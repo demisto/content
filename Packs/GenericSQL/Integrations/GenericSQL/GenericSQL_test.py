@@ -626,3 +626,81 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
+
+
+BIND_VARIABLES_VALUES_LIST = ['2', 'lname', 'fname']
+QUERY = 'INSERT into TestTable(ID, LastName, FirstName) VALUES (?, ?, ?)'
+EXPECTED_QUERY_WITH_NAMES_LIST = 'INSERT into TestTable(ID, LastName, FirstName) VALUES (:ID, :LastName, :FirstName)'
+EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST = {'ID': '2', 'LastName': 'lname', 'FirstName': 'fname'}
+
+
+def test_generate_variable_names_and_mapping_sap_hana():
+    """
+    Given
+    - A bind_variables_values_list, a query and a dialect (SAP HANA)
+    When
+    - Executing generate_variable_names_and_mapping function
+    Then
+    - The sql_query and the bind_variables will be as expected.
+    """
+    from GenericSQL import generate_variable_names_and_mapping
+    expected_query = ('INSERT into TestTable(ID, LastName, FirstName) VALUES (:bind_variable_1, :bind_variable_2, '
+                      ':bind_variable_3)')
+    expected_variables_dict = {'bind_variable_1': '2', 'bind_variable_2': 'lname', 'bind_variable_3': 'fname'}
+    dialect = 'SAP HANA'
+    bind_variables, sql_query = generate_variable_names_and_mapping(BIND_VARIABLES_VALUES_LIST, QUERY, dialect)
+    assert bind_variables == expected_variables_dict
+    assert sql_query == expected_query
+
+
+STR_VARIABLES_VALUE = '2, lname, fname'
+
+
+def test_generate_bind_vars(mocker):
+    """
+    Given
+    - An empty string of bind_variables_names, a string of bind_variables_value, a query and a dialect.
+    When
+    - Executing generate_bind_vars function
+    Then
+    - The generate_bind_vars is called with the correct arguments (bind_variables_names_list is empty).
+    """
+    from GenericSQL import generate_bind_vars
+    mock_call = mocker.patch("GenericSQL.generate_variable_names_and_mapping")
+    dialect = 'SAP HANA'
+    generate_bind_vars("", STR_VARIABLES_VALUE, QUERY, dialect)
+    mock_call.assert_called_with(BIND_VARIABLES_VALUES_LIST, QUERY, dialect)
+
+
+def test_generate_bind_vars_with_bind_variables_names():
+    """
+    Given
+    - a string of bind_variables_names, a string of bind_variables_values, a query and a dialect (SAP HANA)
+    When
+    - Executing generate_bind_vars function
+    Then
+    - The sql_query and the bind_variables will be as expected.
+    """
+    from GenericSQL import generate_bind_vars
+    dialect = 'SAP HANA'
+    str_bind_variables_names = 'ID, LastName, FirstName'
+    bind_variables, sql_query = generate_bind_vars(str_bind_variables_names, STR_VARIABLES_VALUE, EXPECTED_QUERY_WITH_NAMES_LIST,
+                                                   dialect)
+    assert bind_variables == EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST
+    assert sql_query == EXPECTED_QUERY_WITH_NAMES_LIST
+
+
+def test_generate_bind_vars_exception():
+    """
+    Given
+    - bind_variables_names and bind_variables_values but there are more values than matching names.
+    When
+    - Executing generate_bind_vars function
+    Then
+    - An exception should be raised.
+    """
+    from GenericSQL import generate_bind_vars
+    try:
+        generate_bind_vars('variable_name1', STR_VARIABLES_VALUE, QUERY, 'SAP HANA')
+    except Exception as e:
+        assert str(e) == 'Bind variables length must match the variable count.Got 1 variables and 3 values'
