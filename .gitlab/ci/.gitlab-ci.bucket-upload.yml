@@ -724,6 +724,19 @@ xpanse-force-pack-upload:
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
+xsoar-saas-force-pack-upload:
+  needs: [ "xsoar-saas-prepare-testing-bucket-upload-flow" ]
+  variables:
+    SERVER_TYPE: "XSOAR SAAS"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_XSOAR_SAAS_BUCKET
+    MARKETPLACE: "xsoar saas"
+    GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_XSOAR_SAAS_BUCKET
+  extends: .force-pack-upload
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+
 .force-pack-upload:
   tags:
     - gke
@@ -806,15 +819,14 @@ upload-id-set-bucket:
     - gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" "gs://$GCS_MARKET_BUCKET/content/id_set.json"
     - job-done
 
-sync-buckets-between-projects:
-  # syncs buckets from oproxy-dev project to xdr-xsoar-content-dev-01 project
+.sync-buckets-between-projects:
+  # syncs buckets from oproxy-dev/oproxy-prod projects to xdr-xsoar-content-dev-01/xdr-xsoar-content-prod-us-01 projects
   tags:
     - gke
   extends:
     - .bucket-upload-rule
     - .default-job-settings
   stage: upload-to-marketplace
-  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace", "upload-packs-to-xsoar-saas-marketplace"]
   when: always
   variables:
     MARKETPLACE_XSOAR_PROD: "marketplace-xsoar"
@@ -857,3 +869,14 @@ sync-buckets-between-projects:
       
         echo "Bucket sync completed"
       fi
+
+sync-buckets-between-projects:
+  extends: .sync-buckets-between-projects
+  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace", "upload-packs-to-xsoar-saas-marketplace"]
+
+
+force-upload-sync-buckets-between-projects:
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  extends: .sync-buckets-between-projects
+  needs: ["xsoar-force-pack-upload", "marketplace-v2-force-pack-upload", "xpanse-force-pack-upload", "xsoar-saas-force-pack-upload"]
