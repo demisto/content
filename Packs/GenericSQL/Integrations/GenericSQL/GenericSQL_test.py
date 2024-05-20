@@ -17,12 +17,21 @@ class MockedClient(Client):
 
     def __init__(self, mocker, global_cache: dict, cache_string: str, dialect: str, host: str, username: str, password: str,
                  port: str, database: str, connect_parameters: str, ssl_connect: bool, use_pool: bool):
-
-        mocker.patch.object(Client, '_convert_dialect_to_module')
-        mocker.patch.object(Client, '_generate_db_url')
-        mocker.patch.object(Client, '_get_global_cache', return_value=global_cache)
-        mocker.patch.object(Client, '_get_cache_string', return_value=cache_string)
+        self.global_cache = global_cache
+        self.cache_string = cache_string
         super().__init__(dialect, host, username, password, port, database, connect_parameters, ssl_connect, use_pool)
+
+    def _convert_dialect_to_module(self, dialect: str = None):
+        return
+
+    def _generate_db_url(self, module: str = None):
+        return
+
+    def _get_global_cache(self):
+        return self.global_cache
+
+    def _get_cache_string(self, url: str = None, connect_args: dict = None):
+        return self.cache_string
 
 
 class Engine:
@@ -89,7 +98,6 @@ ARGS3 = {
     'limit': 5,
     'skip': 0
 }
-
 
 RAW1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
 
