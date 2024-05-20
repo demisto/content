@@ -443,39 +443,44 @@ class RecoClient(BaseClient):
         formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
             "getTableRequest": {
-                "tableName": "DATA_RISK_MANAGEMENT_VIEW_TOP_3RD_PARTIES_DOMAIN",
+                "tableName": "data_posture_view_3rd_parties_domain",
                 "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
-                        {
-                            "sortBy": "last_activity",
-                            "sortDirection": "SORT_DIRECTION_ASC"
-                        },
-                        {
-                            "sortBy": "num_files",
-                            "sortDirection": "SORT_DIRECTION_DESC"
-                        }
-                    ]
-                },
-                "fieldFilters": {
-                    "relationship": "FILTER_RELATIONSHIP_AND",
-                    "filters": {
-                        "filters": [
-                            {
-                                "field": "last_activity",
-                                "before": {
-                                    "value": f"{formatted_date}"
-                                }
-                            },
-                            {
-                                "field": "data_category",
-                                "stringNotContains": {
-                                    "value": "ALL"
-                                }}
-                        ]
-                    }
+                {
+                    "sortBy": "files_num",
+                    "sortDirection": "SORT_DIRECTION_DESC"
                 }
-            }
+            ]
+        },
+        "fieldFilters": {
+            "relationship": "FILTER_RELATIONSHIP_AND",
+            "fieldFilterGroups": {
+                "fieldFilters": [
+                    {
+                        "relationship": "FILTER_RELATIONSHIP_AND",
+                        "fieldFilterGroups": {
+                            "fieldFilters": [
+                                {
+                                    "relationship": "FILTER_RELATIONSHIP_AND",
+                                    "filters": {
+                                        "filters": [
+                                            {
+                                                "field": "last_activity",
+                                                "before": {
+                                                    "value": f"{formatted_date}"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                    }
+                ]
+            },
+        }
+        }
         }
         try:
             response = self._http_request(
@@ -497,6 +502,61 @@ class RecoClient(BaseClient):
         formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
         return formatted_date
 
+    def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
+        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
+        params = {
+            "getTableRequest": {
+                "tableName": "data_posture_view_3rd_parties_domain",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                {
+                    "sortBy": "files_num",
+                    "sortDirection": "SORT_DIRECTION_DESC"
+                }
+            ]
+        },
+        "fieldFilters": {
+            "relationship": "FILTER_RELATIONSHIP_AND",
+            "fieldFilterGroups": {
+                "fieldFilters": [
+                    {
+                        "relationship": "FILTER_RELATIONSHIP_AND",
+                        "fieldFilterGroups": {
+                            "fieldFilters": [
+                                {
+                                    "relationship": "FILTER_RELATIONSHIP_AND",
+                                    "filters": {
+                                        "filters": [
+                                            {
+                                                "field": "last_activity",
+                                                "before": {
+                                                    "value": f"{formatted_date}"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                    }
+                ]
+            },
+        }
+        }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
     def get_files_shared_with_3rd_parties(self,
                                           domain: str,
                                           last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
@@ -504,12 +564,12 @@ class RecoClient(BaseClient):
         formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
             "getTableRequest": {
-                "tableName": "DATA_RISK_MANAGEMENT_VIEW_SHARED_TOP_EXT_DOMAIN_FILES",
-                "pageSize": 100,
+                "tableName": "data_posture_view_files_by_domain_slider",
+                "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
                         {
-                            "sortBy": "data_category",
+                            "sortBy": "last_access_date",
                             "sortDirection": "SORT_DIRECTION_ASC"
                         }
                     ]
@@ -519,7 +579,7 @@ class RecoClient(BaseClient):
                     "fieldFilterGroups": {
                         "fieldFilters": [
                             {
-                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "relationship": "FILTER_RELATIONSHIP_AND",
                                 "filters": {
                                     "filters": [
                                         {
@@ -529,7 +589,7 @@ class RecoClient(BaseClient):
                                             }
                                         },
                                         {
-                                            "field": "last_access_time",
+                                            "field": "last_access_date",
                                             "before": {
                                                 "value": f"{formatted_date}"
                                             }
@@ -1219,9 +1279,8 @@ def get_3rd_parties_list(reco_client: RecoClient, last_interaction_time_in_days:
             headers=[
                 "domain",
                 "last_activity",
-                "num_files",
-                "num_users",
-                "data_category",
+                "files_num",
+                "users_with_access_num",
             ],
         ),
         outputs_prefix="Reco.Domains",
@@ -1248,6 +1307,7 @@ def get_files_shared_with_3rd_parties(reco_client: RecoClient,
                 "domain",
                 "location",
                 "users",
+                "file_owner",
                 "data_category",
                 "asset",
                 "last_access_date",
