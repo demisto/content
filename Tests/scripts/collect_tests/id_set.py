@@ -189,6 +189,8 @@ class Graph:
                                                        content_type=ContentType.PLAYBOOK)
             modeling_rules = content_graph_interface.search(marketplace=marketplace,
                                                             content_type=ContentType.MODELING_RULE)
+            parsing_rules = content_graph_interface.search(marketplace=marketplace,
+                                                           content_type=ContentType.PARSING_RULE)
             # maps content_items to test playbook where they are used recursively
 
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
@@ -198,6 +200,9 @@ class Graph:
             self.path_to_modeling_rule = {
                 modeling_rule.path: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
             }
+            self.path_to_parsing_rule = {
+                parsing_rule.path: IdSetItem.from_model(parsing_rule) for parsing_rule in parsing_rules
+            }
             self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
                                                    for playbook in playbooks}
             self.implemented_scripts_to_tests = {script.object_id: [IdSetItem.from_model(test) for test in script.tested_by]
@@ -205,6 +210,7 @@ class Graph:
 
             self.test_playbooks = self.id_to_test_playbook.values()
             self.modeling_rules = self.path_to_modeling_rule.values()
+            self.parsing_rules = self.path_to_parsing_rule.values()
             self.api_modules_to_integrations = {script.object_id: script.imported_by for script in scripts}
 
     @property

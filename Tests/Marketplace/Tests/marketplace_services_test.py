@@ -552,7 +552,6 @@ class TestHelperFunctions:
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
-
     def tests_get_failed_packs_from_previous_upload(self, mocker):
         """
           Given:
@@ -589,9 +588,6 @@ class TestHelperFunctions:
         mock_blob.download_as_string.assert_called_once()
 
         assert failed_packs == {"packs_to_upload": ["Pack1"], "packs_to_update_metadata": ["Pack2"]}
-
-
-
 
 
 class TestVersionSorting:

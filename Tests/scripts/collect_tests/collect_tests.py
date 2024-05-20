@@ -55,7 +55,6 @@ class CollectionReason(str, Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     DEFAULT_REPUTATION_TESTS = 'Indicator type file changed, running reputation tests from conf.json[\'reputation_tests\']'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
-    CHANGED_INSTALLED_PACKS = 'packs changed are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
     FILES_REMOVED_FROM_PACK = 'files were removed from this pack, installing to make sure it is not broken'
@@ -763,6 +762,11 @@ class BranchTestCollector(TestCollector):
             - Adds failed packs to `result.packs_to_upload` and `result.packs_to_update_metadata`.
             - Removes duplicates from `packs_to_update_metadata`.
         """
+        if not result:
+            result = CollectionResult(
+                test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.RE_UPLOAD_FAILED_PACK,
+                version_range=None, reason_description='', conf=None, id_set=None
+            )
 
         re_upload_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
         packs_to_re_update_metadata = set(re_upload_packs.get('packs_to_update_metadata', []))
@@ -787,8 +791,8 @@ class BranchTestCollector(TestCollector):
             self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
             self._collect_packs_diff_master_bucket()
         ])
-        # todo result none
-        if result.packs_to_upload:
+
+        if result and result.packs_to_upload:
             sort_packs_to_upload(result)
         self._collect_failed_packs_from_prev_upload(result)
         return result
@@ -1272,7 +1276,8 @@ class NightlyTestCollector(BranchTestCollector, ABC):
             modeling_rules = CollectionResult.union((
                 self._collect_modeling_rule_packs(),
                 self.sanity_tests_xsiam(),
-                # self._collect_specific_marketplace_compatible_packs(self.id_set.parsing_rules, CollectionReason.PARSING_RULE_NIGHTLY) # TODO
+                self._collect_specific_marketplace_compatible_packs(
+                    self.id_set.parsing_rules, CollectionReason.PARSING_RULE_NIGHTLY)  # TODO
             ))
             if modeling_rules:
                 modeling_rules.packs_to_upload = set()
@@ -1282,7 +1287,7 @@ class NightlyTestCollector(BranchTestCollector, ABC):
 
         result = CollectionResult.union(result)
         # todo result none
-        if result.packs_to_upload:
+        if result and result.packs_to_upload:
             sort_packs_to_upload(result)
         self._collect_failed_packs_from_prev_upload(result)
         return result
