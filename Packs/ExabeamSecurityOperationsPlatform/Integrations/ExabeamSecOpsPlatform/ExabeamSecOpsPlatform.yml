@@ -28,10 +28,10 @@ name: ExabeamSecOpsPlatform
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - description: The starting date for the search range. 
       name: start_time
       required: true
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - description: The ending date for the search range. 
       name: end_time
       required: true
     - defaultvalue: ""
@@ -46,7 +46,7 @@ script:
       name: group_by
       required: false
     - defaultvalue: "50"
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The maximal number of results to return. Maximum value is 3000.
       name: limit
       required: false
     description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
