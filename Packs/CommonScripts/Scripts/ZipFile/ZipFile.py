@@ -5,25 +5,13 @@ from CommonServerUserPython import *
 import re
 import shutil
 import pyzipper
+import pyminizip
 from os.path import isfile
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
 
 
-def unzip(zip_file_path: str, password: str = None):
-    with pyzipper.AESZipFile(zip_file_path) as zf:
-        zf.pwd = bytes(password, 'utf-8') if password else None
-        zf.extractall()
-
-
-def compress_multiple(file_names: List[str], zip_name: str, password: str = None):
-    compression = pyzipper.ZIP_DEFLATED
-    encryption = pyzipper.WZ_AES if password else None
-
-    with pyzipper.AESZipFile(zip_name, mode='w', compression=compression, encryption=encryption) as zf:
-        zf.pwd = bytes(password, 'utf-8') if password else None
-        for file_name in file_names:
-            zf.write(file_name)
+def test_compression_succeeded(zip_name: str, password: str = None):
     with pyzipper.AESZipFile(zip_name) as zf:
         # testing for file integrity
         if password:
@@ -31,6 +19,23 @@ def compress_multiple(file_names: List[str], zip_name: str, password: str = None
         ret = zf.testzip()
         if ret is not None:
             raise DemistoException('There was a problem with the zipping, file: ' + ret + ' is corrupted')
+
+
+def compress_multiple(file_names: List[str], zip_name: str, password: str = None):
+    """
+    Compress multiple files into a zip file.
+    :param file_names: list of file names to compress
+    :param zip_name: name of the zip file to create
+    :param password: password to use for encryption
+    """
+    compression = pyzipper.ZIP_DEFLATED
+    encryption = pyzipper.WZ_AES if password else None
+
+    with pyzipper.AESZipFile(zip_name, mode='w', compression=compression, encryption=encryption) as zf:
+        zf.pwd = bytes(password, 'utf-8') if password else None
+        for file_name in file_names:
+            zf.write(file_name)
+    test_compression_succeeded(zip_name, password)
     zf.close()
 
 
