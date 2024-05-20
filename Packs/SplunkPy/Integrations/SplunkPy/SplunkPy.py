@@ -74,6 +74,7 @@ DATA = 'data'
 TYPE = 'type'
 ID = 'id'
 CREATION_TIME = 'creation_time'
+QUERY = 'query'
 INCIDENT_CREATED = 'incident_created'
 
 DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
@@ -513,6 +514,7 @@ class Enrichment:
         data (list): The enrichment's data list (events retrieved from the job's search).
         creation_time (str): The enrichment's creation time in ISO format.
         status (str): The enrichment's status.
+        query (str): The enrichment's query.
     """
     FAILED = 'Enrichment failed'
     EXCEEDED_TIMEOUT = 'Enrichment exceed the given timeout'
@@ -520,26 +522,28 @@ class Enrichment:
     SUCCESSFUL = 'Enrichment successfully handled'
     HANDLED = (EXCEEDED_TIMEOUT, FAILED, SUCCESSFUL)
 
-    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None):
+    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None, query=None):
         self.type = enrichment_type
         self.id = enrichment_id
         self.data = data or []
         self.creation_time = creation_time if creation_time else datetime.utcnow().isoformat()
         self.status = status or Enrichment.IN_PROGRESS
+        self.query = query
 
     @classmethod
-    def from_job(cls, enrichment_type, job: client.Job):
+    def from_job(cls, enrichment_type, job: client.Job, query=None):
         """ Creates an Enrichment object from Splunk Job object
 
         Args:
             enrichment_type (str): The enrichment type
             job (splunklib.client.Job): The corresponding Splunk Job
+            query: The enrichment query
 
         Returns:
             The created enrichment (Enrichment)
         """
         if job:
-            return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"])
+            return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"], query=query)
         else:
             return cls(enrichment_type=enrichment_type, status=Enrichment.FAILED)
 
@@ -552,13 +556,15 @@ class Enrichment:
 
         Returns:
             An instance of the Enrichment class constructed from JSON representation.
+        
         """
         return cls(
             enrichment_type=enrichment_dict.get(TYPE),
             data=enrichment_dict.get(DATA),
             status=enrichment_dict.get(STATUS),
             enrichment_id=enrichment_dict.get(ID),
-            creation_time=enrichment_dict.get(CREATION_TIME)
+            creation_time=enrichment_dict.get(CREATION_TIME),
+            query=enrichment_dict.get(QUERY)
         )
 
 
@@ -662,14 +668,15 @@ class Notable:
         for e in self.enrichments:
             if e.type == DRILLDOWN_ENRICHMENT and total_drilldown_searches > 1:
                 # A notable can have more than one drilldown search enrichment, in that case we will keep the searches results in
-                # a dictionary instead of a list
+                # a dictionary that it's keys are the search queries and the values are the search results
+                
                 if not self.data.get(e.type, {}): # first drilldown enrichment result to add - initiate the dict
-                    self.data[e.type] = {e.id : e.data}
+                    self.data[e.type] = {e.query : e.data}
                     
                 else: # there are previous drilldown enrichments in the notable's data
-                    self.data[e.type][e.id] = e.data
+                    self.data[e.type][e.query] = e.data
                     
-            else: # asset enrichment, identity enrichment or a single drilldown enrichment (BC)
+            else: # asset enrichment, identity enrichment or a single drilldown enrichment (return a list to maintain Backwards compatibility)
                 self.data[e.type] = e.data
                 
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
@@ -992,27 +999,19 @@ def extract_drilldown_search_queries(drilldown_searches: list) -> list[str]:
     Returns:
         list[str]: A list of the drilldown searches queries.
     """
+    demisto.debug("There are multiple drilldown searches to enrich, extracting search queries")
     search_queries = []
     
     for drilldown_search in drilldown_searches:
-        demisto.debug(f'drilldown search is: {drilldown_search}')
-        demisto.debug(f'drilldown search type is: {type(drilldown_search)}')
-        # raw_drilldown_search = rf'{drilldown_search}'
-        # demisto.debug(f'raw drilldown search is: {raw_drilldown_search}')
-        # demisto.debug(f'raw drilldown search type is: {type(raw_drilldown_search)}')
         search = json.loads(drilldown_search)
-        demisto.debug(f'search is: {search}')
-        demisto.debug(f'search type is: {type(search)}')
         query = search.get("search", '')
-        demisto.debug(f'query is: {query}')
-        demisto.debug(f'query type is: {type(query)}')
         search_queries.append(query)
     
     demisto.debug(f'search_queries list: {search_queries}')
     return search_queries
 
           
-def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[client.Job]:
+def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> dict[str, client.Job]:
     """ Performs a drilldown enrichment.
     If the notable has more then one drilldown search, enriches all the drilldown searches.
 
@@ -1021,23 +1020,21 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         notable_data (dict): The notable data
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
-    Returns: The Splunk Job
+    Returns: A dictionary that contains pairs of a search query and the splunk job that runs the query.
     """
-    jobs = []
+    jobs_by_query = {}
     demisto.debug(f"notable data is: {notable_data}")
     if drilldown_search := (notable_data.get("drilldown_search") or argToList(notable_data.get("drilldown_searches", []))):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
         
         if isinstance(drilldown_search, list):
             # there exist more than one drilldown searches to enrich
-            demisto.debug(f'#### drilldown search is a list. - {drilldown_search}')
             searches = extract_drilldown_search_queries(drilldown_search)
         else:
             # only one drilldown search
-            demisto.debug(f'#### drilldown search is a string. - {drilldown_search}')
             searches = [drilldown_search]
         total_searches = len(searches)
-        demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches')
+        demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches to enrich')
             
         for i in range(total_searches):
             # iterates over the drilldown searches of the given notable to enrich each one of them
@@ -1060,7 +1057,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                     demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]} is: {query}")
                     try:
                         job = service.jobs.create(query, **kwargs)
-                        jobs.append(job)
+                        jobs_by_query[query] = job
                     except Exception as e:
                         demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
                 else:
@@ -1072,7 +1069,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     else:
         demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
 
-    return jobs
+    return jobs_by_query
 
 
 def identity_enrichment(service: client.Service, notable_data, num_enrichment_events) -> client.Job:
@@ -1286,9 +1283,9 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
     submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
 
     if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
-        jobs = drilldown_enrichment(service, notable.data, num_enrichment_events)
-        for job in jobs:
-            notable.enrichments.append(Enrichment.from_job(DRILLDOWN_ENRICHMENT, job))
+        jobs_by_query = drilldown_enrichment(service, notable.data, num_enrichment_events)
+        for query, job in jobs_by_query.items():
+            notable.enrichments.append(Enrichment.from_job(DRILLDOWN_ENRICHMENT, job, query=query))
     if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_asset:
         job = asset_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(Enrichment.from_job(ASSET_ENRICHMENT, job))
