@@ -1232,7 +1232,8 @@ def main():  # pragma: no cover
                                                   exclude_artifacts=exclude_artifacts,
                                                   last_run=demisto.getLastRun().get('next_run'),
                                                   max_fetch=max_fetch,
-                                                  statuses=statuses, starred=starred,
+                                                  statuses=statuses,
+                                                  starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
             last_run_obj = demisto.getLastRun()
