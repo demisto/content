@@ -55,4 +55,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1071 - Application Layer Protocol](../doc_files/MITRE_ATT&CK_CoA_-_T1071_-_Application_Layer_Protocol.png)
+![MITRE ATT&CK CoA - T1071 - Application Layer Protocol](../doc_files/MITRE_ATTandCK_CoA_-_T1071_-_Application_Layer_Protocol.png)

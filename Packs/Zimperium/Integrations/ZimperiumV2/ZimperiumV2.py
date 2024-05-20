@@ -5,7 +5,7 @@ import demistomock as demisto
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 FETCH_FIELD = 'timestamp'
 
 

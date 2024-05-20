@@ -3917,6 +3917,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
             },
             'ContentsFormat': EntryFormat.JSON
         })
+    already_mirrored = False
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
                 int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
@@ -3925,6 +3926,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                             f'Not fetching events again.')
             # delete the offense from the queue
             delete_offense_from_context(offense_id, context_data, context_version)
+            already_mirrored = True
         else:
             events, status = get_remote_events(client,
                                                offense_id,
@@ -3944,21 +3946,22 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
     final_offense_data = sanitize_outputs(enriched_offense)[0]
-    events_mirrored = get_num_events(final_offense_data.get('events', []))
-    print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
-    events_message = update_events_mirror_message(
-        mirror_options=mirror_options,
-        events_limit=events_limit,
-        events_count=int(final_offense_data.get('event_count', 0)),
-        events_mirrored=events_mirrored,
-        events_mirrored_collapsed=len(final_offense_data.get('events', [])),
-        fetch_mode=fetch_mode,
-        offense_id=int(offense_id),
-    )
-    print_debug_msg(f'offense {offense_id} events_message: {events_message}')
-    final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
-    final_offense_data['mirroring_events_message'] = events_message
-    final_offense_data['events_fetched'] = events_mirrored
+    if not already_mirrored:
+        events_mirrored = get_num_events(final_offense_data.get('events', []))
+        print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
+        events_message = update_events_mirror_message(
+            mirror_options=mirror_options,
+            events_limit=events_limit,
+            events_count=int(final_offense_data.get('event_count', 0)),
+            events_mirrored=events_mirrored,
+            events_mirrored_collapsed=len(final_offense_data.get('events', [])),
+            fetch_mode=fetch_mode,
+            offense_id=int(offense_id),
+        )
+        print_debug_msg(f'offense {offense_id} events_message: {events_message}')
+        final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
+        final_offense_data['mirroring_events_message'] = events_message
+        final_offense_data['events_fetched'] = events_mirrored
     return GetRemoteDataResponse(final_offense_data, entries)
 
 
