@@ -276,7 +276,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
     result_array = []
     for result in email_result:
         if result.get('FileID'):
-             result_array.append(result)
+            result_array.append(result)
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:
         msg += f' Cc: {email_cc}'
@@ -662,14 +662,16 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
                      f'does not exist.  Please choose a valid Thread Number and re-try.')
         return None
 
+
 def convert_internal_url_to_base64(match):
     original_src = match.group(1)
     result = demisto.executeCommand("core-api-download", {"uri": original_src})
     with open(demisto.investigation()['id'] + '_' + result[0]['FileID'], 'rb') as f:
         base64_data_image = base64.b64encode(f.read()).decode('utf-8')
         demisto.debug(f"{base64_data_image=}")
-    #handle not png files??
+    # handle not png files??
     return f'src="data:image/png;base64,{base64_data_image}" width="100" height="100"'
+
 
 def format_body(new_email_body):
     """
@@ -678,15 +680,15 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    context_html_body =  markdown(new_email_body,
-                    extensions=[
-                        'tables',
-                        'fenced_code',
-                        'legacy_em',
-                        'sane_lists',
-                        'nl2br',
-                        DemistoExtension(),
-                    ])
+    context_html_body = markdown(new_email_body,
+                                 extensions=[
+                                     'tables',
+                                     'fenced_code',
+                                     'legacy_em',
+                                     'sane_lists',
+                                     'nl2br',
+                                     DemistoExtension(),
+                                 ])
 
     context_html_body = re.sub(r'(<img[^>]+src="markdown[^"]*")', r'\1 width="400" height="400"', context_html_body)
     html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)

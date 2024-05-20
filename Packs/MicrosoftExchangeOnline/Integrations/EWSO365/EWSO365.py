@@ -1700,6 +1700,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
     clean_body += html_body[last_index:]
     return clean_body, attachments, file_results
 
+
 def collect_manual_attachments(manualAttachObj):  # pragma: no cover
     """Collect all manual attachments' data
 

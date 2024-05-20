@@ -864,7 +864,8 @@ def test_parse_item_as_dict_return_json_serializable():
     pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
     pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
     pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
-    
+
 ])
 def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
-    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id, attachment_id=attachment_id) == expected_result
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
+                               attachment_id=attachment_id) == expected_result
