@@ -280,7 +280,9 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
     if email_bcc:
         msg += f' Bcc: {email_bcc}'
 
-    return msg
+    demisto.debug(f"{email_result=}")
+    demisto.debug(f"{email_result[-1]=}")
+    return [msg, email_result[-1] if email_result else None]
 
 
 def send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
@@ -333,6 +335,7 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
     demisto.debug(
         f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}")
     email_result = demisto.executeCommand("send-mail", mail_content)
+    demisto.debug(f"{email_result=}")
 
     # Store message details in context entry
     create_thread_context(email_code, email_cc, email_bcc, email_body, service_mail, context_html_body,
@@ -693,6 +696,7 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
+    demisto.debug(f"{new_email_body=}")
     context_html_body = markdown(new_email_body,
                                  extensions=[
                                      'tables',
@@ -702,7 +706,8 @@ def format_body(new_email_body):
                                      'nl2br',
                                      DemistoExtension(),
                                  ])
-    context_html_body = re.sub(r'(<img[^>]+src="markdown[^"]*")', r'\1 width="300" height="300"', context_html_body)
+
+    context_html_body = re.sub(r'(<img[^>]+src="markdown[^"]*")', r'\1 width="400" height="400"', context_html_body)
     html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     demisto.debug(f"{html_body=}")
     return context_html_body, html_body
@@ -1073,6 +1078,7 @@ def main():
                                 mail_sender_instance, reputation_calc_async)
 
         elif new_thread == 'true':
+            demisto.debug("hereeeee")
             # This case is run when using the 'Email Threads' layout to send a new first-contact email message
             multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, body_type,
                              incident_id, email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc,

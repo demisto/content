@@ -1678,7 +1678,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
         attachments.append(attachment)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
-        file_results.append(fileResult(name, attachment['data']))
+        file_results.append(fileResult(attachment['name'], attachment['data']))
 
     clean_body += html_body[last_index:]
     return clean_body, attachments, file_results
@@ -1847,7 +1847,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
 
 
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
-                   additional_headers=None, from_address=None, reply_to=None, importance=None) -> tuple[Message, List[dict[str, Any]]]:  # pragma: no cover
+                   additional_headers=None, from_address=None, reply_to=None, importance=None):  # pragma: no cover
     """Creates the Message object that will be sent.
 
     Args:
@@ -1875,7 +1875,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
-        html_body, html_attachments, file_results = handle_html(html_body)
+        html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
@@ -1890,7 +1890,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
 
             message.attach(new_attachment)
 
-    return message, file_results
+    return message
 
 
 def add_additional_headers(additional_headers):
@@ -1964,8 +1964,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message, file_results = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                               reply_to, importance)
+        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+                                 reply_to, importance)
 
     client.send_email(message)
 
@@ -1976,9 +1976,6 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             content_format=EntryFormat.HTML,
             raw_response=htmlBody,
         ))
-
-    if file_results:
-        results += file_results
 
     return results
 
