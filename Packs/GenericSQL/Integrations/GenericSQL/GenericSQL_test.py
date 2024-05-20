@@ -658,7 +658,7 @@ def test_create_engine_and_connect_engine_exists(mocker):
     When
     - running create_engine_and_connect
     Then
-    - Ensure it uses the exists engine which should be cached
+    - Ensure it uses the existing engine
     """
 
     create_engine_and_connect_init(mocker, {'1': Engine('Demo Engine')}, '1')
