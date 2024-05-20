@@ -9,7 +9,8 @@ from demisto_sdk.commands.common.constants import MarketplaceVersions
 from Tests.scripts.collect_tests import collect_tests
 # importing Machine,FileType from collect_tests (rather than utils) to compare class member values
 from Tests.scripts.collect_tests.collect_tests import (
-    BranchTestCollector, NightlyTestCollector, FileType, Machine, UploadAllCollector, CollectionResult, sort_packs_to_upload, CollectionReason)
+    BranchTestCollector, NightlyTestCollector, FileType, Machine, UploadAllCollector, CollectionResult,
+    sort_packs_to_upload, CollectionReason)
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2, MODELING_RULE_COMPONENT_FILES,
     XSOAR_SANITY_TEST_NAMES, ONLY_INSTALL_PACK_FILE_TYPES, XSIAM_COMPONENT_FILES)
@@ -209,7 +210,8 @@ NIGHTLY_TESTS: tuple = (
 
     # (1) xsoar_saas - Checks that tests are collected when the pack has changed
     (MockerCases.A_xsoar, NightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',),
-     None, None, XSOAR_SAAS_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), ('myXSOAROnlyPack',)),
+     None, None, XSOAR_SAAS_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',),
+     ('myXSOAROnlyPack',)),
 
     # (2) Case B: test playbook changes, expect it to be collected to upload without the tests
     (MockerCases.B_xsoar, NightlyTestCollector, {}, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
@@ -235,8 +237,7 @@ NIGHTLY_TESTS: tuple = (
     # (7) xsiam - Checks that non api+Nightly tests are collected to install and the changed pack to install and upload
     (MockerCases.C, NightlyTestCollector,
      {'myXSIAMOnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'bothMarketplacesPack', 'myXSIAMOnlyPack',
-         'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS,
+     {'bothMarketplacesPack', 'myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'}, None, None, XSIAM_BRANCH_ARGS,
      ("Packs/CoreAlertFields/Integrations/myIntegration/myIntegration.py",), ("CoreAlertFields",)),
 
     # (8) xsiam - Checks that non api+Nightly tests are collected to install when no packs have changed
@@ -286,7 +287,7 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.MR1, NightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS, (), []),
 
-    # (19) only parsing rule component exists, expect the pack to be collected for installation - todo
+    # (19) only parsing rule component exists, expect the pack to be collected for installation
     (MockerCases.PR1, NightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      None, XSIAM_BRANCH_ARGS, (), []),
 
@@ -465,7 +466,8 @@ def test_nightly(mocker, monkeypatch, case_mocker: CollectTestsMocker, collector
 
         # (27) Packs for XSOAR & XSIAM will be collected,
         # test dependency and always install packs will be collected only to install
-        (MockerCases.R, None, ('bothMarketplacesPackOnlyXSIAMIntegration', 'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack'),
+        (MockerCases.R, None, ('bothMarketplacesPackOnlyXSIAMIntegration', 'myXSIAMOnlyPack', 'CoreAlertFields',
+                               'bothMarketplacesPack'),
          None,
          None, XSIAM_BRANCH_ARGS,
          ('Packs/bothMarketplacesPack/pack_metadata.json',
