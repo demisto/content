@@ -8,8 +8,8 @@ expected_partial_all_data = 'Lorem ipsum dolor sit amet, an quas nostro posidoni
 
 
 @pytest.mark.parametrize('file_name,file_path', [
-    ('docwithindicators.doc', 'test_data/docwithindicators'),
-    ('docxwithindicators.docx', 'test_data/docxwithindicators')
+    ('docxwithindicators.docx', 'test_data/docxwithindicators'),
+    ('docwithindicators.doc', 'test_data/docwithindicators')
 ])
 def test_parse_word(file_name, file_path, request):
     basename = os.path.basename(file_path)
