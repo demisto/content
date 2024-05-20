@@ -116,7 +116,7 @@ repos:
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
-    - /src/Tests/scripts/script_runner.py
+    - /src/Utils/pre-commit-script/script_runner.py
     - coverage
     - run
     - -p
@@ -130,7 +130,7 @@ repos:
     - --color=yes
     - --files
     copy_files:
-    - Tests/scripts/dev_envs/pytest/conftest.py
+    - Utils/pre-commit-script/pytest/conftest.py
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
@@ -160,7 +160,7 @@ repos:
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     copy_files:
-    - Tests/scripts/dev_envs/pytest/conftest.py
+    - Utils/pre-commit-script/pytest/conftest.py
     skip:commit: true
     run_isolated: true
     pass_docker_extra_args:ci: --rm=false
