@@ -198,7 +198,104 @@ script:
   - deprecated: false
     description: Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.
     name: ciphertrust-user-create
-    arguments: []
+    arguments:
+    - name: name
+      isArray: false
+      description: User’s name
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: user_id
+      required: false
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: username
+      required: false
+      secret: false
+      default: false
+    - name: password
+      isArray: false
+      description: password
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: false
+      description: Users email
+      required: false
+      secret: false
+      default: false
+    - name: allowed_auth_methods
+      isArray: true
+      description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - password
+      - user_certificate
+      - password_with_user_certificate
+      - empty
+      auto: PREDEFINED
+    - name: allowed_client_types
+      isArray: true
+      description: allowed_client_types
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - unregistered
+      - public
+      - confidential
+      auto: PREDEFINED
+    - name: certificate_subject_dn
+      isArray: false
+      description: The Distinguished Name of the user in certificate
+      required: false
+      secret: false
+      default: false
+    - name: connection
+      isArray: false
+      description: Can be the name of a connection or "local_account" for a local user
+      required: false
+      secret: false
+      default: false
+      defaultValue: local_account
+    - name: expires_at
+      isArray: false
+      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to empty, removes the expiration date of the user account.The supported date-time format is 2025-03-02T06:13:27.71402Z
+      required: false
+      secret: false
+      default: false
+    - name: is_domain_user
+      isArray: false
+      description: This flag can be used to create the user in a non-root domain where user management is allowed.
+      required: false
+      secret: false
+      default: false
+    - name: prevent_ui_login
+      isArray: false
+      description: 'If true, user is not allowed to login from Web UI. '
+      required: false
+      secret: false
+      default: false
+      defaultValue: 'false'
+    - name: password_change_required
+      isArray: false
+      description: Password change required flag. If set to true, user will be required to change their password on next successful login.
+      required: false
+      secret: false
+      default: false
+    - name: password_policy
+      isArray: false
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
@@ -245,9 +342,99 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.
     name: ciphertrust-user-update
-    arguments: []
+    arguments:
+    - name: name
+      isArray: false
+      description: User’s name
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: user_id
+      required: true
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: username
+      required: false
+      secret: false
+      default: false
+    - name: password
+      isArray: false
+      description: The password used to secure the user's account.
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: false
+      description: Users email
+      required: false
+      secret: false
+      default: false
+    - name: password_change_required
+      isArray: false
+      description: Password change required flag. If set to true, user will be required to change their password on next successful login.
+      required: false
+      secret: false
+      default: false
+    - name: allowed_auth_methods
+      isArray: true
+      description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - password
+      - user_certificate
+      - password_with_user_certificate
+      - empty
+      auto: PREDEFINED
+    - name: allowed_client_types
+      isArray: true
+      description: allowed_client_types
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - unregistered
+      - public
+      - confidential
+      auto: PREDEFINED
+    - name: certificate_subject_dn
+      isArray: false
+      description: The Distinguished Name of the user in certificate
+      required: false
+      secret: false
+      default: false
+    - name: expires_at
+      isArray: false
+      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to empty, removes the expiration date of the user account.The supported date-time format is 2025-03-02T06:13:27.71402Z
+      required: false
+      secret: false
+      default: false
+    - name: failed_logins_count
+      isArray: false
+      description: Set it to 0 to unlock a locked user account.
+      required: false
+      secret: false
+      default: false
+    - name: prevent_ui_login
+      isArray: false
+      description: If true, user is not allowed to login from Web UI.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 'false'
+    - name: password_policy
+      isArray: false
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
