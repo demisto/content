@@ -439,6 +439,40 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
+    def get_list_of_private_emails_with_access(self) -> list[dict[str, Any]]:
+        """Get files exposed to email. Returns a list of private email addresses with access."""
+        params = {
+            "getTableRequest": {
+                "tableName": "data_posture_view_private_email_with_access",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "files_num",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": []
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
     def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
         formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
@@ -447,40 +481,40 @@ class RecoClient(BaseClient):
                 "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
-                {
-                    "sortBy": "files_num",
-                    "sortDirection": "SORT_DIRECTION_DESC"
-                }
-            ]
-        },
-        "fieldFilters": {
-            "relationship": "FILTER_RELATIONSHIP_AND",
-            "fieldFilterGroups": {
-                "fieldFilters": [
-                    {
-                        "relationship": "FILTER_RELATIONSHIP_AND",
-                        "fieldFilterGroups": {
-                            "fieldFilters": [
-                                {
-                                    "relationship": "FILTER_RELATIONSHIP_AND",
-                                    "filters": {
-                                        "filters": [
-                                            {
-                                                "field": "last_activity",
-                                                "before": {
-                                                    "value": f"{formatted_date}"
-                                                }
+                        {
+                            "sortBy": "files_num",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_AND",
+                                "fieldFilterGroups": {
+                                    "fieldFilters": [
+                                        {
+                                            "relationship": "FILTER_RELATIONSHIP_AND",
+                                            "filters": {
+                                                "filters": [
+                                                    {
+                                                        "field": "last_activity",
+                                                        "before": {
+                                                            "value": f"{formatted_date}"
+                                                        }
+                                                    }
+                                                ]
                                             }
-                                        ]
-                                    }
+                                        }
+                                    ]
                                 }
-                            ]
-                        },
+                            }
+                        ]
                     }
-                ]
-            },
-        }
-        }
+                }
+            }
         }
         try:
             response = self._http_request(
@@ -501,61 +535,6 @@ class RecoClient(BaseClient):
         # Format the date in the desired format
         formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
         return formatted_date
-
-    def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
-        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
-        params = {
-            "getTableRequest": {
-                "tableName": "data_posture_view_3rd_parties_domain",
-                "pageSize": PAGE_SIZE,
-                "fieldSorts": {
-                    "sorts": [
-                {
-                    "sortBy": "files_num",
-                    "sortDirection": "SORT_DIRECTION_DESC"
-                }
-            ]
-        },
-        "fieldFilters": {
-            "relationship": "FILTER_RELATIONSHIP_AND",
-            "fieldFilterGroups": {
-                "fieldFilters": [
-                    {
-                        "relationship": "FILTER_RELATIONSHIP_AND",
-                        "fieldFilterGroups": {
-                            "fieldFilters": [
-                                {
-                                    "relationship": "FILTER_RELATIONSHIP_AND",
-                                    "filters": {
-                                        "filters": [
-                                            {
-                                                "field": "last_activity",
-                                                "before": {
-                                                    "value": f"{formatted_date}"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        },
-                    }
-                ]
-            },
-        }
-        }
-        }
-        try:
-            response = self._http_request(
-                method="PUT",
-                url_suffix="/risk-management/get-data-risk-management-table",
-                timeout=RECO_API_TIMEOUT_IN_SECONDS,
-                data=json.dumps(params),
-            )
-            return extract_response(response)
-        except Exception as e:
-            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
-            raise e
 
     def get_files_shared_with_3rd_parties(self,
                                           domain: str,
@@ -1470,6 +1449,30 @@ def get_max_fetch(max_fetch: int) -> int:
     return max_fetch
 
 
+def get_private_email_list_with_access(reco_client):
+    result = reco_client.get_list_of_private_emails_with_access()
+    identities_list = []
+    for identity in result:
+        asset_as_dict = parse_table_row_to_dict(identity.get("cells", {}))
+        identities_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "PrivateEmails",
+            identities_list,
+            headers=[
+                "email_account",
+                "primary_email",
+                "files_num",
+                "user_category",
+            ],
+        ),
+        outputs_prefix="Reco.privateEmails",
+        outputs_key_field="email_account",
+        outputs=identities_list,
+        raw_response=result,
+    )
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -1609,6 +1612,9 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-assets-shared-externally":
             result = get_assets_shared_externally_command(reco_client, demisto.args()["email_address"])
+            return_results(result)
+        elif command == "reco-get-private-email-list-with-access":
+            result = get_private_email_list_with_access(reco_client)
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

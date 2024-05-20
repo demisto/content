@@ -365,6 +365,22 @@ script:
         type: String
     description: Get files user has access to from Reco.
     name: reco-get-assets-shared-externally
+  - arguments: [ ]
+    description: Get Private emails with access
+    name: reco-get-private-email-list-with-access
+    outputs:
+      - contextPath: Reco.privateEmails.email_account
+        description: Private email account.
+        type: String
+      - contextPath: Reco.privateEmails.primary_email
+        description: Primary email account.
+        type: String
+      - contextPath: Reco.privateEmails.files_num
+        description: Number of files the private email account has access to.
+        type: Number
+      - contextPath: Reco.privateEmails.user_category
+        description: User category.
+        type: String
 tests:
 - No tests
 fromversion: 6.5.0
