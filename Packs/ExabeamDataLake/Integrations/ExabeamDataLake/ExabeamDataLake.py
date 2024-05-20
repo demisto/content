@@ -28,7 +28,6 @@ class Client(BaseClient):
         """
         Logs in to the Exabeam API using the provided username and password.
         This function must be called before any other API calls.
-        Note: the session is automatically closed in BaseClient's __del__
         """
         data = {"username": self.username, "password": self.password}
         self._http_request(
