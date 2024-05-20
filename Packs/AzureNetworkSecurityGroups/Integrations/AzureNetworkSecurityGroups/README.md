@@ -8,7 +8,7 @@ Use one of the following methods:
 
 1. *Authorization Code Flow* (Recommended).
 2. *Client Credentials*
-   3. *Device Code Flow*.
+3. *Device Code Flow*.
 
 ## Self-Deployed Azure App
 
