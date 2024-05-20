@@ -377,7 +377,7 @@ def optional_arg_to_bool(arg):
 
 def optional_arg_to_datetime_string(arg, date_format):
     datetime_object = arg_to_datetime(arg)
-    return datetime_object.strftime(date_format)
+    return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
 ''' COMMAND FUNCTIONS '''
