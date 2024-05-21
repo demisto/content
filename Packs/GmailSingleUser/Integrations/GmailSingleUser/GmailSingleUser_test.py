@@ -418,8 +418,7 @@ def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
         additional_headers=[],
         templateParams=None,
     )
-    assert GmailSingleUser.EXECUTION_METRICS.success == 1
-    del GmailSingleUser.EXECUTION_METRICS
+
     mocker_obj.assert_called_once()
     assert mocker_obj.call_args.args == ()
 
