@@ -1,8 +1,10 @@
-## BaseIntegration Help
+Exabeam Security Operations Platform offers robust search functionality, enabling security teams to efficiently query, analyze, and visualize security data. It provides a centralized and scalable platform for log management, threat detection, and incident investigation.
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Authentication Method
+ - **Basic Authentication** - Providing Key ID and Key Secret in the corresponding   parameters in the configuration.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+For assistance accessing the Exabeam API, please refer to [Exabeam API Base URLs documentation](https://developers.exabeam.com/exabeam/docs/exabeam-api-base-urls)
+
+Find API key instructions here: [API Keys Documentation](https://developers.exabeam.com/exabeam/docs/api-keys)
+
