@@ -6293,7 +6293,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     kwargs = {
         'url': f"{SERVER}/{url_suffix}",
         'verify': USE_SSL,
-        'retries': 3,
+        'retries': 10,
         'headers': {'Authorization': f'Bearer {get_token()}',
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
