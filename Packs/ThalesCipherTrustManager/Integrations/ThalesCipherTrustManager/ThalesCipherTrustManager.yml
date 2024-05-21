@@ -123,9 +123,21 @@ script:
       defaultValue: 50
     outputs: []
   - deprecated: false
-    description: ''
+    description: Certificate can be resumed only if it is revoked with reason certificatehold.
     name: ciphertrust-certificate-resume
-    arguments: []
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource
+      required: true
+      secret: false
+      default: false
+    - name: cert_id
+      isArray: false
+      description: The identifier of the certificate resource
+      required: true
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: Revoke certificate with a given specific reason.

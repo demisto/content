@@ -404,55 +404,16 @@ LOCAL_CERTIFICATE_DELETE_INPUTS = [
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='The identifier of the certificate resource'),
 ]
 
-'''
-Argument name
-Possible Values
-Is Array 
-Required
-Default Value
-Notes
-ca_id
-String
-No
-Yes
-
-
-
-
-cert_id
-String
-No
-Yes
-
-
-
-
-reason
-String
-Possible values:
-unspecified
-keyCompromise
-cACompromise
-affiliationChanged
-superseded
-cessationOfOperation
-certificateHold
-removeFromCRL
-privilegeWithdrawn
-aACompromise
-
-
-No
-Yes
-
-
-
-'''
 
 CERTIFICATE_REVOKE_INPUTS = [
     InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
     InputArgument(name=CommandArguments.CERT_ID, required=True, description='The identifier of the certificate resource'),
     InputArgument(name=CommandArguments.REASON, required=True, input_type=CertificateRevokeReason, description='Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 '),
+]
+
+CERTIFICATE_RESUME_INPUTS = [
+    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
+    InputArgument(name=CommandArguments.CERT_ID, required=True, description='The identifier of the certificate resource'),
 ]
 
 ''' OUTPUTS '''
@@ -474,7 +435,7 @@ CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CS
 CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
 CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
 CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
-
+CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
 
 '''CLIENT CLASS'''
 
@@ -665,6 +626,14 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/revoke',
             json_data=request_data,
+            return_empty_response=True,
+            empty_valid_codes=[200],
+        )
+
+    def resume_certificate(self, ca_id: str, cert_id: str):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/resume',
             return_empty_response=True,
             empty_valid_codes=[200],
         )
@@ -1096,9 +1065,12 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-resume')
+@metadata_collector.command(command_name='ciphertrust-certificate-resume', inputs_list=CERTIFICATE_RESUME_INPUTS, description=CERTIFICATE_RESUME_DESCRIPTION)
 def certificate_resume_command(client: CipherTrustClient, args: dict):
-    pass
+    client.resume_certificate(ca_id=args[CommandArguments.CA_ID], cert_id=args[CommandArguments.CERT_ID])
+    return CommandResults(
+        readable_output=f'{args[CommandArguments.CERT_ID]} has been resumed'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-external-certificate-upload')
