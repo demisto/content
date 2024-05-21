@@ -101,7 +101,7 @@ def get_entry_id_list(attachments, files, email_html):
             identifier_id = attachment_name.split('-imageName:', 1)[0]
             for file in files:
                 file_name = file.get('Name')
-                if attachment_name == (file_name or attachment_name.split('-imageName:') == file_name.replace(":", "")) and identifier_id in matches:
+                if attachment_name == file_name and identifier_id in matches:
                     entry_id_list.append((attachment_name, file.get('EntryID')))
     return entry_id_list
 
@@ -249,21 +249,23 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
         attachments (Attachment): All attachments from the current thread mail
         email_html (str): email html for the newest message
     """
-    new_attachment_identifiers_list = ["dummyFileIdentifier"]
-    new_attachments = []
-    previous_files = get_incident_related_files(email_related_incident)
-    previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
-    previous_file_names = [file.get("Name") for file in previous_files]
-    previous_file_names_for_reply = [file_name.replace(":", "") for file_name in previous_file_names]
-    for attachment in attachments:
-        attachment_name = attachment.get('name', '')
-        if attachment_name not in previous_file_names and '-imageName:' in attachment_name and attachment_name.split('-imageName:')[1] not in previous_file_names_for_reply:
-            if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
-                new_attachment_identifiers_list = []
-            identifier_id = attachment.get('name', '').split('-imageName:', 1)[0]
-            new_attachment_identifiers_list.append(identifier_id)
-            new_attachments.append(attachment)
-    return ",".join(new_attachment_identifiers_list), new_attachments
+    if attachments:
+        new_attachment_identifiers_list = ["dummyFileIdentifier"]
+        new_attachments = []
+        previous_files = get_incident_related_files(email_related_incident)
+        previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
+        previous_file_names = [file.get("Name") for file in previous_files]
+        previous_file_names_for_reply = [file_name.replace(":", "") for file_name in previous_file_names]
+        for attachment in attachments:
+            attachment_name = attachment.get('name', '')
+            if attachment_name not in previous_file_names and '-imageName:' in attachment_name and attachment_name.split('-imageName:')[1] not in previous_file_names_for_reply:
+                if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
+                    new_attachment_identifiers_list = []
+                identifier_id = attachment.get('name', '').split('-imageName:', 1)[0]
+                new_attachment_identifiers_list.append(identifier_id)
+                new_attachments.append(attachment)
+        return ",".join(new_attachment_identifiers_list), new_attachments
+    return "", []
 
 
 def get_incident_related_files(incident_id):

@@ -670,8 +670,7 @@ def convert_internal_url_to_base64(match):
         base64_data_image = base64.b64encode(f.read()).decode('utf-8')
         demisto.debug(f"{base64_data_image=}")
     # handle not png files??
-    return f'src="data:image/png;base64,{base64_data_image}" width="100" height="100"'
-
+    return f'src="data:image/png;base64,{base64_data_image}" width="300" height="300"'
 
 def format_body(new_email_body):
     """
@@ -680,17 +679,16 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    context_html_body = markdown(new_email_body,
-                                 extensions=[
-                                     'tables',
-                                     'fenced_code',
-                                     'legacy_em',
-                                     'sane_lists',
-                                     'nl2br',
-                                     DemistoExtension(),
-                                 ])
-
-    context_html_body = re.sub(r'(<img[^>]+src="markdown[^"]*")', r'\1 width="400" height="400"', context_html_body)
+    context_html_body =  markdown(new_email_body,
+                    extensions=[
+                        'tables',
+                        'fenced_code',
+                        'legacy_em',
+                        'sane_lists',
+                        'nl2br',
+                        DemistoExtension(),
+                    ])
+    context_html_body = re.sub(r'(<img[^>]+src="/markdown[^"]*")', r'\1 width="400" height="400"', context_html_body)
     html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     demisto.debug(f"{html_body=}")
     return context_html_body, html_body

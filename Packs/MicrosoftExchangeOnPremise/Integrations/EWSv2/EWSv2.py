@@ -2,6 +2,8 @@ import email
 import hashlib
 import subprocess
 from multiprocessing import Process
+import random
+import string
 
 import dateparser  # type: ignore
 import exchangelib
@@ -741,7 +743,8 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     """
     if not attachments:
         attachments = []
-    message_body = get_message_for_body_type(body, body_type, html_body)
+    message_body, inline_attachments, file_results = get_message_for_body_type(body, body_type, html_body)
+    attachments += inline_attachments
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -763,8 +766,46 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         for attachment in attachments:
             m.attach(attachment)
         m.send_and_save()
-    return m
+    return m, file_results
 
+def random_word_generator(length):
+    """Generate a random string of given length
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
+    """
+    Extract all data-url content from within the html and return as separate attachments.
+    Due to security implications, we support only images here
+    We might not have Beautiful Soup so just do regex search
+    """
+    attachments = []
+    file_results = []
+    clean_body = ''
+    last_index = 0
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
+        name = f'image{i}'
+        cid = (f'{name}@{random_word_generator(8)}_{random_word_generator(8)}')
+        attachment = {
+            'data': base64.b64decode(m.group(3)),
+            'name': name
+            
+        }
+        attachment['cid'] = cid
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+        last_index = m.end() - 1
+        file_results.append(fileResult(f"{cid}-imageName:{name}", attachment['data']))
+        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                        content_id=attachment.get('cid'), is_inline=True)
+        attachments.append(new_attachment)
+
+    clean_body += html_body[last_index:]
+    demisto.debug(f"{clean_body=}")
+    demisto.debug(f"{attachments=}")
+    demisto.debug(f"{file_results=}")
+    return clean_body, attachments, file_results
 
 def get_message_for_body_type(body, body_type, html_body):
     """
@@ -778,11 +819,13 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
+    if html_body:
+        html_body, attachments, file_results = handle_html(html_body)
     if body_type is None:  # When called from a data collection task.
-        return HTMLBody(html_body) if html_body else Body(body)
+        return (HTMLBody(html_body) if html_body else Body(body)), attachments, file_results
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
-        return HTMLBody(html_body)
-    return Body(body) if (body or not html_body) else HTMLBody(html_body)
+        return HTMLBody(html_body), attachments, file_results
+    return (Body(body) if (body or not html_body) else HTMLBody(html_body)), attachments, file_results
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
@@ -1244,6 +1287,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
         labels.append({'type': 'Email/format', 'value': email_format})
 
         # handle attachments
+        demisto.debug(f"help_me_debug {item.attachments=}")
         if item.attachments:
             incident['attachment'] = []
             for attachment in item.attachments:
@@ -2365,7 +2409,7 @@ def send_email(args):
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     body_type = args.get('bodyType', args.get('body_type'))
-    send_email_to_mailbox(
+    _, file_results = send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
         from_address=args.get('from')
@@ -2377,20 +2421,23 @@ def send_email(args):
         'attachments': attachments_names
     }
 
-    results = [{
+    results = []
+    results.append({
         'Type': entryTypes['note'],
         'Contents': result_object,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sent email', result_object),
-    }]
+    })
     if render_body:
         results.append({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['html'],
             'Contents': args.get('htmlBody')
         })
-
+    demisto.debug(f"not_working {file_results=}, {type(file_results)=}")
+    for file in file_results:
+        results.append(file)
     return results
 
 
@@ -2454,6 +2501,7 @@ def get_protocol():  # pragma: no cover
 
 
 def encode_and_submit_results(obj):  # pragma: no cover
+    demisto.debug(f"{obj=}")
     demisto.results(obj)
 
 
@@ -2474,6 +2522,7 @@ def sub_main():  # pragma: no cover
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
+            demisto.debug(f"{incidents=}")
             demisto.incidents(incidents)
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
