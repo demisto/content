@@ -31,12 +31,13 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-USER_EXPIRES_AT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+CIPHER_TRUST_API_V1_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
 GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
 LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
+CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
@@ -96,6 +97,9 @@ class CommandArguments:
     CERT = 'cert'
     ALLOW_CLIENT_AUTHENTICATION = 'allow_client_authentication'
     ALLOW_USER_AUTHENTICATION = 'allow_user_authentication'
+    DURATION = 'duration'
+    NOT_AFTER = 'not_after'
+    NOT_BEFORE = 'not_before'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -324,11 +328,17 @@ LOCAL_CA_UPDATE_INPUTS = [
                   description='If set to true, the certificates signed by the specified CA can be used '
                               'for user authentication.'),
 ]
-'''
-'''
 LOCAL_CA_DELETE_INPUTS =[
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
 ]
+
+LOCAL_CA_SELF_SIGN_INPUTS = [
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+    InputArgument(name=CommandArguments.DURATION, description='Duration in days of certificate. Either duration or notAfter date must be specified.'),
+    InputArgument(name=CommandArguments.NOT_AFTER, description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.'),
+    InputArgument(name=CommandArguments.NOT_BEFORE, description='Start date of certificate. ISO 8601 format'),
+
+    ]
 
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
@@ -342,7 +352,7 @@ LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation return
 LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
 LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
 LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
-
+LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
 '''CLIENT CLASS'''
 
 
@@ -486,6 +496,15 @@ class CipherTrustClient(BaseClient):
             return_empty_response=True,
         )
 
+    def self_sign_local_ca(self, local_ca_id: str, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id)}/self-sign',
+            json_data=request_data,
+            return_empty_response=True,
+            empty_valid_codes=[201],
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -503,7 +522,7 @@ def optional_arg_to_bool(arg):
     return argToBoolean(arg) if arg is not None else arg
 
 
-def optional_arg_to_datetime_string(arg, date_format):
+def optional_arg_to_datetime_string(arg, date_format = CIPHER_TRUST_API_V1_DATE_FORMAT):
     datetime_object = arg_to_datetime(arg)
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
@@ -512,7 +531,7 @@ def add_expires_at_param(request_data: dict, expires_at_arg: str):
     if expires_at_arg == "":
         request_data['expires_at'] = expires_at_arg
     else:
-        request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg, USER_EXPIRES_AT_DATE_FORMAT)
+        request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg)
 
 
 def parse_name_fields_string_to_list(name_fields: str):
@@ -817,9 +836,19 @@ def local_ca_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-ca-self-sign')
+@metadata_collector.command(command_name='ciphertrust-local-ca-self-sign', inputs_list=LOCAL_CA_SELF_SIGN_INPUTS, description=LOCAL_CA_SELF_SIGN_DESCRIPTION, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
 def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        duration=arg_to_number(args.get(CommandArguments.DURATION)),
+        notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
+        notBefore=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_BEFORE)),
+    )
+    raw_response = client.self_sign_local_ca(local_ca_id=args[CommandArguments.LOCAL_CA_ID], request_data=request_data)
+    return CommandResults(
+        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-install')
