@@ -336,6 +336,30 @@ def test_weed_rasterize_errors(mocker: MockerFixture):
     assert 'error 3' in return_results_mock.call_args_list[0].args[0].readable_output
 
 
+def test_return_entry_summary(mocker: MockerFixture):
+
+    mock_return_results = mocker.patch('DBotPredictURLPhishing.return_results')
+    pred_json = {
+        'seo': True, 'login_form': False, 'debug_top_words': "['access']",
+        'debug_found_domains_list': "['example.com']",
+        'logo_name': float('nan'), 'logo_found': True, 'image_bytes': '',
+        'debug_image': '{"example.png": "Less than MIN_MATCH_COUNT: 2"}',
+        'url_score': 0.55, 'New domain (less than 6 months)': True
+    }
+    res = return_entry_summary(
+        pred_json=pred_json,
+        url='https://example.com', is_white_listed=False, output_rasterize={'image_b64': '1234'},
+        verdict='Benign - Top domains from Majestic', reliability=DBotScoreReliability.A_PLUS
+    )
+
+    assert res == {
+        'BadSEOQuality': 'True', 'Domain': 'example.com', 'FinalVerdict': 'Benign', 'HasLoginForm': 'False', 'NewDomain': 'True',
+        'TopMajesticDomain': 'False', 'URL': 'https://example.com', 'URLStaticScore': 0.55, 'UseOfSuspiciousLogo': 'True'}
+    assert mock_return_results.mock_calls[0].args[0]['HumanReadable'].startswith('### Phishing prediction evidence | example.com')
+    assert mock_return_results.mock_calls[1].args[0]['File'] == 'Logo detection engine'
+    assert mock_return_results.mock_calls[1].args[0]['Tags'] == ['DBOT_URL_PHISHING_MALICIOUS']
+
+
 def test_rasterize_urls_bad_rasterize_response(mocker: MockerFixture):
     """
     Given: the results from calling rasterize are less than the amount of URLs given.

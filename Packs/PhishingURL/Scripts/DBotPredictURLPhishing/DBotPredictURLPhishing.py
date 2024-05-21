@@ -292,13 +292,12 @@ def return_entry_summary(
         return None
     if verdict == BENIGN_VERDICT_WHITELIST:
         verdict = BENIGN_VERDICT
-    if is_white_listed or not pred_json:
+    if not pred_json:
         url_score = SCORE_BENIGN
-        url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(
-            url_score)
+        url_score_colored = (GREEN_COLOR if url_score < SCORE_THRESHOLD else RED_COLOR).format(url_score)
     else:
         url_score = round(pred_json[MODEL_KEY_URL_SCORE], 2)
-        url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(url_score)
+        url_score_colored = (GREEN_COLOR if url_score < SCORE_THRESHOLD else RED_COLOR).format(url_score)
     pred_json_colored = get_colored_pred_json(pred_json) if pred_json else {}
     domain = extract_domainv2(url)
     explain = {
@@ -540,7 +539,6 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
         x_pred = create_x_pred(output_rasterize, final_url)
 
         pred_json = model.predict(x_pred)
-
         if debug:
             return_results(pred_json['debug_top_words'])
             return_results(pred_json['debug_found_domains_list'])
