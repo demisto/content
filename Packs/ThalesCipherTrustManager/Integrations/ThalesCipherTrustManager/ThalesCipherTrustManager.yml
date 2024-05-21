@@ -156,9 +156,64 @@ script:
       defaultValue: 50
     outputs: []
   - deprecated: false
-    description: ''
+    description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
     name: ciphertrust-local-ca-create
-    arguments: []
+    arguments:
+    - name: cn
+      isArray: false
+      description: Common name
+      required: true
+      secret: false
+      default: false
+    - name: algorithm
+      isArray: false
+      description: RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
+      required: false
+      secret: false
+      default: false
+    - name: copy_from_ca
+      isArray: false
+      description: ID of any Local CA. If given, the csr properties are copied from the given CA.
+      required: false
+      secret: false
+      default: false
+    - name: dns_names
+      isArray: true
+      description: Subject Alternative Names (SAN) values
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: true
+      description: E-mail addresses
+      required: false
+      secret: false
+      default: false
+    - name: ip
+      isArray: true
+      description: IP addresses
+      required: false
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of CA, if not provided, will be set to localca-<id>.
+      required: false
+      secret: false
+      default: false
+      defaultValue: localca-<id>
+    - name: name_fields
+      isArray: true
+      description: Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country
+      required: false
+      secret: false
+      default: false
+    - name: size
+      isArray: false
+      description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
@@ -171,9 +226,68 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: ''
+    description: Returns a list of local CA certificates. The results can be filtered, using the query parameters.
     name: ciphertrust-local-ca-list
-    arguments: []
+    arguments:
+    - name: subject
+      isArray: false
+      description: Filter by subject
+      required: false
+      secret: false
+      default: false
+    - name: local_ca_id
+      isArray: false
+      description: Filter by local CA ID
+      required: false
+      secret: false
+      default: false
+    - name: chained
+      isArray: false
+      description: When set to ‘true’ the full CA chain is returned with the certificate
+      required: false
+      secret: false
+      default: false
+    - name: issuer
+      isArray: false
+      description: Filter by issuer
+      required: false
+      secret: false
+      default: false
+    - name: state
+      isArray: false
+      description: Filter by state
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - pending
+      - active
+      auto: PREDEFINED
+    - name: cert
+      isArray: false
+      description: Filter by cert
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The max number of resources to return. defaults to 50
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
     outputs: []
   - deprecated: false
     description: ''
