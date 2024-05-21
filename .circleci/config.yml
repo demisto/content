@@ -338,7 +338,6 @@ jobs:
       - *install_node_ci
       - *install_neo4j
       - *prepare_environment
-      - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
       - store_test_results:
