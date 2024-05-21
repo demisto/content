@@ -783,6 +783,8 @@ script:
       name: tags
     - description: The description of the indicator.
       name: description
+    - description: The name of the owner to which the Indicator belongs.
+      name: owner
     description: Adds a new indicator to ThreatConnect.
     name: tc-add-indicator
     outputs:
