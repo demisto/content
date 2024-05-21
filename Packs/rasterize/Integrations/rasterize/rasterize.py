@@ -462,7 +462,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
-        demisto.debug(f"Navigated to {path=} on {tab.id=}")
+        demisto.info(f"Navigated to {path=} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
         demisto.debug(f'allTimeSamplingProfile after navigation {allTimeSamplingProfile=} on {tab.id=}')
@@ -515,7 +515,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     if screenshot_data:
         demisto.debug(f"Screenshot image of {path=} on {tab.id=}, available after {operation_time} seconds.")
     else:
-        demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available available after {operation_time} seconds.")
+        demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
     allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
     demisto.debug(f'allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}')
@@ -549,7 +549,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         if request_id:
             demisto.debug(f"request_id available after {request_id_operation_time} seconds.")
         else:
-            demisto.info(f"request_id not available available after {request_id_operation_time} seconds.")
+            demisto.info(f"request_id not available after {request_id_operation_time} seconds.")
         demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds.")
 
         try:
@@ -560,7 +560,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
             if response_body:
                 demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}")
             else:
-                demisto.info(f"Response Body not available available after {operation_time} seconds.")
+                demisto.info(f"Response Body not available after {operation_time} seconds.")
 
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
             demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}')
@@ -586,7 +586,7 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     if pdf_data:
         demisto.debug(f"PDF Data available after {operation_time} seconds.")
     else:
-        demisto.info(f"PDF Data not available available after {operation_time} seconds.")
+        demisto.info(f"PDF Data not available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
