@@ -112,6 +112,7 @@ class CommandArguments:
     CERT_ID = 'cert_id'
     REASON = 'reason'
     PARENT = 'parent'
+    EXTERNAL_CA_ID = 'external_ca_id'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -424,6 +425,12 @@ EXTERNAL_CERTIFICATE_UPLOAD_INPUTS =[
     InputArgument(name=CommandArguments.NAME, description='A unique name of CA, if not provided, will be set to externalca-<id>.'),
     InputArgument(name=CommandArguments.PARENT, description='URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.'),
 ]
+
+
+EXTERNAL_CERTIFICATE_DELETE_INPUTS = [
+    InputArgument(name=CommandArguments.EXTERNAL_CA_ID, required=True, description='The identifier of the certificate resource'),
+]
+
 ''' OUTPUTS '''
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
@@ -445,6 +452,8 @@ CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
 CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
 CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
 EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
+EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
+
 '''CLIENT CLASS'''
 
 
@@ -653,6 +662,13 @@ class CipherTrustClient(BaseClient):
             json_data=request_data,
             return_empty_response=True,
             empty_valid_codes=[201],
+        )
+
+    def delete_external_certificate(self, external_ca_id: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
+            return_empty_response=True,
         )
 
 
@@ -1105,9 +1121,12 @@ def external_certificate_upload_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-delete')
+@metadata_collector.command(command_name='ciphertrust-external-certificate-delete', inputs_list=EXTERNAL_CERTIFICATE_DELETE_INPUTS, description=EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION)
 def external_certificate_delete_command(client: CipherTrustClient, args: dict):
-    pass
+    client.delete_external_certificate(external_ca_id=args[CommandArguments.EXTERNAL_CA_ID])
+    return CommandResults(
+        readable_output=f'{args[CommandArguments.EXTERNAL_CA_ID]} has been deleted successfully!'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-external-certificate-update')

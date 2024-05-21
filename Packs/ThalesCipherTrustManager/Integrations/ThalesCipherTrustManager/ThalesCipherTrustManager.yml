@@ -175,9 +175,15 @@ script:
       auto: PREDEFINED
     outputs: []
   - deprecated: false
-    description: ''
+    description: Deletes an external CA certificate.
     name: ciphertrust-external-certificate-delete
-    arguments: []
+    arguments:
+    - name: external_ca_id
+      isArray: false
+      description: The identifier of the certificate resource
+      required: true
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
