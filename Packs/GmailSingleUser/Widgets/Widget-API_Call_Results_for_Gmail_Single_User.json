@@ -57,7 +57,7 @@
         "xAxisLabel": "Time",
         "yAxisLabel": "Request Counts"
     },
-    "query": "type:integration  and name:\"Gmail Single User_copy\"",
+    "query": "type:integration and name:\"Gmail Single User\"",
     "modified": "2024-05-21T09:56:47.075956051Z",
     "name": "Gmail Single User",
     "dateRange": {
