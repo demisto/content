@@ -267,6 +267,20 @@ def modify_pack_metadata(pack: Path):
 
 
 @add_changed_pack
+def modify_pack_default_data_source(pack: Path, default_data_source: str):
+    """
+    Modifies the pack_metadata file, in order to check that the expected defaultDataSource shows in it
+    """
+    metadata_json = pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
+        base_metadata = json.load(f)
+    base_metadata['defaultDataSource'] = default_data_source
+    with metadata_json.open('w') as f:
+        json.dump(base_metadata, f)
+    return pack, base_metadata['currentVersion'], None
+
+
+@add_changed_pack
 def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str):
     """
     Modify modeling rules path, in order to verify that the pack was uploaded correctly and that the path was changed
@@ -347,6 +361,9 @@ def do_changes_on_branch(packs_path: Path):
 
     # case 15: metadata changes (soft upload) - verify that only the permitted fields have been changed in metadata.json
     modify_pack_metadata(packs_path / 'Zoom')
+
+    # case 16: Verify defaultDataSource field is added with the correct values
+    modify_pack_default_data_source(packs_path / 'HelloWorld', 'HelloWorldEventCollector')
 
     logging.info("Finished making test changes on the branch")
 

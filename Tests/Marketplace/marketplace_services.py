@@ -1751,13 +1751,14 @@ class Pack:
             self.display_name = pack_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._pack_metadata = pack_metadata
             self._content_items = pack_metadata.get(Metadata.CONTENT_ITEMS, {})
-            self._default_data_source = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE)
+            self._default_data_source = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE, {})
             self._eula_link = pack_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = pack_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = pack_metadata.get(Metadata.MODULES, [])
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
+
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
 
