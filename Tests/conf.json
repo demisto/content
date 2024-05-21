@@ -3047,8 +3047,7 @@
         },
         {
             "integrations": "ExabeamSecOpsPlatform",
-            "playbookID": "ExabeamSecurityOperationsPlatform-test",
-            "fromversion":"6.10.0"
+            "playbookID": "ExabeamSecurityOperationsPlatform-test"
         },
         {
             "integrations": "Cisco Spark",

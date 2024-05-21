@@ -28,13 +28,14 @@ name: ExabeamSecOpsPlatform
 script:
   commands:
   - arguments:
-    - description: The starting date for the search range.
+    - defaultvalue: "last 7 days"
+      description: The starting date for the search range.
       name: start_time
-      required: true
-    - description: The ending date for the search range.
+    - defaultvalue: "today"
+      description: The ending date for the search range.
       name: end_time
-      required: true
-    - description: Query, using Lucene syntax, filters log data for precise analysis.
+    - defaultvalue: ""
+      description: Query, using Lucene syntax, filters log data for precise analysis.
       name: query
       required: false
     - description: Comma-separated list of fields to be returned from the search.
