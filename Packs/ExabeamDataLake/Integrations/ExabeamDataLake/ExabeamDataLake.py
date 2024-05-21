@@ -133,7 +133,7 @@ def dates_in_range(start_time: Any, end_time: Any) -> list[str]:
     return dates
 
 
-def get_date(time: str):
+def get_date(time: str, arg_name:str):
     """
     Get the date from a given time string.
 
@@ -144,7 +144,7 @@ def get_date(time: str):
         str: The date extracted from the time string formatted in ISO 8601 format (YYYY-MM-DD),
         or None if the time string is invalid.
     """
-    date_time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
+    date_time = arg_to_datetime(arg=time, arg_name=arg_name, required=True)
     if not date_time:
         raise DemistoException("There was an issue parsing the start time provided.")
     date = date_time.strftime(ISO_8601_FORMAT)
@@ -219,8 +219,8 @@ def query_data_lake_command(client: Client, args: dict, cluster_name: str) -> Co
     """
     from_param, size_param = calculate_page_parameters(args)
 
-    start_time = get_date(args.get("start_time", "7 days ago"))
-    end_time = get_date(args.get("end_time", "today"))
+    start_time = get_date(args.get("start_time", "7 days ago"), "start_time")
+    end_time = get_date(args.get("end_time", "today"), "end_time")
     dates = dates_in_range(start_time, end_time)
     dates_in_format = ["exabeam-" + date for date in dates]
 
