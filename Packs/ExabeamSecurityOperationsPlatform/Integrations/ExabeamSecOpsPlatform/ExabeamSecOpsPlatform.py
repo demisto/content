@@ -69,7 +69,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_date(time: str):
+def get_date(time: str, arg_name: str):
     """
     Get the date from a given time string.
 
@@ -80,7 +80,7 @@ def get_date(time: str):
         str: The date extracted from the time string formatted in ISO 8601 format (YYYY-MM-DD),
         or None if the time string is invalid.
     """
-    date_time = arg_to_datetime(arg=time, arg_name="Start time", required=True)
+    date_time = arg_to_datetime(arg=time, arg_name=arg_name, required=True)
     if date_time:
         date = date_time.strftime(DATE_FORMAT)
     return date
@@ -174,8 +174,8 @@ def search_command(client: Client, args: dict) -> CommandResults:
         'filter': process_string(args.get('query', '')),
         'fields': argToList(args.get('fields', '*')),
         'limit': arg_to_number(args.get('limit', '50')),
-        'startTime': get_date(args.get('start_time', '7 days ago')),
-        'endTime': get_date(args.get('end_time', 'today')),
+        'startTime': get_date(args.get('start_time', '7 days ago'), "start_time"),
+        'endTime': get_date(args.get('end_time', 'today'), "end_time"),
     }
     if args.get('group_by'):
         kwargs.update({'group_by': argToList(args.get('group_by'))})
