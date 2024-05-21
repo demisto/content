@@ -11,7 +11,7 @@ configuration:
   displaypassword: API Key
   name: credentials
   type: 9
-  hiddenusername: 
+  hiddenusername: true
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
@@ -26,7 +26,7 @@ configuration:
   type: 8
   additionalinfo: Used for troubleshooting purposes.
   required: false
-description: Manages indicators from OpenCTI. Compatible with OpenCTI 5.12.17 API version.
+description: Manages indicators from OpenCTI. Compatible with OpenCTI 5.12.17 API version and pycti 6.1.1.
 display: OpenCTI
 name: OpenCTI
 script:
