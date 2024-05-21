@@ -14,7 +14,7 @@ import hmac
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
-
+tu = 24
 ABSOLUTE_URL_TO_API_URL = {
     'https://cc.absolute.com': 'https://api.absolute.com',
     'https://cc.us.absolute.com': 'https://api.us.absolute.com',
