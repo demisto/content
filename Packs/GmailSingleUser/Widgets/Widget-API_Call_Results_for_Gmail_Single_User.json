@@ -4,13 +4,13 @@
         "customGroupBy": [
             null,
             {
-                "General Error": {
+                " General Error": {
                     "conditions": [
                         [
                             {
                                 "field": "apiResponseType",
                                 "operator": "isEqualCaseString",
-                                "right": "GeneralError",
+                                "right": "General Error",
                                 "type": "string"
                             }
                         ]
@@ -42,19 +42,6 @@
                         ]
                     ],
                     "name": "Success"
-                },
-                "ConnectionError": {
-                    "conditions": [
-                        [
-                            {
-                                "field": "apiResponseType",
-                                "operator": "isEqualCaseString",
-                                "right": "ConnectionError",
-                                "type": "string"
-                            }
-                        ]
-                    ],
-                    "name": "ConnectionError"
                 }
             }
         ],
@@ -65,15 +52,14 @@
         "keys": [
             "sum|totalAPICalls"
         ],
-        "referenceLine": {},
         "timeFrame": "hours",
         "valuesFormat": "abbreviated",
         "xAxisLabel": "Time",
         "yAxisLabel": "Request Counts"
     },
-    "query": "type:integration and name:\"Gmail Single User\"",
-    "modified": "2024-01-14T16:57:28.451017133Z",
-    "name": "API Call Results for Gmail Single User",
+    "query": "type:integration  and name:\"Gmail Single User_copy\"",
+    "modified": "2024-05-21T09:56:47.075956051Z",
+    "name": "Gmail Single User",
     "dateRange": {
         "fromDate": "0001-01-01T00:00:00Z",
         "toDate": "0001-01-01T00:00:00Z",
@@ -89,7 +75,7 @@
     },
     "isPredefined": true,
     "version": -1,
-    "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
+    "id": "fd941abd-0143-4fa6-8abd-3973e62720e7",
     "widgetType": "line",
     "fromVersion": "6.10.0",
     "description": ""
