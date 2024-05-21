@@ -472,7 +472,8 @@ class Client(BaseClient):
                     headers=headers,
                     error_handler=self.qradar_error_handler,
                     timeout=timeout or self.timeout,
-                    resp_type=resp_type
+                    resp_type=resp_type,
+                    with_metrics=True
                 )
             except (DemistoException, requests.ReadTimeout) as error:
                 demisto.error(f'Error {error} in time {_time}')
