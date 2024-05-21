@@ -339,7 +339,7 @@ jobs:
       - *install_neo4j
       - *prepare_environment
       - *run_unit_testing_and_lint
-      - *generate_coverage_reports
+      # - *generate_coverage_reports
       - store_test_results:
           path: ./unit-tests
       - *store_artifacts
