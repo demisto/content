@@ -128,3 +128,10 @@ echo "Finished preparing content packs for testing successfully."
 echo -e "\nIf you want to connect this build bucket to your test machine, add this server configs:"
 echo "marketplace.bootstrap.bypass.url: https://storage.googleapis.com/$BUILD_BUCKET_FULL_PATH"
 echo "jobs.marketplacepacks.schedule: 1m"
+
+echo -e "\nIn order to connect this build bucket to your XSIAM machine, add this server configuration in GCP and sync marketplace.
+ Navigate to 'Kubernetes Engine -> Secrets & ConfigMaps -> <lcass_id>-configmap-xsoar-feature-flags', under 'data' add: "
+echo "MARKETPLACE_BOOTSTRAP_BYPASS_URL: https://storage.googleapis.com/$BUILD_BUCKET_FULL_PATH"
+echo "Generate a standard API key. Once the Workloads pods are green, execute: "
+echo "curl --request POST '<api_base_url>/xsoar/contentpacks/marketplace/sync?hard=true' --header 'x-xdr-auth-id: <id>' --header 'Content-Type: application/json' --header 'Authorization: <api_key>' -v"
+
