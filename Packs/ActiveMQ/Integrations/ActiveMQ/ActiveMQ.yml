@@ -27,7 +27,7 @@ configuration:
   required: false
 - display: Client certificate key (.key)
   name: client_key
-  type: 12
+  type: 14
   required: false
 - display: Root Certificate
   name: root_ca

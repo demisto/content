@@ -50,4 +50,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1110 - Brute Force](../doc_files/MITRE_ATT&CK_CoA_-_T1110_-_Brute_Force.png)
+![MITRE ATT&CK CoA - T1110 - Brute Force](../doc_files/MITRE_ATTandCK_CoA_-_T1110_-_Brute_Force.png)
