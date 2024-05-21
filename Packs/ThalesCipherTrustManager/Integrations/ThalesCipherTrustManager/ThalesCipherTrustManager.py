@@ -624,7 +624,8 @@ def users_list_command(client: CipherTrustClient, args: dict):
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response,
-        readable_output=tableToMarkdown(name='users list', t=raw_response.get('resources')),
+        readable_output=tableToMarkdown(name='users list',
+                                        t=raw_response.get('resources') if raw_response.get('resources') else raw_response),
     )
 
 
@@ -728,7 +729,7 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-list', inputs_list=LOCAL_CA_LIST,
-                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX , description=LOCAL_CA_LIST_DESCRIPTION)
+                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_LIST_DESCRIPTION)
 def local_ca_list_command(client: CipherTrustClient, args: dict):
     if local_ca_id := args.get(CommandArguments.LOCAL_CA_ID):
         params = assign_params(
@@ -752,7 +753,9 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response,
-        readable_output=tableToMarkdown('local CAs', raw_response.get('resources'))
+        # todo: name?
+        readable_output=tableToMarkdown('local CAs',
+                                        raw_response.get('resources') if raw_response.get('resources') else raw_response),
     )
 
 
