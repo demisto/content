@@ -17,9 +17,56 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: ''
+    description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.
     name: ciphertrust-certificate-issue
-    arguments: []
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource
+      required: true
+      secret: false
+      default: false
+    - name: csr
+      isArray: false
+      description: CSR in PEM format
+      required: true
+      secret: false
+      default: false
+    - name: purpose
+      isArray: false
+      description: 'Purpose of the certificate. Possible values: server, client or ca'
+      required: true
+      secret: false
+      default: false
+      predefined:
+      - server
+      - client
+      - ca
+      auto: PREDEFINED
+    - name: duration
+      isArray: false
+      description: Duration in days of certificate. Either duration or notAfter date must be specified.
+      required: false
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of Certificate, if not provided, will be set to cert-<id>.
+      required: false
+      secret: false
+      default: false
+    - name: not_after
+      isArray: false
+      description: End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.
+      required: false
+      secret: false
+      default: false
+    - name: not_before
+      isArray: false
+      description: Start date of certificate. ISO 8601 format for notBefore date. Either duration or notAfter date must be specified. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
