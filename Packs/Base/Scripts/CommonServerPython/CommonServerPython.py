@@ -4282,7 +4282,7 @@ class Common(object):
 
         def to_context(self):
             email_context = {
-                'Email':{'Address': self.address}
+                'Email': {'Address': self.address}
             }
 
             if self.blocked:
