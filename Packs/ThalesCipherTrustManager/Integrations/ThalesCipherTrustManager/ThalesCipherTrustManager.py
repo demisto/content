@@ -31,7 +31,8 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-CIPHER_TRUST_API_V1_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+USER_EXPIRES_AT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+LOCAL_CA_NOT_BEFORE_OR_AFTER_DATE_FORMAT = '%Y-%m-%dZ'
 
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
 GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
@@ -522,7 +523,7 @@ def optional_arg_to_bool(arg):
     return argToBoolean(arg) if arg is not None else arg
 
 
-def optional_arg_to_datetime_string(arg, date_format = CIPHER_TRUST_API_V1_DATE_FORMAT):
+def optional_arg_to_datetime_string(arg, date_format):
     datetime_object = arg_to_datetime(arg)
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
@@ -531,7 +532,7 @@ def add_expires_at_param(request_data: dict, expires_at_arg: str):
     if expires_at_arg == "":
         request_data['expires_at'] = expires_at_arg
     else:
-        request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg)
+        request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg , USER_EXPIRES_AT_DATE_FORMAT)
 
 
 def parse_name_fields_string_to_list(name_fields: str):
@@ -840,8 +841,8 @@ def local_ca_delete_command(client: CipherTrustClient, args: dict):
 def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         duration=arg_to_number(args.get(CommandArguments.DURATION)),
-        notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
-        notBefore=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_BEFORE)),
+        notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER) , LOCAL_CA_NOT_BEFORE_OR_AFTER_DATE_FORMAT ),
+        notBefore=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_BEFORE), LOCAL_CA_NOT_BEFORE_OR_AFTER_DATE_FORMAT),
     )
     raw_response = client.self_sign_local_ca(local_ca_id=args[CommandArguments.LOCAL_CA_ID], request_data=request_data)
     return CommandResults(
