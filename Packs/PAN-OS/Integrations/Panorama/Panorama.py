@@ -14237,33 +14237,6 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
     return entries
 
 
-def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[
-        Dict[str, str] | None, datetime | None, List[Dict[str, Any]]]:
-    """parses raw incident entries of a specific log type query into basic context incidents.
-
-    Args:
-        incident_entries (list[dict[str,Any]]): list of dictionaries representing raw incident entries
-
-    Returns:
-        Tuple[Dict[str, str], Optional[datetime], List[Dict[str, Any]]]: a tuple of the largest id, the largest last fetch time and a list of parsed incidents
-    """
-    # if no new incidents are available, return empty list of incidents
-    if not incident_entries:
-        return None, None, incident_entries
-
-    # calculate largest last fetch time for each log type query
-    last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
-    new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
-
-    # calculate largest unique id for each log type query
-    new_largest_id = find_largest_id_per_device(incident_entries)
-    # convert incident entries to incident context and filter any empty incidents if exists
-    parsed_incidents: List[Dict[str, Any]] = list(map(incident_entry_to_incident_context, incident_entries))
-    filtered_parsed_incidents = list(filter(None, parsed_incidents))
-
-    return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
-
-
 def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
     """convert raw incident entry to basic cortex incident format.
 
@@ -14273,17 +14246,14 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
-    occurred = incident_entry.get('time_generated', "")
-    occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
-    incident_context = {}
-    if occurred_datetime:
-        incident_context = {
-            'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
-            'occurred': occurred_datetime.strftime(DATE_FORMAT),
-            'rawJSON': json.dumps(incident_entry),
-            'type': incident_entry.get('type')
-        }
-    return incident_context
+    occurred = incident_entry.get('time_generated', '')
+    occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}) or datetime.now()
+    return {
+        'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
+        'occurred': occurred_datetime.strftime(DATE_FORMAT),
+        'rawJSON': json.dumps(incident_entry),
+        'type': incident_entry.get('type')
+    }
 
 
 def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
@@ -14350,9 +14320,9 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> QueryMap:
     return queries_dict
 
 
-def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]],
+def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, Any]]],
                                 last_fetch_dict: LastFetchTimes,
-                                last_id_dict: LastIDs) -> Dict[str, Any]:
+                                last_id_dict: LastIDs) -> list[dict[str, Any]]:
     """for each log type incident entries array, parse the raw incidents into context incidents.
     if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
 
@@ -14364,31 +14334,23 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
     Returns:
         Dict[str,Any]: parsed context incident dictionary
     """
-    parsed_incident_entries_dict = {}
+    parsed_incident_entries = []
     for log_type, incident_entries in incident_entries_dict.items():
-        if log_type == 'Correlation':
-            last_id_dict['Correlation'] = dateparser.parse(  # type: ignore
-                incident_entries_dict['Correlation'][-1]['time_generated'],
-                settings={'TIMEZONE': 'UTC'}
-            )
         if incident_entries:
-            updated_last_id, updated_last_fetch, incidents = parse_incident_entries(incident_entries)
-            demisto.debug(
-                f'{log_type} log type: {len(incidents)} parsed incidents returned from parse_incident_entries function.')
-            demisto.debug(
-                f"{log_type} log type: parsed incidents unique ID list: {[incident.get('name', '') for incident in incidents]}")
-            parsed_incident_entries_dict[log_type] = incidents
+            if log_type == 'Correlation':
+                last_id_dict['Correlation'] = int(incident_entries_dict['Correlation'][-1]['@logid'])
+            else:
+                if updated_last_id := find_largest_id_per_device(incident_entries):
+                    # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
+                    last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(log_type) else last_id_dict.update({log_type: updated_last_id})
+            last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
+            updated_last_fetch = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
             if updated_last_fetch:
                 last_fetch_dict[log_type] = str(updated_last_fetch)
-            if updated_last_id:
-                # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
-                last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(
-                    log_type) else last_id_dict.update({log_type: updated_last_id})
-
-            demisto.debug(
-                f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}. Updated last ID is: {last_id_dict.get(log_type)}')
-            demisto.debug(f'incidents ID list: {[incident.get("name") for incident in incidents]}')
-    return parsed_incident_entries_dict
+            parsed_incident_entries += list(map(incident_entry_to_incident_context, incident_entries))
+            demisto.debug(f'{log_type} log type: {len(incident_entries)} incidents with unique ID list: {[incident.get('name', '') for incident in incident_entries]}')
+    demisto.debug(f'Updated last run is: {last_fetch_dict}. Updated last ID is: {last_id_dict}')
+    return parsed_incident_entries
 
 
 def fetch_incidents(last_run: LastRun, first_fetch: str,
@@ -14422,11 +14384,7 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
     # remove duplicated incidents from incident_entries_dict
     unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)
 
-    parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
-
-    # flatten incident_entries_dict to a single list of dictionaries representing context entries
-    parsed_incident_entries_list = [incident for incident_list in parsed_incident_entries_dict.values()
-                                    for incident in incident_list]
+    parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
 
     return last_fetch_dict, last_id_dict, parsed_incident_entries_list
 
