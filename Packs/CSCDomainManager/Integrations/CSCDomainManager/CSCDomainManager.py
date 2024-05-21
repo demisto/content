@@ -19,7 +19,6 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -43,7 +42,7 @@ class Client(BaseClient):
     """
 
     # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
+    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -92,9 +91,9 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
+
 def csc_domains_list_command(client: Client):
     return
-
 
 
 def csc_domains_availability_check_command(client: Client):
@@ -103,8 +102,8 @@ def csc_domains_availability_check_command(client: Client):
 
 def csc_domains_configuration_list_command(client: Client):
     return
-        
-        
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -112,9 +111,9 @@ def main() -> None:
     :rtype:
     """
 
-    params = demisto.params()
-    args = demisto.args()
-    
+    demisto.params()
+    demisto.args()
+
     # TODO: make sure you properly handle authentication
     # api_key = demisto.params().get('credentials', {}).get('password')
 
@@ -135,7 +134,7 @@ def main() -> None:
 
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        headers: dict = {}
 
         client = Client(
             base_url=base_url,
@@ -147,19 +146,18 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-        
+
         elif demisto.command() == 'csc-domains-list':
             result = csc_domains_list_command(client)
             return_results(result)
-        
+
         elif demisto.command() == 'csc-domains-availability-check':
             result = csc_domains_availability_check_command(client)
             return_results(result)
-        
+
         elif demisto.command() == 'csc-domains-configuration-list':
             result = csc_domains_configuration_list_command(client)
             return_results(result)
-
 
     # Log exceptions and return errors
     except Exception as e:
