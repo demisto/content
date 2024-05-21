@@ -349,52 +349,52 @@ def fetch_mails(client: IMAPClient,
     """
     if message_id:
         messages_uids = [message_id]
-        demisto.debug("ML: message_id provided, using it for message_uids")
+        demisto.debug("message_id provided, using it for message_uids")
     else:
         messages_query = generate_search_query(time_to_fetch_from,
                                                with_headers,
                                                permitted_from_addresses,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
-        demisto.debug(f'ML: message_id not provided, using generated query {messages_query}')
+        demisto.debug(f'message_id not provided, using generated query {messages_query}')
         messages_uids = client.search(messages_query)
-        demisto.debug(f"ML: client returned {len(messages_uids)} message ids: {messages_uids=}")
+        demisto.debug(f"client returned {len(messages_uids)} message ids: {messages_uids=}")
 
         if len(messages_uids) > limit:  # If there's any reason to shorten the list
             if uid_to_fetch_from == 0:
                 # first fetch takes last page only (workaround as first_fetch filter is date accurate)
                 messages_uids = messages_uids[-limit:]
-                demisto.debug(f"ML: limiting to the LAST {limit=} messages since uid_to_fetch_from == 0")
+                demisto.debug(f"limiting to the LAST {limit=} messages since uid_to_fetch_from == 0")
             else:
                 messages_uids = messages_uids[:limit]
-                demisto.debug(f"ML: limiting to the first {limit=} messages")
-        demisto.debug(f"ML: {messages_uids=}")
+                demisto.debug(f"limiting to the first {limit=} messages")
+        demisto.debug(f"{messages_uids=}")
 
     fetched_email_objects = []
-    demisto.debug(f'ML: Messages to fetch: {messages_uids}')
+    demisto.debug(f'Messages to fetch: {messages_uids}')
 
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
-        demisto.debug(f"ML: Starting to parse the mail with {mail_id=}")
+        demisto.debug(f"Starting to parse the mail with {mail_id=}")
         message_bytes = message_data.get(b'RFC822')
         # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
         try:
             message_bytes = bytes(message_bytes)
         except Exception as e:
-            demisto.debug(f"ML: {mail_id=}: Converting to bytest failed. {message_data=}. Error: {e}")
+            demisto.debug(f"{mail_id=}: Converting to bytest failed. {message_data=}. Error: {e}")
 
         if not message_bytes:
-            demisto.debug(f"ML: {mail_id=}: Skipping because did not managed to convert to bytes")
+            demisto.debug(f"{mail_id=}: Skipping because did not managed to convert to bytes")
             continue
 
         try:
-            demisto.debug("ML: Creating email object")
+            demisto.debug("Creating email object")
             email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-            demisto.debug(f"ML: {mail_id=}: Created email object.")
+            demisto.debug(f"{mail_id=}: Created email object.")
         except Exception as e:
-            demisto.debug(f"ML: {mail_id=}: Failed creating Email object, skipping. Error: {e}")
+            demisto.debug(f"{mail_id=}: Failed creating Email object, skipping. {message_data=}. Error: {e}")
             continue
 
-        demisto.debug(f"ML: {mail_id=}: Created email object successfully.")
+        demisto.debug(f"{mail_id=}: Created email object successfully.")
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):
             fetched_email_objects.append(email_message_object)
