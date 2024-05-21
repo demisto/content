@@ -65,6 +65,7 @@ SECURITY_CONTENT_ITEMS = [
     "Triggers"
 ]
 PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
+LABELS_TO_SKIP_PR_REVIEW = {'contribution on hold'}
 
 
 def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
@@ -104,9 +105,8 @@ def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bo
         Returns:
             bool: if PR need to be skipped
     """
-    labels_to_consider = {'contribution on hold'}
     pr_labels_set = set(pr_labels)
-    if pr.draft or labels_to_consider.issubset(pr_labels_set):
+    if pr.draft or LABELS_TO_SKIP_PR_REVIEW.issubset(pr_labels_set):
         print(f'PR number {pr.number} with draft status {pr.draft} and labels {pr_labels_set} will be skipped from count ')
         return True
     return False
@@ -130,9 +130,7 @@ def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) 
     for pull in pulls:
         # we only consider 'Contribution' prs when computing who to assign
         pr_labels = [label.name.casefold() for label in pull.labels]
-        if label_to_consider not in pr_labels:
-            continue
-        if skip_pr_from_count_for_reviewer(pull, pr_labels):
+        if label_to_consider not in pr_labels or skip_pr_from_count_for_reviewer(pull, pr_labels):
             continue
         assignees = {assignee.login for assignee in pull.assignees}
         for reviewer in potential_reviewers:
