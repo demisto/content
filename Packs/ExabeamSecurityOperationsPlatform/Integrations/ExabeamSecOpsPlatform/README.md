@@ -81,16 +81,12 @@ Get events from Exabeam Security Operations Platform.
                 "ingest_time": 1716209614644000,
                 "is_ioc": false,
                 "landscape": "network devices",
-                "metadataFieldsJSON": "{\"m_collector_name\":\"armis\",\"m_collector_type\":\"Webhook\"}",
                 "msg_type": "armis-byid-cef-alert-trigger-success-systempolicyviolation-custom",
                 "outcome": "success",
                 "parsed": true,
                 "parser_version": "v1.0.0",
                 "platform": "aruba wireless controller",
                 "product": "Armis",
-                "rawLogIds": [
-                    "dd09f357-fb77-483d-84c2-85e0f3297ad4"
-                ],
                 "rawLogs": [
                     "{\"time\":\"2024-05-20T12:53:20\",\"title\":\"[Risk] Abnormal Amount of Open Ports\",\"type\":\"System Policy Violation\",\"severity\":\"Medium\",\"status\":\"Unhandled\",\"deviceIds\":[15]} SE_GENERATED armis-alertiotbyid"
                 ],
@@ -116,9 +112,6 @@ Get events from Exabeam Security Operations Platform.
                 "parsed": true,
                 "parser_version": "v1.0.0",
                 "product": "Palo Alto NGFW",
-                "rawLogIds": [
-                    "723a214f-890f-4604-bd0c-ba9288b9f09a"
-                ],
                 "rawLogs": [
                     ",2020/05/07 02:40:08,44A1B3FC68F5304,TRAFFIC,end,2049,,205.185.123.210,192.168.10.53,205.185.123.210,192.168.10.53,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,,574239,1,50340,8088,50340,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07 02:40:08,7,any,,730183,0x0,United States,10.0.0.0-10.255.255.255,,4,0,aged-out,,,,,,PA-VM,from-policy,,,0,,0,,N/A,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
                 ],
@@ -135,14 +128,10 @@ Get events from Exabeam Security Operations Platform.
                 "id": "shush",
                 "ingest_time": 1716209409505000,
                 "is_ioc": false,
-                "metadataFieldsJSON": "{\"m_collector_id\":\"3f1a69f0-ce69-4f41-bc02-649e5c5a39a3\",\"m_collector_name\":\"exa-cribl-logs-exabeam-out\",\"m_collector_type\":\"cribl-logs\"}",
                 "msg_type": "exa-palo-network-unparsed",
                 "parsed": true,
                 "parser_version": "v1.0.0",
                 "product": "Palo Alto NGFW",
-                "rawLogIds": [
-                    "1e0eceba-c207-4f65-9ac4-6c12a00c6eb7"
-                ],
                 "rawLogs": [
                     ",2020/05/07 02:40:09,44A1B3FC68F5304,TRAFFIC,end,2049,,108.161.138.152,192.168.1.55,108.161.138.152,192.168.1.55,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,,574267,1,34756,8088,34756,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07 02:40:09,7,any,,730214,0x0,United States,10.0.0.0-10.255.255.255,,4,0,aged-out,,,,,,PA-VM,from-policy,,,0,,0,,N/A,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
                 ],
@@ -159,7 +148,6 @@ Get events from Exabeam Security Operations Platform.
                 "id": "c8ead65b-b64d-43a5-a1c3-5f211b125183",
                 "ingest_time": 1716209409506000,
                 "is_ioc": false,
-                "metadataFieldsJSON": "{\"m_collector_id\":\"3f1a69f0-ce69-4f41-bc02-649e5c5a39a3\",\"m_collector_name\":\"exa-cribl-logs-exabeam-out\",\"m_collector_type\":\"cribl-logs\"}",
                 "msg_type": "exa-palo-network-unparsed",
                 "parsed": true,
                 "parser_version": "v1.0.0",
