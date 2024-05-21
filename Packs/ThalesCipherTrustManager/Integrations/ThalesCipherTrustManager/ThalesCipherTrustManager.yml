@@ -462,9 +462,21 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Deletes a local certificate.
     name: ciphertrust-local-certificate-delete
-    arguments: []
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource
+      required: true
+      secret: false
+      default: false
+    - name: local_ca_id
+      isArray: false
+      description: The identifier of the certificate resource
+      required: true
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: Tests API connectivity and authentication

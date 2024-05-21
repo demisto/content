@@ -385,6 +385,12 @@ CERTIFICATE_LIST_INPUTS = [InputArgument(name=CommandArguments.CA_ID, required=T
                            InputArgument(name=CommandArguments.ID, description='Filter by id or URI'),
                            ] + PAGINATION_INPUTS
 
+
+LOCAL_CERTIFICATE_DELETE_INPUTS = [
+    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='The identifier of the certificate resource'),
+]
+
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
@@ -401,7 +407,7 @@ LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used
 LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
 CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
 CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
-
+CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
 '''CLIENT CLASS'''
 
 
@@ -577,6 +583,13 @@ class CipherTrustClient(BaseClient):
             method='GET',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs',
             params=params,
+        )
+
+    def delete_certificate(self, ca_id: str, local_ca_id: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{local_ca_id}',
+            return_empty_response=True,
         )
 
 
@@ -986,9 +999,12 @@ def certificate_list_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-certificate-delete')
+@metadata_collector.command(command_name='ciphertrust-local-certificate-delete', inputs_list=LOCAL_CERTIFICATE_DELETE_INPUTS, description=CERTIFICATE_DELETE_DESCRIPTION)
 def local_certificate_delete_command(client: CipherTrustClient, args: dict):
-    pass
+    client.delete_certificate(ca_id=args[CommandArguments.CA_ID], local_ca_id=args[CommandArguments.LOCAL_CA_ID])
+    return CommandResults(
+        readable_output=f'{args[CommandArguments.LOCAL_CA_ID]} has been deleted successfully!'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-certificate-revoke')
