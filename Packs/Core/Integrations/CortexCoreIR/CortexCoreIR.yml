@@ -83,9 +83,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+    - description: Deprecated. Use gte_creation_time instead.
       defaultValue: 3 days
       name: starred_incidents_fetch_window
+      deprecated: true
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
@@ -2942,7 +2943,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.92207
 tests:
 - No tests
 fromversion: 6.2.0
