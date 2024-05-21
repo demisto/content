@@ -296,13 +296,12 @@ def get_alert_command(client: Client, args: dict) -> CommandResults:
 
 def test_module_command(client: Client) -> str:
     try:
-        client.test_incidents()  
+        client.test_incidents()
     except Exception as e:
         if "Unauthorized" in str(e):
             return "Authorization Error: make sure the credentials and host are correct"
         else:
             raise e
-    
     return "ok"
 
 
