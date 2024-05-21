@@ -97,9 +97,9 @@ def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
         else:
             EXECUTION_METRICS.general_error += 1
         raise error
-    except Exception as error:
+    except Exception:
         EXECUTION_METRICS.general_error += 1
-        raise error
+        raise
     EXECUTION_METRICS.success += 1
     return result
 
@@ -107,6 +107,8 @@ def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
 def return_metrics():
     if EXECUTION_METRICS.metrics is not None and ExecutionMetrics.is_supported():
         return_results(EXECUTION_METRICS.metrics)
+    else:
+        demisto.debug("Not returning metrics. Either metrics are not supported in this XSOAR version, or none were collected")
 
 # See: https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
 
@@ -1159,7 +1161,7 @@ def fetch_incidents(client: Client):
     max_results = MAX_FETCH
     if MAX_FETCH > 200:
         max_results = 200
-    demisto.debug(f'GMAIL: fetch parameters: user: {user_key} query={query}'
+    demisto.debug(f'GMAIL: fetch parameters: user: {user_key} {query=}'
                   f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
     list_command_args = {
         "userId": user_key,
@@ -1199,7 +1201,7 @@ def fetch_incidents(client: Client):
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info(f'extract {len(incidents)} incidents')
+    demisto.info(f'extracted {len(incidents)} incidents')
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
         # we still have more results
