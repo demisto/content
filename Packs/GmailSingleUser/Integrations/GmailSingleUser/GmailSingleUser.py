@@ -79,7 +79,7 @@ def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
     try:
         match action:
             case "send":
-                return service.users().messages().send(**action_kwargs).execute()
+                result = service.users().messages().send(**action_kwargs).execute()
             case "get":
                 result = service.users().messages().get(**action_kwargs).execute()
             case "get_attachments":
@@ -110,9 +110,8 @@ def return_metrics():
     else:
         demisto.debug("Not returning metrics. Either metrics are not supported in this XSOAR version, or none were collected")
 
+
 # See: https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
-
-
 class MemoryCache(Cache):
     _CACHE: dict = {}
 
