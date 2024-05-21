@@ -920,7 +920,6 @@ def test_nightly_failed_packs_from_prev_upload(mocker, monkeypatch, changed_file
             update_update - pack today for update, yesterday for update > expected pack to update
     then: Ensure packs_to_upload, packs_to_update_metadata contain the expected packs
     """
-    from demisto_sdk.commands.common.git_util import GitUtil
     from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
     monkeypatch.chdir(MockerCases.RN_CONFIG.path_manager.content_path)
 
@@ -928,8 +927,6 @@ def test_nightly_failed_packs_from_prev_upload(mocker, monkeypatch, changed_file
                         return_value=FilesToCollect(changed_files, ()))
     mocker.patch('Tests.scripts.collect_tests.collect_tests.get_failed_packs_from_previous_upload', return_value=content_status)
 
-    # mocker.patch.object(GitUtil, "_get_all_changed_files", return_value={Path(file_path) for file_path in changed_files})
-    # mocker.patch.object(GitUtil, "added_files", return_value=added_files)
     mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="2.1.3")
     with MockerCases.RN_CONFIG:
         collector = NightlyTestCollector(*XSOAR_SAAS_BRANCH_ARGS)

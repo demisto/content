@@ -724,8 +724,8 @@ class BranchTestCollector(TestCollector):
         self.branch_name = branch_name
         self.service_account = service_account
         self.build_bucket_path = build_bucket_path
-        self.changed_files: list[str] = []
-        self.added_files: list[str] = []
+        self.changed_files: set[str] = set()
+        self.added_files: set[str] = set()
 
     def _sort_packs_to_upload(self, result: CollectionResult):
         """
@@ -764,7 +764,7 @@ class BranchTestCollector(TestCollector):
         if not result:
             result = CollectionResult(
                 test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.RE_UPLOAD_FAILED_PACK,
-                version_range=None, reason_description='', conf=None, id_set=None
+                version_range=None, reason_description='', conf=self.conf, id_set=self.id_set
             )
 
         re_upload_packs = get_failed_packs_from_previous_upload(self.service_account, self.build_bucket_path)
@@ -1191,8 +1191,8 @@ class BranchTestCollector(TestCollector):
                 added_files.append(file_path)
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
-        self.changed_files.extend(changed_files)
-        self.added_files.extend(added_files)
+        self.changed_files |= set(changed_files)
+        self.added_files |= set(added_files)
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
