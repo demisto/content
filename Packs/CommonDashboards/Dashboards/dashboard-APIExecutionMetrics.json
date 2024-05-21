@@ -1393,7 +1393,7 @@
                 "prevName": "API Call Results For Gmail Single User",
                 "dataType": "metrics",
                 "widgetType": "line",
-                "query": "type:integration  and name:\"Gmail Single User\"",
+                "query": "type:integration and name:\"Gmail Single User\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
