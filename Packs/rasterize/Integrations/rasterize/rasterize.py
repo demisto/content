@@ -442,7 +442,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
 
     try:
-        demisto.debug(f'Starting tab navigation to given path: {path} on {tab.id=}')
+        demisto.info(f'Starting tab navigation to given path: {path} on {tab.id=}')
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
         demisto.debug(f'allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}')
@@ -462,7 +462,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
-        demisto.info(f"Navigated to {path=} on {tab.id=}")
+        demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
         demisto.debug(f'allTimeSamplingProfile after navigation {allTimeSamplingProfile=} on {tab.id=}')
