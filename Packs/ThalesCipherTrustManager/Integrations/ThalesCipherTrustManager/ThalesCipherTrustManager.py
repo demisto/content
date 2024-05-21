@@ -88,6 +88,12 @@ class CommandArguments:
     IP = 'ip'
     NAME_FIELDS = 'name_fields'
     SIZE = 'size'
+    SUBJECT = 'subject'
+    LOCAL_CA_ID = 'local_ca_id'
+    CHAINED = 'chained'
+    ISSUER = 'issuer'
+    STATE = 'state'
+    CERT = 'cert'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -101,6 +107,11 @@ class AllowedClientTypes(enum.Enum):
     UNREGISTERED = "unregistered"
     PUBLIC = "public"
     CONFIDENTIAL = "confidential"
+
+
+class LocalCAState(enum.Enum):
+    PENDING = 'pending'
+    ACTIVE = 'active'
 
 
 ''' YML METADATA '''
@@ -293,6 +304,16 @@ LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True,
                           InputArgument(name=CommandArguments.SIZE,
                                         description='Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'), ]
 
+LOCAL_CA_LIST = [InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
+                 InputArgument(name=CommandArguments.LOCAL_CA_ID, description='Filter by local CA ID'),
+                 InputArgument(name=CommandArguments.CHAINED,
+                               description='When set to ‘true’ the full CA chain is returned with the certificate'),
+                 InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
+                 InputArgument(name=CommandArguments.STATE, input_type=LocalCAState, description='Filter by state'),
+                 InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
+                 ] + PAGINATION_INPUTS
+
+''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
     'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
@@ -301,7 +322,7 @@ USER_CREATE_DESCRIPTION = (
 USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
 LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
-
+LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
 '''CLIENT CLASS'''
 
 
@@ -417,6 +438,20 @@ class CipherTrustClient(BaseClient):
             empty_valid_codes=[201],
         )
 
+    def get_local_ca_list(self, params: dict):
+        return self._http_request(
+            method='GET',
+            url_suffix=LOCAL_CAS_URL_SUFFIX,
+            params=params,
+        )
+
+    def get_local_ca(self, local_ca_id: str, params: dict):
+        return self._http_request(
+            method='GET',
+            url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
+            params=params,
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -445,14 +480,12 @@ def add_expires_at_param(request_data: dict, expires_at_arg: str):
     else:
         request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg, USER_EXPIRES_AT_DATE_FORMAT)
 
+
 def parse_name_fields_string_to_list(name_fields: str):
-    '''
-from this:
-{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}
-to:
-[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]
-    '''
-    return [json.loads(f'{{{name_fields}}}')]
+    if name_fields:
+        return [json.loads(f'{{{name_fields}}}')]
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -675,34 +708,6 @@ def user_password_change_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-local-ca-create', description=LOCAL_CA_CREATE_DESCRIPTION,
                             inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
 def local_ca_create_command(client: CipherTrustClient, args: dict):
-    '''
-    {
-    "cn": string,
-    "algorithm": string,
-    "copy_from_ca": string,
-    "dnsNames": [
-        string
-    ],
-    "emailAddresses": [
-        string
-    ],
-    "ipAddresses": [
-        string
-    ],
-    "name": string,
-    "names": [
-        {
-            "C": string,
-            "L": string,
-            "O": string,
-            "OU": string,
-            "ST": string
-        }
-    ],
-    "size": integer
-}
-    '''
-
     request_data = assign_params(
         cn=args[CommandArguments.CN],
         algorithm=args.get(CommandArguments.ALGORITHM),
@@ -722,9 +727,33 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-ca-list')
+@metadata_collector.command(command_name='ciphertrust-local-ca-list', inputs_list=LOCAL_CA_LIST,
+                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX , description=LOCAL_CA_LIST_DESCRIPTION)
 def local_ca_list_command(client: CipherTrustClient, args: dict):
-    pass
+    if local_ca_id := args.get(CommandArguments.LOCAL_CA_ID):
+        params = assign_params(
+            chained=optional_arg_to_bool(args.get(CommandArguments.CHAINED)),
+        )
+        raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
+    else:
+        skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+                                                           args.get(CommandArguments.PAGE),
+                                                           args.get(CommandArguments.PAGE_SIZE))
+        params = assign_params(
+            skip=skip,
+            limit=limit,
+            subject=args.get(CommandArguments.SUBJECT),
+            issuer=args.get(CommandArguments.ISSUER),
+            state=args.get(CommandArguments.STATE),
+            cert=args.get(CommandArguments.CERT),
+        )
+        raw_response = client.get_local_ca_list(params=params)
+    return CommandResults(
+        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown('local CAs', raw_response.get('resources'))
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-update')
