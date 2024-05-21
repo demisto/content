@@ -22,7 +22,7 @@
   "updateAfter": 0,
   "mergeContext": false,
   "formatScript": "ExtractEmailV2",
-  "contextPath": "Account.Email(val.Address \u0026\u0026 val.Address === obj.Address)",
+  "contextPath": "Account(val.Address \u0026\u0026 val.Address === obj.Address)",
   "contextValue": "Address",
   "excludedBrands": [],
   "defaultMapping": {
