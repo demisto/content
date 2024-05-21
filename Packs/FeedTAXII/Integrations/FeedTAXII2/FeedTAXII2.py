@@ -9,7 +9,7 @@ from typing import Any
 CONTEXT_PREFIX = "TAXII2"
 COMPLEX_OBSERVATION_MODE_SKIP = "Skip indicators with more than a single observation"
 COMPLEX_OBSERVATION_MODE_CREATE_ALL = "Create indicator for each observation"
-
+INTEGRATION_NAME = 'FeedTAXII2'
 """ HELPER FUNCTIONS """
 
 
@@ -192,12 +192,14 @@ def get_indicators_command(
     raw = argToBoolean(raw)
 
     if not client.collection_to_fetch:
+        demisto.debug(f"{INTEGRATION_NAME}: we don't have any collection to fetch so we fetch all collection")
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
+            demisto.debug(f"{INTEGRATION_NAME}: the current collection is {collection}")
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
@@ -206,6 +208,7 @@ def get_indicators_command(
                     break
 
     else:
+        demisto.debug(f"{INTEGRATION_NAME}: we have collection to fetch")
         indicators = client.build_iterator(limit=limit, added_after=added_after)
     relationships_list: list = []
     parsed_relationships: str = ""

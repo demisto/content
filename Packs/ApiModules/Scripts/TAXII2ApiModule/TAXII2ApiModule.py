@@ -19,6 +19,8 @@ import tempfile
 import uuid
 from dateutil.parser import parse
 
+INTEGRATION_NAME = 'FeedTAXII2'
+
 # disable insecure warnings
 urllib3.disable_warnings()
 
@@ -2230,6 +2232,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :param limit: max amount of indicators to fetch
         :return: Cortex indicators list
         """
+        demisto.debug(f"{INTEGRATION_NAME}: we are building iterator now")
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
             raise DemistoException(
                 "Could not find a collection to fetch from. "
@@ -2243,7 +2246,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
             return []
 
         try:
-            demisto.debug(f"Fetching {page_size} objects from TAXII server")
+            demisto.debug(f"{INTEGRATION_NAME}: Fetching {page_size} objects from TAXII server")
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
@@ -2260,6 +2263,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         Polls a taxii collection
         :param page_size: size of the request page
         """
+        demisto.debug(f"{INTEGRATION_NAME}: we are polling collection")
         get_objects = self.collection_to_fetch.get_objects
         if self.objects_to_fetch:
             if 'relationship' not in self.objects_to_fetch and \
@@ -2267,9 +2271,17 @@ class Taxii2FeedClient(STIX2XSOARParser):
                 self.objects_to_fetch.append('relationship')
             kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            demisto.debug(f'Collection is a v20 type collction, {self.collection_to_fetch}')
+            try:
+                self.collection_to_fetch._validate_collection()
+            except Exception as ex:
+                demisto.debug(f'{INTEGRATION_NAME}: Collection is not valid collection!, {str(ex)}')
+            demisto.debug(f'{INTEGRATION_NAME}: Collection is a v20 type collction, {self.collection_to_fetch}')
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        demisto.debug(f'Collection is a v21 type collction, {self.collection_to_fetch}')
+        demisto.debug(f'{INTEGRATION_NAME}: Collection is a v21 type collction, {self.collection_to_fetch}')
+        try:
+            self.collection_to_fetch._validate_collection()
+        except Exception as ex:
+            demisto.debug(f'{INTEGRATION_NAME}: Collection is not valid collection!, {str(ex)}')
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
