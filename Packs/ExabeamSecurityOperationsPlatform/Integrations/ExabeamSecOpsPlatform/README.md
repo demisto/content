@@ -46,122 +46,52 @@ Get events from Exabeam Security Operations Platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ExabeamPlatform.Event.activity | String | Indicates the specific activity performed. | 
-| ExabeamPlatform.Event.activity_type | String | Specifies the type of the activity. | 
-| ExabeamPlatform.Event.business_criticality | String | Reflects the criticality level assigned to the business context of the event. | 
-| ExabeamPlatform.Event.host | String | Identifies the host the activity occurred. | 
-| ExabeamPlatform.Event.landscape | String | Describes the landscape in which the event took place. | 
-| ExabeamPlatform.Event.outcome | String | Indicates the outcome of the activity. | 
-| ExabeamPlatform.Event.platform | String | Specifies the platform involved in the event. | 
-| ExabeamPlatform.Event.product | String | Indicates the specific product related to the event. | 
-| ExabeamPlatform.Event.product_category | String | Specifies the category of the product involved in the event. | 
-| ExabeamPlatform.Event.subject | String | Identifies the subject involved in the activity. | 
-| ExabeamPlatform.Event.time | String | Represents the timestamp of occurrence for the event. | 
-| ExabeamPlatform.Event.vendor | String | Indicates the vendor associated with the event. | 
+| ExabeamPlatform.Event.id | String | Represents the unique identifier associated with the event. | 
+| ExabeamPlatform.Event.rawLogIds | String | Represents the raw log identifiers associated with the event. | 
+| ExabeamPlatform.Event.tier | String | Represents the tier associated with the event. | 
+| ExabeamPlatform.Event.parsed | String | Indicates whether the event has been parsed. | 
+| ExabeamPlatform.Event.rawLogs | String | Represents the raw logs associated with the event. | 
 
 #### Command example
-```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=4```
+```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2```
 #### Context Example
 ```json
 {
     "ExabeamPlatform": {
         "Event": [
             {
-                "activity": "trigger",
-                "activity_type": "alert-trigger",
-                "alert_name": "[Risk] Abnormal Amount of Open Ports",
-                "alert_severity": "Medium",
-                "alert_status": "Unhandled",
-                "alert_type": "System Policy Violation",
-                "approxLogTime": 1716209600000000,
-                "builder_name": "armis_byid_trigger_custom",
-                "collector_timestamp": 1716209614248000,
-                "customFieldsJSON": "{\"c_device_id_list\":\"15\",\"c_device_severity\":\"Medium\"}",
-                "id": "secret_id",
-                "ingest_time": 1716209614644000,
-                "is_ioc": false,
-                "landscape": "network devices",
-                "msg_type": "armis-byid-cef-alert-trigger-success-systempolicyviolation-custom",
-                "outcome": "success",
-                "parsed": true,
-                "parser_version": "v1.0.0",
-                "platform": "aruba wireless controller",
-                "product": "Armis",
-                "rawLogs": [
-                    "{\"time\":\"2024-05-20T12:53:20\",\"title\":\"[Risk] Abnormal Amount of Open Ports\",\"type\":\"System Policy Violation\",\"severity\":\"Medium\",\"status\":\"Unhandled\",\"deviceIds\":[15]} SE_GENERATED armis-alertiotbyid"
-                ],
-                "raw_log_size": 200,
-                "raw_log_time": 1716209600000000,
-                "raw_log_time_format": "yyyy-MM-dd'T'HH:mm:ss",
-                "raw_log_time_str": "2024-05-20T12:53:20",
-                "subject": "alert",
-                "tier": "Tier 2",
-                "time": "2024-05-20T12:53:20",
-                "vendor": "Armis"
-            },
-            {
-                "approxLogTime": 1716209108762000,
-                "collector_timestamp": 1716209108762000,
+                "approxLogTime": 1715694190909000,
+                "collector_timestamp": 1715694190909000,
                 "customFieldsJSON": "{}",
-                "error_detail": "[{\"stage\":\"Parsing\",\"errors\":[{\"reason\":\"TIME_PARSING_ERROR\",\"msg\":\"Parser definition contains time field but time was not parsed\",\"field\":\"time\"}]}]",
-                "id": "shhhh",
-                "ingest_time": 1716209409454000,
-                "is_ioc": false,
-                "metadataFieldsJSON": "{\"m_collector_id\":\"3f1a69f0-ce69-4f41-bc02-649e5c5a39a3\",\"m_collector_name\":\"exa-cribl-logs-exabeam-out\",\"m_collector_type\":\"cribl-logs\"}",
-                "msg_type": "exa-palo-network-unparsed",
-                "parsed": true,
-                "parser_version": "v1.0.0",
-                "product": "Palo Alto NGFW",
-                "rawLogs": [
-                    ",2020/05/07 02:40:08,44A1B3FC68F5304,TRAFFIC,end,2049,,205.185.123.210,192.168.10.53,205.185.123.210,192.168.10.53,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,,574239,1,50340,8088,50340,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07 02:40:08,7,any,,730183,0x0,United States,10.0.0.0-10.255.255.255,,4,0,aged-out,,,,,,PA-VM,from-policy,,,0,,0,,N/A,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
-                ],
-                "raw_log_size": 446,
-                "tier": "Tier 3",
-                "time": "2024-05-20T12:45:08.762000",
-                "vendor": "Palo Alto Networks"
-            },
-            {
-                "approxLogTime": 1716209108763000,
-                "collector_timestamp": 1716209108763000,
-                "customFieldsJSON": "{}",
-                "error_detail": "[{\"stage\":\"Parsing\",\"errors\":[{\"reason\":\"TIME_PARSING_ERROR\",\"msg\":\"Parser definition contains time field but time was not parsed\",\"field\":\"time\"}]}]",
-                "id": "shush",
-                "ingest_time": 1716209409505000,
-                "is_ioc": false,
-                "msg_type": "exa-palo-network-unparsed",
-                "parsed": true,
-                "parser_version": "v1.0.0",
-                "product": "Palo Alto NGFW",
-                "rawLogs": [
-                    ",2020/05/07 02:40:09,44A1B3FC68F5304,TRAFFIC,end,2049,,108.161.138.152,192.168.1.55,108.161.138.152,192.168.1.55,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,,574267,1,34756,8088,34756,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07 02:40:09,7,any,,730214,0x0,United States,10.0.0.0-10.255.255.255,,4,0,aged-out,,,,,,PA-VM,from-policy,,,0,,0,,N/A,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
-                ],
-                "raw_log_size": 444,
-                "tier": "Tier 3",
-                "time": "2024-05-20T12:45:08.763000",
-                "vendor": "Palo Alto Networks"
-            },
-            {
-                "approxLogTime": 1716209114761000,
-                "collector_timestamp": 1716209114761000,
-                "customFieldsJSON": "{}",
-                "error_detail": "[{\"stage\":\"Parsing\",\"errors\":[{\"reason\":\"TIME_PARSING_ERROR\",\"msg\":\"Parser definition contains time field but time was not parsed\",\"field\":\"time\"}]}]",
-                "id": "c8ead65b-b64d-43a5-a1c3-5f211b125183",
-                "ingest_time": 1716209409506000,
-                "is_ioc": false,
-                "msg_type": "exa-palo-network-unparsed",
-                "parsed": true,
-                "parser_version": "v1.0.0",
-                "product": "Palo Alto NGFW",
+                "id": "fake",
+                "ingest_time": 1715694222815000,
+                "metadataFieldsJSON": "{\"m_collector_id\":\"aae1627e-8637-4597-9f43-e49a703a6151\",\"m_collector_name\":\"exa-cribl-logs-sm_exa_ws\",\"m_collector_type\":\"cribl-logs\"}",
+                "parsed": false,
                 "rawLogIds": [
-                    "bf8ccbfe-d840-4304-af1e-36fe2ea59b9e"
+                    "log-fic"
                 ],
                 "rawLogs": [
-                    ",2020/05/07 02:40:10,44A1B3FC68F5304,TRAFFIC,end,2049,,111.223.73.130,192.168.10.53,111.223.73.130,192.168.10.53,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,,574294,1,41166,8088,41166,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07 02:40:10,7,any,,730238,0x0,United States,10.0.0.0-10.255.255.255,,4,0,aged-out,,,,,,PA-VM,from-policy,,,0,,0,,N/A,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+                    "ANY rawLog"
                 ],
-                "raw_log_size": 444,
-                "tier": "Tier 3",
-                "time": "2024-05-20T12:45:14.761000",
-                "vendor": "Palo Alto Networks"
+                "raw_log_size": 9,
+                "tier": "Tier 4"
+            },
+            {
+                "approxLogTime": 1715694915916000,
+                "collector_timestamp": 1715694915916000,
+                "customFieldsJSON": "{}",
+                "id": "fictive-id",
+                "ingest_time": 1715694946775000,
+                "metadataFieldsJSON": "{\"m_collector_id\":\"aae1627e-8637-4597-9f43-e49a703a6151\",\"m_collector_name\":\"exa-cribl-logs-sm_exa_ws\",\"m_collector_type\":\"cribl-logs\"}",
+                "parsed": false,
+                "rawLogIds": [
+                    "rawLogId"
+                ],
+                "rawLogs": [
+                    "CONNECT hotmail"
+                ],
+                "raw_log_size": 59,
+                "tier": "Tier 4"
             }
         ]
     }
@@ -171,10 +101,8 @@ Get events from Exabeam Security Operations Platform.
 #### Human Readable Output
 
 >### Logs
->|activity|activity_type|landscape|outcome|platform|product|subject|time|vendor|
->|---|---|---|---|---|---|---|---|---|
->| trigger | alert-trigger | network devices | success | aruba wireless controller | Armis | alert | 2024-05-20T12:53:20 | Armis |
->|  |  |  |  |  | Palo Alto NGFW |  | 2024-05-20T12:45:08.762000 | Palo Alto Networks |
->|  |  |  |  |  | Palo Alto NGFW |  | 2024-05-20T12:45:08.763000 | Palo Alto Networks |
->|  |  |  |  |  | Palo Alto NGFW |  | 2024-05-20T12:45:14.761000 | Palo Alto Networks |
+>|Id|Is Parsed|Raw Log Ids|Raw Logs|Tier|
+>|---|---|---|---|---|
+>| fake | false | log-fic | ANY rawLog | Tier 4 |
+>| fictive-id | false | rawLogId | CONNECT hotmail  | Tier 4 |
 
