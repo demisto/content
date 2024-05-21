@@ -17,6 +17,7 @@ from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
+print(demisto.args())
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
 
@@ -97,14 +98,14 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     headers = {}
     if page and page_size:
         limit = page * page_size
-    pagination = {'page_size': limit}
+    pagination = {'pageSize': limit}
     payload = {
         'meta': {
             'pagination': pagination
-        },
-        'data': data
+        }
     }  # type: Dict[str, Any]
-
+    if data:
+        payload['data'] = data
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
     response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
@@ -138,77 +139,6 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data: dict = {}, headers={}) -> list[dict]:
-    """
-    Makes a paginated request to an API using OAuth2 authentication and retrieves all results up to a specified limit.
-
-    Args:
-        api_endpoint (str): The URL of the API endpoint to call.
-        data (list): The data to be sent in the request body (usually empty).
-        limit (int, optional): The maximum number of results to retrieve. Defaults to 50.
-        page (int, optional): The current page number.
-        page_size (int, optional): The number of results to retrieve per page. Defaults to 50.
-        headers (dict, optional): Additional headers to include in the request. Defaults to {}.
-
-    Returns:
-        list: A list containing all retrieved log entries, up to the specified limit.
-
-    Raises:
-        Exception: If the API returns an error response.
-    """
-    if page and page_size:
-        limit = page * page_size
-    elif page:
-        page_size = DEFAULT_PAGE_SIZE
-        limit = page *  page_size
-    elif page_size:
-        page  = 1
-        limit = page_size
-    else:   # if only limit
-        page_size = limit if limit < PAGE_SIZE_MAX else PAGE_SIZE_MAX
-
-
-    payload: dict[str, dict[str, dict[str, Any]] | list] = {
-        'meta': {
-            'pagination': {
-                'pageSize': page_size
-            }
-        },
-
-    }
-
-    if data:
-        payload['data'] = [data]
-
-    response = http_request('POST', api_endpoint, payload, headers=headers)
-
-    len_of_results = 0
-    results = []
-    while True:
-        if response.get('fail'):
-            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
-
-        response_data = response.get('data')
-        if len(response_data) > 0:
-            response_data = response_data[0].get('logs') if response_data[0].get('logs') else response_data
-        for entry in response_data:
-            if not limit or len_of_results < limit:
-                len_of_results += 1
-                results.append(entry)
-
-        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
-        if not next_page or (limit and len_of_results >= limit):
-            break
-
-        payload['meta']['pagination']['pageToken'] = next_page
-        response = http_request('POST', api_endpoint, payload, headers=headers)
-
-    if page:
-        return results[-1 * page_size:]
-
-    return results
-
-
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
@@ -236,6 +166,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    print('payload:', payload)
     try:
         res = requests.request(
             method,
@@ -977,7 +908,7 @@ def get_policy(args):
     contents = []
     context = {}
     policy_id = args.get('policyID')
-    policy_type = args.get('policyType','blockedsenders')
+    policy_type = args.get('policyType', 'blockedsenders')
     title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
 
     if policy_id:
@@ -1077,12 +1008,22 @@ def get_arguments_for_policy_command(args):
           tuple. policy arguments, and option to choose from the policy configuration.
      """
 
-    description = args.get('description', '')
-    from_part = args.get('fromPart', '')
-    from_type = args.get('fromType', '')
-    from_value = args.get('fromValue', '')
-    to_type = args.get('toType', '')
-    to_value = args.get('toValue', '')
+    spf_domain = args.get('spf_domain')
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
+    comment = args.get('comment')
+    enabled = argToBoolean(args.get('enabled')) if args.get('enabled') else None
+    enforced = argToBoolean(args.get('enforced')) if args.get('enforced') else None
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args.get('from_eternal')) if args.get('from_eternal') else None
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args.get('to_eternal')) if args.get('to_eternal') else None
+    override = argToBoolean(args.get('override')) if args.get('override') else None
+    description = args.get('description', '') or args.get('policy_description', '')
+    from_part = args.get('fromPart', '') or args.get('from_part', '')
+    from_type = args.get('fromType', '') or args.get('from_type', '')
+    from_value = args.get('fromValue', '') or args.get('from_value', '')
+    to_type = args.get('toType', '') or args.get('to_type', '')
+    to_value = args.get('toValue', '') or args.get('to_value', '')
     option = str(args.get('option', ''))
     policy_obj = {
         'description': description,
@@ -1090,10 +1031,25 @@ def get_arguments_for_policy_command(args):
         'fromType': from_type,
         'fromValue': from_value,
         'toType': to_type,
-        'toValue': to_value
+        'toValue': to_value,
+        'bidirectional': bidirectional,
+        'comment': comment,
+        'enabled': enabled,
+        'enforced': enforced,
+        'override': override,
+        "toDate": to_date,
     }
+    if from_date:
+        policy_obj['fromDate'] = from_date
+    if from_eternal:
+        policy_obj['fromEternal'] = from_eternal
+    if to_eternal:
+        policy_obj['toEternal'] = to_eternal
+    if spf_domain:
+        policy_obj['conditions'] = {'spfDomains': [spf_domain]}
 
     return policy_obj, option
+
 
 def create_block_sender_policy_command():
     headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
@@ -1275,7 +1231,7 @@ def update_policy():
     return results
 
 
-def create_or_update_policy_request(policy, option, policy_id=None):
+def create_or_update_policy_request(policy, option, policy_id=None, policy_type='blockedsenders'):
     # Setup required variables
     api_endpoint = '/api/policy/blockedsenders/create-policy'
     payload = {
@@ -3165,23 +3121,21 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
     :return: The CommandResults object containing the outputs and raw response.
     """
-    query = args.get('query', '')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    query = args.get("query", "")
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    limit = arg_to_number(args.get("limit"))
 
     data = {}
 
     if query:
-        data['query'] = query
+        data["query"] = query
 
-    result_list = request_with_pagination_api2('/api/archive/get-archive-search-logs',
-                                               limit, page, page_size, data)  # type: ignore
-
-    return CommandResults(
-        outputs_prefix='Mimecast.ArchiveSearchLog',
-        outputs=result_list
+    result_list = request_with_pagination(
+        "/api/archive/get-archive-search-logs", data, response_param="logs", limit=limit, page=page, page_size=page_size
     )
+
+    return CommandResults(outputs_prefix="Mimecast.ArchiveSearchLog", outputs=result_list[0])
 
 
 def get_search_logs_command(args: dict) -> CommandResults:
@@ -3193,7 +3147,6 @@ def get_search_logs_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-
     data = {}
     if query:
         data['query'] = query
@@ -3202,11 +3155,13 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if end:
         data['end'] = end
 
-    result_list = request_with_pagination_api2('/api/archive/get-search-logs', limit, page, page_size, data)  # type: ignore
+    result_list = request_with_pagination(
+        "/api/archive/get-archive-search-logs", [data], response_param="logs", limit=limit, page=page, page_size=page_size
+    )
 
     return CommandResults(
         outputs_prefix='Mimecast.SearchLog',
-        outputs=result_list
+        outputs=result_list[0]
     )
 
 
@@ -3230,11 +3185,13 @@ def get_view_logs_command(args: dict) -> CommandResults:
     if end:
         data['end'] = end
 
-    response = request_with_pagination_api2('/api/archive/get-view-logs', limit, page, page_size, data)  # type: ignore
+    response = request_with_pagination(
+        "/api/archive/get-view-logs", [data], limit=limit, page=page, page_size=page_size
+    )
 
     return CommandResults(
         outputs_prefix='Mimecast.ViewLog',
-        outputs=response
+        outputs=response[0]
     )
 
 
@@ -3261,11 +3218,13 @@ def list_account_command(args: dict) -> CommandResults:
     if user_count:
         data['userCount'] = user_count
 
-    response = request_with_pagination_api2('/api/account/get-account', limit, page, page_size, data)  # type: ignore
+    response = request_with_pagination(
+        "/api/account/get-account", [data], limit=limit, page=page, page_size=page_size
+    )
 
     return CommandResults(
         outputs_prefix='Mimecast.Account',
-        outputs=response
+        outputs=response[0]
     )
 
 
@@ -3282,9 +3241,10 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list = request_with_pagination_api2(api_endpoint, limit=limit, page=page, page_size=page_size)
+    policies_list = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)
+
     contents = []
-    for policy_list in policies_list:
+    for policy_list in policies_list[0]:
         policy = policy_list.get('policy', {})
         sender = policy.get('from', {})
         reciever = policy.get('to', {})
@@ -3388,10 +3348,12 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
+    id = response['data'][0]['id']
+
     return CommandResults(
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
         outputs=response,
-        readable_output='Anti-Spoofing Bypass policy was created successfully'
+        readable_output=f'Anti-Spoofing Bypass policy {id} was created successfully'
     )
 
 
@@ -3442,7 +3404,7 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
         outputs=response,
-        readable_output=f'{id} has been updated successfully'
+        readable_output=f'Policy ID- {id} has been updated successfully.'
     )
 
 
@@ -3533,8 +3495,8 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
             'description': policy_description,
             'enabled': enabled,
             'enforced': enforced,
-            'from_eternal': from_eternal,
-            'to_eternal': to_eternal,
+            'fromEternal': from_eternal,
+            'toEternal': to_eternal,
         }
     }
 

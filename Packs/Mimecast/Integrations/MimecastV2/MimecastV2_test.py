@@ -717,7 +717,7 @@ def test_get_archive_search_logs_command(mocker):
                 "logs": [
                     {
                         "createTime": "2024-03-20T11:39:36+0000",
-                        "emailAddr": "aa@aaaa.aaa.aa.com",
+                        "emailAddr": "example@test.com",
                         "source": "archive",
                         "searchText": "aaaaasas",
                         "searchReason": "",
@@ -762,9 +762,9 @@ def test_get_search_logs_command(mocker):
                 "logs": [
                     {
                         "createTime": "2024-03-25T12:04:48+0000",
-                        "emailAddr": "aa@aa.aa.aa.com",
+                        "emailAddr": "example@test.com",
                         "source": "archive",
-                        "searchText": '{"mailbox":"aa@aa.aaa.aaaa.com","query":"[]"}',
+                        "searchText": '{"mailbox":"example@test.com","query":"[]"}',
                         "searchPath": "/INBOX/",
                         "searchReason": "",
                         "isAdmin": "true",
@@ -794,22 +794,22 @@ def test_get_view_logs_command(mocker):
         "meta": {"pagination": {"pageSize": 2, "totalCount": 81, "next": "eNo00000"}, "status": 200},
         "data": [
             {
-                "viewer": "aa@aa.aa",
+                "viewer": "example@test.com",
                 "source": "Message Tracking",
                 "viewed": "2022-09-01T08:13:39+0000",
-                "from": "aa@aa.aa",
-                "to": "aa@aa.aa",
+                "from": "example@test.com",
+                "to": "example@test.com",
                 "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
                 "messageDate": "2022-07-18T13:25:21+0000",
                 "contentViewed": False,
                 "discoveryCase": False,
             },
             {
-                "viewer": "aa@aa.aa",
+                "viewer": "example@test.com",
                 "source": "Message Tracking",
                 "viewed": "2022-08-31T14:29:48+0000",
-                "from": "aa@aa.aa",
-                "to": "aa@aa.aa",
+                "from": "example@test.coma",
+                "to": "example@test.com",
                 "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
                 "messageDate": "2022-07-18T13:25:21+0000",
                 "contentViewed": False,
@@ -840,7 +840,7 @@ def test_list_account_command(mocker):
                                    'exgestAllowQuery': False, 'exgestAllowExtraction': True, 'expressAccount': False,
                                    'cybergraphV2Enabled': False, 'accountCode': 'ABC123',
                                    'accountName': 'API Alliance - Palo Alto Networks', 'adminEmail': '',
-                                   'contactEmail': 'techbd@paloaltonetworks.mime.integration.com', 'domain': '',
+                                   'contactEmail': 'example@test.com', 'domain': '',
                                    'userCount': 10, 'mimecastId': '01-0102-00236', 'contactName': 'Adnan Kharuf',
                                    'telephone': '4088307584',
                                    'packages': ['Journal Services [1053]', 'Desktop Apps - Outlook (Pro) [1016]',]}], 'fail': []}
@@ -956,7 +956,7 @@ def test_update_antispoofing_bypass_policy_command(mocker):
     mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
     result = MimecastV2.update_antispoofing_bypass_policy_command(args)
     assert expected_response.get('data') == result.outputs.get('data')
-    assert f'{args["id"]} has been updated successfully' == result.readable_output
+    assert f'Policy ID- {args["id"]} has been updated successfully.' == result.readable_output
 
 
 def test_update_address_alteration_policy_command(mocker):
