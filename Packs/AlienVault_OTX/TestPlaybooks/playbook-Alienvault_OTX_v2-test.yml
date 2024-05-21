@@ -216,7 +216,7 @@ tasks:
       - "7"
     scriptarguments:
       domain:
-        simple: example.com
+        simple: paloaltonetworks.com
       threshold: {}
     continueonerror: true
     separatecontext: false
