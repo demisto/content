@@ -128,9 +128,39 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: ''
+    description: Revoke certificate with a given specific reason.
     name: ciphertrust-certificate-revoke
-    arguments: []
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource
+      required: true
+      secret: false
+      default: false
+    - name: cert_id
+      isArray: false
+      description: The identifier of the certificate resource
+      required: true
+      secret: false
+      default: false
+    - name: reason
+      isArray: false
+      description: 'Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 '
+      required: true
+      secret: false
+      default: false
+      predefined:
+      - unspecified
+      - keyCompromise
+      - cACompromise
+      - affiliationChanged
+      - superseded
+      - cessationOfOperation
+      - certificateHold
+      - removeFromCRL
+      - privilegeWithdrawn
+      - aACompromise
+      auto: PREDEFINED
     outputs: []
   - deprecated: false
     description: ''

@@ -107,6 +107,8 @@ class CommandArguments:
     CSR = 'csr'
     PURPOSE = 'purpose'
     ID = 'id'
+    CERT_ID = 'cert_id'
+    REASON = 'reason'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -132,6 +134,17 @@ class CACertificatePurpose(enum.Enum):
     CLIENT = 'client'
     CA = 'ca'
 
+class CertificateRevokeReason(enum.Enum):
+    UNSPECIFIED = 'unspecified'
+    KEY_COMPROMISE = 'keyCompromise'
+    CA_COMPROMISE = 'cACompromise'
+    AFFILIATION_CHANGED = 'affiliationChanged'
+    SUPERSEDED = 'superseded'
+    CESSATION_OF_OPERATION = 'cessationOfOperation'
+    CERTIFICATE_HOLD = 'certificateHold'
+    REMOVE_FROM_CRL = 'removeFromCRL'
+    PRIVILEGE_WITHDRAWN = 'privilegeWithdrawn'
+    AA_COMPROMISE = 'aACompromise'
 
 ''' YML METADATA '''
 PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='page to return.'),
@@ -391,6 +404,58 @@ LOCAL_CERTIFICATE_DELETE_INPUTS = [
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='The identifier of the certificate resource'),
 ]
 
+'''
+Argument name
+Possible Values
+Is Array 
+Required
+Default Value
+Notes
+ca_id
+String
+No
+Yes
+
+
+
+
+cert_id
+String
+No
+Yes
+
+
+
+
+reason
+String
+Possible values:
+unspecified
+keyCompromise
+cACompromise
+affiliationChanged
+superseded
+cessationOfOperation
+certificateHold
+removeFromCRL
+privilegeWithdrawn
+aACompromise
+
+
+No
+Yes
+
+
+
+'''
+
+CERTIFICATE_REVOKE_INPUTS = [
+    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
+    InputArgument(name=CommandArguments.CERT_ID, required=True, description='The identifier of the certificate resource'),
+    InputArgument(name=CommandArguments.REASON, required=True, input_type=CertificateRevokeReason, description='Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 '),
+]
+
+''' OUTPUTS '''
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
@@ -408,6 +473,9 @@ LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to a
 CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
 CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
 CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
+CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
+
+
 '''CLIENT CLASS'''
 
 
@@ -590,6 +658,15 @@ class CipherTrustClient(BaseClient):
             method='DELETE',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{local_ca_id}',
             return_empty_response=True,
+        )
+
+    def revoke_certificate(self, ca_id: str, cert_id: str, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/revoke',
+            json_data=request_data,
+            return_empty_response=True,
+            empty_valid_codes=[200],
         )
 
 
@@ -1007,9 +1084,16 @@ def local_certificate_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-revoke')
+@metadata_collector.command(command_name='ciphertrust-certificate-revoke', inputs_list=CERTIFICATE_REVOKE_INPUTS, description=CERTIFICATE_REVOKE_DESCRIPTION)
 def certificate_revoke_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        reason=args[CommandArguments.REASON],
+    )
+    client.revoke_certificate(ca_id=args[CommandArguments.CA_ID], cert_id=args[CommandArguments.CERT_ID],
+                              request_data=request_data)
+    return CommandResults(
+        readable_output=f'{args[CommandArguments.CERT_ID]} has been revoked'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-certificate-resume')
