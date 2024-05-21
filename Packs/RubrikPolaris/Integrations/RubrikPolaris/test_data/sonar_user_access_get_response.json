@@ -1,0 +1,1125 @@
+{
+  "raw_response": {
+    "data": {
+      "principalDetails": {
+        "principalSummary": {
+          "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+          "fullName": "Demo Rubrik",
+          "upn": "demo@rubrik.com",
+          "riskLevel": "HIGH_RISK",
+          "riskReasons": {
+            "accessRiskReasons": [
+              "MEDIUM_RISK_ANALYZER_HITS",
+              "OPEN_ACCESS"
+            ],
+            "insecureReasons": [
+              "PASSWORD_NEVER_EXPIRES"
+            ],
+            "__typename": "PrincipalRiskReasons"
+          },
+          "sensitiveFiles": {
+            "highRiskFileCount": {
+              "totalCount": 124,
+              "violatedCount": 0,
+              "__typename": "SummaryCount"
+            },
+            "mediumRiskFileCount": {
+              "totalCount": 0,
+              "violatedCount": 0,
+              "__typename": "SummaryCount"
+            },
+            "lowRiskFileCount": {
+              "totalCount": 0,
+              "violatedCount": 0,
+              "__typename": "SummaryCount"
+            },
+            "__typename": "SensitiveFiles"
+          },
+          "totalSensitiveHits": {
+            "totalHits": 86972,
+            "violatedHits": 0,
+            "__typename": "SummaryHits"
+          },
+          "sensitiveObjectCount": {
+            "totalCount": 1,
+            "violatedCount": 0,
+            "__typename": "SummaryCount"
+          },
+          "numDescendants": 0,
+          "domainName": "rubrik.com",
+          "__typename": "PrincipalSummary"
+        },
+        "directGroups": [
+          {
+            "name": "Domain Admins",
+            "sid": "S-1-5-21-4202126202-3186661991-960233748-512",
+            "__typename": "UserAccessGroup"
+          },
+          {
+            "name": "Domain Users",
+            "sid": "S-1-5-21-4202126202-3186661991-960233748-513",
+            "__typename": "UserAccessGroup"
+          }
+        ],
+        "__typename": "PrincipalDetails"
+      },
+      "sidsPolicyHitsSummary": {
+        "sidSummaries": [
+          {
+            "principal": "S-1-0-01-0000000000-0000000000-000000000-0001",
+            "summary": [
+              {
+                "policyId": "00000000-0000-0000-0000-000000000001",
+                "policyName": "Policy 1",
+                "sidSensitiveFiles": {
+                  "totalFileCount": {
+                    "totalCount": 164,
+                    "violatedCount": 164,
+                    "__typename": "SummaryCount"
+                  },
+                  "__typename": "SensitiveFiles"
+                },
+                "sidAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "__typename": "PolicyHitsSummary"
+              },
+              {
+                "policyId": "00000000-0000-0000-0000-000000000002",
+                "policyName": "Policy 2",
+                "sidSensitiveFiles": {
+                  "totalFileCount": {
+                    "totalCount": 130,
+                    "violatedCount": 130,
+                    "__typename": "SummaryCount"
+                  },
+                  "__typename": "SensitiveFiles"
+                },
+                "sidAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "__typename": "PolicyHitsSummary"
+              }
+            ],
+            "__typename": "SidPolicyHitsSummary"
+          }
+        ],
+        "__typename": "SidsPolicyHitsSummaries"
+      }
+    }
+  },
+  "raw_response_when_not_whitelisted": {
+    "data": {
+      "principalDetails": {
+        "principalSummary": {
+          "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+          "fullName": "Demo Rubrik",
+          "upn": "demo@rubrik.com",
+          "riskLevel": "HIGH_RISK",
+          "riskReasons": {
+            "accessRiskReasons": [
+              "MEDIUM_RISK_ANALYZER_HITS",
+              "OPEN_ACCESS"
+            ],
+            "insecureReasons": [
+              "PASSWORD_NEVER_EXPIRES"
+            ],
+            "__typename": "PrincipalRiskReasons"
+          },
+          "sensitiveFiles": {
+            "highRiskFileCount": {
+              "totalCount": 0,
+              "violatedCount": 124,
+              "__typename": "SummaryCount"
+            },
+            "mediumRiskFileCount": {
+              "totalCount": 0,
+              "violatedCount": 0,
+              "__typename": "SummaryCount"
+            },
+            "lowRiskFileCount": {
+              "totalCount": 0,
+              "violatedCount": 0,
+              "__typename": "SummaryCount"
+            },
+            "__typename": "SensitiveFiles"
+          },
+          "totalSensitiveHits": {
+            "totalHits": 0,
+            "violatedHits": 86972,
+            "__typename": "SummaryHits"
+          },
+          "sensitiveObjectCount": {
+            "totalCount": 0,
+            "violatedCount": 1,
+            "__typename": "SummaryCount"
+          },
+          "numDescendants": 0,
+          "domainName": "rubrik.com",
+          "__typename": "PrincipalSummary"
+        },
+        "directGroups": [
+          {
+            "name": "Domain Admins",
+            "sid": "S-1-5-21-4202126202-3186661991-960233748-512",
+            "__typename": "UserAccessGroup"
+          },
+          {
+            "name": "Domain Users",
+            "sid": "S-1-5-21-4202126202-3186661991-960233748-513",
+            "__typename": "UserAccessGroup"
+          }
+        ],
+        "__typename": "PrincipalDetails"
+      },
+      "sidsPolicyHitsSummary": {
+        "sidSummaries": [
+          {
+            "principal": "S-1-0-01-0000000000-0000000000-000000000-0001",
+            "summary": [
+              {
+                "policyId": "00000000-0000-0000-0000-000000000001",
+                "policyName": "Policy 1",
+                "sidSensitiveFiles": {
+                  "totalFileCount": {
+                    "totalCount": 164,
+                    "violatedCount": 164,
+                    "__typename": "SummaryCount"
+                  },
+                  "__typename": "SensitiveFiles"
+                },
+                "sidAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 138118,
+                    "violatedHits": 138118,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "__typename": "PolicyHitsSummary"
+              },
+              {
+                "policyId": "00000000-0000-0000-0000-000000000002",
+                "policyName": "Policy 2",
+                "sidSensitiveFiles": {
+                  "totalFileCount": {
+                    "totalCount": 130,
+                    "violatedCount": 130,
+                    "__typename": "SummaryCount"
+                  },
+                  "__typename": "SensitiveFiles"
+                },
+                "sidAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaAnalyzerHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 101434,
+                    "violatedHits": 101434,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "sidDeltaRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "totalHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "__typename": "PolicyHitsSummary"
+              }
+            ],
+            "__typename": "SidPolicyHitsSummary"
+          }
+        ],
+        "__typename": "SidsPolicyHitsSummaries"
+      }
+    }
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs": [
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+      "fullName": "Demo Rubrik",
+      "upn": "demo@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "policy_hits_summary": [
+        {
+          "policyId": "00000000-0000-0000-0000-000000000001",
+          "policyName": "Policy 1",
+          "sidSensitiveFiles": {
+            "totalFileCount": {
+              "totalCount": 164,
+              "violatedCount": 164,
+              "__typename": "SummaryCount"
+            },
+            "__typename": "SensitiveFiles"
+          },
+          "sidAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidRiskHits": {
+            "highRiskHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaRiskHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "__typename": "PolicyHitsSummary"
+        },
+        {
+          "policyId": "00000000-0000-0000-0000-000000000002",
+          "policyName": "Policy 2",
+          "sidSensitiveFiles": {
+            "totalFileCount": {
+              "totalCount": 130,
+              "violatedCount": 130,
+              "__typename": "SummaryCount"
+            },
+            "__typename": "SensitiveFiles"
+          },
+          "sidAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidRiskHits": {
+            "highRiskHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaRiskHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "__typename": "PolicyHitsSummary"
+        }
+      ],
+      "riskReasons": {
+        "accessRiskReasons": [
+          "MEDIUM_RISK_ANALYZER_HITS",
+          "OPEN_ACCESS"
+        ],
+        "insecureReasons": [
+          "PASSWORD_NEVER_EXPIRES"
+        ],
+        "__typename": "PrincipalRiskReasons"
+      },
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 124,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 86972,
+        "violatedHits": 0,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 1,
+        "violatedCount": 0,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "directGroups": [
+        {
+          "name": "Domain Admins",
+          "sid": "S-1-5-21-4202126202-3186661991-960233748-512",
+          "__typename": "UserAccessGroup"
+        },
+        {
+          "name": "Domain Users",
+          "sid": "S-1-5-21-4202126202-3186661991-960233748-513",
+          "__typename": "UserAccessGroup"
+        }
+      ],
+      "__typename": "PrincipalSummary"
+    }
+  ],
+  "outputs_when_not_whitelisted": [
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+      "fullName": "Demo Rubrik",
+      "upn": "demo@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "policy_hits_summary": [
+        {
+          "policyId": "00000000-0000-0000-0000-000000000001",
+          "policyName": "Policy 1",
+          "sidSensitiveFiles": {
+            "totalFileCount": {
+              "totalCount": 164,
+              "violatedCount": 164,
+              "__typename": "SummaryCount"
+            },
+            "__typename": "SensitiveFiles"
+          },
+          "sidAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidRiskHits": {
+            "highRiskHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 138118,
+              "violatedHits": 138118,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaRiskHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "__typename": "PolicyHitsSummary"
+        },
+        {
+          "policyId": "00000000-0000-0000-0000-000000000002",
+          "policyName": "Policy 2",
+          "sidSensitiveFiles": {
+            "totalFileCount": {
+              "totalCount": 130,
+              "violatedCount": 130,
+              "__typename": "SummaryCount"
+            },
+            "__typename": "SensitiveFiles"
+          },
+          "sidAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaAnalyzerHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidRiskHits": {
+            "highRiskHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 101434,
+              "violatedHits": 101434,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "sidDeltaRiskHits": {
+            "highRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "mediumRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "lowRiskHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "totalHits": {
+              "totalHits": 0,
+              "violatedHits": 0,
+              "__typename": "SummaryHits"
+            },
+            "__typename": "SensitiveHits"
+          },
+          "__typename": "PolicyHitsSummary"
+        }
+      ],
+      "riskReasons": {
+        "accessRiskReasons": [
+          "MEDIUM_RISK_ANALYZER_HITS",
+          "OPEN_ACCESS"
+        ],
+        "insecureReasons": [
+          "PASSWORD_NEVER_EXPIRES"
+        ],
+        "__typename": "PrincipalRiskReasons"
+      },
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 124,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 0,
+        "violatedHits": 86972,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 0,
+        "violatedCount": 1,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "directGroups": [
+        {
+          "name": "Domain Admins",
+          "sid": "S-1-5-21-4202126202-3186661991-960233748-512",
+          "__typename": "UserAccessGroup"
+        },
+        {
+          "name": "Domain Users",
+          "sid": "S-1-5-21-4202126202-3186661991-960233748-513",
+          "__typename": "UserAccessGroup"
+        }
+      ],
+      "__typename": "PrincipalSummary"
+    }
+  ]
+}

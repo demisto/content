@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from http import HTTPStatus
 from collections import namedtuple
 from typing import Any
@@ -2515,6 +2517,12 @@ def get_request_arguments_per_ticket_type(
         entity_name,
     )
 
+    # Prioritise a source_numeric command argument over a source command argument.
+    if args.get('source_numeric'):
+        source_value = args.get('source_numeric')
+    else:
+        source_value = ticket_properties.source
+
     validate_mandatory_ticket_requester_fields(
         entity_name,
         args,
@@ -2531,7 +2539,7 @@ def get_request_arguments_per_ticket_type(
             urgency=ticket_properties.urgency,
             tags=argToList(args.get('tags')),
             sub_category=args.get('sub_category'),
-            source=ticket_properties.source,
+            source=source_value,
             responder_id=arg_to_number(args.get('responder_id')),
             requester_id=arg_to_number(args.get('requester_id')),
             problem=get_arg_template(args.get('problem'), 'problem'),   # type: ignore[arg-type]
@@ -2559,6 +2567,7 @@ def get_request_arguments_per_ticket_type(
             release_type=ticket_properties.release_type,
             planned_start_date=args.get('planned_start_date'),
             planned_end_date=args.get('planned_end_date'),
+            resolution_notes=args.get('resolution_notes'),
         ))
     return args_for_request
 

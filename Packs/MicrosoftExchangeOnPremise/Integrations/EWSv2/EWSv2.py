@@ -1,17 +1,17 @@
 import email
 import hashlib
 import subprocess
-import warnings
 from multiprocessing import Process
 
 import dateparser  # type: ignore
 import exchangelib
+
 from CommonServerPython import *
 from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version, Body)
+                         ItemAttachment, Version, Body, FolderCollection)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -19,7 +19,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed, ErrorAccessDenied)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
@@ -487,7 +487,6 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=N
         except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
             original_exc = e
-            pass
 
     try:
         account = Account(
@@ -608,12 +607,28 @@ def get_attachment_name(attachment_name):  # pragma: no cover
     return attachment_name
 
 
-def get_entry_for_object(title, context_key, obj, headers=None):  # pragma: no cover
+def switch_hr_headers(obj, hr_header_changes):
+    """
+    Will swap keys according to hr_header_changes.
+    hr_header_changes: a dict, keys are the old value, value is the new value
+    """
+    if not isinstance(obj, dict):
+        return obj
+    obj_copy = obj.copy()
+    for old_header, new_header in hr_header_changes.items():
+        if old_header in obj:
+            obj_copy[new_header] = obj_copy.pop(old_header)
+    return obj_copy
+
+
+def get_entry_for_object(title, context_key, obj, headers=None, hr_header_changes={}):  # pragma: no cover
     if is_empty_object(obj):
         return "There is no output results"
     obj = filter_dict_null(obj)
+    hr_obj = switch_hr_headers(obj, hr_header_changes)
     if isinstance(obj, list):
         obj = [filter_dict_null(k) for k in obj]
+        hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
 
@@ -622,7 +637,7 @@ def get_entry_for_object(title, context_key, obj, headers=None):  # pragma: no c
         'Contents': obj,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, obj, headers),
+        'HumanReadable': tableToMarkdown(title, hr_obj, headers),
         ENTRY_CONTEXT: {
             context_key: obj
         }
@@ -665,21 +680,17 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
         if path in folders_map:
             return account.root._folders_map[path]
 
-    if is_public:
-        folder_result = account.public_folders_root
-    elif path == 'AllItems':
-        folder_result = account.root
-    else:
-        folder_result = account.inbox.parent  # Top of Information Store
+    folder = account.public_folders_root if is_public else account.root.tois
     path = path.replace("/", "\\")
     path = path.split('\\')
-    for sub_folder_name in path:
-        folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
-        if len(folder_filter_by_name) == 0:
-            raise Exception("No such folder %s" % path)
-        folder_result = folder_filter_by_name[0]
-
-    return folder_result
+    for part in path:
+        try:
+            demisto.debug(f'resolving {part=} {path=}')
+            folder = folder // part
+        except Exception as e:
+            demisto.debug(f'got error {e}')
+            raise ValueError(f'No such folder {path}')
+    return folder
 
 
 class MarkAsJunk(EWSAccountService):
@@ -768,7 +779,7 @@ def get_message_for_body_type(body, body_type, html_body):
         return HTMLBody(html_body) if html_body else Body(body)
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body)
-    return Body(body)
+    return Body(body) if (body or not html_body) else HTMLBody(html_body)
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
@@ -1089,25 +1100,22 @@ def parse_object_as_dict_with_serialized_items(object):
                     json.dumps(v)
                     raw_dict[field.name] = v
             except (TypeError, OverflowError):
-                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
+                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field value is \n{v}\n')
                 continue
     return raw_dict
 
 
-def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):  # pragma: no cover
+def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):  # pragma: no cover
     def parse_object_as_dict(object):
         raw_dict = {}
         if object is not None:
             for field in object.FIELDS:
-                raw_dict[field.name] = getattr(object, field.name, None)
-        return raw_dict
-
-    def parse_attachment_as_raw_json(attachment):
-        raw_dict = parse_object_as_dict(attachment)
-        if raw_dict['attachment_id']:
-            raw_dict['attachment_id'] = parse_object_as_dict(raw_dict['attachment_id'])
-        if raw_dict['last_modified_time']:
-            raw_dict['last_modified_time'] = raw_dict['last_modified_time'].ewsformat()
+                field_val = getattr(object, field.name, None)
+                try:
+                    json.dumps(field_val)
+                except TypeError:
+                    field_val = parse_object_as_dict(field_val)
+                raw_dict[field.name] = field_val
         return raw_dict
 
     def parse_folder_as_json(folder):  # pragma: no cover
@@ -1260,7 +1268,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 # save attachment to incident
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
-                                    'name': get_attachment_name(attachment.name)
+                                    'name': get_attachment_name(attachment.name),
+                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1293,7 +1302,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                       and header.name != 'Content-Type':
+                                            and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -1308,12 +1317,14 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment.name) + ".eml"
+                                'name': get_attachment_name(attachment.name) + ".eml",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                         else:
                             incident['attachment'].append({
-                                'name': get_attachment_name(attachment.name) + ".eml"
+                                'name': get_attachment_name(attachment.name) + ".eml",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
@@ -1684,11 +1695,11 @@ def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
 
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None, selected_fields='all'):  # pragma: no cover
+                            is_public=None, selected_fields='all', surround_id_with_angle_brackets=True):  # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
-    if message_id and message_id[0] != '<' and message_id[-1] != '>':
+    if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != '<' and message_id[-1] != '>':
         message_id = f'<{message_id}>'
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -1699,7 +1710,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = account.inbox.parent.walk()  # pylint: disable=E1101
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()  # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
@@ -1779,50 +1790,56 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
                                 recovered_messages)
 
 
+def parse_physical_address(address):
+    result = {}
+    for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
+        result[attr] = getattr(address, attr, None)
+    return result
+
+
+def parse_phone_number(phone_number):
+    result = {
+        attr: getattr(phone_number, attr, None)
+        for attr in ['label', 'phone_number']
+    }
+    return result if result.get('phone_number') else {}
+
+
+def is_jsonable(x):
+    try:
+        json.dumps(x)
+        return True
+    except Exception:
+        return False
+
+
+def parse_contact(contact):
+    contact_dict = parse_object_as_dict_with_serialized_items(contact)
+    for k in contact_dict:
+        v = contact_dict[k]
+        if isinstance(v, EWSDateTime):
+            contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
+
+    contact_dict['id'] = contact.id
+    if isinstance(contact, Contact) and contact.physical_addresses:
+        contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
+    if isinstance(contact, Contact) and contact.phone_numbers:
+        contact_dict['phone_numbers'] = [elt for elt in map(parse_phone_number, contact.phone_numbers) if elt]
+    if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
+        contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
+    contact_dict = keys_to_camel_case(contact_dict)
+    contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
+    return contact_dict
+
+
 def get_contacts(limit, target_mailbox=None):  # pragma: no cover
-    def parse_physical_address(address):
-        result = {}
-        for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
-            result[attr] = getattr(address, attr, None)
-        return result
-
-    def parse_phone_number(phone_number):
-        result = {}
-        for attr in ['label', 'phone_number']:
-            result[attr] = getattr(phone_number, attr, None)
-        return result
-
-    def is_jsonable(x):
-        try:
-            json.dumps(x)
-            return True
-        except Exception:
-            return False
-
-    def parse_contact(contact):
-        contact_dict = parse_object_as_dict_with_serialized_items(contact)
-        for k in contact_dict:
-            v = contact_dict[k]
-            if isinstance(v, EWSDateTime):
-                contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
-
-        contact_dict['id'] = contact.id
-        if isinstance(contact, Contact) and contact.physical_addresses:
-            contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
-        if isinstance(contact, Contact) and contact.phone_numbers:
-            contact_dict['phone_numbers'] = list(map(parse_phone_number, contact.phone_numbers))
-        if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
-            contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
-        contact_dict = keys_to_camel_case(contact_dict)
-        contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
-        contact_dict['originMailbox'] = target_mailbox
-        return contact_dict
-
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     contacts = []
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
-        contacts.append(parse_contact(contact))
+        contact = parse_contact(contact)
+        contact['originMailbox'] = target_mailbox
+        contacts.append(contact)
     return get_entry_for_object(f'Email contacts for {target_mailbox or ACCOUNT_EMAIL}',
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
@@ -1848,18 +1865,24 @@ def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     root = account.root
     if is_public:
         root = account.public_folders_root
+    root_collection = FolderCollection(account=account, folders=[root])
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()  # pylint: disable=E1101
+
+    try:
+        readable_output = root.tree()   # pylint: disable=E1101
+
+    except ErrorAccessDenied:   # This is temporarily until the exchangelib version will be bumped
+        readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
         'Contents': folders,
         'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': folders_tree,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
         ENTRY_CONTEXT: {
             'EWS.Folders(val.id == obj.id)': folders
         }
@@ -2145,6 +2168,40 @@ def get_autodiscovery_config():  # pragma: no cover
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Auto-Discovery Exchange Configuration', config_dict)
     }
+
+
+def format_identifier(identifier):
+    """
+    Exchangelib has a default smtp routing type. If there's no given routingtype, add explicitly so that
+    exchangelib can be searched by secondary email addresses without making cusomter add it manually
+    """
+    return f'smtp:{identifier}' if '@' in identifier and ':' not in identifier else identifier
+
+
+def resolve_name_command(args, protocol):  # pragma: no cover
+    unresolved_entry = format_identifier(args['identifier'])
+    full_contact_data = argToBoolean(args.get('full_contact_data', True))
+    resolved_names = protocol.resolve_names([unresolved_entry], return_full_contact_data=full_contact_data, search_scope='')
+    demisto.debug(f'{len(resolved_names)=}')
+
+    output = []
+    for rn in resolved_names:
+        if isinstance(rn, ErrorNameResolutionNoResults):
+            demisto.info(f'got ErrorNameResolutionNoResults error, {str(rn)}')
+            return 'No results were found.'
+        elif isinstance(rn, tuple):
+            mail, contact = rn
+        else:
+            mail, contact = rn, None
+        mail_context = parse_item_as_dict(mail)
+        if contact:
+            mail_context['FullContactInfo'] = parse_contact(contact)
+        output.append(mail_context)
+    return get_entry_for_object('Resolved Names',
+                                'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
+                                remove_empty_elements(output),  # noqa: F405
+                                headers=['primary_email_address', 'name', 'mailbox_type', 'routing_type'],
+                                hr_header_changes={'email_address': 'primary_email_address'})
 
 
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragma: no cover
@@ -2440,12 +2497,16 @@ def sub_main():  # pragma: no cover
             encode_and_submit_results(get_expanded_group(protocol, **args))
         elif demisto.command() == 'ews-mark-items-as-read':
             encode_and_submit_results(mark_item_as_read(**args))
+        elif demisto.command() == 'ews-resolve-name':
+            encode_and_submit_results(resolve_name_command(args, protocol))
         elif demisto.command() == 'ews-get-items-as-eml':
             encode_and_submit_results(get_item_as_eml(**args))
         elif demisto.command() == 'send-mail':
             encode_and_submit_results(send_email(args))
         elif demisto.command() == 'reply-mail':
             encode_and_submit_results(reply_email(args))
+        else:
+            return_error(f'Command: "{demisto.command()}" was not recognized by this integration')
 
     except Exception as e:
         import time

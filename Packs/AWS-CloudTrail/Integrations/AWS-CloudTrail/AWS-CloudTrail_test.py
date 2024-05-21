@@ -93,6 +93,9 @@ class CloudTrailClient:
     def lookup_events(self, **kwargs):
         return None
 
+    def get_trail_status(self, **kwargs):
+        return {"IsLogging": True}
+
     def get_paginator(self, _):
         class Paginator:
             def paginate(self, **kwargs):
@@ -297,3 +300,20 @@ def test_cloudtrail_lookup_events(mocker, aws_cloudtrail, return_results_func):
     command_result: CommandResults = return_results_func.call_args[0][0]
     outputs: list[dict] = command_result.outputs
     assert outputs[0]["Username"] == "user"
+
+
+def test_cloudtrail_get_trail_status(mocker, aws_cloudtrail, return_results_func):
+    """
+    Given
+    - demisto args
+    When
+    - running aws-cloudtrail-get-trail-status command
+    Then
+    - Ensure the command result is returned as expected
+    """
+    args = {"name": "name"}
+    mock_command(mocker, aws_cloudtrail, "aws-cloudtrail-get-trail-status", args)
+    aws_cloudtrail.main()
+    command_result: CommandResults = return_results_func.call_args[0][0]
+    outputs: dict = command_result.outputs
+    assert "IsLogging" in outputs

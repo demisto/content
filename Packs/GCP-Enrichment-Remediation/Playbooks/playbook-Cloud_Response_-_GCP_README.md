@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cloud Response - GCP](https://raw.githubusercontent.com/demisto/content/6790c6160863055ad2d0f906e0ffa18963bd7b20/Packs/GCP-Enrichment-Remediation/doc_files/Cloud_Response_-_GCP.png)
+![Cloud Response - GCP](../doc_files/Cloud_Response_-_GCP.png)

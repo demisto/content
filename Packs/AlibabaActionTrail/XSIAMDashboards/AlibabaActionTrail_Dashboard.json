@@ -14,7 +14,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 434,
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter xdm.target.cloud.region!=null\r\n|alter countrycode=arrayindex(regextract(xdm.target.cloud.region,\"(\\w+)-\"),0)\r\n|comp count(countrycode) as Count by countrycode\r\n| view graph type = map header = \"Alibaba Cloud Regions\" xaxis = countrycode yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.target.cloud.region!=null\r\n|alter countrycode=arrayindex(regextract(xdm.target.cloud.region,\"(\\w+)-\"),0)\r\n|comp count(countrycode) as Count by countrycode\r\n| view graph type = map header = \"Alibaba Cloud Regions\" xaxis = countrycode yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -74,7 +74,7 @@
                                 "width": 50,
                                 "height": 434,
                                 "params": [],
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter xdm.source.ipv4!=null\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.source.ipv4!=null\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -138,7 +138,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 434,
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -214,7 +214,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 434,
-                                "phrase": "datamodel \n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\n|comp count() as Count by xdm.event.type\n| view graph type = column subtype = grouped header = \"Count of Event Types\" xaxis = xdm.event.type yaxis = Count seriescolor(\"Count\",\"#7cecc6\") ",
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |comp count() as Count by xdm.event.type\n| view graph type = column subtype = grouped header = \"Count of Event Types\" xaxis = xdm.event.type yaxis = Count seriescolor(\"Count\",\"#7cecc6\") ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -274,9 +274,9 @@
             "widget_key": "xql_1668676732415",
             "title": "Alibaba Cloud Regions",
             "creation_time": 1668676732415,
-            "description": "This widget disaplys the cloud regions associated to the account and their usage volume",
+            "description": "This widget displays the cloud regions associated to the account and their usage volume",
             "data": {
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter xdm.target.cloud.region!=null\r\n|alter countrycode=arrayindex(regextract(xdm.target.cloud.region,\"(\\w+)-\"),0)\r\n|comp count(countrycode) as Count by countrycode\r\n| view graph type = map header = \"Alibaba Cloud Regions\" xaxis = countrycode yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.target.cloud.region!=null\r\n|alter countrycode=arrayindex(regextract(xdm.target.cloud.region,\"(\\w+)-\"),0)\r\n|comp count(countrycode) as Count by countrycode\r\n| view graph type = map header = \"Alibaba Cloud Regions\" xaxis = countrycode yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -386,7 +386,7 @@
             "description": "This widget displays the top IP sources acceesing the Alibaba account",
             "data": {
                 "params": [],
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter xdm.source.ipv4!=null\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |filter xdm.source.ipv4!=null\r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -450,7 +450,7 @@
             "creation_time": 1668676995963,
             "description": "This widget displays count of unauthorized events made a user within the account",
             "data": {
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -491,9 +491,9 @@
             "widget_key": "xql_1668677213404",
             "title": "Alibaba TOP Event Types in Account",
             "creation_time": 1668677213404,
-            "description": "This widget disaplys the top event types occuring in the Alibaba account",
+            "description": "This widget displays the top event types occurring in the Alibaba account",
             "data": {
-                "phrase": "datamodel \n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\n|comp count() as Count by xdm.event.type\n| view graph type = column subtype = grouped header = \"Count of Event Types\" xaxis = xdm.event.type yaxis = Count seriescolor(\"Count\",\"#7cecc6\") ",
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \n |comp count() as Count by xdm.event.type\n| view graph type = column subtype = grouped header = \"Count of Event Types\" xaxis = xdm.event.type yaxis = Count seriescolor(\"Count\",\"#7cecc6\") ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },

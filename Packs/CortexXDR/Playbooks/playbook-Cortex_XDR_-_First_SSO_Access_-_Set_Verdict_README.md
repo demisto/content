@@ -1,3 +1,4 @@
+Deprecated. Use `Cortex XDR - Identity Analytics` instead.
 This playbook determines the alert’s verdict based on the results of multiple checks.
 By default, if at least two of the checks' results are true, the verdict is set to malicious.
 else if only one check's results are true, the verdict is set to suspicious.
@@ -18,9 +19,9 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* SetGridField
 * SetMultipleValues
 * Set
-* SetGridField
 
 ### Commands
 

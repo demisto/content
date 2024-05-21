@@ -1,0 +1,69 @@
+{
+    "id": "e2",
+    "accountId": "25",
+    "groups": [
+        {
+            "id": "37",
+            "accountId": "25",
+            "name": "Default Group",
+            "description": "Default Group",
+            "created": "2023-12-05T20:09:16.621+00:00",
+            "modified": "2023-12-05T20:09:16.621+00:00",
+            "staticFilesWritten": "2024-01-23T06:00:53.957+00:00",
+            "zapps": [],
+            "userActivations": [
+                {
+                    "id": "40"
+                }
+            ],
+            "groupActivations": [],
+            "global": true,
+            "emm": false
+        }
+    ],
+    "name": "Default",
+    "rules": [
+        {
+            "id": "1",
+            "threatTypeId": 0,
+            "shouldCollect": true,
+            "severity": 0,
+            "alertUser": false,
+            "legacyMdmThreatAction": null,
+            "legacyMdmMitigationAction": null,
+            "mdmThreatAction": null,
+            "mdmThreatTarget": null,
+            "mdmMitigationAction": null,
+            "mdmMitigationTarget": null,
+            "responses": [],
+            "customResponses": []
+        },
+        {
+            "id": "2",
+            "threatTypeId": 0,
+            "shouldCollect": true,
+            "severity": 0,
+            "alertUser": false,
+            "legacyMdmThreatAction": null,
+            "legacyMdmMitigationAction": null,
+            "mdmThreatAction": null,
+            "mdmThreatTarget": null,
+            "mdmMitigationAction": null,
+            "mdmMitigationTarget": null,
+            "responses": [],
+            "customResponses": []
+        }
+    ],
+    "created": "2023-12-05T20:09:16.621+00:00",
+    "modified": "2023-12-05T20:09:17.184+00:00",
+    "staticFilesWritten": "2023-12-05T20:09:18.129+00:00",
+    "androidJsonHash": "androidJsonHash",
+    "androidProtoHash": "androidProtoHash",
+    "iosJsonHash": "iosJsonHash",
+    "iosProtoHash": "iosProtoHash",
+    "isDeployed": true,
+    "deploymentDate": "2023-12-05T20:09:18.474+00:00",
+    "emm": false,
+    "assigned": true,
+    "global": true
+}

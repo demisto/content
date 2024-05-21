@@ -13,6 +13,8 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | --- | --- | --- |
     | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
     | API Key |  | False |
+    | Client Certificate |  | False |
+    | Private Key |  | False |
     | Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
     | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
     | Use system proxy settings |  | False |
@@ -3649,6 +3651,58 @@ Adds any other object to MISP.
 #### Human Readable Output
 
 >Object has been added to MISP event ID 1655
+
+### misp-add-custom-object
+
+***
+Adds custom objects to MISP.
+
+#### Base Command
+
+`misp-add-custom-object`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | ID of the event to add the object to. | Required | 
+| template | Custom Template name. | Required | 
+| attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Event.ID | number | MISP event ID. | 
+| MISP.Event.Object.MetaCategory | String | Object meta category. | 
+| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
+| MISP.Event.Object.Name | String | Name of the object. | 
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
+| MISP.Event.Object.ID | Number | ID of the object. | 
+| MISP.Event.Object.UUID | String | UUID of the object. | 
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted?. | 
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
+| MISP.Event.Object.Attribute.Type | String | Object type. | 
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
+| MISP.Event.Object.Description | String | Description of the object. | 
+
+#### Command Example
+
+```!misp-add-custom-object event_id="1572" template="corporate-asset" attributes="{\"asset-type\":\"Server\",\"asset-id\":\"12\",\"text\":\"Asset Details\"}"```
 
 ### misp-add-ip-object
 

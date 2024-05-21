@@ -1,16 +1,20 @@
 import datetime
+import json
+
+from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
 import EWSv2
 import logging
 
 import dateparser
 import pytest
-from exchangelib import Message, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type
-from exchangelib.errors import UnauthorizedError
+from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address
+from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 import demistomock as demisto
+from exchangelib.properties import ItemId
 
 
 class TestNormalCommands:
@@ -93,6 +97,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
     Then:
         - Verify datetime_received__gte is ten minutes earlier
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -131,6 +136,7 @@ def test_fetch_last_emails_last_run(mocker, since_datetime, expected_result):
     Then:
         - Verify datetime_received__gte according to the datetime received
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -173,6 +179,7 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
         - Return 2 emails
         - Return 5 emails
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -666,6 +673,104 @@ def test_get_time_zone(mocker):
     assert results.key == 'Asia/Jerusalem'
 
 
+def test_resolve_names_command_no_contact(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            Only a Mailbox is returned
+        Then:
+            The results are displayed correctly without FullContactInfo
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    protocol.resolve_names.return_value = [Mailbox(email_address=email)]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert email in result.get('HumanReadable')
+    assert email == list(result.get('EntryContext').values())[0][0].get('email_address')
+    assert not list(result.get('EntryContext').values())[0][0].get('FullContactInfo')
+
+
+def test_resolve_names_command_with_contact(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            A Mailbox, Contact tuple is returned
+        Then:
+            The results are displayed correctly with FullContactInfo
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    number_label = 'Bussiness2'
+    phone_numbers = [PhoneNumber(label=number_label, phone_number='+972 058 000 0000'),
+                     PhoneNumber(label='Bussiness', phone_number='+972 058 000 0000')]
+    protocol.resolve_names.return_value = [(Mailbox(email_address=email), Contact(phone_numbers=phone_numbers))]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert email in result.get('HumanReadable')
+    context_output = list(result.get('EntryContext').values())[0][0]
+    assert email == context_output.get('email_address')
+
+    assert any(number.get('label') == number_label for number in context_output.get('FullContactInfo').get('phoneNumbers'))
+
+
+def test_resolve_names_command_no_result(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            ErrorNameResolutionNoResults is returned
+        Then:
+            A human readable string is returned
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    protocol.resolve_names.return_value = [ErrorNameResolutionNoResults(value='No results')]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert result == 'No results were found.'
+
+
+def test_parse_phone_number():
+    """
+        Given: A filled phone number and a Phonenumber with no backing number
+        When: Calling parse_phone_number
+        Then: Only get the context object when the phpone_number is populated
+    """
+    good_number = EWSv2.parse_phone_number(PhoneNumber(label='123', phone_number='123123123'))
+    assert good_number.get('label')
+    assert good_number.get('phone_number')
+    assert not EWSv2.parse_phone_number(PhoneNumber(label='123'))
+
+
+def test_switch_hr_headers():
+    """
+           Given: A context object
+           When: switching headers using a given header switch dict
+           Then: The keys that are present are switched
+       """
+    assert (EWSv2.switch_hr_headers(
+        {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
+        {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
+        == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
+
+
+@pytest.mark.parametrize('input, output', [
+    ('John Smith', 'John Smith'),
+    ('SomeName', 'SomeName'),
+    ('sip:test@test.com', 'sip:test@test.com'),
+    ('hello@test.com', 'smtp:hello@test.com')
+])
+def test_format_identifier(input, output):
+    """
+           Given: several inputs with and without prefixes, that are or arent mails
+           When: calling format_identifier
+           Then: Only mails without a prefix have smtp appended
+       """
+    assert EWSv2.format_identifier(input) == output
+
+
 def test_get_message_for_body_type_no_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
@@ -709,3 +814,47 @@ def test_get_message_for_body_type_text_body_type_with_no_html_body():
     result = get_message_for_body_type(body, 'text', None)
     assert isinstance(result, Body)
     assert result == Body(body)
+
+
+def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
+    """
+    Given: html_body, no body, the default 'text' as body_type.
+    When: Constructing the message body.
+    Then: Assert that the result is an html body.
+    """
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type('', 'text', html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
+def test_parse_physical_address():
+    assert parse_physical_address(PhysicalAddress(city='New York',
+                                                  country='USA',
+                                                  label='SomeLabel',
+                                                  state='NY',
+                                                  street='Broadway Ave.',
+                                                  zipcode=10001)) == {'city': 'New York',
+                                                                      'country': 'USA',
+                                                                      'label': 'SomeLabel',
+                                                                      'state': 'NY',
+                                                                      'street': 'Broadway Ave.',
+                                                                      'zipcode': 10001}
+
+
+def test_parse_item_as_dict_return_json_serializable():
+    """
+    Given:
+        - A message with cc_recipients with an object that includes a non-serializable object (ItemId).
+    When:
+        - Calling parse_item_as_dict
+
+    Then:
+        - Verify that the received dict is json serializable,
+        and that the ItemId appears both in the received dict and the json serialized object.
+    """
+    item = Message(cc_recipients=[Mailbox(item_id=ItemId(id='id123', changekey='change'))])
+    item_as_dict = parse_item_as_dict(item, None)
+    item_as_json = json.dumps(item_as_dict, ensure_ascii=False)
+    assert isinstance((item_as_dict.get("cc_recipients", [])[0]).get("item_id"), dict)
+    assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json

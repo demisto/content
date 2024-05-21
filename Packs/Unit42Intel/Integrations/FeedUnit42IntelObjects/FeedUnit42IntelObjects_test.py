@@ -1,4 +1,3 @@
-import io
 import json
 
 import pytest
@@ -8,7 +7,7 @@ from FeedUnit42IntelObjects import (Client, fetch_indicators_command,
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

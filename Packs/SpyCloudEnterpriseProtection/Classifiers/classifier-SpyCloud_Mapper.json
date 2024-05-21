@@ -1,0 +1,124 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "SpyCloud - Incoming Mapper",
+    "mapping": {
+		"SpyCloud Breach Data": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Email": {
+					"simple": "email"
+				},
+				"Title": {
+					"simple": "breach_title"
+				},
+				"Username": {
+					"simple": "username"
+				}
+			}
+		},
+		"SpyCloud Informative Data": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Email": {
+					"simple": "email"
+				},
+				"Title": {
+					"simple": "breach_title"
+				},
+				"Username": {
+					"simple": "username"
+				}
+			}
+		},
+		"SpyCloud Malware Data": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Email": {
+					"simple": "email"
+				},
+				"Title": {
+					"simple": "breach_title"
+				},
+				"Username": {
+					"simple": "username"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Detection URL": {
+					"simple": "target_url"
+				},
+				"Device OS Name": {
+					"simple": "user_os"
+				},
+				"Device Username": {
+					"simple": "user_hostname"
+				},
+				"Domain Name": {
+					"simple": "domain"
+				},
+				"File Path": {
+					"simple": "infected_path"
+				},
+				"Full Name": {
+					"simple": "full_name"
+				},
+				"Source IP": {
+					"simple": "ip_addresses"
+				},
+				"Source Id": {
+					"simple": "source_id"
+				},
+				"SpyCloud Document ID": {
+					"simple": "document_id"
+				},
+				"SpyCloud Email Domain": {
+					"simple": "email_domain"
+				},
+				"SpyCloud Email Username": {
+					"simple": "email_username"
+				},
+				"SpyCloud Infected Machine ID": {
+					"simple": "infected_machine_id"
+				},
+				"SpyCloud Password": {
+					"simple": "password"
+				},
+				"SpyCloud Password Plaintext": {
+					"simple": "password_plaintext"
+				},
+				"SpyCloud Password Type": {
+					"simple": "password_type"
+				},
+				"SpyCloud Publish Date": {
+					"simple": "spycloud_publish_date"
+				},
+				"SpyCloud Record Modification Date": {
+					"simple": "record_modification_date"
+				},
+				"SpyCloud Target Domain": {
+					"simple": "target_domain"
+				},
+				"SpyCloud Target Subdomain": {
+					"simple": "target_subdomain"
+				},
+				"SpyCloud User Browser": {
+					"simple": "user_browser"
+				},
+				"SpyCloud User SYS Registered Owner": {
+					"simple": "user_sys_registered_owner"
+				},
+				"occurred": {
+					"simple": "infected_time"
+				}
+			}
+		}
+	},
+    "name": "SpyCloud - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

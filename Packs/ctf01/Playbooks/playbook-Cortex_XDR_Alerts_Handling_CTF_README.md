@@ -1,5 +1,6 @@
 This playbook is used to loop over every alert in a Cortex XDR incident. 
 Supported alert categories:
+
 - Malware
 - Port Scan.
 
@@ -9,16 +10,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - First SSO Access
-* Cortex XDR - Cloud Cryptomining
-* Cortex XDR - Port Scan - Adjusted
-* Cortex XDR - Possible External RDP Brute-Force CTF
-* GenericPolling
-* Cortex XDR - Malware Investigation
+- Cortex XDR - First SSO Access
+- Cortex XDR - Cloud Cryptomining
+- Cortex XDR - Port Scan - Adjusted
+- Cortex XDR - Possible External RDP Brute-Force CTF
+- GenericPolling
+- Cortex XDR - Malware Investigation
 
 ### Integrations
 
-* CortexXDRIRCTF
+- CortexXDRIRCTF
 
 ### Scripts
 
@@ -26,7 +27,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-get-incident-extra-data-ctf
+- xdr-get-incident-extra-data-ctf
 
 ## Playbook Inputs
 
