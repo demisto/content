@@ -559,7 +559,7 @@ def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
-    exclude_artifacts = argToBoolean(args.get('excluding_artifacts'))
+    exclude_artifacts = argToBoolean(args.get('excluding_artifacts', 'False'))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
     if return_only_updated_incident:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
