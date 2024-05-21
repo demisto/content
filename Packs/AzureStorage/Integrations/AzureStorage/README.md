@@ -63,7 +63,6 @@ To add a permission:
 
    h. Save the instance.
 
-   i. Run the `!azure-storage-generate-login-url` command in the War Room and follow the instruction.
 
 ### Authentication Using the Device Code Flow
 
