@@ -324,6 +324,11 @@ LOCAL_CA_UPDATE_INPUTS = [
                   description='If set to true, the certificates signed by the specified CA can be used '
                               'for user authentication.'),
 ]
+'''
+'''
+LOCAL_CA_DELETE_INPUTS =[
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+]
 
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
@@ -335,6 +340,9 @@ USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the curre
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
 LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
 LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
+LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
+LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
+
 '''CLIENT CLASS'''
 
 
@@ -469,6 +477,13 @@ class CipherTrustClient(BaseClient):
             method='PATCH',
             url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
             json_data=request_data,
+        )
+
+    def delete_local_ca(self, local_ca_id: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
+            return_empty_response=True,
         )
 
 
@@ -794,9 +809,12 @@ def local_ca_update_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-ca-delete')
+@metadata_collector.command(command_name='ciphertrust-local-ca-delete', inputs_list=LOCAL_CA_DELETE_INPUTS, description=LOCAL_CA_DELETE_DESCRIPTION)
 def local_ca_delete_command(client: CipherTrustClient, args: dict):
-    pass
+    client.delete_local_ca(local_ca_id=args[CommandArguments.LOCAL_CA_ID])
+    return CommandResults(
+        readable_output=f'{args[CommandArguments.LOCAL_CA_ID]} has been deleted successfully!'
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-self-sign')

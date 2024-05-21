@@ -216,9 +216,15 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Deletes a local CA given the local CA's ID.
     name: ciphertrust-local-ca-delete
-    arguments: []
+    arguments:
+    - name: local_ca_id
+      isArray: false
+      description: local CA ID
+      required: true
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
