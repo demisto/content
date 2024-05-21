@@ -190,9 +190,27 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: ''
+    description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
     name: ciphertrust-external-certificate-upload
-    arguments: []
+    arguments:
+    - name: cert
+      isArray: false
+      description: External CA certificate in PEM format
+      required: true
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of CA, if not provided, will be set to externalca-<id>.
+      required: false
+      secret: false
+      default: false
+    - name: parent
+      isArray: false
+      description: URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''

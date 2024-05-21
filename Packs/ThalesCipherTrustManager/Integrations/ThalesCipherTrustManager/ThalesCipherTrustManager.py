@@ -40,6 +40,8 @@ LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
 CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
 CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
+EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
+
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
@@ -109,6 +111,7 @@ class CommandArguments:
     ID = 'id'
     CERT_ID = 'cert_id'
     REASON = 'reason'
+    PARENT = 'parent'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -416,6 +419,11 @@ CERTIFICATE_RESUME_INPUTS = [
     InputArgument(name=CommandArguments.CERT_ID, required=True, description='The identifier of the certificate resource'),
 ]
 
+EXTERNAL_CERTIFICATE_UPLOAD_INPUTS =[
+    InputArgument(name=CommandArguments.CERT, required=True, description='External CA certificate in PEM format'),
+    InputArgument(name=CommandArguments.NAME, description='A unique name of CA, if not provided, will be set to externalca-<id>.'),
+    InputArgument(name=CommandArguments.PARENT, description='URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.'),
+]
 ''' OUTPUTS '''
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
@@ -436,7 +444,7 @@ CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the spe
 CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
 CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
 CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
-
+EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
 '''CLIENT CLASS'''
 
 
@@ -636,6 +644,15 @@ class CipherTrustClient(BaseClient):
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/resume',
             return_empty_response=True,
             empty_valid_codes=[200],
+        )
+
+    def upload_external_certificate(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=EXTERNAL_CAS_URL_SUFFIX,
+            json_data=request_data,
+            return_empty_response=True,
+            empty_valid_codes=[201],
         )
 
 
@@ -1073,9 +1090,19 @@ def certificate_resume_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-upload')
+@metadata_collector.command(command_name='ciphertrust-external-certificate-upload', inputs_list=EXTERNAL_CERTIFICATE_UPLOAD_INPUTS, description=EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION, outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_upload_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        cert=args[CommandArguments.CERT],
+        name=args.get(CommandArguments.NAME),
+        parent=args.get(CommandArguments.PARENT),
+    )
+    raw_response = client.upload_external_certificate(request_data=request_data)
+    return CommandResults(
+        outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-external-certificate-delete')
