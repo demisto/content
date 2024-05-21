@@ -7447,5 +7447,9 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     Then:
         - 
     '''
-    load_json('test_data/corr_logs.json')
-    mocker.patch()
+    from Panorama import filter_fetched_entries, get_parsed_incident_entries
+    corr_logs = load_json('test_data/corr_logs.json')
+    mocker.patch.object(str, '')
+    
+    filter_fetched_entries(entries_dict={'Correlation': })
+    get_parsed_incident_entries
