@@ -94,6 +94,8 @@ class CommandArguments:
     ISSUER = 'issuer'
     STATE = 'state'
     CERT = 'cert'
+    ALLOW_CLIENT_AUTHENTICATION = 'allow_client_authentication'
+    ALLOW_USER_AUTHENTICATION = 'allow_user_authentication'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -313,6 +315,16 @@ LOCAL_CA_LIST = [InputArgument(name=CommandArguments.SUBJECT, description='Filte
                  InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
                  ] + PAGINATION_INPUTS
 
+LOCAL_CA_UPDATE_INPUTS = [
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+    InputArgument(name=CommandArguments.ALLOW_CLIENT_AUTHENTICATION,
+                  description='If set to true, the certificates signed by the specified CA can be used '
+                              'for client authentication.'),
+    InputArgument(name=CommandArguments.ALLOW_USER_AUTHENTICATION,
+                  description='If set to true, the certificates signed by the specified CA can be used '
+                              'for user authentication.'),
+]
+
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
@@ -450,6 +462,13 @@ class CipherTrustClient(BaseClient):
             method='GET',
             url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
             params=params,
+        )
+
+    def update_local_ca(self, local_ca_id: str, request_data: dict):
+        return self._http_request(
+            method='PATCH',
+            url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
+            json_data=request_data,
         )
 
 
@@ -733,6 +752,7 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
 def local_ca_list_command(client: CipherTrustClient, args: dict):
     if local_ca_id := args.get(CommandArguments.LOCAL_CA_ID):
         params = assign_params(
+            #todo: test chained - how does it look like?
             chained=optional_arg_to_bool(args.get(CommandArguments.CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
@@ -759,9 +779,19 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-ca-update')
+@metadata_collector.command(command_name='ciphertrust-local-ca-update', inputs_list=LOCAL_CA_UPDATE_INPUTS,
+                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
 def local_ca_update_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
+        allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
+    )
+    raw_response = client.update_local_ca(local_ca_id=args[CommandArguments.LOCAL_CA_ID], request_data=request_data)
+    return CommandResults(
+        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-delete')

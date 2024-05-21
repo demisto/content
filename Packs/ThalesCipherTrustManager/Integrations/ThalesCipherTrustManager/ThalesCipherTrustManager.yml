@@ -297,7 +297,25 @@ script:
   - deprecated: false
     description: ''
     name: ciphertrust-local-ca-update
-    arguments: []
+    arguments:
+    - name: local_ca_id
+      isArray: false
+      description: local CA ID
+      required: true
+      secret: false
+      default: false
+    - name: allow_client_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for client authentication.
+      required: false
+      secret: false
+      default: false
+    - name: allow_user_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for user authentication.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
