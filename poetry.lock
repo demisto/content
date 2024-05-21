@@ -1245,7 +1245,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "datasource-feature"
-resolved_reference = "ff9c40f111cfbdf65c5e48ea07311a31d021d089"
+resolved_reference = "0bc95e9c6c17d37e4c51030d6e8906fdfc73f7b2"
 
 [[package]]
 name = "deprecated"
