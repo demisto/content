@@ -53,6 +53,7 @@ MAX_PAGE_SIZE = 2000
 DEFAULT_LIMIT = 50
 
 
+#todo: hr to include total
 class CommandArguments:
     PAGE = 'page'
     PAGE_SIZE = 'page_size'
@@ -105,6 +106,7 @@ class CommandArguments:
     CA_ID = 'ca_id'
     CSR = 'csr'
     PURPOSE = 'purpose'
+    ID = 'id'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -374,6 +376,15 @@ CERTIFICATE_ISSUE_INPUTS = [
     InputArgument(name=CommandArguments.NOT_BEFORE,
                   description='Start date of certificate. ISO 8601 format for notBefore date. Either duration or notAfter date must be specified. If duration is given without notBefore date, certificate is issued starting from server\'s current time for the specified duration.'),
 ]
+
+CERTIFICATE_LIST_INPUTS = [InputArgument(name=CommandArguments.CA_ID, required=True,
+                                         description='An identifier of the issuer CA resource'),
+                           InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
+                           InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
+                           InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
+                           InputArgument(name=CommandArguments.ID, description='Filter by id or URI'),
+                           ] + PAGINATION_INPUTS
+
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
@@ -389,6 +400,8 @@ LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
 LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
 LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
 CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
+CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
+
 '''CLIENT CLASS'''
 
 
@@ -557,6 +570,13 @@ class CipherTrustClient(BaseClient):
             json_data=request_data,
             return_empty_response=True,
             empty_valid_codes=[201],
+        )
+
+    def get_certificates_list(self, ca_id: str, params: dict):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs',
+            params=params,
         )
 
 
@@ -824,7 +844,7 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
         emailAddresses=argToList(args.get(CommandArguments.EMAIL)),
         ipAddresses=argToList(args.get(CommandArguments.IP)),
         name=args.get(CommandArguments.NAME),
-        names=argToList(args.get(CommandArguments.NAME_FIELDS)), #todo: name fields formatting
+        names=argToList(args.get(CommandArguments.NAME_FIELDS)),  #todo: name fields formatting
         size=arg_to_number(args.get(CommandArguments.SIZE)),
     )
     raw_response = client.create_local_ca(request_data=request_data)
@@ -923,7 +943,8 @@ def local_ca_install_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-issue', inputs_list=CERTIFICATE_ISSUE_INPUTS, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX, description=CERTIFICATE_ISSUE_DESCRIPTION)
+@metadata_collector.command(command_name='ciphertrust-certificate-issue', inputs_list=CERTIFICATE_ISSUE_INPUTS,
+                            outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX, description=CERTIFICATE_ISSUE_DESCRIPTION)
 def certificate_issue_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         csr=args[CommandArguments.CSR],
@@ -941,9 +962,28 @@ def certificate_issue_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-list')
+@metadata_collector.command(command_name='ciphertrust-certificate-list', inputs_list=CERTIFICATE_LIST_INPUTS, description=CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def certificate_list_command(client: CipherTrustClient, args: dict):
-    pass
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+                                                       args.get(CommandArguments.PAGE),
+                                                       args.get(CommandArguments.PAGE_SIZE))
+    params = assign_params(
+        skip=skip,
+        limit=limit,
+        subject=args.get(CommandArguments.SUBJECT),
+        issuer=args.get(CommandArguments.ISSUER),
+        cert=args.get(CommandArguments.CERT),
+        id=args.get(CommandArguments.ID),
+    )
+    raw_response = client.get_certificates_list(ca_id=args[CommandArguments.CA_ID], params=params)
+    return CommandResults(
+        outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response,
+        #todo: name?
+        readable_output=tableToMarkdown('certificates',
+                                        raw_response.get('resources')),
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-certificate-delete')
