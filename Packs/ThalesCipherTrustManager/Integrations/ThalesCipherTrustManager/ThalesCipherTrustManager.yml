@@ -191,9 +191,27 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: ''
+    description: Update an external CA.
     name: ciphertrust-external-certificate-update
-    arguments: []
+    arguments:
+    - name: external_ca_id
+      isArray: false
+      description: The identifier of the certificate resource
+      required: true
+      secret: false
+      default: false
+    - name: allow_client_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for client authentication.
+      required: false
+      secret: false
+      default: false
+    - name: allow_user_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for user authentication.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.

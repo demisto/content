@@ -138,6 +138,7 @@ class CACertificatePurpose(enum.Enum):
     CLIENT = 'client'
     CA = 'ca'
 
+
 class CertificateRevokeReason(enum.Enum):
     UNSPECIFIED = 'unspecified'
     KEY_COMPROMISE = 'keyCompromise'
@@ -149,6 +150,7 @@ class CertificateRevokeReason(enum.Enum):
     REMOVE_FROM_CRL = 'removeFromCRL'
     PRIVILEGE_WITHDRAWN = 'privilegeWithdrawn'
     AA_COMPROMISE = 'aACompromise'
+
 
 ''' YML METADATA '''
 PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='page to return.'),
@@ -402,17 +404,16 @@ CERTIFICATE_LIST_INPUTS = [InputArgument(name=CommandArguments.CA_ID, required=T
                            InputArgument(name=CommandArguments.ID, description='Filter by id or URI'),
                            ] + PAGINATION_INPUTS
 
-
 LOCAL_CERTIFICATE_DELETE_INPUTS = [
     InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='The identifier of the certificate resource'),
 ]
 
-
 CERTIFICATE_REVOKE_INPUTS = [
     InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
     InputArgument(name=CommandArguments.CERT_ID, required=True, description='The identifier of the certificate resource'),
-    InputArgument(name=CommandArguments.REASON, required=True, input_type=CertificateRevokeReason, description='Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 '),
+    InputArgument(name=CommandArguments.REASON, required=True, input_type=CertificateRevokeReason,
+                  description='Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 '),
 ]
 
 CERTIFICATE_RESUME_INPUTS = [
@@ -420,15 +421,24 @@ CERTIFICATE_RESUME_INPUTS = [
     InputArgument(name=CommandArguments.CERT_ID, required=True, description='The identifier of the certificate resource'),
 ]
 
-EXTERNAL_CERTIFICATE_UPLOAD_INPUTS =[
+EXTERNAL_CERTIFICATE_UPLOAD_INPUTS = [
     InputArgument(name=CommandArguments.CERT, required=True, description='External CA certificate in PEM format'),
-    InputArgument(name=CommandArguments.NAME, description='A unique name of CA, if not provided, will be set to externalca-<id>.'),
-    InputArgument(name=CommandArguments.PARENT, description='URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.'),
+    InputArgument(name=CommandArguments.NAME,
+                  description='A unique name of CA, if not provided, will be set to externalca-<id>.'),
+    InputArgument(name=CommandArguments.PARENT,
+                  description='URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.'),
 ]
-
 
 EXTERNAL_CERTIFICATE_DELETE_INPUTS = [
     InputArgument(name=CommandArguments.EXTERNAL_CA_ID, required=True, description='The identifier of the certificate resource'),
+]
+
+EXTERNAL_CERTIFICATE_UPDATE_INPUTS = [
+    InputArgument(name=CommandArguments.EXTERNAL_CA_ID, required=True, description='The identifier of the certificate resource'),
+    InputArgument(name=CommandArguments.ALLOW_CLIENT_AUTHENTICATION,
+                  description='If set to true, the certificates signed by the specified CA can be used for client authentication.'),
+    InputArgument(name=CommandArguments.ALLOW_USER_AUTHENTICATION,
+                  description='If set to true, the certificates signed by the specified CA can be used for user authentication.'),
 ]
 
 ''' OUTPUTS '''
@@ -453,7 +463,7 @@ CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reaso
 CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
 EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
 EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
-
+EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
 '''CLIENT CLASS'''
 
 
@@ -669,6 +679,13 @@ class CipherTrustClient(BaseClient):
             method='DELETE',
             url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
             return_empty_response=True,
+        )
+
+    def update_external_certificate(self, external_ca_id: str, request_data: dict):
+        return self._http_request(
+            method='PATCH',
+            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
+            json_data=request_data,
         )
 
 
@@ -1054,7 +1071,8 @@ def certificate_issue_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-list', inputs_list=CERTIFICATE_LIST_INPUTS, description=CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
+@metadata_collector.command(command_name='ciphertrust-certificate-list', inputs_list=CERTIFICATE_LIST_INPUTS,
+                            description=CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def certificate_list_command(client: CipherTrustClient, args: dict):
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                        args.get(CommandArguments.PAGE),
@@ -1078,7 +1096,8 @@ def certificate_list_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-certificate-delete', inputs_list=LOCAL_CERTIFICATE_DELETE_INPUTS, description=CERTIFICATE_DELETE_DESCRIPTION)
+@metadata_collector.command(command_name='ciphertrust-local-certificate-delete', inputs_list=LOCAL_CERTIFICATE_DELETE_INPUTS,
+                            description=CERTIFICATE_DELETE_DESCRIPTION)
 def local_certificate_delete_command(client: CipherTrustClient, args: dict):
     client.delete_certificate(ca_id=args[CommandArguments.CA_ID], local_ca_id=args[CommandArguments.LOCAL_CA_ID])
     return CommandResults(
@@ -1086,7 +1105,8 @@ def local_certificate_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-revoke', inputs_list=CERTIFICATE_REVOKE_INPUTS, description=CERTIFICATE_REVOKE_DESCRIPTION)
+@metadata_collector.command(command_name='ciphertrust-certificate-revoke', inputs_list=CERTIFICATE_REVOKE_INPUTS,
+                            description=CERTIFICATE_REVOKE_DESCRIPTION)
 def certificate_revoke_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         reason=args[CommandArguments.REASON],
@@ -1098,7 +1118,8 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-resume', inputs_list=CERTIFICATE_RESUME_INPUTS, description=CERTIFICATE_RESUME_DESCRIPTION)
+@metadata_collector.command(command_name='ciphertrust-certificate-resume', inputs_list=CERTIFICATE_RESUME_INPUTS,
+                            description=CERTIFICATE_RESUME_DESCRIPTION)
 def certificate_resume_command(client: CipherTrustClient, args: dict):
     client.resume_certificate(ca_id=args[CommandArguments.CA_ID], cert_id=args[CommandArguments.CERT_ID])
     return CommandResults(
@@ -1106,7 +1127,9 @@ def certificate_resume_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-upload', inputs_list=EXTERNAL_CERTIFICATE_UPLOAD_INPUTS, description=EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION, outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
+@metadata_collector.command(command_name='ciphertrust-external-certificate-upload',
+                            inputs_list=EXTERNAL_CERTIFICATE_UPLOAD_INPUTS, description=EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION,
+                            outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_upload_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         cert=args[CommandArguments.CERT],
@@ -1121,7 +1144,8 @@ def external_certificate_upload_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-delete', inputs_list=EXTERNAL_CERTIFICATE_DELETE_INPUTS, description=EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION)
+@metadata_collector.command(command_name='ciphertrust-external-certificate-delete',
+                            inputs_list=EXTERNAL_CERTIFICATE_DELETE_INPUTS, description=EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION)
 def external_certificate_delete_command(client: CipherTrustClient, args: dict):
     client.delete_external_certificate(external_ca_id=args[CommandArguments.EXTERNAL_CA_ID])
     return CommandResults(
@@ -1129,9 +1153,19 @@ def external_certificate_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-update')
+@metadata_collector.command(command_name='ciphertrust-external-certificate-update', inputs_list=EXTERNAL_CERTIFICATE_UPDATE_INPUTS, description=EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION, outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_update_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
+        allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
+    )
+    raw_response = client.update_external_certificate(external_ca_id=args[CommandArguments.EXTERNAL_CA_ID],
+                                                      request_data=request_data)
+    return CommandResults(
+        outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-external-certificate-list')
