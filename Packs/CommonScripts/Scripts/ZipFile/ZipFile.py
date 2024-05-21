@@ -30,7 +30,7 @@ def compress_multiple(file_names: List[str], zip_name: str, password: str = None
     """
     compression = pyzipper.ZIP_DEFLATED
     encryption = pyzipper.WZ_AES if password else None
-
+    demisto.debug(f'zipping {file_names=}')
     with pyzipper.AESZipFile(zip_name, mode='w', compression=compression, encryption=encryption) as zf:
         zf.pwd = bytes(password, 'utf-8') if password else None
         for file_name in file_names:
@@ -99,7 +99,7 @@ def main():
             zipName = fileCurrentName + '.zip'
 
         # zipping the file
-        compress_multiple(zipName, file_names, password)
+        compress_multiple(file_names, zipName, password)
 
         with open(zipName, 'rb') as f:
             file_data = f.read()
