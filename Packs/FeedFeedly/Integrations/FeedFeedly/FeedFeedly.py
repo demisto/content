@@ -246,14 +246,20 @@ class STIX2Parser:
 
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
-                    indicator_groups, indicator_obj, STIX_2_TYPES_TO_CORTEX_TYPES, field_map,
+                    indicator_groups,
+                    indicator_obj,
+                    STIX_2_TYPES_TO_CORTEX_TYPES,
+                    field_map,
                 )
             )
 
             cidr_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.cidr_regexes)
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
-                    cidr_groups, indicator_obj, STIX_2_TYPES_TO_CORTEX_CIDR_TYPES, field_map,
+                    cidr_groups,
+                    indicator_obj,
+                    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES,
+                    field_map,
                 )
             )
             self.change_ip_to_cidr(indicators)
@@ -540,6 +546,7 @@ class STIX2Parser:
             "primary_motivation": intrusion_set_obj.get("primary_motivation", ""),
             "secondary_motivations": intrusion_set_obj.get("secondary_motivations", []),
             "publications": publications,
+            "tags": list(set(intrusion_set_obj.get("labels", []))),
         }
         intrusion_set["customFields"] = fields
         return [intrusion_set]
@@ -691,7 +698,7 @@ class STIX2Parser:
                         for ref in b_object["rawJSON"].get("external_references", [])
                         if ref.get("source_name") == "mitre-attack"
                     )
-                    a_object["customFields"]["tags"].append(mitre_id)
+                    a_object["customFields"].setdefault("tags", []).append(mitre_id)
 
             mapping_fields = {
                 "lastseenbysource": relationships_object.get("modified"),
@@ -935,7 +942,7 @@ def get_indicators_command(
     indicators = client.fetch_indicators_from_stream(
         params["feedly_stream_id"], newer_than=time.time() - 24 * 3600, limit=int(args.get("limit", "10"))
     )
-    demisto.createIndicators(indicators)
+    demisto.createIndicators(indicators)  # type: ignore
     return CommandResults(readable_output=f"Created {len(indicators)} indicators.")
 
 
@@ -949,7 +956,7 @@ def fetch_indicators_command(client: Client, params: dict[str, str], context: di
         Indicators.
     """
     return client.fetch_indicators_from_stream(
-        params["feedly_stream_id"], newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600)),
+        params["feedly_stream_id"], newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600))
     )
 
 
@@ -979,7 +986,7 @@ def main():  # pragma: no cover
             now = time.time()
             indicators = fetch_indicators_command(client, params, demisto.getLastRun())
             for indicators_batch in batch(indicators, batch_size=2000):
-                demisto.createIndicators(indicators_batch)
+                demisto.createIndicators(indicators_batch)  # type: ignore
             demisto.setLastRun({"last_successful_run": str(now)})
 
         else:
