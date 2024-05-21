@@ -106,7 +106,7 @@ def test_get_date(mocker):
     expected_result = '2024-05-01'
 
     with mocker.patch("CommonServerPython.arg_to_datetime", return_value=time):
-        result = get_date(time)
+        result = get_date(time, "start_time")
 
     assert result == expected_result
 
