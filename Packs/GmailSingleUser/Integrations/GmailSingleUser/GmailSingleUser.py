@@ -55,7 +55,7 @@ EXECUTION_METRICS = ExecutionMetrics()
 
 
 def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
-    """Executes a specified action on the Gmail API.
+    """Executes a specified action on the Gmail API, while collecting execution metrics.
 
     This function dynamically executes an action such as sending an email, retrieving an email,
     getting attachments, or listing emails based on the specified action and its arguments.
@@ -96,7 +96,7 @@ def execute_gmail_action(service, action: str, action_kwargs: dict) -> dict:
             EXECUTION_METRICS.auth_error += 1
         else:
             EXECUTION_METRICS.general_error += 1
-        raise error
+        raise
     except Exception:
         EXECUTION_METRICS.general_error += 1
         raise
