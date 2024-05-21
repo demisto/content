@@ -30,7 +30,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 CLOUD_URL_STRUCTURE = 'https://api.atlassian.com/jsm/assets/workspace/'
-ON_PREM_URL_STRUCTURE = 'https://{}/rest/assets/1.0/'
+ON_PREM_URL_STRUCTURE = '{}/rest/assets/1.0/'
 GETֹֹֹֹ_WORKSPACE_URL_STRUCTURE = 'https://{}.atlassian.net/rest/servicedeskapi/assets/workspace'
 INTEGRATION_OUTPUTS_BASE_PATH = 'JiraAsset'
 ''' CLIENT CLASS '''
