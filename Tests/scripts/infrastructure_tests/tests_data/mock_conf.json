@@ -1,0 +1,85 @@
+{
+  "testTimeout": 160,
+  "testInterval": 20,
+  "tests": [
+    {
+      "playbookID": "TestCommonPython"
+    },
+    {
+      "integrations": "virtual_test_integration_1",
+      "playbookID": "virtual_fake_test_playbook_1"
+    },
+    {
+      "integrations": "EWS v2",
+      "playbookID": "EWSv2_empty_attachment_test"
+    },
+    {
+      "integrations": "PagerDuty v2",
+      "playbookID": "PagerDuty Test"
+    },
+    {
+      "playbookID": "Calculate Severity - Standard - Test"
+    },
+    {
+      "_comment": "~~~ FROM HERE ALL SHOULD BE SKIPPED PRE 4.1.0 ~~~",
+      "playbookID": "comment_shouldnt_run",
+      "fromversion": "99.99.99"
+    },
+    {
+      "integrations": "fake_integration",
+      "playbookID": "fake_test_playbook"
+    },
+    {
+      "integrations": "test_fake_integration",
+      "playbookID": "fake_test_playbook_to_version"
+    },
+    {
+      "playbookID": "Extract Indicators From File - test"
+    },
+    {
+      "_comment": "~~~ FROM HERE ALL SHOULD BE SKIPPED ~~~",
+      "playbookID": "comment_shouldnt_run",
+      "fromversion": "99.99.99"
+    },
+    {
+      "integrations": "skipped_integration_1",
+      "playbookID": "skipped_integration_test_playbook_1"
+    },
+    {
+      "integrations": "future_integration_1",
+      "playbookID": "future_test_playbook_1",
+      "fromversion": "99.99.99"
+    },
+    {
+      "integrations": "future_integration_2",
+      "playbookID": "future_test_playbook_2"
+    },
+    {
+      "playbookID": "future_test_playbook_3",
+      "fromversion": "99.99.99"
+    },
+    {
+      "playbookID": "virtual_future_test_playbook_4"
+    },
+    {
+      "integrations": "past_integration_1",
+      "playbookID": "past_test_playbook_1",
+      "toversion": "0"
+    },
+    {
+      "playbookID": "past_test_playbook_2",
+      "toversion": "0"
+    },
+    {
+      "playbookID": "virtual_past_test_playbook_4"
+    }
+  ],
+  "skipped_tests": {
+    "skipped_test_playbook_1": "Integration not skipped"
+  },
+  "skipped_integrations": {
+    "skipped_integration_1": "Test is not skipped"
+  },
+  "unmockable_integrations": {},
+  "docker_thresholds": {}
+}

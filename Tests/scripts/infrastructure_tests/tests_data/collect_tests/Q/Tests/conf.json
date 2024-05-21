@@ -1,0 +1,21 @@
+{
+  "tests": [
+    {
+      "integrations": "myIntegration",
+      "playbookID": "myTestPlaybook"
+    },
+    {
+      "integrations": "myDeprecatedIntegration",
+      "playbookID": "myOtherTestPlaybook"
+    }
+  ],
+  "skipped_tests": {},
+  "skipped_integrations": {},
+  "nightly_packs": [
+    "myPack"
+  ],
+  "unmockable_integrations": {},
+  "parallel_integrations": [],
+  "private_tests": [],
+  "test_marketplacev2": []
+}

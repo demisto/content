@@ -1,0 +1,540 @@
+{
+  "scripts": [
+    {
+      "CommonServerPython": {
+        "name": "CommonServerPython",
+        "file_path": "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml",
+        "pack": "Base",
+        "tests": [
+          "TestCommonPython"
+        ]
+      }
+    },
+    {
+      "fake-script": {
+        "name": "fake-script",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_scripts/fake-script.yml",
+        "depends_on": [
+          "fake-command"
+        ],
+        "tests": [
+          "fake_test_playbook"
+        ],
+        "pack": "FakePack"
+      }
+    },
+    {
+      "future-script-1": {
+        "name": "future-script-1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_scripts/future-script-1.yml",
+        "tests": [
+          "future_test_playbook_3"
+        ],
+        "fromversion": "99.99.99"
+      }
+    },
+    {
+      "future-script-2": {
+        "name": "future-script-2",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_scripts/future-script-2.yml",
+        "tests": [
+          "virtual_future_test_playbook_4"
+        ],
+        "fromversion": "99.99.99"
+      }
+    },
+    {
+      "past_script_1": {
+        "name": "past_script_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_scripts/past-script-1.yml",
+        "tests": [
+          "past_test_playbook_2"
+        ],
+        "toversion": "0"
+      }
+    },
+    {
+      "ExtractIndicatorsFromTextFile": {
+        "name": "ExtractIndicatorsFromTextFile",
+        "file_path": "Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml",
+        "fromversion": "4.1.0",
+        "script_executions": [
+          "extractIndicators",
+          "getFilePath"
+        ],
+        "tests": [
+          "Extract Indicators From File - test"
+        ]
+      }
+    }
+  ],
+  "playbooks": [
+    {
+      "fake_playbook": {
+        "name": "fake_playbook",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/fake_playbook.yml",
+        "implementing_scripts": [
+          "fake-script"
+        ],
+        "fromversion": "4.1.0",
+        "command_to_integration": {
+          "fake-command": ""
+        },
+        "pack": "FakePack"
+      }
+    },
+    {
+      "test_fake_playbook": {
+        "name": "test_fake_playbook",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/test_fake_playbook.yml",
+        "implementing_scripts": [
+          "fake-script"
+        ],
+        "fromversion": "5.0.0",
+        "command_to_integration": {
+          "fake-command": ""
+        },
+        "pack": "FakePack"
+      }
+    },
+    {
+      "Calculate Severity By Highest DBotScore": {
+        "name": "Calculate Severity By Highest DBotScore",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/fake_playbook.yml",
+        "tests": [
+          "Calculate Severity - Standard - Test"
+        ]
+      }
+    },
+    {
+      "Calculate Severity By Highest DBotScore": {
+        "name": "Calculate Severity By Highest DBotScore",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/fake_playbook.yml",
+        "pack": "FakePack",
+        "tests": [
+          "Calculate Severity - Standard - Test"
+        ]
+      }
+    }
+  ],
+  "integrations": [
+    {
+      "fake_integration": {
+        "name": "fake_integration",
+        "fromversion": "5.5.0",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration/fake_integration.yml",
+        "commands": [
+          "fake-command"
+        ]
+      }
+    },
+    {
+      "fake_integration": {
+        "name": "fake_integration",
+        "fromversion": "5.5.0",
+        "toversion": "6.0.0",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml",
+        "commands": [
+          "fake-command"
+        ]
+      }
+    },
+    {
+      "test_fake_integration": {
+        "name": "test_fake_integration",
+        "fromversion": "6.0.0",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/test_fake_integration.yml",
+        "commands": [
+          "fake-command"
+        ]
+      }
+    },
+    {
+      "skipped_test_integration_1": {
+        "name": "skipped_test_integration_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/skipped_test_integration_1.yml",
+        "commands": [
+          "fake-command-skipped-1"
+        ]
+      }
+    },
+    {
+      "skipped_integration_1": {
+        "name": "skipped_integration_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/skipped_integration_1.yml",
+        "commands": [
+          "fake-command-2"
+        ]
+      }
+    },
+    {
+      "future_integration_1": {
+        "name": "future_integration_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/future_integration_1.yml",
+        "commands": [
+          "fake-command-3"
+        ],
+        "fromversion": "99.99.99"
+      }
+    },
+    {
+      "future_integration_2": {
+        "name": "future_integration_2",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/future_integration_2.yml",
+        "commands": [
+          "fake-command-3"
+        ],
+        "fromversion": "99.99.99"
+      }
+    },
+    {
+      "past_integration_1": {
+        "name": "past_integration_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/past_integration_1.yml",
+        "commands": [
+          "fake-command-33"
+        ],
+        "toversion": "0"
+      }
+    },
+    {
+      "virtual_test_integration_1": {
+        "name": "virtual_test_integration_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration/fake_integration.yml",
+        "commands": [
+          "virtual-command-1"
+        ]
+      }
+    },
+    {
+      "EWS v2": {
+        "name": "EWS v2",
+        "file_path": "Integrations/EWSv2/EWSv2.yml",
+        "commands": [
+          "ews-get-attachment"
+        ],
+        "tests": [
+          "pyEWS_Test",
+          "EWS search-mailbox test"
+        ]
+      }
+    },
+    {
+      "PagerDuty v2": {
+        "name": "PagerDuty v2",
+        "file_path": "Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml",
+        "commands": [
+          "PagerDuty-get-all-schedules",
+          "PagerDuty-get-users-on-call",
+          "PagerDuty-get-users-on-call-now",
+          "PagerDuty-incidents",
+          "PagerDuty-submit-event",
+          "PagerDuty-get-contact-methods",
+          "PagerDuty-get-users-notification",
+          "PagerDuty-resolve-event",
+          "PagerDuty-acknowledge-event",
+          "PagerDuty-get-incident-data",
+          "PagerDuty-get-service-keys"
+        ],
+        "tests": [
+          "PagerDuty Test"
+        ],
+        "marketplaces": [
+          "marketplacev2"
+        ]
+      }
+    }
+  ],
+  "TestPlaybooks": [
+    {
+      "TestCommonPython": {
+        "name": "TestCommonPython",
+        "pack": "Base",
+        "file_path": "TestPlaybooks/playbook-TestCommonPython.yml",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "fake_playbook_in_fake_pack": {
+        "name": "fake_playbook_in_fake_pack",
+        "pack": "FakePack",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_playbook_in_fake_pack.yml",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "fake_test_playbook": {
+        "name": "fake_test_playbook",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "fromversion": "5.5.0",
+        "implementing_scripts": [
+          "fake-script"
+        ],
+        "command_to_integration": {
+          "fake-command": ""
+        },
+        "pack": "fake_pack",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "fake_test_playbook_to_version": {
+        "name": "fake_test_playbook_to_version",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook_to_version.yml",
+        "toversion": "5.9.9",
+        "implementing_scripts": [
+          "fake-script"
+        ],
+        "command_to_integration": {
+          "fake-command": ""
+        },
+        "pack": "fake_pack",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "skipped_test_playbook_1": {
+        "name": "skipped_test_playbook_1",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_test_playbook_1.yml",
+        "command_to_integration": {
+          "fake-command-skipped-1": ""
+        },
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "skipped_integration_test_playbook_1": {
+        "name": "skipped_integration_test_playbook_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "EWS",
+        "command_to_integration": {
+          "fake-command-2": ""
+        },
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "future_test_playbook_1": {
+        "name": "future_test_playbook_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "EWS",
+        "command_to_integration": {
+          "fake-command-3": ""
+        },
+        "fromversion": "99.99.99",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "future_test_playbook_2": {
+        "name": "future_test_playbook_2",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml",
+        "fromversion": "99.99.99",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "future_test_playbook_3": {
+        "name": "future_test_playbook_3",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "implementing_scripts": [
+          "future-script-1"
+        ],
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "virtual_future_test_playbook_4": {
+        "name": "virtual_future_test_playbook_4",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "implementing_scripts": [
+          "future-script-2"
+        ],
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "past_test_playbook_1": {
+        "name": "past_test_playbook_1",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_1.yml",
+        "command_to_integration": {
+          "fake-command-33": ""
+        },
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "virtual_past_test_playbook_2": {
+        "name": "virtual_past_test_playbook_2",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "command_to_integration": {
+          "fake-command-34": ""
+        },
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "past_test_playbook_2": {
+        "name": "past_test_playbook_2",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "implementing_scripts": [
+          "future-script-2"
+        ],
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "virtual_fake_test_playbook_1": {
+        "name": "virtual_fake_test_playbook_1",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "command_to_integration": {
+          "virtual-command-1": ""
+        },
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "EWSv2_empty_attachment_test": {
+        "name": "EWSv2_empty_attachment_test",
+        "pack": "EWS",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "command_to_integration": {
+          "ews-get-attachment": "EWS v2"
+        },
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "Calculate Severity - Standard - Test": {
+        "name": "Calculate Severity - Standard - Test",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "CommonPlaybooks",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "PagerDuty Test": {
+        "name": "PagerDuty Test",
+        "file_path": "TestPlaybooks/playbook-PagerDuty_Test.yml",
+        "command_to_integration": {
+          "PagerDuty-incidents": "",
+          "PagerDuty-get-all-schedules": "",
+          "PagerDuty-get-users-on-call-now": ""
+        },
+        "pack": "PagerDuty",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "Extract Indicators From File - test": {
+        "name": "Extract Indicators From File - test",
+        "file_path": "TestPlaybooks/playbook-Extract_Indicators_From_File_-_test.yml",
+        "fromversion": "4.1.0",
+        "implementing_playbooks": [
+          "Extract Indicators From File - Generic"
+        ],
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    },
+    {
+      "Test XDR Playbook": {
+        "name": "Test XDR Playbook",
+        "pack": "CortexXDR",
+        "marketplaces": [
+          "xsoar", "marketplacev2"
+        ]
+      }
+    }
+  ],
+  "Packs": {
+      "CortexXDR": {
+        "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
+        "current_version": "4.2.18",
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "Partner": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "GreatPack": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "CommonPlaybooks": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "PagerDuty": {
+        "marketplaces": [
+          "marketplacev2"
+        ]
+      },
+      "EWS": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "pack_a": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "fake_pack": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "Base": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      }
+  }
+}
