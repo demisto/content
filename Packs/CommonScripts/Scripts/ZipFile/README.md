@@ -39,4 +39,4 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 
 
 ### Troubleshooting
-Because of security reasons we support only AES encryption which is not supported on Windows OS without 3rd party unzip applications, For more info about the encryption methods see https://en.wikipedia.org/wiki/ZIP_(file_format)#Encryption
+Because of security reasons we support only AES encryption which is not supported on Windows OS without 3rd party unzip applications, For more info about the encryption methods see [here](https://en.wikipedia.org/wiki/ZIP_(file_format)#Encryption)
