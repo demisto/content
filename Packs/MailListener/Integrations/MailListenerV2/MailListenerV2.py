@@ -304,7 +304,7 @@ def fetch_incidents(client: IMAPClient,
         save_file=save_file,
         uid_to_fetch_from=uid_to_fetch_from     # type: ignore[arg-type]
     )
-    incidents = []
+    incidents: list = []
     demisto.debug(f'fetched {len(incidents)} incidents')
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
