@@ -343,9 +343,11 @@ LOCAL_CA_SELF_SIGN_INPUTS = [
 
 ]
 
-LOCAL_CA_INSTALL_INPUTS = [ InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
-                            InputArgument(name=CommandArguments.CERT, required=True, description='Signed certificate in PEM format to install as a local CA'),
-                            InputArgument(name=CommandArguments.PARENT_ID, required=True, description='An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.')]
+LOCAL_CA_INSTALL_INPUTS = [InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+                           InputArgument(name=CommandArguments.CERT, required=True,
+                                         description='Signed certificate in PEM format to install as a local CA'),
+                           InputArgument(name=CommandArguments.PARENT_ID, required=True,
+                                         description='An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.')]
 
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
@@ -362,8 +364,9 @@ LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
 LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
 LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
 
-
 '''CLIENT CLASS'''
+
+
 class CipherTrustClient(BaseClient):
     """ A client class to interact with the Thales CipherTrust API """
 
@@ -870,7 +873,8 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-ca-install')
+#todo: figure out how to properly test + what does install exactly mean
+@metadata_collector.command(command_name='ciphertrust-local-ca-install' , inputs_list=LOCAL_CA_INSTALL_INPUTS, description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX)
 def local_ca_install_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         cert=args[CommandArguments.CERT],
