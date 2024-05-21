@@ -925,6 +925,7 @@ class BranchTestCollector(TestCollector):
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
         override_support_level_compatibility = False
+        only_to_install = False
 
         match actual_content_type:
             case None:
@@ -939,6 +940,7 @@ class BranchTestCollector(TestCollector):
                 else:
                     logger.warning(f'test playbook with id {yml.id_} is missing from conf.json tests section')
                     tests = ()
+                only_to_install = True
                 reason = CollectionReason.TEST_PLAYBOOK_CHANGED
 
             case FileType.INTEGRATION:
@@ -1006,6 +1008,7 @@ class BranchTestCollector(TestCollector):
                     id_set=self.id_set,
                     is_nightly=False,
                     skip_support_level_compatibility=override_support_level_compatibility,
+                    only_to_install=only_to_install,
                 ) for test in tests))
         else:
             return self._collect_pack(
