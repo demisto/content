@@ -146,18 +146,11 @@ def _parse_entry(entry: dict):
         dict: The parsed entry dictionary.
     """
     parsed = {
-        "activity": entry.get("activity"),
-        "activity_type": entry.get("activity_type"),
-        "business_criticality": entry.get("business_criticality"),
-        "host": entry.get("host"),
-        "landscape": entry.get("landscape"),
-        "outcome": entry.get("outcome"),
-        "platform": entry.get("platform"),
-        "product": entry.get("product"),
-        "product_category": entry.get("product_category"),
-        "subject": entry.get("subject"),
-        "time": entry.get("time"),
-        "vendor": entry.get("vendor")
+        "Id": entry.get("id"),
+        "Raw Log Ids": entry.get("rawLogIds"),
+        "Tier": entry.get("tier"),
+        "Is Parsed": entry.get("parsed"),
+        "Raw Logs": entry.get("rawLogs")
     }
     final = remove_empty_elements(parsed)
     return final if final else None

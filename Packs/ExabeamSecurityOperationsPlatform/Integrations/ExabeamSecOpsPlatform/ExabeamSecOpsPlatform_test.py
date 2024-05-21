@@ -29,6 +29,10 @@ def test_search_command_success(mocker):
         "rows": [
                     {
                         "id": "123",
+                        "rawLogIds": "1",
+                        "tier": "Tier",
+                        "parsed": "false",
+                        "rawLogs": "fictive",
                         "time": "2024-01-30T11:20:07.000000+00:00",
                         "message": "Log message 1",
                         "activity": "trigger",
@@ -67,10 +71,10 @@ def test_search_command_success(mocker):
     assert response.outputs == mock_response["rows"]
     expected_readable_output = (
         "### Logs\n"
-        "|activity|platform|time|vendor|\n"
-        "|---|---|---|---|\n"
-        "| trigger | blackberry protect | 2024-01-30T11:20:07.000000+00:00 | BlackBerry |\n"
-        "| trigger | blackberry protect | 2024-01-30T11:21:06.976000+00:00 | BlackBerry |\n"
+        "|Id|Is Parsed|Raw Log Ids|Raw Logs|Tier|\n"
+        "|---|---|---|---|---|\n"
+        "| 123 | false | 1 | fictive | Tier |\n"
+        "| 456 |  |  |  |  |\n"
     )
     assert expected_readable_output in response.readable_output
 
