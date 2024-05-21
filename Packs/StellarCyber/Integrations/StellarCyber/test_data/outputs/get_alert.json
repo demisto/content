@@ -60,9 +60,9 @@
                                 "attack_spread": 1,
                                 "category": "phish",
                                 "id": "1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6",
-                                "name": "https://okranis.s3.ap-southeast-2.amazonaws.com/control_ramyloe.html",
+                                "name": "https://wkaknns.s3.ap-southeast-2.amazonaws.com/bafkbfkbs.html",
                                 "type": "url",
-                                "url": "https://threatinsight.proofpoint.com/35fd1d8c-be8d-81be-3e81-d6db34a328b3/threat/email/1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6"
+                                "url": "https://example.com/35fd1d8c-be8d-81be-3e81-d6db34a328b3/threat/email/1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6"
                             }
                         ]
                     },
@@ -154,12 +154,12 @@
                             {
                                 "campaignID": null,
                                 "classification": "phish",
-                                "threat": "https://okranis.s3.ap-southeast-2.amazonaws.com/control_ramyloe.html",
+                                "threat": "https://sfgsgs.s3.ap-southeast-2.amazonaws.com/dfgdsgd.html",
                                 "threatID": "1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6",
                                 "threatStatus": "active",
                                 "threatTime": "2024-03-19T21:16:14.000Z",
                                 "threatType": "url",
-                                "threatUrl": "https://threatinsight.proofpoint.com/35fd1d8c-be8d-81be-3e81-d6db34a328b3/threat/email/1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6"
+                                "threatUrl": "https://example.com/35fd1d8c-be8d-81be-3e81-d6db34a328b3/threat/email/1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6"
                             }
                         ],
                         "toAddresses": [
