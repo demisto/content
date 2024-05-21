@@ -160,7 +160,8 @@ class Client(BaseClient):
         response = self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_param
+            params=query_param,
+            resp_type='response'
         )
         paged_results = response.json()
         if response.status_code != 200:
@@ -245,7 +246,7 @@ class Client(BaseClient):
 
         return logs_batch, next_page
 
-    def get_logs(self, next_page=None, last_run_time=None, time_now=None,
+    def get_logs(self, next_page=None, last_run_time=None, time_now=None, limit=None,
                  query_filter=None, auto_generate_filter=False, context=None):
         logs = []
 
@@ -257,8 +258,17 @@ class Client(BaseClient):
         params = {
             'filter': query_filter,
             'since': last_run_time,
-            'until': time_now
+            'until': time_now,
+            'limit': limit
         }
+
+        if limit:
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=params,
+            ), None
+
         logs_batch, next_page = self.get_logs_batch(url_suffix=uri, params=params, full_url=next_page)
 
         try:
@@ -899,7 +909,11 @@ def get_logs_command(client, args):
     filter = args.get('filter')
     since = args.get('since')
     until = args.get('until')
-    log_events, _ = client.get_logs(query_filter=filter, last_run_time=since, time_now=until)
+    limit = args.get('limit')
+    log_events, _ = client.get_logs(query_filter=filter, last_run_time=since, time_now=until, limit=limit)
+
+    if not log_events:
+        return CommandResults(readable_output='No logs found.', outputs={}, raw_response=log_events)
 
     return CommandResults(
         raw_response=log_events,
