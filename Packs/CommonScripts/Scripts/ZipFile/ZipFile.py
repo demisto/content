@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 import re
 import shutil
 import pyzipper
-import pyminizip
 from os.path import isfile
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'

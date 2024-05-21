@@ -13,10 +13,9 @@ ESCAPE_CHARACTERS_PACK = [
 
 
 def unzip(zip_file_path: str, password: str = None):
-    with tempfile.TemporaryDirectory() as unzip_dir:
-        with pyzipper.AESZipFile(zip_file_path) as zf:
-            zf.pwd = bytes(password, 'utf-8') if password else None
-            zf.extractall(path=unzip_dir)
+    with tempfile.TemporaryDirectory() as unzip_dir, pyzipper.AESZipFile(zip_file_path) as zf:
+        zf.pwd = bytes(password, 'utf-8') if password else None
+        zf.extractall(path=unzip_dir)
 
 
 @pytest.mark.parametrize(('input_name', 'output_name'), ESCAPE_CHARACTERS_PACK)
@@ -66,4 +65,3 @@ def test_unzip_wrong_password():
             unzip(zip_name, '1234')
 
         assert 'Bad password' in e.value.args[0]
-
