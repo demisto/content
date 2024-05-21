@@ -39,6 +39,7 @@ USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
 LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
 CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
+CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
@@ -101,6 +102,9 @@ class CommandArguments:
     NOT_AFTER = 'not_after'
     NOT_BEFORE = 'not_before'
     PARENT_ID = 'partent_id'
+    CA_ID = 'ca_id'
+    CSR = 'csr'
+    PURPOSE = 'purpose'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -119,6 +123,12 @@ class AllowedClientTypes(enum.Enum):
 class LocalCAState(enum.Enum):
     PENDING = 'pending'
     ACTIVE = 'active'
+
+
+class CACertificatePurpose(enum.Enum):
+    SERVER = 'server'
+    CLIENT = 'client'
+    CA = 'ca'
 
 
 ''' YML METADATA '''
@@ -349,6 +359,21 @@ LOCAL_CA_INSTALL_INPUTS = [InputArgument(name=CommandArguments.LOCAL_CA_ID, requ
                            InputArgument(name=CommandArguments.PARENT_ID, required=True,
                                          description='An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.')]
 
+CERTIFICATE_ISSUE_INPUTS = [
+    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
+    InputArgument(name=CommandArguments.CSR, required=True, description='CSR in PEM format'),
+    InputArgument(name=CommandArguments.PURPOSE, required=True, input_type=CACertificatePurpose,
+                  description='Purpose of the certificate. Possible values: server, client or ca'),
+    InputArgument(name=CommandArguments.DURATION,
+                  description='Duration in days of certificate. Either duration or notAfter date must be specified.'),
+    #todo: cert-<id> as default value elsewhere is a mistake, go through and fix
+    InputArgument(name=CommandArguments.NAME,
+                  description='A unique name of Certificate, if not provided, will be set to cert-<id>.'),
+    InputArgument(name=CommandArguments.NOT_AFTER,
+                  description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.'),
+    InputArgument(name=CommandArguments.NOT_BEFORE,
+                  description='Start date of certificate. ISO 8601 format for notBefore date. Either duration or notAfter date must be specified. If duration is given without notBefore date, certificate is issued starting from server\'s current time for the specified duration.'),
+]
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
@@ -363,7 +388,7 @@ LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance
 LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
 LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
 LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
-
+CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
 '''CLIENT CLASS'''
 
 
@@ -520,6 +545,15 @@ class CipherTrustClient(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id)}/install',
+            json_data=request_data,
+            return_empty_response=True,
+            empty_valid_codes=[201],
+        )
+
+    def issue_certificate(self, ca_id: str, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs',
             json_data=request_data,
             return_empty_response=True,
             empty_valid_codes=[201],
@@ -790,7 +824,7 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
         emailAddresses=argToList(args.get(CommandArguments.EMAIL)),
         ipAddresses=argToList(args.get(CommandArguments.IP)),
         name=args.get(CommandArguments.NAME),
-        names=argToList(args.get(CommandArguments.NAME_FIELDS)),
+        names=argToList(args.get(CommandArguments.NAME_FIELDS)), #todo: name fields formatting
         size=arg_to_number(args.get(CommandArguments.SIZE)),
     )
     raw_response = client.create_local_ca(request_data=request_data)
@@ -874,7 +908,8 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
 
 
 #todo: figure out how to properly test + what does install exactly mean
-@metadata_collector.command(command_name='ciphertrust-local-ca-install' , inputs_list=LOCAL_CA_INSTALL_INPUTS, description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX)
+@metadata_collector.command(command_name='ciphertrust-local-ca-install', inputs_list=LOCAL_CA_INSTALL_INPUTS,
+                            description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX)
 def local_ca_install_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         cert=args[CommandArguments.CERT],
@@ -888,9 +923,22 @@ def local_ca_install_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-certificate-issue')
+@metadata_collector.command(command_name='ciphertrust-certificate-issue', inputs_list=CERTIFICATE_ISSUE_INPUTS, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX, description=CERTIFICATE_ISSUE_DESCRIPTION)
 def certificate_issue_command(client: CipherTrustClient, args: dict):
-    pass
+    request_data = assign_params(
+        csr=args[CommandArguments.CSR],
+        purpose=args[CommandArguments.PURPOSE],
+        duration=arg_to_number(args.get(CommandArguments.DURATION)),
+        name=args.get(CommandArguments.NAME),
+        notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
+        notBefore=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_BEFORE)),
+    )
+    raw_response = client.issue_certificate(ca_id=args[CommandArguments.CA_ID], request_data=request_data)
+    return CommandResults(
+        outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-certificate-list')
