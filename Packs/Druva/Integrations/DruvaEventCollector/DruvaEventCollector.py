@@ -39,18 +39,21 @@ class Client(BaseClient):
         headers = {'Authorization': f'Bearer {access_token}'}
         self._headers = headers
 
-    def search_events(self) -> List[Dict]:  # noqa: E501
+    def search_events(self, tracker: Optional[str]) -> dict:
         """
         Searches for Druva events.
+
+        Args:
+            tracker: pointer to the last event we got last time
+
         Returns:
             List[Dict]: List of events
         """
 
-        data = {}
+        data = {'tracker': tracker} if tracker else {}
         headers = {'Authorization': self._headers.get('Authorization'), 'accept': 'application/json'}
-        response = self._http_request(method='GET', url_suffix='/insync/eventmanagement/v2/events', headers=headers,
-                                      data=data, resp_type='response')
-        return [response]
+        response = self._http_request(method='GET', url_suffix='/insync/eventmanagement/v2/events', headers=headers, data=data)
+        return response
 
 
 def test_module(client: Client) -> str:
@@ -62,8 +65,6 @@ def test_module(client: Client) -> str:
 
     Args:
         client (Client): Druva client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
@@ -79,13 +80,24 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    events = client.search_events()
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
+def get_events(client: Client, tracker: Optional[str]) -> tuple[List[dict], str]:
+    """
+    Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
+    Args:
+        client: Druva client to use.
+        tracker: A pointer to the last event we received.
+
+    Returns:
+        Druva's events and tracker
+    """
+
+    response = client.search_events(tracker)
+    return response.get('events'), response.get('tracker')
 
 
-def fetch_events(client: Client, last_run: dict[str, int]) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, last_run: dict[str, int],
+                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
+                 ) -> tuple[Dict, List[Dict]]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -98,11 +110,16 @@ def fetch_events(client: Client, last_run: dict[str, int]) -> tuple[Dict, List[D
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id')
+    prev_id = last_run.get('prev_id', None)
     if not prev_id:
         prev_id = 0
 
-    events = client.search_events()
+    events = client.search_events(
+        prev_id=prev_id,
+        alert_status=alert_status,
+        limit=max_events_per_fetch,
+        from_date=first_fetch_time,
+    )
     demisto.debug(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
@@ -124,7 +141,7 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
+            create_time = arg_to_datetime(arg=event.get('timestamp'))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
@@ -145,13 +162,6 @@ def main() -> None:  # pragma: no cover
     str_to_encode = f'{druva_client_id}:{druva_secret_key}'
     base_64_string = base64.b64encode(str_to_encode.encode())
 
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
-    alert_status = params.get('alert_status', None)
-
-    # Each Events API request returns a response that contains a maximum of 500 inSync events
-    max_events_per_fetch = params.get('max_events_per_fetch', MAX_EVENTS)
-
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
@@ -168,8 +178,10 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'druva-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status)
-            return_results(results)
+            events, tracker = get_events(client, args.get('tracker'))
+            return_results(
+                CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events))
+            )
             if should_push_events:
                 add_time_to_events(events)
                 send_events_to_xsiam(
@@ -178,20 +190,24 @@ def main() -> None:  # pragma: no cover
                     product=PRODUCT
                 )
 
-        elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run
-            )
+        # elif command == 'fetch-events':
+        #     last_run = demisto.getLastRun()
+        #     next_run, events = fetch_events(
+        #         client=client,
+        #         last_run=last_run,
+        #         first_fetch_time=first_fetch_time,
+        #         alert_status=alert_status,
+        #         max_events_per_fetch=max_events_per_fetch,
+        #     )
+        #
+        #     add_time_to_events(events)
+        #     send_events_to_xsiam(
+        #         events,
+        #         vendor=VENDOR,
+        #         product=PRODUCT
+        #     )
+        #     demisto.setLastRun(next_run)
 
-            add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
