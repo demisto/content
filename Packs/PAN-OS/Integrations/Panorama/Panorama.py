@@ -49,6 +49,15 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+LOG_TYPE_TO_REQUEST = {
+    'Traffic': 'traffic',
+    'Threat': 'threat',
+    'URL': 'url',
+    'Data': 'data',
+    'Correlation': 'corr',
+    'System': 'system',
+    'Wildfire': 'wildfire',
+    'Decryption': 'decryption'}
 FETCH_RANGE = range(1, 5001)
 
 XPATH_SECURITY_RULES = ''
@@ -237,14 +246,14 @@ class LastFetchTimes(QueryMap):
     
 class LastIDs(TypedDict):
     '''dict[str, DeviceMap | int]'''
-    Traffic: DeviceMap
-    Threat: DeviceMap
-    Url: DeviceMap
-    Data: DeviceMap
-    Correlation: int  # contains the last "@logid"
-    System: DeviceMap
-    Wildfire: DeviceMap
-    Decryption: DeviceMap
+    Traffic: NotRequired[DeviceMap]
+    Threat: NotRequired[DeviceMap]
+    Url: NotRequired[DeviceMap]
+    Data: NotRequired[DeviceMap]
+    Correlation: NotRequired[int]  # contains the last "@logid"
+    System: NotRequired[DeviceMap]
+    Wildfire: NotRequired[DeviceMap]
+    Decryption: NotRequired[DeviceMap]
 
 class MaxFetch(TypedDict):
     '''dict[str, int]
@@ -14045,7 +14054,7 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
-    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch, dir='forward')
+    params = assign_params(key=API_KEY, type='log', log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
     demisto.debug(f'{query=}')
     response = http_request(URL, 'GET', params=params)
     return response.get('response', {}).get('result', {}).get('job')
@@ -14348,7 +14357,7 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
             if updated_last_fetch:
                 last_fetch_dict[log_type] = str(updated_last_fetch)
             parsed_incident_entries += list(map(incident_entry_to_incident_context, incident_entries))
-            demisto.debug(f'{log_type} log type: {len(incident_entries)} incidents with unique ID list: {[incident.get('name', '') for incident in incident_entries]}')
+            demisto.debug(f'{log_type} log type: {len(incident_entries)} incidents with unique ID list: {[incident.get("name", "") for incident in incident_entries]}')
     demisto.debug(f'Updated last run is: {last_fetch_dict}. Updated last ID is: {last_id_dict}')
     return parsed_incident_entries
 

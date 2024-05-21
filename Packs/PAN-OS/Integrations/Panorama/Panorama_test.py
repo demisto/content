@@ -7447,9 +7447,23 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     Then:
         - 
     '''
-    from Panorama import filter_fetched_entries, get_parsed_incident_entries
+    from Panorama import filter_fetched_entries, get_parsed_incident_entries, LastIDs, LastFetchTimes
     corr_logs = load_json('test_data/corr_logs.json')
     mocker.patch.object(str, '')
-    
-    filter_fetched_entries(entries_dict={'Correlation': })
-    get_parsed_incident_entries
+    last_ids = LastIDs(Correlation=0)
+    last_fetch = LastFetchTimes(Correlation='')
+
+    first_batch = filter_fetched_entries(
+        entries_dict={'Correlation': corr_logs[:5]},
+        id_dict=last_ids
+    )
+    get_parsed_incident_entries(
+        incident_entries_dict=first_batch,
+        last_fetch_dict=last_fetch,
+        last_id_dict=last_ids
+    )
+    with open('test_data/corr_logs_test.json', 'w') as f:
+        json.dump([first_batch, last_ids, last_fetch], f, indent=4)
+    assert first_batch == {}
+    assert last_ids == {}
+    assert last_fetch == {}
