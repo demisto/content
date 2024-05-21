@@ -1361,19 +1361,19 @@
             "reflectDimensions": true
         },
         {
-            "id": "d0658c80-169c-11ef-9106-5b9b4b7d142f",
+            "id": "adcecad0-17a8-11ef-b89d-b728009392bd",
             "forceRange": false,
             "x": 0,
             "y": 14,
-            "i": "d0658c80-169c-11ef-9106-5b9b4b7d142f",
+            "i": "adcecad0-17a8-11ef-b89d-b728009392bd",
             "w": 4,
             "h": 3,
             "widget": {
-                "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
-                "version": 1,
+                "id": "eff19897-4635-44c4-889c-f106373be355",
+                "version": 5,
                 "cacheVersn": 0,
-                "modified": "2024-01-14T16:57:28.451017133Z",
-                "created": "0001-01-01T00:00:00Z",
+                "modified": "2024-05-21T19:31:05.883188536Z",
+                "created": "2024-05-21T10:22:20.546514077Z",
                 "sizeInBytes": 0,
                 "packID": "",
                 "packName": "",
@@ -1389,8 +1389,8 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "API Call Results for Gmail Single User",
-                "prevName": "API Call Results for Gmail Single User",
+                "name": "API Call Results For Gmail Single User",
+                "prevName": "API Call Results For Gmail Single User",
                 "dataType": "metrics",
                 "widgetType": "line",
                 "query": "type:integration  and name:\"Gmail Single User\"",
@@ -1400,7 +1400,7 @@
                     "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byTo": "days",
+                        "byTo": "hours",
                         "byFrom": "hours",
                         "toValue": 0,
                         "fromValue": 3,
@@ -1412,6 +1412,19 @@
                     "customGroupBy": [
                         null,
                         {
+                            "ConnectionError": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ConnectionError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "ConnectionError"
+                            },
                             "General Error": {
                                 "conditions": [
                                     [
@@ -1460,7 +1473,6 @@
                     "keys": [
                         "sum|totalAPICalls"
                     ],
-                    "referenceLine": {},
                     "timeFrame": "hours",
                     "valuesFormat": "abbreviated",
                     "xAxisLabel": "Time",
