@@ -738,8 +738,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "upload_artifact_to_bucket"
-resolved_reference = "831227279d80fb7c6a79e43c5b2a560f3cf87d9d"
+reference = "2234bf5bc34558139ba905190c9feef1eddfc2d9poet"
+resolved_reference = "2234bf5bc34558139ba905190c9feef1eddfc2d9"
 
 [[package]]
 name = "deprecated"
@@ -3927,4 +3927,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "a5e864bbdd9e88b3e58821d96f224fa5b2fd262ff9a2312b7abe388a6602a950"
+content-hash = "609f71c701e3f2be53a1161c953ad245cfec12e810ce7af5c321e6833ede384a"
