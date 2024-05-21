@@ -18,7 +18,7 @@ from Tests.scripts.collect_tests.exceptions import (
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.version_range import VersionRange
-
+from more_itertools import powerset, unique_everseen
 
 def find_pack_folder(path: Path) -> Path:
     """
@@ -46,39 +46,42 @@ class Machine(Enum):
     Represents an XSOAR version.
     Serves as the single source of truth for versions used for collect_tests.
     """
-    V6_9 = Version('6.9')
-    V6_10 = Version('6.10')
-    V6_11 = Version('6.11')
-    V6_12 = Version('6.12')
     MASTER = 'Master'
+    V6_MASTER = Version('6.99')
+    V6_12 = Version('6.12')
+    V6_11 = Version('6.11')
+    V6_10 = Version('6.10')
+    V6_9 = Version('6.9')
 
     @staticmethod
     def numeric_machines() -> tuple['Machine', ...]:
-        return tuple(machine for machine in Machine if isinstance(machine.value, Version))
+        return tuple(machine for machine in Machine if not isinstance(machine.value, str))
 
     @staticmethod
-    def get_suitable_machines(version_range: VersionRange | None) -> tuple['Machine', ...]:
+    def get_suitable_machines(version_ranges: list[VersionRange]) -> tuple['Machine', ...]:
         """
 
         :param version_range: range of versions. If None, all versions are returned.
         :return: Master, as well as all Machine items matching the input.
         """
-        result: list[Machine] = []
-
-        if not version_range:
+        if not version_ranges:
             return ()
 
-        if version_range.max_version:
-            return (Machine.MASTER,)
 
-        result.extend(
-            machine
-            for machine in Machine.numeric_machines()
-            if machine.value
-            in [version_range.min_version, version_range.max_version]
-        )
+        all_machines = Machine.numeric_machines()
+        result = tuple(all_machines)
+        best_machine_count = len(all_machines)
 
-        return tuple(result)
+        for option in list(powerset(unique_everseen(all_machines))):
+            covers_all_ranges = all(any(m.value in version_range for m in option) for version_range in version_ranges)
+            if covers_all_ranges and len(option) < best_machine_count:
+                result = option
+                best_machine_count = len(option)
+
+        # Replace Machine.V6_MASTER with Machine.MASTER if present in the result
+        result = tuple(Machine.MASTER if machine == Machine.V6_MASTER else machine for machine in result)
+
+        return result
 
     def __str__(self):
         return f'Server {self.value}'

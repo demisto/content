@@ -126,7 +126,7 @@ class CollectionResult:
         self.modeling_rules_to_test: set[str | Path] = set()
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
-        self.version_range = None
+        self.version_range = list[VersionRange] | None
         self.machines: tuple[Machine, ...] | None = None
         self.packs_to_reinstall: set[str] = set()
 
@@ -276,7 +276,7 @@ class CollectionResult:
         result.modeling_rules_to_test = self.modeling_rules_to_test | other.modeling_rules_to_test
         result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
         result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
-        result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
+        result.version_range = self.version_range.append(other.version_range) if self.version_range else other.version_range # TODO
         result.packs_to_reinstall = self.packs_to_reinstall | other.packs_to_reinstall
         return result
 
