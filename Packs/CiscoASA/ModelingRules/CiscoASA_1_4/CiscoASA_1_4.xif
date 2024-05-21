@@ -96,16 +96,25 @@ config case_sensitive = true
     source_interface = if(source_interface = null,arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),source_interface),
     dest_interface = if(dest_interface = null,arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),dest_interface)
 // duration
-| alter duration_string = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([a-z0-9\:]+)[\s|\,]"),0)
+| alter
+        duration_string_no_days = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([hH0-9]+:[mM0-9]+:[sS0-9]+)[\s|\,]*"),0),
+        duration_string_days = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([dD0-9]*\s[hH0-9]+:[mM0-9]+:[sS0-9]+)[\s|\,]*"),0)
+| alter
+        duration_days = arrayindex(split(duration_string_days ," "), 0),
+        duration_string = arrayindex(split(duration_string_days ," "), 1)
+| alter duration_string = if(duration_string = null or duration_string = "", duration_string_no_days, duration_string)
 | alter duration_split = split(duration_string ,":")
 // duration parts
-| alter duration_part_0 = arrayindex(duration_split,0),
-    duration_part_1 = arrayindex(duration_split,1),
-    duration_part_2 = arrayindex(duration_split,2)
-| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_integer(duration_part_0),3600000) ,0),
-    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_integer(duration_part_1),60000),0),
-    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integer(duration_part_2),1000),0)
-| alter duration = add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis)
+| alter
+        duration_part_0 = arrayindex(duration_split,0),
+        duration_part_1 = arrayindex(duration_split,1),
+        duration_part_2 = arrayindex(duration_split,2)
+| alter
+        duration_part_0_millis = if(duration_part_0 contains "h", multiply(to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_integer(duration_part_0), 3600000), 0),
+        duration_part_1_millis = if(duration_part_1 contains "m", multiply(to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000), duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_integer(duration_part_1), 60000), 0),
+        duration_part_2_millis = if(duration_part_2 contains "s", multiply(to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integer(duration_part_2), 1000), 0),
+        duration_part_days = if(duration_days != null, multiply(to_integer(arrayindex(regextract(duration_days ,"\d+"),0)),86400000),0)
+| alter duration = add(add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis), duration_part_days)
 | alter bytes = coalesce(bytes1 , bytes2 ),
     icmp_code = coalesce(icmp_code1, icmp_code2),
     protocol = coalesce(protocol1, protocol2, protocol3, protocol4, protocol5),
@@ -366,16 +375,25 @@ config case_sensitive = true
 | alter dst_user = coalesce(dst_user1 , dst_user2 ),
     action = coalesce(action1 , action2 )
 // duration
-| alter duration_string = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([a-z0-9\:]+)[\s|\,]"),0)
+| alter
+        duration_string_no_days = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([hH0-9]+:[mM0-9]+:[sS0-9]+)[\s|\,]*"),0),
+        duration_string_days = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([dD0-9]*\s[hH0-9]+:[mM0-9]+:[sS0-9]+)[\s|\,]*"),0)
+| alter
+        duration_days = arrayindex(split(duration_string_days ," "), 0),
+        duration_string = arrayindex(split(duration_string_days ," "), 1)
+| alter duration_string = if(duration_string = null or duration_string = "", duration_string_no_days, duration_string)
 | alter duration_split = split(duration_string ,":")
 // duration parts
-| alter duration_part_0 = arrayindex(duration_split,0),
-    duration_part_1 = arrayindex(duration_split,1),
-    duration_part_2 = arrayindex(duration_split,2)
-| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_integer(duration_part_0),3600000) ,0),
-    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_integer(duration_part_1),60000),0),
-    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integer(duration_part_2),1000),0)
-| alter duration = add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis)
+| alter
+        duration_part_0 = arrayindex(duration_split,0),
+        duration_part_1 = arrayindex(duration_split,1),
+        duration_part_2 = arrayindex(duration_split,2)
+| alter
+        duration_part_0_millis = if(duration_part_0 contains "h", multiply(to_integer(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_integer(duration_part_0), 3600000), 0),
+        duration_part_1_millis = if(duration_part_1 contains "m", multiply(to_integer(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000), duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_integer(duration_part_1), 60000), 0),
+        duration_part_2_millis = if(duration_part_2 contains "s", multiply(to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integer(duration_part_2), 1000), 0),
+        duration_part_days = if(duration_days != null, multiply(to_integer(arrayindex(regextract(duration_days ,"\d+"),0)),86400000),0)
+| alter duration = add(add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis), duration_part_days)
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.id = to_string(event_id),
     xdm.event.description = message,

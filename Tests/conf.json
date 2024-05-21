@@ -123,8 +123,9 @@
             "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
+            "timeout": 1200,
+            "integrations": "Cortex XDR - IR"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -308,6 +309,11 @@
             "integrations": "AWS-WAF",
             "playbookID": "TEST_AWS_WAF",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "AWS - IAM Identity Center",
+            "playbookID": "AWS-IAMIdentityCenter-Test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "GoogleDrive",
@@ -4223,6 +4229,13 @@
             ]
         },
         {
+            "playbookID": "VenafiV2_Test",
+            "fromversion": "6.9.0",
+            "integrations": [
+                "VenafiTLSProtect"
+            ]
+        },
+        {
             "playbookID": "3da36d51-3cdf-4120-882a-cee03b038b89",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5653,6 +5666,10 @@
             "playbookID": "Fortimail"
         },
         {
+            "integrations": "Zoom Mail",
+            "playbookID": "ZoomMailTest"
+        },
+        {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
@@ -5852,7 +5869,10 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "VMWare Test": "CIAC-10276"
+        "VMWare Test": "CIAC-10276",
+        "AWS_DynamoDB-Test": "CIAC-10426",
+        "AWS - EC2 Test Playbook": "CIAC-10426",
+        "AWS SNS Listener - Test": "CIAC-10426"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
