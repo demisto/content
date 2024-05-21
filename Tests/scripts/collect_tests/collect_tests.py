@@ -164,13 +164,11 @@ class CollectionResult:
 
         if test:
             self.tests = {test}
+            self.version_range = version_range
+            self.packs_to_install = {pack}
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            if os.getenv('NIGHTLY') or test:
-                logger.info(f"MICHAL PACK WITH TPB - {pack=}")
-                self.packs_to_install = {pack}
-                self.version_range = version_range # TODO OF WHO WIIL BE
             if only_to_install:
                 self.packs_to_install = {pack}
                 logger.info(f'collected {pack=} only to install, {reason} ({reason_description}, {version_range=})')
@@ -1265,6 +1263,8 @@ class SpecificPacksTestCollector(TestCollector):
 class NightlyTestCollector(TestCollector, ABC):
     def collect(self) -> CollectionResult | None:
         result: CollectionResult | None = super().collect()
+        logger.info('NightlyCollector install all packs to upload') # TODO
+        result.packs_to_install |= result.packs_to_upload
 
         logger.info('NightlyCollector drops packs to upload, as they don\'t need to be uploaded')
         if result:

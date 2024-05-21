@@ -67,8 +67,9 @@ class Machine(Enum):
 
         if not version_range:
             return ()
-        if version_range.min_version or version_range.max_version:
-            result = [Machine.MASTER]
+
+        if version_range.max_version:
+            return (Machine.MASTER,)
 
         result.extend(
             machine
