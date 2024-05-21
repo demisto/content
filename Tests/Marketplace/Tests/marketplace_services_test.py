@@ -386,19 +386,26 @@ class TestParsingInternalFunctions:
 
     """
 
-    @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, expected", [
-        ([], [], []),
-        ([], ["DummyPack"],
+    @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, default_data_source, expected", [
+        ([], [], {}, []),
+        ([], ["DummyPack"], {},
          [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]),
         ([{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}],
-         ["DummyPack", "DummyPack2"],
+         ["DummyPack", "DummyPack2"], {},
          [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"},
           {"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]),
         ([{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}],
-         ["DummyPack2"],
-         [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}])
+         ["DummyPack2"], {},
+         [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"},
+          {"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"},
+          {"name": "DummyIntegration1", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}], [],
+         {"name": "DummyIntegration1", "id": "DummyIntegration1"},
+         [{'imagePath': 'content/packs/DummyPack/DummyIntegration_image.png', 'name': 'DummyIntegration1'},
+          {'imagePath': 'content/packs/DummyPack/DummyIntegration_image.png', 'name': 'DummyIntegration'},
+          {'imagePath': 'content/packs/DummyPack2/DummyIntegration_image.png',  'name': 'DummyIntegration2'}])
     ])
-    def test_get_all_pack_images(self, mocker, pack_integration_images, display_dependencies_images, expected):
+    def test_get_all_pack_images(self, mocker, pack_integration_images, display_dependencies_images, default_data_source, expected):
         """
            Tests that all the pack's images are being collected without duplication, according to the pack dependencies,
            and without the contribution details suffix if exists.
@@ -409,6 +416,7 @@ class TestParsingInternalFunctions:
                - pack_integration_images with DummyIntegration, display_dependencies_images DummyPack1 and DummyPack2
                - pack_integration_images with DummyIntegration2 without contribution details suffix,
                  display_dependencies_images DummyPack2
+               - pack_integration_images with 3 integrations and default_data_source specified
 
            When:
                - Getting all pack images when formatting pack's metadata.
@@ -418,6 +426,7 @@ class TestParsingInternalFunctions:
                - Validates that all_pack_images list was updated according to the packs dependencies.
                - Validates that all_pack_images list was updated without duplications.
                - Validates that all_pack_images list was updated without the contribution details suffix.
+               - Validates that all_pack_images list was updated according to the default data source value.
         """
         from Tests.Marketplace import marketplace_services
 
@@ -439,7 +448,7 @@ class TestParsingInternalFunctions:
 
         mocker.patch.object(marketplace_services, 'load_json', side_effect=side_effect_load_json)
         all_pack_images = Pack._get_all_pack_images('', pack_integration_images, display_dependencies_images,
-                                                    display_dependencies_images, None or "DummyIntegration")  # todo deside
+                                                    display_dependencies_images, default_data_source)
 
         assert expected == all_pack_images
 
