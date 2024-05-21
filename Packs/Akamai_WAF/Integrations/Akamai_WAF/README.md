@@ -22,6 +22,7 @@ This is the modified version where a new command "akamai-update-network-list-ele
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1057,6 +1058,25 @@ Get PAPI edgehostname creation status command until it is created.
 | options | mapDetails. | Required | 
 | sleep_time | Sleep time between each iteration. | Required | 
 | retries | Number of retries. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-acknowledge-warning-command
+
+***
+Acknowledge the warning message for uploading the certs and trust chains of enrollments.
+
+#### Base Command
+
+`akamai-acknowledge-warning-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| change_path | The path of the changed certificate. | Required | 
+| allowed_input_type_param | Enum Found as the last part of Change.allowedInput[].update hypermedia URL.supported values include:change-management-ack,lets-encrypt-challenges-completed,post-verification-warnings-ack,pre-verification-warnings-ack. Possible values are: change-management-ack, lets-encrypt-challenges-completed, post-verification-warnings-ack, pre-verification-warnings-ack. Default is post-verification-warnings-ack. | Optional | 
 
 #### Context Output
 
