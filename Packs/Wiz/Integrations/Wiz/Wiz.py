@@ -697,7 +697,7 @@ def get_issue(issue_id):
     if response_json['data']['issues']['nodes'] != []:
         issues = response_json['data']['issues']['nodes']
     else:
-        demisto.error(f"There was no result for Issue ID: {issue_id}")
+        demisto.info(f"There was no result for Issue ID: {issue_id}")
 
     return issues
 
