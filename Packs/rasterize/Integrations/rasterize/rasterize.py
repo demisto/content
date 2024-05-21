@@ -21,9 +21,6 @@ from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
-pypdf_logger = logging.getLogger("PyPDF2")
-pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
-
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
