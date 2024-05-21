@@ -317,10 +317,10 @@ script:
     - contextPath: Reco.Assets.data_categories
       description: The data categories of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.location
+    - contextPath: Reco.Assets.location
       description: The path of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.source
+    - contextPath: Reco.Assets.source
       description: SaaS tool source of the asset.
       type: String
     - contextPath: Reco.Assets.last_access_date
