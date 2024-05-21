@@ -54,7 +54,8 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
 
-os.environ["DEMISTO_ExecutedCommands"] = demisto.callingContext['context']['ExecutedCommands'][0]['name']
+with open('env.txt', 'w') as file:
+    file.write(f"{demisto.callingContext['context']['ExecutedCommands'][0]['name']}")
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
