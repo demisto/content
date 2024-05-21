@@ -369,13 +369,13 @@ if (currentCommand.extended) {
         entry.EntryContext[current.contextPath] = context;
 
         if(command === 'fe-submit-result' || command === 'fe-submit-url-result'){
-            if (command === 'fe-submit-result' && 'submissionStatus' in result && result.submissionStatus.submissionStatus === 'In Progress'){
+            if (command === 'fe-submit-result' && result.hasOwnProperty('submissionStatus') && result.submissionStatus.submissionStatus === 'In Progress'){
                 return {
                     Type: entryTypes.note,
                     Contents: result,
                     ContentsType: formats.json,
                     ReadableContentsFormat: formats.text,
-                    HumanReadable: `The submission status is still in progress, please try again later.`
+                    HumanReadable: `The submission status is ${result.submissionStatus.submissionStatus}, please try again later.`
                 };
             }
             var md5 = result.alerts.alert.explanation['malware-detected'].malware.md5sum;
