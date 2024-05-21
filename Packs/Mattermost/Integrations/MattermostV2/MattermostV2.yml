@@ -283,7 +283,7 @@ script:
       name: team_name
       required: false
     - description: The name of the channel to filters users by. If mentioned, a team name must be mentioned as well.
-      name: channel_name
+      name: channel
       required: false
     - description: The page number to retrieve. Should be provided with the page_size argument. Default value is 0.
       name: page
@@ -346,15 +346,18 @@ script:
     - description: The team name of the channel to send the file to. Default is the Team Name in the integration configuration.
       name: team_name
       required: false
-    - description: The channel name of the channel to send the file to.
-      name: channel_name
-      required: true
+    - description: The channel name of the channel to send the file to. Cannot be combined with the to argument.
+      name: channel
+      required: false
     - description: The message to send to the channel along with the file.
       name: message
       required: true
     - description: The entry_id of the file.
       name: entry_id
       required: true
+    - description: The username or email of the user to send the file to. Cannot be combined with the channel argument.
+      name: message
+      required: false
     description: Sends a file.
     name: mattermost-send-file
     outputs: []
@@ -386,7 +389,7 @@ script:
       name: team_name
       required: false
     - description: The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists).
-      name: channel_name
+      name: channel
       required: false
     description: Closes a channel.
     name: mattermost-close-channel
@@ -395,8 +398,8 @@ script:
     - description: The team name of the channel to delete. Default value is the team in the integration configuration.
       name: team_name
       required: false
-    - description: The channel name of the channel to delete.
-      name: channel_name
+    - description: The channel name of the channel to close.
+      name: channel
       required: false
     description: Closes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
     name: close-channel

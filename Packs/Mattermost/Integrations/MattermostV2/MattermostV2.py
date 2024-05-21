@@ -15,7 +15,6 @@ urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
-SYNC_CONTEXT = True
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_PAGE_NUMBER = 0
 DEFAULT_PAGE_SIZE = 50
@@ -369,7 +368,7 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
         guid, incident_id, task_id = extract_entitlement(entitlement)
         demisto.handleEntitlementForUser(incident_id, guid, user_name, text, task_id)
         message['remove'] = True
-        set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
     return reply
 
 
@@ -564,7 +563,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
         demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
                       'Fetching new context')
         CACHE_EXPIRY = next_expiry_time()
-        CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+        CACHED_INTEGRATION_CONTEXT = get_integration_context()
 
     return CACHED_INTEGRATION_CONTEXT
 
@@ -614,7 +613,11 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
         channel_id = get_channel_id_from_context(channel_name, investigation_id)
 
         if not channel_id:
-            raise DemistoException(f"Did not find channel with name {channel_name}")
+            try:
+                channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, channel_name)
+                channel_id = channel_details.get('id', '')
+            except Exception as e:
+                raise DemistoException(f"Did not find channel with name {channel_name}. Error: {e}")
 
     return channel_id
 
@@ -631,7 +634,7 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response, t
         default_response: The response to send if the question times out.
         to_id: the user id the message was sent to
     """
-    integration_context = get_integration_context(SYNC_CONTEXT)
+    integration_context = get_integration_context()
     messages = integration_context.get('messages', [])
     if messages:
         messages = json.loads(integration_context['messages'])
@@ -645,7 +648,7 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response, t
         'to_id': to_id
     })
 
-    set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
 
 
 def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
@@ -797,7 +800,7 @@ async def handle_posts(payload):
                 mirror['mirrored'] = True
                 mirrors.append(mirror)
                 set_to_integration_context_with_retries({'mirrors': mirrors},
-                                                        OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                                                        OBJECTS_TO_KEYS)
 
         user_details = CLIENT.get_user_request(user_id)
         operator_name = user_details.get('username', '')
@@ -1002,7 +1005,7 @@ def find_mirror_by_investigation() -> dict:
     mirror: dict = {}
     investigation = demisto.investigation()
     if investigation:
-        integration_context = get_integration_context(SYNC_CONTEXT)
+        integration_context = get_integration_context()
         if integration_context.get('mirrors'):
             mirrors = json.loads(integration_context['mirrors'])
             investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
@@ -1185,7 +1188,7 @@ def remove_channel_member_command(client: HTTPClient, args: dict[str, Any]) -> C
 def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
     """ Closes a channels """
     team_name = args.get('team_name', client.team_name)
-    channel_name = args.get('channel_name', '')
+    channel_name = args.get('channel', '')
 
     channel_details = {}
     channel_id = ''
@@ -1209,7 +1212,7 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
             raise e
 
     mirror = find_mirror_by_investigation()
-    integration_context = get_integration_context(SYNC_CONTEXT)
+    integration_context = get_integration_context()
     if mirror:
         demisto.debug('MM: Found mirrored channel to close.')
         channel_id = mirror.get('channel_id', '')
@@ -1221,7 +1224,7 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
             demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
                                         mirror['auto_close'])
 
-        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS)
 
     return CommandResults(
         readable_output=hr
@@ -1231,7 +1234,7 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
 def list_users_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
     """ Lists users """
     team_name = args.get('team_name', '')
-    channel_name = args.get('channel_name', '')
+    channel_name = args.get('channel', '')
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
     limit = arg_to_number(args.get('limit', ''))
@@ -1269,12 +1272,26 @@ def list_users_command(client: HTTPClient, args: dict[str, Any]) -> CommandResul
 
 def send_file_command(client: HTTPClient, args) -> CommandResults:
     """ Sends a file """
-    channel_name = args.get('channel_name')
+    channel_name = args.get('channel')
     team_name = args.get('team_name', client.team_name)
     message = args.get('message')
-    entry_id = args.get('entry_id')
+    entry_id = args.get('entry_id') or args.get('file')
+    to = args.get('to')
 
-    channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
+    if (to and channel_name):
+        raise DemistoException("Cannot use both to and channel_name arguments")
+    
+    if to:
+        # create a new channel and send the message there
+        if re.match(emailRegex, to):
+            to = get_user_id_by_email(client, to)
+        else:
+            to = get_user_id_by_username(client, to)
+
+        bot_id = get_user_id_from_token(client, bot_user=True)
+        channel_details = client.create_direct_channel_request(to, bot_id)
+    else:
+        channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
 
     file_info = demisto.getFilePath(entry_id)
     params = {'channel_id': channel_details.get('id'),
@@ -1318,7 +1335,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         raise DemistoException('This action cannot be performed in the playground.')
 
-    integration_context = get_integration_context(SYNC_CONTEXT)
+    integration_context = get_integration_context()
     if not integration_context or not integration_context.get('mirrors', []):
         mirrors: list = []
         current_mirror = []
@@ -1392,7 +1409,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     demisto.mirrorInvestigation(investigation_id, f'{mirror_type}:{direction}', autoclose)
 
     mirrors.append(mirror)
-    set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS)
 
     if send_first_message:
         server_links = demisto.demistoUrls()
@@ -1559,7 +1576,7 @@ def handle_global_parameters(params: dict):  # pragma: no cover
 
     # Pull initial Cached context and set the Expiry
     CACHE_EXPIRY = next_expiry_time()
-    CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+    CACHED_INTEGRATION_CONTEXT = get_integration_context()
 
     if MIRRORING_ENABLED and (not LONG_RUNNING or not bot_access_token):
         raise DemistoException("""Mirroring is enabled, however long running is disabled
