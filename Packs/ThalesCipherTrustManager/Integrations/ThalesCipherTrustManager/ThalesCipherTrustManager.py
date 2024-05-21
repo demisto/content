@@ -32,9 +32,12 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 USER_EXPIRES_AT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
 GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
+LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
+
 BASE_URL_SUFFIX = '/api/v1'
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
@@ -78,6 +81,13 @@ class CommandArguments:
     FAILED_LOGINS_COUNT = 'failed_logins_count'
     NEW_PASSWORD = 'new_password'
     AUTH_DOMAIN = 'auth_domain'
+    CN = 'cn'
+    ALGORITHM = 'algorithm'
+    COPY_FROM_CA = 'copy_from_ca'
+    DNS_NAMES = 'dns_names'
+    IP = 'ip'
+    NAME_FIELDS = 'name_fields'
+    SIZE = 'size'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -260,11 +270,29 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
 USER_DELETE_INPUTS = [InputArgument(name=CommandArguments.USER_ID, required=True), ]
 USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True),
                                InputArgument(name=CommandArguments.PASSWORD, required=True),
-                               InputArgument(name=CommandArguments.USERNAME, required=True, description='The login name of the current user.'),
-                               InputArgument(name=CommandArguments.AUTH_DOMAIN,  description= 'The domain where user needs to '
-                                                                                              'be authenticated. This is the '
-                                                                                              'domain where user is created. '
-                                                                                              'Defaults to the root domain.'), ]
+                               InputArgument(name=CommandArguments.USERNAME, required=True,
+                                             description='The login name of the current user.'),
+                               InputArgument(name=CommandArguments.AUTH_DOMAIN, description='The domain where user needs to '
+                                                                                            'be authenticated. This is the '
+                                                                                            'domain where user is created. '
+                                                                                            'Defaults to the root domain.'), ]
+
+LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True, description='Common name'),
+                          InputArgument(name=CommandArguments.ALGORITHM,
+                                        description='RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.'),
+                          InputArgument(name=CommandArguments.COPY_FROM_CA,
+                                        description='ID of any Local CA. If given, the csr properties are copied from the given CA.'),
+                          InputArgument(name=CommandArguments.DNS_NAMES, is_array=True,
+                                        description='Subject Alternative Names (SAN) values'),
+                          InputArgument(name=CommandArguments.EMAIL, is_array=True, description='E-mail addresses'),
+                          InputArgument(name=CommandArguments.IP, is_array=True, description='IP addresses'),
+                          InputArgument(name=CommandArguments.NAME, default='localca-<id>',
+                                        description='A unique name of CA, if not provided, will be set to localca-<id>.'),
+                          InputArgument(name=CommandArguments.NAME_FIELDS, is_array=True,
+                                        description='Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country'),
+                          InputArgument(name=CommandArguments.SIZE,
+                                        description='Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'), ]
+
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
     'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
@@ -272,6 +300,8 @@ USER_CREATE_DESCRIPTION = (
     'identity providers.')
 USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
+LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
+
 '''CLIENT CLASS'''
 
 
@@ -378,6 +408,15 @@ class CipherTrustClient(BaseClient):
             return_empty_response=True,
         )
 
+    def create_local_ca(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=LOCAL_CAS_URL_SUFFIX,
+            json_data=request_data,
+            return_empty_response=True,
+            empty_valid_codes=[201],
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -406,7 +445,14 @@ def add_expires_at_param(request_data: dict, expires_at_arg: str):
     else:
         request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg, USER_EXPIRES_AT_DATE_FORMAT)
 
-
+def parse_name_fields_string_to_list(name_fields: str):
+    '''
+from this:
+{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}
+to:
+[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]
+    '''
+    return [json.loads(f'{{{name_fields}}}')]
 ''' COMMAND FUNCTIONS '''
 
 
@@ -601,7 +647,8 @@ def user_update_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-delete', description=USER_DELETE_DESCRIPTION, inputs_list=USER_DELETE_INPUTS)
+@metadata_collector.command(command_name='ciphertrust-user-delete', description=USER_DELETE_DESCRIPTION,
+                            inputs_list=USER_DELETE_INPUTS)
 def user_delete_command(client: CipherTrustClient, args: dict):
     client.delete_user(args[CommandArguments.USER_ID])
     return CommandResults(
@@ -609,7 +656,8 @@ def user_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-password-change', description=USER_PASSWORD_CHANGE_DESCRIPTION, inputs_list=USER_PASSWORD_CHANGE_INPUTS)
+@metadata_collector.command(command_name='ciphertrust-user-password-change', description=USER_PASSWORD_CHANGE_DESCRIPTION,
+                            inputs_list=USER_PASSWORD_CHANGE_INPUTS)
 def user_password_change_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         new_password=args[CommandArguments.NEW_PASSWORD],
@@ -623,9 +671,55 @@ def user_password_change_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-local-ca-create')
+#todo: response 201, will be in header?
+@metadata_collector.command(command_name='ciphertrust-local-ca-create', description=LOCAL_CA_CREATE_DESCRIPTION,
+                            inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
 def local_ca_create_command(client: CipherTrustClient, args: dict):
-    pass
+    '''
+    {
+    "cn": string,
+    "algorithm": string,
+    "copy_from_ca": string,
+    "dnsNames": [
+        string
+    ],
+    "emailAddresses": [
+        string
+    ],
+    "ipAddresses": [
+        string
+    ],
+    "name": string,
+    "names": [
+        {
+            "C": string,
+            "L": string,
+            "O": string,
+            "OU": string,
+            "ST": string
+        }
+    ],
+    "size": integer
+}
+    '''
+
+    request_data = assign_params(
+        cn=args[CommandArguments.CN],
+        algorithm=args.get(CommandArguments.ALGORITHM),
+        copy_from_ca=args.get(CommandArguments.COPY_FROM_CA),
+        dnsNames=argToList(args.get(CommandArguments.DNS_NAMES)),
+        emailAddresses=argToList(args.get(CommandArguments.EMAIL)),
+        ipAddresses=argToList(args.get(CommandArguments.IP)),
+        name=args.get(CommandArguments.NAME),
+        names=argToList(args.get(CommandArguments.NAME_FIELDS)),
+        size=arg_to_number(args.get(CommandArguments.SIZE)),
+    )
+    raw_response = client.create_local_ca(request_data=request_data)
+    return CommandResults(
+        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-list')

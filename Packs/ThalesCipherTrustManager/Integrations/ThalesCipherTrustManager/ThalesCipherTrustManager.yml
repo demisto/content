@@ -309,9 +309,33 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password.
     name: ciphertrust-user-password-change
-    arguments: []
+    arguments:
+    - name: new_password
+      isArray: false
+      description: new_password
+      required: true
+      secret: false
+      default: false
+    - name: password
+      isArray: false
+      description: password
+      required: true
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: The login name of the current user.
+      required: true
+      secret: false
+      default: false
+    - name: auth_domain
+      isArray: false
+      description: The domain where user needs to be authenticated. This is the domain where user is created. Defaults to the root domain.
+      required: false
+      secret: false
+      default: false
     outputs: []
   - deprecated: false
     description: ''
