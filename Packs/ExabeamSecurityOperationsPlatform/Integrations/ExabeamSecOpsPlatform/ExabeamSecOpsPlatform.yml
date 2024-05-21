@@ -28,7 +28,7 @@ name: ExabeamSecOpsPlatform
 script:
   commands:
   - arguments:
-    - defaultValue: "last 7 days"
+    - defaultValue: "7 days ago"
       description: The starting date for the search range.
       name: start_time
     - defaultValue: "today"
