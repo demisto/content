@@ -133,7 +133,7 @@ class ASClient:
             json_data_args['properties']['customDomain'] = custom_domain
 
         if 'enc_key_source' in args or 'enc_keyvault_key_name' in args or 'enc_keyvault_key_version' in args or \
-            'enc_keyvault_uri' in args or 'enc_requireInfrastructureEncryption' in args:
+                'enc_keyvault_uri' in args or 'enc_requireInfrastructureEncryption' in args:
             json_data_args['properties']['Encryption'] = {}
 
             if 'enc_key_source' in args:
@@ -159,7 +159,7 @@ class ASClient:
                     args.get('enc_requireInfrastructureEncryption') == 'true'
 
         if 'network_ruleset_bypass' in args or 'network_ruleset_default_action' in args or \
-            'network_ruleset_ipRules' in args or 'virtual_network_rules' in args:
+                'network_ruleset_ipRules' in args or 'virtual_network_rules' in args:
             json_data_args['properties']['networkAcls'] = {}
 
             if 'network_ruleset_bypass' in args:
@@ -249,7 +249,7 @@ class ASClient:
             properties['isVersioningEnabled'] = argToBoolean(args.get('versioning'))
 
         if 'last_access_time_tracking_policy_enabled' in args or 'last_access_time_tracking_policy_blob_types' in args \
-            or 'last_access_time_tracking_policy_days' in args:
+                or 'last_access_time_tracking_policy_days' in args:
             properties['lastAccessTimeTrackingPolicy'] = {}
 
             if 'last_access_time_tracking_policy_enabled' in args:
@@ -265,7 +265,7 @@ class ASClient:
                     args.get('last_access_time_tracking_policy_days')
 
         if 'restore_policy_enabled' in args or 'restore_policy_min_restore_time' in args \
-            or 'restore_policy_days' in args:
+                or 'restore_policy_days' in args:
             properties['restorePolicy'] = {}
 
             if 'restore_policy_enabled' in args:
