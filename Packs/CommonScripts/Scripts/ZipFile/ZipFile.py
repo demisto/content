@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import re
 import shutil
 import zipfile
-import zipencrypt
+import pyminizip
 from os.path import isfile
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
@@ -76,9 +76,7 @@ def main():
 
         # zipping the file
         if password:
-            with zipencrypt.ZipFile(zipName, mode="w") as zf:
-                for file_name in file_names:
-                    zf.write(file_name, compress_type=compression, pwd=password.encode('utf-8'))
+            pyminizip.compress_multiple(file_names, ['./'] * len(file_names), zipName, password, 5)
 
         else:
             zf = zipfile.ZipFile(zipName, mode='w')
