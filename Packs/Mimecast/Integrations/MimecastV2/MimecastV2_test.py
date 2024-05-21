@@ -703,7 +703,7 @@ def test_get_archive_search_logs_command(mocker):
     """
 
     args = {'limit': '5', 'query': 'integration.com'}
-    expected_response = {
+    expected_response = [{
         "meta": {
             "pagination": {
                 "pageSize": 10,
@@ -727,10 +727,10 @@ def test_get_archive_search_logs_command(mocker):
             }
         ],
         "fail": []
-    }
-    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+    }]
+    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=expected_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert expected_response['data'][0]['logs'] == result.outputs['data'][0]['logs']
+    assert expected_response[0]['data'][0]['logs'] == result.outputs['data'][0]['logs']
 
 
 def test_get_search_logs_command(mocker):
@@ -789,8 +789,8 @@ def test_get_view_logs_command(mocker):
         mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
     """
 
-    args = {"end": "2024-09-16T14:49:18+0000", "limit": "2", "query": "aa@aaa.one", "start": "2017-09-16T14:49:18+0000"}
-    expected_response = {
+    args = {"end": "2024-09-16T14:49:18+0000", "limit": "2", "query": "example@test.com", "start": "2017-09-16T14:49:18+0000"}
+    expected_response = [{
         "meta": {"pagination": {"pageSize": 2, "totalCount": 81, "next": "eNo00000"}, "status": 200},
         "data": [
             {
@@ -817,21 +817,22 @@ def test_get_view_logs_command(mocker):
             },
         ],
         "fail": [],
-    }
-    mocker.patch.object(MimecastV2, "request_with_pagination_api2", return_value=expected_response)
+    }]
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=expected_response)
     result = MimecastV2.get_view_logs_command(args)
-    assert expected_response.get("data") == result.outputs["data"]
+    assert expected_response[0].get("data") == result.outputs["data"]
 
 
 def test_list_account_command(mocker):
     """
-
+    Test the list_account_command function of the MimecastV2 integration.
 
     Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
     """
 
     args = {'account_code': 'ABC123'}
-    expected_response = {'meta': {'status': 200},
+    expected_response = [{'meta': {'status': 200},
                          'data': [{'region': 'us', 'archive': False, 'gateway': True, 'passphrase': '', 'supportCode': '6747',
                                    'maxRetention': 30, 'maxRetentionConfirmed': True, 'minRetentionEnabled': False,
                                    'automatedSegmentPurge': True, 'type': 'full', 'policyInheritance': False,
@@ -843,10 +844,10 @@ def test_list_account_command(mocker):
                                    'contactEmail': 'example@test.com', 'domain': '',
                                    'userCount': 10, 'mimecastId': '01-0102-00236', 'contactName': 'Adnan Kharuf',
                                    'telephone': '4088307584',
-                                   'packages': ['Journal Services [1053]', 'Desktop Apps - Outlook (Pro) [1016]',]}], 'fail': []}
-    mocker.patch.object(MimecastV2, 'request_with_pagination_api2', return_value=expected_response)
+                                   'packages': ['Journal Services [1053]', 'Desktop Apps - Outlook (Pro) [1016]',]}], 'fail': []}]
+    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=expected_response)
     result = MimecastV2.list_account_command(args)
-    assert expected_response.get('data') == result.outputs['data']
+    assert expected_response[0].get('data') == result.outputs['data']
 
 
 def test_list_policies_command(mocker):
@@ -857,7 +858,7 @@ def test_list_policies_command(mocker):
     """
 
     args = {"policyType": "address-alteration"}
-    expected_response = [
+    expected_response = [[
         {
             "option": "no_action",
             "id": "eNo1jr",
@@ -881,9 +882,9 @@ def test_list_policies_command(mocker):
                 "lastUpdated": "2024-04-17T09:01:16+0000",
             },
         }
-    ]
+    ]]
 
-    mocker.patch.object(MimecastV2, "request_with_pagination_api2", return_value=expected_response)
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=expected_response)
     result = MimecastV2.list_policies_command(args)
     assert result.outputs == expected_response
 
@@ -949,10 +950,43 @@ def test_update_antispoofing_bypass_policy_command(mocker):
     Args:
     """
 
-    args = {'description': 'test_1', 'enabled': 'true', 'from_eternal': 'true',
-            'id': 'eNo11111', 'option': 'disable_bypass', 'to_eternal': 'true'}
-    expected_response = {'meta': {'status': 200}, 'data': [{'option': 'disable_bypass', 'id': 'eNo11111', 'policy': {'description': 'test_1', 'fromPart': 'envelope_from', 'from': {'type': 'everyone'}, 'to': {'type': 'everyone'}, 'fromType': 'everyone', 'toType': 'everyone', 'fromEternal': True,
-                                                                                                                     'toEternal': True, 'fromDate': '1900-01-01T00:00:00+0000', 'toDate': '2100-01-01T23:59:59+0000', 'override': False, 'bidirectional': False, 'conditions': {}, 'enabled': True, 'enforced': False, 'createTime': '2024-05-06T13:48:16+0000', 'lastUpdated': '2024-05-07T13:26:34+0000'}}], 'fail': []}
+    args = {
+        "description": "test_1",
+        "enabled": "true",
+        "from_eternal": "true",
+        "id": "eNo11111",
+        "option": "disable_bypass",
+        "to_eternal": "true",
+    }
+    expected_response = {
+        "meta": {"status": 200},
+        "data": [
+            {
+                "option": "disable_bypass",
+                "id": "eNo11111",
+                "policy": {
+                    "description": "test_1",
+                    "fromPart": "envelope_from",
+                    "from": {"type": "everyone"},
+                    "to": {"type": "everyone"},
+                    "fromType": "everyone",
+                    "toType": "everyone",
+                    "fromEternal": True,
+                    "toEternal": True,
+                    "fromDate": "1900-01-01T00:00:00+0000",
+                    "toDate": "2100-01-01T23:59:59+0000",
+                    "override": False,
+                    "bidirectional": False,
+                    "conditions": {},
+                    "enabled": True,
+                    "enforced": False,
+                    "createTime": "2024-05-06T13:48:16+0000",
+                    "lastUpdated": "2024-05-07T13:26:34+0000",
+                },
+            }
+        ],
+        "fail": [],
+    }
     mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
     result = MimecastV2.update_antispoofing_bypass_policy_command(args)
     assert expected_response.get('data') == result.outputs.get('data')

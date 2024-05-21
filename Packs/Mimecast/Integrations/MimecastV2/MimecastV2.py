@@ -199,20 +199,13 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
 
 def token_oauth2_request():
-    if not CLIENT_ID:
-        raise Exception('In order to refresh a token validty duration, account\'s client id is required.')
-    if not CLIENT_SECRET:
-        raise Exception('In order to refresh a token validty duration, account\'s client secret is required.')
-    client_id = CLIENT_ID
-    client_secret = CLIENT_SECRET
-
     api_endpoint = '/oauth/token'
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
     data = {
-        'client_id': client_id,
-        'client_secret': client_secret,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
         'grant_type': 'client_credentials'
     }
     response = http_request('POST', api_endpoint, user_auth=False, headers=headers, data=data)
@@ -982,11 +975,11 @@ def get_policy_request(policy_type='blockedsenders', policy_id=None):
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = []
 
-    id_field_name = 'id' if policy_type != 'address-alteration' else 'folderId'
+    id = 'id' if policy_type != 'address-alteration' else 'folderId'
 
     if policy_id:
         data.append({
-            id_field_name: policy_id
+            id: policy_id
         })
     payload = {
         'data': data
@@ -1283,10 +1276,10 @@ def delete_policy_request(policy_type, policy_id=None):
         'address-alteration': 'address-alteration/delete-policy',
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
-    id_field_name = 'id'
+    id = 'id'
 
     data = [{
-        id_field_name: policy_id
+        id: policy_id
     }]
 
     payload = {
@@ -3132,7 +3125,7 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
         data["query"] = query
 
     result_list = request_with_pagination(
-        "/api/archive/get-archive-search-logs", data, response_param="logs", limit=limit, page=page, page_size=page_size
+        "/api/archive/get-archive-search-logs", data, response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
     )
 
     return CommandResults(outputs_prefix="Mimecast.ArchiveSearchLog", outputs=result_list[0])
@@ -3155,7 +3148,8 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if end:
         data['end'] = end
 
-    result_list = request_with_pagination(
+    result_list, _ = request_with_pagination(
+        # type: ignore
         "/api/archive/get-archive-search-logs", [data], response_param="logs", limit=limit, page=page, page_size=page_size
     )
 
@@ -3186,7 +3180,7 @@ def get_view_logs_command(args: dict) -> CommandResults:
         data['end'] = end
 
     response = request_with_pagination(
-        "/api/archive/get-view-logs", [data], limit=limit, page=page, page_size=page_size
+        "/api/archive/get-view-logs", [data], limit=limit, page=page, page_size=page_size  # type: ignore
     )
 
     return CommandResults(
@@ -3219,7 +3213,7 @@ def list_account_command(args: dict) -> CommandResults:
         data['userCount'] = user_count
 
     response = request_with_pagination(
-        "/api/account/get-account", [data], limit=limit, page=page, page_size=page_size
+        "/api/account/get-account", [data], limit=limit, page=page, page_size=page_size  # type: ignore
     )
 
     return CommandResults(
@@ -3241,7 +3235,7 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)
+    policies_list = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
 
     contents = []
     for policy_list in policies_list[0]:
@@ -3299,7 +3293,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     to_type = args.get('to_type')
     to_value = args.get('to_value')
 
-    data = {
+    data: dict[str, Any] = {
         "option": option,
         "policy": {
             "description": description,
@@ -3427,7 +3421,7 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     to_type = args.get('to_type')
     to_value = args.get('to_value')
 
-    data = {
+    data: dict[str, Any] = {
         'addressAlterationSetId': policy_id,
         'policy': {
             'description': policy_description,
