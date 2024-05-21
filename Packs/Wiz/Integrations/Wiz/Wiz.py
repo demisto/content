@@ -679,7 +679,7 @@ def get_issue(issue_id):
 
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
-        demisto.error(message)
+        demisto.debug(message)
         return message
 
     issue_variables = {
@@ -691,7 +691,7 @@ def get_issue(issue_id):
 
     response_json = checkAPIerrors(PULL_ISSUES_QUERY, issue_variables)
 
-    demisto.info(f"The API response is {response_json}")
+    demisto.debug(f"The API response is {response_json}")
 
     issues = {}
     if response_json['data']['issues']['nodes'] != []:
