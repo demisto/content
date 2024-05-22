@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Client Id
+- display: Client ID
   name: credentials
   required: true
   section: Connect
@@ -41,7 +41,7 @@ script:
     - description: Comma-separated list of fields to be returned from the search.
       name: fields
       required: false
-    - description: Comma-separated list of fields to GROUP BY.
+    - description: Comma-separated list of fields by which to group the results.
       name: group_by
       required: false
     - description: The maximal number of results to return. Maximum value is 3000.
@@ -51,19 +51,19 @@ script:
     name: exabeam-platform-event-search
     outputs:
     - contextPath: ExabeamPlatform.Event.id
-      description: Represents the unique identifier associated with the event.
+      description: The unique identifier associated with the event.
       type: String
     - contextPath: ExabeamPlatform.Event.rawLogIds
-      description: Represents the raw log identifiers associated with the event.
+      description: The raw log identifiers associated with the event.
       type: String
     - contextPath: ExabeamPlatform.Event.tier
-      description: Represents the tier associated with the event.
+      description: The tier associated with the event.
       type: String
     - contextPath: ExabeamPlatform.Event.parsed
-      description: Indicates whether the event has been parsed.
+      description: Whether the event has been parsed.
       type: String
     - contextPath: ExabeamPlatform.Event.rawLogs
-      description: Represents the raw logs associated with the event.
+      description: The raw logs associated with the event.
       type: String
   runonce: false
   script: '-'

@@ -10,7 +10,7 @@ This integration was integrated and tested with version v1.0 of ExabeamSecOpsPla
     | **Parameter** | **Required** |
     | --- | --- |
     | Server URL | True |
-    | Client Id | True |
+    | Client ID | True |
     | Client Secret | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
@@ -39,18 +39,18 @@ Get events from Exabeam Security Operations Platform.
 | end_time | The ending date for the search range. | Required | 
 | query | Query, using Lucene syntax, filters log data for precise analysis. | Optional | 
 | fields | Comma-separated list of fields to be returned from the search. | Optional | 
-| group_by | Comma-separated list of fields to GROUP BY. | Optional | 
+| group_by | Comma-separated list of fields by which to group the results. | Optional | 
 | limit | The maximal number of results to return. Maximum value is 3000. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ExabeamPlatform.Event.id | String | Represents the unique identifier associated with the event. | 
-| ExabeamPlatform.Event.rawLogIds | String | Represents the raw log identifiers associated with the event. | 
-| ExabeamPlatform.Event.tier | String | Represents the tier associated with the event. | 
-| ExabeamPlatform.Event.parsed | String | Indicates whether the event has been parsed. | 
-| ExabeamPlatform.Event.rawLogs | String | Represents the raw logs associated with the event. | 
+| ExabeamPlatform.Event.id | String | The unique identifier associated with the event. | 
+| ExabeamPlatform.Event.rawLogIds | String | The raw log identifiers associated with the event. | 
+| ExabeamPlatform.Event.tier | String | The tier associated with the event. | 
+| ExabeamPlatform.Event.parsed | String | Whether the event has been parsed. | 
+| ExabeamPlatform.Event.rawLogs | String | The raw logs associated with the event. | 
 
 #### Command example
 ```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2```
