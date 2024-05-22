@@ -285,6 +285,7 @@ def main() -> None:    # pragma: no cover
             raise NotImplementedError(f"Command {command} is not supported")
 
     except Exception as e:
+        demisto.info(str(e))
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
     finally:
