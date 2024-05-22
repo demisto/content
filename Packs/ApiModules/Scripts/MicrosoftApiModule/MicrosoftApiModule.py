@@ -20,6 +20,7 @@ class Scopes:
 class Resources:
     graph = 'https://graph.microsoft.com/'
     security_center = 'https://api.securitycenter.microsoft.com/'
+    security = 'https://api.security.microsoft.com/'
     management_azure = 'https://management.azure.com/'  # resource_manager
     manage_office = 'https://manage.office.com/'
 
