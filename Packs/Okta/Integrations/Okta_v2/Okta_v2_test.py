@@ -944,3 +944,31 @@ def test_set_temp_password_command():
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
 
     assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'
+
+
+LOGS_WITH_LIMIT = [
+    (None, 3),
+    (1, 1),
+    (3, 3),
+    (1001, 3)
+]
+
+
+@pytest.mark.parametrize('limit, logs_amount', LOGS_WITH_LIMIT)
+def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
+    """
+    Given:
+        - An Okta IAM client object.
+    When:
+        - Calling function okta-get-logs
+        - Events should come in two batches of two events in the first batch, and one event in the second batch.
+    Then:
+        - Ensure three events are returned in incident the correct format.
+    """
+    from Okta_v2 import get_logs_command
+
+    mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
+    requests_mock.get(f"{BASE_URL}/logs?limit={limit}", json=LOGS[:limit])
+    args = {'limit': limit}
+    results = get_logs_command(client=mock_client(), args=args)
+    assert len(results.outputs) == logs_amount

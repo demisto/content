@@ -548,4 +548,3 @@ def test_get_logs_command(mocker, requests_mock, limit, logs_amount):
     args = {'limit': limit}
     results = get_logs_command(client=mock_client(), args=args)
     assert len(results.outputs) == logs_amount
-
