@@ -63,6 +63,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "sha-1": FeedIndicatorType.File,
     "sha-256": FeedIndicatorType.File,
     "file:hashes": FeedIndicatorType.File,
+    "vulnerability": FeedIndicatorType.CVE,
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
@@ -176,6 +177,7 @@ class STIX2Parser:
         "windows-registry-key",
         "relationship",
         "extension-definition",
+        "vulnerability",
     ]
 
     def __init__(self):
@@ -658,6 +660,31 @@ class STIX2Parser:
         )
         return registry_key_indicator
 
+    @staticmethod
+    def parse_vulnerability(vulnerability_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses vulnerability indicator type to cortex format.
+
+        Args:
+            vulnerability_obj (dict): indicator as an observable object of vulnerability type.
+        """
+        vulnerability = {
+            "value": vulnerability_obj.get("name"),
+            "indicator_type": FeedIndicatorType.CVE,
+            "rawJSON": vulnerability_obj,
+        }
+        fields = {
+            "stixid": vulnerability_obj.get("id"),
+            "firstseenbysource": vulnerability_obj.get("created"),
+            "modified": vulnerability_obj.get("modified"),
+            "description": vulnerability_obj.get("description", ""),
+            "external_references": vulnerability_obj.get("external_references", []),
+            "tags": list(set(vulnerability_obj.get("labels", []))),
+        }
+
+        vulnerability["customFields"] = fields
+        return [vulnerability]
+
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> dict[str, Any]:
         """Parse the Relationships objects retrieved from the feed.
 
@@ -753,6 +780,7 @@ class STIX2Parser:
             "mutex": self.parse_sco_mutex_indicator,
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
+            "vulnerability": self.parse_vulnerability,
         }
         indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
         return indicators
