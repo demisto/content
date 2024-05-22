@@ -443,12 +443,138 @@ EXTERNAL_CERTIFICATE_UPDATE_INPUTS = [
 ]
 
 EXTERNAL_CERTIFICATE_LIST_INPUTS = [
-    InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
-    InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
-    InputArgument(name=CommandArguments.SERIAL_NUMBER, description='Filter by serial number'),
-    InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
-] + PAGINATION_INPUTS
+                                       InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
+                                       InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
+                                       InputArgument(name=CommandArguments.SERIAL_NUMBER, description='Filter by serial number'),
+                                       InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
+                                   ] + PAGINATION_INPUTS
 ''' OUTPUTS '''
+'''
+
+                            outputs_list=[OutputArgument(name="some_out",
+                                                         description="some desc",
+                                                         output_type=int),
+                                          OutputArgument(name="some_other_name",
+                                                         description="some other description.",
+                                                         output_type=bool)]
+'''
+
+'''
+skip integerrequired
+The index of the first record returned. Equivalent to 'offset' in SQL.
+
+limit integerrequired
+The max number of records returned. Equivalent to 'limit' in SQL.
+
+total integerrequired
+The total records matching the query.
+
+messages array
+An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
+
+items
+{"type":"string"}
+
+name string
+name of the group
+
+user_metadata object
+A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+
+app_metadata object
+A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+
+client_metadata object
+A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+
+description string
+description of the group
+
+users_count integer
+It returns the total user count associated with the group
+'''
+GROUPS_LIST_OUTPUT = [
+    OutputArgument(name="limit", output_type=int, description="The max number of records returned. Equivalent to 'limit' in SQL."),
+    OutputArgument(name="skip", output_type=int, description="The index of the first record returned. Equivalent to 'offset' in SQL."),
+    OutputArgument(name="total", output_type=int, description="The total records matching the query."),
+    OutputArgument(name="messages", output_type=list, description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."), #todo: dynamic : messages arrayAn optional list of warning messages, usually used to note when unsupported query parameters were ignored. items {"type":"string"}
+    OutputArgument(name="resources.name", output_type=str , description= "name of the group"),
+    OutputArgument(name="resources.created_at", output_type=datetime, description="The time the group was created."),
+    OutputArgument(name="resources.updated_at", output_type=datetime , description= "The time the group was last updated."),
+    OutputArgument(name="resources.user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="resources.app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="resources.client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="resources.description", output_type=str , description= "description of the group"),
+    OutputArgument(name="resources.users_count", output_type=int , description= "It returns the total user count associated with the group"),
+]
+
+GROUP_CREATE_OUTPUT = [
+    OutputArgument(name="name", output_type=str, description="The name of the group."),
+    OutputArgument(name="created_at", output_type=datetime, description= "The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime , description= "The time the group was last updated."),
+    OutputArgument(name="user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="description", output_type=str , description= "The description of the group."),
+    OutputArgument(name="users_count", output_type=int , description= "The total user count associated with the group."), #todo: apeears in documenation but not in the response
+]
+
+
+GROUP_UPDATE_OUTPUT = [
+    OutputArgument(name="name", output_type=str, description="The name of the group."),
+    OutputArgument(name="created_at", output_type=datetime, description= "The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime , description= "The time the group was last updated."),
+    OutputArgument(name="user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="description", output_type=str , description= "The description of the group."),
+    OutputArgument(name="users_count", output_type=int , description= "The total user count associated with the group."),
+]
+
+
+'''
+name string
+name of the group
+
+user_metadata object
+A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+
+app_metadata object
+A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+
+client_metadata object
+A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+
+description string
+description of the group
+
+users_count integer
+It returns the total user count associated with the group
+
+"app_metadata": {},
+		"created_at": "2016-12-05T15:13:49.543Z",
+		"name": "drivers",
+		"updated_at": "2016-12-05T15:13:49.543Z",
+		"user_metadata": {},
+		"client_metadata": {}
+'''
+USER_TO_GROUP_ADD_OUTPUT = [
+    OutputArgument(name="name", output_type=str, description="The name of the group."),
+    OutputArgument(name="created_at", output_type=datetime, description= "The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime , description= "The time the group was last updated."),
+    OutputArgument(name="user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="description", output_type=str , description= "The description of the group."),
+    OutputArgument(name="users_count", output_type=int , description= "The total user count associated with the group."),
+]
+
+USER_TO_GROUP_REMOVE_OUTPUT = []
+
+
+USERS_LIST_OUTPUT = []
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
@@ -1168,7 +1294,9 @@ def external_certificate_delete_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-update', inputs_list=EXTERNAL_CERTIFICATE_UPDATE_INPUTS, description=EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION, outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
+@metadata_collector.command(command_name='ciphertrust-external-certificate-update',
+                            inputs_list=EXTERNAL_CERTIFICATE_UPDATE_INPUTS, description=EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION,
+                            outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
@@ -1183,11 +1311,13 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-list', inputs_list=EXTERNAL_CERTIFICATE_LIST_INPUTS, description=EXTERNAL_CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
+@metadata_collector.command(command_name='ciphertrust-external-certificate-list', inputs_list=EXTERNAL_CERTIFICATE_LIST_INPUTS,
+                            description=EXTERNAL_CERTIFICATE_LIST_DESCRIPTION,
+                            outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_list_command(client: CipherTrustClient, args: dict):
-    skip,limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
-                                                        args.get(CommandArguments.PAGE),
-                                                        args.get(CommandArguments.PAGE_SIZE))
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+                                                       args.get(CommandArguments.PAGE),
+                                                       args.get(CommandArguments.PAGE_SIZE))
     params = assign_params(
         skip=skip,
         limit=limit,
