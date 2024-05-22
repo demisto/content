@@ -133,7 +133,7 @@ def dates_in_range(start_time: Any, end_time: Any) -> list[str]:
     return dates
 
 
-def get_date(time: str, arg_name:str):
+def get_date(time: str, arg_name: str):
     """
     Get the date from a given time string.
 
