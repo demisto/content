@@ -437,7 +437,7 @@ script:
       - ASCENDING
       - DESCENDING
     - defaultValue: '100'
-      description: The maximum number of results to return. The default is 100.
+      description: The maximum number of results to return, between 0 and 1000 maximum. The default is 100.
       name: limit
     description: Gets logs by providing optional filters.
     name: okta-get-logs
