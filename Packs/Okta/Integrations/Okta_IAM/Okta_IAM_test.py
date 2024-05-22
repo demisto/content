@@ -486,8 +486,6 @@ LOGS = [
 
 
 def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
-    # first_batch = [{'mock_log1': 'mock_value1'}, {'mock_log2': 'mock_value2'}]
-    # second_batch = [{'mock_log3': 'mock_value3'}]
     if url_suffix:
         # first iteration
         return LOGS[:2], 'mock_next_page'
