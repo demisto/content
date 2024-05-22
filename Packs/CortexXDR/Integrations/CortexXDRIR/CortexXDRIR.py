@@ -1032,7 +1032,7 @@ def update_related_alerts(client: Client, args: dict):
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
-                    max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None, 
+                    max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
                     starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
