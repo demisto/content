@@ -196,7 +196,11 @@ def calculate_page_parameters(args: dict) -> tuple[int, int]:
     if page_arg and page_size_arg:
         page = arg_to_number(args.get('page', '1'))
         page_size = get_limit(args, "page_size")
+        if page == 0 or page_size == 0:
+            raise DemistoException("Both 'page' and 'page_size' must be greater than 0.")
         if page and page_size:
+            if page < 0 or page_size < 0:
+                raise DemistoException("Both 'page' and 'page_size' must be greater than 0.")
             from_param = page * page_size - page_size
             size_param = page_size
     else:
