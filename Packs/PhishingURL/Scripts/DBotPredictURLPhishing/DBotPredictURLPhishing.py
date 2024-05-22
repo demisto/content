@@ -492,7 +492,7 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
         rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
         res_rasterize = sum(rasterize_runs, [])
     weed_rasterize_errors(urls, res_rasterize)
-    return res_rasterize
+    return cast(list[dict], res_rasterize)
 
 
 def get_whois_verdict(domains: list[dict]) -> list:
