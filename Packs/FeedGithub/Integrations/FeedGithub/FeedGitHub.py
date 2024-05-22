@@ -5,7 +5,7 @@ import plyara
 import tldextract
 
 CONTEXT_PREFIX = "GITHUB"
-RAW_RESPONSE = []
+RAW_RESPONSE = ""
 
 
 class Client(BaseClient):
@@ -223,7 +223,7 @@ def detect_domain_type(domain: str):
         Optional[FeedIndicatorType]: The type of the indicator, or None if detection fails.
     """
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)  # type: ignore
+        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None) # type: ignore
 
         if no_cache_extract(domain).suffix:
             if "*" in domain:
@@ -317,7 +317,7 @@ def arrange_iocs_indicator_to_xsoar(file_path: str, parsed_indicators: list, par
 def get_stix_indicators(repo_files_content):
     stix_client = STIX2XSOARParser({})
     generator_stix_files = create_stix_generator(repo_files_content)
-    indicators = stix_client.load_stix_objects_from_envelope(generator_stix_files)  # type: ignore
+    indicators = stix_client.load_stix_objects_from_envelope(generator_stix_files) # type: ignore
     return indicators
 
 
