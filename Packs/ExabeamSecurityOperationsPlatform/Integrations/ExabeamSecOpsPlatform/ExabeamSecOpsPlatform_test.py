@@ -218,8 +218,8 @@ def test_search_request(mocker):
     assert result == mocked_response
 
 
-@pytest.mark.parametrize('args, expected_output',[
-    ({},50),
+@pytest.mark.parametrize('args, expected_output', [
+    ({}, 50),
     ({'limit': None}, 50),
     ({'limit': 1000}, 1000),
     ({'limit': 5000}, 3000)

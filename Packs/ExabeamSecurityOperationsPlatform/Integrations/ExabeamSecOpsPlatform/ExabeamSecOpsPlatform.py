@@ -172,6 +172,7 @@ def get_limit(args: dict) -> int:
 
     return 50
 
+
 ''' COMMAND FUNCTIONS '''
 
 
