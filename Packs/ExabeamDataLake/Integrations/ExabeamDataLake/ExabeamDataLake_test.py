@@ -289,13 +289,13 @@ def test_query_datalake_request(mocker):
     mock_login.assert_called_once()
 
 
-@pytest.mark.parametrize('args, expected_output', [
-    ({}, 50),
-    ({'limit': None}, 50),
-    ({'limit': 1000}, 1000),
-    ({'limit': 5000}, 3000)
+@pytest.mark.parametrize('args, arg_name, expected_output', [
+    ({}, 'limit', 50),
+    ({'limit': None}, 'limit', 50),
+    ({'limit': 1000}, 'limit', 1000),
+    ({'limit': 5000}, 'limit', 3000)
 ])
-def test_get_limit(args, expected_output):
+def test_get_limit(args, arg_name, expected_output):
     """
     GIVEN:
         a dictionary containing the 'limit' argument with various values.
@@ -308,4 +308,4 @@ def test_get_limit(args, expected_output):
         otherwise, it should return 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, it should return 50 as the default limit.
     """
-    assert get_limit(args) == expected_output
+    assert get_limit(args, arg_name) == expected_output

@@ -154,7 +154,7 @@ def get_date(time: str, arg_name: str):
     return date
 
 
-def get_limit(args: dict) -> int:
+def get_limit(args: dict, arg_name) -> int:
     """
     Get the limit value specified in the arguments.
 
@@ -165,7 +165,7 @@ def get_limit(args: dict) -> int:
         int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
     """
-    if limit := args.get('limit'):
+    if limit := args.get(arg_name):
         return min(int(limit), 3000)
 
     return 50
@@ -195,13 +195,13 @@ def calculate_page_parameters(args: dict) -> tuple[int, int]:
 
     if page_arg and page_size_arg:
         page = arg_to_number(args.get('page', '1'))
-        page_size = arg_to_number(args.get('page_size', '50'))
+        page_size = get_limit(args, "page_size")
         if page and page_size:
             from_param = page * page_size - page_size
             size_param = page_size
     else:
         from_param = 0
-        size_param = get_limit(args)
+        size_param = get_limit(args, "limit")
 
     return from_param, size_param
 
