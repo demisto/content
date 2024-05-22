@@ -424,7 +424,6 @@ script:
       required: false
       secret: false
       default: false
-      defaultValue: localca-<id>
     - name: name_fields_raw_json
       isArray: true
       description: Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country
