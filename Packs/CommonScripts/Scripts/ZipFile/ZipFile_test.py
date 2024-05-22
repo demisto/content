@@ -24,6 +24,14 @@ def test_escape_characters_in_file_name(input_name, output_name):
 
 
 def test_compress_multiple_with_password():
+    """
+    Given:
+        - A directory with files to zip.
+    When:
+        - Calling the function compress_multiple.
+    Then:
+        - The function should not raise an exception.
+    """
     test_data_dir = './test_data'
     file_names = [os.path.join(test_data_dir, f) for f in os.listdir(test_data_dir) if
                   os.path.isfile(os.path.join(test_data_dir, f))]
@@ -36,7 +44,15 @@ def test_compress_multiple_with_password():
         )
 
 
-def test_unzip():
+def test_zip_and_unzip_with_password():
+    """
+    Given:
+        - A directory with files to zip.
+    When:
+        - Calling the function compress_multiple with a password.
+    Then:
+        - We can unzip the file with the correct password.
+    """
     test_data_dir = './test_data'
     file_names = [os.path.join(test_data_dir, f) for f in os.listdir(test_data_dir) if
                   os.path.isfile(os.path.join(test_data_dir, f))]
@@ -51,6 +67,14 @@ def test_unzip():
 
 
 def test_unzip_wrong_password():
+    """
+    Given:
+        - A directory with files to zip.
+    When:
+        - Calling the function compress_multiple with a password.
+    Then:
+        - We can not unzip the file with the wrong password.
+    """
     test_data_dir = './test_data'
     file_names = [os.path.join(test_data_dir, f) for f in os.listdir(test_data_dir) if
                   os.path.isfile(os.path.join(test_data_dir, f))]

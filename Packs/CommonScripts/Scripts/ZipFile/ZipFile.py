@@ -17,6 +17,7 @@ def test_compression_succeeded(zip_name: str, password: str = None):
             zf.setpassword(bytes(password, 'utf-8'))
         ret = zf.testzip()
         if ret is not None:
+            demisto.log('zf.testzip() failed')
             raise DemistoException('There was a problem with zipping the file: ' + ret + ' is corrupted')
 
 
