@@ -161,7 +161,7 @@ def test_close_channel_command_no_mirror(http_client):
     Then: Ensure we get the result.
     """
     args = {'team_name': 'team_name',
-            'channel_name': 'channel_name', }
+            'channel': 'channel_name', }
     results = close_channel_command(http_client, args)
     assert 'The channel channel_name was delete successfully.' in results.readable_output
 
@@ -173,7 +173,7 @@ def test_close_channel_command_mirror(http_client, mocker):
     Then: Ensure we get the result, and  was called only once with the first mirror
     """
     args = {'team_name': 'team_name',
-            'channel_name': 'channel_name', }
+            'channel': 'channel_name', }
 
     import MattermostV2
     MattermostV2.CACHE_EXPIRY = False
@@ -209,7 +209,7 @@ def test_send_file_command(http_client, mocker):
     mocker.patch.object(http_client, 'send_file_request', return_value=util_load_json("test_data/send_file_response.json"))
 
     args = {'team_name': 'team_name',
-            'channel_name': 'channel_name', }
+            'channel': 'channel_name', }
     send_file_command(http_client, args)
 
 
@@ -260,7 +260,6 @@ def test_save_entitlement():
     expiry = "2023-09-09"
     default_response = "Default Response"
     to_id = "user@example.com"
-    SYNC_CONTEXT = True
     OBJECTS_TO_KEYS = {
         'messages': 'entitlement',
     }
@@ -289,8 +288,8 @@ def test_save_entitlement():
             ]
         }
 
-        mock_get_integration_context.assert_called_once_with(SYNC_CONTEXT)
-        mock_set_integration_context.assert_called_once_with(expected_data, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        mock_get_integration_context.assert_called_once_with()
+        mock_set_integration_context.assert_called_once_with(expected_data, OBJECTS_TO_KEYS)
 
 
 @pytest.mark.parametrize("entitlement, expected_result", [
@@ -541,10 +540,10 @@ async def test_create_incidents(mocker):
 
     incidents_with_labels = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
                               'labels': [{'type': 'Reporter', 'value': 'spengler'},
-                                         {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'},
+                                         {'type': 'ReporterEmail', 'value': 'test@test.com'},
                                          {'type': 'Source', 'value': 'Slack'}]}]
 
-    data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
+    data = await create_incidents(incidents, 'spengler', 'test@test.com', 'demisto_user')
 
     incident_arg = demisto.createIncidents.call_args[0][0]
     user_arg = demisto.createIncidents.call_args[1]['userID']

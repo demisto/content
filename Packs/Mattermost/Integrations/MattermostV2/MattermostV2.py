@@ -310,7 +310,7 @@ class HTTPClient(BaseClient):
 
     def create_direct_channel_request(self, user_id: str, bot_id: str) -> dict[str, Any]:
         "creates a direct channel"
-        response = self._http_request(method='POST', url_suffix='/api/v4/channels/direct', data=[bot_id, user_id])
+        response = self._http_request(method='POST', url_suffix='/api/v4/channels/direct', json_data=[bot_id, user_id])
 
         return response
 
@@ -432,7 +432,7 @@ async def mattermost_loop():  # pragma: no cover
 
 def long_running_loop():  # pragma: no cover
     global MIRRORING_ENABLED
-    tts = 15 if MIRRORING_ENABLED else 60
+    tts = 30 if MIRRORING_ENABLED else 60
     while True:
         error = ''
         try:
@@ -1272,23 +1272,29 @@ def list_users_command(client: HTTPClient, args: dict[str, Any]) -> CommandResul
 
 def send_file_command(client: HTTPClient, args) -> CommandResults:
     """ Sends a file """
-    channel_name = args.get('channel')
+    channel_name = args.get('channel', '')
     team_name = args.get('team_name', client.team_name)
     message = args.get('message')
     entry_id = args.get('entry_id') or args.get('file')
-    to = args.get('to')
+    to = args.get('to', '')
+
+    demisto.debug(f'{to=}, {channel_name=}')
 
     if (to and channel_name):
         raise DemistoException("Cannot use both to and channel_name arguments")
-    
+
+    if not to and not channel_name:
+        raise DemistoException("You must provide an to or channel_name arguments")
+
     if to:
-        # create a new channel and send the message there
+        # create a new direct channel and send the message there
         if re.match(emailRegex, to):
             to = get_user_id_by_email(client, to)
         else:
             to = get_user_id_by_username(client, to)
 
         bot_id = get_user_id_from_token(client, bot_user=True)
+        demisto.debug(f'{to=}, {bot_id=}')
         channel_details = client.create_direct_channel_request(to, bot_id)
     else:
         channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
@@ -1323,7 +1329,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     client = client
     mirror_type = args.get('type', 'all')
     direction = args.get('direction', 'Both')
-    channel_name = args.get('channelName', '')
+    channel_name = args.get('channel', '')
     team_name = args.get('team_name', client.team_name)
 
     autoclose = argToBoolean(args.get('autoclose', True))
@@ -1420,7 +1426,10 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
 
         client.send_notification_request(channel_id, message_to_send)
     if kick_admin:
-        client.remove_channel_member_request(channel_id, admin_user_id)
+        try:
+            client.remove_channel_member_request(channel_id, admin_user_id)
+        except Exception as e:
+            demisto.debug(f'Could not kick admin from channel. Error: {e}')
 
     return CommandResults(
         readable_output=f'Investigation mirrored successfully with mirror type {mirror_type},\n channel name: {channel_name}'

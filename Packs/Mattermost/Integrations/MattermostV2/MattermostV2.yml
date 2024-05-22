@@ -355,8 +355,8 @@ script:
     - description: The entry_id of the file.
       name: entry_id
       required: true
-    - description: The username or email of the user to send the file to. Cannot be combined with the channel argument.
-      name: message
+    - description: The username or email of the user to send the file to.
+      name: to
       required: false
     description: Sends a file.
     name: mattermost-send-file
@@ -371,7 +371,7 @@ script:
     - description: An entry ID to send as a link.
       name: entry
       required: false
-    - description: The username or email of the user to send the message to.
+    - description: The username or email of the user to send the file to.
       name: to
       required: false
     - description: Adds the warroom link to the message.
@@ -432,8 +432,8 @@ script:
     - description: The name of the channel. The default is "incident-<incidentID>".
       name: channelName
     - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Whether to remove the admin from the newly created channel.
+      defaultValue: 'false'
+      description: Whether to remove the admin from the newly created channel. Default value is false.
       name: kickAdmin
       predefined:
       - 'true'
