@@ -10,6 +10,41 @@ from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
 
+class MockedClient(Client):
+    """
+    This class presents a client object for testing the cache engines mechanism.
+    """
+
+    def __init__(self, mocker, global_cache: dict, cache_string: str, dialect: str, host: str, username: str, password: str,
+                 port: str, database: str, connect_parameters: str, ssl_connect: bool, use_pool: bool):
+        self.global_cache = global_cache
+        self.cache_string = cache_string
+        super().__init__(dialect, host, username, password, port, database, connect_parameters, ssl_connect, use_pool)
+
+    def _convert_dialect_to_module(self, dialect: str = None):
+        return
+
+    def _generate_db_url(self, module: str = None):
+        return
+
+    def _get_global_cache(self):
+        return self.global_cache
+
+    def _get_cache_string(self, url: str = None, connect_args: dict = None):
+        return self.cache_string
+
+
+class Engine:
+    def __init__(self, name: str):
+        self.name = name
+
+    def connect(self):
+        return self.name
+
+    def dispose(self):
+        return
+
+
 class ResultMock:
     def __init__(self):
         pass
@@ -63,7 +98,6 @@ ARGS3 = {
     'limit': 5,
     'skip': 0
 }
-
 
 RAW1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
 
@@ -210,6 +244,8 @@ EMPTY_OUTPUT = {
             }
     }
 }
+
+GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, header', [
@@ -626,3 +662,49 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
+
+
+def test_create_engine_and_connect_engine_exists(mocker):
+    """
+    Given
+    - An engine is in the cache
+    When
+    - running create_engine_and_connect
+    Then
+    - Ensure it uses the existing engine
+    """
+
+    client = MockedClient(mocker=mocker, global_cache={'1': Engine('Demo Engine')}, cache_string='1',
+                          dialect='Teradata', host='host', username='username', password='password',
+                          port='', connect_parameters='', database='', ssl_connect=False, use_pool=True)
+
+    assert client.connection == 'Demo Engine'
+
+
+def test_create_engine_and_connect_new_engine(mocker):
+    """
+    Given
+    - No engine is in the cache
+    When
+    - running create_engine_and_connect
+    Then
+    - Ensure a new engine is created and replaces the old one in cache
+    - Ensure the old engine is disposed and removed from the cache
+    """
+
+    old_engine = Engine('Old Engine')
+    new_engine = Engine('New Engine')
+    setattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {'1': old_engine})
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine', return_value=new_engine)
+    mock_engine_dispose = mocker.patch.object(Engine, 'dispose')
+
+    client = MockedClient(mocker=mocker, global_cache={}, cache_string='1',
+                          dialect='Teradata', host='host', username='username', password='password',
+                          port='', connect_parameters='', database='', ssl_connect=False, use_pool=True)
+
+    mock_create_engine.assert_called_once()
+    mock_engine_dispose.assert_called_once()
+    cache = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR)
+    assert client.connection == 'New Engine'
+    assert cache['1'] != old_engine
+    assert cache['1'] == new_engine

@@ -293,10 +293,11 @@ class TAXIIServer:
         """
         Args:
             request_headers: The request headers
-
         Returns:
             The service URL according to the protocol.
         """
+        prefix = ''
+        xsoar_path = ''
         if self.service_address:
             return self.service_address
         if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
@@ -306,9 +307,14 @@ class TAXIIServer:
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
+
+            if is_xsiam_or_xsoar_saas():
+                prefix = 'ext-'
+                xsoar_path = '/xsoar'
         else:
             endpoint = f':{self.port}'
-        return f'{self.url_scheme}://{self.host}{endpoint}'
+
+        return f'{self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}'
 
 
 SERVER: TAXIIServer
