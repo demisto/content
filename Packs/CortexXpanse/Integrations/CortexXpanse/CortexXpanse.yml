@@ -63,6 +63,7 @@ configuration:
   required: false
   options:
   - new
+  - reopened
   - under_investigation
   - resolved_no_longer_observed
   - resolved_no_risk
@@ -443,6 +444,7 @@ script:
       auto: PREDEFINED
       predefined:
       - new
+      - reopened
       - under_investigation
       - resolved_no_longer_observed
       - resolved_no_risk
@@ -714,6 +716,7 @@ script:
       auto: PREDEFINED
       predefined:
       - new
+      - reopened
       - under_investigation
       - resolved
       - resolved_contested_asset
