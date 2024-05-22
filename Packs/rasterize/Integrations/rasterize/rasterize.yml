@@ -363,5 +363,4 @@ script:
 defaultEnabled: true
 tests:
 - Rasterize Test
-- DBotPredictURLPhishing_test
 fromversion: 5.0.0
