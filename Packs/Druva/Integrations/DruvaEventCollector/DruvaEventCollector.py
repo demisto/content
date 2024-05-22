@@ -29,7 +29,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def update_headers(self, base_64_string):
+    def update_headers(self, base_64_string: str):
         base_64_string = base_64_string.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {base_64_string}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
@@ -39,7 +39,7 @@ class Client(BaseClient):
         headers = {'Authorization': f'Bearer {access_token}'}
         self._headers = headers
 
-    def search_events(self, tracker: Optional[str]) -> dict:
+    def search_events(self, tracker: Optional[str] = None) -> dict:
         """
         Searches for Druva events.
 
@@ -80,7 +80,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, tracker: Optional[str]) -> tuple[List[dict], str]:
+def get_events(client: Client, tracker: Optional[str]) -> tuple[str, List[dict]]:
     """
     Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
     Args:
@@ -92,38 +92,26 @@ def get_events(client: Client, tracker: Optional[str]) -> tuple[List[dict], str]
     """
 
     response = client.search_events(tracker)
-    return response.get('events'), response.get('tracker')
+    return response.get('tracker'), response.get('events')
 
 
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, last_run: dict) -> tuple[Dict, List[Dict]]:
     """
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        client (Client): Druva client to use.
+        last_run (dict): A dict with a key containing a pointer to the latest event created time we got from last fetch.
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        dict: Next run dict containing the next tracker (a pointer to the next event).
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
-    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
+    tracker = last_run.get('tracker')
+    demisto.debug(f'Fetched events with tracker: {tracker}.')
+    new_tracker, events = get_events(client, tracker)
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
+    next_run = {'tracker': new_tracker}
+
     demisto.debug(f'Setting next run {next_run}.')
     return next_run, events
 
@@ -178,7 +166,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'druva-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, tracker = get_events(client, args.get('tracker'))
+            tracker, events = get_events(client, args.get('tracker'))
             return_results(
                 CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events))
             )
@@ -190,24 +178,20 @@ def main() -> None:  # pragma: no cover
                     product=PRODUCT
                 )
 
-        # elif command == 'fetch-events':
-        #     last_run = demisto.getLastRun()
-        #     next_run, events = fetch_events(
-        #         client=client,
-        #         last_run=last_run,
-        #         first_fetch_time=first_fetch_time,
-        #         alert_status=alert_status,
-        #         max_events_per_fetch=max_events_per_fetch,
-        #     )
-        #
-        #     add_time_to_events(events)
-        #     send_events_to_xsiam(
-        #         events,
-        #         vendor=VENDOR,
-        #         product=PRODUCT
-        #     )
-        #     demisto.setLastRun(next_run)
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            next_run, events = fetch_events(
+                client=client,
+                last_run=last_run,
+            )
 
+            add_time_to_events(events)
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
