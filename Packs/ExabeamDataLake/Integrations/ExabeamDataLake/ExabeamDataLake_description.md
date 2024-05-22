@@ -3,7 +3,8 @@ management system.
 Data Lake is used for log collection, storage, processing, and presentation.
 
 ### Authentication Method
- - **Basic Authentication** - Providing Username and password in the corresponding   parameters in the configuration.
+ - **Basic Authentication** - Providing the Exabeam username and password in the corresponding parameters in the configuration.
+
 
 Access requires the 'run_es_search' permission.
 

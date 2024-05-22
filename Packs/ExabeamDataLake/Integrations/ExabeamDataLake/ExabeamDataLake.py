@@ -219,6 +219,9 @@ def query_data_lake_command(client: Client, args: dict, cluster_name: str) -> Co
     """
     from_param, size_param = calculate_page_parameters(args)
 
+    if args.get("end_time") and not args.get("start_time"):
+        raise DemistoException("When providing 'end_time', 'start_time' must also be provided.")
+
     start_time = get_date(args.get("start_time", "7 days ago"), "start_time")
     end_time = get_date(args.get("end_time", "today"), "end_time")
     dates = dates_in_range(start_time, end_time)
