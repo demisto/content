@@ -8,6 +8,117 @@
 		"SentinelOne Incident": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Account Member Of": {
+					"simple": "agentDetectionInfo.accountName"
+				},
+				"Agent ID": {
+					"simple": "agentRealtimeInfo.agentId"
+				},
+				"Agent Version": {
+					"simple": "agentDetectionInfo.agentVersion"
+				},
+				"Classification": {
+					"simple": "threatInfo.classification"
+				},
+				"Cloud Account ID": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudAccount"
+				},
+				"Cloud Instance ID": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudInstanceId"
+				},
+				"Device External IP": {
+					"simple": "agentDetectionInfo.externalIp"
+				},
+				"Device Id": {
+					"simple": "agentDetectionInfo.agentUuid"
+				},
+				"Device Internal IPs": {
+					"simple": "agentDetectionInfo.agentIpV6"
+				},
+				"Device Local IP": {
+					"simple": "agentDetectionInfo.agentIpV4"
+				},
+				"Device MAC Address": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[0].physical"
+				},
+				"Device Name": {
+					"simple": "agentRealtimeInfo.agentComputerName"
+				},
+				"Device OS Name": {
+					"simple": "agentDetectionInfo.agentOsName"
+				},
+				"Device OS Version": {
+					"simple": "agentDetectionInfo.agentOsRevision"
+				},
+				"Device Username": {
+					"simple": "agentDetectionInfo.agentLastLoggedInUserName"
+				},
+				"Domain Name": {
+					"simple": "agentRealtimeInfo.agentDomain"
+				},
+				"Endpoint": {
+					"simple": "agentRealtimeInfo.agentComputerName"
+				},
+				"Endpoint Isolation Status": {
+					"simple": "agentRealtimeInfo.agentNetworkStatus"
+				},
+				"External Confidence": {
+					"simple": "threatInfo.confidenceLevel"
+				},
+				"File Hash": {
+					"simple": "threatInfo.sha1"
+				},
+				"File MD5": {
+					"simple": "threatInfo.md5"
+				},
+				"File Name": {
+					"simple": "threatInfo.threatName"
+				},
+				"File Path": {
+					"simple": "threatInfo.filePath"
+				},
+				"File SHA1": {
+					"simple": "threatInfo.sha1"
+				},
+				"File SHA256": {
+					"simple": "threatInfo.sha256"
+				},
+				"File Size": {
+					"simple": "threatInfo.fileSize"
+				},
+				"Investigation Stage": {
+					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"OS": {
+					"simple": "agentRealtimeInfo.agentOsName"
+				},
+				"OS Type": {
+					"simple": "agentRealtimeInfo.agentOsType"
+				},
+				"OS Version": {
+					"simple": "agentRealtimeInfo.agentOsRevision"
+				},
+				"SentinelOne Account ID": {
+					"simple": "agentDetectionInfo.accountId"
+				},
+				"SentinelOne Account Name": {
+					"simple": "agentDetectionInfo.accountName"
+				},
+				"SentinelOne Classification Source": {
+					"simple": "threatInfo.classificationSource"
+				},
+				"SentinelOne Group ID": {
+					"simple": "agentDetectionInfo.groupId"
+				},
+				"SentinelOne Group Name": {
+					"simple": "agentDetectionInfo.groupName"
+				},
+				"SentinelOne Site ID": {
+					"simple": "agentDetectionInfo.siteId"
+				},
+				"SentinelOne Site Name": {
+					"simple": "agentDetectionInfo.siteName"
+				},
 				"SentinelOne Threat Analyst Verdict": {
 					"simple": "threatInfo.analystVerdictDescription"
 				},
@@ -16,6 +127,12 @@
 				},
 				"SentinelOne Threat Status": {
 					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"Threat Name": {
+					"simple": "threatInfo.threatName"
+				},
+				"Verdict": {
+					"simple": "threatInfo.analystVerdictDescription"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"

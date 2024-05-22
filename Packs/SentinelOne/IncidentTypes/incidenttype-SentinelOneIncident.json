@@ -24,7 +24,7 @@
     "layout": "SentinelOne Incident Layout",
     "detached": false,
     "extractSettings": {
-        "mode": "Specific",
+        "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "5.0.0"
