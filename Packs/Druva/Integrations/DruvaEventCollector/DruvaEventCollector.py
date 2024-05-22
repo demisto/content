@@ -50,9 +50,10 @@ class Client(BaseClient):
             List[Dict]: List of events
         """
 
-        data = {'tracker': tracker} if tracker else {}
+        url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
         headers = {'Authorization': self._headers.get('Authorization'), 'accept': 'application/json'}
-        response = self._http_request(method='GET', url_suffix='/insync/eventmanagement/v2/events', headers=headers, data=data)
+        response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
+                                      headers=headers)
         return response
 
 
@@ -80,7 +81,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, tracker: Optional[str]) -> tuple[str, List[dict]]:
+def get_events(client: Client, tracker: Optional[str] = None) -> tuple[str, List[dict]]:
     """
     Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
     Args:

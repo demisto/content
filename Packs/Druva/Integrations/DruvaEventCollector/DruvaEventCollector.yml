@@ -31,7 +31,6 @@ script:
         - 'false'
       required: true
     - description: A pointer to the last event we received.
-      isArray: false
       name: tracker
       required: false
     description: Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
