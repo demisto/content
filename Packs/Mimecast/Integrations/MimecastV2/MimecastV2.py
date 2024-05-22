@@ -104,7 +104,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
             'pagination': pagination
         }
     }  # type: Dict[str, Any]
-    if data:
+    if data and not [{}]:
         payload['data'] = data
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
