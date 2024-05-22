@@ -122,10 +122,10 @@ def dates_in_range(start_time: Any, end_time: Any) -> list[str]:
     end_time = datetime.strptime(end_time, "%Y-%m-%d")
 
     if start_time >= end_time:
-        raise DemistoException("Start time must be before end time")
+        raise DemistoException("Start time must be before end time.")
 
     if (end_time - start_time).days > 10:
-        raise DemistoException("Difference between start time and end time must be less than or equal to 10 days")
+        raise DemistoException("Difference between start time and end time must be less than or equal to 10 days.")
 
     dates = []
     current_date = start_time
