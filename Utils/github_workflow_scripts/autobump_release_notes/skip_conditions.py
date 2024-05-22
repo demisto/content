@@ -7,19 +7,25 @@ from git import Repo, GitCommandError
 from github.PullRequest import PullRequest
 from packaging.version import Version
 from blessings import Terminal
-from Tests.Marketplace.marketplace_constants import Metadata
-from Tests.Marketplace.marketplace_services import Pack
 from Utils.github_workflow_scripts.utils import load_json, Checkout, timestamped_print
 
 
 print = timestamped_print
 SKIPPING_MESSAGE = "Skipping Auto-Bumping release notes."
 PACKS_DIR = "Packs"
-PACK_METADATA_FILE = Pack.PACK_METADATA
-RELEASE_NOTES_DIR = Pack.RELEASE_NOTES
+PACK_METADATA_FILE = "pack_metadata.json"
+RELEASE_NOTES_DIR = "ReleaseNotes"
 LAST_SUITABLE_PR_UPDATE_TIME_DAYS = 14
 t = Terminal()
 FAILED_TO_MERGE = 'Failed to merge'
+
+XSOAR_SUPPORT = "xsoar"
+PARTNER_SUPPORT = "partner"
+COMMUNITY_SUPPORT = "community"
+CURRENT_VERSION = 'currentVersion'
+SUPPORT = 'support'
+
+
 
 
 class UpdateType(str, Enum):
@@ -416,7 +422,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
 
 
 class PackSupportCondition(MetadataCondition):
-    ALLOWED_SUPPORT_TYPES = (Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT, Metadata.COMMUNITY_SUPPORT)
+    ALLOWED_SUPPORT_TYPES = (XSOAR_SUPPORT, PARTNER_SUPPORT, COMMUNITY_SUPPORT)
 
     def generate_skip_reason(self, support_type: str | None, **kwargs) -> str:  # type: ignore[override]
         """
@@ -438,7 +444,7 @@ class PackSupportCondition(MetadataCondition):
         Returns(ConditionResult): whether the condition check pass,
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
-        support_type = self.branch_metadata.get(Metadata.SUPPORT)
+        support_type = self.branch_metadata.get(SUPPORT)
         if support_type not in self.ALLOWED_SUPPORT_TYPES:
             return ConditionResult(
                 should_skip=True,
@@ -475,11 +481,11 @@ class MajorChangeCondition(MetadataCondition):
         """
         origin_pack_metadata_version = Version(
             self.origin_base_metadata.get(
-                Metadata.CURRENT_VERSION, self.DEFAULT_VERSION
+                CURRENT_VERSION, self.DEFAULT_VERSION
             )
         )
         branch_pack_metadata_version = Version(
-            self.branch_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
+            self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
         )
         if origin_pack_metadata_version.major != branch_pack_metadata_version.major:
             return ConditionResult(
@@ -520,10 +526,10 @@ class MaxVersionCondition(MetadataCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         origin_pack_metadata_version = self.origin_base_metadata.get(
-            Metadata.CURRENT_VERSION, self.DEFAULT_VERSION
+            CURRENT_VERSION, self.DEFAULT_VERSION
         )
         branch_pack_metadata_version = self.branch_metadata.get(
-            Metadata.CURRENT_VERSION, self.DEFAULT_VERSION
+            CURRENT_VERSION, self.DEFAULT_VERSION
         )
         if (
             self.MAX_ALLOWED_VERSION in origin_pack_metadata_version
@@ -541,7 +547,7 @@ class MaxVersionCondition(MetadataCondition):
 
 
 class OnlyVersionChangedCondition(MetadataCondition):
-    ALLOWED_CHANGED_KEYS = [Metadata.CURRENT_VERSION]
+    ALLOWED_CHANGED_KEYS = [CURRENT_VERSION]
 
     def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:      # type: ignore[override]
         """
@@ -643,7 +649,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         branch_pack_metadata_version = Version(
-            self.branch_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
+            self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
         )
         assert previous_result, "No previous result was supplied to the SameRNMetadataVersionCondition object."
         assert previous_result.pack_new_rn_file, "No previous result was supplied to the SameRNMetadataVersionCondition object."
@@ -688,10 +694,10 @@ class AllowedBumpCondition(MetadataCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         branch_pack_metadata_version = Version(
-            self.branch_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
+            self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
         )
         base_pack_metadata_version = Version(
-            self.pr_base_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
+            self.pr_base_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
         )
         update_type = self.check_update_type(
             base_pack_metadata_version, branch_pack_metadata_version
