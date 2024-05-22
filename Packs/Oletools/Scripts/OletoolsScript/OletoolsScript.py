@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import oletools.oleid
 from oletools.olevba import VBA_Parser
 import subprocess
-from oletools import crypto, ftguess
-from oletools.oleid import Indicator, RISK, OleID
+from oletools import crypto
 import os
 import hashlib
 # suppress logs from oletools
@@ -12,62 +12,19 @@ vba_logger = logging.getLogger("olevba")
 vba_logger.setLevel(logging.CRITICAL)
 
 
-class XsoarOleId(OleID):
+class CustomHandler(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        self.log = ""
 
-    def check(self):
-        """
-        Open file and run all checks on it.
+    def emit(self, record):
+        self.log = record
 
-        :returns: list of all :py:class:`Indicator`s created
-        """
-        self.ftg = ftguess.FileTypeGuesser(filepath=self.filename, data=self.data)
-        ftype = self.ftg.ftype
-        # if it's an unrecognized OLE file, display the root CLSID in description:
-        if self.ftg.filetype == ftguess.FTYPE.GENERIC_OLE:
-            description = 'Unrecognized OLE file. Root CLSID: {} - {}'.format(
-                self.ftg.root_clsid, self.ftg.root_clsid_name)
-        else:
-            description = ''
-        ft = Indicator('ftype', value=ftype.longname, _type=str, name='File format', risk=RISK.INFO,
-                       description=description)
-        self.indicators.append(ft)
-        ct = Indicator('container', value=ftype.container, _type=str, name='Container format', risk=RISK.INFO,
-                       description='Container type')
-        self.indicators.append(ct)
 
-        # check if it is actually an OLE file:
-        if self.ftg.container == ftguess.CONTAINER.OLE:
-            # reuse olefile already opened by ftguess
-            self.ole = self.ftg.olefile
-
-        # checks:
-        try:
-            self.check_properties()
-        except:
-            vba_logger.exception("properties check failed")
-        try:
-            self.check_encrypted()
-        except:
-            vba_logger.exception("encrypted check failed")
-        try:
-            self.check_macros()
-        except:
-            vba_logger.exception("macros check failed")
-        try:
-            self.check_external_relationships()
-        except:
-            vba_logger.exception("external relationships check failed")
-        try:
-            self.check_object_pool()
-        except:
-            vba_logger.exception("object pool check failed")
-        try:
-            self.check_flash()
-        except:
-            vba_logger.exception("flash check failed")
-        if self.ole is not None:
-            self.ole.close()
-        return self.indicators
+oleid_logger = logging.getLogger("oleid")
+oleid_logger.setLevel(logging.NOTSET)
+custom_handler = CustomHandler()
+oleid_logger.addHandler(custom_handler)
 
 
 class OleClient:
@@ -135,7 +92,7 @@ class OleClient:
         return indicator.replace(' ', '_')
 
     def oleid(self):
-        oid = XsoarOleId(self.processed_file_path)
+        oid = oletools.oleid.OleID(self.processed_file_path)
         indicators = oid.check()
         indicators_list = []
         dbot_score = None
@@ -266,7 +223,7 @@ def main():  # pragma: no cover
         ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
         return_results(ole_client.run())
     except Exception as e:
-        return_error(f'The script failed with the following error:\n {e}')
+        return_error(f'The script failed with the following error:\n {e} \n Logs form oletools:\n {custom_handler.log}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
