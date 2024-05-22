@@ -242,9 +242,11 @@ def main() -> None:
             return_results(test_module(client))
         elif command == 'exabeam-platform-event-search':
             return_results(search_command(client, args))
-
-    # Log exceptions and return errors
+        else:
+            raise NotImplementedError(f"Command {command} is not supported")
+        
     except Exception as e:
+        demisto.info(str(e))
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
