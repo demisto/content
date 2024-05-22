@@ -294,7 +294,6 @@ script:
       description: The last ID of the previous fetch to use for pagination.
       type: String
   dockerimage: demisto/vendors-sdk:1.0.0.92984
-  autoUpdateDockerImage: false
   runonce: false
   script: '-'
   subtype: python3
@@ -302,3 +301,4 @@ script:
 tests:
 - OpenCTI Test
 fromversion: 5.0.0
+autoUpdateDockerImage : false

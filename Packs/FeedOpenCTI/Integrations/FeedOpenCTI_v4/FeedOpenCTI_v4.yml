@@ -156,7 +156,6 @@ script:
     description: Gets indicators from the feed.
     name: opencti-get-indicators
   dockerimage: demisto/vendors-sdk:1.0.0.92984
-  autoUpdateDockerImage: false
   feed: true
   runonce: false
   script: '-'
@@ -165,3 +164,4 @@ script:
 tests:
 - OpenCTI Feed Test
 fromversion: 5.5.0
+autoUpdateDockerImage : false
