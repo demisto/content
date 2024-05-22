@@ -28,8 +28,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool,
                  proxy: bool):
-        headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy, timeout=20)
+        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy, timeout=20)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
