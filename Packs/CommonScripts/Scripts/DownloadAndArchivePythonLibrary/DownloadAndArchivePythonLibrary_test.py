@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from InstallAndArchivePythonLibrary import installLibrary  # Replace 'InstallAndArchivePythonLibrary' with the name of your Python file
+from DownloadAndArchivePythonLibrary import installLibrary
 
-class TestInstallAndArchivePythonLibrary(unittest.TestCase):
+class TestDownloadAndArchivePythonLibrary(unittest.TestCase):
 
-    @patch('InstallAndArchivePythonLibrary.subprocess.Popen')
-    @patch('InstallAndArchivePythonLibrary.zipfile.ZipFile')
-    @patch('InstallAndArchivePythonLibrary.os.walk')
-    @patch('InstallAndArchivePythonLibrary.open')
+    @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
+    @patch('DownloadAndArchivePythonLibrary.zipfile.ZipFile')
+    @patch('DownloadAndArchivePythonLibrary.os.walk')
+    @patch('DownloadAndArchivePythonLibrary.open')
     def test_install_library(self, mock_open, mock_os_walk, mock_zipfile, mock_popen):
         # Set up mock for subprocess.Popen
         mock_process = MagicMock()
