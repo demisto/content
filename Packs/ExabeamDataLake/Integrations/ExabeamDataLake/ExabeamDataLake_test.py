@@ -1,7 +1,7 @@
 import json
 import pytest
 from CommonServerPython import DemistoException
-from ExabeamDataLake import Client, query_data_lake_command, get_date, dates_in_range, calculate_page_parameters, _parse_entry
+from ExabeamDataLake import Client, query_data_lake_command, get_limit, get_date, dates_in_range, calculate_page_parameters, _parse_entry
 
 
 class MockClient(Client):
@@ -286,3 +286,26 @@ def test_query_datalake_request(mocker):
         headers={'Content-Type': 'application/json', 'Csrf-Token': 'nocheck'}
     )
     mock_login.assert_called_once()
+
+
+
+@pytest.mark.parametrize('args, expected_output',[
+    ({},50),
+    ({'limit': None}, 50),
+    ({'limit': 1000}, 1000),
+    ({'limit': 5000}, 3000)
+])
+def test_get_limit(args, expected_output):
+    """
+    GIVEN:
+        a dictionary containing the 'limit' argument with various values.
+
+    WHEN:
+        'get_limit' function is called with the provided dictionary.
+
+    THEN:
+        it should return the limit value if specified and less than or equal to 3000;
+        otherwise, it should return 3000 as the maximum limit.
+        If the 'limit' argument is not present in the dictionary or is None, it should return 50 as the default limit.
+    """
+    assert get_limit(args) == expected_output
