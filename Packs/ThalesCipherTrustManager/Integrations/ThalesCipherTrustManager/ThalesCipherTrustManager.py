@@ -985,7 +985,7 @@ def user_to_group_remove_command(client: CipherTrustClient, args: dict):
 def users_list_command(client: CipherTrustClient, args: dict):
     if user_id := args.get(CommandArguments.USER_ID):
         raw_response = client.get_user(user_id=user_id)
-        output_prefix = USERS_CONTEXT_OUTPUT_PREFIX + '.resources'
+        outputs = {'resources': [raw_response]}
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                            args.get(CommandArguments.PAGE),
@@ -1005,10 +1005,10 @@ def users_list_command(client: CipherTrustClient, args: dict):
             password_policy=args.get(CommandArguments.PASSWORD_POLICY),
             return_groups=optional_arg_to_bool(args.get(CommandArguments.RETURN_GROUPS)), )
         raw_response = client.get_users_list(params=params)
-        output_prefix = USERS_CONTEXT_OUTPUT_PREFIX
+        outputs = raw_response
     return CommandResults(
-        outputs_prefix=output_prefix,
-        outputs=raw_response,
+        outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
+        outputs=outputs,
         raw_response=raw_response,
         readable_output=tableToMarkdown(name='users list',
                                         t=raw_response.get('resources') if raw_response.get('resources') else raw_response),
@@ -1122,7 +1122,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
             chained=optional_arg_to_bool(args.get(CommandArguments.CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-        output_prefix = LOCAL_CA_CONTEXT_OUTPUT_PREFIX + '.resources'
+        outputs = {'resources': [raw_response]}
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                            args.get(CommandArguments.PAGE),
@@ -1136,10 +1136,10 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
             cert=args.get(CommandArguments.CERT),
         )
         raw_response = client.get_local_ca_list(params=params)
-        output_prefix = LOCAL_CA_CONTEXT_OUTPUT_PREFIX
+        outputs = raw_response
     return CommandResults(
-        outputs_prefix=output_prefix,
-        outputs=raw_response,
+        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs=outputs,
         raw_response=raw_response,
         # todo: name?
         readable_output=tableToMarkdown('local CAs',
