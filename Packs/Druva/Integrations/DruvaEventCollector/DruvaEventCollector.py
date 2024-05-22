@@ -168,7 +168,10 @@ def main() -> None:  # pragma: no cover
             should_push_events = argToBoolean(args.pop('should_push_events'))
             tracker, events = get_events(client, args.get('tracker'))
             return_results(
-                CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events))
+                CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events),
+                               outputs={'tracker': tracker},
+                               outputs_prefix=VENDOR,
+                               outputs_key_field='tracker')
             )
             if should_push_events:
                 add_time_to_events(events)
