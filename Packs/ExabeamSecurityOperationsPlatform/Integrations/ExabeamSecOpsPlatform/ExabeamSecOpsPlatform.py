@@ -81,7 +81,7 @@ def get_date(time: str, arg_name: str):
     """
     date_time = arg_to_datetime(arg=time, arg_name=arg_name, required=True)
     if not date_time:
-        raise DemistoException("There was an issue parsing the start time provided.")
+        raise DemistoException(f"There was an issue parsing the {arg_name} provided.")
     date = date_time.strftime(DATE_FORMAT)
     return date
 
