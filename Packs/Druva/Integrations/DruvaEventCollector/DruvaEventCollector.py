@@ -1,8 +1,6 @@
-import uuid
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
 import base64
 
 
@@ -29,7 +27,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def update_headers(self, base_64_string: str):
+    def update_headers(self, base_64_string: bytes):
         base_64_string = base_64_string.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {base_64_string}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
@@ -81,7 +79,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, tracker: Optional[str] = None) -> tuple[str, List[dict]]:
+def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[Any], Optional[Any]]:
     """
     Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
     Args:
@@ -96,7 +94,7 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[str, List
     return response.get('tracker'), response.get('events')
 
 
-def fetch_events(client: Client, last_run: dict) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any]], Optional[Any]]:
     """
     Args:
         client (Client): Druva client to use.

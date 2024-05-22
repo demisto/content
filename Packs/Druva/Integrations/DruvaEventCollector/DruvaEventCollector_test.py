@@ -1,4 +1,4 @@
-from HelloWorldEventCollector import Client, fetch_events, get_events
+from DruvaEventCollector import Client, fetch_events, get_events
 
 
 def test_fetch_detection_events_command():
@@ -44,8 +44,7 @@ def test_test_module_command():
     Then:
     - Test module passed
     """
-    from HelloWorldEventCollector import test_module
-    first_fetch_str = '2022-12-21T03:42:05Z'
+    from DruvaEventCollector import test_module
     base_url = 'https://server_url/'
     client = Client(
         base_url=base_url,
@@ -54,8 +53,7 @@ def test_test_module_command():
     )
     res = test_module(
         client=client,
-        params={},
-        first_fetch_time=first_fetch_str,
+
     )
 
     assert res == 'ok'
@@ -80,8 +78,7 @@ def test_get_events_command():
     )
     events, hr = get_events(
         client=client,
-        alert_status="Some Status",
-        args={},
+
     )
 
     assert events[0].get('id') == 1
