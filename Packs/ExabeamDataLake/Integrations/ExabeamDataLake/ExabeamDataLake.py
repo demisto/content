@@ -290,7 +290,7 @@ def main() -> None:    # pragma: no cover
 
     except Exception as e:
         demisto.info(str(e))
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
     finally:
         client._logout()
