@@ -1,15 +1,73 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import oletools.oleid
 from oletools.olevba import VBA_Parser
 import subprocess
-from oletools import crypto
+from oletools import crypto, oleid, ftguess
+from oletools.oleid import Indicator, RISK, OleID
 import os
 import hashlib
 # suppress logs from oletools
 import logging
 vba_logger = logging.getLogger("olevba")
 vba_logger.setLevel(logging.CRITICAL)
+
+
+class XsoarOleId(OleID):
+
+    def check(self):
+        """
+        Open file and run all checks on it.
+
+        :returns: list of all :py:class:`Indicator`s created
+        """
+        self.ftg = ftguess.FileTypeGuesser(filepath=self.filename, data=self.data)
+        ftype = self.ftg.ftype
+        # if it's an unrecognized OLE file, display the root CLSID in description:
+        if self.ftg.filetype == ftguess.FTYPE.GENERIC_OLE:
+            description = 'Unrecognized OLE file. Root CLSID: {} - {}'.format(
+                self.ftg.root_clsid, self.ftg.root_clsid_name)
+        else:
+            description = ''
+        ft = Indicator('ftype', value=ftype.longname, _type=str, name='File format', risk=RISK.INFO,
+                       description=description)
+        self.indicators.append(ft)
+        ct = Indicator('container', value=ftype.container, _type=str, name='Container format', risk=RISK.INFO,
+                       description='Container type')
+        self.indicators.append(ct)
+
+        # check if it is actually an OLE file:
+        if self.ftg.container == ftguess.CONTAINER.OLE:
+            # reuse olefile already opened by ftguess
+            self.ole = self.ftg.olefile
+
+        # checks:
+        try:
+            self.check_properties()
+        except:
+            vba_logger.exception("properties check failed")
+        try:
+            self.check_encrypted()
+        except:
+            vba_logger.exception("encrypted check failed")
+        try:
+            self.check_macros()
+        except:
+            vba_logger.exception("macros check failed")
+        try:
+            self.check_external_relationships()
+        except:
+            vba_logger.exception("external relationships check failed")
+        try:
+            self.check_object_pool()
+        except:
+            vba_logger.exception("object pool check failed")
+        try:
+            self.check_flash()
+        except:
+            vba_logger.exception("flash check failed")
+        if self.ole is not None:
+            self.ole.close()
+        return self.indicators
 
 
 class OleClient:
@@ -77,7 +135,7 @@ class OleClient:
         return indicator.replace(' ', '_')
 
     def oleid(self):
-        oid = oletools.oleid.OleID(self.processed_file_path)
+        oid = XsoarOleId(self.processed_file_path)
         indicators = oid.check()
         indicators_list = []
         dbot_score = None
