@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 API_PREFIX = "/api/v1"
-
+TI = 24
 """ CLIENT CLASS """
 
 
