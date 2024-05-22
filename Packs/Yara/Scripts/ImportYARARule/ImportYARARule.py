@@ -38,6 +38,7 @@ def parse_rules(rules: str) -> CommandResults:
 
     except plyara.exceptions.ParseError:
         demisto.debug(f'Failed to parse - {rules}')
+        raise
 
     for parsed_rule in parsed_rules:
         indicators.append(build_indicator(parsed_rule))
@@ -119,16 +120,15 @@ def main():  # pragma: no cover
         # TODO: replace the invoked command function with yours
         args = demisto.args()
 
-        if args.get('string', ''):
-            yara_rules: str = args["string"]
+        if args.get('yara_signatures', ''):
+            yara_rules: str = args['yara_signatures']
 
         elif args.get('entryID', ''):
-            file_path = demisto.getFilePath(args['entryID'])['path']
+            file_path = demisto.getFilePath(args['entry_id'])['path']
             with open(file_path) as f:
                 yara_rules = f.read()
 
-        else:
-            raise Exception('Input must be provided')
+            raise Exception('Please provide exactly one input to the script yara_signatures or entry_id.')
 
         return_results(parse_rules(yara_rules))
 

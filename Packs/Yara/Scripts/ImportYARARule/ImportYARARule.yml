@@ -1,8 +1,8 @@
 args:
-- name: string
+- name: yara_signatures
   required: false
-  description: One or more YARA signatures in string format.
-- name: entryID
+  description: One or more YARA signatures, separated by a comma, in string format.
+- name: entry_id
   required: false
   description: An entry ID for a file containing YARA signatures.
 commonfields:
