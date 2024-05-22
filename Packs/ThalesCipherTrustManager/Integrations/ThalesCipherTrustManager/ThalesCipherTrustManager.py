@@ -725,8 +725,6 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=LOCAL_CAS_URL_SUFFIX,
             json_data=request_data,
-            return_empty_response=True,
-            empty_valid_codes=[201],
         )
 
     def get_local_ca_list(self, params: dict):
@@ -762,8 +760,6 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id)}/self-sign',
             json_data=request_data,
-            return_empty_response=True,
-            empty_valid_codes=[201],
         )
 
     def install_local_ca(self, local_ca_id: str, request_data: dict):
@@ -771,8 +767,6 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id)}/install',
             json_data=request_data,
-            return_empty_response=True,
-            empty_valid_codes=[201],
         )
 
     def issue_certificate(self, ca_id: str, request_data: dict):
@@ -780,8 +774,6 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs',
             json_data=request_data,
-            return_empty_response=True,
-            empty_valid_codes=[201],
         )
 
     def get_certificates_list(self, ca_id: str, params: dict):
@@ -820,8 +812,6 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=EXTERNAL_CAS_URL_SUFFIX,
             json_data=request_data,
-            return_empty_response=True,
-            empty_valid_codes=[201],
         )
 
     def delete_external_certificate(self, external_ca_id: str):
@@ -1100,7 +1090,6 @@ def user_password_change_command(client: CipherTrustClient, args: dict):
     )
 
 
-#todo: response 201, will be in header?
 @metadata_collector.command(command_name='ciphertrust-local-ca-create', description=LOCAL_CA_CREATE_DESCRIPTION,
                             inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
 def local_ca_create_command(client: CipherTrustClient, args: dict):
