@@ -1,5 +1,5 @@
 Manages indicators from OpenCTI.  
-This integration is compatible with OpenCTI versions from 4.X to 5.12.X.  
+This integration was tested with version 5.12.17 of OpenCTI.  
 
 ## Configure OpenCTI on Cortex XSOAR
 
