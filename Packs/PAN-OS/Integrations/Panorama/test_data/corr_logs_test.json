@@ -1,0 +1,24 @@
+[
+    {
+        "Correlation": [
+            {
+                "@logid": "1"
+            },
+            {
+                "@logid": "2"
+            },
+            {
+                "@logid": "3"
+            },
+            {
+                "@logid": "4"
+            }
+        ]
+    },
+    {
+        "Correlation": 4
+    },
+    {
+        "Correlation": ""
+    }
+]
