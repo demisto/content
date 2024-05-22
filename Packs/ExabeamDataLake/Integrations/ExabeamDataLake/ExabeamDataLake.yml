@@ -33,7 +33,7 @@ script:
   commands:
   - arguments:
     - defaultValue: "*"
-      description: The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description).
+      description: The search query string to filter the events by. Examples can be found in the syntax documentation section of the integration description.
       name: query
     - defaultValue: "7 days ago"
       description: The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days.
