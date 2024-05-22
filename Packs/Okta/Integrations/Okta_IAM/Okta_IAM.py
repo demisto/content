@@ -160,8 +160,7 @@ class Client(BaseClient):
         response = self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_param,
-            resp_type='response'
+            params=query_param
         )
         paged_results = response.json()
         if response.status_code != 200:
