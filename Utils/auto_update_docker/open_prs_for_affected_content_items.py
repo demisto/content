@@ -1,4 +1,5 @@
 import logging
+import sys
 import math
 import os
 from collections import defaultdict
@@ -286,6 +287,7 @@ def open_prs_for_content_items(
 
     except Exception as e:
         logging.error(f"Got error when opening PRs {e}")
+        sys.exit(1)
 
 
 def main():

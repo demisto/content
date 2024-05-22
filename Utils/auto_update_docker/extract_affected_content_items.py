@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 import os
 import typer
-from dotenv import load_dotenv
 from neo4j import Transaction
 
 from demisto_sdk.commands.common.handlers import DEFAULT_JSON_HANDLER as json
@@ -16,7 +15,6 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import (
 from demisto_sdk.commands.common.docker.docker_image import DockerImage
 
 logging.basicConfig(level=logging.INFO)
-load_dotenv()
 app = typer.Typer(no_args_is_help=True)
 CWD = os.getcwd()
 
@@ -26,6 +24,79 @@ def load_json(path: str) -> dict[str, Any]:
         return json.loads(f.read())
 
 
+def get_content_item_to_add(
+    only_nightly: bool,
+    content_item_pack_path: str,
+    nightly_packs: list[str],
+    content_item_path: Path,
+    benchmark_docker_tags: dict[str, str],
+    docker_image: str,
+    content_item_docker_image_tag: str,
+    content_item_cov: int,
+    support_levels: list[str],
+    content_item_support: str,
+    min_cov: int,
+    max_cov: int,
+) -> str | None:
+    """Returns the content item if it complies with the batch configuration.
+
+    Args:
+        only_nightly (bool): If to run on nightly packs.
+        content_item_pack_path (str): The content item's pack's path.
+        nightly_packs (list[str]): List of nightly packs.
+        content_item_path (Path): The content item's path
+        benchmark_docker_tags (dict[str, str]): A dictionary where the keys are docker images, and values are the
+        biggest tag of all the effected CVEs tags for a given image, and if an image has a tag equal or less than it,
+        then it will be updated to the latest tag.
+        docker_image (str): The docker image to check.
+        content_item_docker_image_tag (str): The docker image tag of the content item.
+        content_item_cov (int): The coverage of the content item.
+        support_levels (list[str]): The support levels of the batch. If empty, this means all support levels
+        should be considered.
+        content_item_support (str): The support level of the content item.
+        min_cov (int): Minimum coverage
+        of the configuration.
+        max_cov (int): Maximum coverage of the configuration.
+
+    Returns:
+        str | None: _description_
+    """
+    if only_nightly and content_item_pack_path not in nightly_packs:
+        logging.info(f"Pack path {content_item_pack_path} for {content_item_path} is not in nightly, skipping.")
+        return None
+
+    if docker_image in benchmark_docker_tags:
+        docker_image_tag_benchmark = benchmark_docker_tags[docker_image]
+        if Version(content_item_docker_image_tag) > Version(docker_image_tag_benchmark):
+            # If content item's docker tag is larger than the benchmark docker tag, then we
+            # don't need to update the content item, skipping
+            logging.info(f"{content_item_path} tag {content_item_docker_image_tag} > {docker_image_tag_benchmark = }, skipping.")
+            return None
+
+    # If content item is not in coverage report, then we consider it's coverage to be 0
+    # content_item_cov = content_items_coverage.get(str(content_item_path), 0)
+    logging.info(f"{content_item_path = } {content_item_cov = }")
+    content_item_cov_floor = math.floor(content_item_cov)
+    if support_levels and content_item_support not in support_levels:
+        # If support levels is not empty, and the content item's support level is not in the allowed support levels,
+        # then we skip it.
+        logging.info(f"Is not of {support_levels=}, skipping")
+    elif content_item_cov_floor >= min_cov and (content_item_cov <= max_cov and content_item_cov_floor <= max_cov):
+        # NOTE We added the second clause to deal with the following scenario:
+        # If max_cov=70, and content_item_cov=70.12, then content_item_cov_floor will be equal to 70,
+        # if not handled correctly, we will collect the content item, which is wrong, therefore,
+        # we added the condition content_item_cov <= max_cov
+
+        # We check the coverage of the content item
+        # Since the content item that we get will be a python file, and we want to
+        # return a YML
+        return str(content_item_path.with_suffix(".yml"))
+        # affected_content_items.append(str(content_item_path.with_suffix(".yml")))
+    else:
+        logging.info(f"{content_item_path} not within coverage, skipping")
+    return None
+
+
 def filter_content_items_to_run_on(
     batch_config: dict[str, Any],
     content_items_coverage: dict[str, int],
@@ -33,7 +104,7 @@ def filter_content_items_to_run_on(
     target_docker_tag: str,
     nightly_packs: list[str],
     docker_image: str,
-    benchmark_docker_tags: dict[str, str]
+    benchmark_docker_tags: dict[str, str],
 ) -> dict[str, Any]:
     """Collect the content items with respect to the batch config.
 
@@ -44,6 +115,10 @@ def filter_content_items_to_run_on(
         into the current batch.
         target_docker_tag (str): The target docker tag.
         nightly_packs (list[str]): The nightly packs.
+        docker_image (str): The docker image to check.
+        benchmark_docker_tags (dict[str, str]): A dictionary where the keys are docker images, and values are the
+        biggest tag of all the effected CVEs tags for a given image, and if an image has a tag equal or less than it,
+        then it will be updated to the latest tag.
 
     Returns:
         dict[str, Any]: A dictionary where the key is the docker image, and the values are
@@ -61,44 +136,63 @@ def filter_content_items_to_run_on(
         content_item_pack_path = content_item["pack_path"]
         content_item_docker_image_tag = content_item["docker_image_tag"]
 
-        if only_nightly and content_item_pack_path not in nightly_packs:
-            logging.info(f"Pack path {content_item_pack_path} for {content_item} is not in nightly, skipping.")
-            continue
+        content_item_to_add = get_content_item_to_add(
+            only_nightly=only_nightly,
+            content_item_pack_path=content_item_pack_path,
+            nightly_packs=nightly_packs,
+            content_item_path=content_item_path,
+            benchmark_docker_tags=benchmark_docker_tags,
+            docker_image=docker_image,
+            content_item_docker_image_tag=content_item_docker_image_tag,
+            # If content item is not in coverage report, then we consider it's coverage to be 0
+            content_item_cov=content_items_coverage.get(str(content_item_path), 0),
+            support_levels=support_levels,
+            content_item_support=content_item_support,
+            min_cov=min_cov,
+            max_cov=max_cov,
+        )
+        if content_item_to_add:
+            affected_content_items.append(content_item_to_add)
+        # if only_nightly and content_item_pack_path not in nightly_packs:
+        #     logging.info(f"Pack path {content_item_pack_path} for {content_item_path} is not in nightly, skipping.")
+        #     continue
 
-        if docker_image in benchmark_docker_tags:
-            docker_image_tag_benchmark = benchmark_docker_tags[docker_image]
-            if Version(content_item_docker_image_tag) > Version(docker_image_tag_benchmark):
-                # If content item's docker tag is larger than the benchmark docker tag, then we
-                # don't need to update the content item, skipping
-                logging.info(f"Content item of {content_item_path} has tag {content_item_docker_image_tag} > {docker_image_tag_benchmark = }, skipping.")
-                continue
+        # if docker_image in benchmark_docker_tags:
+        #     docker_image_tag_benchmark = benchmark_docker_tags[docker_image]
+        #     if Version(content_item_docker_image_tag) > Version(docker_image_tag_benchmark):
+        #         # If content item's docker tag is larger than the benchmark docker tag, then we
+        #         # don't need to update the content item, skipping
+        #         logging.info(
+        #             f"Content item of {content_item_path} has tag {content_item_docker_image_tag} > {docker_image_tag_benchmark = }, skipping."
+        #         )
+        #         continue
 
-        # If content item is not in coverage report, then we consider it's coverage to be 0
-        content_item_cov = content_items_coverage.get(str(content_item_path), 0)
-        logging.info(f"{content_item_path = } {content_item_cov = }")
-        content_item_cov_floor = math.floor(content_item_cov)
-        if support_levels and content_item_support not in support_levels:
-            # If support levels is not empty, and the content item's support level is not in the allowed support levels,
-            # then we skip it.
-            logging.info(f"Is not of {support_levels=}, skipping")
-        elif content_item_cov_floor >= min_cov and (content_item_cov <= max_cov and content_item_cov_floor <= max_cov):
-            # NOTE We added the second clause to deal with the following scenario:
-            # If max_cov=70, and content_item_cov=70.12, then content_item_cov_floor will be equal to 70,
-            # if not handled correctly, we will collect the content item, which is wrong, therefore,
-            # we added the condition content_item_cov <= max_cov
+        # # If content item is not in coverage report, then we consider it's coverage to be 0
+        # content_item_cov = content_items_coverage.get(str(content_item_path), 0)
+        # logging.info(f"{content_item_path = } {content_item_cov = }")
+        # content_item_cov_floor = math.floor(content_item_cov)
+        # if support_levels and content_item_support not in support_levels:
+        #     # If support levels is not empty, and the content item's support level is not in the allowed support levels,
+        #     # then we skip it.
+        #     logging.info(f"Is not of {support_levels=}, skipping")
+        # elif content_item_cov_floor >= min_cov and (content_item_cov <= max_cov and content_item_cov_floor <= max_cov):
+        #     # NOTE We added the second clause to deal with the following scenario:
+        #     # If max_cov=70, and content_item_cov=70.12, then content_item_cov_floor will be equal to 70,
+        #     # if not handled correctly, we will collect the content item, which is wrong, therefore,
+        #     # we added the condition content_item_cov <= max_cov
 
-            # We check the coverage of the content item
-            # Since the content item that we get will be a python file, and we want to
-            # return a YML
-            affected_content_items.append(str(content_item_path.with_suffix(".yml")))
-        else:
-            logging.info(f"{content_item} not within coverage, skipping")
+        #     # We check the coverage of the content item
+        #     # Since the content item that we get will be a python file, and we want to
+        #     # return a YML
+        #     affected_content_items.append(str(content_item_path.with_suffix(".yml")))
+        # else:
+        #     logging.info(f"{content_item_path} not within coverage, skipping")
     return {
-            "content_items": affected_content_items,
-            "pr_labels": batch_config.get("pr_labels", []),
-            "target_tag": target_docker_tag,
-            "coverage": f"{min_cov}-{max_cov}",
-        }
+        "content_items": affected_content_items,
+        "pr_labels": batch_config.get("pr_labels", []),
+        "target_tag": target_docker_tag,
+        "coverage": f"{min_cov}-{max_cov}",
+    }
 
 
 def get_docker_image_target_tag(docker_image: str, images_tag: dict[str, str]) -> str:
@@ -197,7 +291,7 @@ def get_affected_content_items_by_docker_image(
                 target_docker_tag=docker_image_target_tag,
                 nightly_packs=nightly_packs,
                 docker_image=docker_image,
-                benchmark_docker_tags=benchmark_docker_tags
+                benchmark_docker_tags=benchmark_docker_tags,
             )
         else:
             logging.info(f"No batch config was found for {docker_image = }, and {current_batch_index = }")
@@ -244,7 +338,7 @@ def calculate_affected_docker_images(
         return []
 
 
-def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str, bool, str, str]]:
+def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str, str, str]]:
     """
     Queries the content graph for the following data:
     1. Docker image.
@@ -259,12 +353,12 @@ def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str,
             MATCH (pack:Pack) <-[:IN_PACK] - (iss)
             WHERE iss.content_type IN ["Integration", "Script"]
             AND NOT iss.deprecated
+            AND iss.auto_update_docker_image
             AND NOT iss.type = 'javascript'
-            AND NOT pack.support = 'community'
             AND NOT pack.object_id = 'ApiModules'
             AND iss.docker_image IS NOT NULL
             AND NOT pack.hidden
-            Return iss.docker_image, iss.path, iss.auto_update_docker_image, pack.path, pack.support
+            Return iss.docker_image, iss.path, pack.path, pack.support
             """
         )
     )
@@ -281,29 +375,26 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
     content_images: dict[str, list[dict[str, Any]]] = defaultdict(list)
     with ContentGraphInterface() as graph, graph.driver.session() as session:
         content_items_info = session.execute_read(query_used_dockers_per_content_item)
-        for docker_image, content_item, auto_update_docker_image, full_pack_path, support_level in content_items_info:
-            if auto_update_docker_image:
-                content_item_py = Path(content_item).with_suffix(".py")
-                if content_item_py.is_file():
-                    # Since the full_pack_path is in the format "Packs/{pack path}"
-                    pack_path = full_pack_path.split("/")[1]
+        for docker_image, content_item, full_pack_path, support_level in content_items_info:
+            content_item_py = Path(content_item).with_suffix(".py")
+            if content_item_py.is_file():
+                # Since the full_pack_path is in the format "Packs/{pack path}"
+                pack_path = full_pack_path.split("/")[1]
 
-                    # Since the docker image returned will include the tag, we only need the image
-                    docker_image_split = docker_image.split(":")
-                    docker_image_without_tag = docker_image_split[0]
-                    docker_image_tag = docker_image_split[1]
-                    content_images[docker_image_without_tag].append(
-                        {
-                            "content_item": content_item_py,
-                            "support_level": support_level,
-                            "pack_path": pack_path,
-                            "docker_image_tag": docker_image_tag,
-                        }
-                    )
-                else:
-                    logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
+                # Since the docker image returned will include the tag, we only need the image
+                docker_image_split = docker_image.split(":")
+                docker_image_without_tag = docker_image_split[0]
+                docker_image_tag = docker_image_split[1]
+                content_images[docker_image_without_tag].append(
+                    {
+                        "content_item": content_item_py,
+                        "support_level": support_level,
+                        "pack_path": pack_path,
+                        "docker_image_tag": docker_image_tag,
+                    }
+                )
             else:
-                logging.warning(f"{auto_update_docker_image=} configured for {content_item}, skipping")
+                logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
     return content_images
 
 
@@ -342,12 +433,15 @@ def get_affected_content_items(
         help="The batch index",
     ),
     flow_index: int = typer.Option(
-        help="The flow index",
+        help="The flow index, where a flow is simply the process of going over all the batches in the config file",
     ),
     benchmark_docker_tags: dict[str, str] = typer.Option(
         default="",
-        help="Docker images and their benchmark tags, where each docker image will hold the tag from which every content items'"
-        " ",
+        help=(
+            "A comma separated key:value pair, where the keys are docker images, and values are the"
+            " biggest tag of all the effected CVEs tags for a given image, and if an image has a tag equal or less than it,"
+            " then it will be updated to the latest tag."
+        ),
         parser=docker_tags_parser,
     ),
     docker_images_arg: str = typer.Option(
@@ -416,7 +510,7 @@ def get_affected_content_items(
         content_items_by_docker_image=content_items_by_docker_image,
         images_tag=images_tag,
         nightly_packs=nightly_packs,
-        benchmark_docker_tags=benchmark_docker_tags
+        benchmark_docker_tags=benchmark_docker_tags,
     )
 
     docker_images_target_tag = {
@@ -434,7 +528,8 @@ def get_affected_content_items(
     # Only dump docker images that have content items to update
     docker_images_to_dump = {
         docker_image: affected_items
-        for docker_image, affected_items in affected_content_items_by_docker_image.items() if affected_items["content_items"]
+        for docker_image, affected_items in affected_content_items_by_docker_image.items()
+        if affected_items["content_items"]
     }
     affected_content_items_path.write_text(json.dumps(docker_images_to_dump))
 
