@@ -725,7 +725,7 @@ def get_default_command_args_value(args: dict[str, Any], max_page_size=10000, da
     return start_time, end_time, page_size, reference_time
 
 
-def get_gcb_udm_search_command_args_value(args: dict[str, Any], max_limit=1000, date_range=None):
+def get_gcb_udm_search_command_args_value(args: dict[str, Any], max_limit=10000, date_range=None):
     """
     Validate and return gcb-udm-search command arguments default values as per Chronicle Backstory.
 
