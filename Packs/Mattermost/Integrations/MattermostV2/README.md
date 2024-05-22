@@ -592,13 +592,6 @@ In the *commandName* command:
 * *argumentName* - is now required.
 * *argumentName* - supports now comma separated values.
 
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
 
 ## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
+- A new requierd parameter was introduced

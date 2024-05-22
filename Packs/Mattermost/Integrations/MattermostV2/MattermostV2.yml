@@ -139,7 +139,7 @@ script:
     - description: The size of the page to retrieve. Default value is 50.
       name: page_size
       required: false
-    - description: How many results to retrieve. Default value is 50. Will override the page and page_size arguments if given.
+    - description: How many results to retrieve. Will override the page and page_size arguments if given.
       name: limit
       required: false
     description: Lists channels.
@@ -291,7 +291,7 @@ script:
     - description: The size of the page to retrieve. Should be provided with the page argument. Default value is 50.
       name: page_size
       required: false
-    - description: How many results to retrieve. Default value is 50. If provided, overrides the page and page_size arguments.
+    - description: How many results to retrieve. If provided, overrides the page and page_size arguments.
       name: limit
       required: false
     description: Lists users.
@@ -474,7 +474,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/mattermost:1.0.0.91765
+  dockerimage: devdemisto/mattermost:1.0.0.95163
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook

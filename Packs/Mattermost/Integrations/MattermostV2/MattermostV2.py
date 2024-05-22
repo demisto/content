@@ -608,6 +608,7 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
         bot_id = get_user_id_from_token(client, bot_user=True)
         channel_object = client.create_direct_channel_request(to, bot_id)
         channel_id = channel_object.get('id', '')
+        demisto.debug(f'MM: Created a new direct channel to: {to} with channel_id: {channel_id}')
 
     elif channel_name:  # if channel name provided and the channel was mirrored
         channel_id = get_channel_id_from_context(channel_name, investigation_id)
@@ -1294,8 +1295,8 @@ def send_file_command(client: HTTPClient, args) -> CommandResults:
             to = get_user_id_by_username(client, to)
 
         bot_id = get_user_id_from_token(client, bot_user=True)
-        demisto.debug(f'{to=}, {bot_id=}')
         channel_details = client.create_direct_channel_request(to, bot_id)
+        demisto.debug(f'MM: Created a new direct channel to: {to} with channel_id: {channel_details.get("id")}')
     else:
         channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
 
@@ -1304,6 +1305,7 @@ def send_file_command(client: HTTPClient, args) -> CommandResults:
               'filename': file_info['name']}
 
     upload_response = client.send_file_request(file_info, params)
+    demisto.debug('MM: Uploaded the file successfully to mattermost')
 
     data = {'channel_id': channel_details.get('id'),
             'message': message,
@@ -1370,7 +1372,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
             except Exception as e:
                 if '404' in str(e):
                     # create new public channel
-                    demisto.debug('MM: Creating a new channel for mirroring')
+                    demisto.debug(f'MM: Creating a new channel for mirroring with name: {channel_name}')
                     args = {'team_name': team_name, 'name': channel_name.lower(), 'display_name': channel_name, 'type': 'Public'}
                     result = create_channel_command(client=client, args=args)
                     channel_details = result.outputs  # type: ignore
@@ -1405,8 +1407,9 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
             mirror['auto_close'] = autoclose
         if direction:
             mirror['mirror_direction'] = direction
-        if channel_name and not channel_filter:
+        if channel_name:
             # update channel name if needed
+            demisto.debug(f'MM: Updating channel name to {channel_name}')
             params = {'name': channel_name, 'display_name': channel_name, 'id': channel_id}
             client.update_channel_request(channel_id=channel_id, params=params)
             mirror['channel_name'] = channel_name
