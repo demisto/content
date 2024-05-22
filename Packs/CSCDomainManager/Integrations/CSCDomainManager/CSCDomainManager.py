@@ -26,6 +26,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+DEFAULT_PAGE_SIZE = 15000
+DEFAULT_LIMIT = 50
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -92,15 +94,24 @@ def test_module(client: Client) -> str:
     return message
 
 
-def csc_domains_list_command(client: Client):
+def csc_domains_list_command(client: Client, args):
+    args.get('last_run_id')
+    args.get('registration_date')
+    args.get('email')
+    args.get('organization')
+    args.get('registry_expiry_date')
+    args.get('filter')
+    args.get('sort')
+    arg_to_number(args.get('page'))
+    arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
+    arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+
+
+def csc_domains_availability_check_command(client: Client, args):
     return
 
 
-def csc_domains_availability_check_command(client: Client):
-    return
-
-
-def csc_domains_configuration_list_command(client: Client):
+def csc_domains_configuration_list_command(client: Client, args):
     return
 
 
@@ -111,23 +122,23 @@ def main() -> None:
     :rtype:
     """
 
-    demisto.params()
-    demisto.args()
+    params = demisto.params()
+    args = demisto.args()
 
     # TODO: make sure you properly handle authentication
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(params()['url'], '/api/v1')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params().get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -140,26 +151,23 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            results = test_module(client)
+            return_results(results)
 
         elif demisto.command() == 'csc-domains-list':
-            result = csc_domains_list_command(client)
-            return_results(result)
+            return_results(csc_domains_list_command(client, args))
 
         elif demisto.command() == 'csc-domains-availability-check':
-            result = csc_domains_availability_check_command(client)
-            return_results(result)
+            return_results(csc_domains_availability_check_command(client, args))
 
         elif demisto.command() == 'csc-domains-configuration-list':
-            result = csc_domains_configuration_list_command(client)
-            return_results(result)
+            return_results(csc_domains_configuration_list_command(client, args))
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
