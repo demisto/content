@@ -245,8 +245,8 @@ class Client(BaseClient):
 
         return logs_batch, next_page
 
-    def get_logs(self, next_page=None, last_run_time=None, time_now=None, limit=None,
-                 query_filter=None, auto_generate_filter=False, context=None):
+    def get_logs(self, next_page=None, last_run_time=None, time_now=None,
+                 query_filter=None, auto_generate_filter=False, context=None, limit=None):
         logs = []
 
         uri = 'logs'
