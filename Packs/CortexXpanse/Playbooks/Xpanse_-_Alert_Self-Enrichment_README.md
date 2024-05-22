@@ -14,14 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Set
 * GridFieldSetup
+* Set
 
 ### Commands
 
-* extractIndicators
 * asm-get-asset-internet-exposure
 * asm-get-external-service
+* extractIndicators
 
 ## Playbook Inputs
 
