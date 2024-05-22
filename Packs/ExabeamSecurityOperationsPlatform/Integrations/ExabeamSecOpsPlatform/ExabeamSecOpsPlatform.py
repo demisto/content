@@ -172,6 +172,11 @@ def get_limit(args: dict) -> int:
 
     return 50
 
+def error_fixes(error: str):
+    new_error = ""
+    if error == 'not enough values to unpack (expected 2, got 1)':
+        new_error = "Recommendation:\nValidate the query argument against the syntax documentation in the integration description."
+    return new_error
 
 ''' COMMAND FUNCTIONS '''
 
@@ -264,8 +269,9 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not supported")
 
     except Exception as e:
+        recommend = error_fixes(str(e))
         demisto.info(str(e))
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}\n{recommend}')
 
 
 ''' ENTRY POINT '''
