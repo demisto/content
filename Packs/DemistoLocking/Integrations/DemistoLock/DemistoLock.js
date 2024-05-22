@@ -47,15 +47,15 @@ switch (command) {
         var lock, version;
 
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
-            logDebug('Running on XSOAR version 8')
+            logDebug('Running on XSOAR version 8');
 
             // check if the process already holds the lock
             [lock, version] = getLock();
 
-            if (typeof version === 'object') {
+            if (typeof version === "object") {
                 version = JSON.stringify(version)
             }
-            logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
+            logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
             if (lock.guid === guid) {
                 var md = '### Demisto Locking Mechanism\n';
@@ -71,7 +71,7 @@ switch (command) {
                     try {
                         setLock(guid, lockInfo, version);
                     } catch (err) {
-                        logDebug(err.message)
+                        logDebug(err.message);
                     }
                 }
                 var timeout_err_msg = 'Timeout waiting for lock\n';
@@ -88,7 +88,7 @@ switch (command) {
                 }
             }
         } else {  // XSOAR 6 lock implementation without polling.
-            logDebug('Running on XSOAR version 6')
+            logDebug('Running on XSOAR version 6');
             do {
                 [lock, version] = getLock();
                 if (lock.guid === guid) {

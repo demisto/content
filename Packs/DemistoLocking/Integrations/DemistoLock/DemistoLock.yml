@@ -60,6 +60,4 @@ script:
   - name: demisto-lock-release-all
     arguments: []
     description: Release all locks.
-marketplaces:
-- xsoar
 fromversion: 5.0.0
