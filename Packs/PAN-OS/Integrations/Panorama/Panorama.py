@@ -14101,7 +14101,6 @@ def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polli
     Returns:
         List[Dict[Any,Any]]): a list of raw entries for the specified query
     """
-    entries = []
     # first http request: send request with query, valid response will contain a job id.
     job_id = get_query_by_job_id_request(log_type, query, max_fetch)
     demisto.debug(f'{job_id=}')
@@ -14110,21 +14109,21 @@ def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polli
     query_entries = get_query_entries_by_id_request(job_id, fetch_job_polling_max_num_attempts)
 
     # extract all entries from response
-    if result := query_entries.get('response', {}).get('result', {}).get('log', {}).get('logs', {}).get('entry'):
+    if result := dict_safe_get(query_entries, ('response', 'result', 'log', 'logs', 'entry')):
         if isinstance(result, list):
-            entries.extend(result)
+            entries = result
         elif isinstance(result, dict):
-            entries.append(result)
+            entries = [result]
         else:
             raise DemistoException(f'Could not parse fetch results: {result}')
 
-    entries_log_info = {entry.get('seqno', ''): entry.get('time_generated') for entry in entries}
+    entries_log_info = ' '.join(f"{entry.get('seqno', '')}:{entry.get('time_generated')}" for entry in entries)
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
     demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
     return entries
 
 
-def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
+def add_time_filter_to_query_parameter(query: str, last_fetch: datetime, time_key: str) -> str:
     """append time filter parameter to original query parameter.
 
     Args:
@@ -14134,10 +14133,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
     Returns:
         str: a string representing a query with added time filter parameter
     """
-    if 'time_generated' in query or not last_fetch:
-        raise DemistoException('Query parameter must not contain time_generated filter.')
-    time_generated = f" and (time_generated geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
-    return query + time_generated
+    return f"{query} and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
 
 
 def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
@@ -14175,7 +14171,8 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
     for log_type in entries_dict:
         demisto.debug(f'Filtering {log_type} type enties, recived {len(entries_dict[log_type])} to filter.')
         if log_type == 'Correlation':
-            last_log_id = id_dict.get('Correlation', 0)
+            # use dict_safe_get because 'Correlation' can have a dict from older versions
+            last_log_id = dict_safe_get(id_dict, ['Correlation'], 0, int, False)
             first_new_log_index = next(
                 i for i, log in enumerate(entries_dict['Correlation'])
                 if int(log.get("@logid")) > last_log_id  # type: ignore
@@ -14235,15 +14232,38 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
     Returns:
         Dict[str, List[Dict[str,Any]]]: a dictionary of all fetched raw incidents entries
     """
+    def log_type_to_time_param(log_type: str) -> str:
+        return {'Correlation': 'match_time'}.get(log_type, 'time_generated')
+
     entries = {}
     if queries_dict:
         for log_type, query in queries_dict.items():
             max_fetch = max_fetch_dict.get(log_type, MAX_INCIDENTS_TO_FETCH)
             fetch_start_time = fetch_start_datetime_dict.get(log_type)
             if fetch_start_time:
-                query = add_time_filter_to_query_parameter(query, fetch_start_time)
+                query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))
             entries[log_type] = get_query_entries(log_type, query, max_fetch, fetch_job_polling_max_num_attempts)
     return entries
+
+
+def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
+    """convert correlation incident entry to basic cortex incident format.
+
+    Args:
+        incident_entry (Dict[str, Any]): raw correlation incident entry represented by a dictionary
+
+    Returns:
+        dict[str,any]: context formatted incident entry represented by a dictionary
+    """
+    occurred = incident_entry.get('match_time', '')
+    occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}) or datetime.now()
+    
+    return {
+        'name': f"Correlation {incident_entry.get('@logid')}",
+        'occurred': occurred_datetime.strftime(DATE_FORMAT),
+        'rawJSON': json.dumps(incident_entry),
+        'type': 'CORRELATION'
+    }
 
 
 def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
@@ -14257,6 +14277,7 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     """
     occurred = incident_entry.get('time_generated', '')
     occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}) or datetime.now()
+    
     return {
         'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
         'occurred': occurred_datetime.strftime(DATE_FORMAT),
@@ -14348,15 +14369,18 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
         if incident_entries:
             if log_type == 'Correlation':
                 last_id_dict['Correlation'] = int(incident_entries_dict['Correlation'][-1]['@logid'])
+                parsed_incident_entries += list(map(corr_incident_entry_to_incident_context, incident_entries))
+                last_fetch_string = max({entry.get('match_time', '') for entry in incident_entries})
             else:
                 if updated_last_id := find_largest_id_per_device(incident_entries):
                     # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
                     last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(log_type) else last_id_dict.update({log_type: updated_last_id})
-            last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
+                parsed_incident_entries += list(map(incident_entry_to_incident_context, incident_entries))
+                last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
+
             updated_last_fetch = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
             if updated_last_fetch:
                 last_fetch_dict[log_type] = str(updated_last_fetch)
-            parsed_incident_entries += list(map(incident_entry_to_incident_context, incident_entries))
             demisto.debug(f'{log_type} log type: {len(incident_entries)} incidents with unique ID list: {[incident.get("name", "") for incident in incident_entries]}')
     demisto.debug(f'Updated last run is: {last_fetch_dict}. Updated last ID is: {last_id_dict}')
     return parsed_incident_entries
@@ -14365,7 +14389,7 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
 def fetch_incidents(last_run: LastRun, first_fetch: str,
                     queries_dict: QueryMap, max_fetch_dict: MaxFetch,
                     fetch_job_polling_max_num_attempts: int
-                    ) -> tuple[LastFetchTimes, LastIDs, List[Dict[str, list]]]:
+                    ) -> tuple[LastFetchTimes, LastIDs, list[dict[str, list]]]:
     """run one cycle of fetch incidents.
 
     Args:
@@ -14402,6 +14426,8 @@ def test_fetch_incidents_parameters(fetch_params):
     if log_types := fetch_params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        if 'match_time' in fetch_params.get('correlation_query', ''):
+            raise DemistoException("Correlation Log Type Query parameter cannot contain 'match_time' filter. Please remove it from the query.")
         for log_type in active_log_type_queries:
             log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
             if not log_type_query:

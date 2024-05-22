@@ -15,6 +15,7 @@ import dateparser
 from test_data import fetch_incidents_input
 from test_data import mock_rules
 from freezegun import freeze_time
+from typing import cast
 
 integration_firewall_params = {
     'port': '443',
@@ -7441,29 +7442,49 @@ def test_pan_os_delete_security_profile_group_command(mocker):
 def test_fetch_incidents_correlation(mocker: MockerFixture):
     '''
     Given:
-        - 
+        -
     When:
-        - 
+        -
     Then:
-        - 
+        -
     '''
-    from Panorama import filter_fetched_entries, get_parsed_incident_entries, LastIDs, LastFetchTimes
+    from Panorama import fetch_incidents, LastIDs, LastFetchTimes, LastRun, MaxFetch, QueryMap
     corr_logs = load_json('test_data/corr_logs.json')
-    # mocker.patch.object(str, '')
-    last_ids = LastIDs(Correlation=0)
-    last_fetch = LastFetchTimes(Correlation='')
+    mock_get_query_entries = mocker.patch('Panorama.get_query_entries')
 
-    first_batch = filter_fetched_entries(
-        entries_dict={'Correlation': corr_logs[:5]},
-        id_dict=last_ids
+    last_fetch_dict = LastFetchTimes(Correlation='2024/04/08 07:22:54')
+    last_id_dict = LastIDs(Correlation=0)
+    max_fetch_dict = MaxFetch(Correlation=10)
+    last_run = LastRun(
+        last_fetch_dict=last_fetch_dict,
+        last_id_dict=last_id_dict,
+        max_fetch_dict=max_fetch_dict
     )
-    get_parsed_incident_entries(
-        incident_entries_dict=first_batch,
-        last_fetch_dict=last_fetch,
-        last_id_dict=last_ids
+
+    # first fetch:
+
+    mock_get_query_entries.return_value = corr_logs[:5]
+    _, _, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
-    with open('test_data/corr_logs_test.json', 'w') as f:
-        json.dump([first_batch, last_ids, last_fetch], f, indent=4)
-    assert first_batch == {}
-    assert last_ids == {}
-    assert last_fetch == {}
+
+    assert last_run == LastRun(
+        last_fetch_dict=LastFetchTimes(Correlation="2024-04-08 07:22:54"),
+        last_id_dict=LastIDs(Correlation=4),
+        max_fetch_dict=MaxFetch(Correlation=10)
+    )
+    assert entries[0]["name"] == "Correlation 1"
+    assert entries[0]["type"] == "CORRELATION"
+    assert mock_get_query_entries.call_args_list[0].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
+    )
+
+    # test with dict from older versions
+
+    last_id_dict['Correlation'] = cast(int, {})
+
+    _, _, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+    assert entries[0]["name"] == "Correlation 1"
+
