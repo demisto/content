@@ -387,7 +387,7 @@ script:
       description: Status of the application.
       type: String
   - arguments:
-    - description: Group SCIM Data
+    - description: Group SCIM Data.
       name: scim
       required: true
     - auto: PREDEFINED
