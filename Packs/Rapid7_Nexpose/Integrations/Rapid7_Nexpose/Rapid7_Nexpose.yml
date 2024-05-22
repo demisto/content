@@ -2115,7 +2115,7 @@ script:
     arguments:
     - name: name
       required: true
-      description: The tage name.
+      description: The tag name.
     - name: type
       required: true
       auto: PREDEFINED
@@ -2123,7 +2123,7 @@ script:
       - Owner
       - Location
       - Custom
-      description: The tage type.
+      description: The tag type.
     - name: color
       auto: PREDEFINED
       predefined:
@@ -2133,16 +2133,16 @@ script:
       - Red
       - Purple
       - Default
-      description: The tage color - relevant only in "Custom" type.
+      description: The tag color - relevant only for "Custom" type.
       defaultValue: Default
     - name: ip_address_is
-      description: A specific IP address to search.
+      description: A specific IP address to search for.
     - name: host_name_is
-      description: A specific host name to search.
+      description: A specific host name to search for.
     - name: risk_score_higher_than
       description: A minimum risk score to use as a filter.
     - name: vulnerability_title_contains
-      description: A string to search for in vulnerabilities titles.
+      description: A string to search for in vulnerability titles.
     - name: site_id_in
       description: Site IDs to filter for. Can be a comma-separated list.
       isArray: true
@@ -2154,52 +2154,45 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "all" requires that
-        all filters match for an asset to be included. "any" requires only one filter
-        to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Queries to use as a filter,. According to the Search Criteria
-        API standard, the structure is {field} {operator} {value}.   Multiple queries
-        can be specified, separated by a ";" separator. For example 'ip-address in-range
-        192.0.2.0,192.0.2.1;host-name is myhost'.
-    description: Create tag.
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+    description: Create a tag.
   - name: nexpose-delete-tag
     arguments:
     - name: id
       required: true
       description: The tag ID.
-    description: delete tag.
+    description: Delete a tag.
   - name: nexpose-list-tag
     arguments:
     - name: id
-      description: Get tag by id.
+      description: Get tag by ID.
     - name: name
-      description: Ffilters the returned tags to only those containing the value within their name.
+      description: Filters the returned tags to only those containing the value within their name.
     - name: type
-      description: Ffilters the returned tags to only those from this type.
+      description: Filters the returned tags to only those of this type.
     - name: page_size
-      description: Number of records to retrieve in each API call when pagination.
-        is used.
+      description: Number of records to retrieve in each API call when pagination is used.
     - name: page
-      description: A specific page to retrieve when pagination is used. Page indexing.
-        starts at 0.
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
     - name: limit
       description: A number of records to limit the response to.
-    description: Retarn a list of tags.
+    description: Return a list of tags.
   - name: nexpose-update-tag-search-criteria
     arguments:
     - name: tag_id
       required: true
       description: The tag ID.
     - name: ip_address_is
-      description: A specific IP address to search.
+      description: A specific IP address to search for.
     - name: host_name_is
-      description: A specific host name to search.
-    - name: risk_score_title_contains
-      description: Aminimum risk score to use as a filter.
-    - name: vulnerability_title_conains
-      description: A string to searck for in vulnerbilities titles.
+      description: A specific host name to search for.
+    - name: risk_score_higher_than
+      description: A minimum risk score to use as a filter.
+    - name: vulnerability_title_contains
+      description: A string to search for in vulnerability titles.
     - name: site_id_in
       description: Site IDs to filter for. Can be a comma-separated list.
       isArray: true
@@ -2210,23 +2203,16 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "all" requires that
-        all filters match for an asset to be included. "any" requires only one filter
-        to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Queries to use as a filter, in addition to the specific fields
-        detailed above. According to the Search Criteria API standard, the structure
-        is {field} {operator} {value}.   Multiple queries can be specified, separated
-        by a ";" separator. For example 'ip-address in-range 192.0.2.0,192.0.2.1;host-name
-        is myhost'.
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     - name: overwrite
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Whether to overwrite the original search values OR append new conditions
-        to the existing  search.
+      description: Whether to overwrite the original search values or append new conditions to the existing search.
       defaultValue: "no"
     description: Update tag search criteria.
   - name: nexpose-list-tag-asset-group
@@ -2234,7 +2220,7 @@ script:
     - name: tag_id
       required: true
       description: The tag ID.
-    description: Return a list of tag is asset groups.
+    description: Return a list of asset groups for a tag.
   - name: nexpose-add-tag-asset-group
     arguments:
     - name: tag_id
@@ -2242,8 +2228,8 @@ script:
       description: The tag ID.
     - name: asset_group_ids
       required: true
-      description: The asset group to add. Can be a comma-separated list.
-    description: Add existing asset group to existing tag.
+      description: The asset group IDs to add. Can be a comma-separated list.
+    description: Add existing asset groups to an existing tag.
   - name: nexpose-remove-tag-asset-group
     arguments:
     - name: tag_id
@@ -2252,13 +2238,13 @@ script:
     - name: asset_group_id
       required: true
       description: The asset group ID.
-    description: Remove asset group from tag.
+    description: Remove an asset group from a tag.
   - name: nexpose-list-tag-asset
     arguments:
     - name: tag_id
       required: true
       description: The tag ID.
-    description: Return a list of tag is assets.
+    description: Return a list of assets for a tag.
   - name: nexpose-add-tag-asset
     arguments:
     - name: tag_id
@@ -2267,7 +2253,7 @@ script:
     - name: asset_id
       required: true
       description: The asset ID.
-    description: Add existing asset to existing tag.
+    description: Add an existing asset to an existing tag.
   - name: nexpose-remove-tag-asset
     arguments:
     - name: tag_id
@@ -2276,48 +2262,48 @@ script:
     - name: asset_id
       required: true
       description: The asset ID.
-    description: Remove asset from tag. Please note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
+    description: Remove an asset from a tag. Please note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
   - name: nexpose-add-site-included-asset
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
+      description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's included scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+      description: List of addresses to add to the site's included scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
       isArray: true
     - name: asset_group_ids
       isArray: true
-      description: Array of asset group identifiers.
+      description: List of asset group identifiers.
   - name: nexpose-remove-site-included-target
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
+      description: A URL parameter.
     - name: assets
       isArray: true
-      description: List of address to remove from the sites included scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+      description: List of addresses to remove from the site's included scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       isArray: true
-      description: Array of asset group identifiers.
+      description: List of asset group identifiers.
   - name: nexpose-list-site-included-asset
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
-    description: Return a list of site is related assets.
+      description: A URL parameter.
+    description: Return a list of included assets for a site.
   - name: nexpose-list-site-included-asset-group
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
-    description: Return a list of site is related asset groups.
+      description: A URL parameter.
+    description: Return a list of included asset groups for a site.
   - name: nexpose-add-site-excluded-target
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
+      description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's excluded scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+      description: List of addresses to add to the site's excluded scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to exclude.
     description: Add excluded targets to a site.
@@ -2325,23 +2311,23 @@ script:
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
+      description: A URL parameter.
     - name: assets
-      description: List of addresses to remove from the sites excluded scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+      description: List of addresses to remove from the site's excluded scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
-      description: List of asset group IDs to remove the sites from exclusion.
+      description: List of asset group IDs to remove from the site's exclusion list.
     description: Remove excluded targets from a site.
   - name: nexpose-list-site-excluded-asset
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
+      description: A URL parameter.
     description: Return a list of excluded assets for a site.
   - name: nexpose-list-site-excluded-asset-group
     arguments:
     - name: site_id
       required: true
-      description: A URL param.
+      description: A URL parameter.
     description: Return a list of excluded asset groups for a site.
   runonce: false
   script: '-'
