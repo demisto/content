@@ -21,8 +21,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
                  proxy: bool):
-        headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy, timeout=20)
+        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy, timeout=20)
         self.username = username
         self.password = password
 
@@ -37,7 +36,7 @@ class Client(BaseClient):
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
-            headers=self._headers,
+            headers={'Accept': 'application/json', 'Csrf-Token': 'nocheck'},
             data=data,
         )
 
