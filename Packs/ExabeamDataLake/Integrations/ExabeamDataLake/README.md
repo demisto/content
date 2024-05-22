@@ -36,12 +36,12 @@ Get events from Exabeam Data Lake.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description). | Required | 
+| query | The search query string to filter the events by. (e.g., "VPN". See more examples in the integration description). | Required | 
 | start_time | The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days. | Required | 
 | end_time | The ending date for the search range. This defines the end of the search range, which should be within one to ten days after the start_time. | Required | 
 | limit | The maximal number of results to return. Maximum value is 3000. | Optional | 
 | page | The page number for pagination. | Optional | 
-| page_size | The maximal number of results to return. Maximum value is 3000. | Optional | 
+| page_size | The maximal number of results to return per page. Maximum value is 3000. | Optional | 
 
 #### Context Output
 

@@ -19,7 +19,7 @@ configuration:
   name: cluster_name
   type: 0
   required: true
-  additionalinfo: The default value is usually 'local', suitable for standard setups. For custom cluster deployments, consult Exabeam Support Team.
+  additionalinfo: The default value is usually 'local', suitable for standard setups. For custom cluster deployments, consult the Exabeam Support Team.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -45,7 +45,7 @@ script:
       name: limit
     - description: The page number for pagination.
       name: page
-    - description: The maximal number of results to return. Maximum value is 3000.
+    - description: The maximal number of results to return per page. Maximum value is 3000.
       name: page_size
     description: Get events from Exabeam Data Lake.
     name: exabeam-data-lake-search
