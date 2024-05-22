@@ -230,7 +230,6 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             base_url.rstrip('/'),
@@ -239,13 +238,15 @@ def main() -> None:
             client_secret=client_secret,
             proxy=proxy)
 
+        demisto.debug(f'Command being called is {demisto.command()}')
+
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'exabeam-platform-event-search':
             return_results(search_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
-        
+
     except Exception as e:
         demisto.info(str(e))
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
