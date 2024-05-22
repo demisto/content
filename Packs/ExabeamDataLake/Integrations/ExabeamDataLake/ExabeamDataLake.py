@@ -154,7 +154,7 @@ def get_date(time: str, arg_name: str):
     return date
 
 
-def get_limit(args: dict, arg_name) -> int:
+def get_limit(args: dict, arg_name: str) -> int:
     """
     Get the limit value specified in the arguments.
 
