@@ -430,6 +430,23 @@ class Client(CoreClient):
         incidents = reply.get('reply')
         return incidents.get('incidents', {}) if isinstance(incidents, dict) else incidents  # type: ignore
 
+    def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
+        request_data = {"request_data": {
+            "alert_id_list": alerts_ids,
+        }}
+        update_data = assign_params(severity=severity, status=status, comment=comment)
+        request_data['request_data']['update_data'] = update_data
+        response = self._http_request(
+            method='POST',
+            url_suffix='/alerts/update_alerts',
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        if "reply" not in response or "alerts_ids" not in response["reply"]:
+            raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
+        return response['reply']['alerts_ids']
+
 
 def get_headers(params: dict) -> dict:
     api_key = params.get('apikey_creds', {}).get('password', '') or params.get('apikey', '')
@@ -471,10 +488,12 @@ def update_incident_command(client, args):
     assigned_user_mail = args.get('assigned_user_mail')
     assigned_user_pretty_name = args.get('assigned_user_pretty_name')
     status = args.get('status')
+    demisto.debug(f"this_is_the_status {status}")
     severity = args.get('manual_severity')
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
+    resolve_alerts = argToBoolean(args.get('resolve_alerts', False))
 
     if assigned_user_pretty_name and not assigned_user_mail:
         raise DemistoException('To set a new assigned_user_pretty_name, '
@@ -490,6 +509,10 @@ def update_incident_command(client, args):
         resolve_comment=resolve_comment,
         add_comment=add_comment,
     )
+    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
+    if resolve_alerts and is_closed:
+        args['status'] = args['status'].lower()
+        update_related_alerts(client, args)
 
     return f'Incident {incident_id} has been updated', None, None
 
@@ -956,7 +979,6 @@ def update_remote_system_command(client, args):
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
-        demisto.debug(f'{remote_args.delta=}')
     try:
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
@@ -964,7 +986,20 @@ def update_remote_system_command(client, args):
 
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+            demisto.debug(f"Before checking status {update_args=}")
+            is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
+                         or update_args.get('resolve_comment') or update_args.get('closingUserId'))
+            closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
+            if is_closed and closed_without_status:
+                update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+            demisto.debug(f"After checking status {update_args=}")
             update_incident_command(client, update_args)
+
+            close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+            # Check all relevant fields for an incident being closed in XSOAR UI
+            demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
+            if close_alerts_in_xdr and is_closed:
+                update_related_alerts(client, update_args)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -979,9 +1014,26 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool,
-                    last_run: dict = None, max_fetch: int = 10, statuses: List = [],
-                    starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
+def update_related_alerts(client: Client, args: dict):
+    new_status = args.get('status')
+    incident_id = args.get('incident_id')
+    comment = f"Resolved by XSOAR, due to incident {incident_id} that has been resolved."
+    demisto.debug(f"{new_status=}, {comment=}")
+    if not new_status:
+        raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
+                               "no status found")
+    incident_extra_data = client.get_incident_extra_data(incident_id)
+    if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
+        alerts_array = incident_extra_data['alerts']['data']
+        related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
+        demisto.debug(f"{related_alerts_ids_array=}")
+        args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
+        return_results(update_alerts_in_xdr_command(client, args_for_command))
+
+
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
+                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
+                    fields_to_exclude: bool = True):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
@@ -1176,6 +1228,27 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
         outputs=result,
         raw_response=result
     )
+
+
+def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
+    alerts_list = argToList(args.get('alert_ids'))
+    array_of_all_ids = []
+    severity = args.get('severity')
+    status = args.get('status')
+    comment = args.get('comment')
+    if not severity and not status and not comment:
+        raise DemistoException(
+            f"Can not find a field to update for alerts {alerts_list}, please fill in severity/status/comment.")
+    # API is limited to 100 alerts per request, doing the request in batches of 100.
+    for index in range(0, len(alerts_list), 100):
+        alerts_sublist = alerts_list[index:index + 100]
+        demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')
+        array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
+        array_of_all_ids += array_of_sublist_ids
+    if not array_of_all_ids:
+        raise DemistoException("Could not find alerts to update, please make sure you used valid alert IDs.")
+    return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
+                          )
 
 
 def main():  # pragma: no cover
@@ -1608,6 +1681,9 @@ def main():  # pragma: no cover
 
         elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
             return_results(change_user_role_command(client, args))
+
+        elif command == 'xdr-update-alert':
+            return_results(update_alerts_in_xdr_command(client, args))
 
     except Exception as err:
         return_error(str(err))
