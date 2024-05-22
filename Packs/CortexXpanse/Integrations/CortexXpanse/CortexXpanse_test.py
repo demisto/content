@@ -344,12 +344,16 @@ def test_list_alerts_command(requests_mock):
         },
         proxy=False)
     args = {
-        'limit': '2',
-        'severity': 'high',
+        'limit': '3',
         'sort_by_creation_time': 'asc'
     }
 
     response = list_alerts_command(client, args)
+
+    for alert in response.outputs:
+        if 'status' in alert:
+            status = alert['status']
+            assert status == 'reopened'
 
     assert response.outputs == LIST_ALERTS_RESULTS
     assert response.outputs_prefix == 'ASM.Alert'
@@ -819,7 +823,7 @@ def test_fetch_incidents(requests_mock, mocker):
         status=None,
         tags=None)
 
-    assert len(incidents) == 2
+    assert len(incidents) == 3
     assert incidents[0]['name'] == "Networking Infrastructure"
     assert json.loads(incidents[0]['rawJSON']).pop('local_insert_ts')
     assert next_run == {'last_fetch': 1659455267908}
