@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from oletools.olevba import VBA_Parser
 import subprocess
-from oletools import crypto, oleid, ftguess
+from oletools import crypto, ftguess
 from oletools.oleid import Indicator, RISK, OleID
 import os
 import hashlib
