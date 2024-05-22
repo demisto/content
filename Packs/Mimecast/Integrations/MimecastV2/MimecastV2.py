@@ -104,7 +104,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
             'pagination': pagination
         }
     }  # type: Dict[str, Any]
-    if data and not [{}]:
+    if data and data != [{}]:
         payload['data'] = data
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
@@ -3125,7 +3125,7 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
         data["query"] = query
 
     result_list = request_with_pagination(
-        "/api/archive/get-archive-search-logs", data, response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
+        "/api/archive/get-archive-search-logs", [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
     )
 
     return CommandResults(outputs_prefix="Mimecast.ArchiveSearchLog", outputs=result_list[0])
