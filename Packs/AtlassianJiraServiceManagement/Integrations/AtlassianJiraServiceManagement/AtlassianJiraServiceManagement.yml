@@ -48,6 +48,10 @@ script:
         name: limit
       - description: Whether to retrieve all object schemas with no limit.
         name: all_results
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
     name: jira-asset-object-schema-list
     outputs:
       - contextPath: JiraAsset.Schema.ID
@@ -84,8 +88,12 @@ script:
         name: exclude
       - description: The amount of object types to retrieve.
         name: limit
-      - all_results: Whether to retrieve all object types with no limit.
+      - description: Whether to retrieve all object types with no limit.
         name: all_results
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
     name: jira-asset-object-type-list
     outputs:
       - contextPath: JiraAsset.ObjectType.ID
@@ -128,27 +136,55 @@ script:
       - description: Whether to only return attributes that can be edited.
         name: is_editable
         defaultvalue: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
       - description: Whether to sort the results by the attribute name.
         name: order_by_name
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
         defaultvalue: false
       - description: Query to filter on available object type attributes.
         name: query
       - description: Should the response only include attributes where attribute values exists.
         name: include_value_exist
         defaultvalue: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
       - description: Should the response exclude parent attributes.
         name: exclude_parent_attributes
         defaultvalue: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
       - description: Should the response include child attributes.
         name: include_children
         defaultvalue: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
       - description: Should the response be ordered by the number of required attributes.
         name: order_by_required
         defaultvalue: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
       - description: The amount of object types to retrieve.
         name: limit
       - all_results: Whether to retrieve all object types with no limit.
         name: all_results
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
     name: jira-asset-object-type-attribute-list
     outputs:
       - contextPath: JiraAsset.Attribute.ID
