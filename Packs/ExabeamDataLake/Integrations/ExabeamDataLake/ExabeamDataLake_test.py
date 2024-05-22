@@ -1,7 +1,8 @@
 import json
 import pytest
 from CommonServerPython import DemistoException
-from ExabeamDataLake import Client, query_data_lake_command, get_limit, get_date, dates_in_range, calculate_page_parameters, _parse_entry
+from ExabeamDataLake import Client, query_data_lake_command, get_limit, get_date, dates_in_range, calculate_page_parameters, \
+    _parse_entry
 
 
 class MockClient(Client):
@@ -288,9 +289,8 @@ def test_query_datalake_request(mocker):
     mock_login.assert_called_once()
 
 
-
-@pytest.mark.parametrize('args, expected_output',[
-    ({},50),
+@pytest.mark.parametrize('args, expected_output', [
+    ({}, 50),
     ({'limit': None}, 50),
     ({'limit': 1000}, 1000),
     ({'limit': 5000}, 3000)
