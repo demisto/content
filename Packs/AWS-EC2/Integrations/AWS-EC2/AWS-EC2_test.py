@@ -130,8 +130,8 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker):
 
 
 @pytest.mark.parametrize('filter, expected_results', [
-    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole",
-     [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole']}])
+    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::123456789012:instance-profile/AmazonEKSNodeRole",
+     [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::123456789012:instance-profile/AmazonEKSNodeRole']}])
 ])
 def test_parse_filter_field(filter, expected_results):
     """

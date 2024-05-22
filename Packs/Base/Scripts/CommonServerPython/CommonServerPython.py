@@ -8898,7 +8898,7 @@ if 'requests' in sys.modules:
                 method_whitelist = "allowed_methods" if hasattr(
                     Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
-                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
                 }
                 retry = Retry(
                     total=retries,
@@ -11992,7 +11992,21 @@ def safe_sleep(duration_seconds):
                              .format(duration_seconds, run_duration))
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
-    time.sleep(duration_seconds)
+    time.sleep(duration_seconds)  # pylint: disable=E9003
+
+
+def is_time_sensitive():
+    """
+    Checks if the command reputation (auto-enrichment) is called as auto-extract=inline.
+    This function checks if the 'isTimeSensitive' attribute exists in the 'demisto' object and if it's set to True.
+
+        :return: bool
+        :rtype: ``bool``
+    """
+    return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+
+
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 ###########################################
