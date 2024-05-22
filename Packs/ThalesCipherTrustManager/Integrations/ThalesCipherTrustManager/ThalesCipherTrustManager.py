@@ -113,6 +113,7 @@ class CommandArguments:
     REASON = 'reason'
     PARENT = 'parent'
     EXTERNAL_CA_ID = 'external_ca_id'
+    SERIAL_NUMBER = 'serial_number'
 
 
 class AllowedAuthMethods(enum.Enum):
@@ -441,6 +442,12 @@ EXTERNAL_CERTIFICATE_UPDATE_INPUTS = [
                   description='If set to true, the certificates signed by the specified CA can be used for user authentication.'),
 ]
 
+EXTERNAL_CERTIFICATE_LIST_INPUTS = [
+    InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
+    InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
+    InputArgument(name=CommandArguments.SERIAL_NUMBER, description='Filter by serial number'),
+    InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
+] + PAGINATION_INPUTS
 ''' OUTPUTS '''
 ''' DESCRIPTIONS '''
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
@@ -464,6 +471,7 @@ CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revok
 EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
 EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
 EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
+EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certificates. The results can be filtered, using the query parameters.'
 '''CLIENT CLASS'''
 
 
@@ -686,6 +694,13 @@ class CipherTrustClient(BaseClient):
             method='PATCH',
             url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
             json_data=request_data,
+        )
+
+    def get_external_certificates_list(self, params: dict):
+        return self._http_request(
+            method='GET',
+            url_suffix=EXTERNAL_CAS_URL_SUFFIX,
+            params=params,
         )
 
 
@@ -1168,9 +1183,28 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-external-certificate-list')
+@metadata_collector.command(command_name='ciphertrust-external-certificate-list', inputs_list=EXTERNAL_CERTIFICATE_LIST_INPUTS, description=EXTERNAL_CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_list_command(client: CipherTrustClient, args: dict):
-    pass
+    skip,limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+                                                        args.get(CommandArguments.PAGE),
+                                                        args.get(CommandArguments.PAGE_SIZE))
+    params = assign_params(
+        skip=skip,
+        limit=limit,
+        subject=args.get(CommandArguments.SUBJECT),
+        issuer=args.get(CommandArguments.ISSUER),
+        serialNumber=args.get(CommandArguments.SERIAL_NUMBER),
+        cert=args.get(CommandArguments.CERT),
+    )
+
+    raw_response = client.get_external_certificates_list(params=params)
+    return CommandResults(
+        outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown('external certificates',
+                                        raw_response.get('resources')),
+    )
 
 
 ''' MAIN FUNCTION '''

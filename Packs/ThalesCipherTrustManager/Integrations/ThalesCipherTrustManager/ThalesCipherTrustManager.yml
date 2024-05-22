@@ -186,9 +186,52 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Returns a list of external CA certificates. The results can be filtered, using the query parameters.
     name: ciphertrust-external-certificate-list
-    arguments: []
+    arguments:
+    - name: subject
+      isArray: false
+      description: Filter by subject
+      required: false
+      secret: false
+      default: false
+    - name: issuer
+      isArray: false
+      description: Filter by issuer
+      required: false
+      secret: false
+      default: false
+    - name: serial_number
+      isArray: false
+      description: Filter by serial number
+      required: false
+      secret: false
+      default: false
+    - name: cert
+      isArray: false
+      description: Filter by cert
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The max number of resources to return. defaults to 50
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
     outputs: []
   - deprecated: false
     description: Update an external CA.
