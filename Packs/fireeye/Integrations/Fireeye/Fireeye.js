@@ -238,6 +238,7 @@ var sendRequest = function(url, method, token, setContentType, args) {
     return res;
 }
 
+logDebug("DEBUG: Login - getting token")
 
 var token = sendRequest(commandDictionary.login.url, commandDictionary.login.method).Headers['X-Feapi-Token'];
 
@@ -330,9 +331,12 @@ switch (command) {
         break;
 
     default:
+        logDebug("DEBUG: Running command by template: " + commandDictionary[command].method)
         response = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
         result = response.Body;
+        logDebug("DEBUG: Showing Raw Result for debuging: " + result)
         contentType = response.Headers && response.Headers['Content-Type'] && response.Headers['Content-Type'][0];
+        logDebug("DEBUG: Result type: " + contentType)
         if (contentType && contentType.indexOf('application/json') !== -1) {
           result = JSON.parse(response.Body);
         }
@@ -340,19 +344,23 @@ switch (command) {
           result = JSON.parse(x2j(response.Body));
         }
 }
+logDebug("DEBUG: logging out: ")
 sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
 
 
 if (typeof result === 'object' && !result['submission_Key'] && command != 'fe-submit-status') {
-  result['submission_Key'] = submissionKey;
+    logDebug("DEBUG: Getting submission key")
+    result['submission_Key'] = submissionKey;
 }
 
 currentCommand = commandDictionary[command];
 var entries = [];
 if (currentCommand.extended) {
+    logDebug("DEBUG: extended command detected: ")
     if(command === 'fe-submit-url'){
         result = result.response;
     }
+    logDebug("DEBUG: Translating results: ")
     for (var j in currentCommand.translator) {
         var current = currentCommand.translator[j];
         var entry = {
@@ -367,8 +375,10 @@ if (currentCommand.extended) {
         entry.EntryContext = {};
         var context = createContext(translated);
         entry.EntryContext[current.contextPath] = context;
+        logDebug("DEBUG: extracting data from results: ")
 
         if(command === 'fe-submit-result' || command === 'fe-submit-url-result'){
+            logDebug("DEBUG: Getting md5")
             if (command === 'fe-submit-result' && result.hasOwnProperty('submissionStatus') && result.submissionStatus.submissionStatus === 'In Progress'){
                 return {
                     Type: entryTypes.note,
@@ -379,6 +389,7 @@ if (currentCommand.extended) {
                 };
             }
             var md5 = result.alerts.alert.explanation['malware-detected'].malware.md5sum;
+            logDebug("DEBUG: creating entry")
             if(context.Severity === 'majr'){
                 entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
                 var malFile = {};
