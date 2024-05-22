@@ -292,7 +292,8 @@ def main() -> None:    # pragma: no cover
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
     finally:
-        client._logout()
+        if client:
+            client._logout()
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
