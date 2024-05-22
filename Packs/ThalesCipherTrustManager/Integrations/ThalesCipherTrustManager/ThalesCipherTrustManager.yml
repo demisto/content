@@ -425,9 +425,15 @@ script:
       secret: false
       default: false
       defaultValue: localca-<id>
-    - name: name_fields
+    - name: name_fields_raw_json
       isArray: true
       description: Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country
+      required: false
+      secret: false
+      default: false
+    - name: name_fields_json_entry_id
+      isArray: false
+      description: Entry Id of the file that contains JSON representation of the name_fields_raw_json
       required: false
       secret: false
       default: false
