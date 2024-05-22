@@ -5,7 +5,7 @@ import plyara
 import tldextract
 
 CONTEXT_PREFIX = "GITHUB"
-RAW_RESPONSE = ""
+RAW_RESPONSE = []
 
 
 class Client(BaseClient):
@@ -111,14 +111,6 @@ def get_content_files_from_repo(client: Client, relevant_files: list[str], param
     RAW_RESPONSE = [list(file.values()) for file in raw_data_files]
     return raw_data_files
 
-
-def extract_branch_sha(client: Client, branch_name):
-    try:
-        branch_info = client._http_request("GET", f"/git/refs/heads/{branch_name}")
-    except Exception as e:
-        demisto.error(f"in extract_branch_sha func, error massege: {e}")
-        raise e
-    return branch_info["object"]["sha"]
 
 
 def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list, str]:
