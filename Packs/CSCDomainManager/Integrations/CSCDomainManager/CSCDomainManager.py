@@ -28,6 +28,7 @@ urllib3.disable_warnings()
 
 DEFAULT_PAGE_SIZE = 15000
 DEFAULT_LIMIT = 50
+MAX_QUALIFIED_DOMAIN_NAMES = 50
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -42,26 +43,15 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+    def __init__(self, base_url: str, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+    
+    def generate_get_request(self, url_suffix, json_data):
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            json_data=json_data
+        )
 
 ''' COMMAND FUNCTIONS '''
 
@@ -94,24 +84,54 @@ def test_module(client: Client) -> str:
     return message
 
 
-def csc_domains_list_command(client: Client, args):
-    args.get('last_run_id')
-    args.get('registration_date')
-    args.get('email')
-    args.get('organization')
-    args.get('registry_expiry_date')
-    args.get('filter')
-    args.get('sort')
+def csc_domains_search_command(client: Client, args) -> None:
+    
+    qualified_domain_name = args.get('qualified_domain_name')
+    if qualified_domain_name:
+        return client.generate_get_request("" ,qualified_domain_name)
+    
+    args_dict = {
+        'domain_name' : args.get('domain_name'),
+        'registration_date' : args.get('registration_date'),
+        'email' : args.get('email'),
+        'organization' : args.get('organization'),
+        'registry_expiry_date' : args.get('registry_expiry_date'),
+        'filter' : args.get('filter'),
+        'sort' : args.get('sort')
+    }
+    
     arg_to_number(args.get('page'))
     arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
     arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    
+    for arg in args_dict:
+        if not args_dict[args]:
+            del args_dict[arg]
+    
+    #get domain with the given filters
+    #sort if needed
+    #what to do with page, size and limit?
+    return None
+    
 
-
-def csc_domains_availability_check_command(client: Client, args):
-    return
-
+def csc_domains_availability_check_command(client: Client, args) -> Any:
+    qualified_domain_names = args.get('qualified_domain_names')
+    if not qualified_domain_names:
+        return ("Error") #TODO to return a real error
+    if len(qualified_domain_names.split(',')) > MAX_QUALIFIED_DOMAIN_NAMES:
+        return ("Error") #TODO to return a real error
+    
+    #get domains from api and return output
+    domains_data = client.generate_get_request("/availability", qualified_domain_names) #can be or object or list
+    
+    for domain in domains_data:
+        #put in each domain result, the fields written in the design
+        domain
+    #return the results in the required pattern
+    return None
 
 def csc_domains_configuration_list_command(client: Client, args):
+    
     return
 
 
@@ -129,27 +149,30 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(params()['url'], '/api/v1')
+    
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not params().get('insecure', False)
+    
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        headers: dict = {}
 
+        base_url=params.get('base_url')
+        verify = not params().get('insecure', False)
+        headers: dict = {}
+        proxy=params.get('proxy', False)
+    
         client = Client(
             base_url=base_url,
-            verify=verify_certificate,
+            verify=verify,
             headers=headers,
             proxy=proxy
         )
@@ -159,8 +182,8 @@ def main() -> None:
             results = test_module(client)
             return_results(results)
 
-        elif demisto.command() == 'csc-domains-list':
-            return_results(csc_domains_list_command(client, args))
+        elif demisto.command() == 'csc-domains-search':
+            return_results(csc_domains_search_command(client, args))
 
         elif demisto.command() == 'csc-domains-availability-check':
             return_results(csc_domains_availability_check_command(client, args))

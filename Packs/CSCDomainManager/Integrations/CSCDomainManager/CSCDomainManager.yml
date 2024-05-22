@@ -1,0 +1,76 @@
+category: Utilities
+commonfields:
+  id: CSCDomainManager
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Base URL
+  name: base_url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: CSCDomainManager
+display: CSCDomainManager 
+name: CSCDomainManager
+script:
+  commands:
+  - arguments:
+    - description: 
+      name: domain_name
+      required: false
+    - description: 
+      name: registration_date
+      required: false
+    - description: 
+      name: email
+      required: false
+    - description: 
+      name: organization
+      required: false
+    - description: 
+      name: registry_expiry_date
+      required: false
+    - description: 
+      name: filter
+      required: false
+    - description: 
+      name: sort
+      required: false
+    - description: 
+      name: page
+      required: false
+    - description: 
+      name: page_size
+      required: false
+    - description: 
+      name: limit
+      required: false
+    description: Gets the domains by the applied filters
+    name: csc-domains-search
+    outputs:
+    - contextPath: CSCDomainManager.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+
+    
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
