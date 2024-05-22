@@ -6,7 +6,7 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-// returns true if the current platform is XSIAM or XSOAR 8.0 and above. test
+// returns true if the current platform is XSIAM or XSOAR 8.0 and above.
 isHosted = function () {
     res = getDemistoVersion();
     platform = res.platform;
