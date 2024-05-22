@@ -2,6 +2,10 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import urllib3
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 """ CONSTANTS """
 
 ISO_8601_FORMAT = "%Y-%m-%d"
