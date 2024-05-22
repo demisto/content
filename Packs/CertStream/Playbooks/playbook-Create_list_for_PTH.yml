@@ -397,7 +397,8 @@ tasks:
     task:
       id: 92e8c889-2606-4dc6-878d-f0853e929e31
       version: -1
-      name: Generate Homographs using LLM
+      name: Manual\Xpanse permutation
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -506,6 +507,7 @@ tasks:
       id: b7264512-7905-4a24-80cf-c6c42990e27a
       version: -1
       name: Generate Homographs using LLM
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -588,6 +590,7 @@ tasks:
       id: 7e27f484-a492-4d28-8d28-a47cb89dddb2
       version: -1
       name: Add single/multiple domain
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -638,6 +641,7 @@ tasks:
       id: c2f496dc-c7d1-441d-880c-c0f807322720
       version: -1
       name: Add a single domain to hunt
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -720,6 +724,7 @@ tasks:
       id: fec6978f-b5d1-4f49-8bf7-fdb3e02a6da1
       version: -1
       name: Add multiple domains to hunt
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -921,8 +926,9 @@ tasks:
     task:
       id: 62ca251a-b45e-4cf0-8cb7-57f68f20ed78
       version: -1
-      name: Which Domains should be added to DomainsList?
-      type: collection
+      name: Manual\Xpanse permutation
+      description: ''
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
@@ -1248,6 +1254,7 @@ tasks:
       id: 754821eb-89d2-4f25-80af-d1c5965a3977
       version: -1
       name: List exist - should overwrite?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
