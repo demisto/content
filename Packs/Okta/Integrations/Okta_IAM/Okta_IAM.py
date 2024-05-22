@@ -28,6 +28,8 @@ FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events co
                             '"Fetch Query Filter" parameter instead.'
 GET_USER_ATTRIBUTES = ['id', 'login', 'email']
 
+MAX_LOGS_LIMIT = 1000
+
 '''CLIENT CLASS'''
 
 
@@ -261,18 +263,23 @@ class Client(BaseClient):
             'limit': limit
         }
 
-        if limit:
+        if limit and limit <= MAX_LOGS_LIMIT:
             return self._http_request(
                 method='GET',
                 url_suffix=uri,
                 params=params,
             ), None
 
+        if limit and limit > MAX_LOGS_LIMIT:
+            params['limit'] = MAX_LOGS_LIMIT
+
         logs_batch, next_page = self.get_logs_batch(url_suffix=uri, params=params, full_url=next_page)
 
         try:
             while logs_batch:
                 logs.extend(logs_batch)
+                if limit and len(logs) > limit:
+                    return logs[:limit], next_page
                 logs_batch, next_page = self.get_logs_batch(full_url=next_page)
         except DemistoException as e:
             # in case of too many API calls, we return what we got and save the next_page for next fetch
