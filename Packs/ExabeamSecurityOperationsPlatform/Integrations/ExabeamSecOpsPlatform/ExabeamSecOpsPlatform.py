@@ -178,7 +178,7 @@ def error_fixes(error: str):
     if error == 'not enough values to unpack (expected 2, got 1)':
         new_error = "Recommendation:\nValidate the query argument \
         against the syntax documentation in the integration description."
-    
+
     return new_error
 
 
@@ -200,7 +200,7 @@ def search_command(client: Client, args: dict) -> CommandResults:
     end_time = get_date(args.get('end_time', 'today'), "end_time")
     if start_time > end_time:
         raise DemistoException("Start time must be before end time.")
-    
+
     kwargs = {
         'filter': process_string(args.get('query', '')),
         'fields': argToList(args.get('fields', '*')),
