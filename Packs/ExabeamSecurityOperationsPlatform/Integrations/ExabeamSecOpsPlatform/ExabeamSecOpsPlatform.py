@@ -156,6 +156,22 @@ def _parse_entry(entry: dict):
     return final if final else None
 
 
+def get_limit(args: dict) -> int:
+    """
+    Get the limit value specified in the arguments.
+
+    Args:
+        args: A dictionary containing the 'limit' argument.
+
+    Returns:
+        int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit.
+        If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
+    """
+    if limit := args.get('limit'):
+        return min(int(limit), 3000)
+
+    return 50
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -173,7 +189,7 @@ def search_command(client: Client, args: dict) -> CommandResults:
     kwargs = {
         'filter': process_string(args.get('query', '')),
         'fields': argToList(args.get('fields', '*')),
-        'limit': arg_to_number(args.get('limit', '50')),
+        'limit': get_limit(args),
         'startTime': get_date(args.get('start_time', '7 days ago'), "start_time"),
         'endTime': get_date(args.get('end_time', 'today'), "end_time"),
     }
