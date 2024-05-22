@@ -1,3 +1,4 @@
+from CommonServerPython import DemistoException
 import demistomock as demisto
 import numpy as np
 import pandas as pd
@@ -337,21 +338,6 @@ def test_get_get_data_from_indicators_automation():
     assert res is None
 
 
-def test_build_message_of_values():
-    from DBotFindSimilarIncidents import build_message_of_values
-
-    assert build_message_of_values([]) == ''
-
-    foo = 'foo_value'
-    assert build_message_of_values([foo]) == 'foo_value'
-
-    bar = 'bar_value'
-    assert build_message_of_values([foo, bar]) == 'foo_value; bar_value'
-
-    baz = ['baz1', 'baz2']
-    assert build_message_of_values([foo, bar, baz]) == "foo_value; bar_value; ['baz1', 'baz2']"
-
-
 @pytest.fixture
 def sample_data():
     # Create sample data for testing
@@ -364,12 +350,13 @@ def sample_data():
     return pd.DataFrame(data)
 
 
-fields_to_match = ['created', 'Name', 'test', 'Id', 'test2', 'xdralerts']
+fields_to_match = ['created', 'Name', 'test', 'Id', 'test2', 'xdralerts', 'hello']
 expected_results = ['created']
 
 
 def test_remove_empty_or_short_fields(sample_data):
-    from DBotFindSimilarIncidents import Model
+    from DBotFindSimilarIncidents import Model, FIELD_SKIP_REASON_DOESNT_EXIST, \
+        FIELD_SKIP_REASON_FALSY_VALUE, FIELD_SKIP_REASON_TOO_SHORT
     """
     Given:
         - sample_data: a dataframe with a column of strings
@@ -383,10 +370,39 @@ def test_remove_empty_or_short_fields(sample_data):
     my_instance.incident_to_match = sample_data
 
     my_instance.field_for_command_line = fields_to_match
-    my_instance.field_for_potential_exact_match = fields_to_match
-    my_instance.field_for_json = fields_to_match
+    my_instance.field_for_potential_exact_match = []
+    my_instance.field_for_json = []
 
-    my_instance.remove_empty_or_short_fields()
+    should_proceed, all_skip_reasons = my_instance.remove_empty_or_short_fields()
     assert my_instance.field_for_command_line == expected_results
-    assert my_instance.field_for_potential_exact_match == expected_results
-    assert my_instance.field_for_json == expected_results
+    assert should_proceed
+    assert all("created" not in reason for reason in all_skip_reasons)
+    assert f'  - {FIELD_SKIP_REASON_TOO_SHORT.format(field="Name", val="t", len=1)}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_TOO_SHORT.format(field="Id", val=["123"], len=1)}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="test", val=None)}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="test2", val="")}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="xdralerts", val="N/A")}' in all_skip_reasons
+    assert f'  - {FIELD_SKIP_REASON_DOESNT_EXIST.format(field="hello")}' in all_skip_reasons
+
+
+def test_predict_without_similarity_fields(sample_data):
+    """
+    Given:
+        - A Model object
+    When:
+        - No similarity fields were provided
+        - Calling Model.predict()
+    Then:
+        - Ensure the correct exception is raised
+    """
+    from DBotFindSimilarIncidents import Model
+    model = Model({})
+    model.incident_to_match = sample_data
+    model.field_for_command_line = []
+    model.field_for_potential_exact_match = []
+    model.field_for_json = []
+
+    with pytest.raises(DemistoException) as e:
+        model.predict()
+
+    assert "No fields were provided for similarity calculation" in str(e)
