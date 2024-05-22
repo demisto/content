@@ -149,7 +149,7 @@ def get_date(time: str, arg_name: str):
     """
     date_time = arg_to_datetime(arg=time, arg_name=arg_name, required=True)
     if not date_time:
-        raise DemistoException("There was an issue parsing the start time provided.")
+        raise DemistoException(f"There was an issue parsing the {arg_name} provided.")
     date = date_time.strftime(ISO_8601_FORMAT)
     return date
 
@@ -261,9 +261,9 @@ def main() -> None:    # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    credentials = params.get('credentials', {})
-    username = credentials.get('identifier')
-    password = credentials.get('password')
+    credentials: dict = params.get('credentials', {})
+    username = credentials.get('identifier', '')
+    password = credentials.get('password', '')
     base_url: str = params.get('url', '')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

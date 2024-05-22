@@ -32,9 +32,9 @@ name: Exabeam Data Lake
 script:
   commands:
   - arguments:
-    - description: The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description).
+    - defaultValue: "*"
+      description: The search query string to filter the events by. (e.g. "VPN". See more examples in the integration description).
       name: query
-      required: true
     - defaultValue: "7 days ago"
       description: The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days.
       name: start_time
