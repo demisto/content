@@ -15,16 +15,19 @@ vba_logger.setLevel(logging.CRITICAL)
 class CustomHandler(logging.Handler):
     def __init__(self):
         super().__init__()
-        self.log = ""
+        self.last_log_msg = None
 
     def emit(self, record):
-        self.log = record
+        self.last_log_msg = record.msg
+
+    def get_last_log_msg(self):
+        return self.last_log_msg
 
 
-oleid_logger = logging.getLogger("oleid")
-oleid_logger.setLevel(logging.NOTSET)
+ooxml_logger = logging.getLogger("ooxml")
+ooxml_logger.setLevel(logging.DEBUG)
 custom_handler = CustomHandler()
-oleid_logger.addHandler(custom_handler)
+ooxml_logger.addHandler(custom_handler)
 
 
 class OleClient:
@@ -223,7 +226,8 @@ def main():  # pragma: no cover
         ole_client = OleClient(file_info, ole_command, password=password, decoded=show_decoded)
         return_results(ole_client.run())
     except Exception as e:
-        return_error(f'The script failed with the following error:\n {e} \n Logs form oletools:\n {custom_handler.log}')
+        return_error(f'The script failed with the following error:\n {e}'
+                     f'\n Logs form oletools:\n {custom_handler.get_last_log_msg()}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
