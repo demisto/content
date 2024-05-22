@@ -91,7 +91,8 @@ class CommandArguments:
     COPY_FROM_CA = 'copy_from_ca'
     DNS_NAMES = 'dns_names'
     IP = 'ip'
-    NAME_FIELDS = 'name_fields'
+    NAME_FIELDS_RAW_JSON = 'name_fields_raw_json'
+    NAME_FIELDS_JSON_ENTRY_ID = 'name_fields_json_entry_id'
     SIZE = 'size'
     SUBJECT = 'subject'
     LOCAL_CA_ID = 'local_ca_id'
@@ -338,8 +339,10 @@ LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True,
                           InputArgument(name=CommandArguments.IP, is_array=True, description='IP addresses'),
                           InputArgument(name=CommandArguments.NAME, default='localca-<id>',
                                         description='A unique name of CA, if not provided, will be set to localca-<id>.'),
-                          InputArgument(name=CommandArguments.NAME_FIELDS, is_array=True,
+                          InputArgument(name=CommandArguments.NAME_FIELDS_RAW_JSON, is_array=True,
                                         description='Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country'),
+                          InputArgument(name=CommandArguments.NAME_FIELDS_JSON_ENTRY_ID,
+                                        description='Entry Id of the file that contains JSON representation of the name_fields_raw_json'),
                           InputArgument(name=CommandArguments.SIZE,
                                         description='Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'), ]
 
@@ -494,45 +497,56 @@ users_count integer
 It returns the total user count associated with the group
 '''
 GROUPS_LIST_OUTPUT = [
-    OutputArgument(name="limit", output_type=int, description="The max number of records returned. Equivalent to 'limit' in SQL."),
-    OutputArgument(name="skip", output_type=int, description="The index of the first record returned. Equivalent to 'offset' in SQL."),
+    OutputArgument(name="limit", output_type=int,
+                   description="The max number of records returned. Equivalent to 'limit' in SQL."),
+    OutputArgument(name="skip", output_type=int,
+                   description="The index of the first record returned. Equivalent to 'offset' in SQL."),
     OutputArgument(name="total", output_type=int, description="The total records matching the query."),
-    OutputArgument(name="messages", output_type=list, description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."), #todo: dynamic : messages arrayAn optional list of warning messages, usually used to note when unsupported query parameters were ignored. items {"type":"string"}
-    OutputArgument(name="resources.name", output_type=str , description= "name of the group"),
+    OutputArgument(name="messages", output_type=list,
+                   description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."),
+    #todo: dynamic : messages arrayAn optional list of warning messages, usually used to note when unsupported query parameters were ignored. items {"type":"string"}
+    OutputArgument(name="resources.name", output_type=str, description="name of the group"),
     OutputArgument(name="resources.created_at", output_type=datetime, description="The time the group was created."),
-    OutputArgument(name="resources.updated_at", output_type=datetime , description= "The time the group was last updated."),
-    OutputArgument(name="resources.user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="resources.updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="resources.user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="resources.app_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
-    OutputArgument(name="resources.client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
-    OutputArgument(name="resources.description", output_type=str , description= "description of the group"),
-    OutputArgument(name="resources.users_count", output_type=int , description= "It returns the total user count associated with the group"),
+    OutputArgument(name="resources.client_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="resources.description", output_type=str, description="description of the group"),
+    OutputArgument(name="resources.users_count", output_type=int,
+                   description="It returns the total user count associated with the group"),
 ]
 
 GROUP_CREATE_OUTPUT = [
     OutputArgument(name="name", output_type=str, description="The name of the group."),
-    OutputArgument(name="created_at", output_type=datetime, description= "The time the group was created."),
-    OutputArgument(name="updated_at", output_type=datetime , description= "The time the group was last updated."),
-    OutputArgument(name="user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="created_at", output_type=datetime, description="The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="app_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
-    OutputArgument(name="client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
-    OutputArgument(name="description", output_type=str , description= "The description of the group."),
-    OutputArgument(name="users_count", output_type=int , description= "The total user count associated with the group."), #todo: apeears in documenation but not in the response
+    OutputArgument(name="client_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="description", output_type=str, description="The description of the group."),
+    OutputArgument(name="users_count", output_type=int, description="The total user count associated with the group."),
+    #todo: apeears in documenation but not in the response
 ]
-
 
 GROUP_UPDATE_OUTPUT = [
     OutputArgument(name="name", output_type=str, description="The name of the group."),
-    OutputArgument(name="created_at", output_type=datetime, description= "The time the group was created."),
-    OutputArgument(name="updated_at", output_type=datetime , description= "The time the group was last updated."),
-    OutputArgument(name="user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
-    OutputArgument(name="app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
-    OutputArgument(name="client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
-    OutputArgument(name="description", output_type=str , description= "The description of the group."),
-    OutputArgument(name="users_count", output_type=int , description= "The total user count associated with the group."),
+    OutputArgument(name="created_at", output_type=datetime, description="The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="client_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="description", output_type=str, description="The description of the group."),
+    OutputArgument(name="users_count", output_type=int, description="The total user count associated with the group."),
 ]
-
 
 '''
 name string
@@ -562,17 +576,19 @@ It returns the total user count associated with the group
 '''
 USER_TO_GROUP_ADD_OUTPUT = [
     OutputArgument(name="name", output_type=str, description="The name of the group."),
-    OutputArgument(name="created_at", output_type=datetime, description= "The time the group was created."),
-    OutputArgument(name="updated_at", output_type=datetime , description= "The time the group was last updated."),
-    OutputArgument(name="user_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
-    OutputArgument(name="app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
-    OutputArgument(name="client_metadata", output_type=dict , description= "A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
-    OutputArgument(name="description", output_type=str , description= "The description of the group."),
-    OutputArgument(name="users_count", output_type=int , description= "The total user count associated with the group."),
+    OutputArgument(name="created_at", output_type=datetime, description="The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="client_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences."),
+    OutputArgument(name="description", output_type=str, description="The description of the group."),
+    OutputArgument(name="users_count", output_type=int, description="The total user count associated with the group."),
 ]
 
 USER_TO_GROUP_REMOVE_OUTPUT = []
-
 
 USERS_LIST_OUTPUT = []
 ''' DESCRIPTIONS '''
@@ -858,9 +874,11 @@ def add_expires_at_param(request_data: dict, expires_at_arg: str):
         request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg)
 
 
-def parse_name_fields_string_to_list(name_fields: str):
-    if name_fields:
-        return [json.loads(f'{{{name_fields}}}')]
+def optional_safe_load_json(raw_json_string, json_entry_id):
+    json_object = json_entry_id if json_entry_id else raw_json_string
+    if json_object:
+        return safe_load_json(json_object)
+    return {}
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1094,7 +1112,8 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
         emailAddresses=argToList(args.get(CommandArguments.EMAIL)),
         ipAddresses=argToList(args.get(CommandArguments.IP)),
         name=args.get(CommandArguments.NAME),
-        names=argToList(args.get(CommandArguments.NAME_FIELDS)),  #todo: name fields formatting
+        names=optional_safe_load_json(args.get(CommandArguments.NAME_FIELDS_RAW_JSON),
+                                      args.get(CommandArguments.NAME_FIELDS_JSON_ENTRY_ID)),
         size=arg_to_number(args.get(CommandArguments.SIZE)),
     )
     raw_response = client.create_local_ca(request_data=request_data)
