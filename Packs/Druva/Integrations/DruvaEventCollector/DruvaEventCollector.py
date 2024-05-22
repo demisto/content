@@ -169,9 +169,10 @@ def main() -> None:  # pragma: no cover
             tracker, events = get_events(client, args.get('tracker'))
             return_results(
                 CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events),
-                               outputs={'tracker': tracker},
-                               outputs_prefix=VENDOR,
-                               outputs_key_field='tracker')
+                               outputs=tracker,
+                               outputs_prefix=f'{VENDOR}.tracker',
+                               outputs_key_field='tracker',
+                               replace_existing=True)
             )
             if should_push_events:
                 add_time_to_events(events)
