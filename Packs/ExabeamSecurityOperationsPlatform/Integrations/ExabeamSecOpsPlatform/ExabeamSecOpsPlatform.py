@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ' 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 ''' CLIENT CLASS '''
@@ -238,7 +238,7 @@ def test_module(client: Client) -> str:    # pragma: no cover
         return 'ok'
     else:
         raise DemistoException('Access Token Generation Failure.')
-    
+
 
 ''' MAIN FUNCTION '''
 
