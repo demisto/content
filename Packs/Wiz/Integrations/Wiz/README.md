@@ -23,6 +23,25 @@ This integration was integrated and tested with Wiz
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook or War Room.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+### wiz-get-issue
+***
+Get the details for a Wiz Issue ID.
+
+<h4> Base Command </h4>
+
+`wiz-get-issue`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Issue id | Required | 
+
+#### Command Example
+```
+!wiz-get-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+```
+
 ### wiz-get-issues
 ***
 Get the issues on cloud resources
