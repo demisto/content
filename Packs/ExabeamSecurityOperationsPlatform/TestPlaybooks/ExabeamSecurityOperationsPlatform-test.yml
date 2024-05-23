@@ -1,5 +1,5 @@
 id: ExabeamSecurityOperationsPlatform-test
-version: 3
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ExabeamSecurityOperationsPlatform-test
 starttaskid: "0"

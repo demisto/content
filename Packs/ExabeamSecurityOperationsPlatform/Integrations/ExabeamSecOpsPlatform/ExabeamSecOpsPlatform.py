@@ -91,6 +91,10 @@ def transform_string(input_str: str) -> str:
     Returns:
         str: The transformed string where the value part is converted to lowercase if it's "true" or "false",
         otherwise it's enclosed in double quotes.
+        
+    Examples:
+        transform_string("status:true") -> 'status:true'
+        transform_string("message:Hello World") -> 'message:"Hello World"'
     """
     key, value = input_str.split(':', 1)
     if value.lower() in ['true', 'false']:
