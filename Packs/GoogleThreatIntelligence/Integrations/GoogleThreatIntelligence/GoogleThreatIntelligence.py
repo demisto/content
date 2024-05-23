@@ -1951,7 +1951,7 @@ def file_scan_and_get_analysis(client: Client, args: dict):
     if not args.get('id'):
         command_results = file_scan(client, args)
         command_result = command_results[0]
-        outputs: dict = command_result.outputs
+        outputs = command_result.outputs
         scheduled_command = ScheduledCommand(
             command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
             next_run_in_seconds=interval,
@@ -1967,7 +1967,7 @@ def file_scan_and_get_analysis(client: Client, args: dict):
         return command_result
 
     command_result = get_analysis_command(client, args)
-    outputs: dict = command_result.outputs
+    outputs = command_result.outputs
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
         return command_result
     scheduled_command = ScheduledCommand(
@@ -1992,7 +1992,7 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
     if not args.get('id'):
         command_results = private_file_scan(client, args)
         command_result = command_results[0]
-        outputs: dict = command_result.outputs
+        outputs = command_result.outputs
         scheduled_command = ScheduledCommand(
             command=f'{COMMAND_PREFIX}-private-file-and-analysis-get',
             next_run_in_seconds=interval,
@@ -2008,7 +2008,7 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
         return command_result
 
     command_result = private_get_analysis_command(client, args)
-    outputs: dict = command_result.outputs
+    outputs = command_result.outputs
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
         return command_result
     scheduled_command = ScheduledCommand(
@@ -2032,7 +2032,7 @@ def url_scan_and_get_analysis(client: Client, args: dict):
 
     if not args.get('id'):
         command_result = scan_url_command(client, args)
-        outputs: dict = command_result.outputs
+        outputs = command_result.outputs
         scheduled_command = ScheduledCommand(
             command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
             next_run_in_seconds=interval,
@@ -2048,7 +2048,7 @@ def url_scan_and_get_analysis(client: Client, args: dict):
         return command_result
 
     command_result = get_analysis_command(client, args)
-    outputs: dict = command_result.outputs
+    outputs = command_result.outputs
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
         return command_result
     scheduled_command = ScheduledCommand(
