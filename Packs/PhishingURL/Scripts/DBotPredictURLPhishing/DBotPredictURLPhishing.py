@@ -292,13 +292,12 @@ def return_entry_summary(
         return None
     if verdict == BENIGN_VERDICT_WHITELIST:
         verdict = BENIGN_VERDICT
-    if is_white_listed or not pred_json:
+    if not pred_json:
         url_score = SCORE_BENIGN
-        url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(
-            url_score)
+        url_score_colored = (GREEN_COLOR if url_score < SCORE_THRESHOLD else RED_COLOR).format(url_score)
     else:
         url_score = round(pred_json[MODEL_KEY_URL_SCORE], 2)
-        url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(url_score)
+        url_score_colored = (GREEN_COLOR if url_score < SCORE_THRESHOLD else RED_COLOR).format(url_score)
     pred_json_colored = get_colored_pred_json(pred_json) if pred_json else {}
     domain = extract_domainv2(url)
     explain = {
@@ -458,25 +457,21 @@ def extract_created_date(entry: dict):
     return None
 
 
-def weed_rasterize_errors(urls: list[str], res_rasterize: list[dict]):
+def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]):
     '''Remove the URLs that failed rasterization and return them.'''
-    if len(urls) != len(res_rasterize):
-        demisto.debug(f'{res_rasterize=}')
-        raise DemistoException('Unexpected response from the "rasterize" command. '
-                               'Please make sure the Rasterize pack version is above 2.0.7')
     error_idx = [
         i for (i, res) in enumerate(res_rasterize)
-        if isinstance(res['Contents'], str)
+        if isinstance(res, str)
     ][::-1]  # reverse the list as it will be used to remove elements.
     if error_idx:
         return_results(CommandResults(readable_output=tableToMarkdown(
             'The following URLs failed rasterize and were skipped:',
-            [{'URL': urls.pop(i), 'Message': res_rasterize.pop(i)['Contents']} for i in error_idx],
+            [{'URL': urls.pop(i), 'Message': res_rasterize.pop(i)} for i in error_idx],
             ['URL', 'Message']
         )))
 
 
-def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
+def rasterize_command(urls: Union[list[str], str], rasterize_timeout: int) -> list[Union[dict, str]]:
     res_rasterize: list[dict] = demisto.executeCommand(  # type: ignore
         'rasterize',
         {
@@ -487,8 +482,17 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
         }
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
-    weed_rasterize_errors(urls, res_rasterize)
     return [res['Contents'] for res in res_rasterize]
+
+
+def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
+    res_rasterize = rasterize_command(urls, rasterize_timeout)
+    if len(res_rasterize) < len(urls):  # check for errors in the response
+        demisto.info(f'Rasterize response is too short, running command for each URL\n{res_rasterize=}\n{urls=}')
+        rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
+        res_rasterize = sum(rasterize_runs, [])
+    weed_rasterize_errors(urls, res_rasterize)
+    return cast(list[dict], res_rasterize)
 
 
 def get_whois_verdict(domains: list[dict]) -> list:
@@ -535,7 +539,6 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
         x_pred = create_x_pred(output_rasterize, final_url)
 
         pred_json = model.predict(x_pred)
-
         if debug:
             return_results(pred_json['debug_top_words'])
             return_results(pred_json['debug_found_domains_list'])
