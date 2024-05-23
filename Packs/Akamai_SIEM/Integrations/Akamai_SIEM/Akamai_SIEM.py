@@ -31,7 +31,7 @@ Attributes:
 INTEGRATION_NAME = 'Akamai SIEM'
 INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
-
+IP = 24
 
 VENDOR = "Akamai"
 PRODUCT = "WAF"
