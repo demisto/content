@@ -956,7 +956,7 @@ def build_drilldown_search(notable_data, search, raw_dict):
     return ''.join(searchable_search)
 
 
-def get_drilldown_timeframe(notable_data, raw):
+def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
     """ Sets the drilldown search timeframe data.
 
     Args:
@@ -964,12 +964,9 @@ def get_drilldown_timeframe(notable_data, raw):
         raw (dict): The raw dict
 
     Returns:
-        task_status: True if the timeframe was retrieved successfully, False otherwise.
         earliest_offset: The earliest time to query from.
         latest_offset: The latest time to query to.
     """
-    # TODO: I'm not sure about this logic - it seems that now the query offset for each drilldown is set in the earliest and latest fields inside the drilldown dict. 
-    task_status = True
     earliest_offset = notable_data.get("drilldown_earliest", "")
     latest_offset = notable_data.get("drilldown_latest", "")
     info_min_time = raw.get(INFO_MIN_TIME, "")
@@ -980,15 +977,13 @@ def get_drilldown_timeframe(notable_data, raw):
             earliest_offset = info_min_time
         else:
             demisto.debug("Failed retrieving info min time")
-            task_status = False
     if not latest_offset or latest_offset == f"${INFO_MAX_TIME}$":
         if info_max_time:
             latest_offset = info_max_time
         else:
             demisto.debug("Failed retrieving info max time")
-            task_status = False
 
-    return task_status, earliest_offset, latest_offset
+    return earliest_offset, latest_offset
 
 def extract_drilldown_search_queries(drilldown_searches: list) -> list[str]:
     """ Goes over the drilldown searches list, and from each drilldown search dictionary extracts the search query.
@@ -1010,6 +1005,28 @@ def extract_drilldown_search_queries(drilldown_searches: list) -> list[str]:
     demisto.debug(f'search_queries list: {search_queries}')
     return search_queries
 
+def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
+    """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
+
+    Args:
+        drilldown_searches (list): The list of the drilldown searches.
+
+    Returns:
+        list[str]: A list of the drilldown searches dictionaries.
+    """
+    demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
+    searches = []
+    
+    for drilldown_search in drilldown_searches:
+        try:
+            search = json.loads(drilldown_search)
+            searches.append(search)
+        except json.JSONDecodeError as e:
+            demisto.error(f"Caught an exception while parsing a drilldown search object."
+                          f"Drilldown search is: {drilldown_search}, Original Error is: {str(e)}")
+        
+    return searches
+
           
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> dict[str, client.Job]:
     """ Performs a drilldown enrichment.
@@ -1024,15 +1041,21 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     """
     jobs_by_query = {}
     demisto.debug(f"notable data is: {notable_data}")
-    if drilldown_search := (notable_data.get("drilldown_search") or argToList(notable_data.get("drilldown_searches", []))):
+    if drilldown_search := (argToList(notable_data.get("drilldown_searches", [])) or (notable_data.get("drilldown_search"))):
+            # Multiple drilldown searches is a feature added in Enterprise Security v7.2.0.
+            # If a user set more than one drilldown search, we will get a list of drilldown search objects (under
+            # the 'drilldown_searches' key) and we will submit a splunk enrichment for each one of them.
+            # To maintain backwards compatibility we will keep using the 'drilldown_search' key as well.
         raw_dict = rawToDict(notable_data.get("_raw", ""))
         
         if isinstance(drilldown_search, list):
-            # there exist more than one drilldown searches to enrich
-            searches = extract_drilldown_search_queries(drilldown_search)
+            # There are multiple drilldown searches to enrich
+            searches = parse_drilldown_searches(drilldown_search)
+        
         else:
-            # only one drilldown search
+            # Got only one drilldown search (BC)
             searches = [drilldown_search]
+            
         total_searches = len(searches)
         demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches to enrich')
             
@@ -1041,13 +1064,23 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             search = searches[i]
             demisto.debug(f'Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}')
             
+            if isinstance(search, dict):
+                query_name = search.get('name', '')
+                query_search = search.get('search', '')
+                earliest_offset = search.get('earliest', '') # The earliest time to query from.
+                latest_offset = search.get('latest', '') # The latest time to query to.
+            
+            else:
+                # Got only one drilldown search under the 'drilldown_search' key (BC)
+                query_search = search
+                earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
+            
             if searchable_query := build_drilldown_search(
-                notable_data, search, raw_dict
+                notable_data, query_search, raw_dict
             ):
-                status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
-                # TODO - to be sure about the timeframe logic we need to create a notable with 3 different drilldown searches, 
-                # for each one of them different earliest and latest offsets and check the relevant fields of the notable fetched data. 
-                if status:
+                demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
+                
+                if earliest_offset and latest_offset:
                     kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                     if latest_offset:
                         kwargs['latest_time'] = latest_offset
@@ -1064,7 +1097,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                     demisto.debug(f'Failed getting the drilldown timeframe for notable {notable_data[EVENT_ID]}')
             else:
                 demisto.debug(
-                    f"Couldn't build search query for notable {notable_data[EVENT_ID]} with the following drilldown search {search}"
+                    f"Couldn't build search query for notable {notable_data[EVENT_ID]} "
+                    f"with the following drilldown search {query_search}"
                 )
     else:
         demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
