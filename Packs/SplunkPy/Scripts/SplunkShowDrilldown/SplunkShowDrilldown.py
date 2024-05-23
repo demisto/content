@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_RESULTS_TO_DISPLAY = 50 # TODO: need to consult the number and the concept
+MAX_RESULTS_TO_DISPLAY = 10 # TODO: need to consult the number and the concept
 
 
 def main():
@@ -33,10 +33,13 @@ def main():
         markdown = tableToMarkdown("", events_arr, headers=events_arr[0].keys())
         
     elif isinstance(drilldown_results, dict):
-        markdown = ""
+        markdown = "#### Drilldown Searches Results\n"
         for key, value in drilldown_results.items():
-            markdown += f"Drilldown search results for search query: {key}\n"
-            markdown += tableToMarkdown("", value[:MAX_RESULTS_TO_DISPLAY], headers=value[0].keys())
+            markdown += f"**Query Name:** {key}\n\n **Query Search:** {value.get('query_search', '')}\n\n **Results:**\n"
+            if results := value.get("query_results", []):
+                markdown += tableToMarkdown("", results[:MAX_RESULTS_TO_DISPLAY], headers=results[0].keys())
+            else:
+               markdown += "\nNo results found for drilldown search."
             markdown += "\n\n"
             
     else:
