@@ -28,5 +28,8 @@
 	"name": "User Profile - PrismaCloud (Incoming)",
 	"type": "mapping-incoming",
 	"version": -1,
+    "marketplaces": [
+        "xsoar"
+    ],
 	"fromVersion": "6.0.0"
 }
