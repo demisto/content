@@ -377,7 +377,43 @@ script:
       secret: false
       default: false
       defaultValue: 50
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Group.limit
+      description: The max number of records returned. Equivalent to 'limit' in SQL.
+      type: Number
+    - contextPath: CipherTrust.Group.skip
+      description: The index of the first record returned. Equivalent to 'offset' in SQL.
+      type: Number
+    - contextPath: CipherTrust.Group.total
+      description: The total records matching the query.
+      type: Number
+    - contextPath: CipherTrust.Group.messages
+      description: An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
+      type: Unknown
+    - contextPath: CipherTrust.Group.resources.name
+      description: name of the group
+      type: String
+    - contextPath: CipherTrust.Group.resources.created_at
+      description: The time the group was created.
+      type: Unknown
+    - contextPath: CipherTrust.Group.resources.updated_at
+      description: The time the group was last updated.
+      type: Unknown
+    - contextPath: CipherTrust.Group.resources.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.resources.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.resources.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.resources.description
+      description: description of the group
+      type: String
+    - contextPath: CipherTrust.Group.resources.users_count
+      description: It returns the total user count associated with the group
+      type: Number
   - deprecated: false
     description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
     name: ciphertrust-local-ca-create
