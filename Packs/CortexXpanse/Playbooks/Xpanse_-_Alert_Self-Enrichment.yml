@@ -341,7 +341,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: bb5c3806-9983-40ce-85d2-e224942d135b
       iscommand: false
@@ -393,7 +393,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: fdaef9a9-d071-4b8d-8361-2a77e159353f
       iscommand: false
@@ -445,7 +445,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 667637a3-7289-42a3-88f8-38f9085aabe1
       iscommand: false
@@ -496,7 +496,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: edcabcaa-be6e-45ec-86a5-add2df3e2734
       iscommand: false
@@ -544,7 +544,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have an asset of type certificate.
+      description: Determines if there is an asset of type certificate.
       id: e0856db5-4c44-4f19-89ee-84768af91985
       iscommand: false
       name: Is there a certificate asset?
@@ -769,7 +769,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 7ec17610-c685-49ca-8a65-935721a02bcb
       iscommand: false
@@ -817,7 +817,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have an asset of type responsive IP.
+      description: Determines if there is an asset of type responsive IP.
       id: b0768e44-c968-4d69-8110-fd5cdf639a08
       iscommand: false
       name: Is there a responsive ip asset?
@@ -970,7 +970,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 49969165-0261-4433-892f-71ea9f797a60
       iscommand: false
@@ -1022,7 +1022,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 8772970e-8dfc-43a2-83d8-96655ad71ec0
       iscommand: false
@@ -1070,7 +1070,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 8802dbed-5fb6-4fb5-8857-e06df0702af4
       iscommand: false
@@ -1118,7 +1118,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 8a838e32-b013-4f73-8d8c-f98c71a36f9e
       iscommand: false
@@ -1220,10 +1220,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have a time entries to add to service grid field.
+      description: Determines if there are time entries to add to the service grid field.
       id: 064f771f-dff0-4705-8fca-91b07804d0ed
       iscommand: false
-      name: Do we have time entries?
+      name: Are there time entries?
       type: condition
       version: -1
     taskid: 064f771f-dff0-4705-8fca-91b07804d0ed
@@ -1369,10 +1369,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have a time entries to add to asset grid field.
+      description: Determines if there are time entries to add to the asset grid field.
       id: e6a098c6-5cdc-4fdd-810d-b866d2d7da53
       iscommand: false
-      name: Do we have time entries?
+      name: Are there time entries?
       type: condition
       version: -1
     taskid: e6a098c6-5cdc-4fdd-810d-b866d2d7da53
@@ -1415,7 +1415,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have an asset of type domain.
+      description: Determines if there is an asset of type domain.
       id: 551aaf77-07d5-4610-8f72-43949dba127f
       iscommand: false
       name: Is there a domain asset?
@@ -1461,7 +1461,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have an asset of type cloud.
+      description: Determines if there is an asset of type cloud.
       id: 92d4b2f3-5493-456a-88a8-7d259da37241
       iscommand: false
       name: Is there a cloud asset?
@@ -1673,7 +1673,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 71564cd0-f13d-4ec0-8e38-7d6006061f45
       iscommand: false
@@ -1899,7 +1899,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 04d78478-e2e2-4867-85b8-067411f75680
       iscommand: false
@@ -2069,7 +2069,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 792fb7b0-2162-4b00-8ae1-c6ca8e3ddd9e
       iscommand: false
@@ -2125,10 +2125,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have a time entries to add to asset grid field.
+      description: Determines if there are time entries to add to the asset grid field.
       id: 4b745d05-e52e-4c0f-8d97-2fcc071f4dec
       iscommand: false
-      name: Do we have time entries?
+      name: Are there time entries?
       type: condition
       version: -1
     taskid: 4b745d05-e52e-4c0f-8d97-2fcc071f4dec
@@ -2336,7 +2336,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: fa63614a-ca49-4bf3-8051-b862ab3f97b0
       iscommand: false
@@ -2383,7 +2383,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have a asset id to enrich.
+      description: Determines if there is an asset ID to enrich.
       id: b21b79b5-bb5f-43d8-818a-46be4de44320
       iscommand: false
       name: Is Xpanse Asset IDs defined?
@@ -2428,7 +2428,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have a service id to enrich.
+      description: Determines if there is a service ID to enrich.
       id: 1e7f5704-542d-48b4-845c-351460a1cc69
       iscommand: false
       name: Is Xpanse Service ID defined?
@@ -2489,10 +2489,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if we have a time entries to add to asset grid field.
+      description: Determines if there are time entries to add to the asset grid field.
       id: f81c2323-d804-4a83-8972-b59dc47930ae
       iscommand: false
-      name: Do we have ip_range entries?
+      name: Are there ip_range entries?
       type: condition
       version: -1
     taskid: f81c2323-d804-4a83-8972-b59dc47930ae
@@ -2607,7 +2607,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       id: 4719d617-837d-4aef-81ea-da9214bba227
       iscommand: false
