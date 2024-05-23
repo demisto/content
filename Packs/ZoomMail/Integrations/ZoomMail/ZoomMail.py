@@ -1163,6 +1163,7 @@ def safe_bytes_to_string(byte_data: bytes, encoding: str = 'utf-8') -> str:
     except UnicodeDecodeError:
         return 'Unicode decode error.'
 
+
 def correct_base64_errors(encoded_data: str) -> str:
     """
     Attempts to correct common errors in a base64 string, such as non-base64 characters and padding issues.
@@ -1203,8 +1204,6 @@ def decode_base64(encoded_data: str) -> str:
 
         decoded_bytes = base64.b64decode(corrected_data, altchars=b'+/')
         return safe_bytes_to_string(decoded_bytes)
-    except base64.binascii.Error as e:
-        return f'Base64 decoding error: {str(e)}'
     except ValueError as e:
         return f'Value error: {str(e)}'
 

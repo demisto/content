@@ -2018,49 +2018,49 @@ class TestBase64Decoding(unittest.TestCase):
         # Test with a normal base64 encoded string
         encoded = base64.b64encode(b'hello world').decode('utf-8')
         result = decode_base64(encoded)
-        self.assertEqual(result, 'hello world')
+        assert result == "hello world"
 
     def test_decode_base64_incorrect_padding(self):
         # Test base64 string with incorrect padding
         encoded = base64.b64encode(b'hello world').decode('utf-8').rstrip('=')
         result = decode_base64(encoded)
-        self.assertEqual(result, 'hello world')
+        assert result == "hello world"
 
     def test_decode_base64_invalid_characters(self):
         # Test base64 string with invalid characters
         encoded = 'aGVsbG8gd29ybGQ$'
         result = decode_base64(encoded)
-        self.assertEqual(result, 'hello world')
+        assert result == "hello world"
 
     def test_decode_base64_special_characters(self):
         # Test base64 string with special URL characters
         encoded = base64.urlsafe_b64encode(b'hello?world!').decode('utf-8')
         result = decode_base64(encoded)
-        self.assertEqual(result, 'hello?world!')
+        assert result == "hello?world!"
 
     def test_decode_base64_empty_string(self):
         # Test with an empty string
         result = decode_base64('')
-        self.assertEqual(result, '')
+        assert result == ""
 
     def test_correct_base64_errors(self):
         # Test the correction of non-base64 characters
         encoded = 'aGVsbG8gd29ybGQ$=='
         corrected = correct_base64_errors(encoded)
-        self.assertTrue(set(corrected) <= set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='))
-        self.assertTrue(len(corrected) % 4 == 0)
+        assert set(corrected) <= set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
+        assert len(corrected) % 4 == 0
 
     def test_safe_bytes_to_string(self):
         # Test converting bytes to string safely
         byte_data = b'hello world'
         result = safe_bytes_to_string(byte_data)
-        self.assertEqual(result, 'hello world')
+        assert result == "hello world"
 
     def test_safe_bytes_to_string_decoding_error(self):
         # Test safe byte to string conversion with non-utf8 encodable bytes
         byte_data = bytes([0xff, 0xfe, 0xfd])
         result = safe_bytes_to_string(byte_data)
-        self.assertEqual(result, '')
+        assert result == ""
 
 
 if __name__ == "__main__":
