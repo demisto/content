@@ -517,83 +517,104 @@ USER_TO_GROUP_ADD_OUTPUT = [
     OutputArgument(name="users_count", output_type=int, description="The total user count associated with the group."),
 ]
 
-
 USERS_LIST_OUTPUT = [
-    OutputArgument(name="limit", output_type=int, description="The max number of records returned. Equivalent to 'limit' in SQL."),
-    OutputArgument(name="skip", output_type=int, description="The index of the first record returned. Equivalent to 'offset' in SQL."),
+    OutputArgument(name="limit", output_type=int,
+                   description="The max number of records returned. Equivalent to 'limit' in SQL."),
+    OutputArgument(name="skip", output_type=int,
+                   description="The index of the first record returned. Equivalent to 'offset' in SQL."),
     OutputArgument(name="total", output_type=int, description="The total records matching the query."),
     OutputArgument(name="messages", output_type=list,
                    description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."),
     OutputArgument(name="resources.userid", output_type=str, description="A unique identifier for API call usage."),
     OutputArgument(name="resources.username", output_type=str,
                    description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
-    OutputArgument(name="resources.connection", output_type=str, description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
+    OutputArgument(name="resources.connection", output_type=str,
+                   description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
     OutputArgument(name="resources.email", output_type=str, description="E-mail of the user"),
     OutputArgument(name="resources.name", output_type=str, description="Full name of the user"),
     OutputArgument(name="resources.certificate_subject_dn", output_type=str,
                    description="The Distinguished Name of the user in certificate"),
-    OutputArgument(name="resources.enable_cert_auth", output_type=bool, description="Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate."),
-    OutputArgument(name="resources.user_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
-    OutputArgument(name="resources.app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="resources.enable_cert_auth", output_type=bool,
+                   description="Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate."),
+    OutputArgument(name="resources.user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="resources.app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
     OutputArgument(name="resources.logins_count", output_type=int, description="Count for the number of logins"),
     OutputArgument(name="resources.last_login", output_type=datetime, description="Timestamp of last login"),
     OutputArgument(name="resources.created_at", output_type=datetime, description="Timestamp of when user was created"),
     OutputArgument(name="resources.updated_at", output_type=datetime, description="Timestamp of last update of the user"),
-    OutputArgument(name="resources.allowed_auth_methods", output_type=list, description="List of login authentication methods allowed to the user."),
+    OutputArgument(name="resources.allowed_auth_methods", output_type=list,
+                   description="List of login authentication methods allowed to the user."),
     OutputArgument(name="resources.expires_at", output_type=datetime,
-                     description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
+                   description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
     OutputArgument(name="resources.password_policy", output_type=str,
-                        description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
+                   description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
     OutputArgument(name="resources.allowed_client_types", output_type=list,
-                        description="List of client types allowed to the user."),
+                   description="List of client types allowed to the user."),
     OutputArgument(name="resources.last_failed_login_at", output_type=datetime, description="Timestamp of last failed login"),
     OutputArgument(name="resources.failed_logins_count", output_type=int, description="Count of failed logins"),
-    OutputArgument(name="resources.failed_logins_initial_attempt_at", output_type=datetime, description="Timestamp of first failed login"),
+    OutputArgument(name="resources.failed_logins_initial_attempt_at", output_type=datetime,
+                   description="Timestamp of first failed login"),
     OutputArgument(name="resources.account_lockout_at", output_type=datetime, description="Timestamp of account lockout"),
 ]
 
-
 USER_CREATE_OUTPUT = [
     OutputArgument(name="userid", output_type=str, description="A unique identifier for API call usage."),
-    OutputArgument(name="username", output_type=str,  description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
-    OutputArgument(name="connection", output_type=str, description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
+    OutputArgument(name="username", output_type=str,
+                   description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
+    OutputArgument(name="connection", output_type=str,
+                   description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
     OutputArgument(name="email", output_type=str, description="E-mail of the user"),
     OutputArgument(name="name", output_type=str, description="Full name of the user"),
-    OutputArgument(name="certificate_subject_dn", output_type=str, description="The Distinguished Name of the user in certificate"),
-    OutputArgument(name="enable_cert_auth", output_type=bool, description="Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate."),
-    OutputArgument(name="user_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
-    OutputArgument(name="app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="certificate_subject_dn", output_type=str,
+                   description="The Distinguished Name of the user in certificate"),
+    OutputArgument(name="enable_cert_auth", output_type=bool,
+                   description="Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate."),
+    OutputArgument(name="user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
     OutputArgument(name="logins_count", output_type=int, description="Count for the number of logins"),
     OutputArgument(name="last_login", output_type=datetime, description="Timestamp of last login"),
 
     OutputArgument(name="created_at", output_type=datetime, description="Timestamp of when user was created"),
     OutputArgument(name="updated_at", output_type=datetime, description="Timestamp of last update of the user"),
-    OutputArgument(name="allowed_auth_methods", output_type=list, description="List of login authentication methods allowed to the user."),
-    OutputArgument(name="expires_at", output_type=datetime, description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
-    OutputArgument(name="password_policy", output_type=str, description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
-    OutputArgument(name="allowed_client_types", output_type=list, description="List of client types allowed to the user."),
-    ]
-
-
-USER_UPDATE_OUTPUT = [
-    OutputArgument(name="userid", output_type=str, description="A unique identifier for API call usage."),
-    OutputArgument(name="username", output_type=str, description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
-    OutputArgument(name="connection", output_type=str, description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
-    OutputArgument(name="email", output_type=str, description="E-mail of the user"),
-    OutputArgument(name="name", output_type=str, description="Full name of the user"),
-    OutputArgument(name="certificate_subject_dn", output_type=str, description="The Distinguished Name of the user in certificate"),
-    OutputArgument(name="enable_cert_auth", output_type=bool, description="Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate."),
-    OutputArgument(name="user_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
-    OutputArgument(name="app_metadata", output_type=dict, description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
-    OutputArgument(name="logins_count", output_type=int, description="Count for the number of logins"),
-    OutputArgument(name="last_login", output_type=datetime, description="Timestamp of last login"),
-    OutputArgument(name="created_at", output_type=datetime, description="Timestamp of when user was created"),
-    OutputArgument(name="updated_at", output_type=datetime, description="Timestamp of last update of the user"),
-    OutputArgument(name="allowed_auth_methods", output_type=list, description="List of login authentication methods allowed to the user."),
+    OutputArgument(name="allowed_auth_methods", output_type=list,
+                   description="List of login authentication methods allowed to the user."),
     OutputArgument(name="expires_at", output_type=datetime,
                    description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
     OutputArgument(name="password_policy", output_type=str,
-                     description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
+                   description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
+    OutputArgument(name="allowed_client_types", output_type=list, description="List of client types allowed to the user."),
+]
+
+USER_UPDATE_OUTPUT = [
+    OutputArgument(name="userid", output_type=str, description="A unique identifier for API call usage."),
+    OutputArgument(name="username", output_type=str,
+                   description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
+    OutputArgument(name="connection", output_type=str,
+                   description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
+    OutputArgument(name="email", output_type=str, description="E-mail of the user"),
+    OutputArgument(name="name", output_type=str, description="Full name of the user"),
+    OutputArgument(name="certificate_subject_dn", output_type=str,
+                   description="The Distinguished Name of the user in certificate"),
+    OutputArgument(name="enable_cert_auth", output_type=bool,
+                   description="Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate."),
+    OutputArgument(name="user_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
+    OutputArgument(name="app_metadata", output_type=dict,
+                   description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
+    OutputArgument(name="logins_count", output_type=int, description="Count for the number of logins"),
+    OutputArgument(name="last_login", output_type=datetime, description="Timestamp of last login"),
+    OutputArgument(name="created_at", output_type=datetime, description="Timestamp of when user was created"),
+    OutputArgument(name="updated_at", output_type=datetime, description="Timestamp of last update of the user"),
+    OutputArgument(name="allowed_auth_methods", output_type=list,
+                   description="List of login authentication methods allowed to the user."),
+    OutputArgument(name="expires_at", output_type=datetime,
+                   description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
+    OutputArgument(name="password_policy", output_type=str,
+                   description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
     OutputArgument(name="allowed_client_types", output_type=list, description="List of client types allowed to the user."),
 ]
 
@@ -846,8 +867,51 @@ class CipherTrustClient(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+'''
+When working on a command that supports pagination (usually has API parameters like page and/or page size) with a maximal page size enforced by the API, our best practice is to create a command that will support two different use-cases with the following 3 integer arguments:
+
+page
+page_size
+limit
+The two use cases
+
+Manual Pagination: - The user wants to control the pagination on its own by using the page and page size arguments, usually as part of a wrapper script for the command. To achieve this, the command will simply pass the page and page size values on to the API request. If limit argument was also provided, then it will be redundant and should be ignored.
+Automatic Pagination: - Useful when the user prefers to work with the total number of results returned from the playbook task rather than implementing a wrapper script that works with pages. In this case, the limit argument will be used to aggregate results by iterating over the necessary pages from the first page until collecting all the needed results. This implies a pagination loop mechanism will be implemented behind the scenes. For example, if the limit value received is 250 and the maximal page size enforced by the API is 100, the command will need to perform 3 API calls (pages 1,2, and 3) to collect the 250 requested results. Note that when a potentially large number of results may be returned, and the user wants to perform filters and/or transformers on them, we still recommend creating a wrapper script for the command for better performance.
+Notes:
+
+Page Tokens - In case an API supports page tokens, instead of the more common 'limit' and 'offset'/'skip' as query parameters:
+The arguments that will be implemented are: limit, page_size and next_token.
+The retrieved next_token should be displayed in human readable output and in the context. It will be a single node in the context, and will be overwritten each command run:
+{
+  "IntegrationName":
+  {
+      "Object1NextToken": "TOKEN_VALUE",
+      "Object2NextToken": "TOKEN_VALUE",
+      "Objects1": [],
+      "Objects2": []
+  }
+}
+Standard argument defaults - limit will have a default of '50' in the YAML. page_size should be defaulted in the code to '50', in case only page was provided.
+There should be no maximum value for the limit argument. This means that users should be able to retrieve as many records as they need in a single command execution.
+When an integrated API doesn't support pagination parameters at all - then only limit will be applied, and implemented internally in the code. An additional argument will be added to allow the user to retrieve all results by overriding the default limit: all_results=true.
+If API supports only 'limit' and 'offset'/'skip' as query parameters, then all 3 standard XSOAR pagination arguments should be implemented.
+'''
+
 
 def derive_skip_and_limit_for_pagination(limit, page, page_size):
+    '''
+    Derive skip and limit values for CipherTrust API pagination given Demisto pagination conventions
+    :type limit: str
+    :param limit: limit value
+
+    :type page: str
+    :param page: page value
+
+    :type page_size: str
+    :param page_size: page size value
+
+    :return: skip and limit values
+    '''
     if page:
         page_size = arg_to_number(page_size) or DEFAULT_PAGE_SIZE
         if page_size > MAX_PAGE_SIZE:
@@ -901,7 +965,7 @@ def test_module(client: CipherTrustClient):
 
 
 @metadata_collector.command(command_name='ciphertrust-groups-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
-                            inputs_list=GROUPS_LIST_INPUTS , outputs_list=GROUPS_LIST_OUTPUT)
+                            inputs_list=GROUPS_LIST_INPUTS, outputs_list=GROUPS_LIST_OUTPUT)
 def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
     """

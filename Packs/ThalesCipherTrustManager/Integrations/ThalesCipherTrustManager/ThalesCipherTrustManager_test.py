@@ -11,32 +11,172 @@ you are implementing with your integration
 """
 
 import json
+
+from Packs.ThalesCipherTrustManager.Integrations.ThalesCipherTrustManager.ThalesCipherTrustManager import CommandArguments
+
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
+
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
-#
-#     Checks the output of the command function with the expected output.
-#
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
-#
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
-#
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
-#
-#     assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
 
+import pytest
+from unittest.mock import patch
+from CommonServerPython import CommandResults, tableToMarkdown
+
+# Define input arguments for parametrized tests
+GROUPS_LIST_TEST_ARGS = [
+    {
+        CommandArguments.GROUP_NAME: 'Admins',
+        CommandArguments.USER_ID: '123',
+        CommandArguments.CONNECTION: 'conn1',
+        CommandArguments.CLIENT_ID: '456',
+        CommandArguments.LIMIT: '10',
+        CommandArguments.PAGE: '1',
+        CommandArguments.PAGE_SIZE: '10'
+    },
+    {
+        CommandArguments.GROUP_NAME: 'Users',
+        CommandArguments.LIMIT: '5'
+    },
+    {
+        CommandArguments.PAGE: '2',
+        CommandArguments.PAGE_SIZE: '5'
+    }
+]
+
+
+@pytest.mark.parametrize('args', GROUPS_LIST_TEST_ARGS)
+@patch(MOCKER_HTTP_METHOD)
+@patch('CommonServerPython.tableToMarkdown')
+def test_groups_list_command(mock_tableToMarkdown, mock_get_groups_list, args):
+    from ThalesCipherTrustManager import CipherTrustClient, groups_list_command
+    mock_get_groups_list.return_value = {
+        'resources': [
+            {'id': '1', 'name': 'Admins', 'description': 'Admin group'},
+            {'id': '2', 'name': 'Users', 'description': 'User group'}
+        ]
+    }
+
+    mock_tableToMarkdown.return_value = 'groups'
+
+    client = CipherTrustClient(username='user', password='pass', base_url='https://example.com' , verify=False , proxy=False )
+
+    result = groups_list_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'CipherTrust.Group'
+    assert result.outputs == mock_get_groups_list.return_value
+    assert result.raw_response == mock_get_groups_list.return_value
+    assert result.readable_output == 'groups'
+
+    # mock_get_groups_list.assert_called_twice()
+
+    # mock_tableToMarkdown.assert_called_once_with('groups', mock_get_groups_list.return_value.get('resources'))
+
+
+
+
+
+
+def test_group_create_command():
+    pass
+
+
+def test_group_delete_command():
+    pass
+
+
+def test_group_update_command():
+    pass
+
+
+def test_user_to_group_add_command():
+    pass
+
+
+def test_user_to_group_remove_command():
+    pass
+
+
+def test_users_list_command():
+    pass
+
+
+def test_user_create_command():
+    pass
+
+
+def test_user_update_command():
+    pass
+
+
+def test_user_delete_command():
+    pass
+
+
+def test_user_password_change_command():
+    pass
+
+
+def test_local_ca_create_command():
+    pass
+
+
+def test_local_ca_list_command():
+    pass
+
+
+def test_local_ca_update_command():
+    pass
+
+
+def test_local_ca_delete_command():
+    pass
+
+
+def test_local_ca_self_sign_command():
+    pass
+
+
+def test_local_ca_install_command():
+    pass
+
+
+def test_certificate_issue_command():
+    pass
+
+
+def test_certificate_list_command():
+    pass
+
+
+def test_local_certificate_delete_command():
+    pass
+
+
+def test_certificate_revoke_command():
+    pass
+
+
+def test_certificate_resume_command():
+    pass
+
+
+def test_external_certificate_upload_command():
+    pass
+
+
+def test_external_certificate_delete_command():
+    pass
+
+
+def test_external_certificate_update_command():
+    pass
+
+
+def test_external_certificate_list_command():
+    pass
