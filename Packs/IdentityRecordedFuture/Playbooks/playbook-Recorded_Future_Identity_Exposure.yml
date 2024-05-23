@@ -1,0 +1,987 @@
+id: Recorded Future - Identity Exposure
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Recorded Future - Identity Exposure
+description: This playbook was developed as a template response when an Identity Exposure Playbook Alert has been triggered.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0c68c1bf-6c55-45c0-8bcd-9fcb579be082
+    type: start
+    task:
+      id: 0c68c1bf-6c55-45c0-8bcd-9fcb579be082
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b5030e1e-052a-4d1a-8ead-62e4b0c9bb53
+    type: regular
+    task:
+      id: b5030e1e-052a-4d1a-8ead-62e4b0c9bb53
+      version: -1
+      name: Check AD for active account
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email:
+        complex:
+          root: incident
+          accessor: identity
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 766923da-e2a7-44a2-8d1c-2b4f8e4eea5a
+    type: collection
+    task:
+      id: 766923da-e2a7-44a2-8d1c-2b4f8e4eea5a
+      version: -1
+      name: Analyst Prompt | Review Account Information
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Is this a true positive?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Review Exposed Identity Information
+      description: Review Exposure Date, Malware Log, Malware Family
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8266edc5-9bab-488f-81f8-b52f07cf1b66
+    type: condition
+    task:
+      id: 8266edc5-9bab-488f-81f8-b52f07cf1b66
+      version: -1
+      name: True Positive?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "YES":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Review Exposed Identity Information.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a2475cc5-4c01-46d4-8940-765ed432efd9
+    type: regular
+    task:
+      id: a2475cc5-4c01-46d4-8940-765ed432efd9
+      version: -1
+      name: Disable AD account
+      description: Disables an Active Directory user account.
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      username:
+        simple: ${ActiveDirectory.Users.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0eae398f-8691-4152-8f7f-b9e324e3b364
+    type: regular
+    task:
+      id: 0eae398f-8691-4152-8f7f-b9e324e3b364
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b8253666-45b2-4811-8ce8-cda087689fb1
+    type: regular
+    task:
+      id: b8253666-45b2-4811-8ce8-cda087689fb1
+      version: -1
+      name: Create ticket in IM system & contact user
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 76de3dbe-e837-40f7-84e7-0c07984b4758
+    type: collection
+    task:
+      id: 76de3dbe-e837-40f7-84e7-0c07984b4758
+      version: -1
+      name: Analyst Prompt | Take Automated Action?
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to automate the IR plan?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: AD
+        - simple: Okta
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Take Automated Action
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f3e28311-8e82-4bcb-8a22-daf07e3c0705
+    type: condition
+    task:
+      id: f3e28311-8e82-4bcb-8a22-daf07e3c0705
+      version: -1
+      name: Automate IR?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      AD:
+      - "4"
+      Okta:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: AD
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Take Automated Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: AD
+    - label: Okta
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Take Automated Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Okta
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 638413f9-4bf1-4063-870c-87716b3ff9d6
+    type: regular
+    task:
+      id: 638413f9-4bf1-4063-870c-87716b3ff9d6
+      version: -1
+      name: Manual response
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1235,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: adfe6205-c277-41cf-8d82-774f3d054a6d
+    type: regular
+    task:
+      id: adfe6205-c277-41cf-8d82-774f3d054a6d
+      version: -1
+      name: Expire password
+      description: Expires the password of an Active Directory user.
+      script: Active Directory Query v2|||ad-expire-password
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      username:
+        simple: ${ActiveDirectory.Users.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ddabce7f-cdc9-423c-8224-031bcdfa383f
+    type: title
+    task:
+      id: ddabce7f-cdc9-423c-8224-031bcdfa383f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4f619e4f-b442-4282-8319-7cf89d761d0e
+    type: condition
+    task:
+      id: 4f619e4f-b442-4282-8319-7cf89d761d0e
+      version: -1
+      name: Is Active Directory integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 981a116c-fae1-467e-8c26-7c8f08f57e07
+    type: condition
+    task:
+      id: 981a116c-fae1-467e-8c26-7c8f08f57e07
+      version: -1
+      name: Is Okta integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "14"
+    scriptarguments:
+      brandname:
+        simple: Okta v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 903ce120-65bd-48e1-8ac7-853922195210
+    type: regular
+    task:
+      id: 903ce120-65bd-48e1-8ac7-853922195210
+      version: -1
+      name: Check Okta for active account
+      description: Searches for Okta users.
+      script: Okta v2|||okta-search
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      term:
+        complex:
+          root: incident
+          accessor: identity
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2c2a91b5-c444-4c00-8681-e74537cd8d8e
+    type: regular
+    task:
+      id: 2c2a91b5-c444-4c00-8681-e74537cd8d8e
+      version: -1
+      name: Suspend Okta user
+      description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
+      script: Okta v2|||okta-suspend-user
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      username:
+        complex:
+          root: Account
+          accessor: Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e5f0b195-8db1-42bd-8a6b-d9f44a4c1a2e
+    type: regular
+    task:
+      id: e5f0b195-8db1-42bd-8a6b-d9f44a4c1a2e
+      version: -1
+      name: Add user to Compromised group
+      description: Adds a user to a group with OKTA_GROUP type.
+      script: Okta v2|||okta-add-to-group
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      username:
+        simple: ${Account.Username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: df2fd1c4-579a-4037-8672-d9851a322d89
+    type: regular
+    task:
+      id: df2fd1c4-579a-4037-8672-d9851a322d89
+      version: -1
+      name: Review account manually
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2328bfdc-f0ae-42db-8ec2-7a330de7f5dd
+    type: condition
+    task:
+      id: 2328bfdc-f0ae-42db-8ec2-7a330de7f5dd
+      version: -1
+      name: Integration was available?
+      description: Indicates whether a given value is a member of given array
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: brandInstances
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a26e0ec6-de4c-48a9-8dd8-8e43b041f36b
+    type: regular
+    task:
+      id: a26e0ec6-de4c-48a9-8dd8-8e43b041f36b
+      version: -1
+      name: Set Recorded Future alert to 'in-progress'
+      description: Update the status of one or multiple Playbook alerts.
+      script: IdentityRecordedFuturePlaybookAlerts|||recordedfuture-identity-playbook-alerts-update
+      type: regular
+      iscommand: true
+      brand: IdentityRecordedFuturePlaybookAlerts
+    nexttasks:
+      '#none#':
+      - "13"
+      - "12"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: incident
+          accessor: alertid
+      new_status:
+        simple: in-progress
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4754113b-7acb-4c09-82fd-25448961aebc
+    type: collection
+    task:
+      id: 4754113b-7acb-4c09-82fd-25448961aebc
+      version: -1
+      name: Analyst Prompt | Select Resolving Action
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select Resolving Action
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: enforced password reset
+        - simple: placed in risky group
+        - simple: reviewed incident report
+        - simple: account disabled or terminated
+        - simple: account remediated
+        - simple: other
+        - simple: none
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Set Recorded Future Alert Status to 'Resolved' with Resolving Action
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 0b15c108-9b6b-44b0-87da-d7ebb0f1f527
+    type: regular
+    task:
+      id: 0b15c108-9b6b-44b0-87da-d7ebb0f1f527
+      version: -1
+      name: Set Recorded Future alert to 'resolved'
+      description: Update the status of one or multiple Playbook alerts.
+      script: IdentityRecordedFuturePlaybookAlerts|||recordedfuture-identity-playbook-alerts-update
+      type: regular
+      iscommand: true
+      brand: IdentityRecordedFuturePlaybookAlerts
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      add_actions_taken:
+        complex:
+          root: Set Recorded Future Alert Status to 'Resolved' with Resolving Action.Answers
+          accessor: "0"
+          transformers:
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: '","'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: none
+      alert_ids:
+        complex:
+          root: incident
+          accessor: alertid
+      new_status:
+        simple: resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2585,
+        "width": 1665,
+        "x": -50,
+        "y": -130
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

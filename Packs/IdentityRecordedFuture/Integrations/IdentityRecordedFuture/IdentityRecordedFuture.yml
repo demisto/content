@@ -62,14 +62,20 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.92207
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.
     arguments:
-    - name: latest-downloaded
+    - name: first-downloaded
       defaultValue: "All time"
-      description: Time period for last downloaded time (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      description: Time period for "first_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+    - name: latest-downloaded
+      description: Time period for "last_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      defaultValue: "All time"
+    - name: exfiltration-date
+      description: Time period for "exfiltration_date_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      defaultValue: "All time"
     - name: domains
       description: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
     - name: domain-type
@@ -85,7 +91,7 @@ script:
       description: Recorded Future identity email values.
       type: string
   - name: recordedfuture-password-lookup
-    description: Lookup for password in Recorded Future Dataset
+    description: Lookup for password in Recorded Future Dataset.
     arguments:
     - name: password-hash
       description: Password hash value.
@@ -109,7 +115,7 @@ script:
       description: Recorded Future password exposure status.
       type: string
   - name: recordedfuture-identity-lookup
-    description: Lookup for identities in Recorded Future Identity Dataset
+    description: Lookup for identities in Recorded Future Identity Dataset.
     arguments:
     - name: identities
       required: true
@@ -118,7 +124,13 @@ script:
       description: Domains list separated by comma (e.g. norsegods.online, norsegods.online).
     - name: first-downloaded
       defaultValue: "All time"
-      description: Time period for first downloaded time (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      description: Time period for "first_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+    - name: latest-downloaded
+      defaultValue: "All time"
+      description: Time period for "last_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+    - name: exfiltration-date
+      defaultValue: "All time"
+      description: Time period for "exfiltration_date_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
     outputs:
     - contextPath: RecordedFuture.Credentials.Identities.identity.subjects
       description: Identity value.
