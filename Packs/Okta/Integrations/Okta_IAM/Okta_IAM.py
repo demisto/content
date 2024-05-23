@@ -262,7 +262,7 @@ class Client(BaseClient):
             'until': time_now,
             'limit': limit
         }
-
+        limit = int(limit) if limit else limit
         if limit and limit <= MAX_LOGS_LIMIT:
             return self._http_request(
                 method='GET',
