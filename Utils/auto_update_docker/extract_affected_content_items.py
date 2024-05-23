@@ -153,40 +153,6 @@ def filter_content_items_to_run_on(
         )
         if content_item_to_add:
             affected_content_items.append(content_item_to_add)
-        # if only_nightly and content_item_pack_path not in nightly_packs:
-        #     logging.info(f"Pack path {content_item_pack_path} for {content_item_path} is not in nightly, skipping.")
-        #     continue
-
-        # if docker_image in benchmark_docker_tags:
-        #     docker_image_tag_benchmark = benchmark_docker_tags[docker_image]
-        #     if Version(content_item_docker_image_tag) > Version(docker_image_tag_benchmark):
-        #         # If content item's docker tag is larger than the benchmark docker tag, then we
-        #         # don't need to update the content item, skipping
-        #         logging.info(
-        #             f"Content item of {content_item_path} has tag {content_item_docker_image_tag} > {docker_image_tag_benchmark = }, skipping."
-        #         )
-        #         continue
-
-        # # If content item is not in coverage report, then we consider it's coverage to be 0
-        # content_item_cov = content_items_coverage.get(str(content_item_path), 0)
-        # logging.info(f"{content_item_path = } {content_item_cov = }")
-        # content_item_cov_floor = math.floor(content_item_cov)
-        # if support_levels and content_item_support not in support_levels:
-        #     # If support levels is not empty, and the content item's support level is not in the allowed support levels,
-        #     # then we skip it.
-        #     logging.info(f"Is not of {support_levels=}, skipping")
-        # elif content_item_cov_floor >= min_cov and (content_item_cov <= max_cov and content_item_cov_floor <= max_cov):
-        #     # NOTE We added the second clause to deal with the following scenario:
-        #     # If max_cov=70, and content_item_cov=70.12, then content_item_cov_floor will be equal to 70,
-        #     # if not handled correctly, we will collect the content item, which is wrong, therefore,
-        #     # we added the condition content_item_cov <= max_cov
-
-        #     # We check the coverage of the content item
-        #     # Since the content item that we get will be a python file, and we want to
-        #     # return a YML
-        #     affected_content_items.append(str(content_item_path.with_suffix(".yml")))
-        # else:
-        #     logging.info(f"{content_item_path} not within coverage, skipping")
     return {
         "content_items": affected_content_items,
         "pr_labels": batch_config.get("pr_labels", []),
