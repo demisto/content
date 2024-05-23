@@ -54,6 +54,10 @@ script:
     - name: query
       required: true
       description: A query string (in BigQuery query syntax). For more information about the standard syntax, see the BigQuery documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
+    - name: project_id
+      required: false
+      type: String
+      description: The Big Query project on which to query, is visible in the credentials.
     - name: location
       description: The geographic location where the job should run. Required for locations other than US and EU.
     - name: allow_large_results
