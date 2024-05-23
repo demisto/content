@@ -9,8 +9,8 @@ all_1_depth_dirs=$(find . -maxdepth 1 -type d -not \( -path "*cache*" -o -path .
 echo -e "Top level folders to scan (used by ruff):\n${all_1_depth_dirs}\n"
 echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs}\n"
 
-./Tests/scripts/mypy.sh $all_1_depth_dirs || errors=$?
-python3 -m ruff $all_1_depth_dirs --select=E,F,PLC,PLE --extend-exclude Tests/scripts/infrastructure_tests/tests_data,Utils/test_upload_flow --ignore=PLC1901 || errors=$?
+./.circleci/mypy.sh $all_1_depth_dirs || errors=$?
+python3 -m ruff $all_1_depth_dirs --select=E,F,PLC,PLE --ignore=PLC1901 || errors=$?
 
 
 echo 'Linter exit code:' $errors
