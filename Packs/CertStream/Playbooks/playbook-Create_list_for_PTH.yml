@@ -1279,7 +1279,7 @@ tasks:
       to:
       subject:
       body:
-        simple: List with the name ${inputs.DomainsList} already exist, should we continue and overwrite it?
+        simple: List with the name ${inputs.DomainsListName} already exist, should we continue and overwrite it?
       methods: []
       format: ""
       bcc:
