@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![MITRE - Extract and Associate to Incident]!(../doc_files/Mitre_Attack _-_Extract_Technique_Information_From_ID.png)
+![MITRE - Extract and Associate to Incident]!(../doc_files/Mitre_Attack_-_Extract_Technique_Information_From_ID.png)
