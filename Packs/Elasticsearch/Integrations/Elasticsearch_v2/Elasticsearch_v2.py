@@ -76,7 +76,7 @@ def get_value_by_dot_notation(dictionary, key):
         The value corresponding to the key if found, otherwise None.
     """
     value = dictionary
-    demisto.debug('Trying to get value by dot notation')
+    demisto.debug('Try  ing to get value by dot notation')
     for k in key.split('.'):
         if isinstance(value, dict):
             value = value.get(k)
