@@ -5668,7 +5668,8 @@
         },
         {
             "integrations": "Zoom Mail",
-            "playbookID": "ZoomMailTest"
+            "playbookID": "ZoomMailTest",
+            "instance_names": "zoom_mail_test"
         },
         {
             "integrations": "Zimperium v2",
