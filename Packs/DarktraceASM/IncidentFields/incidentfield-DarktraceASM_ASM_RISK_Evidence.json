@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-01-30T19:47:23.87179797Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Risk Evidence",
+    "name": "DarktraceASM Risk Evidence",
     "ownerOnly": false,
     "cliName": "darktraceasmriskevidence",
     "type": "shortText",

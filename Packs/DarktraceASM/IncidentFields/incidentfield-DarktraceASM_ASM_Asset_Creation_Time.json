@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-02-28T00:42:54.112345906Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Asset Creation Time",
+    "name": "DarktraceASM Asset Creation Time",
     "ownerOnly": false,
     "cliName": "darktraceasmassetcreationtime",
     "type": "shortText",

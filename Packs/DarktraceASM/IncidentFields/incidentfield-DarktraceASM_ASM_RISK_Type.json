@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-01-26T22:29:02.714905738Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Risk Type",
+    "name": "DarktraceASM Risk Type",
     "ownerOnly": false,
     "cliName": "darktraceasmrisktype",
     "type": "shortText",

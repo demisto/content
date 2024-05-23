@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-01-30T19:49:44.878013767Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Asset ID ",
+    "name": "DarktraceASM Asset ID",
     "ownerOnly": false,
     "cliName": "darktraceasmassetid",
     "type": "shortText",

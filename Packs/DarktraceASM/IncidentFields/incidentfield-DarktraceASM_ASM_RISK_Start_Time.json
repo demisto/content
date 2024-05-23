@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-02-28T19:37:16.244341931Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Risk Start Time",
+    "name": "DarktraceASM Risk Start Time",
     "ownerOnly": false,
     "cliName": "darktraceasmriskstarttime",
     "type": "shortText",

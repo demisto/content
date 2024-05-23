@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-02-28T19:37:31.951385914Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Risk End Time",
+    "name": "DarktraceASM Risk End Time",
     "ownerOnly": false,
     "cliName": "darktraceasmriskendtime",
     "type": "shortText",

@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2024-01-30T20:02:35.371217706Z",
     "fromVersion": "6.6.0",
-    "name": "Darktrace ASM Risk Security Rating",
+    "name": "DarktraceASM Risk Security Rating",
     "ownerOnly": false,
     "cliName": "darktraceasmrisksecurityrating",
     "type": "shortText",
