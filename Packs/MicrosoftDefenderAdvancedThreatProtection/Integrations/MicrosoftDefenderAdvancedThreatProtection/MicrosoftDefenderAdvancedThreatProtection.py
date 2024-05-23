@@ -5080,21 +5080,21 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
-    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+def handle_machines(machines_response):
+    """Converts the machine's list that the API returns to a CommandResults list with all data needed.
+
+    Args:
+        The API response, a list of machines.
 
     Returns:
         CommandResults list.
     """
-    headers = ['ID', 'Hostname', 'OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
-    hostnames = argToList(args.get('hostname', ''))
-    ips = argToList(args.get('ip', ''))
-    ids = argToList(args.get('id', ''))
-    validate_args_endpoint_command(hostnames, ips, ids)
-    machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
+    
+    headers = ['ID', 'Hostname', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
+
     machines_outputs = []
 
-    for machine in machines_response.get('value', []):
+    for machine in machines_response:
         machine_data = get_machine_data(machine)
         machine_data['MACAddress'] = get_machine_mac_address(machine)
         endpoint_indicator = create_endpoint_verdict(machine_data)
@@ -5109,13 +5109,47 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
             outputs=machine_data,
             indicator=endpoint_indicator,
         ))
-
+            
     if not machines_outputs:
         machines_outputs.append(CommandResults(
             readable_output=f"{INTEGRATION_NAME} no device found.",
             raw_response=machines_response,
         ))
     return machines_outputs
+
+def list_machines_by_ip_command(client: MsClient, args: dict)-> list[CommandResults]:
+    """Retrieves machines that comunicated with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+
+    Returns:
+        CommandResults list.
+    """
+    ip = args['ip']
+    timestamp = args['timestamp']
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results',False))
+    
+    machines_response = client.ms_client.http_request(method='GET', url_suffix=f"machines/findbyip(ip='{ip}',timestamp={timestamp})")
+    
+    machines_response= machines_response.get('value', [])[:limit] if not all_results else machines_response.get('value', [])
+    
+    return handle_machines(machines_response)
+    
+
+
+def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+
+    Returns:
+        CommandResults list.
+    """
+    hostnames = argToList(args.get('hostname', ''))
+    ips = argToList(args.get('ip', ''))
+    ids = argToList(args.get('id', ''))
+    validate_args_endpoint_command(hostnames, ips, ids)
+    machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
+    machines_response =  machines_response.get('value', [])
+    
+    return handle_machines(machines_response)
 
 
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
@@ -5557,7 +5591,7 @@ def main():  # pragma: no cover
                                 'Please use `!microsoft-atp-test` command to test the connection')
             test_module(client)
             demisto.results('ok')
-
+        
         elif command == 'microsoft-atp-test':
             test_module(client)
             return_results('✅ Success!')
@@ -5566,6 +5600,9 @@ def main():  # pragma: no cover
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
+            
+        elif command == 'microsoft-atp-list-machines-by-ip':
+            return_results(list_machines_by_ip_command(client, args))
 
         elif command == 'microsoft-atp-isolate-machine':
             return_outputs(*isolate_machine_command(client, args))

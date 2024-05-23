@@ -241,6 +241,94 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
+  - name: microsoft-atp-list-machines-by-ip
+    description: Retrieves machines that interacted with the requested internal IP in the time range of 15 minutes prior and after a given timestamp. Note, this command is different than the endpoint command in witch returns data about the given machines  
+    arguments: 
+    - name: ip
+      description: The endpoint IP address.
+      default: true
+      required: true
+    - name: timestamp
+      description: The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z Also supports relative time
+      required: true
+    - name: limit
+      defaultValue: '50'
+      description: Maximum number of results to return.
+    - name: all_results	
+      description: Whether to retrieve all results. The "limit" argument will be ignored.'
+      defaultValue: false
+    outputs:
+    - contextPath: MicrosoftATP.Machine.ID
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.Machine.ComputerDNSName
+      description: The machine DNS name.
+      type: String
+    - contextPath: MicrosoftATP.Machine.FirstSeen
+      description: The first date and time the machine was observed by Microsoft Defender ATP.
+      type: Date
+    - contextPath: MicrosoftATP.Machine.LastSeen
+      description: The last date and time the machine was observed by Microsoft Defender ATP.
+      type: Date
+    - contextPath: MicrosoftATP.Machine.OSPlatform
+      description: The operating system platform.
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSVersion
+      description: The operating system version.
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSProcessor
+      description: The operating system processor.
+      type: String
+    - contextPath: MicrosoftATP.Machine.LastIPAddress
+      description: The last IP on the machine.
+      type: String
+    - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
+      description: The last machine IP to access the internet.
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSBuild
+      description: The operating system build number.
+      type: Number
+    - contextPath: MicrosoftATP.Machine.HealthStatus
+      description: The machine health status.
+      type: String
+    - contextPath: MicrosoftATP.Machine.RBACGroupID
+      description: The machine RBAC group ID.
+      type: Number
+    - contextPath: MicrosoftATP.Machine.RBACGroupName
+      description: The machine RBAC group name.
+      type: String
+    - contextPath: MicrosoftATP.Machine.RiskScore
+      description: The machine risk score.
+      type: String
+    - contextPath: MicrosoftATP.Machine.ExposureLevel
+      description: The machine exposure score.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IsAADJoined
+      description: True if machine is AAD joined, False otherwise.
+      type: Boolean
+    - contextPath: MicrosoftATP.Machine.AADDeviceID
+      description: The AAD Device ID.
+      type: String
+    - contextPath: MicrosoftATP.Machine.MachineTags
+      description: Set of machine tags.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.ipAddress
+      description: The machine IP address.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.MACAddress
+      description: The machine MAC address.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.operationalStatus
+      description: The machine operational status.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.type
+      description: The machine IP address type.
+      type: String
+    - contextPath: MicrosoftATP.Machine.AgentVersion
+      description: The machine Agent version.
+      type: String
+    #TODO
+    #polling true
   - description: Tests connectivity to Microsoft Defender for Endpoint.
     name: microsoft-atp-test
     arguments:
