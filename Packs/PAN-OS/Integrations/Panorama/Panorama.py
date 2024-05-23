@@ -14113,7 +14113,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polli
 
     # second http request: send request with job id, valid response will contain a dictionary of entries.
     query_entries = get_query_entries_by_id_request(job_id, fetch_job_polling_max_num_attempts)
-
+    entries = []
     # extract all entries from response
     if result := dict_safe_get(query_entries, ('response', 'result', 'log', 'logs', 'entry')):
         if isinstance(result, list):
