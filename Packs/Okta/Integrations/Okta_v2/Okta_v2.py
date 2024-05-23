@@ -611,7 +611,7 @@ class Client(OktaClient):
                 key = 'q'
             query_params[key] = encode_string_results(value)
         limit = args.get('limit')
-        limit = int(limit) if limit else limit
+        limit = int(limit) if limit else None
         if limit and limit <= MAX_LOGS_LIMIT:
             return self.http_request(
                 method='GET',
