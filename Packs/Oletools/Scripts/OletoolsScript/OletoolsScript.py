@@ -25,8 +25,8 @@ root_logger.addHandler(custom_handler)
 root_logger.setLevel(logging.DEBUG)
 
 # should be imported after adding log handler to the root logger
-from oletools import crypto, oleid
-from oletools.olevba import VBA_Parser
+from oletools import crypto, oleid  # noqa: E402
+from oletools.olevba import VBA_Parser  # noqa: E402
 
 
 class OleClient:
