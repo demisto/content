@@ -1,15 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import oletools.oleid
-from oletools.olevba import VBA_Parser
+
 import subprocess
-from oletools import crypto
 import os
 import hashlib
-# suppress logs from oletools
 import logging
-vba_logger = logging.getLogger("olevba")
-vba_logger.setLevel(logging.CRITICAL)
 
 
 class CustomHandler(logging.Handler):
@@ -24,10 +19,14 @@ class CustomHandler(logging.Handler):
         return self.last_log_msg
 
 
-ooxml_logger = logging.getLogger("ooxml")
-ooxml_logger.setLevel(logging.DEBUG)
 custom_handler = CustomHandler()
-ooxml_logger.addHandler(custom_handler)
+root_logger = logging.getLogger()
+root_logger.addHandler(custom_handler)
+root_logger.setLevel(logging.DEBUG)
+
+# should be imported after adding log handler to the root logger
+from oletools import crypto, oleid
+from oletools.olevba import VBA_Parser
 
 
 class OleClient:
@@ -95,7 +94,7 @@ class OleClient:
         return indicator.replace(' ', '_')
 
     def oleid(self):
-        oid = oletools.oleid.OleID(self.processed_file_path)
+        oid = oleid.OleID(self.processed_file_path)
         indicators = oid.check()
         indicators_list = []
         dbot_score = None
