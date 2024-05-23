@@ -1063,7 +1063,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             searches = parse_drilldown_searches(drilldown_search)
         
         else:
-            # Got only one drilldown search (BC)
+            # Got a single drilldown search (BC)
             searches = [drilldown_search]
             
         total_searches = len(searches)
@@ -1081,7 +1081,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 latest_offset = search.get("latest", "") # The latest time to query to.
             
             else:
-                # Got only one drilldown search under the 'drilldown_search' key (BC)
+                # Got a single drilldown search under the 'drilldown_search' key (BC)
                 query_search = search
                 query_name = notable_data.get("drilldown_name", "")
                 earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
