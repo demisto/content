@@ -5262,6 +5262,10 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}\nException is: {str(e)}')
+    finally:
+        #  CIAC-10628
+        client._return_execution_metrics_results()
+        client.execution_metrics.metrics = None
 
 
 ''' ENTRY POINT '''
