@@ -723,5 +723,5 @@ inputs:
   description: Test Azure Network Security Groups commands.
   playbookInputQuery: null
 outputs: []
-fromversion: 6.9.0
+fromversion: 5.0.0
 
