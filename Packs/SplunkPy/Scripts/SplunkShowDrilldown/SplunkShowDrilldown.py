@@ -27,10 +27,7 @@ def main():
         return CommandResults(readable_output='Drilldown was not configured for notable.')
 
     if isinstance(drilldown_results, list):
-        events_arr = []
-        for event in drilldown_results: #TODO: I think that this loop does nothing, in addition need to limit the number of results
-            events_arr.append(event)
-        markdown = tableToMarkdown("", events_arr, headers=events_arr[0].keys())
+        markdown = tableToMarkdown("", drilldown_results, headers=drilldown_results[0].keys())
         
     elif isinstance(drilldown_results, dict):
         markdown = "#### Drilldown Searches Results\n"
