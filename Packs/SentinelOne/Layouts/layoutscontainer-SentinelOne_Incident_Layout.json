@@ -1265,6 +1265,11 @@
 				"id": "workPlan",
 				"name": "Work Plan",
 				"type": "workPlan"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
 			}
 		]
 	},
