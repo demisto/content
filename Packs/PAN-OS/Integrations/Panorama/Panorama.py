@@ -5,11 +5,19 @@ from CommonServerPython import *  # noqa: F401
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
-from typing_extensions import TypedDict, NotRequired  # needs to be changed to "from typing" when updating to python 3.11
 from functools import partial
 import enum
 import html
 
+# Temprorary
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import TypedDict, NotRequired
+else:
+    class TypedDict:
+        def __new__(cls, **kwargs):
+            return kwargs
+    NotRequired = list
 
 import panos.errors
 
@@ -235,25 +243,23 @@ class QueryMap(TypedDict):
     Wildfire: NotRequired[str]
     Decryption: NotRequired[str]
 
-class DeviceMap(dict[str, int]):  # TODO int?????
-    '''Maps devices to the "seqno" of the last log
-       associated with the device.
+class LastFetchTimes(QueryMap):
+    '''Maps log types to the latest log already fetched.
     '''
 
-class LastFetchTimes(QueryMap):
-    '''Maps 
-    '''
-    
 class LastIDs(TypedDict):
-    '''dict[str, DeviceMap | int]'''
-    Traffic: NotRequired[DeviceMap]
-    Threat: NotRequired[DeviceMap]
-    Url: NotRequired[DeviceMap]
-    Data: NotRequired[DeviceMap]
+    '''dict[str, dict[str, str] | int]
+    Maps devices to the "seqno" of the last log
+    associated with the device.
+    '''
+    Traffic: NotRequired[dict[str, str]]
+    Threat: NotRequired[dict[str, str]]
+    Url: NotRequired[dict[str, str]]
+    Data: NotRequired[dict[str, str]]
     Correlation: NotRequired[int]  # contains the last "@logid"
-    System: NotRequired[DeviceMap]
-    Wildfire: NotRequired[DeviceMap]
-    Decryption: NotRequired[DeviceMap]
+    System: NotRequired[dict[str, str]]
+    Wildfire: NotRequired[dict[str, str]]
+    Decryption: NotRequired[dict[str, str]]
 
 class MaxFetch(TypedDict):
     '''dict[str, int]
@@ -14055,9 +14061,9 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
         job_id (str): returns the Job ID associated with the given query
     """
     params = assign_params(key=API_KEY, type='log', log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
-    demisto.debug(f'{query=}')
+    demisto.debug(f'{params=}')
     response = http_request(URL, 'GET', params=params)
-    return response.get('response', {}).get('result', {}).get('job')
+    return dict_safe_get(response, ('response', 'result', 'job'))  # type: ignore
 
 
 def get_query_entries_by_id_request(job_id: str, fetch_job_polling_max_num_attempts: int) -> Dict[str, Any]:
@@ -14204,7 +14210,7 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: MaxFetch, l
     Returns:
         max_fetch_dict (MaxFetch): a dictionary of log type and its updated max fetch value
     """
-    previous_last_fetch = cast(LastFetchTimes, demisto.getLastRun().get("last_fetch_dict", {}))
+    previous_last_fetch: LastFetchTimes = demisto.getLastRun().get("last_fetch_dict", {})  # type: ignore
     for log_type in last_fetch_dict:
         previous_fetch_timestamp = previous_last_fetch.get(log_type)
         # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
@@ -14257,7 +14263,7 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
     """
     occurred = incident_entry.get('match_time', '')
     occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}) or datetime.now()
-    
+
     return {
         'name': f"Correlation {incident_entry.get('@logid')}",
         'occurred': occurred_datetime.strftime(DATE_FORMAT),
@@ -14277,7 +14283,7 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     """
     occurred = incident_entry.get('time_generated', '')
     occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}) or datetime.now()
-    
+
     return {
         'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
         'occurred': occurred_datetime.strftime(DATE_FORMAT),
@@ -14470,7 +14476,7 @@ def main():  # pragma: no cover
             configured_max_fetch = arg_to_number(params['max_fetch'])
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
-            max_fetch = last_run.get('max_fetch_dict') or cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
+            max_fetch: MaxFetch = last_run.get('max_fetch_dict') or dict.fromkeys(queries, configured_max_fetch)  # type: ignore
 
             last_fetch, last_ids, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)
             next_max_fetch = update_max_fetch_dict(configured_max_fetch, max_fetch, last_fetch)

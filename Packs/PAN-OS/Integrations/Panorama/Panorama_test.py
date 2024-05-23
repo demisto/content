@@ -6493,21 +6493,8 @@ class TestFetchIncidentsHelperFunctions:
               according to the queries log type last fetch time.
         """
         from Panorama import add_time_filter_to_query_parameter
-        assert add_time_filter_to_query_parameter(query, last_fetch) == expected_result
+        assert add_time_filter_to_query_parameter(query, last_fetch, 'time_generated') == expected_result
 
-    def test_add_time_filter_to_query_parameter_fail(self):
-        """
-        Given:
-            - a query from parameters containing a 'time_generated' query filter
-        When:
-            - a fetch incidents cycle starts
-        Then:
-            - add_time_filter_to_query_parameter function will throw a DemistoException.
-        """
-        from Panorama import add_time_filter_to_query_parameter
-        with pytest.raises(DemistoException):
-            add_time_filter_to_query_parameter('time_generated geq "2020-01-01T00:00:00Z"',
-                                               fetch_incidents_input.utc_time_twelve)
 
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
@@ -6571,20 +6558,25 @@ class TestFetchIncidentsHelperFunctions:
 
     @pytest.mark.parametrize('incident_entries, expected_result',
                              fetch_incidents_input.test_parse_incident_entries_args)
-    def test_parse_incident_entries(self, incident_entries, expected_result):
-        from Panorama import parse_incident_entries
+    def test_get_parsed_incident_entries(self, incident_entries, expected_result):
+        from Panorama import get_parsed_incident_entries, LastFetchTimes, LastIDs
 
-        assert parse_incident_entries(incident_entries) == expected_result
+        last_id_dict = LastIDs()
+        last_fetch_dict = LastFetchTimes(Url='2022/01/01 12:00:00')
+
+        res = get_parsed_incident_entries({'Url': incident_entries}, last_fetch_dict, last_id_dict)
+
+        assert last_id_dict.get('Url') == expected_result[0]
+        assert last_fetch_dict['Url'] == expected_result[1]  # type: ignore
+        assert res == expected_result[2]
 
     @pytest.mark.parametrize('incident_entries_dict, last_fetch_dict, last_id_dict, expected_result',
                              fetch_incidents_input.get_parsed_incident_entries_args)
-    def test_get_parsed_incident_entries(
-            self, mocker, incident_entries_dict, last_fetch_dict, last_id_dict, expected_result):
+    def test_get_parsed_incident_entries_2(self, mocker, incident_entries_dict, last_fetch_dict, last_id_dict, expected_result):
         from Panorama import get_parsed_incident_entries
-        mocker.patch('Panorama.parse_incident_entries', return_value=fetch_incidents_input.one_incident_result)
+
         assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
 
-    @patch("Panorama.GET_LOG_JOB_ID_MAX_RETRIES", 1)
     @pytest.mark.parametrize('response, debug_msg, expected_result',
                              fetch_incidents_input.get_query_entries_by_id_request_args)
     def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
@@ -6600,10 +6592,10 @@ class TestFetchIncidentsHelperFunctions:
             1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
             2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
          """
-        from Panorama import get_query_entries_by_id_request, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import get_query_entries_by_id_request
         mocker.patch('Panorama.http_request', return_value=response)
         debug = mocker.patch('demistomock.debug')
-        assert get_query_entries_by_id_request('000', GET_LOG_JOB_ID_MAX_RETRIES) == expected_result
+        assert get_query_entries_by_id_request('000', 1) == expected_result
         assert debug.called_with(debug_msg)
 
 
@@ -6620,7 +6612,7 @@ class TestFetchIncidentsFlows:
         - no incidents should be returned.
         """
 
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
@@ -6629,7 +6621,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_query_entries', return_value={})
 
         last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_list == []
         assert last_fetch_dict == {'X_log_type': ''}
@@ -6649,7 +6641,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch should be created.
         - X_log_type last id should be created.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
@@ -6665,7 +6657,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
@@ -6685,7 +6677,7 @@ class TestFetchIncidentsFlows:
         - last_fetch_dict X_log_type value should not be updated.
         - last_id_dict X_log_type value should not be updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T12:00:00'},
                     'last_id_dict': {'X_log_type': '000000001'}}
         first_fetch = '24 hours'
@@ -6701,7 +6693,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T12:00:00'
@@ -6722,7 +6714,7 @@ class TestFetchIncidentsFlows:
         - last_fetch_dict X_log_type value should be updated.
         - last_id_dict X_log_type value should be updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 13:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device': '000000001'}}}
         first_fetch = '24 hours'
@@ -6740,7 +6732,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
@@ -6764,7 +6756,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch time will be updated.
         - X_log_type last id is updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 12:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}}}
         first_fetch = '24 hours'
@@ -6792,7 +6784,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
@@ -6818,7 +6810,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch time will be updated.
         - X_log_type last id is updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 11:00:00', 'Y_log_type': '2022-01-01 13:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}, 'Y_log_type': {'dummy_device2': '000000002'}}}
         first_fetch = '24 hours'
@@ -6843,7 +6835,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
@@ -6911,21 +6903,6 @@ def test_filter_fetched_entries(mocker):
     res = filter_fetched_entries(raw_entries, id_dict)
     assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
-
-
-def test_create_max_fetch_dict():
-    """
-    Given:
-    - dictionary of queries and max_fetch.
-    When:
-    - create_max_fetch_dict is called.
-    Then:
-    - return a dictionary of queries and max_fetch.
-    """
-    from Panorama import create_max_fetch_dict
-    queries_dict = {'log_type1': '(mock)', 'log_type2': '(mocker)'}
-    res = create_max_fetch_dict(queries_dict, 5)
-    assert res == {'log_type1': 5, 'log_type2': 5}
 
 
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
@@ -7461,23 +7438,22 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
         max_fetch_dict=max_fetch_dict
     )
 
-    # first fetch:
+    # assert duplicates are removed:
 
     mock_get_query_entries.return_value = corr_logs[:5]
     _, _, entries = fetch_incidents(
         last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
 
-    assert last_run == LastRun(
-        last_fetch_dict=LastFetchTimes(Correlation="2024-04-08 07:22:54"),
-        last_id_dict=LastIDs(Correlation=4),
-        max_fetch_dict=MaxFetch(Correlation=10)
-    )
     assert entries[0]["name"] == "Correlation 1"
     assert entries[0]["type"] == "CORRELATION"
+
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
-    )
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-09 07:22:54")  # the max date
+    assert last_id_dict == LastIDs(Correlation=4)
+    assert max_fetch_dict == MaxFetch(Correlation=10)
 
     # test with dict from older versions
 
