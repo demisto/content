@@ -6,7 +6,7 @@ RESPONSE_LINE_LENGTH = 8
 
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+''' CONSTANTS ''' 
 
 BASE_URL = 'http://data.phishtank.com'
 HTTPS_BASE_URL = 'https://data.phishtank.com'
