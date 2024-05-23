@@ -26,8 +26,6 @@ CURRENT_VERSION = 'currentVersion'
 SUPPORT = 'support'
 
 
-
-
 class UpdateType(str, Enum):
     """Pack version update type"""
 
