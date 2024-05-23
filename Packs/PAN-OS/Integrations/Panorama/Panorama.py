@@ -37,7 +37,7 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator, Literal
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
 from urllib.parse import urlparse
 
 
@@ -14179,10 +14179,13 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
         if log_type == 'Correlation':
             # use dict_safe_get because 'Correlation' can have a dict from older versions
             last_log_id = dict_safe_get(id_dict, ['Correlation'], 0, int, False)
+            demisto.debug(f'{last_log_id=}')
             first_new_log_index = next(
-                i for i, log in enumerate(entries_dict['Correlation'])
-                if int(log.get("@logid")) > last_log_id  # type: ignore
+                (i for i, log in enumerate(entries_dict['Correlation'])
+                if int(log.get("@logid")) > last_log_id),  # type: ignore
+                len(entries_dict['Correlation'])
             )
+            demisto.debug(f'{first_new_log_index=}')
             new_entries_dict['Correlation'] = entries_dict['Correlation'][first_new_log_index:]
         else:
             for log in entries_dict[log_type]:
@@ -14377,6 +14380,7 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
                 last_id_dict['Correlation'] = int(incident_entries_dict['Correlation'][-1]['@logid'])
                 parsed_incident_entries += list(map(corr_incident_entry_to_incident_context, incident_entries))
                 last_fetch_string = max({entry.get('match_time', '') for entry in incident_entries})
+                demisto.debug(f'{last_fetch_string=}')
             else:
                 if updated_last_id := find_largest_id_per_device(incident_entries):
                     # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
