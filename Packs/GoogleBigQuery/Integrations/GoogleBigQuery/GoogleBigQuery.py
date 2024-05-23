@@ -390,6 +390,8 @@ def test_module():
 
 
 ''' MAIN FUNCTION '''
+
+
 def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -406,6 +408,7 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -55,17 +55,17 @@ script:
       required: true
       description: A query string (in BigQuery query syntax). For more information about the standard syntax, see the BigQuery documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
     - name: project_id
+      description: The Big Query project on which to query, is visible in the credentials.
       required: false
       type: String
-      description: The Big Query project on which to query, is visible in the credentials.
     - name: location
       description: The geographic location where the job should run. Required for locations other than US and EU.
     - name: allow_large_results
+      description: Allow query results tables larger than 128 MB compressed (legacy SQL only).
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: Allow query results tables larger than 128 MB compressed (legacy SQL only).
     - name: default_dataset
       description: A string of the fully-qualified dataset ID in standard SQL format. The value must include a project ID and dataset ID, separated by periods.
     - name: destination_table
@@ -81,8 +81,8 @@ script:
     - name: priority
       auto: PREDEFINED
       predefined:
-      - BATCH
-      - INTERACTIVE
+      - "BATCH"
+      - "INTERACTIVE"
       description: Priority of the query (“INTERACTIVE” or “BATCH”). A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH will start as soon as idle resources are available, and changed to INTERACTIVE priority if it wasn’t started within 24 hours. The default value is “INTERACTIVE”.
     - name: use_query_cache
       auto: PREDEFINED
@@ -91,11 +91,11 @@ script:
       - "False"
       description: Whether to look for the query results in the cache.
     - name: use_legacy_sql
+      description: Whether to use legacy SQL syntax.
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: Whether to use legacy SQL syntax.
     - name: job_id
       description: The ID of the job. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024 characters.
     - name: write_disposition
@@ -113,7 +113,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.73837
+  dockerimage: demisto/bigquery:1.0.0.95616
   subtype: python3
   isfetch: true
 fromversion: 5.0.0
