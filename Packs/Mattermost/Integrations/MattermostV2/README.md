@@ -7,7 +7,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 ## Configure Mattermost v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MattermostV2.
+2. Search for Mattermost v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -119,7 +119,7 @@ Lists channels.
 | include_private_channels | Include private channels or not. Default is false. Possible values are: true, false. | Optional | 
 | page | The page number to retrieve. Default value is 0. | Optional | 
 | page_size | The size of the page to retrieve. Default value is 50. | Optional | 
-| limit | How many results to retrieve. Default value is 50. Will override the page and page_size arguments if given. | Optional | 
+| limit | How many results to retrieve. Will override the page and page_size arguments if given. | Optional | 
 
 #### Context Output
 
@@ -422,8 +422,8 @@ Lists users.
 >### Users:
 >|username|email|role|id|
 >|---|---|---|---|
->| admin | rrapoport@paloaltonetworks.com |  | 8a6t7whumbdbxrawretujh6rre |
->| demistodev | admin@demistodev.com |  | o9hpcwz73fdwxe9adue8jxo16o |
+>| admin | admin@admin.com |  | 8a6t7whumbdbxrawretujh6rre |
+>| dev | admin@ddev.com |  | o9hpcwz73fdwxe9adue8jxo16o |
 >| mberger | mberger@paloaltonetworks.com |  | cgyeny19f3b9dgoifsztkmobke |
 >| testbot | testbot@localhost |  | tmqcibcsy7yxdejb6gjjmduyda |
 
@@ -437,18 +437,27 @@ Sends a file.
 
 `mattermost-send-file`
 
+#### Command example
+```!mattermost-send-file message=check entry_id=85@109 channel=test```
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_name | The team name of the channel to send the file to. Default is the Team Name in the integration configuration. | Optional | 
-| channel_name | The channel name of the channel to send the file to. | Required | 
+| channel | The channel name of the channel to send the file to. Cannot be combined with the to argument. | Optional | 
 | message | The message to send to the channel along with the file. | Required | 
 | entry_id | The entry_id of the file. | Required | 
+| to | The username or email of the user to send the file to. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+file test.txt was successfully sent to channel test
+
 ### send-notification
 
 ***
@@ -465,7 +474,7 @@ Send a message using a chatbot app.
 | message | The message to send. | Required | 
 | channel | The channel name to send the notification to. Default value is the channel config parameter. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
-| to | The username or email of the user to send the message to. | Optional | 
+| to | The username or email of the user to send the file to. | Optional | 
 | ignoreAddURL | Adds the warroom link to the message. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -485,7 +494,7 @@ Closes a channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_name | The team name of the channel to close. Default value is the team in the integration configuration. | Optional | 
-| channel_name | The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
+| channel | The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
 
 #### Context Output
 
@@ -504,7 +513,7 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_name | The team name of the channel to delete. Default value is the team in the integration configuration. | Optional | 
-| channel_name | The channel name of the channel to delete. | Optional | 
+| channel | The channel name of the channel to close. | Optional | 
 
 #### Context Output
 
@@ -570,7 +579,9 @@ Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
 #### Context Output
 
 There is no context output for this command.
+
 ## Breaking changes from the previous version of this integration - Mattermost v2
+
 - New configuration parameters were added: Bot Access Token
 - 
 
@@ -582,8 +593,8 @@ There is no context output for this command.
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
+In the *mirror-investigation* command:
+* *mirrorTo* - this argument was replaced by channelName.
 * *argumentName* - this argument was replaced by XXX.
 
 #### The behavior of the following arguments was changed:
