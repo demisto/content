@@ -1006,9 +1006,9 @@ def get_arguments_for_policy_command(args):
     comment = args.get('comment')
     enabled = argToBoolean(args.get('enabled')) if args.get('enabled') else None
     enforced = argToBoolean(args.get('enforced')) if args.get('enforced') else None
-    from_date = args.get('from_date')
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
     from_eternal = argToBoolean(args.get('from_eternal')) if args.get('from_eternal') else None
-    to_date = args.get('to_date')
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
     to_eternal = argToBoolean(args.get('to_eternal')) if args.get('to_eternal') else None
     override = argToBoolean(args.get('override')) if args.get('override') else None
     description = args.get('description', '') or args.get('policy_description', '')
@@ -3283,10 +3283,10 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     from_attribute_id = args.get('from_attribute_id')
     from_attribute_name = args.get('from_attribute_name')
     from_attribute_value = args.get('from_attribute_value')
-    from_date = args.get('from_date')
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
     from_eternal = argToBoolean(args['from_eternal'])
     from_part = args.get('from_part')
-    to_date = args.get('to_date')
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
     to_eternal = argToBoolean(args['to_eternal'])
     override = argToBoolean(args.get('override')) if args.get('override') else None
     from_type = args.get('from_type')
@@ -3356,10 +3356,10 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     description = args.get('description')
     id = args.get('id')
     enabled = argToBoolean(args.get('enabled'))
-    from_date = args.get('from_date')
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
     from_eternal = argToBoolean(args.get('from_eternal'))
     from_part = args.get('from_part')
-    to_date = args.get('to_date')
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
     to_eternal = argToBoolean(args.get('to_eternal'))
     if args.get('bidirectional'):
         bidirectional = argToBoolean(args.get('bidirectional'))
@@ -3411,10 +3411,10 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     conditions = args.get('conditions')
     enabled = argToBoolean(args.get('enabled'))
     enforced = argToBoolean(args.get('enforced'))
-    from_date = args.get('from_date')
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
     from_eternal = argToBoolean(args.get('from_eternal'))
     from_part = args.get('from_part')
-    to_date = args.get('to_date')
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
     to_eternal = argToBoolean(args.get('to_eternal'))
     override = argToBoolean(args.get('override')) if args.get('override') else None
     from_type = args.get('from_type')
@@ -3477,10 +3477,10 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
     conditions = args.get('conditions')
     enabled = argToBoolean(args.get('enabled'))  # default value
     enforced = argToBoolean(args.get('enforced'))  # default value
-    from_date = args.get('from_date')
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
     from_eternal = argToBoolean(args.get('from_eternal'))  # default value
     from_part = args.get('from_part')
-    to_date = args.get('to_date')
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
     to_eternal = argToBoolean(args.get('to_eternal'))  # default value
     override = args.get('override')
 

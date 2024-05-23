@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: MimecastV2 - dev
+  id: MimecastV2
   version: -1
 configuration:
 - defaultvalue: https://api.services.mimecast.com
@@ -140,8 +140,8 @@ configuration:
   type: 8
   required: false
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
-display: Mimecast v2 - dev
-name: MimecastV2 - dev
+display: Mimecast v2
+name: MimecastV2
 script:
   commands:
   - arguments:
@@ -283,10 +283,10 @@ script:
       description: Block emails to receiver type.
       type: string
   - arguments:
-    - description: policy ID. The policy ID can be retrieved using mimecast-list-policies data.id field. For type address-alteration enter folderId data.addressAlterationSetId field.
+    - description: Policy ID. The policy ID can be retrieved using mimecast-list-policies use the data.id field. For type address-alteration provide the folderId from the data.addressAlterationSetId field.
       name: policyID
       required: true
-    - description: According to this argument an endpoint is selected.
+    - description: Policy type.
       name: policyType
       defaultValue: blockedsenders
       auto: PREDEFINED
@@ -416,7 +416,7 @@ script:
       description: The receiver type.
       type: String
   - arguments:
-    - description: policy ID. The policy ID can be retrieved using mimecast-list-policies data.id field. For type address-alteration enter folderId data.addressAlterationSetId field.
+    - description: Policy ID. The policy ID can be retrieved using mimecast-list-policies use the data.id field. For type address-alteration provide the folderId from the data.addressAlterationSetId field.
       name: policyID
       required: true
     - description: According to this argument an endpoint is selected.
@@ -1062,7 +1062,7 @@ script:
       description: The number of child groups.
       type: Number
   - arguments:
-    - description: The Mimecast ID of the group to return. can be retrieved by running mimecast-find-groups.
+    - description: The group ID to return. can be retrieved by running the mimecast-find-groups command.
       name: group_id
       required: true
     - description: The maximum number of results to return.
@@ -1089,7 +1089,7 @@ script:
       description: Whether the user is part of the group.
       type: Boolean
   - arguments:
-    - description: The Mimecast ID of the group to add the user to. can be retrieved by running mimecast-find-groups.
+    - description: The group ID to add the user to. can be retrieved by running the mimecast-find-groups command.
       name: group_id
       required: true
     - description: The email address of the user to add to a group.
@@ -1106,7 +1106,7 @@ script:
       description: Whether the user is part of the group.
       type: Boolean
   - arguments:
-    - description: The Mimecast ID of the group from which to remove the user. can be retrieved by running mimecast-find-groups.
+    - description: The group ID from which to remove the user. can be retrieved by running the mimecast-find-groups command.
       name: group_id
       required: true
     - description: The email address of the user to remove from the group.
@@ -2381,7 +2381,7 @@ script:
       - profile_group
       - individual_email_address
       required: true
-    - description: 'Required if fromType is one of email domain, profile group, individual email address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.'
+    - description: Required if fromType is one of email domain, profile group, individual email address. Expected values If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.
       name: fromValue
     - auto: PREDEFINED
       description: Receiver type.
@@ -2397,7 +2397,7 @@ script:
       - free_mail_domains
       - header_display_name
       required: true
-    - description: 'Required if fromType is one of email domain, profile group, individual email address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.'
+    - description: Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.
       name: toValue
     - auto: PREDEFINED
       description: 'The block option, must be one of: no_action, block_sender.'
@@ -2674,7 +2674,7 @@ script:
       - individual_email_address
       required: true
     - name: from_value
-      description: Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.	
+      description: Required if fromType is one of email domain, profile group, individual email address. Expected values If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.
     - name: to_type
       description: The type of applies on - everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address.
       auto: PREDEFINED
