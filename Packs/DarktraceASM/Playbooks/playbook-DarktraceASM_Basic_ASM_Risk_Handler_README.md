@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Darktrace](../docs_files/logo_darktrace.png)
+![Darktrace](../docs_files/DarktraceASM_image.png)
