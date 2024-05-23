@@ -21,7 +21,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 
 # Disable insecure warnings
-urllib3.disable_warnings()
+# urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -43,15 +43,19 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
-    def __init__(self, base_url: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-    
-    def generate_get_request(self, url_suffix, json_data):
-        return self._http_request(
+
+    def __init__(self, base_url: str, verify: bool, headers: dict, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+
+    def send_get_request(self, url_suffix, params): 
+        results = self._http_request(
             method="GET",
             url_suffix=url_suffix,
-            json_data=json_data
+            params=params,
+            headers=self._headers
         )
+        return 'ok'
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -69,6 +73,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    
 
     message: str = ''
     try:
@@ -85,53 +90,50 @@ def test_module(client: Client) -> str:
 
 
 def csc_domains_search_command(client: Client, args) -> None:
-    
+    #just to organize the dict so it matches the api params
     qualified_domain_name = args.get('qualified_domain_name')
     if qualified_domain_name:
-        return client.generate_get_request("" ,qualified_domain_name)
-    
+        return client.generate_get_request("", qualified_domain_name)
+
     args_dict = {
-        'domain_name' : args.get('domain_name'),
-        'registration_date' : args.get('registration_date'),
-        'email' : args.get('email'),
-        'organization' : args.get('organization'),
-        'registry_expiry_date' : args.get('registry_expiry_date'),
-        'filter' : args.get('filter'),
-        'sort' : args.get('sort')
+        'domain_name': args.get('domain_name'),
+        'registration_date': args.get('registration_date'),
+        'email': args.get('email'),
+        'organization': args.get('organization'),
+        'registry_expiry_date': args.get('registry_expiry_date'),
+        'filter': args.get('filter'),
+        'sort': args.get('sort')
     }
-    
+
     arg_to_number(args.get('page'))
     arg_to_number(args.get('page_size')) or DEFAULT_PAGE_SIZE
     arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    
-    for arg in args_dict:
-        if not args_dict[args]:
-            del args_dict[arg]
-    
-    #get domain with the given filters
-    #sort if needed
-    #what to do with page, size and limit?
+
+    # get domain with the given filters
+    # sort if needed
+    # what to do with page, size and limit?
     return None
-    
+
 
 def csc_domains_availability_check_command(client: Client, args) -> Any:
     qualified_domain_names = args.get('qualified_domain_names')
     if not qualified_domain_names:
-        return ("Error") #TODO to return a real error
+        return ("Error")  # TODO to return a real error
     if len(qualified_domain_names.split(',')) > MAX_QUALIFIED_DOMAIN_NAMES:
-        return ("Error") #TODO to return a real error
-    
-    #get domains from api and return output
-    domains_data = client.generate_get_request("/availability", qualified_domain_names) #can be or object or list
-    
+        return ("Error")  # TODO to return a real error
+
+    # get domains from api and return output
+    domains_data = client.generate_get_request("/availability", qualified_domain_names)  # can be or object or list
+
     for domain in domains_data:
-        #put in each domain result, the fields written in the design
+        # put in each domain result, the fields written in the design
         domain
-    #return the results in the required pattern
+    # return the results in the required pattern
     return None
 
+
 def csc_domains_configuration_list_command(client: Client, args):
-    
+
     return
 
 
@@ -149,12 +151,10 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
@@ -165,21 +165,29 @@ def main() -> None:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
 
-        base_url=params.get('base_url')
-        verify = not params().get('insecure', False)
-        headers: dict = {}
-        proxy=params.get('proxy', False)
-    
+        base_url = params.get('base_url')
+        verify = not params.get('insecure', False)
+        token = params.get('token', {}).get('password')
+        headers: dict = {
+            'Authorization' : 'Bearer ' + token,
+            'apikey' : params.get('credentials', {}).get('password'),
+            'Accept' : "application/json"
+        }
+        proxy = params.get('proxy', False)
+        
         client = Client(
             base_url=base_url,
             verify=verify,
             headers=headers,
             proxy=proxy
         )
+        
+        #results = client.send_get_request("/domains", "")
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            results = test_module(client)
+            # results = test_module(client)
+            results = client.send_get_request("/domains", "")
             return_results(results)
 
         elif demisto.command() == 'csc-domains-search':
