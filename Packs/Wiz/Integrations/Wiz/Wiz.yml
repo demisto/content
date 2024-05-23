@@ -227,6 +227,12 @@ script:
       required: true
     - name: reopen_note
       description: reopen note.
+  - name: wiz-get-issue
+    description: Get the details of a Wiz Issue Id.
+    arguments:
+    - name: issue_id
+      description: issue id.
+      required: true
   - name: wiz-resolve-issue
     description: Resolve a Threat Detection Issue.
     arguments:

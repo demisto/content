@@ -18,7 +18,7 @@ integration_params_with_auth_url.update({"auth_endpoint": "https://auth.wiz.io/o
 
 TEST_TOKEN = '123456789'
 SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
-                    'wiz-get-resource',
+                    'wiz-get-resource', 'wiz-get-issue',
                     'wiz-set-issue-note', 'wiz-clear-issue-note', 'wiz-get-issue-evidence', 'wiz-set-issue-due-date',
                     'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team', 'wiz-resolve-issue']
 
@@ -84,6 +84,34 @@ def test_get_filtered_issues(checkAPIerrors):
     ]
 
     res = get_filtered_issues('virtualMachine', '', 'CRITICAL', 500)
+    assert res == result_response
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_get_issues_response)
+def test_get_issue(checkAPIerrors):
+    from Wiz import get_issue
+
+    result_response = [
+        {
+            "id": "12345678-1234-1234-1234-d25e16359c19",
+            "control": {
+                "id": "12345678-4321-4321-4321-3792e8a03318",
+                "name": "test delete",
+            },
+            "createdAt": "2022-01-02T15:46:34Z",
+            "updatedAt": "2022-01-04T10:40:57Z",
+            "status": "OPEN",
+            "type": "THREAT_DETECTION",
+            "severity": "CRITICAL",
+            "entity": {
+                "bla": "lot more blah was here",
+                "name": "virtualMachine",
+                "type": "virtualMachine"
+            }
+        }
+    ]
+
+    res = get_issue('d6f7a886-e2f5-44c0-980c-c7c17bbfb7dd')
     assert res == result_response
 
 
@@ -504,6 +532,16 @@ def test_get_filtered_issues_bad_arguments(mocker, capfd):
         issue = get_filtered_issues(issue_type='virtualMachine', resource_id='', severity='BAD', limit=500)
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
+
+
+def test_get_issue_bad_arguments(mocker, capfd):
+    from Wiz import get_issue
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        issue = get_issue(issue_id='virtualMachine')
+        assert issue == 'Wrong format: The Issue ID should be in UUID format.'
+        issue = get_issue(issue_id='')
+        assert issue == 'You should pass an Issue ID.'
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_issue_in_progress_response)
