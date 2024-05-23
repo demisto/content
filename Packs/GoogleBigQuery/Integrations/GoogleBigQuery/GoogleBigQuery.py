@@ -134,7 +134,7 @@ def query(query_string, project_id, location, allow_large_results, default_datas
 def get_query_results(query_to_run=None):
     args = demisto.args()
     query_to_run = query_to_run or args['query']
-    demisto.debug(f"Query to run: {query_to_run}")
+    demisto.debug(f"Running with the following args: {args}")
     project_id = args.get('project_id', None)
     location = args.get('location', None)
     allow_large_results = args.get('allow_large_results', None)
@@ -154,17 +154,20 @@ def get_query_results(query_to_run=None):
     query_results = query(query_to_run, project_id, location, allow_large_results, default_dataset,
                           destination_table, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
                           google_service_creds, job_id, write_disposition)
+    demisto.debug("Got the query results.")
     return query_results
 
 
 def query_command(query_to_run=None):
     query_results = get_query_results(query_to_run)
+    demisto.debug("Got query results.")
     args = demisto.args()
     dry_run = args.get('dry_run', None)
     context = {}
     rows_contexts = []
     human_readable = 'No results found.'
     if dry_run and str_to_bool(dry_run):
+        demisto.debug("In query dry run")
         human_readable = '### Dry run results: \n This query will process {0} ' \
                          'bytes'.format(query_results.total_bytes_processed)
 
