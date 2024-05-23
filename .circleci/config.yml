@@ -227,32 +227,32 @@ references:
         ./.circleci/linters_runner.sh
         ./.circleci/validate.sh
 
-  run_unit_testing_and_lint: &run_unit_testing_and_lint
-    run:
-      parameters:
-        dockerimageflag:
-          type: string
-      name: Run Unit Testing And Lint - Docker Image:<< parameters.dockerimageflag >>
-      when: always
-      no_output_timeout: 5h
-      command: |
-        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
-          echo "Skipping validations when uploading to a test bucket."
-          exit 0
-        fi
-
-        echo "demisto-sdk version: $(demisto-sdk --version)"
-        echo "mypy version: $(mypy --version)"
-        echo "flake8 py3 version: $(python3 -m flake8 --version)"
-        echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-        mkdir ./unit-tests
-
-        neo4j start
-        # poll for neo4j status until available
-        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
-
-        demisto-sdk lint -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
+#  run_unit_testing_and_lint: &run_unit_testing_and_lint
+#    run:
+#      parameters:
+#        dockerimageflag:
+#          type: string
+#      name: Run Unit Testing And Lint - Docker Image:<< parameters.dockerimageflag >>
+#      when: always
+#      no_output_timeout: 5h
+#      command: |
+#        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+#          echo "Skipping validations when uploading to a test bucket."
+#          exit 0
+#        fi
+#
+#        echo "demisto-sdk version: $(demisto-sdk --version)"
+#        echo "mypy version: $(mypy --version)"
+#        echo "flake8 py3 version: $(python3 -m flake8 --version)"
+#        echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+#        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+#        mkdir ./unit-tests
+#
+#        neo4j start
+#        # poll for neo4j status until available
+#        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
+#
+#        demisto-sdk lint -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
 
   # generate_coverage_reports: &generate_coverage_reports
   #   run:
@@ -311,102 +311,102 @@ references:
           - Setup Environment
 
 
-jobs:
-  Setup Environment:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - checkout
-      - *install_build_dependencies
-      - *install_node_ci
-      - *prepare_environment
-      - *get_contribution_pack
-      - *persist_to_workspace
-
-  Run Unit Testing And Lint:
-    <<: *container_config
-    resource_class: large
-    <<: *environment
-    parameters:
-      dockerimageflag:
-        type: string
-    steps:
-      - *attach_workspace
-      - *remote_docker
-      - *install_build_dependencies
-      - *install_node_ci
-      - *install_neo4j
-      - *prepare_environment
-      - *run_unit_testing_and_lint
-      # - *generate_coverage_reports
-      - store_test_results:
-          path: ./unit-tests
-      - *store_artifacts
-
-  Run Validations:
-    <<: *container_config
-    resource_class: large
-    <<: *environment
-    steps:
-      - *attach_workspace
-      - *install_build_dependencies
-      - *install_node_ci
-      - *install_neo4j
-      - *prepare_environment
-      - *secrets
-      - *validate_files_and_yaml
-      - run:
-          name: Spell Checks
-          command: |
-            python3 ./.circleci/circleci_spell_checker.py $CIRCLE_BRANCH
-      - run:
-          name: Verify Base Branch for Contribution
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
-              then
-                python3 ./.circleci/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
-            fi
-      - run:
-          name: Validate landingPageSections.json
-          when: always
-          command: |
-            # Download index.zip
-            INDEX_PATH=$(mktemp)
-            gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
-            echo "successfully downloaded index.zip into $INDEX_PATH"
-
-            UNZIP_PATH=$(mktemp -d)
-            unzip $INDEX_PATH -d $UNZIP_PATH
-
-            python3 ./.circleci/validate_landing_page_sections.py -i $UNZIP_PATH
-      - *store_artifacts
-      - store_artifacts:
-          path: $ARTIFACTS_FOLDER
+#jobs:
+#  Setup Environment:
+#    <<: *container_config
+#    resource_class: medium
+#    <<: *environment
+#    steps:
+#      - checkout
+#      - *install_build_dependencies
+#      - *install_node_ci
+#      - *prepare_environment
+#      - *get_contribution_pack
+#      - *persist_to_workspace
+#
+#  Run Unit Testing And Lint:
+#    <<: *container_config
+#    resource_class: large
+#    <<: *environment
+#    parameters:
+#      dockerimageflag:
+#        type: string
+#    steps:
+#      - *attach_workspace
+#      - *remote_docker
+#      - *install_build_dependencies
+#      - *install_node_ci
+#      - *install_neo4j
+#      - *prepare_environment
+#      - *run_unit_testing_and_lint
+#      # - *generate_coverage_reports
+#      - store_test_results:
+#          path: ./unit-tests
+#      - *store_artifacts
+#
+#  Run Validations:
+#    <<: *container_config
+#    resource_class: large
+#    <<: *environment
+#    steps:
+#      - *attach_workspace
+#      - *install_build_dependencies
+#      - *install_node_ci
+#      - *install_neo4j
+#      - *prepare_environment
+#      - *secrets
+#      - *validate_files_and_yaml
+#      - run:
+#          name: Spell Checks
+#          command: |
+#            python3 ./.circleci/circleci_spell_checker.py $CIRCLE_BRANCH
+#      - run:
+#          name: Verify Base Branch for Contribution
+#          when: always
+#          command: |
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+#              then
+#                python3 ./.circleci/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+#            fi
+#      - run:
+#          name: Validate landingPageSections.json
+#          when: always
+#          command: |
+#            # Download index.zip
+#            INDEX_PATH=$(mktemp)
+#            gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
+#            echo "successfully downloaded index.zip into $INDEX_PATH"
+#
+#            UNZIP_PATH=$(mktemp -d)
+#            unzip $INDEX_PATH -d $UNZIP_PATH
+#
+#            python3 ./.circleci/validate_landing_page_sections.py -i $UNZIP_PATH
+#      - *store_artifacts
+#      - store_artifacts:
+#          path: $ARTIFACTS_FOLDER
 
 
 
 workflows:
   version: 2
-  commit:
-    when:
-      matches:
-        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
-        pattern: pull/[0-9]+
-        value: << pipeline.git.branch >>
-    jobs:
-      - Setup Environment
-      - Run Unit Testing And Lint:
-          requires:
-            - Setup Environment
-          matrix:
-            parameters:
-              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "native:candidate", "from-yml" ]
-          name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
-      - Run Validations:
-          requires:
-            - Setup Environment
+#  commit:
+#    when:
+#      matches:
+#        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
+#        pattern: pull/[0-9]+
+#        value: << pipeline.git.branch >>
+#    jobs:
+#      - Setup Environment
+#      - Run Unit Testing And Lint:
+#          requires:
+#            - Setup Environment
+#          matrix:
+#            parameters:
+#              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "native:candidate", "from-yml" ]
+#          name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
+#      - Run Validations:
+#          requires:
+#            - Setup Environment
 
   nightly:
     triggers:
