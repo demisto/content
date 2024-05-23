@@ -1473,20 +1473,15 @@ def prepare_args(d):  # pragma: no cover
     return d
 
 
-def get_limited_number_of_messages_from_qs(qs, limit, folder=''):  # pragma: no cover
+def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
     count = 0
     results = []
-    counter_items = 0
-
     for item in qs:
         if count == limit:
             break
-        if folder == 'WorkingSet':
-            demisto.debug(f'{item}')
         if isinstance(item, Message):
             count += 1
             results.append(item)
-        counter_items += 1
     return results
 
 
@@ -1504,8 +1499,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        root = account.public_folders_root if is_public else account.root.tois
-        folders = FolderCollection(account=account, folders=[root]).find_folders()  # pylint: disable=E1101
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders() # pylint: disable=E1101
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
     if selected_all_fields:
