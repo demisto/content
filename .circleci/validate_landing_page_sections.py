@@ -22,7 +22,7 @@ def main():
     content_repo_pack_names = {os.path.basename(pack_name) for pack_name in glob('Packs/*')}
     valid_packs = bucket_pack_names | content_repo_pack_names
     validate_valid_packs_in_sections(landing_page_sections_json, valid_packs)
-    logger.success('Validation finished successfully')
+    logger.info('Validation finished successfully')
 
 
 def validate_valid_packs_in_sections(landing_page_sections_json: dict, valid_pack_names: set) -> None:
