@@ -649,7 +649,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         result = client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == EXPORT_EXPIRED:
-            demisto.info(f"export uuid with value: {export_uuid} has expired,generating new export uuid to start new fetch.")
+            demisto.debug(f"export uuid with value: {export_uuid} has expired,generating new export uuid to start new fetch.")
 
             export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
@@ -1638,28 +1638,28 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     status_response = client.check_export_scan_status(scan_id, file_id)
     demisto.debug(f'{status_response=}')
 
-    # match status_response.get('status'):
-    #     case 'ready':
-    #         return PollResult(
-    #             client.download_export_scan(
-    #                 scan_id, file_id, args['format']),
-    #             continue_to_poll=False)
-    #
-    #     case 'loading':
-    #         return PollResult(
-    #             None,
-    #             continue_to_poll=True,
-    #             args_for_next_run={
-    #                 'fileId': file_id,
-    #                 'scanId': scan_id,
-    #                 'format': args['format'],  # not necessary but avoids confusion
-    #             })
-    #
-    #     case _:
-    #         raise DemistoException(
-    #             'Tenable IO encountered an error while exporting the scan report file.\n'
-    #             f'Scan ID: {scan_id}\n'
-    #             f'File ID: {file_id}\n')
+    match status_response.get('status'):
+        case 'ready':
+            return PollResult(
+                client.download_export_scan(
+                    scan_id, file_id, args['format']),
+                continue_to_poll=False)
+
+        case 'loading':
+            return PollResult(
+                None,
+                continue_to_poll=True,
+                args_for_next_run={
+                    'fileId': file_id,
+                    'scanId': scan_id,
+                    'format': args['format'],  # not necessary but avoids confusion
+                })
+
+        case _:
+            raise DemistoException(
+                'Tenable IO encountered an error while exporting the scan report file.\n'
+                f'Scan ID: {scan_id}\n'
+                f'File ID: {file_id}\n')
 
 
 def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_date: Optional[str] = None,
@@ -1930,7 +1930,7 @@ def main():  # pragma: no cover
                 # starting a whole new fetch process for assets
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
-            # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
+            # Fetch Assets (no type -> new fetch, or assets_export_uuid -> continue prev fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('type'):
                 assets = run_assets_fetch(client, assets_last_run)
 
