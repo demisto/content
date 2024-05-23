@@ -1949,7 +1949,6 @@ def main():  # pragma: no cover
             demisto.setAssetsLastRun(assets_last_run)
 
     except Exception as e:
-        demisto.debug(f"assets last run in exception: {demisto.getAssetsLastRun()}")
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
