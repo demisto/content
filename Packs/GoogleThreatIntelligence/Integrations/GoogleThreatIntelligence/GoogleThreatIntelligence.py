@@ -1956,15 +1956,15 @@ def file_scan_and_get_analysis(client: Client, args: dict):
         if isinstance(outputs, list):
             outputs = outputs[0]
         scheduled_command = ScheduledCommand(
-                command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
-                next_run_in_seconds=interval,
-                args={
-                    'entryID': args.get('entryID'),
-                    'id': outputs.get('vtScanID'),
-                    'interval_in_seconds': interval,
-                    'extended_data': extended,
-                },
-                timeout_in_seconds=6000,
+            command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
+            next_run_in_seconds=interval,
+            args={
+                'entryID': args.get('entryID'),
+                'id': outputs.get('vtScanID'),
+                'interval_in_seconds': interval,
+                'extended_data': extended,
+            },
+            timeout_in_seconds=6000,
         )
         command_result.scheduled_command = scheduled_command
         return command_result
@@ -1976,15 +1976,15 @@ def file_scan_and_get_analysis(client: Client, args: dict):
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
         return command_result
     scheduled_command = ScheduledCommand(
-            command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
-            next_run_in_seconds=interval,
-            args={
-                'entryID': args.get('entryID'),
-                'id': outputs.get('id'),
-                'interval_in_seconds': interval,
-                'extended_data': extended,
-            },
-            timeout_in_seconds=6000,
+        command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
+        next_run_in_seconds=interval,
+        args={
+            'entryID': args.get('entryID'),
+            'id': outputs.get('id'),
+            'interval_in_seconds': interval,
+            'extended_data': extended,
+        },
+        timeout_in_seconds=6000,
     )
     return CommandResults(scheduled_command=scheduled_command)
 
@@ -2002,15 +2002,15 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
         if isinstance(outputs, list):
             outputs = outputs[0]
         scheduled_command = ScheduledCommand(
-                command=f'{COMMAND_PREFIX}-private-file-and-analysis-get',
-                next_run_in_seconds=interval,
-                args={
-                    'entryID': args.get('entryID'),
-                    'id': outputs.get('vtScanID'),
-                    'interval_in_seconds': interval,
-                    'extended_data': extended,
-                },
-                timeout_in_seconds=6000,
+            command=f'{COMMAND_PREFIX}-private-file-and-analysis-get',
+            next_run_in_seconds=interval,
+            args={
+                'entryID': args.get('entryID'),
+                'id': outputs.get('vtScanID'),
+                'interval_in_seconds': interval,
+                'extended_data': extended,
+            },
+            timeout_in_seconds=6000,
         )
         command_result.scheduled_command = scheduled_command
         return command_result
@@ -2022,15 +2022,15 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
         return command_result
     scheduled_command = ScheduledCommand(
-            command=f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get',
-            next_run_in_seconds=interval,
-            args={
-                'entryID': args.get('entryID'),
-                'id': outputs.get('id'),
-                'interval_in_seconds': interval,
-                'extended_data': extended,
-            },
-            timeout_in_seconds=6000,
+        command=f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get',
+        next_run_in_seconds=interval,
+        args={
+            'entryID': args.get('entryID'),
+            'id': outputs.get('id'),
+            'interval_in_seconds': interval,
+            'extended_data': extended,
+        },
+        timeout_in_seconds=6000,
     )
     return CommandResults(scheduled_command=scheduled_command)
 
@@ -2046,15 +2046,15 @@ def url_scan_and_get_analysis(client: Client, args: dict):
         if isinstance(outputs, list):
             outputs = outputs[0]
         scheduled_command = ScheduledCommand(
-                command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
-                next_run_in_seconds=interval,
-                args={
-                    'url': args.get('url'),
-                    'id': outputs.get('vtScanID'),
-                    'interval_in_seconds': interval,
-                    'extended_data': extended,
-                },
-                timeout_in_seconds=6000,
+            command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
+            next_run_in_seconds=interval,
+            args={
+                'url': args.get('url'),
+                'id': outputs.get('vtScanID'),
+                'interval_in_seconds': interval,
+                'extended_data': extended,
+            },
+            timeout_in_seconds=6000,
         )
         command_result.scheduled_command = scheduled_command
         return command_result
@@ -2066,15 +2066,15 @@ def url_scan_and_get_analysis(client: Client, args: dict):
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
         return command_result
     scheduled_command = ScheduledCommand(
-            command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
-            next_run_in_seconds=interval,
-            args={
-                'url': args.get('url'),
-                'id': outputs.get('id'),
-                'interval_in_seconds': interval,
-                'extended_data': extended,
-            },
-            timeout_in_seconds=6000,
+        command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
+        next_run_in_seconds=interval,
+        args={
+            'url': args.get('url'),
+            'id': outputs.get('id'),
+            'interval_in_seconds': interval,
+            'extended_data': extended,
+        },
+        timeout_in_seconds=6000,
     )
     return CommandResults(scheduled_command=scheduled_command)
 
