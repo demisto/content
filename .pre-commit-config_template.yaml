@@ -290,32 +290,33 @@ repos:
     needs:
     - pytest-in-docker
 
-  # - id: coverage-pytest-analyze
-  #   name: coverage-pytest-analyze
-  #   entry: demisto-sdk coverage-analyze
-  #   description: Running demisto-sdk coverage-analyze and showing a coverage report.
-  #   language: system
-  #   pass_filenames: false
-  #   args:
-  #   - -i
-  #   - .coverage
-  #   - --report-dir
-  #   - coverage_report
-  #   - --report-type
-  #   - all
-  #   - --previous-coverage-report-url
-  #   - https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
-  #   args:nightly:
-  #   - -i
-  #   - .coverage
-  #   - --report-dir
-  #   - coverage_report
-  #   - --report-type
-  #   - all
-  #   - --allowed-coverage-degradation-percentage
-  #   - '100'
-  #   needs:
-  #   - pytest-in-docker
+  - id: coverage-pytest-analyze
+    name: coverage-pytest-analyze
+    entry: demisto-sdk coverage-analyze
+    description: Running demisto-sdk coverage-analyze and showing a coverage report.
+    language: system
+    pass_filenames: false
+    args:
+    - -i
+    - .coverage
+    - --report-dir
+    - coverage_report
+    - --report-type
+    - all
+    - --previous-coverage-report-url
+    - https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+    args:nightly:
+    - -i
+    - .coverage
+    - --report-dir
+    - coverage_report
+    - --report-type
+    - all
+    - --allowed-coverage-degradation-percentage
+    - '100'
+    needs:
+    - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
