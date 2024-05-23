@@ -67,11 +67,102 @@ script:
     description: Gets the domains by the applied filters
     name: csc-domains-search
     outputs:
-    - contextPath: CSCDomainManager.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: CSCDomainManager.Domain.QualifiedDomainName
+      description: the qualified domain name
+      type: String
+    - contextPath: CSCDomainManager.Domain.Domain
+      description: the domain
+      type: String
+    - contextPath: CSCDomainManager.Domain.ManagedStatus
+      description: the managed status
+      type: String
+    - contextPath: CSCDomainManager.Domain.RegistrationDate
+      description: the registration date
+      type: String
+    - contextPath: CSCDomainManager.Domain.RegistryExpiryDate 
+      description: the registry expiry date
+      type: String
+    - contextPath: CSCDomainManager.Domain.PaidThroughDate
+      description: paid through date
+      type: String
+    - contextPath: CSCDomainManager.Domain.NameServers
+      description: servers names
+      type: String
+    - contextPath: CSCDomainManager.Domain.DnsType
+      description: dns type
+      type: String
+    - contextPath: CSCDomainManager.Domain.WhoisContactFirstName
+      description: first name from whoisContacts
+      type: String
+    - contextPath: CSCDomainManager.Domain.WhoisContactLastName
+      description: last name from whoisContacts
+      type: String
+    - contextPath: CSCDomainManager.Domain.WhoisContactEmail
+      description: whoisContact email
+      type: String
+  - arguments:
+    - description: the domain name
+      name: domain_name
+      required: true
+    description: 
+    name: csc-domains-availability-check
+    outputs:
+    - contextPath: CSCDomainManager.Domain.Availability
+      description: 
+      type: 
+  - arguments:
+    - description: to fill
+      name: domain_name
+      required: false
+    - description: to fill
+      name: registration_date
+      required: false
+    - description: to fill
+      name: domain_email
+      required: false
+    - description: to fill
+      name: filter
+      required: false
+    - description: to fill
+      name: page
+      required: false
+    - description: to fill
+      name: page_size
+      required: false
+    - description: to fill
+      name: limit
+      required: false
+    description: 
+    name: csc-domains-configuration-list
+    outputs:
+    - contextPath: CSCDomainManager.Domain.Configuration.Domain
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.DomainLabel
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.DomainStatusCode
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.DomainExtension
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.Country
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.AdminEmail
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.AdminName
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.AccountNumber
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.AccountName
+      description: 
       type: String
 
-    
   runonce: false
   script: '-'
   type: python
