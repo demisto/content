@@ -1871,7 +1871,7 @@ def get_working_id(id_: str, entry_id: str) -> str:
     Returns:
         A working ID that we can use in other commands.
     """
-    if isinstance(id_, str) and id_.isnumeric() or (isinstance(id_, int)):
+    if isinstance(id_, str) and id_.isnumeric() or isinstance(id_, int):
         demisto.debug(f'Got an integer id from file-scan. {id_=}, {entry_id=}\n')
         raise DemistoException(
             f'Got an int {id_=} as analysis report. This is a bug in Google Threat Intelligence API.\n'
@@ -1943,6 +1943,142 @@ def upload_file(client: Client, args: dict, private: bool = False) -> List[Comma
     return results
 
 
+def file_scan_and_get_analysis(client: Client, args: dict):
+    """Calls to file-scan and gti-analysis-get."""
+    interval = int(args.get('interval_in_seconds', 60))
+    extended = argToBoolean(args.get('extended_data', False))
+
+    if not args.get('id'):
+        command_result = file_scan(client, args)
+        if isinstance(command_result, list):
+            command_result = command_result[0]
+        outputs = command_result.outputs
+        if isinstance(outputs, list):
+            outputs = outputs[0]
+        scheduled_command = ScheduledCommand(
+                command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
+                next_run_in_seconds=interval,
+                args={
+                    'entryID': args.get('entryID'),
+                    'id': outputs.get('vtScanID'),
+                    'interval_in_seconds': interval,
+                    'extended_data': extended,
+                },
+                timeout_in_seconds=6000,
+        )
+        command_result.scheduled_command = scheduled_command
+        return command_result
+
+    command_result = get_analysis_command(client, args)
+    outputs = command_result.outputs
+    if isinstance(outputs, list):
+        outputs = outputs[0]
+    if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
+        return command_result
+    scheduled_command = ScheduledCommand(
+            command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
+            next_run_in_seconds=interval,
+            args={
+                'entryID': args.get('entryID'),
+                'id': outputs.get('id'),
+                'interval_in_seconds': interval,
+                'extended_data': extended,
+            },
+            timeout_in_seconds=6000,
+    )
+    return CommandResults(scheduled_command=scheduled_command)
+
+
+def private_file_scan_and_get_analysis(client: Client, args: dict):
+    """Calls to gti-privatescanning-file-scan and gti-privatescanning-analysis-get."""
+    interval = int(args.get('interval_in_seconds', 60))
+    extended = argToBoolean(args.get('extended_data', False))
+
+    if not args.get('id'):
+        command_result = private_file_scan(client, args)
+        if isinstance(command_result, list):
+            command_result = command_result[0]
+        outputs = command_result.outputs
+        if isinstance(outputs, list):
+            outputs = outputs[0]
+        scheduled_command = ScheduledCommand(
+                command=f'{COMMAND_PREFIX}-private-file-and-analysis-get',
+                next_run_in_seconds=interval,
+                args={
+                    'entryID': args.get('entryID'),
+                    'id': outputs.get('vtScanID'),
+                    'interval_in_seconds': interval,
+                    'extended_data': extended,
+                },
+                timeout_in_seconds=6000,
+        )
+        command_result.scheduled_command = scheduled_command
+        return command_result
+
+    command_result = private_get_analysis_command(client, args)
+    outputs = command_result.outputs
+    if isinstance(outputs, list):
+        outputs = outputs[0]
+    if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
+        return command_result
+    scheduled_command = ScheduledCommand(
+            command=f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get',
+            next_run_in_seconds=interval,
+            args={
+                'entryID': args.get('entryID'),
+                'id': outputs.get('id'),
+                'interval_in_seconds': interval,
+                'extended_data': extended,
+            },
+            timeout_in_seconds=6000,
+    )
+    return CommandResults(scheduled_command=scheduled_command)
+
+
+def url_scan_and_get_analysis(client: Client, args: dict):
+    """Calls to url-scan and gti-analysis-get."""
+    interval = int(args.get('interval_in_seconds', 60))
+    extended = argToBoolean(args.get('extended_data', False))
+
+    if not args.get('id'):
+        command_result = scan_url_command(client, args)
+        outputs = command_result.outputs
+        if isinstance(outputs, list):
+            outputs = outputs[0]
+        scheduled_command = ScheduledCommand(
+                command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
+                next_run_in_seconds=interval,
+                args={
+                    'url': args.get('url'),
+                    'id': outputs.get('vtScanID'),
+                    'interval_in_seconds': interval,
+                    'extended_data': extended,
+                },
+                timeout_in_seconds=6000,
+        )
+        command_result.scheduled_command = scheduled_command
+        return command_result
+
+    command_result = get_analysis_command(client, args)
+    outputs = command_result.outputs
+    if isinstance(outputs, list):
+        outputs = outputs[0]
+    if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
+        return command_result
+    scheduled_command = ScheduledCommand(
+            command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
+            next_run_in_seconds=interval,
+            args={
+                'url': args.get('url'),
+                'id': outputs.get('id'),
+                'interval_in_seconds': interval,
+                'extended_data': extended,
+            },
+            timeout_in_seconds=6000,
+    )
+    return CommandResults(scheduled_command=scheduled_command)
+
+
 def get_upload_url(client: Client) -> CommandResults:
     """
     1 API Call
@@ -1952,7 +2088,6 @@ def get_upload_url(client: Client) -> CommandResults:
     context = {
         f'{INTEGRATION_ENTRY_CONTEXT}.FileUploadURL': upload_url,
         'vtUploadURL': upload_url  # BC preservation
-
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2556,6 +2691,12 @@ def main(params: dict, args: dict, command: str):
         results = private_get_analysis_command(client, args)
     elif command == f'{COMMAND_PREFIX}-assessment-get':
         results = get_assessment_command(client, score_calculator, args)
+    elif command == f'{COMMAND_PREFIX}-file-scan-and-analysis-get':
+        results = file_scan_and_get_analysis(client, args)
+    elif command == f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get':
+        results = private_file_scan_and_get_analysis(client, args)
+    elif command == f'{COMMAND_PREFIX}-url-scan-and-analysis-get':
+        results = url_scan_and_get_analysis(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)
