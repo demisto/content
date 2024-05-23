@@ -41,8 +41,10 @@ script:
     - description: Comma-separated list of fields to be returned from the search.
       name: fields
       required: false
+      isArray: true
     - description: Comma-separated list of fields by which to group the results.
       name: group_by
+      isArray: true
       required: false
     - description: The maximal number of results to return. Maximum value is 3000.
       name: limit

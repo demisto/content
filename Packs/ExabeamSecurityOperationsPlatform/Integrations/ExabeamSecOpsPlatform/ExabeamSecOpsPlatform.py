@@ -10,20 +10,15 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ' 
 
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """
+    Exabeam Client: A Python Wrapper for Interacting with the Exabeam API
     """
 
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool,
@@ -118,15 +113,13 @@ def process_string(input_str: str) -> str:
     transformed_parts = []
     start_index = 0
 
-    for end_index, _char in enumerate(input_str):
+    for end_index in range(len(input_str)):
         if any(op in input_str[start_index:end_index] for op in logical_operators):
             part = input_str[start_index:end_index].strip()
-            if part:
-                operator = next((op for op in logical_operators if op in part), None)
-                if operator:
-                    part = part.replace(operator, "").strip()
-                    transformed_parts.append(transform_string(part))
-                    transformed_parts.append(operator)
+            operator = next(op for op in logical_operators if op in part)
+            part = part.replace(operator, "").strip()
+            transformed_parts.append(transform_string(part))
+            transformed_parts.append(operator)
             start_index = end_index + 1
 
     if start_index < len(input_str):
@@ -175,7 +168,7 @@ def get_limit(args: dict) -> int:
 
 def error_fixes(error: str):
     new_error = ""
-    if error == 'not enough values to unpack (expected 2, got 1)':
+    if 'not enough values to unpack' in error:
         new_error = "Recommendation:\nValidate the query argument \
         against the syntax documentation in the integration description."
 
@@ -220,8 +213,7 @@ def search_command(client: Client, args: dict) -> CommandResults:
 
     human_readable = []
     for entry in data_response:
-        parsed_entry = _parse_entry(entry)
-        if parsed_entry:
+        if parsed_entry := _parse_entry(entry):
             human_readable.append(parsed_entry)
 
     return CommandResults(
@@ -242,8 +234,11 @@ def test_module(client: Client) -> str:    # pragma: no cover
         If we've reached this point, it indicates that the login process was successful.
 
     """
-    return 'ok'
-
+    if client.access_token:
+        return 'ok'
+    else:
+        raise DemistoException('Access Token Generation Failure.')
+    
 
 ''' MAIN FUNCTION '''
 

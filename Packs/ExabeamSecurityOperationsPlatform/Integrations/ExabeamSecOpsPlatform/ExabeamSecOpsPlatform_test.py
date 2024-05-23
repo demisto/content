@@ -164,6 +164,10 @@ def test_transform_string(input_str, expected_output):
     (
         "",
         ''
+    ),
+    (
+        "key1:true AND key2:some value OR key3:another value",
+        'key1:true AND key2:"some value" OR key3:"another value"'
     )
 ])
 def test_process_string(input_str, expected_output):
@@ -181,14 +185,14 @@ def test_process_string(input_str, expected_output):
 
 def test_search_request(mocker):
     """
-    # GIVEN:
-    #     A dictionary containing data to be sent in the request.
-    #     A mocked '_http_request' method of the YourClass class.
-    #     A base URL and an access token.
-    # WHEN:
-    #     The 'search_request' method of the YourClass class is called with the data dictionary.
-    # THEN:
-    #     It should send a POST request to the specified URL with the provided data and headers.
+    GIVEN:
+        A dictionary containing data to be sent in the request.
+        A mocked '_http_request' method of the YourClass class.
+        A base URL and an access token.
+    WHEN:
+        The 'search_request' method of the YourClass class is called with the data dictionary.
+    THEN:
+        It should send a POST request to the specified URL with the provided data and headers.
     """
     mocker.patch('ExabeamSecOpsPlatform.Client._login')
     mock_http_request = mocker.patch('ExabeamSecOpsPlatform.Client._http_request')
