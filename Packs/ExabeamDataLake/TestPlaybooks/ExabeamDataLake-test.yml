@@ -1,5 +1,5 @@
 id: ExabeamDataLake-test
-version: 3
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ExabeamDataLake-test
 starttaskid: "0"
