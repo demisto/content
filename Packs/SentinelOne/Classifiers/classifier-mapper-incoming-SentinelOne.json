@@ -98,6 +98,36 @@
 				"OS Version": {
 					"simple": "agentRealtimeInfo.agentOsRevision"
 				},
+				"SeninelOne AWS Image": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudImage"
+				},
+				"SeninelOne AWS Instance ID": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudInstanceId"
+				},
+				"SeninelOne AWS Instance Size": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudInstanceSize"
+				},
+				"SeninelOne AWS Location": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudLocation"
+				},
+				"SeninelOne AWS Network": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudNetwork"
+				},
+				"SeninelOne AWS Tag": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudTags.[0]"
+				},
+				"SentinelOne AWS Account": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudAccount"
+				},
+				"SentinelOne AWS Role": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsRole"
+				},
+				"SentinelOne AWS Security Group": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSecurityGroups.[0]"
+				},
+				"SentinelOne AWS SubnetId": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSubnetIds.[0]"
+				},
 				"SentinelOne Account ID": {
 					"simple": "agentDetectionInfo.accountId"
 				},
@@ -113,6 +143,84 @@
 				"SentinelOne Group Name": {
 					"simple": "agentDetectionInfo.groupName"
 				},
+				"SentinelOne Kubernetes Cluster": {
+					"simple": "kubernetesInfo.cluster"
+				},
+				"SentinelOne Kubernetes Controller Kind": {
+					"simple": "kubernetesInfo.controllerKind"
+				},
+				"SentinelOne Kubernetes Controller Label": {
+					"simple": "kubernetesInfo.controllerLabels.[0]"
+				},
+				"SentinelOne Kubernetes Controller Name": {
+					"simple": "kubernetesInfo.controllerName"
+				},
+				"SentinelOne Kubernetes Namespace": {
+					"simple": "kubernetesInfo.namespace"
+				},
+				"SentinelOne Kubernetes Namespace Label": {
+					"simple": "kubernetesInfo.namespaceLabels.[0]"
+				},
+				"SentinelOne Kubernetes Node": {
+					"simple": "kubernetesInfo.node"
+				},
+				"SentinelOne Kubernetes Node Label": {
+					"simple": "kubernetesInfo.nodeLabels.[0]"
+				},
+				"SentinelOne Kubernetes Pod": {
+					"simple": "kubernetesInfo.pod"
+				},
+				"SentinelOne Kubernetes Pod Label": {
+					"simple": "kubernetesInfo.podLabels.[0]"
+				},
+				"SentinelOne Kubernetes isContainerQuarantine": {
+					"simple": "kubernetesInfo.isContainerQuarantine"
+				},
+				"SentinelOne Network Interface.[0].ID": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[0].id"
+				},
+				"SentinelOne Network Interface.[0].Inet": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[0].inet.[0]"
+				},
+				"SentinelOne Network Interface.[0].Inet6": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[0].inet6.[0]"
+				},
+				"SentinelOne Network Interface.[0].Name": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[0].name"
+				},
+				"SentinelOne Network Interface.[0].Physical": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[0].physical"
+				},
+				"SentinelOne Network Interface.[1].ID": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[1].id"
+				},
+				"SentinelOne Network Interface.[1].Inet": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[1].inet.[0]"
+				},
+				"SentinelOne Network Interface.[1].Inet6": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[1].inet6.[0]"
+				},
+				"SentinelOne Network Interface.[1].Name": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[1].name"
+				},
+				"SentinelOne Network Interface.[1].Physical": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[1].physical"
+				},
+				"SentinelOne Network Interface.[2].ID": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[2].id"
+				},
+				"SentinelOne Network Interface.[2].Inet": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[2].inet.[0]"
+				},
+				"SentinelOne Network Interface.[2].Inet6": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[2].inet6.[0]"
+				},
+				"SentinelOne Network Interface.[2].Name": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[2].name"
+				},
+				"SentinelOne Network Interface.[2].Physical": {
+					"simple": "agentRealtimeInfo.networkInterfaces.[2].physical"
+				},
 				"SentinelOne Site ID": {
 					"simple": "agentDetectionInfo.siteId"
 				},
@@ -127,6 +235,9 @@
 				},
 				"SentinelOne Threat Status": {
 					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"SentinelOne Threat Story Line": {
+					"simple": "threatInfo.storyline"
 				},
 				"Threat Name": {
 					"simple": "threatInfo.threatName"
