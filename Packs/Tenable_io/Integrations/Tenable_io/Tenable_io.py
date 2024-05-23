@@ -1825,7 +1825,7 @@ def skip_fetch_assets(last_run):
     if not time_to_check:
         return False
     passed_time = (time.time() - time_to_check) / 60
-    to_skip = not last_run.get('nextTrigger') and (passed_time < MIN_ASSETS_INTERVAL)
+    to_skip = not last_run.get('type') and (passed_time < MIN_ASSETS_INTERVAL)
     if to_skip:
         demisto.info(f"Skipping fetch-assets command. Only {passed_time} minutes have passed since the last fetch. "
                      f"It should be a minimum of 1 hour.")
@@ -1926,16 +1926,16 @@ def main():  # pragma: no cover
             assets_last_run_copy = assets_last_run.copy()
             if skip_fetch_assets(assets_last_run):
                 return
-            elif not assets_last_run.get("nextTrigger"):
+            elif not assets_last_run.get("type"):
                 # starting a whole new fetch process for assets
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
-            if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
+            if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('type'):
                 assets = run_assets_fetch(client, assets_last_run)
 
             # Fetch Vulnerabilities
-            if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
+            if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('type'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
             demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
