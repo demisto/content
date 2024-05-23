@@ -57,8 +57,9 @@ SAFE_SLEEP_START_TIME = datetime.now()
 if 'context' in demisto.callingContext \
         and 'ExecutedCommands' in demisto.callingContext['context'] \
         and 'name' in demisto.callingContext['context']['ExecutedCommands'][0]:
+    context_executed_commands_name = demisto.callingContext['context']['ExecutedCommands'][0]['name']
     with open('demisto_info.txt', 'w') as file:
-        file.write(f"{demisto.callingContext['context']['ExecutedCommands'][0]['name']}")
+        file.write(context_executed_commands_name)
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
