@@ -2098,7 +2098,8 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_names": "no_sync"
+            "instance_names": "no_sync",
+            "timeout": 600
         },
         {
             "playbookID": "test-domain-indicator",
