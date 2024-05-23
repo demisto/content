@@ -994,26 +994,6 @@ def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
 
     return earliest_offset, latest_offset
 
-def extract_drilldown_search_queries(drilldown_searches: list) -> list[str]:
-    """ Goes over the drilldown searches list, and from each drilldown search dictionary extracts the search query.
-
-    Args:
-        drilldown_searches (list): The list of the drilldown searches.
-
-    Returns:
-        list[str]: A list of the drilldown searches queries.
-    """
-    demisto.debug("There are multiple drilldown searches to enrich, extracting search queries")
-    search_queries = []
-    
-    for drilldown_search in drilldown_searches:
-        search = json.loads(drilldown_search)
-        query = search.get("search", '')
-        search_queries.append(query)
-    
-    demisto.debug(f'search_queries list: {search_queries}')
-    return search_queries
-
 def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
