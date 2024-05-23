@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: Rapid7 Nexpose -dev
+  id: Rapid7 Nexpose
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.0.2.0:8080)
@@ -31,8 +31,8 @@ configuration:
   additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
   type: 0
 description: Vulnerability management solution to help reduce threat exposure.
-display: Rapid7 InsightVM -dev
-name: Rapid7 Nexpose -dev
+display: Rapid7 InsightVM
+name: Rapid7 Nexpose
 script:
   commands:
   - arguments:
@@ -2159,6 +2159,10 @@ script:
     - name: query
       description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     description: Create a tag.
+    outputs:
+    - contextPath: Nexpose.Tag.id
+      description: The tag ID.
+      type: int
   - name: nexpose-delete-tag
     arguments:
     - name: id
@@ -2180,6 +2184,55 @@ script:
     - name: limit
       description: A number of records to limit the response to.
     description: Return a list of tags.
+    outputs:
+    - contextPath: Nexpose.Tag.resources.color
+      description: The color associated with the tag.
+      type: String
+    - contextPath: Nexpose.Tag.resources.created
+      description: The date when the tag was created.
+      type: Date
+    - contextPath: Nexpose.Tag.resources.id
+      description: The unique identifier of the tag.
+      type: Number
+    - contextPath: Nexpose.Tag.resources.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Nexpose.Tag.resources.searchCriteria.match
+      description: The match criteria used for the tag search (e.g., "all" or "any").
+      type: String
+    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.field
+      description: The field name used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.operator
+      description: The operator used in the tag search filter (e.g., "is", "contains", "is-greater-than").
+      type: String
+    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.lower
+      description: The lower bound of the range used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.upper
+      description: The upper bound of the range used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.resources.source
+      description: The source of the tag.
+      type: String
+    - contextPath: Nexpose.Tag.resources.type
+      description: The type of the tag.
+      type: String
+    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.value
+      description: The value used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.page.number
+      description: The current page number in the paginated response.
+      type: Number
+    - contextPath: Nexpose.Tag.page.size
+      description: The number of items per page in the paginated response.
+      type: Number
+    - contextPath: Nexpose.Tag.page.totalResources
+      description: The total number of resources available.
+      type: Number
+    - contextPath: Nexpose.Tag.page.totalPages
+      description: The total number of pages available.
+      type: Number
   - name: nexpose-update-tag-search-criteria
     arguments:
     - name: tag_id
@@ -2221,6 +2274,10 @@ script:
       required: true
       description: The tag ID.
     description: Return a list of asset groups for a tag.
+    outputs:
+    - contextPath: Nexpose.TagAssetGroup.id
+      description: Asset group ID.
+      type: int
   - name: nexpose-add-tag-asset-group
     arguments:
     - name: tag_id
@@ -2245,6 +2302,13 @@ script:
       required: true
       description: The tag ID.
     description: Return a list of assets for a tag.
+    outputs:
+    - contextPath: Nexpose.TagAsset.id
+      description: Asset ID.
+      type: int
+    - contextPath: Nexpose.TagAsset.sources
+      description: The asset sources.
+      type: string
   - name: nexpose-add-tag-asset
     arguments:
     - name: tag_id
@@ -2291,12 +2355,26 @@ script:
       required: true
       description: A URL parameter.
     description: Return a list of included assets for a site.
+    outputs:
+    - contextPath: Nexpose.IncludedAsset.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.IncludedAsset.addresses
+      description: A list of addresses of the included assets for the specified site.
+      type: string
   - name: nexpose-list-site-included-asset-group
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     description: Return a list of included asset groups for a site.
+    outputs:
+    - contextPath: Nexpose.IncludedAssetGroup.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.IncludedAssetGroup.resources
+      description: The asset group ID.
+      type: int
   - name: nexpose-add-site-excluded-target
     arguments:
     - name: site_id
@@ -2323,12 +2401,26 @@ script:
       required: true
       description: A URL parameter.
     description: Return a list of excluded assets for a site.
+    outputs:
+    - contextPath: Nexpose.ExcludedAsset.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.ExcludedAsset.addresses
+      description: A list of addresses of the excluded assets for the specified site.
+      type: string
   - name: nexpose-list-site-excluded-asset-group
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     description: Return a list of excluded asset groups for a site.
+    outputs:
+    - contextPath: Nexpose.ExcludedAssetGroup.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.ExcludedAssetGroup.resources
+      description: The asset group ID.
+      type: int
   runonce: false
   script: '-'
   type: python
