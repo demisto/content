@@ -1,7 +1,10 @@
 import argparse
 import json
-from collections import defaultdict
+import os
+from pathlib import Path
 
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+OUTPUT_FILE = Path(ARTIFACTS_FOLDER_SERVER_TYPE) / 'packs_to_install_by_machine.json'
 
 class PackInfo:
     def __init__(self, name):
@@ -91,21 +94,19 @@ def options_handler() -> argparse.Namespace:
     options = parser.parse_args()
     return options
 
-
 def main():
-    # options = options_handler()
-    playbooks_file = "/Users/epintzov/Desktop/tests/playbooks.json"  # Replace with your file path
+    options = options_handler()
+    playbooks_file = "/Usrs/epintzov/Desktop/tests/playbooks.json"  # Replace with your file path
     # playbooks_file = options.playbooks_to_packs
-    # machine_list = options.cloud_machines
-    machine_list = "/Users/epintzov/Desktop/tests/machines.txt"
+    machine_list = options.cloud_machines
+    # machine_list = "/Users/epintzov/Desktop/tests/machines.txt"
     playbooks_time_file = "/Users/epintzov/Desktop/tests/playbooks_times.txt"  # Replace with your file path
     # playbooks_time_file = options.playbooks_execution_times
     machine_assignments = create_pack_graph(playbooks_file, machine_list, playbooks_time_file)
 
-    # Print machine assignments (modify for your desired output format)
-    print("\nMachine Assignments:")
-    for pack, machine in machine_assignments.items():
-        print(f"- Pack: {pack} assigned to Machine: {machine}")
+    # output files
+    OUTPUT_FILE.write_text(json.dumps(machine_assignments))
+
 
 
 if __name__ == "__main__":
