@@ -1119,6 +1119,253 @@ def dynamic_analysis_report_output(resp, action, sample_hash, report_format):
     return results, file_result
 
 
+def sample_classification_command(a1000: A1000):
+    sample_hash = demisto.getArg("hash")
+    action = demisto.getArg("action")
+    system = demisto.getArg("system")
+    av_scanners = False
+
+    try:
+        if action == "GET CLASSIFICATION":
+            local_only = False
+            if demisto.getArg("local_only"):
+                local_only = argToBoolean(demisto.getArg("local_only"))
+
+            if demisto.getArg("av_scanners"):
+                av_scanners = argToBoolean(demisto.getArg("av_scanners"))
+
+            resp = a1000.get_classification_v3(
+                sample_hash=sample_hash,
+                local_only=local_only,
+                av_scanners=av_scanners
+            )
+
+        elif action == "SET CLASSIFICATION":
+            classification = demisto.getArg("classification")
+            risk_score = demisto.getArg("risk_score")
+            threat_platform = demisto.getArg("threat_platform")
+            threat_name = demisto.getArg("threat_name")
+            threat_type = demisto.getArg("threat_type")
+            resp = a1000.set_classification(
+                sample_hash=sample_hash,
+                classification=classification,
+                system=system,
+                risk_score=risk_score,
+                threat_platform=threat_platform,
+                threat_name=threat_name,
+                threat_type=threat_type
+            )
+
+        elif action == "DELETE CLASSIFICATION":
+            resp = a1000.delete_classification(sample_hash=sample_hash, system=system)
+
+        else:
+            return_error("This action is not supported.")
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        else:
+            raise
+
+    results = sample_classification_output(
+        resp_json=resp.json(),
+        action=action,
+        av_scanners=av_scanners,
+        sample_hash=sample_hash
+    )
+
+    return results
+
+
+def sample_classification_output(resp_json, action, av_scanners, sample_hash):
+    markdown = f"""## ReversingLabs A1000 sample classification - {action}\n"""
+
+    if action == "GET CLASSIFICATION":
+        markdown = markdown + f"""**Classification**: {resp_json.get("classification")}
+        **Risk score**: {resp_json.get("riskscore")}
+        **First seen**: {resp_json.get("first_seen")}
+        **Last seen**: {resp_json.get("last_seen")}
+        **Classification result**: {resp_json.get("classification_result")}
+        **Classification reason**: {resp_json.get("classification_reason")}
+        **SHA-1**: {resp_json.get("sha1")}
+        **SHA-256**: {resp_json.get("sha256")}
+        **MD5**: {resp_json.get("md5")}
+        """
+        if av_scanners:
+            scanners_table = tableToMarkdown("Scanner results", resp_json.get("av_scanners"))
+            markdown = markdown + f"\n{scanners_table}"
+
+        d_bot_score = classification_to_score(resp_json.get("classification").upper())
+        dbot_score = Common.DBotScore(
+            indicator=sample_hash,
+            indicator_type=DBotScoreType.FILE,
+            integration_name='ReversingLabs A1000 v2',
+            score=d_bot_score,
+            malicious_description=resp_json.get("classification_result"),
+            reliability=RELIABILITY
+        )
+
+        indicator = Common.File(
+            md5=resp_json.get("md5"),
+            sha1=resp_json.get("sha1"),
+            sha256=resp_json.get("sha256"),
+            dbot_score=dbot_score
+        )
+
+        command_results = CommandResults(
+            outputs_prefix="ReversingLabs",
+            outputs={"a1000_sample_classification": resp_json},
+            indicator=indicator,
+            readable_output=markdown
+        )
+
+        return command_results
+
+    elif action == "SET CLASSIFICATION":
+        set_table = tableToMarkdown("Set classification response", resp_json)
+        markdown = markdown + set_table
+
+    elif action == "DELETE CLASSIFICATION":
+        markdown = markdown + "Custom classification removed."
+
+    command_results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_sample_classification": resp_json},
+        readable_output=markdown
+    )
+
+    return command_results
+
+
+def yara_command(a1000: A1000):
+    action = demisto.getArg("action")
+    ruleset_name = demisto.getArg("ruleset_name")
+    ruleset_content = demisto.getArg("ruleset_content")
+    publish = demisto.getArg("publish")
+    if publish:
+        publish = argToBoolean(publish)
+    sync_time = demisto.getArg("sync_time")
+
+    if action == "GET RULESETS":
+        resp = a1000.get_yara_rulesets_on_the_appliance_v2()
+
+    elif action == "GET CONTENTS":
+        resp = a1000.get_yara_ruleset_contents(ruleset_name=ruleset_name)
+
+    elif action == "GET MATCHES":
+        resp = a1000.get_yara_ruleset_matches_v2(ruleset_name=ruleset_name)
+
+    elif action == "UPDATE RULESET":
+        resp = a1000.create_or_update_yara_ruleset(name=ruleset_name, content=ruleset_content, publish=publish)
+
+    elif action == "DELETE RULESET":
+        resp = a1000.delete_yara_ruleset(name=ruleset_name, publish=publish)
+
+    elif action == "ENABLE RULESET":
+        resp = a1000.enable_or_disable_yara_ruleset(enabled=True, name=ruleset_name, publish=publish)
+
+    elif action == "DISABLE RULESET":
+        resp = a1000.enable_or_disable_yara_ruleset(enabled=False, name=ruleset_name, publish=publish)
+
+    elif action == "GET SYNCHRONIZATION TIME":
+        resp = a1000.get_yara_ruleset_synchronization_time()
+
+    elif action == "UPDATE SYNCHRONIZATION TIME":
+        resp = a1000.update_yara_ruleset_synchronization_time(sync_time=sync_time)
+
+    else:
+        return_error("This action is not supported.")
+
+    results = yara_output(resp_json=resp.json(), action=action)
+    return results
+
+
+def yara_output(resp_json, action):
+    markdown = f"""## ReversingLabs A1000 YARA - {action}"""
+    resp_table = tableToMarkdown("", resp_json)
+    markdown = markdown + f"""\n{resp_table}"""
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_yara": resp_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def yara_retro_command(a1000: A1000):
+    action = demisto.getArg("action")
+    ruleset_name = demisto.getArg("ruleset_name")
+    operation = demisto.getArg("operation")
+
+    if action == "MANAGE LOCAL SCAN":
+        resp = a1000.start_or_stop_yara_local_retro_scan(operation=operation)
+
+    elif action == "LOCAL SCAN STATUS":
+        resp = a1000.get_yara_local_retro_scan_status()
+
+    elif action == "MANAGE CLOUD SCAN":
+        resp = a1000.start_or_stop_yara_cloud_retro_scan(operation=operation, ruleset_name=ruleset_name)
+
+    elif action == "CLOUD SCAN STATUS":
+        resp = a1000.get_yara_cloud_retro_scan_status(ruleset_name=ruleset_name)
+
+    else:
+        return_error("This action is not supported.")
+
+    results = yara_retro_output(resp_json=resp.json(), action=action)
+    return results
+
+
+def yara_retro_output(resp_json, action):
+    markdown = f"""## ReversingLabs A1000 YARA Retroactive Hunt - {action}"""
+    resp_table = tableToMarkdown("", resp_json)
+    markdown = markdown + f"""\n{resp_table}"""
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_yara_retro": resp_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def list_containers_command(a1000: A1000):
+    sample_hashes = demisto.getArg("sample_hashes")
+    hash_list = sample_hashes.split(",")
+
+    if not len(hash_list) > 0:
+        return_error("Please enter at least one sample hash or check the formatting. "
+                     "The hashes should be comma-separated with no whitespaces")
+
+    try:
+        resp = a1000.list_containers_for_hashes(sample_hashes=hash_list)
+
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.content)
+        else:
+            raise
+
+    results = list_containers_output(resp_json=resp.json())
+    return results
+
+
+def list_containers_output(resp_json):
+    markdown = f"""## ReversingLabs A1000 List containers for hashes"""
+    resp_table = tableToMarkdown("", resp_json)
+    markdown = markdown + f"""\n{resp_table}"""
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_list_containers": resp_json},
+        readable_output=markdown
+    )
+
+    return results
 
 
 def main():
@@ -1191,12 +1438,14 @@ def main():
             return_results(static_analysis_report_command(a1000))
         elif demisto.command() == 'reversinglabs-a1000-dynamic-analysis-report':
             return_results(dynamic_analysis_report_command(a1000))
-        elif demisto.command() == 'reversinglabs-a1000-get-sample-classification':
-            pass
-        elif demisto.command() == 'reversinglabs-a1000-set-sample-classification':
-            pass
-        elif demisto.command() == 'reversinglabs-a1000-delete-sample-classification':
-            pass
+        elif demisto.command() == 'reversinglabs-a1000-sample-classification':
+            return_results(sample_classification_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-yara':
+            return_results(yara_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-yara-retro':
+            return_results(yara_retro_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-list-containers':
+            return_results(list_containers_command(a1000))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
 
