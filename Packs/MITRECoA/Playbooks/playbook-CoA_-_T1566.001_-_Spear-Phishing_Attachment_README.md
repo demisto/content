@@ -54,4 +54,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1566.001 - Spear-Phishing Attachment](../doc_files/MITRE_ATT&CK_CoA_-_T1566.001_-_Spear-Phishing_Attachment.png)
+![MITRE ATT&CK CoA - T1566.001 - Spear-Phishing Attachment](../doc_files/MITRE_ATTandCK_CoA_-_T1566_001_-_Spear-Phishing_Attachment.png)
