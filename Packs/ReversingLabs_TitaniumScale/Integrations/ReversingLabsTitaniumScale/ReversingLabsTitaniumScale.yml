@@ -208,6 +208,19 @@ script:
         required: true
         default: true
         description: Task ID.
+  - name: reversinglabs-titaniumscale-delete-multiple-tasks
+    description: Deletes multiple processing tasks.
+    arguments:
+      - name: age
+        required: true
+        default: true
+        description: Task age in seconds.
+  - name: reversinglabs-titaniumscale-get-yara-id
+    description: Retrieves the identifier of the current set of YARA rules on the TitaniumScale Worker instance.
+    outputs:
+      - contextPath: ReversingLabs.yara_id
+        description: Identifier of the current set of YARA rules on the TitaniumScale Worker instance.
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
   runonce: false
   script: '-'

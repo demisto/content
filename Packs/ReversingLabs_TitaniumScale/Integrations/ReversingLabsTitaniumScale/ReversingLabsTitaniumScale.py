@@ -343,6 +343,50 @@ def delete_processing_task_command(tiscale: TitaniumScale):
     return results
 
 
+def delete_multiple_tasks_command(tiscale: TitaniumScale):
+    age = int(demisto.getArg("age"))
+
+    try:
+        tiscale.delete_multiple_tasks(age=age)
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)
+        else:
+            raise
+
+    results = CommandResults(
+        readable_output=f"## ReversingLabs TitaniumScale delete multiple tasks\n Tasks "
+                        f"of age {age} seconds or less deleted successfully."
+    )
+
+    return results
+
+
+def get_yara_id_command(tiscale: TitaniumScale):
+    try:
+        resp = tiscale.get_yara_id()
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)
+        else:
+            raise
+
+    results = get_yara_id_output(resp_json=resp.json())
+    return results
+
+
+def get_yara_id_output(resp_json):
+    markdown = f"""## ReversingLabs TitaniumScale YARA ruleset ID\n **ID**: {resp_json.get("id")}"""
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"yara_id": resp_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
 def main():
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
@@ -384,9 +428,9 @@ def main():
         elif demisto.command() == 'reversinglabs-titaniumscale-delete-processing-task':
             return_results(delete_processing_task_command(tiscale))
         elif demisto.command() == 'reversinglabs-titaniumscale-delete-multiple-tasks':
-            pass
+            return_results(delete_multiple_tasks_command(tiscale))
         elif demisto.command() == 'reversinglabs-titaniumscale-get-yara-id':
-            pass
+            return_results(get_yara_id_command(tiscale))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
     except Exception as e:
