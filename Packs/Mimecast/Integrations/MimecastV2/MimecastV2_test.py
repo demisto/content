@@ -994,50 +994,29 @@ def test_update_antispoofing_bypass_policy_command(mocker):
 
 
 def test_update_address_alteration_policy_command(mocker):
-    """
-
-
-    Args:
+    """Unit test
+    Given
+    - update_address_alteration_policy_command function from MimecastV2 integration.
+    - command args including enabled, enforced, from_eternal, from_type, policy_description, policy_id, to_eternal, and to_type.
+    - command raw response from the server.
+    When
+    - mock the server response to http_request.
+    Then
+    - Validate the content of the response to match the expected data structure.
     """
 
     args = {
-        "enabled": "true",
-        "enforced": "false",
-        "from_eternal": "true",
-        "from_type": "everyone",
-        "policy_description": "test",
-        "policy_id": "eNo11111",
-        "to_eternal": "true",
-        "to_type": "everyone",
+        "comment": "test-comment",
+        "conditions": "8.8.8.8/24",
+        "enabled": "yes",
+        "enforced": "no",
+        "from_eternal": "yes",
+        "id": "eNo1jrsOgjAAA",
+        "to_eternal": "yes",
     }
-    expected_response = {
-        "meta": {"status": 200},
-        "data": [
-            {
-                "addressAlterationSetId": "eNo11111",
-                "policy": {
-                    "description": "test",
-                    "fromPart": "envelope_from",
-                    "from": {"type": "everyone"},
-                    "to": {"type": "everyone"},
-                    "fromType": "everyone",
-                    "toType": "everyone",
-                    "fromEternal": True,
-                    "toEternal": True,
-                    "fromDate": "1900-01-01T00:00:00+0000",
-                    "toDate": "2100-01-01T23:59:59+0000",
-                    "override": False,
-                    "bidirectional": False,
-                    "conditions": {},
-                    "enabled": True,
-                    "enforced": False,
-                    "createTime": "2024-05-07T14:29:18+0000",
-                    "lastUpdated": "2024-05-07T14:29:18+0000",
-                },
-            }
-        ],
-        "fail": [],
-    }
-    mocker.patch.object(MimecastV2, "http_request", return_value=expected_response)
+    id = args['id']
+    mock_response = util_load_json('test_data/update_address_alteration_policy_response.json')
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.update_address_alteration_policy_command(args)
-    assert expected_response.get("data") == result.outputs.get("data")
+    assert result.outputs.get("data") == mock_response.get("data")
+    assert result.readable_output == f'{id} has been updated successfully'

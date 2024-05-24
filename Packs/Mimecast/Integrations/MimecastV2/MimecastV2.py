@@ -17,7 +17,6 @@ from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
-print(demisto.args())
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
 
@@ -166,7 +165,6 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
-    print('payload:', payload)
     try:
         res = requests.request(
             method,
@@ -1016,11 +1014,11 @@ def get_arguments_for_policy_command(args):
     from_type = args.get('fromType', '') or args.get('from_type', '')
     from_value = args.get('fromValue', '') or args.get('from_value', '')
     to_type = args.get('toType', '') or args.get('to_type', '')
+    conditions = args.get('conditions')
     to_value = args.get('toValue', '') or args.get('to_value', '')
     option = str(args.get('option', ''))
-    policy_obj = {
+    policy_obj: dict[str, Any] = {
         'description': description,
-        'fromPart': from_part,
         'fromType': from_type,
         'fromValue': from_value,
         'toType': to_type,
@@ -1031,15 +1029,20 @@ def get_arguments_for_policy_command(args):
         'enforced': enforced,
         'override': override,
         "toDate": to_date,
+        'fromPart': from_part,
+        'fromDate': from_date,
+        'fromEternal': from_eternal,
+        'toEternal': to_eternal
     }
-    if from_date:
-        policy_obj['fromDate'] = from_date
-    if from_eternal:
-        policy_obj['fromEternal'] = from_eternal
-    if to_eternal:
-        policy_obj['toEternal'] = to_eternal
+
+    # Empty cleaning
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+
     if spf_domain:
         policy_obj['conditions'] = {'spfDomains': [spf_domain]}
+
+    if conditions:
+        policy_obj['conditions'] = {'sourceIPs': [conditions]}
 
     return policy_obj, option
 
@@ -3327,8 +3330,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     if to_eternal:
         data['policy']['toEternal'] = to_eternal
     if spf_domain:
-        data['policy']['conditions'] = {}
-        data['policy']['conditions']['spfDomains'] = [spf_domain]
+        data['policy']['conditions'] = {'spfDomains': [spf_domain]}
     if from_attribute_id:
         data['policy']['from']['attribute']['id'] = from_attribute_id
     if from_attribute_name:
@@ -3404,56 +3406,13 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
 
 
 def create_address_alteration_policy_command(args: dict) -> CommandResults:
+    policy_obj, _ = get_arguments_for_policy_command(args)
     policy_id = args.get('policy_id')
-    policy_description = args.get('policy_description')
-    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
-    comment = args.get('comment')
-    conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled'))
-    enforced = argToBoolean(args.get('enforced'))
-    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
-    from_eternal = argToBoolean(args.get('from_eternal'))
-    from_part = args.get('from_part')
-    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
-    to_eternal = argToBoolean(args.get('to_eternal'))
-    override = argToBoolean(args.get('override')) if args.get('override') else None
-    from_type = args.get('from_type')
-    from_value = args.get('from_value')
-    to_type = args.get('to_type')
-    to_value = args.get('to_value')
 
     data: dict[str, Any] = {
         'addressAlterationSetId': policy_id,
-        'policy': {
-            'description': policy_description,
-            'enabled': enabled,
-            'enforced': enforced,
-            'fromEternal': from_eternal,
-            'toEternal': to_eternal,
-            "fromType": from_type,
-            "toType": to_type,
-        }
+        'policy': policy_obj
     }
-
-    if from_value:
-        data['policy']['fromValue'] = from_value
-    if to_value:
-        data['policy']['toValue'] = to_value
-    if bidirectional:
-        data['bidirectional'] = bidirectional
-    if comment:
-        data['comment'] = comment
-    if conditions:
-        data['policy']['conditions'] = {}
-        data['policy']['conditions']['sourceIPs'] = [conditions]
-    if from_date:
-        data['fromDate'] = from_date
-    if from_part:
-        data['fromPart'] = from_part
-    if to_date:
-        data['toDate'] = to_date
-    if override:
-        data['override'] = override
 
     payload = {'data': [data]}
     api_endpoint = '/api/policy/address-alteration/create-policy'
