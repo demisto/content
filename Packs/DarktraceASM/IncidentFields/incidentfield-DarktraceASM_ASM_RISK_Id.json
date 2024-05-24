@@ -9,7 +9,7 @@
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
-    "required": true,
+    "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "useAsKpi": false,
@@ -24,7 +24,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": false,
     "sla": 0,
     "threshold": 72
