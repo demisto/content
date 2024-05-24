@@ -5599,7 +5599,7 @@ def list_siteshield_maps_command(client: Client) -> Tuple[str, dict, Union[list,
         t=human_readable_ec,
         removeNull=True,
     )
-    return raw_response, context_entry, raw_response
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S. 2023-05-03
