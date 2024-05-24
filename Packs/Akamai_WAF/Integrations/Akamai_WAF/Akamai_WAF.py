@@ -3321,7 +3321,10 @@ def update_change_command(client: Client, change_path: str,
 
 # Created by C.L.
 @logger
-def acknowledge_warning_command(client: Client, change_path: str, allowed_input_type_param: str = 'post-verification-warnings-ack') -> Tuple[object, dict, Union[list, dict]]:
+def acknowledge_warning_command(client: Client,
+                                change_path: str,
+                                allowed_input_type_param: str = 'post-verification-warnings-ack'
+                                ) -> Tuple[object, dict, Union[list, dict]]:
     """
     Acknowledge the warning message after updating a enrollment change
 
