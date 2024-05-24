@@ -2942,11 +2942,10 @@ def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
     Returns:
         List of site shield maps
     """
-    entry_context = []
-    human_readable = []
+
     if raw_response:
-        entry_context.append(raw_response.get('siteShieldMaps', []))
-        human_readable.append(raw_response.get('siteShieldMaps', []))
+        entry_context = raw_response.get('siteShieldMaps', [])
+        human_readable = raw_response.get('siteShieldMaps', [])
     return entry_context, human_readable
 
 
@@ -5593,8 +5592,13 @@ def list_siteshield_maps_command(client: Client) -> Tuple[str, dict, Union[list,
     title = f'{INTEGRATION_NAME} - list siteshield map command'
     entry_context, human_readable_ec = list_siteshield_maps_ec(raw_response=raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.SiteShieldMaps": entry_context[0]
+        f"{INTEGRATION_CONTEXT_NAME}.SiteShieldMaps": entry_context
     }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
     return raw_response, context_entry, raw_response
 
 
@@ -5630,7 +5634,7 @@ def get_cps_enrollment_deployment_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    
     return human_readable, context_entry, raw_response
 
 
@@ -5673,7 +5677,7 @@ def list_cidr_blocks_command(client: Client,
         t=raw_response,
         removeNull=True,
     )
-    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    
     return human_readable, context_entry, raw_response
 
 
@@ -5789,7 +5793,7 @@ def update_cps_enrollment_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    
     return human_readable, context_entry, raw_response
 
 
@@ -5856,7 +5860,7 @@ def update_cps_enrollment_schedule_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    
     return human_readable, context_entry, raw_response
 
 # Created by D.S.
@@ -5901,7 +5905,7 @@ def get_cps_change_status_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
-    # demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
+    
     return human_readable, context_entry, raw_response
 
 
