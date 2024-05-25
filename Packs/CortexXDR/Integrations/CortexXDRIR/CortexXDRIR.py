@@ -368,7 +368,7 @@ class Client(CoreClient):
         )
         return reply.get('reply', {})
 
-    def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
+    def get_multiple_incidents_extra_data(self, incident_id_list=[], fields_to_exclude=True, gte_creation_time_milliseconds=0,
                                           status=None, starred=None, starred_incidents_fetch_window=None,
                                           page_number=0, limit=100):
         """
@@ -389,7 +389,7 @@ class Client(CoreClient):
                 'operator': 'eq',
                 'value': status
             })
-        if exclude_artifacts:
+        if demisto.command() == 'fetch-incidents' and fields_to_exclude:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
 
         if starred and starred_incidents_fetch_window:
@@ -563,9 +563,9 @@ def sort_incident_data(raw_incident):
             - network artifacts.
     """
     incident = raw_incident.get('incident', {})
-    raw_alerts = raw_incident.get('alerts', {}).get('data', [])
-    file_artifacts = raw_incident.get('file_artifacts', {}).get('data', [])
-    network_artifacts = raw_incident.get('network_artifacts', {}).get('data', [])
+    raw_alerts = raw_incident.get('alerts', {}).get('data', None)
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     if context_alerts:
         for alert in context_alerts:
@@ -582,7 +582,6 @@ def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
-    exclude_artifacts = argToBoolean(args.get('excluding_artifacts', 'False'))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
     if return_only_updated_incident:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
@@ -593,7 +592,7 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], exclude_artifacts=exclude_artifacts)
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id])
     if not raw_incident:
         raise DemistoException(f'Incident {incident_id} is not found')
     if isinstance(raw_incident, list):
@@ -603,10 +602,9 @@ def get_incident_extra_data_command(client, args):
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
+    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {raw_incident=}")
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
-
     incident = sort_incident_data(raw_incident)
-
     if incident_alerts := incident.get('alerts'):
         readable_output.append(tableToMarkdown('Alerts', incident_alerts,
                                                headers=[key for key in incident_alerts[0]
@@ -1031,9 +1029,9 @@ def update_related_alerts(client: Client, args: dict):
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
-                    max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
-                    starred_incidents_fetch_window: str = None):
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
+                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
+                    fields_to_exclude: bool = True):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
@@ -1059,7 +1057,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                     status=status,
                     limit=max_fetch, starred=starred,
                     starred_incidents_fetch_window=starred_incidents_fetch_window,
-                    exclude_artifacts=exclude_artifacts)
+                    fields_to_exclude=fields_to_exclude)
                 raw_incidents.extend(raw_incident_status)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
@@ -1067,7 +1065,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
-                exclude_artifacts=exclude_artifacts)
+                fields_to_exclude=fields_to_exclude)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1267,7 +1265,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts = argToBoolean(params.get('exclude_fields'))
+    fields_to_exclude = params.get('exclude_fields', True)
 
     try:
         timeout = int(params.get('timeout', 120))
@@ -1299,16 +1297,10 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
-            next_run, incidents = fetch_incidents(client=client,
-                                                  first_fetch_time=first_fetch_time,
-                                                  integration_instance=integration_instance,
-                                                  exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run'),
-                                                  max_fetch=max_fetch,
-                                                  statuses=statuses,
-                                                  starred=starred,
-                                                  starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                                  )
+            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance,
+                                                  demisto.getLastRun().get('next_run'), max_fetch, statuses, starred,
+                                                  starred_incidents_fetch_window,
+                                                  fields_to_exclude)
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
