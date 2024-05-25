@@ -1,0 +1,89 @@
+commonfields:
+  id: LDAP-Query
+  version: -1
+name: LDAP-Query
+display: LDAP-Query
+description: The LDAP-Query Integration allows seamless interaction with LDAP servers, enabling users to query and authenticate LDAP entries using various identifiers such as Common Name (CN) and User ID (UID). This integration supports querying functionalities for LDAP servers, including fetching detailed user information.
+category: Authentication & Identity Management
+sectionOrder:
+- Connect
+configuration:
+- display: Server IP or Host Name (e.g., 192.168.0.1)
+  name: host
+  required: true
+  type: 0
+  section: Connect
+- display: Port. If not specified, default port is 389, or 636 for LDAPS.
+  name: port
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: User DN (e.g., cn=admin,ou=users,dc=domain,dc=com)
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Base DN (e.g., DC=domain,DC=com)
+  name: base_dn
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: None
+  display: Connection Type
+  name: connection_type
+  options:
+  - None
+  - SSL
+  - Start TLS
+  required: true
+  type: 15
+  section: Connect
+- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None.'
+  defaultvalue: None
+  display: SSL Version
+  name: ssl_version
+  options:
+  - None
+  - TLS
+  - TLSv1
+  - TLSv1_1
+  - TLSv1_2
+  - TLS_CLIENT
+  type: 15
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+script:
+  type: python
+  subtype: python3
+  script: ldap-query
+  dockerimage: demisto/py3-tools:1.0.0.96102
+  commands:
+  - name: ldap-query
+    description: Query LDAP by CN or UID and optionally retrieve a specific attribute.
+    arguments:
+    - name: cn
+      description: The Common Name (CN) to query.
+      required: false
+    - name: uid
+      description: The User ID (UID) to query.
+      required: false
+    - name: attribute
+      description: The specific attribute to retrieve. If not specified, all attributes will be returned.
+      required: false
+tests:
+- LDAP-Query - Test
+fromversion: 6.8.0
