@@ -1,0 +1,30 @@
+
+{
+    "meta": {"status": 200},
+    "data": [
+        {
+            "option": "disable_bypass",
+            "id": "eNo1jrsOgj11111",
+            "policy": {
+                "description": "aa",
+                "fromPart": "envelope_from",
+                "from": {"type": "everyone"},
+                "to": {"type": "everyone"},
+                "fromType": "everyone",
+                "toType": "everyone",
+                "fromEternal": true,
+                "toEternal": true,
+                "fromDate": "1900-01-01T00:00:00+0000",
+                "toDate": "2100-01-01T23:59:59+0000",
+                "override": false,
+                "bidirectional": false,
+                "conditions": {"spfDomains": ["googl.com"]},
+                "enabled": true,
+                "enforced": false,
+                "createTime": "2024-05-08T13:00:06+0000",
+                "lastUpdated": "2024-05-08T13:00:06+0000"
+            }
+        }
+    ],
+    "fail": []
+}

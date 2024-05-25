@@ -3117,6 +3117,7 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
     :return: The CommandResults object containing the outputs and raw response.
     """
+    api_endpoint = "/api/archive/get-archive-search-logs"
     query = args.get("query", "")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
@@ -3128,8 +3129,7 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
         data["query"] = query
 
     result_list = request_with_pagination(
-        # type: ignore
-        "/api/archive/get-archive-search-logs", [data], response_param="logs", limit=limit, page=page, page_size=page_size
+        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
     )
 
     return CommandResults(outputs_prefix="Mimecast.ArchiveSearchLog", outputs=result_list[0])
@@ -3152,10 +3152,9 @@ def get_search_logs_command(args: dict) -> CommandResults:
     if end:
         data['end'] = end
 
+    api_endpoint = "/api/archive/get-archive-search-logs"
     result_list, _ = request_with_pagination(
-        # type: ignore
-        "/api/archive/get-archive-search-logs", [data], response_param="logs", limit=limit, page=page, page_size=page_size
-    )
+        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size)  # type: ignore
 
     return CommandResults(
         outputs_prefix='Mimecast.SearchLog',
