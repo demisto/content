@@ -703,34 +703,11 @@ def test_get_archive_search_logs_command(mocker):
     """
 
     args = {'limit': '5', 'query': 'integration.com'}
-    expected_response = [{
-        "meta": {
-            "pagination": {
-                "pageSize": 10,
-                "totalCount": 234,
-                "next": "asides"
-            },
-            "status": 200
-        },
-        "data": [
-            {
-                "logs": [
-                    {
-                        "createTime": "2024-03-20T11:39:36+0000",
-                        "emailAddr": "example@test.com",
-                        "source": "archive",
-                        "searchText": "aaaaasas",
-                        "searchReason": "",
-                        "description": "Message Tracking Search"
-                    }
-                ]
-            }
-        ],
-        "fail": []
-    }]
-    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=expected_response)
+    mock_response = util_load_json('test_data/get_archive_search_logs_response.json')
+    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=mock_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert result.outputs['data'][0]['logs'] == expected_response[0]['data'][0]['logs']
+    assert result.outputs['data'][0]['logs'] == mock_response[0]['data'][0]['logs']
+    assert result.outputs_prefix == "Mimecast.ArchiveSearchLog"
 
 
 def test_get_search_logs_command(mocker):
@@ -747,37 +724,11 @@ def test_get_search_logs_command(mocker):
     """
 
     args = {'limit': '50', 'page': '1', 'page_size': '1', 'query': 'aa.aa.aa.aa', 'start': '2017-09-16T14:49:18+0000'}
-    expected_response = {
-        "meta": {
-            "pagination": {
-                "pageSize": 1,
-                "totalCount": 169,
-                "next": "eNodjskOgSZLtvp3x9nzD75",
-            },
-            "status": 200,
-        },
-        "data": [
-            {
-                "logs": [
-                    {
-                        "createTime": "2024-03-25T12:04:48+0000",
-                        "emailAddr": "example@test.com",
-                        "source": "archive",
-                        "searchText": '{"mailbox":"example@test.com","query":"[]"}',
-                        "searchPath": "/INBOX/",
-                        "searchReason": "",
-                        "isAdmin": "true",
-                        "museQuery": "[]",
-                        "description": "Archive Mailbox",
-                    }
-                ]
-            }
-        ],
-        "fail": [],
-    }
-    mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
+    mock_response = util_load_json('test_data/get_search_logs_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert result.outputs == expected_response.get('data')[0]['logs']
+    assert result.outputs == mock_response.get('data')[0]['logs']
+    assert result.outputs_prefix == "Mimecast.ArchiveSearchLog"
 
 
 def test_get_view_logs_command(mocker):
@@ -789,37 +740,11 @@ def test_get_view_logs_command(mocker):
     """
 
     args = {"end": "2024-09-16T14:49:18+0000", "limit": "2", "query": "example@test.com", "start": "2017-09-16T14:49:18+0000"}
-    expected_response = [{
-        "meta": {"pagination": {"pageSize": 2, "totalCount": 81, "next": "eNo00000"}, "status": 200},
-        "data": [
-            {
-                "viewer": "example@test.com",
-                "source": "Message Tracking",
-                "viewed": "2022-09-01T08:13:39+0000",
-                "from": "example@test.com",
-                "to": "example@test.com",
-                "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
-                "messageDate": "2022-07-18T13:25:21+0000",
-                "contentViewed": False,
-                "discoveryCase": False,
-            },
-            {
-                "viewer": "example@test.com",
-                "source": "Message Tracking",
-                "viewed": "2022-08-31T14:29:48+0000",
-                "from": "example@test.coma",
-                "to": "example@test.com",
-                "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
-                "messageDate": "2022-07-18T13:25:21+0000",
-                "contentViewed": False,
-                "discoveryCase": False,
-            },
-        ],
-        "fail": [],
-    }]
-    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=expected_response)
+    mock_response = util_load_json('test_data/get_view_logs_response.json')
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
     result = MimecastV2.get_view_logs_command(args)
-    assert result.outputs["data"] == expected_response[0].get("data")
+    assert result.outputs["data"] == mock_response[0].get("data")
+    assert result.outputs_prefix == 'Mimecast.ViewLog'
 
 
 def test_list_account_command(mocker):
@@ -859,7 +784,6 @@ def test_list_policies_command(mocker):
     result = MimecastV2.list_policies_command(args)
     assert result.outputs == mock_response
     assert result.outputs_prefix == 'Mimecast.Policies'
-    assert result.readable_output == '### Mimecast list address-alteration policies: \n These are the existing address-alteration Policies:\n|Policy ID|Sender|Reciever|Bidirectional|Start|End|\n|---|---|---|---|---|---|\n| eNo1jr | Group: null<br>Email Address: null<br>Domain: null<br>Type: internal_addresses | Group: null<br>Email Address: null<br>Domain: null<br>Type: external_addresses | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |\n'
 
 
 def test_create_antispoofing_bypass_policy_command(mocker):

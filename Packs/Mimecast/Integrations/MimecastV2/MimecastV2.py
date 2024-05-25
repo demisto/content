@@ -3132,7 +3132,10 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
         api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
     )
 
-    return CommandResults(outputs_prefix="Mimecast.ArchiveSearchLog", outputs=result_list[0])
+    return CommandResults(
+        outputs_prefix="Mimecast.ArchiveSearchLog",
+        outputs=result_list[0]
+    )
 
 
 def get_search_logs_command(args: dict) -> CommandResults:
@@ -3166,9 +3169,6 @@ def get_view_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
     start = arg_to_datetime(args.get('start')).strftime(DATE_FORMAT) if args.get('start') else None  # type: ignore
     end = arg_to_datetime(args.get('end')).strftime(DATE_FORMAT) if args.get('end') else None  # type: ignore
-
-    if not any([query, start, end]):
-        raise ValueError('At least one argument must be entered.')
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
