@@ -1,0 +1,25 @@
+{
+    "name": "LDAP-Query",
+    "description": "The LDAP-Query enables users to query and authenticate LDAP entries using various identifiers",
+    "support": "community",
+    "currentVersion": "2.2.0",
+    "author": "zp-4",
+    "url": "https://github.com/zp-4",
+    "email": "zpycho@zp4-learning.com",
+    "created": "2024-05-25T05:43:00Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "LDAP",
+        "User Management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+   "fromVersion": "6.0.0",
+   "toVersion": ""
+}
