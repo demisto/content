@@ -416,7 +416,7 @@ async def test_handle_text(mocker):
     text = "Hello, this is a test message"
     operator_email = "test@example.com"
     operator_name = "Test User"
-    MESSAGE_FOOTER = '\n**From MatterMost**'
+    MESSAGE_FOOTER = '\n**From Mattermost**'
 
     with patch('MattermostV2.demisto') as mock_demisto:
         await handle_text_received_from_mm(investigation_id, text, operator_email, operator_name)

@@ -597,12 +597,6 @@ In the *mirror-investigation* command:
 * *mirrorTo* - this argument was replaced by channelName.
 * *argumentName* - this argument was replaced by XXX.
 
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
 
 ## Additional Considerations for this version
 - A new requierd parameter was introduced

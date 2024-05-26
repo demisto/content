@@ -38,7 +38,7 @@ LONG_RUNNING: bool
 CACHED_INTEGRATION_CONTEXT: dict
 VERIFY_CERT: bool
 CACHE_EXPIRY: float
-MESSAGE_FOOTER = '\n**From MatterMost**'
+MESSAGE_FOOTER = '\n**From Mattermost**'
 MIRROR_TYPE = 'mirrorEntry'
 OBJECTS_TO_KEYS = {
     'messages': 'entitlement',
@@ -1108,7 +1108,7 @@ def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandR
     team_name = args.get('team', client.team_name)
     channel_name = args.get('name', '')
     channel_display_name = args.get('display_name')
-    channel_type = 'O' if args.get('type') == 'Public' else 'P'
+    channel_type = 'O' if args.get('type') == 'public' else 'P'
     purpose = args.get('purpose', '')
     header = args.get('header', '')
 
@@ -1333,6 +1333,7 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     direction = args.get('direction', 'Both')
     channel_name = args.get('channel', '')
     team_name = args.get('team_name', client.team_name)
+    mirror_to = args.get('mirrorTo', 'group')
 
     autoclose = argToBoolean(args.get('autoclose', True))
     send_first_message = False
@@ -1371,9 +1372,11 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
                 send_first_message = False
             except Exception as e:
                 if '404' in str(e):
-                    # create new public channel
+                    # create new channel
                     demisto.debug(f'MM: Creating a new channel for mirroring with name: {channel_name}')
-                    args = {'team_name': team_name, 'name': channel_name.lower(), 'display_name': channel_name, 'type': 'Public'}
+                    channel_type = 'public' if mirror_to == 'channel' else 'private'
+                    args = {'team_name': team_name, 'name': channel_name.lower(),
+                            'display_name': channel_name, 'type': channel_type}
                     result = create_channel_command(client=client, args=args)
                     channel_details = result.outputs  # type: ignore
                     send_first_message = True

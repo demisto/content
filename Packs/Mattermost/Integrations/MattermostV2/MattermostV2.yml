@@ -12,14 +12,14 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: Bot Access Token
-  additionalinfo: The Bot Access Token to use for connection
+  additionalinfo: The Bot Access Token to use for connection.
   name: bot_access_token
   required: true
   hiddenusername: true
   type: 9
   section: Connect
 - displaypassword: Personal Access Token
-  additionalinfo: The Personal Access Token to use for connection
+  additionalinfo: The Personal Access Token to use for connection.
   name: personal_access_token
   required: true
   hiddenusername: true
@@ -42,7 +42,7 @@ configuration:
   type: 8
   section: Connect - Advanced
   required: false
-- display: Allow external users to create incidents via DM
+- display: Allow external users to create incidents via DM.
   name: allow_incidents
   type: 8
   section: Collect
@@ -65,7 +65,7 @@ configuration:
   type: 8
   required: false
   section: Connect - Advanced
-description: Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organisations and companies.
+description: Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organizations and companies.
 display: Mattermost v2
 name: MattermostV2
 script:
@@ -191,11 +191,12 @@ script:
     - description: The name of the channel to create.
       name: name
       required: true
-    - description: The type of the channel to create. Default value is Public.
+    - description: The type of the channel to create. Default value is public.
       name: type
+      defaultValue: public
       predefined:
-      - Public
-      - Private
+      - public
+      - private
       auto: PREDEFINED
       required: false
     - description: The purpose of the channel to create.
@@ -313,10 +314,10 @@ script:
       description: The username of the user.
       type: String
     - contextPath: Mattermost.User.auth_data
-      description: The auth data of the user.
+      description: The authorization data of the user.
       type: String
     - contextPath: Mattermost.User.auth_service
-      description: The auth service of the user.
+      description: The authorization service of the user.
       type: String
     - contextPath: Mattermost.User.email
       description: The email of the user.
@@ -365,7 +366,7 @@ script:
     - description: The message to send.
       name: message
       required: true
-    - description: The channel name to send the notification to. Default value is the channel config parameter.
+    - description: The channel name to send the notification to. Default value is the channel configuration parameter.
       name: channel
       required: false
     - description: An entry ID to send as a link.
@@ -374,7 +375,7 @@ script:
     - description: The username or email of the user to send the file to.
       name: to
       required: false
-    - description: Adds the warroom link to the message.
+    - description: Adds the war room link to the message.
       name: ignoreAddURL
       required: false
       predefined:
@@ -430,7 +431,7 @@ script:
       - FromDemisto
       - ToDemisto
     - description: The name of the channel. The default is "incident-<incidentID>".
-      name: channelName
+      name: channel
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to remove the admin from the newly created channel. Default value is false.
@@ -438,6 +439,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'group'
+      description: Mirrors the investigation to a group (private channel) or a public channel. Default is group.
+      name: mirrorTo
+      predefined:
+      - 'group'
+      - 'channel'
     description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
     name: mirror-investigation
   - arguments:
@@ -466,7 +474,21 @@ script:
       - FromDemisto
       - ToDemisto
     - description: The name of the channel. The default is "incident-<incidentID>".
-      name: channelName
+      name: channel
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to remove the admin from the newly created channel. Default value is false.
+      name: kickAdmin
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'group'
+      description: Mirrors the investigation to a group (private channel) or a public channel. Default is group.
+      name: mirrorTo
+      predefined:
+      - 'group'
+      - 'channel'
     description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
     name: mattermost-mirror-investigation
   longRunning: true
@@ -474,7 +496,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/mattermost:1.0.0.95163
+  dockerimage: devdemisto/netutils:1.0.0.95632
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook
