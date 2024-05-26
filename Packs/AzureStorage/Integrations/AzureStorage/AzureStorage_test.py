@@ -363,3 +363,35 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
     res = AzureStorage.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+def test_test_module_command_with_client_credentials(mocker):
+    """
+    Given:
+        - The auth_type is Client Credentials
+    When:
+        - Creating a Microsoft client.
+    Then:
+        - Ensure that the Client Credentials Flow Authentication works.
+    """
+
+    import demistomock as demisto
+    from AzureStorage import main
+
+    mocked_params = {
+        'auth_type': 'Client Credentials',
+        'tenant_id': 'tenant_id',
+        'app_id': app_id,
+        'subscription_id': subscription_id,
+        'resource_group_name': resource_group_name,
+        'credentials': {
+            'password': 'client_secret'
+        }
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocked_response = mocker.patch('AzureStorage.MicrosoftClient.get_access_token', return_value='access_token')
+
+    main()
+    assert mocked_response.return_value == "access_token"

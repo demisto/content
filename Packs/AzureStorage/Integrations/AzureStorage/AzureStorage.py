@@ -8,7 +8,8 @@ import urllib3
 urllib3.disable_warnings()
 
 API_VERSION = '2022-09-01'
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE,
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
                        'Client Credentials': CLIENT_CREDENTIALS}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
                        'Authorization Code': "https://management.azure.com/.default",
