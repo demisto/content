@@ -3329,12 +3329,18 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
         data['policy']['toEternal'] = to_eternal
     if spf_domain:
         data['policy']['conditions'] = {'spfDomains': [spf_domain]}
+
+    from_attribute_data = {}
     if from_attribute_id:
-        data['policy']['from']['attribute']['id'] = from_attribute_id
+        from_attribute_data['id'] = from_attribute_id
     if from_attribute_name:
-        data['policy']['from']['attribute']['name'] = from_attribute_name
+        from_attribute_data['name'] = from_attribute_name
     if from_attribute_value:
-        data['policy']['from']['attribute']['value'] = from_attribute_value
+        from_attribute_data['value'] = from_attribute_value
+
+    if from_attribute_data:
+        data['policy']['from'] = {"type": "address_attribute_value"}
+        data['policy']['from']['attribute'] = from_attribute_data
 
     payload = {"data": [data]}
     api_endpoint = '/api/policy/antispoofing-bypass/create-policy'
@@ -3456,8 +3462,7 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
     if comment:
         data['comment'] = comment
     if conditions:
-        data['policy']['conditions'] = {}
-        data['policy']['conditions']['sourceIPs'] = [conditions]
+        data['policy']['conditions'] = {'sourceIPs': [conditions]}
     if from_date:
         data['fromDate'] = from_date
     if from_part:

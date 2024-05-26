@@ -3068,6 +3068,10 @@ script:
     - name: to_eternal
       description: Specifies if the policy should have.
       defaultValue: yes
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
     - name: override
       description: Specifies if the policy should be set as an override, to be considered prior to equally-specific policies.
       auto: PREDEFINED
