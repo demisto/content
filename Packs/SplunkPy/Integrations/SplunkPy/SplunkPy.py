@@ -707,9 +707,9 @@ class Notable:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
             self.enrichments) >= len(ENABLED_ENRICHMENTS)
-        # The number of notable enrichments could be bigger than the enabled enrichments
-        # because there could be more than one drilldown search.
-        # TODO: consult with Yuval regarding the delicate change here. 
+        # The number of notable enrichments could be larger than the enabled enrichments because there could be
+        # multiple drilldown searches to enrich.
+        # TODO: consult with Yuval regarding the delicate change in the second condition here.
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
@@ -1023,7 +1023,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
           
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
     """ Performs a drilldown enrichment.
-    If the notable has more then one drilldown search, enriches all the drilldown searches.
+    If the notable has multiple drilldown searches, enriches all the drilldown searches.
 
     Args:
         service (splunklib.client.Service): Splunk service object.
@@ -1073,7 +1073,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             try:
                 parsed_query_name =  build_drilldown_search(notable_data, query_name, raw_dict)
                 if not parsed_query_name: # if parsing failed - keep original unparsed name
-                    demisto.error(f'Failed parsing drilldown search query name, using the original un-parsed name instead: {query_name}.')
+                    demisto.debug(f'Failed parsing drilldown search query name, using the original un-parsed name instead: {query_name}.')
                     parsed_query_name = query_name # TODO: consult with Yuval about keeping the original name here.
             except Exception as e:
                 demisto.debug(f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
@@ -1324,9 +1324,10 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
 
     if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
         jobs_and_queries = drilldown_enrichment(service, notable.data, num_enrichment_events)
-        for obj in jobs_and_queries:
+        for job_and_query in jobs_and_queries:
             notable.enrichments.append(
-                Enrichment.from_job(DRILLDOWN_ENRICHMENT, job=obj[2], query_name=obj[0], query_search=obj[1]))
+                Enrichment.from_job(DRILLDOWN_ENRICHMENT, job=job_and_query[2],
+                                    query_name=job_and_query[0], query_search=job_and_query[1]))
     if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_asset:
         job = asset_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(Enrichment.from_job(ASSET_ENRICHMENT, job))
