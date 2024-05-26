@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_RESULTS_TO_DISPLAY = 10 # TODO: need to consult the number and the concept
+MAX_RESULTS_TO_DISPLAY = 10 # TODO: need to remove this const (used only for demo)
 
 
 def main():
@@ -30,9 +30,10 @@ def main():
         markdown = tableToMarkdown("", drilldown_results, headers=drilldown_results[0].keys())
         
     elif isinstance(drilldown_results, dict):
+        # Got drilldown results of multiple drilldown searches
         markdown = "#### Drilldown Searches Results\n"
         for key, value in drilldown_results.items():
-            markdown += f"**Query Name:** {key}\n\n **Query Search:** {value.get('query_search', '')}\n\n **Results:**\n"
+            markdown += f"**Query Name:** {key}\n\n **Query Search:**\n {value.get('query_search', '')}\n\n **Results:**\n"
             if results := value.get("query_results", []):
                 markdown += tableToMarkdown("", results[:MAX_RESULTS_TO_DISPLAY], headers=results[0].keys())
             else:
