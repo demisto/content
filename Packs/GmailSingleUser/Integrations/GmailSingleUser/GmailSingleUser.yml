@@ -4,7 +4,7 @@ sectionOrder:
 - Collect
 fromversion: 5.0.0
 commonfields:
-  id: Gmail Single User
+  id: Gmail Single User dev
   version: -1
 configuration:
 - display: Email of user
@@ -115,8 +115,8 @@ configuration:
   advanced: true
   required: false
 description: Gmail API using OAuth 2.0.
-display: Gmail Single User
-name: Gmail Single User
+display: Gmail Single User dev
+name: Gmail Single User dev
 script:
   commands:
   - arguments:

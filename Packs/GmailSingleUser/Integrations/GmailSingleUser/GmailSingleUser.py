@@ -285,14 +285,15 @@ class Client:
             'messageId': _id,
         }
         files = []
-        for attachment in result['Attachments']:
-            identifiers_filter_array = argToList(identifiers_filter)
-            command_args['id'] = attachment['ID']
-            result = service.users().messages().attachments().get(**command_args).execute()
-            if not identifiers_filter_array or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array):
-                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-                files.append((attachment['Name'], file_data))
-
+        demisto.debug(f"{result=}")
+        if 'Attachments' in result:
+            for attachment in result['Attachments']:
+                identifiers_filter_array = argToList(identifiers_filter)
+                command_args['id'] = attachment['ID']
+                result = service.users().messages().attachments().get(**command_args).execute()
+                if not identifiers_filter_array or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array):
+                    file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+                    files.append((attachment['Name'], file_data))
         return files
 
     @staticmethod
@@ -702,7 +703,7 @@ class Client:
             })
 
         return attachments
-
+    
     def handle_html(self, htmlBody):
         """
         Extract all data-url content from within the html and return as separate attachments.
@@ -721,7 +722,7 @@ class Client:
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
                 'name': name,
-                'cid': name
+                'cid': f'{name}@{random_word_generator(8)}_{random_word_generator(8)}'
             }
             attachments.append(att)
             cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
@@ -1015,6 +1016,11 @@ class Client:
         link = f"https://accounts.google.com/o/oauth2/v2/auth?{params}"  # noqa: E501
         return link
 
+def random_word_generator(length):
+    """Generate a random string of given length
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
 
 def test_module(client):
     demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')

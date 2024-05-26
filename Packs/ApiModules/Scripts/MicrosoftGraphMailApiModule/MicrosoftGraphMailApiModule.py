@@ -1,3 +1,5 @@
+import random
+import string
 from urllib.parse import quote
 import binascii
 from MicrosoftApiModule import *  # noqa: E402
@@ -48,6 +50,20 @@ class MsGraphMailBaseClient(MicrosoftClient):
         self._mark_fetched_read = mark_fetched_read
         self._look_back = look_back
         self.fetch_html_formatting = fetch_html_formatting
+
+    @classmethod
+    def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
+        file_attachments_result = []
+        for attachment in inline_from_layout_attachments:
+            file_attachments_result.append(
+                    {
+                        '@odata.type': cls.FILE_ATTACHMENT,
+                        'contentBytes': attachment.get('data'),
+                        'isInline': True,
+                        'name': attachment.get('name'),
+                        'contentId': attachment.get('cid'),
+                    })
+            
 
     @classmethod
     def _build_attachments_input(cls, ids, attach_names=None, is_inline=False):
@@ -1115,6 +1131,48 @@ class GraphMailUtils:
         return mails_list
 
     @staticmethod
+    def random_word_generator(length):
+        """Generate a random string of given length
+        """
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(length))
+
+    @staticmethod
+    def handle_html(htmlBody):
+        """
+        Extract all data-url content from within the html and return as separate attachments.
+        Due to security implications, we support only images here
+        We might not have Beautiful Soup so just do regex search
+        """
+        demisto.debug(f"{htmlBody=}")
+        attachments = []
+        cleanBody = ''
+        lastIndex = 0
+        for i, m in enumerate(
+            re.finditer(  # pylint: disable=E1101
+                r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
+                htmlBody,
+                re.I | re.S  # pylint: disable=E1101
+            )
+        ):
+            maintype, subtype = m.group(2).split('/', 1)
+            name = f"image{i}.{subtype}"
+            att = {
+                'maintype': maintype,
+                'subtype': subtype,
+                'data': base64.b64decode(m.group(3)),
+                'name': name,
+                'cid': f'{name}@{GraphMailUtils.random_word_generator(8)}_{GraphMailUtils.random_word_generator(8)}'
+            }
+            attachments.append(att)
+            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+            lastIndex = m.end() - 1
+
+        cleanBody += htmlBody[lastIndex:]
+        demisto.debug(f"{cleanBody=}")
+        return cleanBody, attachments
+    
+    @staticmethod
     def prepare_args(command, args):
         """
         Receives command and prepares the arguments for future usage.
@@ -1129,7 +1187,7 @@ class GraphMailUtils:
         :rtype: ``dict``
         """
         if command in ['create-draft', 'send-mail']:
-            email_body = args.get('htmlBody') if args.get('htmlBody', None) else args.get('body', '')
+            email_body, inline_attachments = GraphMailUtils.handle_html(args.get('htmlBody')) if args.get('htmlBody', None) else args.get('body', '')
             processed_args = {
                 'to_recipients': argToList(args.get('to')),
                 'cc_recipients': argToList(args.get('cc')),
@@ -1144,7 +1202,8 @@ class GraphMailUtils:
                 'attach_ids': argToList(args.get('attachIDs') or args.get('attach_ids')),
                 'attach_names': argToList(args.get('attachNames') or args.get('attach_names')),
                 'attach_cids': argToList(args.get('attachCIDs') or args.get('attach_cids')),
-                'manual_attachments': args.get('manualAttachObj', [])
+                'manual_attachments': args.get('manualAttachObj', []),
+                'inline_attachments': inline_attachments or []
             }
             if command == 'send-mail':
                 processed_args['renderBody'] = argToBoolean(args.get('renderBody') or False)
@@ -1483,7 +1542,7 @@ class GraphMailUtils:
         return {'flagStatus': flag}
 
     @staticmethod
-    def build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments):
+    def build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments, inline_attachments_from_layout=None):
         """
         Builds both inline and regular attachments.
 
@@ -1509,6 +1568,7 @@ class GraphMailUtils:
         manual_att_names = [att['FileName'] for att in manual_attachments if 'FileName' in att]
         manual_report_attachments = MsGraphMailBaseClient._build_attachments_input(ids=manual_att_ids,
                                                                                    attach_names=manual_att_names)
+        inline_from_layout_attachments = MsGraphMailBaseClient._build_inline_layout_attachments_input(inline_from_layout_attachments)
 
         return regular_attachments + inline_attachments + manual_report_attachments
 
@@ -1527,7 +1587,8 @@ class GraphMailUtils:
 
     @staticmethod
     def build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to):
+                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to,
+                      inline_attachments):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -1543,7 +1604,7 @@ class GraphMailUtils:
             'importance': importance,
             'flag': GraphMailUtils.build_flag_input(flag),
             'attachments': GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids,
-                                                                       manual_attachments)
+                                                                       manual_attachments, inline_attachments)
         }
 
         if internet_message_headers:
