@@ -165,7 +165,12 @@ def get_endpoint_id_command():
         return_error('Given MAC address is invalid')
 
     endpoint_data = get_endpoint_id(mac_address)
-    endpoint_id = endpoint_data.get('SearchResult', {}).get('resources', [])[0].get('id', None)
+
+    resources = endpoint_data.get('SearchResult', {}).get('resources', [])
+    if resources:
+        endpoint_id = resources[0].get('id', None)
+    else:
+        endpoint_id = None
 
     entry_context = {
         'Endpoint(val.ID === obj.ID)': {
@@ -205,8 +210,9 @@ def get_endpoint_details_command():
         return_error('Either endpoint ID or MAC address should be provided')
 
     if endpoint_mac_address and not endpoint_id:
-        endpoint_id = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])[0].get('id',
-                                                                                                                None)
+        resources = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])
+        if resources:
+            endpoint_id = resources[0].get('id', None)
 
     endpoint_data = get_endpoint_details(endpoint_id)
 
@@ -724,27 +730,22 @@ def get_blacklist_endpoints():
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
 
 
-def get_endpoint_id_by_name(mac_address=None):
+def get_endpoint_id_by_name(endpoint_name=None):
     """
     Returns endpoint id by specific mac address
     Only compatible with Cisco ISE versions 2.3
     """
-    if not is_mac_address(mac_address):
-        return_error('Given MAC address is invalid')
-
-    api_endpoint = f'/ers/config/endpoint/name/{mac_address}'
+    api_endpoint = f'/ers/config/endpoint/name/{endpoint_name}'
     return http_request('GET', api_endpoint, '')
 
 
 def get_endpoint_id_by_name_command():
 
-    mac_address = demisto.args().get('mac_address')
+    endpoint_name = demisto.args().get('name')
 
-    if not is_mac_address(mac_address):
-        return_error('Given MAC address is invalid')
-
-    endpoint_data = get_endpoint_id_by_name(mac_address)
+    endpoint_data = get_endpoint_id_by_name(endpoint_name)
     endpoint_id = endpoint_data.get('ERSEndPoint', {}).get('id', None)
+    mac_address = endpoint_data.get('ERSEndPoint', {}).get('mac', None)
 
     entry_context = {
         'Endpoint(val.ID === obj.ID)': {

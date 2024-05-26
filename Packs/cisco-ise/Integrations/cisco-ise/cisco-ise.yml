@@ -244,8 +244,8 @@ script:
       description: Details of all deployment ISE nodes.
       type: unknown
   - arguments:
-    - description: 'MAC address of the endpoint (format: 11:22:33:44:55:66).'
-      name: mac_address
+    - description: 'The name of the endpoint.'
+      name: name
       required: true
     description: Returns an EndpointID using its name (Available on ISE 2.3 and later versions).
     name: cisco-ise-get-endpoint-id-by-name
