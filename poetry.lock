@@ -870,7 +870,7 @@ toml = "^0.10.2"
 typer = {version = "^0.9.0", extras = ["all"]}
 typing-extensions = "^4.1.1"
 ujson = "^5.1.0"
-urllib3 = "^2.2.1"
+urllib3 = ">=1.26,<3"
 uv = "^0.1.5"
 vulture = "^2.3"
 wcmatch = "^8.3"
@@ -884,8 +884,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "ed859b18a8c8274bca4e90ec799661fa0b0bd4ae"
-resolved_reference = "ed859b18a8c8274bca4e90ec799661fa0b0bd4ae"
+reference = "3c1455cecd8d9f7b6340b574ee0977a304b7b615"
+resolved_reference = "3c1455cecd8d9f7b6340b574ee0977a304b7b615"
 
 [[package]]
 name = "deprecated"
@@ -5273,4 +5273,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "e67a5c64a988afc3f1a8e1cdbef2d1860f97ed9aa4fbd7346c0addb93ac8fb79"
+content-hash = "8a7944626eb0e448dbda9d3435cbc90a5b457336fce69a0529b847fe20d477bc"
