@@ -1,0 +1,87 @@
+{
+    "id": "d9e0967700000000_e833244a355e9fc9_010",
+    "threadId": "d9e0967700000000_e8345b511227f591_005",
+    "labelIds": [
+        "INBOX", "UNREAD"
+    ],
+    "snippet": "",
+    "historyId": "14",
+    "internalDate": "1714987131956",
+    "expiration": "0",
+    "lastMoved": "1714987132000",
+    "sendTime": "0",
+    "userScheduled": "False",
+    "manifest": "RANDOM_GUID",
+    "originalMime": "RANDOM_GUID",
+    "payload": {
+        "partId": "",
+        "mimeType": "multipart/mixed",
+        "filename": "",
+        "headers": [{
+            "name": "X-Zoom-Encryption",
+            "value": "s=Server; t=1714987132214"
+        }, {
+            "name": "Subject",
+            "value": "Zoom Encrypted Email"
+        }, {
+            "name": "Content-Type",
+            "value": "multipart/mixed; boundary=_qbezlwc8l86i0lo7wrku4dzo50"
+        }, {
+            "name": "MIME-Version",
+            "value": "1.0"
+        }, {
+            "name": "References",
+            "value": "<CAA7=RANDOM_GUID@mail.gmail.com> <CAA7=RANDOM_GUID@mail.gmail.com> <CAA7=RANDOM_GUID@mail.gmail.com> <CAA7=RANDOM_GUID@mail.gmail.com>"
+        }, {
+            "name": "In-Reply-To",
+            "value": "<CAA7=RANDOM_GUID@mail.gmail.com>"
+        }, {
+            "name": "From",
+            "value": "Testing Dev <testingdev@paloaltonetworks.com>"
+        }, {
+            "name": "Date",
+            "value": "Mon, 6 May 2024 12:18:36 +0300"
+        }, {
+            "name": "Message-ID",
+            "value": "<CAA7=RANDOM_GUID@mail.gmail.com>"
+        }, {
+            "name": "To",
+            "value": "xsoar_test@zmail.com"
+        }],
+        "body": {
+            "size": 0
+        },
+        "parts": [{
+            "partId": "0",
+            "mimeType": "application/vnd.zoom.encrypt.manifest",
+            "filename": "",
+            "headers": [{
+                "name": "Content-Type",
+                "value": "application/vnd.zoom.encrypt.manifest"
+            }, {
+                "name": "Content-Transfer-Encoding",
+                "value": "base64"
+            }],
+            "body": {
+                "size": 383
+            },
+            "parts": []
+        }, {
+            "partId": "1",
+            "mimeType": "application/vnd.zoom.encrypt.mime",
+            "filename": "",
+            "headers": [{
+                "name": "Content-Type",
+                "value": "application/vnd.zoom.encrypt.mime"
+            }, {
+                "name": "Content-Transfer-Encoding",
+                "value": "base64"
+            }],
+            "body": {
+                "size": 33233
+            },
+            "parts": []
+        }]
+    },
+    "sizeEstimate": 46881
+}
