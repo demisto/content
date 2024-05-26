@@ -1,5 +1,5 @@
 {
-    "name": "HarmonyEndpoint",
+    "name": "CheckPointHarmonyEndpoint",
     "description": "Checkpoint Harmony Endpoint provides a complete endpoint security solution built to protect organizations and the remote workforce from today's complex threat landscape.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

@@ -1,7 +1,7 @@
-id: HarmonyEndpoint
+id: CheckPointHarmonyEndpoint
 version: 12
 vcShouldKeepItemLegacyProdMachine: false
-name: HarmonyEndpoint
+name: CheckPointHarmonyEndpoint
 starttaskid: "0"
 tasks:
   "0":
@@ -122,12 +122,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Job.data
+              simple: HarmonyEP.Job.data
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Job.status
+              simple: HarmonyEP.Job.status
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -196,27 +196,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.IOC.comment
+              simple: HarmonyEP.IOC.comment
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.IOC.modifiedOn
+              simple: HarmonyEP.IOC.modifiedOn
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.IOC.value
+              simple: HarmonyEP.IOC.value
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.IOC.type
+              simple: HarmonyEP.IOC.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.IOC.id
+              simple: HarmonyEP.IOC.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -402,17 +402,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.Assignments.type
+              simple: HarmonyEP.Rule.Assignments.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.Assignments.name
+              simple: HarmonyEP.Rule.Assignments.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.Assignments.id
+              simple: HarmonyEP.Rule.Assignments.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -556,7 +556,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PolicyRuleInstall.job_id
+              simple: HarmonyEP.PolicyRuleInstall.job_id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -628,19 +628,19 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.family
+              simple: HarmonyEP.Rule.family
             iscontext: true
           right:
             value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.name
+              simple: HarmonyEP.Rule.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.id
+              simple: HarmonyEP.Rule.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -709,27 +709,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.order
+              simple: HarmonyEP.Rule.order
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.family
+              simple: HarmonyEP.Rule.family
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.comment
+              simple: HarmonyEP.Rule.comment
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.name
+              simple: HarmonyEP.Rule.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Rule.id
+              simple: HarmonyEP.Rule.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -798,37 +798,37 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.adminName
+              simple: HarmonyEP.PushOperation.adminName
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: Harmony.PushOperation.aborted
+              simple: HarmonyEP.PushOperation.aborted
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.remainingTimeoutSeconds
+              simple: HarmonyEP.PushOperation.remainingTimeoutSeconds
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.createdOn
+              simple: HarmonyEP.PushOperation.createdOn
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.type
+              simple: HarmonyEP.PushOperation.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.comment
+              simple: HarmonyEP.PushOperation.comment
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.id
+              simple: HarmonyEP.PushOperation.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -900,17 +900,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -982,7 +982,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperationAbort.job_id
+              simple: HarmonyEP.PushOperationAbort.job_id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1054,22 +1054,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.AntiMalwareScan.job_id
+              simple: HarmonyEP.PushOperation.AntiMalwareScan.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1141,22 +1141,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.AntiMalwareUpdate.job_id
+              simple: HarmonyEP.PushOperation.AntiMalwareUpdate.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1230,22 +1230,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.FileRestore.job_id
+              simple: HarmonyEP.PushOperation.FileRestore.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1321,22 +1321,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.IndicatorAnalyze.job_id
+              simple: HarmonyEP.PushOperation.IndicatorAnalyze.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1412,22 +1412,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.FileQuarantine.job_id
+              simple: HarmonyEP.PushOperation.FileQuarantine.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1501,22 +1501,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.FileRestore.job_id
+              simple: HarmonyEP.PushOperation.FileRestore.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1588,22 +1588,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ComputerIsolate.job_id
+              simple: HarmonyEP.PushOperation.ComputerIsolate.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1675,22 +1675,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ComputerDeisolate.job_id
+              simple: HarmonyEP.PushOperation.ComputerDeisolate.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1762,22 +1762,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ComputerRestart.job_id
+              simple: HarmonyEP.PushOperation.ComputerRestart.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1849,22 +1849,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ComputerShutdown.job_id
+              simple: HarmonyEP.PushOperation.ComputerShutdown.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1936,22 +1936,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ComputerRepair.job_id
+              simple: HarmonyEP.PushOperation.ComputerRepair.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2023,27 +2023,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ComputerList.job_id
+              simple: HarmonyEP.Computer.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Computer.type
+              simple: HarmonyEP.Computer.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Computer.ip
+              simple: HarmonyEP.Computer.ip
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Computer.name
+              simple: HarmonyEP.Computer.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.Computer.id
+              simple: HarmonyEP.Computer.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2115,22 +2115,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ProcessInformation.job_id
+              simple: HarmonyEP.PushOperation.ProcessInformation.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2204,22 +2204,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.ProcessTerminate.job_id
+              simple: HarmonyEP.PushOperation.ProcessTerminate.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2301,22 +2301,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.RegistryKeyAdd.job_id
+              simple: HarmonyEP.PushOperation.RegistryKeyAdd.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2392,22 +2392,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.RegistryKeyDelete.job_id
+              simple: HarmonyEP.PushOperation.RegistryKeyDelete.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2483,22 +2483,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.FileCopy.job_id
+              simple: HarmonyEP.PushOperation.FileCopy.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2574,22 +2574,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.FileMove.job_id
+              simple: HarmonyEP.PushOperation.FileMove.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2663,22 +2663,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.FileDelete.job_id
+              simple: HarmonyEP.PushOperation.FileDelete.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2758,22 +2758,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.VPNsiteConfigurationAdd.job_id
+              simple: HarmonyEP.PushOperation.VPNsiteConfigurationAdd.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -2847,22 +2847,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.VPNsiteConfigurationRemove.job_id
+              simple: HarmonyEP.PushOperation.VPNsiteConfigurationRemove.job_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.ipAddress
+              simple: HarmonyEP.PushOperation.machine.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.name
+              simple: HarmonyEP.PushOperation.machine.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Harmony.PushOperation.machine.id
+              simple: HarmonyEP.PushOperation.machine.id
             iscontext: true
     continueonerrortype: ""
     view: |-
