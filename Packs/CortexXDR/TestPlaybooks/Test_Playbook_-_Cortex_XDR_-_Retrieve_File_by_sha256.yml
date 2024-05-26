@@ -283,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "203":
     id: "203"
-    taskid: 98a4c167-7df4-4089-8824-c7a68178e4e8
+    taskid: 7cd40262-ef0e-4168-8c15-b8f3c6702a0c
     type: regular
     task:
-      id: 98a4c167-7df4-4089-8824-c7a68178e4e8
+      id: 7cd40262-ef0e-4168-8c15-b8f3c6702a0c
       version: -1
       name: Wait for playbook to end running
       description: Wait until the final task (Done) has been completed before starting tests.
@@ -308,7 +308,7 @@ tasks:
       max_timeout:
         simple: "300"
       task_name:
-        simple: Done
+        simple: UnZip File
       task_states:
         simple: Completed
     separatecontext: false
