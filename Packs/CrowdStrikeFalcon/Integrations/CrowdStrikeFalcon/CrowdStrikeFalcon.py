@@ -46,8 +46,6 @@ INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
-# Remove proxy if not set to true in params
-handle_proxy()
 
 ''' KEY DICTIONARY '''
 
@@ -388,6 +386,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             files=files,
             params=params,
             proxy=PROXY,
+            prox
             resp_type='response',
             verify=USE_SSL,
             error_handler=error_handler,
@@ -6302,7 +6301,6 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
                     "Content-Type": "application/json"}
     }
     transport = RequestsHTTPTransport(**kwargs)
-    handle_proxy()
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,
