@@ -29,19 +29,29 @@ DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
 MAX_QUALIFIED_DOMAIN_NAMES = 50
 ACCEPT_VAL = "application/json"
-SEARCH_OUTPUT_HEADERS = ['Qualified Domain Name',
-                         'Domain',
-                         'Managed Status',
-                         'Registration Date',
-                         'Registry Expiry Date',
-                         'Paid Through Date',
-                         'Name Servers',
-                         'Dns Type',
-                         'WhoisContacts'
-                         #  'Whois Contact first Name',
-                         #  'Whois Contact last Name',
-                         #  'Whois Contact email'
-                         ]
+SEARCH_OUTPUT_HEADERS_FOR_DOMAINS_SEARCH = ['Qualified Domain Name',
+                                            'Domain',
+                                            'Managed Status',
+                                            'Registration Date',
+                                            'Registry Expiry Date',
+                                            'Paid Through Date',
+                                            'Name Servers',
+                                            'Dns Type',
+                                            'WhoisContacts'
+                                            #  'Whois Contact first Name',
+                                            #  'Whois Contact last Name',
+                                            #  'Whois Contact email'
+                                        ]
+SEARCH_OUTPUT_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
+                                               'Domain Label',
+                                               'Domain Status Code',
+                                               'Domain extension',
+                                               'Country',
+                                               'Admin Email',
+                                               'Admin Name',
+                                               'Account Number',
+                                               'Account Name'
+                                        ]
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -70,10 +80,11 @@ class Client(BaseClient):
         return results
 
 
-def create_params_string_for_domains_search(args):
+def create_params_string(args):
     selectors_mapping = {
         'domain_name': 'domain',
         'registration_date': 'registrationDate',
+        'registration_org' : 'regOrg',
         'email': 'email',
         'organization': 'organization',
         'registry_expiry_date': 'registryExpiryDate',
@@ -88,7 +99,10 @@ def create_params_string_for_domains_search(args):
     # Check each key in args and add to param_dict if present
     for arg_key, param_key in selectors_mapping.items():
         if args.get(arg_key):
-            if arg_key in ['sort', 'page', 'page_size']:
+            prefixes = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
+            if args[arg_key] is str and len(args[arg_key]) >= 3 and args[arg_key][:3] in prefixes:
+                param_for_filter.append(f"{param_key}={args[arg_key]}")
+            if arg_key in ['sort', 'page', 'page_size'] :
                 additional_params.append(f"{param_key}={args[arg_key]}")
             else:
                 param_for_filter.append(f"{param_key}=={args[arg_key]}")
@@ -104,6 +118,54 @@ def create_params_string_for_domains_search(args):
 
     return params_str
 
+def extract_required_fields_for_domains_search(domains_list):
+    filtered_domains = []
+
+    for domain in domains_list:
+        filtered_domain = {
+            'Qualified Domain Name': domain.get('qualifiedDomainName'),
+            'Domain': domain.get('domain'),
+            'Managed Status': domain.get('managedStatus'),
+            'Registration Date': domain.get('registrationDate'),
+            'Registry Expiry Date': domain.get('registryExpiryDate'),
+            'Paid Through Date': domain.get('paidThroughDate'),
+            'Name Servers': domain.get('nameServers'),
+            'Dns Type': domain.get('dnsType'),
+            'WhoisContacts': []
+        }
+
+        whois_contacts = domain.get('whoisContacts', [])
+        for contact in whois_contacts:
+            filtered_contact = {
+                'firstName': contact.get('firstName'),
+                'lastName': contact.get('lastName'),
+                'email': contact.get('email')
+            }
+            filtered_domain['WhoisContacts'].append(filtered_contact)
+
+        filtered_domains.append(filtered_domain)
+
+    return filtered_domains
+
+def extract_required_fields_for_domains_configurations_list(filtered_configurations):
+    filtered_configurations = []
+
+    for config in filtered_configurations:
+        filtered = {
+            'Domain': config.get('domain'),
+            'Domain Label': config.get('domainLabel'),
+            'Domain Status Code': config.get('domainStatusCode'),
+            'Domain extension': config.get('extension'),
+            'Country': config.get('country'),
+            'Admin Email': config.get('adminEmail'),
+            'Admin Name': config.get('regEmail'),
+            'Account Number': config.get('accounts').get('accountNumber'),
+            'Account Name': config.get('accounts').get('accountName')
+        }
+
+        filtered_configurations.append(filtered)
+
+    return filtered_configurations
 
 ''' COMMAND FUNCTIONS '''
 
@@ -136,36 +198,6 @@ def test_module(client: Client) -> str:
     return message
 
 
-def extract_required_fields(domains_list):
-    filtered_domains = []
-
-    for domain in domains_list:
-        filtered_domain = {
-            'Qualified Domain Name': domain.get('qualifiedDomainName'),
-            'Domain': domain.get('domain'),
-            'Managed Status': domain.get('managedStatus'),
-            'Registration Date': domain.get('registrationDate'),
-            'Registry Expiry Date': domain.get('registryExpiryDate'),
-            'Paid Through Date': domain.get('paidThroughDate'),
-            'Name Servers': domain.get('nameServers'),
-            'Dns Type': domain.get('dnsType'),
-            'WhoisContacts': []
-        }
-
-        whois_contacts = domain.get('whoisContacts', [])
-        for contact in whois_contacts:
-            filtered_contact = {
-                'firstName': contact.get('firstName'),
-                'lastName': contact.get('lastName'),
-                'email': contact.get('email')
-            }
-            filtered_domain['WhoisContacts'].append(filtered_contact)
-
-        filtered_domains.append(filtered_domain)
-
-    return filtered_domains
-
-
 def csc_domains_search_command(client: Client, args) -> Any:
     qualified_domain_name = args.get('qualified_domain_name')
     if qualified_domain_name:
@@ -176,14 +208,14 @@ def csc_domains_search_command(client: Client, args) -> Any:
         args['page'] = '1'
         args['page_size'] = args.get('limit')
 
-    params_results = create_params_string_for_domains_search(args)
+    params_results = create_params_string(args)
     domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
 
     domains_list = domains_results.get('domains', [])
-    domains_with_required_fields = extract_required_fields(domains_list)
+    domains_with_required_fields = extract_required_fields_for_domains_search(domains_list)
 
     results = CommandResults(
-        readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields, headers=SEARCH_OUTPUT_HEADERS),
+        readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields, headers=SEARCH_OUTPUT_HEADERS_FOR_DOMAINS_SEARCH),
         outputs_prefix='CSCDomainManager.Domain',
         outputs_key_field='QualifiedDomainName',
         outputs=domains_with_required_fields
@@ -208,8 +240,26 @@ def csc_domains_availability_check_command(client: Client, args) -> str:
 
 
 def csc_domains_configuration_list_command(client: Client, args):
+    args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE
+    if args.get('limit'):
+        args['page'] = '1'
+        args['page_size'] = args.get('limit')
 
-    return
+    params_results = create_params_string(args)
+    configurations_results = client.send_get_request(url_suffix="/domains/configuration", params=params_results)
+    
+    configurations_list = configurations_results.get('configurations', [])
+    configurations_with_required_fields = extract_required_fields_for_domains_configurations_list(configurations_list)
+
+    results = CommandResults(
+        readable_output=tableToMarkdown('Filtered Configurations',
+                                        configurations_with_required_fields,
+                                        headers=SEARCH_OUTPUT_HEADERS_FOR_DOMAIN_CONFI_LIST),
+        outputs_prefix='CSCDomainManager.Domain.Configuration',
+        outputs_key_field='CSCDomainManager.Domain.Configuration.Domain',
+        outputs=configurations_with_required_fields
+    )
+    return results
 
 
 def main() -> None:

@@ -136,31 +136,31 @@ script:
     name: csc-domains-configuration-list
     outputs:
     - contextPath: CSCDomainManager.Domain.Configuration.Domain
-      description: 
+      description: the domain
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.DomainLabel
-      description: 
+      description: the domain label
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.DomainStatusCode
-      description: 
+      description: the domain status code
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.DomainExtension
-      description: 
+      description: extension
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.Country
-      description: 
+      description: country
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.AdminEmail
-      description: 
+      description: domain email
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.AdminName
-      description: 
+      description: admin name
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.AccountNumber
-      description: 
+      description: the account number
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.AccountName
-      description: 
+      description: the account name
       type: String
 
   runonce: false
