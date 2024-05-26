@@ -1,8 +1,8 @@
 rule Agent_BTZ_Proxy_DLL_2 {
    meta:
-      description = "Lorem ipsum"
-      author = "edge case"
-      reference = "http://www.test.test.test"
+      description = "Detects Agent-BTZ Proxy DLL - activeds.dll"
+      author = "Lorem Ipsum (Nextron Systems)"
+      reference = "http://www.example.com/new-variants-of-agent-btz-comrat-found/"
       date = "2017-08-07"
       hash1 = "73db4295c5b29958c5d93c20be9482c1efffc89fc4e5c8ba59ac9425a4657a88"
       hash2 = "380b0353ba8cd33da8c5e5b95e3e032e83193019e73c71875b58ec1ed389bdac"

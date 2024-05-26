@@ -13,7 +13,7 @@ class Client(BaseClient):
         base_url = urljoin(base_url, f"/repos/{owner}/{repo}")
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def get_base_head_commits_sha(self, since, until) -> list:
+    def get_commits_between_dates(self, since, until) -> list:
         """
         Retrieves the SHA of the base commit of the repository.
 
@@ -25,7 +25,7 @@ class Client(BaseClient):
         """
         parsed_since = dateparser.parse(since)
         parsed_until = dateparser.parse(until)
-        if parsed_since is None or parsed_until is None:
+        if not (parsed_since and parsed_until):
             demisto.debug(f"Unable to parse date string: since:{since} until:{until}")
             raise ValueError(f"Unable to parse date string: since:{since} until:{until}")
         params = {
@@ -34,9 +34,9 @@ class Client(BaseClient):
         }
         response = self._http_request("GET", full_url=f"{self._base_url}/commits", params=params, resp_type="response")
         demisto.debug(f"The base get_base_head_commits_sha() raw response: {response}")
-        return [commit.get("sha") for commit in self.extract_commits(response)]
+        return [commit.get("sha") for commit in self._extract_commits(response)]
 
-    def extract_commits(self, response) -> list:
+    def _extract_commits(self, response) -> list:
         all_commits = []
         if "next" not in response.links:
             all_commits.extend(response.json())
@@ -44,20 +44,27 @@ class Client(BaseClient):
             data = response.json()
             all_commits.extend(data)
             response = self._http_request("GET", full_url=response.links["next"]["url"], resp_type="response")
+        demisto.debug(f"list of all commits in the given time frame{all_commits}")
         return all_commits
 
-    def get_files_between_commits(self, base: str, head: str, is_first_fetch: bool) -> tuple[list, str]:
+    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list, str]:
         """
         Retrieves the list of files modified between two commits.
 
         Args:
-            base (str): The SHA of the base commit.
-            head (str): The SHA of the head commit.
+        base (str): The SHA of the base commit.
+        head (str): The SHA of the head commit.
+        include_base_commit (bool): A flag indicating if this is the first fetch.
 
         Returns:
-            list: A list of files modified between the specified base and head commits.
+        list: A list of files modified between the specified base and head commits.
+        str: The SHA of the last commit in the comparison.
+
+        Warning:
+        This method will not work correctly if the base commit is the very first commit in the repository.
+        In such a case, the base commit cannot be used for comparison in the way this function is designed.
         """
-        url_suffix = f"/compare/{base}...{head}" if not is_first_fetch else f"/compare/{base}^...{head}"
+        url_suffix = f"/compare/{base}...{head}" if not include_base_commit else f"/compare/{base}^...{head}"
         try:
             response = self._http_request("GET", url_suffix)
         except Exception as e:
@@ -74,7 +81,7 @@ class Client(BaseClient):
         return response["files"], base_sha
 
 
-def filter_out_files_by_status(commits_files: list) -> list:
+def filter_out_files_by_status(commits_files: list, statuses=("added", "modified")) -> list:
     """
     Parses files from a list of commit files based on their status.
 
@@ -86,7 +93,7 @@ def filter_out_files_by_status(commits_files: list) -> list:
     """
     relevant_files: list[dict] = []
     for file in commits_files:
-        if file.get("status") in ("added", "modified"):
+        if file.get("status") in statuses:
             relevant_files.append(file.get("raw_url"))
     return relevant_files
 
@@ -112,7 +119,6 @@ def get_content_files_from_repo(client: Client, relevant_files: list[str], param
     return raw_data_files
 
 
-
 def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list, str]:
     """
     Retrieves relevant files modified between commits and the current repository head.
@@ -132,6 +138,28 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
         return [], base_commit
 
 
+def split_yara_rules(str) -> list[str]:
+    """
+    Splits a string containing multiple Yara rules into a list of individual Yara rules.
+
+    The regex pattern used here is:
+    - `r"(rule.*?})\s*(?=rule|$)"`
+    - `rule`: Matches the literal word "rule" which indicates the start of a Yara rule.
+    - `.*?`: A non-greedy match for any character (except for newline) zero or more times, capturing the content of the rule.
+    - `}`: Matches the closing brace of a Yara rule.
+    - `\s*`: Matches zero or more whitespace characters following the closing brace.
+    - `(?=rule|$)`: Positive lookahead that asserts the position is followed by the word "rule" or the end of the string (`$`). This ensures the match captures one rule at a time.
+
+    Args:
+    yara_rules_str (str): A string containing one or more Yara rules.
+
+    Returns:
+    list[str]: A list of individual Yara rules as strings.
+    """
+    pattern = re.compile(r"(rule.*?})\s*(?=rule|$)", re.DOTALL)
+    return pattern.findall(str)
+
+
 def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
     """
     Parses YARA rules from a given content item and maps their attributes.
@@ -143,10 +171,10 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
         list: A list of dictionaries representing parsed and mapped YARA rules.
               Each dictionary contains attributes such as rule name, description, author, etc.
     """
-    pattern = re.compile(r"(rule.*?})\s*(?=rule|$)", re.DOTALL)
+
     text_content = list(content_item.values())[0]
     file_path = list(content_item.keys())[0]
-    content_rules = pattern.findall(text_content)
+    content_rules = split_yara_rules(text_content)
     parsed_rules = []
     current_time = datetime.now().isoformat()
     for rule in content_rules:
@@ -215,7 +243,7 @@ def detect_domain_type(domain: str):
         Optional[FeedIndicatorType]: The type of the indicator, or None if detection fails.
     """
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None) # type: ignore
+        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)  # type: ignore
 
         if no_cache_extract(domain).suffix:
             if "*" in domain:
@@ -309,7 +337,7 @@ def arrange_iocs_indicator_to_xsoar(file_path: str, parsed_indicators: list, par
 def get_stix_indicators(repo_files_content):
     stix_client = STIX2XSOARParser({})
     generator_stix_files = create_stix_generator(repo_files_content)
-    indicators = stix_client.load_stix_objects_from_envelope(generator_stix_files) # type: ignore
+    indicators = stix_client.load_stix_objects_from_envelope(generator_stix_files)  # type: ignore
     return indicators
 
 
@@ -393,11 +421,10 @@ def test_module(client: Client, params) -> str:
         client._http_request("GET", full_url=client._base_url)
     except Exception as e:
         if "Not Found" in str(e):
-            return "Not Found error please check the 'Owner / Repo' names"
+            return f"Not Found error please check the 'Owner / Repo' names  The error massage:{e}"
         elif "Bad credentials" in str(e):
-            return "Bad credentials error please check the API Token"
+            return f"Bad credentials error please check the API Token  The error massage:{e}"
         return str(f"{e}")
-
     return "ok"
 
 
@@ -426,7 +453,7 @@ def fetch_indicators(
     since = params.get("fetch_since", "90 days ago")
     until = "now"
     is_first_fetch = not last_commit_fetch
-    base_commit_sha = last_commit_fetch or client.get_base_head_commits_sha(since, until)[-1]
+    base_commit_sha = last_commit_fetch or client.get_commits_between_dates(since, until)[-1]
     head_commit = params.get("branch_head", "")
     iterator, last_commit_info = get_indicators(client, params, base_commit_sha, head_commit, is_first_fetch)
     indicators = []
@@ -476,14 +503,14 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
     Returns:
         Outputs.
     """
-    limit = arg_to_number(args.get('limit'))
+    limit = arg_to_number(args.get("limit"))
     indicators = []
     try:
         if limit and limit <= 0:
-            raise ValueError('Limit must be a positive number.')
+            raise ValueError("Limit must be a positive number.")
         since = args.get("since", "7 days ago")
         until = args.get("until", "now")
-        all_commits = client.get_base_head_commits_sha(since, until)
+        all_commits = client.get_commits_between_dates(since, until)
         if not all_commits:
             indicators = []
             human_readable = "#### No commits were found in the given time range"

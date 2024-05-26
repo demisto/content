@@ -1,6 +1,6 @@
 # Feed GitHub
 
-The integration supports the following workflows:
+The integration supports the following workflow:
 
 - Publication of indicators from a specific repo
 
@@ -8,7 +8,7 @@ The integration supports the following workflows:
  the owner(username), repo(repository) name, and API key as parameters for the
  integration.
 
-#### It is recommended to use Api Token in order to avoid the rate limit
+#### It is recommended to use Api Token in order to avoid being rate limited.
 
 To generate your personal access token, visit:[GitHub](https://github.com/settings/tokens)
 

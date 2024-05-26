@@ -12,7 +12,7 @@ configuration:
   display: Base URL
   name: url
   type: 0
-  additionalinfo: The URL to the github repository
+  additionalinfo: The URL to the github api
   section: Connect
   required: true
 - displaypassword: API Token
@@ -36,7 +36,7 @@ configuration:
   display: Repository / Path to fetch
   name: repo
   type: 0
-  additionalinfo: The repository name
+  additionalinfo: The name of the repository
   section: Connect
   required: true
 - defaultvalue: ""
@@ -47,7 +47,11 @@ configuration:
   - STIX
   - IOCs
   type: 15
-  additionalinfo: Predefined list of indicator types
+  additionalinfo: |
+    Predefined list of indicator types:
+    - YARA: Parses YARA rules from the feed.
+    - STIX: Parses STIX data from the feed.
+    - IOCs: Parses Indicators of Compromise (IOCs) using regex patterns.
   section: Collect
   required: true
 - display: Branch name
@@ -94,7 +98,7 @@ configuration:
   required: false
   type: 15
 - display: First fetch time
-  additionalinfo: First commit date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
+  additionalinfo: First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago"
   name: fetch_since
   type: 0
   defaultvalue: '90 days ago'
@@ -127,7 +131,7 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- additionalinfo: Supports CSV values.
+- additionalinfo: Insert as a comma-separated list
   display: Tags
   name: feedTags
   required: false
@@ -138,14 +142,14 @@ script:
   commands:
   - arguments:
     - defaultValue: '7 days'
-      description: ''
+      description: 'The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc.'
       name: since
-    - description: ''
+    - description: 'The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc.'
       name: until
     - defaultValue: '50'
       description: The maximum number of results to return.
       name: limit
-    description: Gets indicators from the feed.
+    description: Gets indicators from the feed within a specified date range and up to a maximum limit..
     name: github-get-indicators
   dockerimage: demisto/taxii2:1.0.0.94196
   feed: true

@@ -1,9 +1,9 @@
-rule HvS_APT27_HyperBro_Decrypted_Stage2 {
+rule Lorem_Ipsum {
    meta:
-      description = "HyperBro Stage 2 and compressed Stage 3 detection"
+      description = "broking yara rule test"
       license = "https://creativecommons.org/licenses/by-nc/4.0/"
-      author = "Moritz Oettle"
-      reference = "https://www.hvs-consulting.de/en/threat-intelligence-report-emissary-panda-apt27"
+      author = "Lorem ipsum"
+      reference = "https://www."
       date = "2022-02-07"
       hash1 = "fc5a58bf0fce9cb96f35ee76842ff17816fe302e3164bc7c6a5ef46f6eff67ed"
       id = "039e5d41-eadb-5c53-82cd-20ffd4105326"

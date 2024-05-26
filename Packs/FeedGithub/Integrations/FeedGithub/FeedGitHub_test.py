@@ -112,6 +112,28 @@ def test_filter_out_files_by_status():
     assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
 
 
+def test_split_yara_rules():
+    """
+    Test the split_yara_rules function.
+    Given:
+    - Yara rule sets from 'test_data/test-split-yara-critical-rule.yar' and 'test_data/test-split-yara-1.yar'.
+    - Expected split result from 'test_data/split-critical-yara-rule-res.json'.
+    When:
+    - split_yara_rules is called on both Yara rule sets.
+    Then:
+    - The number of rules from 'test_data/test-split-yara-1.yar' is 6.
+    - The split result of 'test_data/test-split-yara-critical-rule.yar' matches the expected result.
+    """
+    from FeedGitHub import split_yara_rules
+
+    aaa = util_load_txt("test_data/test-split-yara-critical-rule.yar")
+    bbb = split_yara_rules(aaa)
+    yara_content = util_load_txt("test_data/test-split-yara-1.yar")
+    yara_rules = split_yara_rules(yara_content)
+    assert len(yara_rules) == 6
+    assert bbb == util_load_json("test_data/split-critical-yara-rule-res.json")
+
+
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_parse_and_map_yara_content(mocker):
     """
@@ -196,29 +218,6 @@ def test_negative_limit(mocker):
     assert ve.value.args[0] == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
 
 
-# def test_build_iterator(requests_mock):
-#     """
-
-#     Given:
-#         - Output of the feed API
-#     When:
-#         - When calling fetch_indicators or get_indicators
-#     Then:
-#         - Returns a list of the indicators parsed from the API's response
-
-#     """
-#     with open("test_data/FeedHelloWorld_mock.txt") as file:
-#         response = file.read()
-#     requests_mock.get(URL, text=response)
-#     expected_url = "https://url1.com"
-#     client = mock_client()
-#     indicators = client.build_iterator()
-#     url_indicators = {
-#         indicator["value"] for indicator in indicators if indicator["type"] == "URL"
-#     }
-#     assert expected_url in url_indicators
-
-
 def test_fetch_indicators(mocker):
     """
     Given:
@@ -235,7 +234,7 @@ def test_fetch_indicators(mocker):
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "setLastRun")
     params = {"fetch_since": "15 days ago"}
-    mocker.patch.object(client, "get_base_head_commits_sha", return_value="046a799ebe004e1bff686d6b774387b3bdb3d1ce")
+    mocker.patch.object(client, "get_commits_between_dates", return_value="046a799ebe004e1bff686d6b774387b3bdb3d1ce")
     mocker.patch.object(
         FeedGitHub,
         "get_indicators",
@@ -256,16 +255,17 @@ def test_get_indicators_command(mocker):
     Then:
      - Returns the human-readable output matching the expected results.
     """
-    
+
     import FeedGitHub
     from CommonServerPython import tableToMarkdown
+
     client = mock_client()
     # args = {"limit": "6", "since": "15 days ago", "until": "now"}
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
     mocker.patch.object(
         client,
-        "get_base_head_commits_sha",
+        "get_commits_between_dates",
         return_value=[
             "9a611449423b9992c126c20e47c5de4f58fc1c0e",
             "aabaf42225cb4d18e338bc5c8c934f25be814704",
