@@ -41,8 +41,11 @@ CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
 CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
 EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
+#make it a string that can get a paramaeter the api version as parameter
 
-BASE_URL_SUFFIX = '/api/v1'
+BASE_URL_SUFFIX =
+
+
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
@@ -162,13 +165,13 @@ PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='page
                                    description='The max number of resources to return. defaults to 50',
                                    default=DEFAULT_LIMIT), ]
 GROUP_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Group name to filter by.'),
-                      InputArgument(name=CommandArguments.USER_ID,
-                                    description='User id to filter by membership. “nil” will return groups with no members.'),
-                      InputArgument(name=CommandArguments.CONNECTION,
-                                    description='Connection id or name to filter by.'),
-                      InputArgument(name=CommandArguments.CLIENT_ID,
-                                    description='Client id to filter by membership. “nil” will return groups with no members.'),
-                      ] + PAGINATION_INPUTS
+                     InputArgument(name=CommandArguments.USER_ID,
+                                   description='User id to filter by membership. “nil” will return groups with no members.'),
+                     InputArgument(name=CommandArguments.CONNECTION,
+                                   description='Connection id or name to filter by.'),
+                     InputArgument(name=CommandArguments.CLIENT_ID,
+                                   description='Client id to filter by membership. “nil” will return groups with no members.'),
+                     ] + PAGINATION_INPUTS
 GROUP_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group.'),
                        InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.'), ]
 GROUP_DELETE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group'),
@@ -649,7 +652,8 @@ EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certifica
 class CipherTrustClient(BaseClient):
     """ A client class to interact with the Thales CipherTrust API """
 
-    def __init__(self, username: str, password: str, base_url: str, proxy: bool, verify: bool):
+    def __init__(self, username: str, password: str, server_url: str, proxy: bool, verify: bool, api_version='v1'):
+        base_url = urljoin(server_url, f'api/{api_version}')
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         res = self._create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
@@ -1432,7 +1436,6 @@ def main():
     command = demisto.command()
 
     server_url = params.get('server_url')
-    base_url = urljoin(server_url, BASE_URL_SUFFIX)
 
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
@@ -1473,7 +1476,7 @@ def main():
         client = CipherTrustClient(
             username=username,
             password=password,
-            base_url=base_url,
+            base_url=server_url,
             verify=verify,
             proxy=proxy)
 

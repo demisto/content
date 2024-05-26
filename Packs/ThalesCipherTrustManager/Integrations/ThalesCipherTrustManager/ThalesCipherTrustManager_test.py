@@ -15,13 +15,6 @@ import json
 from Packs.ThalesCipherTrustManager.Integrations.ThalesCipherTrustManager.ThalesCipherTrustManager import CommandArguments
 
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
-MOCK_GROUP_LIST_RESPONSE = {
-    'resources': [
-        {'id': '1', 'name': 'Admins', 'description': 'Admin group'},
-        {'id': '2', 'name': 'Users', 'description': 'User group'}
-    ]
-}
-
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
@@ -57,30 +50,19 @@ GROUPS_LIST_TEST_ARGS = [
 @pytest.mark.parametrize('args', GROUPS_LIST_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 @patch('CommonServerPython.tableToMarkdown')
-def test_group_list_command(mock_tableToMarkdown, mock_get_groups_list, args):
-    from ThalesCipherTrustManager import CipherTrustClient, groups_list_command
-    mock_get_groups_list.return_value = {
-        'resources': [
-            {'id': '1', 'name': 'Admins', 'description': 'Admin group'},
-            {'id': '2', 'name': 'Users', 'description': 'User group'}
-        ]
-    }
-
-    mock_tableToMarkdown.return_value = 'groups'
+def test_group_list_command(mock_get_group_list, args):
+    from ThalesCipherTrustManager import CipherTrustClient, group_list_command
+    mock_get_group_list.return_value = util_load_json('test_data/group_list.json')
 
     client = CipherTrustClient(username='user', password='pass', base_url='https://example.com', verify=False, proxy=False)
 
-    result = groups_list_command(client, args)
+    result = group_list_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'CipherTrust.Group'
-    assert result.outputs == mock_get_groups_list.return_value
-    assert result.raw_response == mock_get_groups_list.return_value
+    assert result.outputs == mock_get_group_list.return_value
+    assert result.raw_response == mock_get_group_list.return_value
     assert result.readable_output == 'groups'
-
-    # mock_get_groups_list.assert_called_twice()
-
-    # mock_tableToMarkdown.assert_called_once_with('groups', mock_get_groups_list.return_value.get('resources'))
 
 
 def test_group_create_command():

@@ -54,7 +54,7 @@ def get_fetch_times(last_fetch):
 
 class Client:
     def __init__(self, proofpoint_url, api_version, verify, service_principal, secret, proxies):
-        self.base_url = proofpoint_url
+        self.basCliente_url = proofpoint_url
         self.api_version = api_version
         self.verify = verify
         self.service_principal = service_principal
