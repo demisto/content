@@ -49,8 +49,18 @@ policy_args = {
     'fromType': 'free_mail_domains',
     'fromValue': 'gmail.com',
     'toType': 'email_domain',
-    'toValue': 'gmail.com'
+    'toValue': 'gmail.com',
+    'bidirectional': '',
+    'comment': '',
+    'enabled': '',
+    'enforced': '',
+    'override': '',
+    'toDate': '',
+    'fromDate': '',
+    'fromEternal': '',
+    'toEternal': ''
 }
+
 
 get_args_response = (policy_args, 'no_action')
 
@@ -837,7 +847,7 @@ def test_update_antispoofing_bypass_policy_command(mocker):
         "description": "test_1",
         "enabled": "true",
         "from_eternal": "true",
-        "id": "eNo11111",
+        "policy_id": "eNo11111",
         "option": "disable_bypass",
         "to_eternal": "true",
     }
@@ -845,7 +855,7 @@ def test_update_antispoofing_bypass_policy_command(mocker):
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     result = MimecastV2.update_antispoofing_bypass_policy_command(args)
     assert mock_response.get('data') == result.outputs.get('data')
-    assert f'Policy ID- {args["id"]} has been updated successfully.' == result.readable_output
+    assert f'Policy ID- {args["policy_id"]} has been updated successfully.' == result.readable_output
     assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
 
 
@@ -867,10 +877,10 @@ def test_update_address_alteration_policy_command(mocker):
         "enabled": "yes",
         "enforced": "no",
         "from_eternal": "yes",
-        "id": "eNo1jrsOgjAAA",
+        "policy_id": "eNo1jrsOgjAAA",
         "to_eternal": "yes",
     }
-    id = args['id']
+    id = args['policy_id']
     mock_response = util_load_json('test_data/update_address_alteration_policy_response.json')
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.update_address_alteration_policy_command(args)

@@ -1000,15 +1000,15 @@ def get_arguments_for_policy_command(args):
      """
 
     spf_domain = args.get('spf_domain')
-    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
-    comment = args.get('comment')
-    enabled = argToBoolean(args.get('enabled')) if args.get('enabled') else None
-    enforced = argToBoolean(args.get('enforced')) if args.get('enforced') else None
-    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
-    from_eternal = argToBoolean(args.get('from_eternal')) if args.get('from_eternal') else None
-    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
-    to_eternal = argToBoolean(args.get('to_eternal')) if args.get('to_eternal') else None
-    override = argToBoolean(args.get('override')) if args.get('override') else None
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else ""
+    comment = args.get('comment', '')
+    enabled = argToBoolean(args.get('enabled')) if args.get('enabled') else ""
+    enforced = argToBoolean(args.get('enforced')) if args.get('enforced') else ""
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else ""  # type: ignore
+    from_eternal = argToBoolean(args.get('from_eternal')) if args.get('from_eternal') else ""
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else ""  # type: ignore
+    to_eternal = argToBoolean(args.get('to_eternal')) if args.get('to_eternal') else ""
+    override = argToBoolean(args.get('override')) if args.get('override') else ""
     description = args.get('description', '') or args.get('policy_description', '')
     from_part = args.get('fromPart', '') or args.get('from_part', '')
     from_type = args.get('fromType', '') or args.get('from_type', '')
@@ -1035,9 +1035,6 @@ def get_arguments_for_policy_command(args):
         'toEternal': to_eternal
     }
 
-    # Empty cleaning
-    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
-
     if spf_domain:
         policy_obj['conditions'] = {'spfDomains': [spf_domain]}
 
@@ -1052,6 +1049,7 @@ def create_block_sender_policy_command():
     context = {}
     policy_args = demisto.args()
     policy_obj, option = get_arguments_for_policy_command(policy_args)
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
     policy_list = create_or_update_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
@@ -1151,7 +1149,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
             if arg == "option":
                 option = policy_details["option"]
             else:
-                policy_obj[arg] = policy_details["policy"][arg]
+                policy_obj[arg] = policy_details["policy"].get(arg, "")
 
     return policy_obj, option, policy_id
 
@@ -1168,6 +1166,7 @@ def update_policy():
     if not policy_id:
         raise Exception("You need to enter policy ID")
     policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
     response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
     policy = response.get('policy')
     title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
@@ -3355,7 +3354,7 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
 
 def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     description = args.get('description')
-    id = args.get('id')
+    id = args.get('policy_id')
     enabled = argToBoolean(args.get('enabled'))
     from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
     from_eternal = argToBoolean(args.get('from_eternal'))
@@ -3406,10 +3405,11 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
 
 def create_address_alteration_policy_command(args: dict) -> CommandResults:
     policy_obj, _ = get_arguments_for_policy_command(args)
-    policy_id = args.get('policy_id')
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+    folder_id = args.get('folder_id')
 
     data: dict[str, Any] = {
-        'addressAlterationSetId': policy_id,
+        'addressAlterationSetId': folder_id,
         'policy': policy_obj
     }
 
@@ -3428,7 +3428,7 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
 
 
 def update_address_alteration_policy_command(args: dict) -> CommandResults:
-    id = args.get('id')
+    id = args.get('policy_id')
     policy_description = args.get('policy_description')
     bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
     comment = args.get('comment')

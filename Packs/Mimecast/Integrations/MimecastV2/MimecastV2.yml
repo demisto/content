@@ -18,7 +18,9 @@ configuration:
   section: Connect
 - display: Client Secret
   name: client_secret
-  type: 4
+  type: 9
+  hiddenusername: true
+  displaypassword: Client Secret
   additionalinfo: for API 2.0
   section: Connect
 - display: App ID
@@ -416,7 +418,7 @@ script:
       description: The receiver type.
       type: String
   - arguments:
-    - description: Policy ID. The policy ID can be retrieved using mimecast-list-policies use the data.id field. For type address-alteration provide the folderId from the data.addressAlterationSetId field.
+    - description: Policy ID. The policy ID can be retrieved using mimecast-list-policies use the data.id field.
       name: policyID
       required: true
     - description: According to this argument an endpoint is selected.
@@ -2549,6 +2551,9 @@ script:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
       type: string
+    - contextPath: Mimecast.Policies.addressAlterationSetId
+      description: Address Alteration ID.
+      type: string
     - contextPath: Mimecast.Policy.Sender.Address
       description: Block Sender by email address.
       type: string
@@ -2748,7 +2753,7 @@ script:
     arguments:
     - name: description
       description: Narrative to describe the policy for future reference.
-    - name: id
+    - name: policy_id
       description: The Mimecast secure id of an existing policy. Use /api/policy/antispoofing-bypass/get-policy to obtain the id.
       required: true
     - name: enabled
@@ -2860,8 +2865,8 @@ script:
   - name: mimecast-create-address-alteration-policy
     description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
     arguments:
-    - name: policy_id
-      description: The Mimecast secure id of the Address Alteration Set (folder) that will be applied by this policy.
+    - name: folder_id
+      description: The Mimecast secure id of the Address Alteration Set (folder) that will be applied by this policy. To provide this, run the mimecast-list-policies command and use the value from the `Mimecast.Policies.addressAlterationSetId` field.
       required: true
     - name: policy_description
       description: A description of the policies for future reference.
@@ -2875,7 +2880,7 @@ script:
     - name: comment
       description: Comment about the policy. This field is not visible within the Administration Console.
     - name: conditions
-      description: Policy application based on email transmission requirements.
+      description: Source IP Ranges for a policy it will only apply when the source IP address used to transmit the email data falls inside/matches the range(s) configured. IP ranges should be entered in CIDR notation.
     - name: enabled
       description: Determines if the policy should be enabled to process messages.
       auto: PREDEFINED
@@ -3013,7 +3018,7 @@ script:
   - name: mimecast-update-address-alteration-policy
     description: This API endpoint can be used to update an existing Address Alteration policy.
     arguments:
-    - name: id
+    - name: policy_id
       description: The Mimecast secure id of the Address Alteration policy to be modified.
       required: true
     - name: policy_description
@@ -3027,7 +3032,7 @@ script:
     - name: comment
       description: Comment about the policy. This field is not visible within the Administration Console.
     - name: conditions
-      description: Policy application based on email transmission requirements.
+      description: Source IP Ranges for a policy it will only apply when the source IP address used to transmit the email data falls inside/matches the range(s) configured. IP ranges should be entered in CIDR notation.
     - name: enabled
       description: Determines if the policy should be enabled to process messages.
       auto: PREDEFINED

@@ -1385,7 +1385,7 @@ Retrieves archive search logs.
 | Mimecast.ArchiveSearchLog.data.logs.description | String | The description of the search if any. | 
 
 #### Command example
-```!mimecast-get-archive-search-logs limit=1 query=user@gmail.com```
+```!mimecast-get-archive-search-logs limit=1 query=test@gmail.com```
 #### Context Example
 ```json
 {
@@ -1394,7 +1394,7 @@ Retrieves archive search logs.
             {
                 "createTime": "2024-03-04T12:27:02+0000",
                 "description": "Audit [Page 1] - Depth 100",
-                "emailAddr": "user@gmail.com",
+                "emailAddr": "test@gmail.com",
                 "searchReason": "",
                 "searchText": "test@gmail.com",
                 "source": "archive"
@@ -1409,7 +1409,7 @@ Retrieves archive search logs.
 >### Results
 >|createTime|description|emailAddr|searchReason|searchText|source|
 >|---|---|---|---|---|---|
->| 2024-03-04T12:27:02+0000 | Audit [Page 1] - Depth 100 | user@gmail.com |  | test@gmail.com | archive |
+>| 2024-03-04T12:27:02+0000 | Audit [Page 1] - Depth 100 | test@gmail.com |  | test@gmail.com | archive |
 
 
 ### mimecast-get-search-logs
@@ -1451,7 +1451,7 @@ Retrieves the search logs.
 | Mimecast.SearchLog.data.logs.description | String | The description of the search, if any. | 
 
 #### Command example
-```!mimecast-get-search-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000  query=user@gmail.com limit=1```
+```!mimecast-get-search-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000  query=test@gmail.com limit=1```
 #### Context Example
 ```json
 {
@@ -1460,7 +1460,7 @@ Retrieves the search logs.
             {
                 "createTime": "2024-05-06T12:01:42+0000",
                 "description": "Admin Search",
-                "emailAddr": "user@gmail.com",
+                "emailAddr": "test@gmail.com",
                 "isAdmin": true,
                 "museQuery": "<?xml version=\"1.0\"?> \n    <xmlquery trace=\"iql,muse\">\n    <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">\n        <smartfolders/>\n        <return-fields>\n            <return-field>attachmentcount</return-field>\n            <return-field>status</return-field>\n            <return-field>subject</return-field>\n            <return-field>size</return-field>\n            <return-field>receiveddate</return-field>\n            <return-field>displayfrom</return-field>\n            <return-field>id</return-field>\n            <return-field>displayto</return-field>\n            <return-field>smash</return-field>\n        </return-fields>\n    </metadata>\n    <muse>\n        <text></text>\n        <date select=\"last_year\"/>\n        \n        <docs select=\"optional\"></docs>\n        <route/>\n    </muse>\n</xmlquery>",
                 "searchPath": "",
@@ -1478,7 +1478,7 @@ Retrieves the search logs.
 >### Results
 >|createTime|description|emailAddr|isAdmin|museQuery|searchPath|searchReason|searchText|source|
 >|---|---|---|---|---|---|---|---|---|
->| 2024-05-06T12:01:42+0000 | Admin Search | user@gmail.com | true | <?xml version="1.0"?> <br/>    <xmlquery trace="iql,muse"><br/>    <metadata query-type="emailarchive" archive="true" active="false" page-size="25" startrow="0"><br/>        <smartfolders/><br/>        <return-fields><br/>            <return-field>attachmentcount</return-field><br/>            <return-field>status</return-field><br/>            <return-field>subject</return-field><br/>            <return-field>size</return-field><br/>            <return-field>receiveddate</return-field><br/>            <return-field>displayfrom</return-field><br/>            <return-field>id</return-field><br/>            <return-field>displayto</return-field><br/>            <return-field>smash</return-field><br/>        </return-fields><br/>    </metadata><br/>    <muse><br/>        <text></text><br/>        <date select="last_year"/><br/>        <br/>        <docs select="optional"></docs><br/>        <route/><br/>    </muse><br/></xmlquery> |  |  | {"query":""} | archive |
+>| 2024-05-06T12:01:42+0000 | Admin Search | test@gmail.com | true | <?xml version="1.0"?> <br/>    <xmlquery trace="iql,muse"><br/>    <metadata query-type="emailarchive" archive="true" active="false" page-size="25" startrow="0"><br/>        <smartfolders/><br/>        <return-fields><br/>            <return-field>attachmentcount</return-field><br/>            <return-field>status</return-field><br/>            <return-field>subject</return-field><br/>            <return-field>size</return-field><br/>            <return-field>receiveddate</return-field><br/>            <return-field>displayfrom</return-field><br/>            <return-field>id</return-field><br/>            <return-field>displayto</return-field><br/>            <return-field>smash</return-field><br/>        </return-fields><br/>    </metadata><br/>    <muse><br/>        <text></text><br/>        <date select="last_year"/><br/>        <br/>        <docs select="optional"></docs><br/>        <route/><br/>    </muse><br/></xmlquery> |  |  | {"query":""} | archive |
 
 
 ### mimecast-get-view-logs
@@ -1516,7 +1516,7 @@ Retrieves the email view logs.
 | Mimecast.SearchLog.discoveryCase | Boolean | Indicates if the viewed message is a part of an existing discovery case. | 
 
 #### Command example
-```!mimecast-get-view-logs start="1 day"  end=2024-09-16T14:49:18+0000 query=user@gmail.com limit=1```
+```!mimecast-get-view-logs start="1 day"  end=2024-09-16T14:49:18+0000 query=test@gmail.com limit=1```
 #### Context Example
 ```json
 {
@@ -1531,7 +1531,7 @@ Retrieves the email view logs.
                 "subject": "Re",
                 "to": "admin2@gmail.com",
                 "viewed": "2023-08-03T12:06:01+0000",
-                "viewer": "user@gmail.com"
+                "viewer": "test@gmail.com"
             }
         ]
     }
@@ -1543,7 +1543,7 @@ Retrieves the email view logs.
 >### Results
 >|contentViewed|discoveryCase|from|messageDate|source|subject|to|viewed|viewer|
 >|---|---|---|---|---|---|---|---|---|
->| false | false | admin@gmail.com | 2023-08-03T10:59:31+0000 | Message Tracking | Re | admin2@gmail.com | 2023-08-03T12:06:01+0000 | user@gmail.com |
+>| false | false | admin@gmail.com | 2023-08-03T10:59:31+0000 | Message Tracking | Re | admin2@gmail.com | 2023-08-03T12:06:01+0000 | test@gmail.com |
 
 
 ### mimecast-list-account
