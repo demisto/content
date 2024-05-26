@@ -15,7 +15,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "2a2c4247489c73b6add4afaf7b92c6d831d1aaab" }
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "b68874175c3ed8b7515fc1759582d4d89029126b" }
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
