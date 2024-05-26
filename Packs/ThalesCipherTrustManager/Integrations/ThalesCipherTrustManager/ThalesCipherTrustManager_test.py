@@ -1,5 +1,6 @@
 import json
 
+
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
@@ -137,6 +138,29 @@ EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = []
+
+''' HELPER FUNCTIONS TESTS'''
+
+
+def test_derive_skip_and_limit_for_pagination():
+    from ThalesCipherTrustManager import derive_skip_and_limit_for_pagination
+    assert derive_skip_and_limit_for_pagination('100', '2', '25') == (25, 25)
+    assert derive_skip_and_limit_for_pagination('200', None, None) == (0, 200)
+    assert derive_skip_and_limit_for_pagination(None, '2', '30') == (30, 30)
+    assert derive_skip_and_limit_for_pagination(None, '2', None) == (50, 50)
+    assert derive_skip_and_limit_for_pagination(None, '3', None) == (100, 50)
+    with pytest.raises(ValueError):
+        derive_skip_and_limit_for_pagination(None, '1', '101')
+        derive_skip_and_limit_for_pagination(None, 'invalid', '30')
+        derive_skip_and_limit_for_pagination('invalid', None, None)
+
+
+@pytest.mark.parametrize('args', [])
+def test_add_expires_at_param(args):
+    pass
+
+
+''' COMMAND FUNCTIONS TESTS '''
 
 
 @pytest.mark.parametrize('args', GROUPS_LIST_TEST_ARGS)
@@ -330,7 +354,6 @@ def test_user_delete_command(mock_delete_user, args):
     assert result.readable_output == f'{args[CommandArguments.USER_ID]} has been deleted successfully!'
 
 
-
 @pytest.mark.parametrize('args', USER_PASSWORD_CHANGE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 def test_user_password_change_command(mock_change_current_user_password, args):
@@ -521,7 +544,6 @@ def test_local_certificate_delete_command(mock_delete_certificate, args):
     assert result.readable_output == f'{args[CommandArguments.LOCAL_CA_ID]} has been deleted successfully!'
 
 
-
 @pytest.mark.parametrize('args', CERTIFICATE_REVOKE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 def test_certificate_revoke_command(mock_revoke_certificate, args):
@@ -614,7 +636,8 @@ def test_external_certificate_update_command(mock_update_external_certificate, a
 @patch(MOCKER_HTTP_METHOD)
 def test_external_certificate_list_command(mock_get_external_certificates_list, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_certificate_list_command
-    mock_get_external_certificates_list.return_value = util_load_json('test_data/mock_external_certificate_list_response.json.json')
+    mock_get_external_certificates_list.return_value = util_load_json(
+        'test_data/mock_external_certificate_list_response.json.json')
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -625,4 +648,3 @@ def test_external_certificate_list_command(mock_get_external_certificates_list, 
     assert result.outputs_prefix == EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_get_external_certificates_list.return_value
     assert result.raw_response == mock_get_external_certificates_list.return_value
-

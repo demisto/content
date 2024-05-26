@@ -901,13 +901,13 @@ If API supports only 'limit' and 'offset'/'skip' as query parameters, then all 3
 def derive_skip_and_limit_for_pagination(limit, page, page_size):
     '''
     Derive skip and limit values for CipherTrust API pagination given Demisto pagination conventions
-    :type limit: str
+    :type limit:
     :param limit: limit value
 
-    :type page: str
+    :type page:
     :param page: page value
 
-    :type page_size: str
+    :type page_size:
     :param page_size: page size value
 
     :return: skip and limit values
@@ -969,7 +969,7 @@ def test_module(client: CipherTrustClient):
 def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
     """
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+    skip, limit = derive_skip_and_limit_for_pagination(args[CommandArguments.LIMIT],
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
     params = assign_params(
@@ -1060,7 +1060,7 @@ def users_list_command(client: CipherTrustClient, args: dict):
         raw_response = client.get_user(user_id=user_id)
         outputs = {'resources': [raw_response]}
     else:
-        skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+        skip, limit = derive_skip_and_limit_for_pagination(args[CommandArguments.LIMIT],
                                                            args.get(CommandArguments.PAGE),
                                                            args.get(CommandArguments.PAGE_SIZE))
         params = assign_params(
@@ -1197,7 +1197,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
         outputs = {'resources': [raw_response]}
     else:
-        skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+        skip, limit = derive_skip_and_limit_for_pagination(args[CommandArguments.LIMIT],
                                                            args.get(CommandArguments.PAGE),
                                                            args.get(CommandArguments.PAGE_SIZE))
         params = assign_params(
@@ -1298,7 +1298,7 @@ def certificate_issue_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-certificate-list', inputs_list=CERTIFICATE_LIST_INPUTS,
                             description=CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def certificate_list_command(client: CipherTrustClient, args: dict):
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+    skip, limit = derive_skip_and_limit_for_pagination(args[CommandArguments.LIMIT],
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
     params = assign_params(
@@ -1398,7 +1398,7 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict):
                             description=EXTERNAL_CERTIFICATE_LIST_DESCRIPTION,
                             outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_list_command(client: CipherTrustClient, args: dict):
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
+    skip, limit = derive_skip_and_limit_for_pagination(args[CommandArguments.LIMIT],
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
     params = assign_params(
