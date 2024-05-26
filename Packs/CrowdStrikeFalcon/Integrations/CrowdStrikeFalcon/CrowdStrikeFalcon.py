@@ -46,7 +46,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
 # Remove proxy if not set to true in params
-handle_proxy()
+PROXIES = handle_proxy()
 
 ''' KEY DICTIONARY '''
 
@@ -386,6 +386,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             data=data,
             files=files,
             params=params,
+            proxy=bool(PROXIES),
             resp_type='response',
             verify=USE_SSL,
             error_handler=error_handler,
@@ -416,6 +417,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     data=data,
                     files=files,
                     params=params,
+                    proxy=bool(PROXIES),
                     retries=5,
                     status_list_to_retry=[429],
                     resp_type='response',
