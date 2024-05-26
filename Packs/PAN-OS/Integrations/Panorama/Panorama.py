@@ -5470,6 +5470,7 @@ def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
+    demisto.debug(f"command called is {demisto.command()} with args {demisto.args()}")
     log_type = args.get('log-type')
     number_of_logs = arg_to_number(args.get('number_of_logs', 100))
     query = args.get('query')
@@ -5592,6 +5593,13 @@ def panorama_query_logs_command(args: dict):
                 readable_output=readable_output,
                 raw_response=parsed.raw
             ),
+            args_for_next_run={
+                'query_log_job_id': job_id,
+                'log-type': log_type,
+                'polling': argToBoolean(args.get('polling', 'false')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'timeout': arg_to_number(args.get('timeout', 120))
+            },
             continue_to_poll=parsed.ns.response.result.job.status != 'FIN'
         )
 
