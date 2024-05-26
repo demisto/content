@@ -41,7 +41,7 @@ SEARCH_OUTPUT_HEADERS_FOR_DOMAINS_SEARCH = ['Qualified Domain Name',
                                             #  'Whois Contact first Name',
                                             #  'Whois Contact last Name',
                                             #  'Whois Contact email'
-                                        ]
+                                            ]
 SEARCH_OUTPUT_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
                                                'Domain Label',
                                                'Domain Status Code',
@@ -51,7 +51,7 @@ SEARCH_OUTPUT_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
                                                'Admin Name',
                                                'Account Number',
                                                'Account Name'
-                                        ]
+                                               ]
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -84,7 +84,7 @@ def create_params_string(args):
     selectors_mapping = {
         'domain_name': 'domain',
         'registration_date': 'registrationDate',
-        'registration_org' : 'regOrg',
+        'registration_org': 'regOrg',
         'email': 'email',
         'organization': 'organization',
         'registry_expiry_date': 'registryExpiryDate',
@@ -102,7 +102,7 @@ def create_params_string(args):
             # prefixes = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
             # if args[arg_key] is str and len(args[arg_key]) >= 3 and args[arg_key][:3] in prefixes:
             #     param_for_filter.append(f"{param_key}={args[arg_key]}")
-            if arg_key in ['sort', 'page', 'page_size'] :
+            if arg_key in ['sort', 'page', 'page_size']:
                 additional_params.append(f"{param_key}={args[arg_key]}")
             else:
                 param_for_filter.append(f"{param_key}=={args[arg_key]}")
@@ -117,6 +117,7 @@ def create_params_string(args):
         params_str += "&" + "&".join(additional_params)
 
     return params_str
+
 
 def extract_required_fields_for_domains_search(domains_list):
     filtered_domains = []
@@ -147,6 +148,7 @@ def extract_required_fields_for_domains_search(domains_list):
 
     return filtered_domains
 
+
 def extract_required_fields_for_domains_configurations_list(filtered_configurations):
     filtered_configurations = []
 
@@ -166,6 +168,7 @@ def extract_required_fields_for_domains_configurations_list(filtered_configurati
         filtered_configurations.append(filtered)
 
     return filtered_configurations
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -215,7 +218,8 @@ def csc_domains_search_command(client: Client, args) -> Any:
     domains_with_required_fields = extract_required_fields_for_domains_search(domains_list)
 
     results = CommandResults(
-        readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields, headers=SEARCH_OUTPUT_HEADERS_FOR_DOMAINS_SEARCH),
+        readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields,
+                                        headers=SEARCH_OUTPUT_HEADERS_FOR_DOMAINS_SEARCH),
         outputs_prefix='CSCDomainManager.Domain',
         outputs_key_field='QualifiedDomainName',
         outputs=domains_with_required_fields
@@ -247,7 +251,7 @@ def csc_domains_configuration_list_command(client: Client, args):
 
     params_results = create_params_string(args)
     configurations_results = client.send_get_request(url_suffix="/domains/configuration", params=params_results)
-    
+
     configurations_list = configurations_results.get('configurations', [])
     configurations_with_required_fields = extract_required_fields_for_domains_configurations_list(configurations_list)
 
