@@ -53,7 +53,7 @@ CHROME_PROCESS = None
 WITH_ERRORS = demisto.params().get('with_error', True)
 
 # The default wait time before taking a screenshot
-DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
+DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0.3)), 0.3)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 TAB_CLOSE_WAIT_TIME = 1
 
@@ -441,7 +441,6 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         else:
             tab.Page.navigate(url=path)
 
-        time.sleep(0)  # pylint: disable=E9003
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
