@@ -15,8 +15,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchAlertsV2
 * SetAndHandleEmpty
+* SearchAlertsV2
 
 ### Commands
 
@@ -57,4 +57,4 @@ This playbook does not use any commands.
 
 ---
 
-![Get entity alerts by MITRE tactics_3](../doc_files/Get_entity_alerts_by_MITRE_tactics_3.png)
+![Get entity alerts by MITRE tactics](../doc_files/Get_entity_alerts_by_MITRE_tactics.png)
