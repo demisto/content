@@ -195,7 +195,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
-  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). Multiple Drilldown searches Enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info.
   options:
   - Drilldown
   - Asset

@@ -3,7 +3,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.1.1.
+This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.2.0.
 
 ## Use Cases
 ---
@@ -46,7 +46,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
     | HEC Token (HTTP Event Collector) |  | False |
     | HEC Token (HTTP Event Collector) |  | False |
     | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
-    | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). For more info about enrichment types see the integration additional info. | False |
+    | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple Drilldown searches Enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info. | False |
     | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
     | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
     | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
@@ -78,7 +78,8 @@ The integration allows for fetching Splunk notable events using a default query.
 This integration allows 3 types of enrichments for fetched notables: Drilldown, Asset, and Identity.
 
 #### Enrichment types
-1. **Drilldown search enrichment**: fetches the drilldown search configured by the user in the rule name that triggered the notable event and performs this search. The results are stored in the context of the incident under the **Drilldown** field.
+1. **Drilldown search enrichment**: fetches the drilldown search configured by the user in the rule name that triggered the notable event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follow: [{result1}, {result2}, {result3}].
+Getting results from multiple drilldown searches is supported from Enterprise Security v7.2.0. In that case, the results are stored in the context of the incident under the **Drilldown** field as follow: {<query_name>: {'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}]}}.
 2. **Asset search enrichment**: Runs the following query:
 *| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as * by asset_id*
 where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** and **dst_ip** from the fetched notable. The results are stored in the context of the incident under the **Asset** field.
@@ -135,7 +136,7 @@ Define the lookup table in Splunk.
 
 #### Troubleshooting enrichment status
 Each enriched incident contains the following fields in the incident context:
-- **successful_drilldown_enrichment**: whether the drill down enrichment was successful.
+- **successful_drilldown_enrichment**: whether the drill down enrichment was successful (in a case off a multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful).
 - **successful_asset_enrichment**: whether the asset enrichment was successful.
 - **successful_identity_enrichment**: whether the identity enrichment was successful.
 
