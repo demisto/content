@@ -161,7 +161,7 @@ PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='page
                      InputArgument(name=CommandArguments.LIMIT,
                                    description='The max number of resources to return. defaults to 50',
                                    default=DEFAULT_LIMIT), ]
-GROUPS_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Group name to filter by.'),
+GROUP_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Group name to filter by.'),
                       InputArgument(name=CommandArguments.USER_ID,
                                     description='User id to filter by membership. “nil” will return groups with no members.'),
                       InputArgument(name=CommandArguments.CONNECTION,
@@ -452,7 +452,7 @@ EXTERNAL_CERTIFICATE_LIST_INPUTS = [
                                    ] + PAGINATION_INPUTS
 ''' OUTPUTS '''
 
-GROUPS_LIST_OUTPUT = [
+GROUP_LIST_OUTPUT = [
     OutputArgument(name="limit", output_type=int,
                    description="The max number of records returned. Equivalent to 'limit' in SQL."),
     OutputArgument(name="skip", output_type=int,
@@ -665,7 +665,7 @@ class CipherTrustClient(BaseClient):
             },
         )
 
-    def get_groups_list(self, params: dict):
+    def get_group_list(self, params: dict):
         return self._http_request(
             method='GET',
             url_suffix=USER_MANAGEMENT_GROUPS_URL_SUFFIX,
@@ -960,13 +960,13 @@ def test_module(client: CipherTrustClient):
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    client.get_groups_list(params={})
+    client.get_group_list(params={})
     return 'ok'
 
 
-@metadata_collector.command(command_name='ciphertrust-groups-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
-                            inputs_list=GROUPS_LIST_INPUTS, outputs_list=GROUPS_LIST_OUTPUT)
-def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
+@metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
+                            inputs_list=GROUP_LIST_INPUTS, outputs_list=GROUP_LIST_OUTPUT)
+def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
     """
     """
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
@@ -980,12 +980,12 @@ def groups_list_command(client: CipherTrustClient, args: dict) -> CommandResults
         connection=args.get(CommandArguments.CONNECTION),
         clients=args.get(CommandArguments.CLIENT_ID)
     )
-    raw_response = client.get_groups_list(params=params)
+    raw_response = client.get_group_list(params=params)
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response,
-        readable_output=tableToMarkdown('groups', raw_response.get('resources'))
+        readable_output=tableToMarkdown('group', raw_response.get('resources'))
     )
 
 
@@ -1441,7 +1441,7 @@ def main():
     proxy = demisto.params().get('proxy', False)
 
     commands = {
-        'ciphertrust-groups-list': groups_list_command,
+        'ciphertrust-group-list': group_list_command,
         'ciphertrust-group-create': group_create_command,
         'ciphertrust-group-delete': group_delete_command,
         'ciphertrust-group-update': group_update_command,

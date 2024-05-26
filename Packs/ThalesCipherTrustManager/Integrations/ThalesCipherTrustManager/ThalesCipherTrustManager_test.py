@@ -15,6 +15,12 @@ import json
 from Packs.ThalesCipherTrustManager.Integrations.ThalesCipherTrustManager.ThalesCipherTrustManager import CommandArguments
 
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
+MOCK_GROUP_LIST_RESPONSE = {
+    'resources': [
+        {'id': '1', 'name': 'Admins', 'description': 'Admin group'},
+        {'id': '2', 'name': 'Users', 'description': 'User group'}
+    ]
+}
 
 
 def util_load_json(path):
@@ -22,12 +28,11 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-
 import pytest
 from unittest.mock import patch
 from CommonServerPython import CommandResults, tableToMarkdown
 
-# Define input arguments for parametrized tests
+#todo: test pagination?
 GROUPS_LIST_TEST_ARGS = [
     {
         CommandArguments.GROUP_NAME: 'Admins',
@@ -52,7 +57,7 @@ GROUPS_LIST_TEST_ARGS = [
 @pytest.mark.parametrize('args', GROUPS_LIST_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 @patch('CommonServerPython.tableToMarkdown')
-def test_groups_list_command(mock_tableToMarkdown, mock_get_groups_list, args):
+def test_group_list_command(mock_tableToMarkdown, mock_get_groups_list, args):
     from ThalesCipherTrustManager import CipherTrustClient, groups_list_command
     mock_get_groups_list.return_value = {
         'resources': [
@@ -63,7 +68,7 @@ def test_groups_list_command(mock_tableToMarkdown, mock_get_groups_list, args):
 
     mock_tableToMarkdown.return_value = 'groups'
 
-    client = CipherTrustClient(username='user', password='pass', base_url='https://example.com' , verify=False , proxy=False )
+    client = CipherTrustClient(username='user', password='pass', base_url='https://example.com', verify=False, proxy=False)
 
     result = groups_list_command(client, args)
 
@@ -76,10 +81,6 @@ def test_groups_list_command(mock_tableToMarkdown, mock_get_groups_list, args):
     # mock_get_groups_list.assert_called_twice()
 
     # mock_tableToMarkdown.assert_called_once_with('groups', mock_get_groups_list.return_value.get('resources'))
-
-
-
-
 
 
 def test_group_create_command():
