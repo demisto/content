@@ -1,7 +1,7 @@
 id: Rubrik Object Context Analysis - Rubrik Polaris
 version: -1
 name: Rubrik Object Context Analysis - Rubrik Polaris
-description: This playbook will investigate an object from the Rubrik Anomaly incident to get the Network or IT information based on the object type.
+description: This playbook will investigate based on the object type from the Rubrik Anomaly incident to retrieve the policy hits of the files related to the object.
 starttaskid: "0"
 tasks:
   "0":
@@ -140,7 +140,7 @@ tasks:
       id: 1cb54c33-0f08-4ef7-8852-95d374988334
       version: -1
       name: Rubrik File Context Analysis - Rubrik Polaris
-      description: This playbook fetches file context information for the provided file/folder/fileshare name and the object ID to get the policy hits.
+      description: This playbook fetches file context information for the provided file, folder, or file share name and the object ID to get the policy hits.
       playbookName: Rubrik File Context Analysis - Rubrik Polaris
       type: playbook
       iscommand: false

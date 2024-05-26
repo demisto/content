@@ -99,7 +99,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
     'geo-us': 'https://login.microsoftonline.com',
     'geo-eu': 'https://login.microsoftonline.com',
     'geo-uk': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
 }
@@ -1224,7 +1224,7 @@ class MicrosoftClient(BaseClient):
     def run_retry_on_rate_limit(args_for_next_run: dict):
         return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
                               scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
-                                                                 args=args_for_next_run))
+                                                                 args=args_for_next_run, timeout_in_seconds=900))
 
     def handle_error_with_metrics(self, res):
         MicrosoftClient.create_api_metrics(res.status_code)

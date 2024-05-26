@@ -147,6 +147,7 @@ tasks:
       - "20"
       - "21"
       - "23"
+      - "26"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -850,7 +851,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -555,
+          "x": -975,
           "y": 735
         }
       }
@@ -1455,10 +1456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 44ff2241-eeb3-4b0b-831f-79543662820f
+    taskid: feb4ec48-681e-44c1-8c02-4226ce97de5f
     type: regular
     task:
-      id: 44ff2241-eeb3-4b0b-831f-79543662820f
+      id: feb4ec48-681e-44c1-8c02-4226ce97de5f
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -1478,6 +1479,8 @@ tasks:
         complex:
           root: URL
           accessor: Data
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1538,7 +1541,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
+          "x": -730,
           "y": 460
         }
       }
@@ -1664,6 +1667,15 @@ tasks:
                 value:
                   simple: Zip archive data
               ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft Excel 2007+
+              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -1728,6 +1740,15 @@ tasks:
                     right:
                       value:
                         simple: Zip archive data
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Excel 2007+
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -1891,6 +1912,185 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 608bdaf3-5ea5-4ea7-85bc-0343f8535b0d
+    type: condition
+    task:
+      id: 608bdaf3-5ea5-4ea7-85bc-0343f8535b0d
+      version: -1
+      name: Is there a PPTX/XSLX file?
+      description: Checks if there is a PowerPoint or Excel file (PPTX/XSLX) in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsx
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: pptx
+                    ignorecase: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zip archive data
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft PowerPoint 2007+
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Excel 2007+
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: eefbac0c-db14-4ba0-85f7-fbb67a0f40b3
+    type: regular
+    task:
+      id: eefbac0c-db14-4ba0-85f7-fbb67a0f40b3
+      version: -1
+      name: Extract Hyper-Links from Office Files
+      description: 'Extracts hyperlinks from Office files. Supported file types are: xlsx, docx, pptx.'
+      scriptName: ExtractHyperlinksFromOfficeFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pptx
+              ignorecase: true
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Zip archive data
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft PowerPoint 2007+
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft Excel 2007+
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1911,8 +2111,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1815,
-        "width": 3125,
-        "x": -555,
+        "width": 3545,
+        "x": -975,
         "y": -10
       }
     }
@@ -2173,9 +2373,19 @@ outputs:
 - contextPath: QRCodeReader.IP
   description: The IPs extracted from the QR code image if they are present.
   type: String
+- contextPath: ExtractedHyperLink
+  description: Extracted hyperlinks from supported Office documents (xlsx,docx,pptx).
+  type: unknown
+- contextPath: ExtractedHyperLink.URL
+  description: The URL of the extracted hyperlink.
+  type: String
+- contextPath: ExtractedHyperLink.FileName
+  description: The Office file from which the hyperlinks are extracted.
+  type: String
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+quiet: true

@@ -117,7 +117,26 @@ script:
     - contextPath: FireMonSecurityManager.SIQL.matchId
       description: Resposne for the SIQL query.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.88772
+  - arguments:
+    - description: Page in which to retrieve results.  
+      name: page
+    - description: Number of results in the page.
+      name: pageSize
+    description: Get all the collectors in the inventory.
+    name: firemon-collector-get-all
+    outputs:
+    - contextPath: FireMonSecurityManager.Collector
+      description: Firemon Collector Infomation.
+  - arguments:
+    - description: Collector id.
+      name: id
+      required: true
+    description: Get collector status.
+    name: firemon-collector-get-status-byid
+    outputs:
+    - contextPath: FireMonSecurityManager.CollectorStatus
+      description: Firemon Collector Status.
+  dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   script: ''
   subtype: python3

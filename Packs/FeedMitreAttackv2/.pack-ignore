@@ -7,3 +7,7 @@ ignore=BA101
 [file:MITREIndicatorsByOpenIncidentsv2.yml]
 ignore=BA124
 
+[known_words]
+stixid
+firstseenbysource
+trafficlightprotocol

@@ -280,3 +280,9 @@ SaaS
 saas
 Symantec
 XQL
+STS
+DB
+WAF
+VPC
+GPT
+chatgpt

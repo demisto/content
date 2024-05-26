@@ -179,7 +179,10 @@ class Client(BaseClient):
         """
 
         if not args.get("caller", None):
-            raise ValueError('Caller must be specified to create incident.')
+            if not demisto.params().get('defaultCallerId'):
+                raise ValueError('Caller must be specified to create incident.')
+            else:
+                args['caller'] = demisto.params().get('defaultCallerId')
 
         request_params = prepare_touch_request_params(args)
 

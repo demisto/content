@@ -158,6 +158,20 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: "Whether to fetch only the essential incident's fields and minimize the incident's information."
+  display: Minimize Incident Information
+  name: exclude_fields
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Close all related alerts in XDR
+  name: close_alerts_in_xdr
+  required: false
+  additionalinfo: "Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR."
+  advanced: true
+  type: 8
+  section: Collect
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -205,9 +219,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+    - description: Deprecated. Use gte_creation_time instead.
       defaultValue: 3 days
       name: starred_incidents_fetch_window
+      deprecated: true
     description: |-
       Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
       If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
@@ -600,7 +615,7 @@ script:
       - LOW
     - description: Email address of the user to assign to the incident.
       name: assigned_user_mail
-    - description: Full name of the user assigned to the incident.
+    - description: Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument.
       name: assigned_user_pretty_name
     - auto: PREDEFINED
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
@@ -623,6 +638,13 @@ script:
       - 'true'
     - description: Add a comment to the incident.
       name: add_comment
+    - auto: PREDEFINED
+      description: Whether to resolve alerts related to a resolved incident. The incident is considered resolved when the status argument includes the "RESOLVED" or "resolve_comment" value.
+      name: resolve_alerts
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
@@ -3485,7 +3507,43 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.89009
+  - arguments:
+    - description: A comma-separated list of alert IDs.
+      name: alert_ids
+      required: true
+      isArray: true
+    - auto: PREDEFINED
+      description: Required severity to update alerts to.
+      name: severity
+      required: false
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+    - auto: PREDEFINED
+      description: New status for updated alerts.
+      name: status
+      required: false
+      predefined:
+      - new
+      - resolved_threat_handled
+      - under_investigation
+      - resolved_security_testing
+      - resolved_auto
+      - resolved_known_issue
+      - resolved_duplicate
+      - resolved_other
+      - resolved_false_positive
+      - resolved_true_positive
+    - description: Comment to append to updated alerts.
+      name: comment
+      required: false
+    description: |- 
+      Update one or more alerts with the provided arguments.
+      Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+    name: xdr-update-alert
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   isfetch:xpanse: false
   script: ''

@@ -1,0 +1,10 @@
+{
+    "success": {
+        "args": {},
+        "command": "safebreach-get-running-tests"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-running-tests"
+    }
+}

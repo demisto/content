@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from freezegun import freeze_time
 import pytest
@@ -50,7 +51,7 @@ def test_is_command_sanitized():
     # Twice additionalPollingCommandArgNames - fail
     command = "additionalPollingCommandArgNames additionalPollingCommandArgNames"
     result = is_command_sanitized(command)
-    assert result == (False, 'The value of additionalPollingCommandArgNames is malformed.')
+    assert result == (False, 'The value of additionalPollingCommandArgNames is malformed.'), '2 additionalPollingCommandArgNames'
 
     # 2 different args - pass
     command = "pollingCommandArgName additionalPollingCommandArgNames"
@@ -60,15 +61,21 @@ def test_is_command_sanitized():
     # 2 and 2 - fail
     command = "pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName additionalPollingCommandArgValues"
     result = is_command_sanitized(command)
-    assert result == (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')
+    result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.'
+    assert result == (False, result_message), '2 and 2'
 
     # 2 and 2 and 2 - fail
     command = "pollingCommand pollingCommandArgName additionalPollingCommandArgValues pollingCommand " \
               "pollingCommandArgName additionalPollingCommandArgValues"
     result = is_command_sanitized(command)
-
     result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is malformed.'
-    assert result == (False, result_message)
+    assert result == (False, result_message), '2 and 2 and 2'
+
+    # case insensitive 2 and 2 - fail
+    command = "pollingcommandargname additionalpollingcommandargvalues pollingCommandArgName additionalPollingCommandArgValues"
+    result = is_command_sanitized(command)
+    result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.'
+    assert result == (False, result_message), 'case insensitive 2 and 2'
 
 
 def test_get_command_string_pass():

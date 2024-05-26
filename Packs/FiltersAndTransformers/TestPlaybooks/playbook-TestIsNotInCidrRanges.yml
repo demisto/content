@@ -75,16 +75,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f3dc2819-a2ae-4a92-8b25-b8095e40230f
-    type: title
+    taskid: 844fd8b0-c218-478c-8a26-89558472efac
+    type: regular
     task:
-      id: f3dc2819-a2ae-4a92-8b25-b8095e40230f
+      id: 844fd8b0-c218-478c-8a26-89558472efac
       version: -1
-      name: Test Success
-      type: title
+      name: Set CIDR range
+      type: regular
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Set a value in context under the key you entered.'
+      script: Set
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -101,14 +102,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: cidr
+      value:
+        simple: 11.1.1.0/24
   "16":
     id: "16"
-    taskid: 710bd57d-5b5d-44dc-8e24-e5adc0f5a1d6
+    taskid: 6283a4ca-7e64-403b-882f-28dcf227e9b4
     type: regular
     task:
-      id: 710bd57d-5b5d-44dc-8e24-e5adc0f5a1d6
+      id: 6283a4ca-7e64-403b-882f-28dcf227e9b4
       version: -1
-      name: Set IPs
+      name: Set IP
       description: Set a value in context under the key you entered.
       type: regular
       iscommand: false
@@ -119,9 +128,9 @@ tasks:
       - "17"
     scriptarguments:
       key:
-        simple: ips
+        simple: ip
       value:
-        simple: '["11.1.1.1"]'
+        simple: '11.1.1.1'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -140,12 +149,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 0f38ac46-e0a7-4504-8fa4-9adf1fad6cd0
+    taskid: d9af0aa3-c1ed-4b00-886b-ccd80bed0371
     type: regular
     task:
-      id: 0f38ac46-e0a7-4504-8fa4-9adf1fad6cd0
+      id: d9af0aa3-c1ed-4b00-886b-ccd80bed0371
       version: -1
-      name: Set CIDR ranges
+      name: Set CIDR range
       description: Set a value in context under the key you entered.
       type: regular
       iscommand: false
@@ -156,9 +165,9 @@ tasks:
       - "18"
     scriptarguments:
       key:
-        simple: cidrs
+        simple: cidr
       value:
-        simple: '["192.168.1.0/24"]'
+        simple: '192.168.1.0/24'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -181,12 +190,12 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ips
+              simple: ip
           operator: IsNotInCidrRanges
           right:
             iscontext: true
             value:
-              simple: cidrs
+              simple: cidr
       label: "yes"
     continueonerrortype: ""
     id: "18"
@@ -202,12 +211,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8921485d-938a-40ce-88b2-dd43e3794b2f
+      id: fa5c3d98-54cf-41e6-89ed-ed8340d72fa8
       iscommand: false
       name: IsNotInCIDRRanges?
       type: condition
       version: -1
-    taskid: 8921485d-938a-40ce-88b2-dd43e3794b2f
+    taskid: fa5c3d98-54cf-41e6-89ed-ed8340d72fa8
     timertriggers: []
     type: condition
     view: |-
@@ -217,12 +226,82 @@ tasks:
           "y": 720
         }
       }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ip
+          operator: IsNotInCidrRanges
+          right:
+            iscontext: true
+            value:
+              simple: cidr
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ecea9613-d219-44bc-8c9f-9a7b31dc5d0c
+      iscommand: false
+      name: IsNotInCIDRRanges?
+      type: condition
+      version: -1
+    taskid: ecea9613-d219-44bc-8c9f-9a7b31dc5d0c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14e9c3f1-8dcd-4330-86c0-4c0e12bdff7d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 14e9c3f1-8dcd-4330-86c0-4c0e12bdff7d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
@@ -232,4 +311,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.9.0
+sourceplaybookid: TestIsNotInCidrRanges
 description: ''

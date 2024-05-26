@@ -3039,7 +3039,7 @@ RESPONSE_FETCH = {
                 'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '',
                 'close_notes': '',
                 'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
-                'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
+                'sys_id': 'sys_id1', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
                 'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
                 'u_custom_field_test': 'NYC', 'activity_due': '', 'assigned_to': '', 'severity': '3', 'comments': '',
                 'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '',
@@ -3072,7 +3072,7 @@ RESPONSE_FETCH = {
                 'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '',
                 'close_notes': '',
                 'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
-                'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
+                'sys_id': 'sys_id2', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
                 'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
                 'u_custom_field_test': 'NYC', 'activity_due': '', 'assigned_to': '', 'severity': '3', 'comments': '',
                 'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '',
@@ -3460,6 +3460,17 @@ MIRROR_COMMENTS_RESPONSE = {'result': [{
     'sys_id': '549fc0bfdbaa101053482fb748961941', 'sys_created_on': '2020-08-17 06:31:49', 'name': 'incident',
     'element_id': '9bf0f1afdbe6101053482fb748961908', 'sys_tags': '', 'value': 'This is a comment',
     'sys_created_by': 'admin', 'element': 'comments'}]}
+
+RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT = {
+    'sys_created_on': '2022-11-21 19:59:49',
+    'sys_created_by': 'admin',
+    'sys_id': '123456789',
+    'urgency': '3 - Low',
+    'severity': '3 - Low',
+    'comments': '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment'
+                '\n\n Mirrored from Cortex XSOAR\n\n'
+                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+}
 
 RESPONSE_COMMENTS_DISPLAY_VALUE = {
     'result': {'sys_created_on': {'display_value': '2022-11-21 20:59:49', 'value': '2022-11-21 19:59:49'},

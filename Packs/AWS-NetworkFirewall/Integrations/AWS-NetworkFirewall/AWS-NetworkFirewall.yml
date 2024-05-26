@@ -53,6 +53,15 @@ configuration:
   type: 4
   hidden: true
   required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -163,19 +172,19 @@ script:
       name: subnet_mappings_subnet_ids
       required: true
     - auto: PREDEFINED
-      description: <p>A flag indicating whether it is possible to delete the firewall. A setting of <code>TRUE</code> indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to <code>TRUE</code>.</p>
+      description: <p>A flag indicating whether it is possible to delete the firewall. A setting of <code>TRUE</code> indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to <code>TRUE</code>.</p>.
       name: delete_protection
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: <p>A setting indicating whether the firewall is protected against changes to the subnet associations. Use this setting to protect against accidentally modifying the subnet associations for a firewall that is in use. When you create a firewall, the operation initializes this setting to <code>TRUE</code>.</p>
+      description: <p>A setting indicating whether the firewall is protected against changes to the subnet associations. Use this setting to protect against accidentally modifying the subnet associations for a firewall that is in use. When you create a firewall, the operation initializes this setting to <code>TRUE</code>.</p>.
       name: subnet_change_protection
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: <p>A setting indicating whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to <code>TRUE</code>.</p>
+      description: <p>A setting indicating whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to <code>TRUE</code>.</p>.
       name: firewall_policy_change_protection
       predefined:
       - 'True'
@@ -186,7 +195,7 @@ script:
       name: tag_key
     - description: The Tags value identifier.
       name: tag_value
-    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2"'
+    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2".'
       name: tags
     description: Creates an AWS Network Firewall Firewall and accompanying FirewallStatus for a VPC.  The firewall defines the configuration settings for an AWS Network Firewall firewall. The settings that you can define at creation include the firewall policy, the subnets in your VPC to use for the firewall endpoints, and any tags that are attached to the firewall AWS resource.  After you create a firewall, you can provide additional settings, like the logging configuration.  To update the settings for a firewall, you use the operations that apply to the settings themselves, for example UpdateLoggingConfiguration, AssociateSubnets, and UpdateFirewallDeleteProtection.  To manage a firewall's tags, use the standard AWS resource tagging operations, ListTagsForResource, TagResource, and UntagResource. To retrieve information about firewalls, use ListFirewalls and DescribeFirewall.
     name: aws-network-firewall-create-firewall
@@ -271,7 +280,7 @@ script:
       name: tag_key
     - description: The Tags value identifier.
       name: tag_value
-    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2"'
+    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2".'
       name: tags
     description: Creates the firewall policy for the firewall according to the specifications.  An AWS Network Firewall firewall policy defines the behavior of a firewall, in a collection of stateless and stateful rule groups and other settings. You can use one firewall policy for multiple firewalls.
     name: aws-network-firewall-create-firewall-policy
@@ -340,7 +349,7 @@ script:
       name: tag_key
     - description: The Tags value identifier.
       name: tag_value
-    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2"'
+    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2".'
       name: tags
     description: Creates the specified stateless or stateful rule group, which includes the rules for network traffic inspection, a capacity setting, and tags.  You provide your rule group specification in your request using either RuleGroup or Rules.
     name: aws-network-firewall-create-rule-group
@@ -740,7 +749,7 @@ script:
       description: The type of storage destination to send these logs to. You can send logs to an Amazon S3 bucket, a CloudWatch log group, or a Kinesis Data Firehose delivery stream.
       type: Unknown
     - contextPath: AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs.LogDestination
-      description: "The named location for the logs, provided in a key:value mapping that is specific to the chosen destination type.   *  For an Amazon S3 bucket, provide the name of the bucket, with key bucketName, and optionally provide a prefix, with key prefix. The following example specifies an Amazon S3 bucket named DOC-EXAMPLE-BUCKET and the prefix alerts:   \"LogDestination\": { \"bucketName\": \"DOC-EXAMPLE-BUCKET\", \"prefix\": \"alerts\" }  \n *  For a CloudWatch log group, provide the name of the CloudWatch log group, with key logGroup. The following example specifies a log group named alert-log-group:   \"LogDestination\": { \"logGroup\": \"alert-log-group\" }  \n *  For a Kinesis Data Firehose delivery stream, provide the name of the delivery stream, with key deliveryStream. The following example specifies a delivery stream named alert-delivery-stream:   \"LogDestination\": { \"deliveryStream\": \"alert-delivery-stream\" }  \n "
+      description: "The named location for the logs, provided in a key:value mapping that is specific to the chosen destination type.   *  For an Amazon S3 bucket, provide the name of the bucket, with key bucketName, and optionally provide a prefix, with key prefix. The following example specifies an Amazon S3 bucket named DOC-EXAMPLE-BUCKET and the prefix alerts:   \"LogDestination\": { \"bucketName\": \"DOC-EXAMPLE-BUCKET\", \"prefix\": \"alerts\" }  \n *  For a CloudWatch log group, provide the name of the CloudWatch log group, with key logGroup. The following example specifies a log group named alert-log-group:   \"LogDestination\": { \"logGroup\": \"alert-log-group\" }  \n *  For a Kinesis Data Firehose delivery stream, provide the name of the delivery stream, with key deliveryStream. The following example specifies a delivery stream named alert-delivery-stream:   \"LogDestination\": { \"deliveryStream\": \"alert-delivery-stream\" }."
       type: Unknown
     - contextPath: AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs
       description: 'Defines the logging destinations for the logs for a firewall. Network Firewall generates logs for stateful rule groups. '
@@ -808,7 +817,7 @@ script:
       description: The domains that you want to inspect for in your traffic flows. To provide multiple domains, separate them with commas.
       type: Unknown
     - contextPath: AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.RulesSourceList.TargetTypes
-      description: TLS_SNI and HTTP_HOST
+      description: TLS_SNI and HTTP_HOST.
       type: Unknown
     - contextPath: AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.RulesSourceList.GeneratedRulesType
       description: Whether you want to allow or deny access to the domains in your target list.
@@ -1160,7 +1169,7 @@ script:
     - description: The Amazon Resource Name (ARN) of the resource.
       name: resource_arn
       required: true
-    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2"'
+    - description: 'List of Tags separated by Key Value. For example: "key=key1,value=value1;key=key2,value=value2".'
       name: tags
     description: 'Adds the specified tags to the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources, for purposes like billing. For example, you might set the tag key to "customer" and the value to the customer name or ID. You can specify one or more tags to add to each AWS resource, up to 50 tags for a resource. You can tag the AWS resources that you manage through AWS Network Firewall: firewalls, firewall policies, and rule groups.'
     name: aws-network-firewall-tag-resource
@@ -1201,7 +1210,7 @@ script:
     - description: 'The descriptive name of the firewall. You can''t change the name of a firewall after you create it. You must specify the ARN or the name, and you can specify both. '
       name: firewall_name
     - auto: PREDEFINED
-      description: <p>A flag indicating whether it is possible to delete the firewall. A setting of <code>TRUE</code> indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to <code>TRUE</code>.</p>
+      description: <p>A flag indicating whether it is possible to delete the firewall. A setting of <code>TRUE</code> indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to <code>TRUE</code>.</p>.
       name: delete_protection
       predefined:
       - 'True'
@@ -1217,7 +1226,7 @@ script:
       description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
       type: Unknown
     - contextPath: AWS-NetworkFirewall.FirewallAttributes.DeleteProtection
-      description: Delete protection
+      description: Delete protection.
       type: Unknown
     - contextPath: AWS-NetworkFirewall.FirewallAttributes.UpdateToken
       description: 'An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.  To make an unconditional change to the firewall, omit the token in your update request. Without the token, Network Firewall performs your updates regardless of whether the firewall has changed since you last retrieved it. To make a conditional change to the firewall, provide the token in your update request. Network Firewall uses the token to ensure that the firewall hasn''t changed since you last retrieved it. If it has changed, the operation fails with an InvalidTokenException. If this happens, retrieve the firewall again to get a current copy of it with a new token. Reapply your changes as needed, then try the operation again using the new token. '
@@ -1280,7 +1289,7 @@ script:
     - description: A description of the firewall policy.
       name: description
     - auto: PREDEFINED
-      description: <p>Indicates whether you want Network Firewall to just check the validity of the request, rather than run the request. </p> <p>If set to <code>TRUE</code>, Network Firewall checks whether the request can run successfully, but doesn't actually make the requested changes. The call returns the value that the request would return if you ran it with dry run set to <code>FALSE</code>, but doesn't make additions or changes to your resources. This option allows you to make sure that you have the required permissions to run the request and that your request parameters are valid. </p> <p>If set to <code>FALSE</code>, Network Firewall makes the requested changes to your resources. </p>
+      description: <p>Indicates whether you want Network Firewall to just check the validity of the request, rather than run the request. </p> <p>If set to <code>TRUE</code>, Network Firewall checks whether the request can run successfully, but doesn't actually make the requested changes. The call returns the value that the request would return if you ran it with dry run set to <code>FALSE</code>, but doesn't make additions or changes to your resources. This option allows you to make sure that you have the required permissions to run the request and that your request parameters are valid. </p> <p>If set to <code>FALSE</code>, Network Firewall makes the requested changes to your resources. </p>.
       name: dry_run
       predefined:
       - 'True'
@@ -1336,13 +1345,13 @@ script:
     - description: 'The descriptive name of the firewall. You can''t change the name of a firewall after you create it. You must specify the ARN or the name, and you can specify both. '
       name: firewall_name
     - auto: PREDEFINED
-      description: <p>A setting indicating whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to <code>TRUE</code>.</p>
+      description: <p>A setting indicating whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to <code>TRUE</code>.</p>.
       name: firewall_policy_change_protection
       predefined:
       - 'True'
       - 'False'
       required: true
-    description: Update the firewall policy change protection
+    description: Update the firewall policy change protection.
     name: aws-network-firewall-update-firewall-policy-change-protection
     outputs:
     - contextPath: AWS-NetworkFirewall.FirewallAttributes.UpdateToken
@@ -1392,7 +1401,7 @@ script:
       description: The type of storage destination to send these logs to. You can send logs to an Amazon S3 bucket, a CloudWatch log group, or a Kinesis Data Firehose delivery stream.
       type: Unknown
     - contextPath: AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs.LogDestination
-      description: "The named location for the logs, provided in a key:value mapping that is specific to the chosen destination type.   *  For an Amazon S3 bucket, provide the name of the bucket, with key bucketName, and optionally provide a prefix, with key prefix. The following example specifies an Amazon S3 bucket named DOC-EXAMPLE-BUCKET and the prefix alerts:   \"LogDestination\": { \"bucketName\": \"DOC-EXAMPLE-BUCKET\", \"prefix\": \"alerts\" }  \n *  For a CloudWatch log group, provide the name of the CloudWatch log group, with key logGroup. The following example specifies a log group named alert-log-group:   \"LogDestination\": { \"logGroup\": \"alert-log-group\" }  \n *  For a Kinesis Data Firehose delivery stream, provide the name of the delivery stream, with key deliveryStream. The following example specifies a delivery stream named alert-delivery-stream:   \"LogDestination\": { \"deliveryStream\": \"alert-delivery-stream\" }  \n "
+      description: "The named location for the logs, provided in a key:value mapping that is specific to the chosen destination type.   *  For an Amazon S3 bucket, provide the name of the bucket, with key bucketName, and optionally provide a prefix, with key prefix. The following example specifies an Amazon S3 bucket named DOC-EXAMPLE-BUCKET and the prefix alerts:   \"LogDestination\": { \"bucketName\": \"DOC-EXAMPLE-BUCKET\", \"prefix\": \"alerts\" }  \n *  For a CloudWatch log group, provide the name of the CloudWatch log group, with key logGroup. The following example specifies a log group named alert-log-group:   \"LogDestination\": { \"logGroup\": \"alert-log-group\" }  \n *  For a Kinesis Data Firehose delivery stream, provide the name of the delivery stream, with key deliveryStream. The following example specifies a delivery stream named alert-delivery-stream:   \"LogDestination\": { \"deliveryStream\": \"alert-delivery-stream\" }."
       type: Unknown
     - contextPath: AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs
       description: 'Defines the logging destinations for the logs for a firewall. Network Firewall generates logs for stateful rule groups. '
@@ -1429,7 +1438,7 @@ script:
     - description: 'A description of the rule group. '
       name: description
     - auto: PREDEFINED
-      description: <p>Indicates whether you want Network Firewall to just check the validity of the request, rather than run the request. </p> <p>If set to <code>TRUE</code>, Network Firewall checks whether the request can run successfully, but doesn't actually make the requested changes. The call returns the value that the request would return if you ran it with dry run set to <code>FALSE</code>, but doesn't make additions or changes to your resources. This option allows you to make sure that you have the required permissions to run the request and that your request parameters are valid. </p> <p>If set to <code>FALSE</code>, Network Firewall makes the requested changes to your resources. </p>
+      description: <p>Indicates whether you want Network Firewall to just check the validity of the request, rather than run the request. </p> <p>If set to <code>TRUE</code>, Network Firewall checks whether the request can run successfully, but doesn't actually make the requested changes. The call returns the value that the request would return if you ran it with dry run set to <code>FALSE</code>, but doesn't make additions or changes to your resources. This option allows you to make sure that you have the required permissions to run the request and that your request parameters are valid. </p> <p>If set to <code>FALSE</code>, Network Firewall makes the requested changes to your resources. </p>.
       name: dry_run
       predefined:
       - 'True'
@@ -1497,7 +1506,7 @@ script:
       - 'True'
       - 'False'
       required: true
-    description: Update the firewall subnet change  protection
+    description: Update the firewall subnet change  protection.
     name: aws-network-firewall-update-subnet-change-protection
     outputs:
     - contextPath: AWS-NetworkFirewall.UpdateToken
@@ -1512,7 +1521,7 @@ script:
     - contextPath: AWS-NetworkFirewall.SubnetChangeProtection
       description: A setting indicating whether the firewall is protected against changes to the subnet associations. Use this setting to protect against accidentally modifying the subnet associations for a firewall that is in use. When you create a firewall, the operation initializes this setting to TRUE.
       type: Unknown
-  dockerimage: demisto/boto3py3:1.0.0.87655
+  dockerimage: demisto/boto3py3:1.0.0.95377
   runonce: false
   script: '-'
   subtype: python3

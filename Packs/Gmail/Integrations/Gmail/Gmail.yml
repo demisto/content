@@ -229,6 +229,12 @@ script:
     - contextPath: File.Size
       description: File size.
       type: number
+    - contextPath: File.EntryID
+      description: The EntryID of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -355,6 +361,12 @@ script:
     - contextPath: File.Size
       description: Relevant only when include-attachments is set to True. File size.
       type: number
+    - contextPath: File.EntryID
+      description: The EntryID of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -1715,7 +1727,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.88704
+  dockerimage: demisto/google-api-py3:1.0.0.89766
   isfetch: true
   runonce: false
   script: '-'
