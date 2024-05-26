@@ -838,8 +838,8 @@ def test_fetch_assets(requests_mock):
 FETCH_ASSETS_EXAMPLES = [
     # export uuid 111 is valid, assets are returned.
     (
-        [{"id":  "asset_id_one", "name": "asset_name_one"}],
-        [{"id":  "asset_id_one", "name": "asset_name_one"}],
+        [{"id": "asset_id_one", "name": "asset_name_one"}],
+        [{"id": "asset_id_one", "name": "asset_name_one"}],
         {}
     ),
     # export uuid 111 is not valid, so new export uuid 222 is generated
@@ -886,5 +886,3 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
     assert new_last_run.get('assets_available_chunks') == expected_last_run.get('assets_available_chunks')
     assert new_last_run.get('nextTrigger') == expected_last_run.get('nextTrigger')
     assert new_last_run.get('type') == expected_last_run.get('type')
-
-
