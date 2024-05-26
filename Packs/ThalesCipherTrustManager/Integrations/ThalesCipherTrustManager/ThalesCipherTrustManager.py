@@ -31,7 +31,7 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-ISO_8601 = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
 GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
@@ -41,10 +41,6 @@ CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
 CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
 EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
-#make it a string that can get a paramaeter the api version as parameter
-
-BASE_URL_SUFFIX =
-
 
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
@@ -928,7 +924,7 @@ def optional_arg_to_bool(arg):
     return argToBoolean(arg) if arg is not None else arg
 
 
-def optional_arg_to_datetime_string(arg, date_format=ISO_8601):
+def optional_arg_to_datetime_string(arg, date_format=DATE_FORMAT):
     datetime_object = arg_to_datetime(arg)
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
