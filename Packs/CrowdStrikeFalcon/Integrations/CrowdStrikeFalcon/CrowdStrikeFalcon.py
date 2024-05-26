@@ -386,7 +386,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             files=files,
             params=params,
             proxy=PROXY,
-            prox
             resp_type='response',
             verify=USE_SSL,
             error_handler=error_handler,
