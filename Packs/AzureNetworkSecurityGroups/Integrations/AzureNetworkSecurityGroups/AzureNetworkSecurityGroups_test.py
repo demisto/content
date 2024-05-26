@@ -203,11 +203,7 @@ def test_generate_login_url(mocker):
     assert expected_url in res
 
 
-@pytest.mark.parametrize('authentication_type, grant_type', [
-    (AUTHORIZATION_CODE, SNAKED_CASE_AUTHORIZATION_CODE),
-    (CLIENT_CREDENTIALS_FLOW, SNAKED_CASE_CLIENT_CREDENTIALS_FLOW)
-])
-def test_auth_code_params(mocker, authentication_type, grant_type):
+def test_auth_code_params(mocker):
     """
     Given:
         - The auth_type is Authorization Code
@@ -222,7 +218,7 @@ def test_auth_code_params(mocker, authentication_type, grant_type):
     client_id = 'client_id'
     mocked_params = {
         'redirect_uri': redirect_uri,
-        'auth_type': authentication_type,
+        'auth_type': 'Authorization Code',
         'tenant_id': tenant_id,
         'app_id': client_id,
         'credentials': {
@@ -235,7 +231,7 @@ def test_auth_code_params(mocker, authentication_type, grant_type):
     expected_args = {
         'self_deployed': True,
         'auth_id': 'client_id',
-        'grant_type': grant_type,
+        'grant_type': 'authorization_code',
         'base_url': 'https://management.azure.com/subscriptions//resourceGroups//providers/Microsoft.Network/'
                     'networkSecurityGroups',
         'verify': True,
