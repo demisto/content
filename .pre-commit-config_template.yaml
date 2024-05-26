@@ -160,7 +160,7 @@ repos:
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     copy_files:
-    - Tests/scripts/pytest/conftest.py
+    - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     run_isolated: true
     pass_docker_extra_args:ci: --rm=false
