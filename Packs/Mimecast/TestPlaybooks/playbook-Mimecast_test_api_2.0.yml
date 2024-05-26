@@ -1,0 +1,741 @@
+id: bd01f3e5-621f-46ab-85c4-b222fccb14b7
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
+name: Mimecast test api 2.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e9460385-a26b-4273-816f-0549c6f6faf3
+    type: start
+    task:
+      id: e9460385-a26b-4273-816f-0549c6f6faf3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 223c5633-b1bd-492a-88f7-6de83445947c
+    type: regular
+    task:
+      id: 223c5633-b1bd-492a-88f7-6de83445947c
+      version: -1
+      name: mimecast-get-archive-search-logs
+      description: Retrieves archive search logs.
+      script: MimecastV2 - dev|||mimecast-get-archive-search-logs
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 00541b27-ecc3-4b03-8d4a-fbf26142f41a
+    type: regular
+    task:
+      id: 00541b27-ecc3-4b03-8d4a-fbf26142f41a
+      version: -1
+      name: mimecast-get-search-logs
+      description: Retrieves the search logs.
+      script: MimecastV2 - dev|||mimecast-get-search-logs
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      page:
+        simple: "2"
+      page_size:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 712a8709-1713-4025-8d1e-051cf2000205
+    type: regular
+    task:
+      id: 712a8709-1713-4025-8d1e-051cf2000205
+      version: -1
+      name: mimecast-get-view-logs
+      description: Retrieves the email view logs.
+      script: MimecastV2 - dev|||mimecast-get-view-logs
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      page:
+        simple: "2"
+      page_size:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 23c3f1a0-c898-4321-8cc3-e9f877c7c048
+    type: regular
+    task:
+      id: 23c3f1a0-c898-4321-8cc3-e9f877c7c048
+      version: -1
+      name: mimecast-list-account
+      description: This endpoint returns the summary details for an account in Mimecast.
+      script: MimecastV2 - dev|||mimecast-list-account
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5c9e1c11-51cd-4b53-8795-45c891f10563
+    type: regular
+    task:
+      id: 5c9e1c11-51cd-4b53-8795-45c891f10563
+      version: -1
+      name: mimecast-create-block-sender-policy
+      description: Create a Blocked Sender Policy.
+      script: MimecastV2 - dev|||mimecast-create-block-sender-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      description:
+        simple: test1
+      fromType:
+        simple: email_domain
+      fromValue:
+        simple: test1.com
+      option:
+        simple: no_action
+      toType:
+        simple: everyone
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7503d491-edda-4480-8c65-895ef8168515
+    type: regular
+    task:
+      id: 7503d491-edda-4480-8c65-895ef8168515
+      version: -1
+      name: mimecast-update-block-sender-policy
+      description: Updates the specified policy.
+      script: MimecastV2 - dev|||mimecast-update-block-sender-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      description:
+        simple: test2
+      fromType:
+        simple: everyone
+      fromValue:
+        simple: test2.com
+      option:
+        simple: block_sender
+      policy_id:
+        simple: ${Mimecast.Policy.ID}
+      toType:
+        simple: everyone
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: df97e995-e6c2-431c-85bc-8d2195ec9db5
+    type: regular
+    task:
+      id: df97e995-e6c2-431c-85bc-8d2195ec9db5
+      version: -1
+      name: mimecast-create-antispoofing-bypass-policy
+      description: This endpoint can be used to create a new Anti-Spoofing SPF based
+        Bypass policy.
+      script: MimecastV2 - dev|||mimecast-create-antispoofing-bypass-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      description:
+        simple: test
+      from_type:
+        simple: email_domain
+      from_value:
+        simple: google.com
+      option:
+        simple: disable_bypass
+      spf_domain:
+        simple: google.com
+      to_type:
+        simple: email_domain
+      to_value:
+        simple: amazon.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a2ff4580-1af7-4a64-86c4-da701f91abc9
+    type: regular
+    task:
+      id: a2ff4580-1af7-4a64-86c4-da701f91abc9
+      version: -1
+      name: mimecast-get-policy blockedsenders
+      description: Get a policy by ID.
+      script: MimecastV2 - dev|||mimecast-get-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.Policy.ID}
+      policyType:
+        simple: blockedsenders
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: eb289f15-1f25-4a65-8093-2082d37d9558
+    type: regular
+    task:
+      id: eb289f15-1f25-4a65-8093-2082d37d9558
+      version: -1
+      name: mimecast-update-antispoofing-bypass-policy
+      description: This endpoint can be used to update an existing Anti-Spoofing SPF
+        based Bypass policy.
+      script: MimecastV2 - dev|||mimecast-update-antispoofing-bypass-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      bidirectional:
+        simple: "yes"
+      description:
+        simple: test
+      from_date:
+        simple: 3 day
+      from_part:
+        simple: both
+      id:
+        simple: ${Mimecast.AntispoofingBypassPolicy.data.id}
+      option:
+        simple: disable_bypass
+      policy_id:
+        simple: ${Mimecast.AntispoofingBypassPolicy.data.id}
+      to_date:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 49d46a6c-f6c1-4b71-8c0e-ec5c6c95120d
+    type: regular
+    task:
+      id: 49d46a6c-f6c1-4b71-8c0e-ec5c6c95120d
+      version: -1
+      name: mimecast-list-policies address-alteration
+      description: List all existing Mimecast blocked sender policies.
+      script: MimecastV2 - dev|||mimecast-list-policies
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      limit:
+        simple: "1"
+      policyType:
+        simple: address-alteration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0adcf6f5-eda9-42e1-8122-2e940bc49b26
+    type: regular
+    task:
+      id: 0adcf6f5-eda9-42e1-8122-2e940bc49b26
+      version: -1
+      name: mimecast-create-address-alteration-policy
+      description: This API endpoint can be used to create a new Address Alteration
+        policy to apply an alteration definition based on sender and recipient values.
+      script: MimecastV2 - dev|||mimecast-create-address-alteration-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      bidirectional:
+        simple: "yes"
+      comment:
+        simple: test
+      conditions:
+        simple: 8.8.8.8/24
+      folder_id:
+        simple: ${Mimecast.Policies.addressAlterationSetId}
+      from_date:
+        simple: 2 day
+      from_part:
+        simple: header_from
+      from_type:
+        simple: email_domain
+      from_value:
+        simple: google.com
+      override:
+        simple: "yes"
+      policy_description:
+        simple: test_create
+      policy_id:
+        simple: ${Mimecast.Policies.addressAlterationSetId}
+      to_date:
+        simple: now
+      to_type:
+        simple: email_domain
+      to_value:
+        simple: google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d3d303dc-cdf4-4bf8-8e7f-ce09036069c2
+    type: regular
+    task:
+      id: d3d303dc-cdf4-4bf8-8e7f-ce09036069c2
+      version: -1
+      name: mimecast-update-address-alteration-policy
+      description: This API endpoint can be used to update an existing Address Alteration
+        policy.
+      script: MimecastV2 - dev|||mimecast-update-address-alteration-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      id:
+        simple: ${Mimecast.AddressAlterationPolicy.data.id}
+      policy_description:
+        simple: test_update
+      policy_id:
+        simple: ${Mimecast.AddressAlterationPolicy.data.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0c62f457-cedb-4442-8023-2671409610cf
+    type: regular
+    task:
+      id: 0c62f457-cedb-4442-8023-2671409610cf
+      version: -1
+      name: mimecast-get-policy antispoofing-bypass
+      description: Get a policy by ID.
+      script: MimecastV2 - dev|||mimecast-get-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.AntispoofingBypassPolicy.data.id}
+      policyType:
+        simple: antispoofing-bypass
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b3f14936-2edc-4599-82f0-f7788686e01f
+    type: regular
+    task:
+      id: b3f14936-2edc-4599-82f0-f7788686e01f
+      version: -1
+      name: mimecast-delete-policy address-alteration
+      description: Delete a Blocked Sender Policy.
+      script: MimecastV2 - dev|||mimecast-delete-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.Policies.id}
+      policyType:
+        simple: address-alteration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b099eec7-c25f-4413-8d57-dd8d768290a4
+    type: regular
+    task:
+      id: b099eec7-c25f-4413-8d57-dd8d768290a4
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d9ca8d50-351e-4c47-8aae-3ca406c3bb3f
+    type: regular
+    task:
+      id: d9ca8d50-351e-4c47-8aae-3ca406c3bb3f
+      version: -1
+      name: mimecast-get-policy address-alteration
+      description: Get a policy by ID.
+      script: MimecastV2 - dev|||mimecast-get-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.AddressAlterationPolicy.data.addressAlterationSetId}
+      policyType:
+        simple: address-alteration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 96e7ed29-26ba-452f-8e37-43209b285a88
+    type: regular
+    task:
+      id: 96e7ed29-26ba-452f-8e37-43209b285a88
+      version: -1
+      name: mimecast-delete-policy blockedsenders
+      description: Get a policy by ID.
+      script: MimecastV2 - dev|||mimecast-get-policy
+      type: regular
+      iscommand: true
+      brand: MimecastV2 - dev
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.Policy.ID}
+      policyType:
+        simple: blockedsenders
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3005,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
