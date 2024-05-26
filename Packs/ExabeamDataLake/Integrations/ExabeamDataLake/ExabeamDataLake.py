@@ -272,7 +272,8 @@ def main() -> None:    # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     cluster_name = params.get('cluster_name', 'local')
-
+    client = None
+    
     try:
         client = Client(
             base_url.rstrip('/'),
