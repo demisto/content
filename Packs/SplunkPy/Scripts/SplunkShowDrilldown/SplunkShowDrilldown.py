@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_RESULTS_TO_DISPLAY = 10 # TODO: need to remove this const (used only for demo)
+MAX_RESULTS_TO_DISPLAY = 10  # TODO: need to remove this const (used only for demo)
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
 
     if isinstance(drilldown_results, list):
         markdown = tableToMarkdown("", drilldown_results, headers=drilldown_results[0].keys())
-        
+
     elif isinstance(drilldown_results, dict):
         # Get drilldown results of multiple drilldown searches
         markdown = "#### Drilldown Searches Results\n"
@@ -37,9 +37,9 @@ def main():
             if results := value.get("query_results", []):
                 markdown += tableToMarkdown("", results[:MAX_RESULTS_TO_DISPLAY], headers=results[0].keys())
             else:
-               markdown += "\nNo results found for drilldown search."
+                markdown += "\nNo results found for drilldown search."
             markdown += "\n\n"
-            
+
     else:
         markdown = tableToMarkdown("", drilldown_results)
 

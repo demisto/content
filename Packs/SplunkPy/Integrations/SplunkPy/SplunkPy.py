@@ -560,7 +560,7 @@ class Enrichment:
 
         Returns:
             An instance of the Enrichment class constructed from JSON representation.
-        
+
         """
         return cls(
             enrichment_type=enrichment_dict.get(TYPE),
@@ -667,40 +667,40 @@ class Notable:
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
         demisto.debug("in to_incident function")
-        
+
         total_drilldown_searches = self.drilldown_searches_counter()
 
         for e in self.enrichments:
             if e.type == DRILLDOWN_ENRICHMENT and total_drilldown_searches > 1:
                 # A notable can have more than one drilldown search enrichment, in that case we will keep the searches results in
                 # a dictionary that it's keys are the search queries and the values are the search results
-                
-                if not self.data.get(e.type, {}): # first drilldown enrichment result to add - initiate the dict
-                    self.data[e.type] = {e.query_name : {"query_search" : e.query_search, "query_results" : e.data}}
-                    
-                else: # there are previous drilldown enrichments in the notable's data
-                    self.data[e.type][e.query_name] = {"query_search" : e.query_search, "query_results" : e.data}
-                    
+
+                if not self.data.get(e.type, {}):  # first drilldown enrichment result to add - initiate the dict
+                    self.data[e.type] = {e.query_name: {"query_search": e.query_search, "query_results": e.data}}
+
+                else:  # there are previous drilldown enrichments in the notable's data
+                    self.data[e.type][e.query_name] = {"query_search": e.query_search, "query_results": e.data}
+
                 if not self.data.get('successful_drilldown_enrichment'):
                     # Drilldown enrichment is successful if at least one drilldown search was successful
                     self.data['successful_drilldown_enrichment'] = e.status == Enrichment.SUCCESSFUL
-                    
-            else: # asset enrichment, identity enrichment or a single drilldown enrichment
-                  # (return a list to maintain Backwards compatibility)
+
+            else:  # asset enrichment, identity enrichment or a single drilldown enrichment
+                # (return a list to maintain Backwards compatibility)
                 self.data[e.type] = e.data
                 self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
         return self.create_incident(self.data, self.occurred, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                                     comment_tag_from_splunk=comment_tag_from_splunk)
-        
+
     def drilldown_searches_counter(self):
         """ Counts the drilldown searches of a notable """
         drilldown_search_cnt = 0
-        
+
         for e in self.enrichments:
             if e.type == DRILLDOWN_ENRICHMENT:
                 drilldown_search_cnt += 1
-        
+
         return drilldown_search_cnt
 
     def submitted(self) -> bool:
@@ -998,6 +998,7 @@ def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
 
     return earliest_offset, latest_offset
 
+
 def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -1009,7 +1010,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
     searches = []
-    
+
     for drilldown_search in drilldown_searches:
         try:
             search = json.loads(drilldown_search)
@@ -1017,10 +1018,10 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
         except json.JSONDecodeError as e:
             demisto.error(f"Caught an exception while parsing a drilldown search object."
                           f"Drilldown search is: {drilldown_search}, Original Error is: {str(e)}")
-        
+
     return searches
 
-          
+
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
     """ Performs a drilldown enrichment.
     If the notable has multiple drilldown searches, enriches all the drilldown searches.
@@ -1036,55 +1037,56 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     jobs_and_queries = []
     demisto.debug(f"notable data is: {notable_data}")
     if drilldown_search := ((notable_data.get("drilldown_search")) or argToList(notable_data.get("drilldown_searches", []))):
-            # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
-            # If a user set more than one drilldown search, we get a list of drilldown search objects (under
-            # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
-            # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
+        # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
+        # If a user set more than one drilldown search, we get a list of drilldown search objects (under
+        # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
+        # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
         raw_dict = rawToDict(notable_data.get("_raw", ""))
-        
+
         if isinstance(drilldown_search, list):
             # There are multiple drilldown searches to enrich
             searches = parse_drilldown_searches(drilldown_search)
-        
+
         else:
             # Got a single drilldown search (BC)
             searches = [drilldown_search]
-            
+
         total_searches = len(searches)
         demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches to enrich')
-            
+
         for i in range(total_searches):
             # Iterates over the drilldown searches of the given notable to enrich each one of them
             search = searches[i]
             demisto.debug(f'Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}')
-            
+
             if isinstance(search, dict):
                 query_name = search.get("name", "")
-                query_search = search.get("search","")
-                earliest_offset = search.get("earliest", "") # The earliest time to query from.
-                latest_offset = search.get("latest", "") # The latest time to query to.
-            
+                query_search = search.get("search", "")
+                earliest_offset = search.get("earliest", "")  # The earliest time to query from.
+                latest_offset = search.get("latest", "")  # The latest time to query to.
+
             else:
                 # Got a single drilldown search under the 'drilldown_search' key (BC)
                 query_search = search
                 query_name = notable_data.get("drilldown_name", "")
                 earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
-                
+
             try:
-                parsed_query_name =  build_drilldown_search(notable_data, query_name, raw_dict)
-                if not parsed_query_name: # if parsing failed - keep original unparsed name
-                    demisto.debug(f'Failed parsing drilldown search query name, using the original un-parsed name instead: {query_name}.')
-                    parsed_query_name = query_name # TODO: consult with Yuval about keeping the original name here.
+                parsed_query_name = build_drilldown_search(notable_data, query_name, raw_dict)
+                if not parsed_query_name:  # if parsing failed - keep original unparsed name
+                    demisto.debug(
+                        f'Failed parsing drilldown search query name, using the original un-parsed name instead: {query_name}.')
+                    parsed_query_name = query_name  # TODO: consult with Yuval about keeping the original name here.
             except Exception as e:
-                demisto.debug(f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
+                demisto.debug(
+                    f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
                 parsed_query_name = query_name
-            
-            
+
             if searchable_query := build_drilldown_search(
                 notable_data, query_search, raw_dict
             ):
                 demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
-                
+
                 if earliest_offset and latest_offset:
                     kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                     if latest_offset:
@@ -1096,7 +1098,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                     try:
                         job = service.jobs.create(query, **kwargs)
                         jobs_and_queries.append((parsed_query_name, query, job))
-                    
+
                     except Exception as e:
                         demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
                 else:
