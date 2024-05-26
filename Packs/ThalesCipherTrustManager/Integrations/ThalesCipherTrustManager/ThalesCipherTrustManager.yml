@@ -314,25 +314,8 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
-    name: ciphertrust-group-update
-    arguments:
-    - name: group_name
-      isArray: false
-      description: Name of the group.
-      required: true
-      secret: false
-      default: false
-    - name: description
-      isArray: false
-      description: description of the group.
-      required: false
-      secret: false
-      default: false
-    outputs: []
-  - deprecated: false
     description: "\n    "
-    name: ciphertrust-groups-list
+    name: ciphertrust-group-list
     arguments:
     - name: group_name
       isArray: false
@@ -414,6 +397,23 @@ script:
     - contextPath: CipherTrust.Group.resources.users_count
       description: It returns the total user count associated with the group
       type: Number
+  - deprecated: false
+    description: ''
+    name: ciphertrust-group-update
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group.
+      required: true
+      secret: false
+      default: false
+    - name: description
+      isArray: false
+      description: description of the group.
+      required: false
+      secret: false
+      default: false
+    outputs: []
   - deprecated: false
     description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
     name: ciphertrust-local-ca-create
