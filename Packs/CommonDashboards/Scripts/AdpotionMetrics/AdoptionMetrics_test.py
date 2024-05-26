@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import UseCaseAdoptionMetrics
+import AdoptionMetrics
 import pytest
 
 
@@ -29,7 +29,7 @@ def test_check_phishing_incidents(mocker, data, expected_result):
         "executeCommand",
         return_value=[{"Contents": {"data": data}}]
     )
-    assert UseCaseAdoptionMetrics.check_phishing_incidents() == expected_result
+    assert AdoptionMetrics.check_phishing_incidents() == expected_result
 
 
 CASES_RAPID_BREACH_RESPONSE = [
@@ -58,7 +58,7 @@ def test_is_rapid_breach_response_installed(mocker, return_value, expected_resul
         return_value=return_value
     )
 
-    assert UseCaseAdoptionMetrics.is_rapid_breach_response_installed() == expected_result
+    assert AdoptionMetrics.is_rapid_breach_response_installed() == expected_result
 
 
 def test_get_use_cases(mocker):
@@ -72,7 +72,7 @@ def test_get_use_cases(mocker):
     Then:
         - Use cases in production and at risk are returned correctly.
     """
-    from UseCaseAdoptionMetrics import get_use_cases
+    from AdoptionMetrics import get_use_cases
     # Simulate modules with different categories and states
     mocker.patch.object(demisto, "getModules", return_value={
         '1': {'category': 'case management', 'brand': 'Brand', 'state': 'active'},
@@ -81,8 +81,8 @@ def test_get_use_cases(mocker):
         '4': {'category': 'vulnerability management', 'brand': 'Brand', 'state': 'at_risk'}
     })
     link = 'https://cortex.marketplace.pan.dev/marketplace/'
-    mocker.patch.object(UseCaseAdoptionMetrics, 'check_phishing_incidents', return_value=False)
-    mocker.patch.object(UseCaseAdoptionMetrics, 'is_rapid_breach_response_installed', return_value=False)
+    mocker.patch.object(AdoptionMetrics, 'check_phishing_incidents', return_value=False)
+    mocker.patch.object(AdoptionMetrics, 'is_rapid_breach_response_installed', return_value=False)
     res = get_use_cases()
     assert res == {'use_cases_in_production': {'Case Management', 'Network Security'},
                    'at_risk': {'Ransomware & Malware Coverage': f'{link}?useCase=Malware',
@@ -107,13 +107,13 @@ def test_main(mocker):
     Then:
         - Markdown table is generated correctly.
     """
-    import UseCaseAdoptionMetrics
+    import AdoptionMetrics
     use_cases_data = {
         'use_cases_in_production': {'Ransomware & Malware Coverage', 'Network Security'},
         'at_risk': {'Business Email Compromise Coverage': 'https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging'}
     }
-    mocker.patch.object(UseCaseAdoptionMetrics, 'get_use_cases', return_value=use_cases_data)
-    res = UseCaseAdoptionMetrics.main()
+    mocker.patch.object(AdoptionMetrics, 'get_use_cases', return_value=use_cases_data)
+    res = AdoptionMetrics.main()
     assert '| Network Security | ✅ |' in res
     assert 'Business Email Compromise Coverage | ❌ |' in res
     assert 'Rapid Breach Response' not in res
