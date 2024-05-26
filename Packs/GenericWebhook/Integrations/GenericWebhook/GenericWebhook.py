@@ -30,8 +30,10 @@ async def parse_incidents(request: Request) -> list[dict]:
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
     for incident in incidents:
+        raw_json = incident.get('rawJson') or incident.get('raw_json') or copy(incident)
         if not incident.get('rawJson'):
-            incident['rawJson'] = copy(incident)
+            incident.pop('raw_json', None)
+            incident['rawJson'] = raw_json
     return incidents
 
 
@@ -145,8 +147,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:
-            if port_param := demisto.params().get('longRunningPort'):
-                port = int(port_param)
+            port = int(demisto.params().get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':

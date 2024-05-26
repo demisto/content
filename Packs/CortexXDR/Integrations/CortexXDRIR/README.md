@@ -29,6 +29,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Prevent Only Mode                                                                | Whether the XDR tenant Mode is prevent only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | False        |
     | Incident Statuses to Fetch                                                       | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
     | Incidents Fetch Interval                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
+    | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -548,7 +549,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 | incident_id | XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command. | Required | 
 | manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). Possible values are: HIGH, MEDIUM, LOW. | Optional | 
 | assigned_user_mail | Email address of the user to assign to the incident. | Optional | 
-| assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
+| assigned_user_pretty_name | Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument. | Optional | 
 | status | Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. Possible values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. | Optional | 
 | resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
 | unassign_user | If true, will remove all assigned users from the incident. Possible values are: true. | Optional | 
@@ -3839,3 +3840,33 @@ There is no context output for this command.
 
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
+
+### xdr-update-alert
+
+***
+Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+
+#### Base Command
+
+`xdr-update-alert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | Comma-separated list of alert IDs. | Required | 
+| severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| comment | Comment to append to updated alerts. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!xdr-update-alert alert_ids=35326 severity=low```
+
+#### Human Readable Output
+
+>Alerts with IDs 35326 have been updated successfully.
+
+

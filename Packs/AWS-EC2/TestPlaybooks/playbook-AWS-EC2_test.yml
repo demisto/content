@@ -1672,7 +1672,7 @@ tasks:
       LaunchTemplateName:
         simple: test
       roleArn:
-        simple: arn:aws:iam::794065701450:role/EC2_SG_API_CRTX-91813_AssumeRole
+        simple: arn:aws:iam::123456789012:role/EC2_SG_API_CRTX-91813_AssumeRole
       roleSessionDuration:
         simple: "1000"
       roleSessionName:

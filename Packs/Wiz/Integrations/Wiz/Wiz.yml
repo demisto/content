@@ -208,24 +208,53 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - WONT_FIX
-      - EXCEPTION
+      - OBJECT_DELETED
+      - ISSUE_FIXED
       - FALSE_POSITIVE
-      - CONTROL_CHANGED
+      - EXCEPTION
       - CONTROL_DISABLED
       - CONTROL_DELETED
+      - WONT_FIX
       - DETECTION_EXPIRED
     - name: reject_note
       description: rejection note.
       required: true
   - name: wiz-reopen-issue
-    description: Reject a Wiz Issue.
+    description: Reopen a Wiz Issue.
     arguments:
     - name: issue_id
       description: issue id.
       required: true
     - name: reopen_note
       description: reopen note.
+  - name: wiz-get-issue
+    description: Get the details of a Wiz Issue Id.
+    arguments:
+    - name: issue_id
+      description: issue id.
+      required: true
+  - name: wiz-resolve-issue
+    description: Resolve a Threat Detection Issue.
+    arguments:
+    - name: issue_id
+      required: true
+      description: issue id.
+    - name: resolution_reason
+      description: resolution reason.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OBJECT_DELETED
+      - ISSUE_FIXED
+      - FALSE_POSITIVE
+      - EXCEPTION
+      - CONTROL_DISABLED
+      - CONTROL_DELETED
+      - WONT_FIX
+      - DETECTION_EXPIRED
+    - name: resolution_note
+      description: resolution note.
+      required: true
   - name: wiz-issue-in-progress
     description: Set a Wiz Issue to in progress.
     arguments:
