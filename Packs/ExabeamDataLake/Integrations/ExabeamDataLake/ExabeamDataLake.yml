@@ -26,7 +26,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-description: Exabeam Data Lake provides a highly scalable, cost-effective, and searchable log management system. 
+description: Exabeam Data Lake provides a searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
 display: Exabeam Data Lake
 name: Exabeam Data Lake
 script:

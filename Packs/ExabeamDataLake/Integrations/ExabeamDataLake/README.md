@@ -1,5 +1,4 @@
-Exabeam Data Lake provides a highly scalable, cost-effective, and searchable log
-management system. 
+Exabeam Data Lake provides a searchable log management system. 
 Data Lake is used for log collection, storage, processing, and presentation.
 This integration was integrated and tested with version LMS-i40.3 of Exabeam Data Lake.
 
