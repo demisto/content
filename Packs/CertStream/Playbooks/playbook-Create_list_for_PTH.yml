@@ -24,122 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -1000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 13686d12-2dfd-4f15-8d6c-3cd04047eaba
-    type: collection
-    task:
-      id: 13686d12-2dfd-4f15-8d6c-3cd04047eaba
-      version: -1
-      name: How would you like to create a list for PTH?
-      description: ''
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Who would you like to create a list for PTH?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Manual
-        - simple: Xpanse
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: How would you like to create a list for PTH
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 135a1685-647f-40f9-8ec2-8b98c2db9937
-    type: condition
-    task:
-      id: 135a1685-647f-40f9-8ec2-8b98c2db9937
-      version: -1
-      name: Check the answer
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      Xpanse:
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: Xpanse
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: How would you like to create a list for PTH.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: Xpanse
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -120
+          "y": -850
         }
       }
     note: false
@@ -197,7 +82,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "1"
+      - "45"
     scriptarguments:
       brandname:
         simple: Cortex Xpanse
@@ -207,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -500
+          "y": -360
         }
       }
     note: false
@@ -321,7 +206,7 @@ tasks:
     task:
       id: 585f5b4b-2ebf-465d-846c-29adf1b2752a
       version: -1
-      name: 'Create List Manually'
+      name: Create List Manually
       description: commands.local.cmd.list.create
       script: Builtin|||createList
       type: regular
@@ -397,7 +282,7 @@ tasks:
     task:
       id: 92e8c889-2606-4dc6-878d-f0853e929e31
       version: -1
-      name: Manual\Xpanse permutation
+      name: Generate Homographs using LLM
       description: ''
       type: condition
       iscommand: false
@@ -572,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -850
+          "y": -700
         }
       }
     note: false
@@ -635,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c2f496dc-c7d1-441d-880c-c0f807322720
+    taskid: 5672824c-759a-4e36-83b0-c564b213fda6
     type: collection
     task:
-      id: c2f496dc-c7d1-441d-880c-c0f807322720
+      id: 5672824c-759a-4e36-83b0-c564b213fda6
       version: -1
       name: Add a single domain to hunt
       description: ""
@@ -705,7 +590,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: The list of primary domain's homographs to match. e.g. ```examp1e, ex4mple, exampl3, xample```
+        tooltip: 'Note: If using LLM, this field should be empty. The list of primary
+          domain''s homographs to match. e.g. ```examp1e, ex4mple, exampl3, xample```'
         readonly: false
       title: Add a single domain to hunt
       description: ""
@@ -718,10 +604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: fec6978f-b5d1-4f49-8bf7-fdb3e02a6da1
+    taskid: c9a81353-1447-494d-8e8b-2c2701da63e0
     type: collection
     task:
-      id: fec6978f-b5d1-4f49-8bf7-fdb3e02a6da1
+      id: c9a81353-1447-494d-8e8b-2c2701da63e0
       version: -1
       name: Add multiple domains to hunt
       description: ""
@@ -773,24 +659,26 @@ tasks:
         options: []
         optionsarg: []
         fieldassociated: ""
-        placeholder: 'List of homographs to hunt. provided in the following format: ```json {   "example_domain": [     "example",     "ex4mple",     "exampl3",     "xample"   ],   "another_domain": [     "permu7ation1",     "permutat1on2",     "p3rmutation3"   ] } ```'
-        tooltip: ""
+        placeholder: 'List of homographs to hunt. provided in the following format:
+          ```json {   "example_domain": [     "example",     "ex4mple",     "exampl3",     "xample"   ],   "another_domain":
+          [     "permu7ation1",     "permutat1on2",     "p3rmutation3"   ] } ```'
+        tooltip: 'Note: If using LLM, Please change only the domain names and leave
+          the homographs lists with the examples'
         readonly: false
       title: Add multiple domains to hunt
       description: |-
         List of homographs to hunt. provided in the following format:
         ```json
         {
-          "example_domain": [
-            "example",
-            "ex4mple",
-            "exampl3",
-            "xample"
+          "domain1": [
+            "domain1_homograph1",
+            "domain1_homograph2",
+            "domain1_homograph2"
           ],
-          "another_domain": [
-            "permu7ation1",
-            "permutat1on2",
-            "p3rmutation3"
+          "domain2": [
+            "domain2_homograph1",
+            "domain2_homograph2",
+            "domain2_homograph3"
           ]
         }
         ```
@@ -926,9 +814,8 @@ tasks:
     task:
       id: 62ca251a-b45e-4cf0-8cb7-57f68f20ed78
       version: -1
-      name: Manual\Xpanse permutation
-      description: ''
-      type: condition
+      name: Which Domains should be added to DomainsList?
+      type: collection
       iscommand: false
       brand: ""
     nexttasks:
@@ -1015,7 +902,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "9"
+      - "46"
     scriptarguments:
       listData:
         complex:
@@ -1037,7 +924,7 @@ tasks:
       {
         "position": {
           "x": 800,
-          "y": 1880
+          "y": 1630
         }
       }
     note: false
@@ -1248,10 +1135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 754821eb-89d2-4f25-80af-d1c5965a3977
+    taskid: 0b41e822-f88a-4f5b-81c2-6a05ce46e3d5
     type: condition
     task:
-      id: 754821eb-89d2-4f25-80af-d1c5965a3977
+      id: 0b41e822-f88a-4f5b-81c2-6a05ce46e3d5
       version: -1
       name: List exist - should overwrite?
       description: ""
@@ -1259,7 +1146,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "No":
+      '#default#':
       - "9"
       "Yes":
       - "5"
@@ -1268,8 +1155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": -670
+          "x": 660,
+          "y": -530
         }
       }
     note: false
@@ -1279,7 +1166,8 @@ tasks:
       to:
       subject:
       body:
-        simple: List with the name ${inputs.DomainsListName} already exist, should we continue and overwrite it?
+        simple: List with the name ${inputs.DomainsListName} already exist, should
+          we continue and overwrite it?
       methods: []
       format: ""
       bcc:
@@ -1297,23 +1185,108 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: eaf35e8c-75f8-4f6b-8c7a-95988baa2e6b
+    type: condition
+    task:
+      id: eaf35e8c-75f8-4f6b-8c7a-95988baa2e6b
+      version: -1
+      name: How would you like to create a list for PTH?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Expanse:
+      - "15"
+      Manual:
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: how would you like to create the list?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Expanse
+      - Manual
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 463488fd-2958-48dc-8092-95fa6cc14a84
+    type: regular
+    task:
+      id: 463488fd-2958-48dc-8092-95fa6cc14a84
+      version: -1
+      name: Add Domain Homographs Manually
+      description: "Almost Done! Now go over to the XSOAR Lists page and manually
+        replace the \"homograph\" placeholder for each domain to hunt. \n\nThe List
+        Name: ${inputs.DomainsListName}\nExpected List Format:\n{\n  \"domain1\":
+        [\n    \"d0main1\",\n    \"doma1n1\",\n    \"domainn1\",\n  ],\n  \"domain2\":
+        [\n    \"dOmain2\",\n    \"domaוm2\",\n    \"6oma!n2\"\n  ]\n}"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "19_42_Use LLM Permutations": 0.5,
       "23_10_Use LLM Permutations": 0.5,
-      "2_15_Xpanse": 0.57,
-      "2_3_#default#": 0.63,
+      "28_44_#default#": 0.59,
+      "28_5_No": 0.4,
       "30_31_Single": 0.48,
-      "30_33_Multiple": 0.54,
-      "5_1_yes": 0.53
+      "30_33_Multiple": 0.54
     },
     "paper": {
       "dimensions": {
-        "height": 3115,
+        "height": 2965,
         "width": 1590,
         "x": -140,
-        "y": -1000
+        "y": -850
       }
     }
   }
@@ -1348,7 +1321,6 @@ tests:
 fromversion: 6.10.0
 contentitemexportablefields:
   contentitemfields: {}
-system: true
 inputSections:
 - inputs:
   - ResultsLimit

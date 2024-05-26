@@ -14,15 +14,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsListExist
-* SetAndHandleEmpty
 * IsIntegrationAvailable
+* SetAndHandleEmpty
+* IsListExist
 
 ### Commands
 
-* gpt-send-message
 * createList
 * asm-list-external-websites
+* gpt-send-message
 
 ## Playbook Inputs
 
