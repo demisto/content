@@ -1,4 +1,4 @@
-Exabeam Security Operations Platform offers robust search functionality, enabling security teams to efficiently query, analyze, and visualize security data. It provides a centralized and scalable platform for log management, threat detection, and incident investigation.
+Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 This integration was integrated and tested with version v1.0 of ExabeamSecOpsPlatform.
 
 ## Configure Exabeam Security Operations Platform on Cortex XSOAR

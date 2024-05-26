@@ -22,7 +22,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Exabeam Security Operations Platform offers robust search functionality, enabling security teams to efficiently query, analyze, and visualize security data. It provides a centralized and scalable platform for log management, threat detection, and incident investigation.
+description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
 script:
