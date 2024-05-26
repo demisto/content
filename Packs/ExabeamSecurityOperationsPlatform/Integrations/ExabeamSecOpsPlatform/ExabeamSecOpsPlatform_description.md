@@ -1,5 +1,4 @@
-Exabeam Security Operations Platform offers robust search functionality, enabling security
-teams to efficiently query, analyze, and visualize security data. 
+Exabeam Security Operations Platform offers robust search functionality, enabling security teams to efficiently query, analyze, and visualize security data. 
 It provides a centralized and scalable platform for log management, threat detection, and incident investigation.
 
 ### Authentication Method

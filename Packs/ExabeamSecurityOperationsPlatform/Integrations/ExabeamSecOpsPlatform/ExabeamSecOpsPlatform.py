@@ -173,8 +173,8 @@ def get_limit(args: dict) -> int:
 def error_fixes(error: str):
     new_error = ""
     if 'not enough values to unpack' in error:
-        new_error = "Recommendation:\nValidate the query argument \
-        against the syntax documentation in the integration description."
+        new_error = ("Recommendation:\nValidate the query argument "
+        "against the syntax documentation in the integration description.")
 
     return new_error
 
