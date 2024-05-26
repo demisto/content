@@ -995,8 +995,8 @@ def get_protocols(client: ExtraHopClient, ip_or_id, query_from, query_until) -> 
 
     activitymap = client.get_peers(body)
 
-    client_protocols = defaultdict(int)  # type: DefaultDict[str, int]
-    server_protocols = defaultdict(int)  # type: DefaultDict[str, int]
+    client_protocols: DefaultDict[str, int] = defaultdict(int)
+    server_protocols: DefaultDict[str, int] = defaultdict(int)
     for edge in activitymap["edges"]:
         if "annotations" in edge and "protocols" in edge.get("annotations"):
             for protocol_list in edge.get("annotations", {}).get("protocols"):
@@ -1060,11 +1060,11 @@ def peers_get(client: ExtraHopClient, ip_or_id: Optional[Any], query_from: Optio
 
     activitymap = client.get_peers(body)
 
-    peers = defaultdict(lambda: {
+    peers: DefaultDict[str, dict] = defaultdict(lambda: {
         "weight": 0,
         "client_protocols": defaultdict(int),
         "server_protocols": defaultdict(int)
-    })  # type: DefaultDict[str, dict]
+    })
 
     for edge in activitymap["edges"]:
         if edge["to"] == api_id:
