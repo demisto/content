@@ -1,7 +1,3 @@
-Exabeam Data Lake provides a highly scalable, cost-effective, and searchable log
-management system. 
-Data Lake is used for log collection, storage, processing, and presentation.
-
 ### Authentication Method
  - **Basic Authentication** - Provide the Exabeam username and password in the corresponding parameters in the configuration.
 
