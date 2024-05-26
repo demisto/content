@@ -176,7 +176,80 @@ script:
     - contextPath: CSCDomainManager.Domain.Configuration.AccountName
       description: the account name
       type: String
-
+  - arguments:
+    - description: "Will contain domains values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com"
+      name: domain
+      required: true
+    description: 
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.CreationDate
+      description: 
+      type: String
+    - contextPath: Domain.DomainIDNName
+      description: 
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: 
+      type: String
+    - contextPath: DomainUpdatedDate
+      description: 
+      type: String
+    - contextPath: Domain.NameServers
+      description: 
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: 
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: 
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: 
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: 
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: 
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: 
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: 
+      type: String
+    - contextPath: DDomain.Admin.Country
+      description: 
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: 
+      type: String
+    - contextPath: Domain.Tech.Name
+      description: 
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: 
+      type: String
+    - contextPath: Domain.Tech.Email
+      description: 
+      type: String
+  
   runonce: false
   script: '-'
   type: python

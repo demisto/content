@@ -54,17 +54,18 @@ SEARCH_OUTPUT_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
                                                ]
 SEARCH_OPERATORS = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
 SELECTORS_MAPPING = {
-        'domain_name': 'domain',
-        'registration_date': 'registrationDate',
-        'registration_org': 'regOrg',
-        'email': 'email',
-        'organization': 'organization',
-        'registry_expiry_date': 'registryExpiryDate',
-        'filter': 'filter',
-        'sort': 'sort',
-        'page': 'page',
-        'page_size': 'size',
-    }
+    'domain_name': 'domain',
+    'registration_date': 'registrationDate',
+    'registration_org': 'regOrg',
+    'admin_email': 'adminEmail',
+    'email': 'email',
+    'organization': 'organization',
+    'registry_expiry_date': 'registryExpiryDate',
+    'filter': 'filter',
+    'sort': 'sort',
+    'page': 'page',
+    'page_size': 'size',
+}
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -100,20 +101,19 @@ def create_params_string(args):
     for arg_key, param_key in SELECTORS_MAPPING.items():
         if args.get(arg_key):
             value = args[arg_key]
-            if isinstance(value, str) and len(value) >= 3 and value[:3] in SEARCH_OPERATORS:
-            #if len(value) >= 3 and value[:3] in SEARCH_OPERATORS:
+            if arg_key == 'filter':
+                param_for_filter.append(value)
+            elif isinstance(value, str) and len(value) >= 3 and value[:3] in SEARCH_OPERATORS:
                 param_for_filter.append(f"{param_key}={value}")
             elif arg_key in ['sort', 'page', 'page_size']:
                 additional_params.append(f"{param_key}={value}")
             else:
                 param_for_filter.append(f"{param_key}=={value}")
 
-    # Join the parameters with commas
     params_str = 'filter='
     if param_for_filter:
         params_str += ','.join(param_for_filter)
 
-    # Join the parameters with &
     if additional_params:
         params_str += "&" + "&".join(additional_params)
 
@@ -187,12 +187,9 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        client.send_get_request("/domains", "")
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -203,17 +200,19 @@ def test_module(client: Client) -> str:
 
 
 def csc_domains_search_command(client: Client, args) -> Any:
+    domains_results = {}
     qualified_domain_name = args.get('qualified_domain_name')
     if qualified_domain_name:
-        return client.send_get_request(url_suffix="/domains/{qualified_domain_name}", params="")
+        domains_results = client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")
 
-    args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE
-    if args.get('limit'):
-        args['page'] = '1'
-        args['page_size'] = args.get('limit')
+    else:
+        args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE
+        if args.get('limit'):
+            args['page'] = '1'
+            args['page_size'] = args.get('limit')
 
-    params_results = create_params_string(args)
-    domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
+        params_results = create_params_string(args)
+        domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
 
     domains_list = domains_results.get('domains', [])
     domains_with_required_fields = extract_required_fields_for_domains_search(domains_list)
@@ -267,6 +266,11 @@ def csc_domains_configuration_list_command(client: Client, args):
     return results
 
 
+def domain(client, args):
+    args['qualified_domain_name'] = args['domain']
+    return csc_domains_search_command(client, args)
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -290,8 +294,8 @@ def main() -> None:
             'apikey': apikey,
             'Accept': ACCEPT_VAL
         }
-        
-        #TODO to check
+
+        # TODO to check
         reliability = params.get('integrationReliability')
         reliability = reliability if reliability else DBotScoreReliability.A
 
@@ -308,10 +312,8 @@ def main() -> None:
         )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            # results = test_module(client)
-            results = client.send_get_request("/domains", "")
-            return_results('ok')
+            results = test_module(client)
+            return_results(results)
 
         elif demisto.command() == 'csc-domains-search':
             results = csc_domains_search_command(client, args)
@@ -322,6 +324,9 @@ def main() -> None:
 
         elif demisto.command() == 'csc-domains-configuration-list':
             return_results(csc_domains_configuration_list_command(client, args))
+
+        elif demisto.command() == 'domain':
+            return_results(domain(client, args))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
