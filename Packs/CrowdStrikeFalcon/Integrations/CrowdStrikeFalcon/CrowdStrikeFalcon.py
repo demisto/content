@@ -32,6 +32,7 @@ SERVER = PARAMS['url'].removesuffix('/')
 USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+PROXY = PARAMS.get('proxy', False)
 BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
 HEADERS = {
@@ -46,7 +47,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
 # Remove proxy if not set to true in params
-PROXIES = handle_proxy()
+handle_proxy()
 
 ''' KEY DICTIONARY '''
 
@@ -386,7 +387,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             data=data,
             files=files,
             params=params,
-            proxy=bool(PROXIES),
+            proxy=PROXY,
             resp_type='response',
             verify=USE_SSL,
             error_handler=error_handler,
@@ -417,7 +418,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     data=data,
                     files=files,
                     params=params,
-                    proxy=bool(PROXIES),
+                    proxy=PROXY,
                     retries=5,
                     status_list_to_retry=[429],
                     resp_type='response',
