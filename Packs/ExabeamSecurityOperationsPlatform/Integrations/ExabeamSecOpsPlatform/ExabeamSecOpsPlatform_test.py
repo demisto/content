@@ -71,10 +71,10 @@ def test_search_command_success(mocker):
     assert response.outputs == mock_response["rows"]
     expected_readable_output = (
         "### Logs\n"
-        "|Id|Is Parsed|Raw Log Ids|Raw Logs|Tier|\n"
-        "|---|---|---|---|---|\n"
-        "| 123 | false | 1 | fictive | Tier |\n"
-        "| 456 |  |  |  |  |\n"
+        "|Id|Is Parsed|Raw Log Ids|Raw Logs|Tier|Time|\n"
+        "|---|---|---|---|---|---|\n"
+        "| 123 | false | 1 | fictive | Tier | 2024-01-30T11:20:07.000000+00:00 |\n"
+        "| 456 |  |  |  |  | 2024-01-30T11:21:06.976000+00:00 |\n"
     )
     assert expected_readable_output in response.readable_output
 

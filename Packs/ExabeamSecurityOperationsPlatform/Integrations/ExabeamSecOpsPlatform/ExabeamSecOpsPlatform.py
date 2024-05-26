@@ -147,8 +147,27 @@ def _parse_entry(entry: dict):
         "Raw Log Ids": entry.get("rawLogIds"),
         "Tier": entry.get("tier"),
         "Is Parsed": entry.get("parsed"),
-        "Raw Logs": entry.get("rawLogs")
+        "Raw Logs": entry.get("rawLogs"),
+        "Time": entry.get("time")
     }
+    final = remove_empty_elements(parsed)
+    return final if final else None
+
+
+def _parse_group_by(entry: dict, titles: list):
+    """
+    Parses a single entry from the API response into a dictionary based on provided titles.
+
+    Args:
+        entry (dict): The entry from the API response.
+        titles (list): A list of keys to extract from the entry.
+
+    Returns:
+        dict or None: The parsed entry dictionary with non-empty elements or None if all elements are empty.
+    """
+    parsed = {}
+    for title in titles:
+        parsed.update({title: entry.get(title)})
     final = remove_empty_elements(parsed)
     return final if final else None
 
@@ -174,7 +193,7 @@ def error_fixes(error: str):
     new_error = ""
     if 'not enough values to unpack' in error:
         new_error = ("Recommendation:\nValidate the query argument "
-        "against the syntax documentation in the integration description.")
+                     "against the syntax documentation in the integration description.")
 
     return new_error
 
@@ -205,8 +224,10 @@ def search_command(client: Client, args: dict) -> CommandResults:
         'startTime': start_time,
         'endTime': end_time,
     }
-    if args.get('group_by'):
-        kwargs.update({'group_by': argToList(args.get('group_by'))})
+    group_by = args.get('group_by')
+    if group_by:
+        group_list = argToList(group_by)
+        kwargs.update({'groupBy': group_list, 'fields': group_list})
 
     response = client.search_request(kwargs)
 
@@ -217,7 +238,10 @@ def search_command(client: Client, args: dict) -> CommandResults:
 
     human_readable = []
     for entry in data_response:
-        if parsed_entry := _parse_entry(entry):
+        if group_by:
+            if parsed_entry := _parse_group_by(entry, group_list):
+                human_readable.append(parsed_entry)
+        elif parsed_entry := _parse_entry(entry):
             human_readable.append(parsed_entry)
 
     return CommandResults(
