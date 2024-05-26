@@ -1,6 +1,5 @@
 import json
 
-
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
@@ -155,9 +154,24 @@ def test_derive_skip_and_limit_for_pagination():
         derive_skip_and_limit_for_pagination('invalid', None, None)
 
 
-@pytest.mark.parametrize('args', [])
-def test_add_expires_at_param(args):
-    pass
+def test_add_expires_at_param():
+    from ThalesCipherTrustManager import add_expires_at_param
+    request_data = {}
+    add_expires_at_param(request_data, "")
+    assert request_data['expires_at'] == ""
+
+    request_data = {}
+    add_expires_at_param(request_data, "2023-05-26T15:30:00")
+    assert request_data['expires_at'] == "2023-05-26T15:30:00.000000Z"
+
+    request_data = {}
+    add_expires_at_param(request_data, None)
+    assert request_data['expires_at'] is None
+
+    with pytest.raises(ValueError):
+        request_data = {}
+        add_expires_at_param(request_data, "invalid-datetime")
+        assert request_data['expires_at'] is None
 
 
 ''' COMMAND FUNCTIONS TESTS '''
