@@ -174,13 +174,13 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
 
     text_content = list(content_item.values())[0]
     file_path = list(content_item.keys())[0]
-    content_rules = split_yara_rules(text_content)
     parsed_rules = []
+    parser = plyara.Plyara()
+    raw_rules = parser.parse_string(text_content)
     current_time = datetime.now().isoformat()
-    for rule in content_rules:
-        parser = plyara.Plyara()
+    for parsed_rule in raw_rules:
+        
         try:
-            parsed_rule = parser.parse_string(rule)[0]
             metadata = {key: value for d in parsed_rule["metadata"] for key, value in d.items()}
             value_ = parsed_rule["rule_name"]
             type_ = "YARA Rule"
@@ -194,7 +194,7 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "rulestrings": make_grid_layout(parsed_rule.get("strings", {})),
                 "condition": " ".join(parsed_rule["condition_terms"]),
                 "references": file_path,
-                "raw rule": f"``` \n {rule} \n ```",
+                "raw rule": f"``` \n {parsed_rule} \n ```",
             }
             indicator_obj = {
                 "value": value_,
@@ -207,7 +207,7 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
             }
             parsed_rules.append(indicator_obj)
         except Exception as e:
-            demisto.error(f"Rull: {rule} cannot be processed. Error Message: {e}")
+            demisto.error(f"Rull: {parsed_rule} cannot be processed. Error Message: {e}")
             continue
     return parsed_rules
 

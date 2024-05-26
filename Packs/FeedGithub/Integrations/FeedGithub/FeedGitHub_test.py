@@ -142,6 +142,7 @@ def test_parse_and_map_yara_content(mocker):
      rule-1 = classic yara rule
      rule-2 = broken yara rule
      rule-3 = yara rule has a unique structure that contains curly brackets inside the rule strings field
+     list_rules_input = Several different rules from a single file
     When:
      - Parsing and mapping YARA content using the parse_and_map_yara_content function.
     Then:
@@ -153,14 +154,16 @@ def test_parse_and_map_yara_content(mocker):
     rule_1_input = {"example.com": util_load_txt("test_data/yara-rule-1.yar")}
     rule_2_input = {"example.com": util_load_txt("test_data/yara-rule-2.yar")}
     rule_3_input = {"example.com": util_load_txt("test_data/yara-rule-3.yar")}
-
+    list_rules_input = {"example.com": util_load_txt("test_data/test-split-yara-1.yar")}
     parsed_rule1 = parse_and_map_yara_content(rule_1_input)
     parsed_rule2 = parse_and_map_yara_content(rule_2_input)
     parsed_rule3 = parse_and_map_yara_content(rule_3_input)
+    list_parsed_rules = parse_and_map_yara_content(list_rules_input)
 
     assert parsed_rule1 == util_load_json("test_data/yara-rule-1-res.json")
     assert parsed_rule2 == util_load_json("test_data/yara-rule-2-res.json")
     assert parsed_rule3 == util_load_json("test_data/yara-rule-3-res.json")
+    assert list_parsed_rules == util_load_json("test_data/list-parsed-rules-res.json")
 
 
 @freeze_time("2024-05-12T15:30:49.330015")
