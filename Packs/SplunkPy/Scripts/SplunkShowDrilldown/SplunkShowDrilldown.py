@@ -30,7 +30,7 @@ def main():
         markdown = tableToMarkdown("", drilldown_results, headers=drilldown_results[0].keys())
         
     elif isinstance(drilldown_results, dict):
-        # Got drilldown results of multiple drilldown searches
+        # Get drilldown results of multiple drilldown searches
         markdown = "#### Drilldown Searches Results\n"
         for key, value in drilldown_results.items():
             markdown += f"**Query Name:** {key}\n\n **Query Search:**\n {value.get('query_search', '')}\n\n **Results:**\n"
