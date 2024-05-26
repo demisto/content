@@ -240,7 +240,8 @@ def query_data_lake_command(client: Client, args: dict, cluster_name: str) -> Co
     return CommandResults(
         outputs_prefix="ExabeamDataLake.Event",
         outputs=data_response,
-        readable_output=tableToMarkdown(name="Logs", t=human_readable),
+        readable_output=tableToMarkdown(name="Logs", t=human_readable, headers=[
+                                        "Id", "Vendor", "Product", "Created_at", "Message"])
     )
 
 
@@ -273,7 +274,7 @@ def main() -> None:    # pragma: no cover
     proxy = params.get('proxy', False)
     cluster_name = params.get('cluster_name', 'local')
     client = None
-    
+
     try:
         client = Client(
             base_url.rstrip('/'),

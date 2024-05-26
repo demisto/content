@@ -59,10 +59,10 @@ def test_query_data_lake_command(mocker):
                                             'only_hr': 'nothing'}} in result
     expected_result = (
         "### Logs\n"
-        "|Created_at|Id|Message|Product|Vendor|\n"
+        "|Id|Vendor|Product|Created_at|Message|\n"
         "|---|---|---|---|---|\n"
-        "| 2024-05-01T12:00:00 | FIRST_ID | example message 1 |  |  |\n"
-        "| 2024-05-02T12:00:00 | SECOND_ID | example message 2 |  |  |\n"
+        "| FIRST_ID |  |  | 2024-05-01T12:00:00 | example message 1 |\n"
+        "| SECOND_ID |  |  | 2024-05-02T12:00:00 | example message 2 |\n"
     )
     assert expected_result in response.readable_output
 
