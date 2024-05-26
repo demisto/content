@@ -141,10 +141,10 @@ severity_to_text = [
 ]
 
 
-class FETCH_COMMAND(Enum):
-    # the format is defined in issue #19786, may change in the future
-    EVENTS = 0
-    ASSETS = 1
+FETCH_COMMAND = {
+    'events': 0,
+    'assets': 1
+}
 
 
 PARAMS = demisto.params()
@@ -662,7 +662,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
 
             export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
-            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.ASSETS})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
             assets_last_run.pop('assets_available_chunks', None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
             return [], assets_last_run
@@ -673,7 +673,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
         updated_stored_chunks.remove(chunk_id)
     if updated_stored_chunks:
         assets_last_run.update({'assets_available_chunks': updated_stored_chunks,
-                                'nextTrigger': '0', "type": FETCH_COMMAND.ASSETS})
+                                'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')})
     else:
         assets_last_run.pop('nextTrigger', None)
         assets_last_run.pop('type', None)
@@ -1764,14 +1764,14 @@ def fetch_assets_command(client: Client, assets_last_run):
 
         if status in ['PROCESSING', 'QUEUED']:
             demisto.debug(f"status is still {status}")
-            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.ASSETS})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
         # set params for next run
         if status == 'FINISHED':
             assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
-            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.ASSETS})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
     return assets
@@ -1803,7 +1803,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict):
         demisto.info(f'Got export uuid from API {export_uuid}')
         vulnerabilities, status = get_vulnerabilities_chunks(client=client, export_uuid=export_uuid)
         if status in ['PROCESSING', 'QUEUED']:
-            last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.ASSETS})
+            last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
         # set params for next run
         if status == 'FINISHED':
             last_run.pop('vuln_export_uuid', None)
@@ -1814,7 +1814,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict):
             export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
                                                       last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
             last_run.update({'vuln_export_uuid': export_uuid})
-            last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.ASSETS})
+            last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
 
     demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {last_run=}.')
     return vulnerabilities
