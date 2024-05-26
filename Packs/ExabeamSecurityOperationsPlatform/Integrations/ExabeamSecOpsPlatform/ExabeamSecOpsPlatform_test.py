@@ -1,7 +1,7 @@
 import json
 import pytest
 from CommonServerPython import DemistoException, CommandResults
-from ExabeamSecOpsPlatform import Client, search_command, get_limit, get_date, transform_string, process_string
+from ExabeamSecOpsPlatform import Client, search_command, get_limit, get_date, transform_string, process_string, _parse_group_by
 
 
 class MockClient(Client):
@@ -242,3 +242,32 @@ def test_get_limit(args, expected_output):
         If the 'limit' argument is not present in the dictionary or is None, it should return 50 as the default limit.
     """
     assert get_limit(args) == expected_output
+
+
+def test_parse_group_by():
+    """
+    GIVEN:
+        an entry dictionary containing information about an item with various attributes.
+
+    WHEN:
+        '_parse_group_by' function is called with the provided entry dictionary and a list of titles.
+
+    THEN:
+        it should return a parsed dictionary with non-empty elements based on the provided titles;
+        empty elements should be removed.
+    """
+    entry = {
+        'Id': '123',
+        'Vendor': 'Vendor X',
+        'Product': '',
+        'Created_at': '2024-05-26T12:00:00',
+        'Message': 'This is a message.'
+    }
+    titles = ['Id', 'Vendor', 'Created_at', 'Message']
+    expected_result = {
+        'Id': '123',
+        'Vendor': 'Vendor X',
+        'Created_at': '2024-05-26T12:00:00',
+        'Message': 'This is a message.'
+    }
+    assert _parse_group_by(entry, titles) == expected_result
