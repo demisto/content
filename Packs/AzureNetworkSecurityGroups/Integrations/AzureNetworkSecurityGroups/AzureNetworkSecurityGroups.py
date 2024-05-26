@@ -5,9 +5,9 @@ from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
 import traceback
-
 # Disable insecure warnings
 urllib3.disable_warnings()
+
 
 ''' CONSTANTS '''
 
