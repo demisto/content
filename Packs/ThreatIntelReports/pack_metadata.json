@@ -18,6 +18,7 @@
     ],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
