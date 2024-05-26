@@ -810,13 +810,13 @@ def test_test_module(requests_mock, mocker):
 def test_fetch_assets(requests_mock):
     """
     Given:
-        - vulnerabilities fetch interval.
+        - assets fetch interval.
     When:
-        - Running the fetch vulnerabilities process running.
+        - Running the fetch assets process running.
     Then:
         - Verify that fetch should run
         - Verify export uuid being updated in the integration context
-        - Verify vulnerabilities returned and finished flag is up.
+        - Verify assets returned and finished flag is up.
     """
     from Tenable_io import generate_assets_export_uuid, handle_assets_chunks, get_asset_export_job_status, Client
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
@@ -833,3 +833,58 @@ def test_fetch_assets(requests_mock):
     assets, last_run = handle_assets_chunks(client, last_run)
 
     assert len(assets) == 2
+
+
+FETCH_ASSETS_EXAMPLES = [
+    # export uuid 111 is valid, assets are returned.
+    (
+        [{"id":  "asset_id_one", "name": "asset_name_one"}],
+        [{"id":  "asset_id_one", "name": "asset_name_one"}],
+        {}
+    ),
+    # export uuid 111 is not valid, so new export uuid 222 is generated
+    (
+        {'status': 404, 'message': 'Export expired or not found'},
+        [],
+        {'assets_export_uuid': '222', 'nextTrigger': '30', 'type': 1}
+    ),
+    # export uuid is valid, but chunk is not valid.
+    (
+        {'status': 404, 'message': 'invalid chunk'},
+        [],
+        {}
+    )
+]
+
+
+@pytest.mark.parametrize('api_response, expected_assets, expected_last_run', FETCH_ASSETS_EXAMPLES)
+def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expected_last_run):
+    """
+    Given:
+        - assets last run object, containing an expired export uuid.
+    When:
+        - Calling handle_assets_chunks method.
+    Then:
+        - Verify that new export uuid was generated.
+        - lastrun object was updated.
+    """
+    from Tenable_io import handle_assets_chunks, Client
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/assets/export/111/chunks/1', json=api_response)
+    requests_mock.post(f'{BASE_URL}/assets/export', json={"export_uuid": "222"})
+
+    assets_last_run = {
+        'assets_export_uuid': '111',
+        'assets_available_chunks': [1],
+
+    }
+
+    assets, new_last_run = handle_assets_chunks(client, assets_last_run)
+
+    assert assets == expected_assets
+    assert new_last_run.get('assets_export_uuid') == expected_last_run.get('assets_export_uuid')
+    assert new_last_run.get('assets_available_chunks') == expected_last_run.get('assets_available_chunks')
+    assert new_last_run.get('nextTrigger') == expected_last_run.get('nextTrigger')
+    assert new_last_run.get('type') == expected_last_run.get('type')
+
+
