@@ -136,12 +136,12 @@ This will bring up a page which confirms that you are installing the app to your
    the *Bot Token* as a credential.
 
 ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
+</br>
 
-:::note
-When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
+**NOTE: When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
 and tokens that should not be used elsewhere. Failure to comply with this requirement may result in issues with incoming
-messages and the steady flow of the integration.
-:::
+messages and the steady flow of the integration.**
+
 
 ### Testing the Bot
 
@@ -149,7 +149,7 @@ messages and the steady flow of the integration.
    new app to the channel you have configured.
 2. Navigate to your Instance Settings page in Cortex XSOAR and click **Test**. A message should appear in the channel
    from your app.
-
+3. 
 ## Backwards Compatibility with Slack V2
 
 Slack V3 contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This
