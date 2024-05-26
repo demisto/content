@@ -839,10 +839,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "287":
     id: "287"
-    taskid: 6e4d7069-1341-4792-807b-16f4d4860954
+    taskid: 40508e9b-9849-4bd1-8899-4bd5a71a8890
     type: playbook
     task:
-      id: 6e4d7069-1341-4792-807b-16f4d4860954
+      id: 40508e9b-9849-4bd1-8899-4bd5a71a8890
       version: -1
       name: MDE - Retrieve File
       description: |-
@@ -858,7 +858,7 @@ tasks:
       - "332"
     scriptarguments:
       paths:
-        simple: C:\Users\Administrator\Desktop\test.txt
+        simple: C:\Windows\System32\taskhostw.exe
       MachineID:
         complex:
           root: incident
@@ -886,10 +886,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "288":
     id: "288"
-    taskid: 4425a1fa-8577-4472-843d-e3dd548b01b4
+    taskid: d05dd61d-b027-4e25-8cb2-f6d3b1537fe3
     type: regular
     task:
-      id: 4425a1fa-8577-4472-843d-e3dd548b01b4
+      id: d05dd61d-b027-4e25-8cb2-f6d3b1537fe3
       version: -1
       name: Set Device ID To Incident Field
       description: Change the properties of an incident
@@ -902,7 +902,7 @@ tasks:
       - "287"
     scriptarguments:
       deviceid:
-        simple: 96444b946be252d1f4550354edef5fdc23aca2c5
+        simple: 4cceb3c642212014e0e9553aa8b59e999ea515ff
     separatecontext: false
     continueonerrortype: ""
     view: |-
