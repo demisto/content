@@ -99,9 +99,9 @@ def create_params_string(args):
     # Check each key in args and add to param_dict if present
     for arg_key, param_key in selectors_mapping.items():
         if args.get(arg_key):
-            prefixes = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
-            if args[arg_key] is str and len(args[arg_key]) >= 3 and args[arg_key][:3] in prefixes:
-                param_for_filter.append(f"{param_key}={args[arg_key]}")
+            # prefixes = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
+            # if args[arg_key] is str and len(args[arg_key]) >= 3 and args[arg_key][:3] in prefixes:
+            #     param_for_filter.append(f"{param_key}={args[arg_key]}")
             if arg_key in ['sort', 'page', 'page_size'] :
                 additional_params.append(f"{param_key}={args[arg_key]}")
             else:
