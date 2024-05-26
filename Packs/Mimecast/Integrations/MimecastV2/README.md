@@ -1716,6 +1716,7 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.Policy.ToDate | date | Policy expiration date. | 
 | Mimecast.Policy.Sender.Type | string | Block emails to sender type. | 
 | Mimecast.Policy.Receiver.Type | string | Block emails to receiver type. | 
+| Mimecast.Policies.addressAlterationSetId | string | Address Alteration ID. |
 
 #### Command example
 ```!mimecast-list-policies policyType="address-alteration" page_size=1 page=1```

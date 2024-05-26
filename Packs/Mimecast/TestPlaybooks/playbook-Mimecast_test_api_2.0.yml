@@ -1,6 +1,5 @@
-id: bd01f3e5-621f-46ab-85c4-b222fccb14b7
-version: 13
-vcShouldKeepItemLegacyProdMachine: false
+id: Mimecast test api 2.0
+version: -1
 name: Mimecast test api 2.0
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -273,8 +273,7 @@ tasks:
       id: df97e995-e6c2-431c-85bc-8d2195ec9db5
       version: -1
       name: mimecast-create-antispoofing-bypass-policy
-      description: This endpoint can be used to create a new Anti-Spoofing SPF based
-        Bypass policy.
+      description: This endpoint can be used to create a new Anti-Spoofing SPF based Bypass policy.
       script: MimecastV2 - dev|||mimecast-create-antispoofing-bypass-policy
       type: regular
       iscommand: true
@@ -358,8 +357,7 @@ tasks:
       id: eb289f15-1f25-4a65-8093-2082d37d9558
       version: -1
       name: mimecast-update-antispoofing-bypass-policy
-      description: This endpoint can be used to update an existing Anti-Spoofing SPF
-        based Bypass policy.
+      description: This endpoint can be used to update an existing Anti-Spoofing SPF based Bypass policy.
       script: MimecastV2 - dev|||mimecast-update-antispoofing-bypass-policy
       type: regular
       iscommand: true
@@ -445,8 +443,7 @@ tasks:
       id: 0adcf6f5-eda9-42e1-8122-2e940bc49b26
       version: -1
       name: mimecast-create-address-alteration-policy
-      description: This API endpoint can be used to create a new Address Alteration
-        policy to apply an alteration definition based on sender and recipient values.
+      description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
       script: MimecastV2 - dev|||mimecast-create-address-alteration-policy
       type: regular
       iscommand: true
@@ -507,8 +504,7 @@ tasks:
       id: d3d303dc-cdf4-4bf8-8e7f-ce09036069c2
       version: -1
       name: mimecast-update-address-alteration-policy
-      description: This API endpoint can be used to update an existing Address Alteration
-        policy.
+      description: This API endpoint can be used to update an existing Address Alteration policy.
       script: MimecastV2 - dev|||mimecast-update-address-alteration-policy
       type: regular
       iscommand: true
@@ -739,3 +735,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
+description: ''
