@@ -1,6 +1,6 @@
 import json
 import pytest
-from Scripts.CreateYARARuleIndicators.CreateYARARuleIndicators import build_indicator, parse_rules, parse_metadata
+from CreateYARARuleIndicators import build_indicator, parse_rules, parse_metadata
 
 
 def open_json(path):
