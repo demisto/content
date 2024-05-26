@@ -619,7 +619,7 @@ class Client(OktaClient):
                 params=query_params
             )
         if limit and limit > MAX_LOGS_LIMIT:
-            query_params['limit'] = query_params
+            query_params['limit'] = MAX_LOGS_LIMIT
         return self.get_paged_results(uri, query_params, max_limit=limit)
 
     def delete_user(self, user_term):
