@@ -80,20 +80,6 @@ jobs:
           .report_pytest.xml
         if-no-files-found: error
 
-    - name: Upload junit & pack-wise pytest report - b
-      uses: actions/upload-artifact@v4
-      if: |
-        always() && 
-        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
-        github.event.pull_request.head.repo.fork == false
-      with:
-        name: pytest
-        path: |
-          packwise_pytest_time.csv
-          .report_pytest.xml
-          .pre-commit
-        if-no-files-found: error
-
     - name: Pytest coverage comment
       if: |
         always() && 
