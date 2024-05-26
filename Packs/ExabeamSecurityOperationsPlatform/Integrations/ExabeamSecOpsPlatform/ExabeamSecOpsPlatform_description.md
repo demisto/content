@@ -1,5 +1,5 @@
 ### Authentication Method
- - **OAuth2.0** - Provide the Key ID and Key Secret in the corresponding  parameters in the configuration.
+ - **OAuth2.0** - Provide the ID and Secret key in the integration configuration.
 
 
 For assistance accessing the Exabeam API, refer to [Exabeam API Base URLs documentation](https://developers.exabeam.com/exabeam/docs/exabeam-api-base-urls)
