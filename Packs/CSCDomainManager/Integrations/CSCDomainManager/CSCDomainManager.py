@@ -52,6 +52,19 @@ SEARCH_OUTPUT_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
                                                'Account Number',
                                                'Account Name'
                                                ]
+SEARCH_OPERATORS = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
+SELECTORS_MAPPING = {
+        'domain_name': 'domain',
+        'registration_date': 'registrationDate',
+        'registration_org': 'regOrg',
+        'email': 'email',
+        'organization': 'organization',
+        'registry_expiry_date': 'registryExpiryDate',
+        'filter': 'filter',
+        'sort': 'sort',
+        'page': 'page',
+        'page_size': 'size',
+    }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -81,31 +94,19 @@ class Client(BaseClient):
 
 
 def create_params_string(args):
-    selectors_mapping = {
-        'domain_name': 'domain',
-        'registration_date': 'registrationDate',
-        'registration_org': 'regOrg',
-        'email': 'email',
-        'organization': 'organization',
-        'registry_expiry_date': 'registryExpiryDate',
-        'filter': 'filter',
-        'sort': 'sort',
-        'page': 'page',
-        'page_size': 'size',
-    }
+    param_for_filter: list[str] = []
+    additional_params: list[str] = []
 
-    param_for_filter = []
-    additional_params = []
-    # Check each key in args and add to param_dict if present
-    for arg_key, param_key in selectors_mapping.items():
+    for arg_key, param_key in SELECTORS_MAPPING.items():
         if args.get(arg_key):
-            # prefixes = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
-            # if args[arg_key] is str and len(args[arg_key]) >= 3 and args[arg_key][:3] in prefixes:
-            #     param_for_filter.append(f"{param_key}={args[arg_key]}")
-            if arg_key in ['sort', 'page', 'page_size']:
-                additional_params.append(f"{param_key}={args[arg_key]}")
+            value = args[arg_key]
+            if isinstance(value, str) and len(value) >= 3 and value[:3] in SEARCH_OPERATORS:
+            #if len(value) >= 3 and value[:3] in SEARCH_OPERATORS:
+                param_for_filter.append(f"{param_key}={value}")
+            elif arg_key in ['sort', 'page', 'page_size']:
+                additional_params.append(f"{param_key}={value}")
             else:
-                param_for_filter.append(f"{param_key}=={args[arg_key]}")
+                param_for_filter.append(f"{param_key}=={value}")
 
     # Join the parameters with commas
     params_str = 'filter='
@@ -289,6 +290,15 @@ def main() -> None:
             'apikey': apikey,
             'Accept': ACCEPT_VAL
         }
+        
+        #TODO to check
+        reliability = params.get('integrationReliability')
+        reliability = reliability if reliability else DBotScoreReliability.A
+
+        if DBotScoreReliability.is_valid_type(reliability):
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
         client = Client(
             base_url=base_url,
@@ -301,7 +311,7 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             # results = test_module(client)
             results = client.send_get_request("/domains", "")
-            return_results(results)
+            return_results('ok')
 
         elif demisto.command() == 'csc-domains-search':
             results = csc_domains_search_command(client, args)
