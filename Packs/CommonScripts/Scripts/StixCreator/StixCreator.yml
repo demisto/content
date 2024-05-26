@@ -14,7 +14,7 @@ args:
 - name: doubleBackslash
   default: true
   description: Adds a second backslash to all existing backslashes in the value field.
-  defaultValue: 'true'
+  defaultValue: "true"
 outputs:
 - contextPath: StixExportedIndicators.created
   description: The date/time that the indicator was created.
