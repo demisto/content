@@ -2,7 +2,6 @@ category: Network Security
 commonfields:
   id: Palo Alto Networks IoT 3rd Party
   version: -1
-deprecated: true
 configuration:
 - display: Server URL
   name: url

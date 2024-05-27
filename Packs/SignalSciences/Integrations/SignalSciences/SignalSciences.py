@@ -231,9 +231,8 @@ def is_legal_interval_for_alert(interval):
 
 
 def validate_list_description_length(description):
-    if description is not None:
-        if len(description) > 140:
-            return_error("Error: Description given is too long. Description must be 140 characters or shorter")
+    if description is not None and len(description) > 140:
+        return_error("Error: Description given is too long. Description must be 140 characters or shorter")
 
 
 def validate_update_list_args(method, description):
