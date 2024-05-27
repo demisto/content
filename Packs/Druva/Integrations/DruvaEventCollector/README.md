@@ -1,18 +1,17 @@
-This is the Hello World event collector integration for XSIAM.
+This is the Druva event collector integration for Cortex XSIAM.
+This integration was integrated and tested with version xx of DruvaEventCollector.
 
-## Configure HelloWorld Event Collector on Cortex XSOAR
+## Configure Druva Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HelloWorld Event Collector.
+2. Search for Druva Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL | False |
-    | Fetch alerts with status (ACTIVE, CLOSED) | False |
-    | Max number of events per fetch | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | Server URL | True |
+    | Client ID | True |
+    | Secret Key | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -21,23 +20,21 @@ This is the Hello World event collector integration for XSIAM.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### hello-world-get-events
+### druva-get-events
 
 ***
-Gets events from Hello World.
+Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
 
 #### Base Command
 
-`hello-world-get-events`
+`druva-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
+| tracker | A pointer to the last event we received. | Optional | 
 
 #### Context Output
 
