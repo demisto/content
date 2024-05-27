@@ -40,7 +40,7 @@ tasks:
       id: 21c5699f-57ef-4b90-8e47-9c363e189116
       version: -1
       name: Check URL Command
-      description: Checks the reputation of the supplied URLs.
+      description: Checks the reputation of the supplied URLs. TESTING
       script: PhishTank V2|||url
       type: regular
       iscommand: true
