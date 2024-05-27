@@ -41,6 +41,7 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
+    skip:docker_autoupdate: true
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: v2.0.4
   hooks:
