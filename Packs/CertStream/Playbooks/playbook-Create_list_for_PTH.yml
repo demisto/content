@@ -815,6 +815,7 @@ tasks:
       id: 62ca251a-b45e-4cf0-8cb7-57f68f20ed78
       version: -1
       name: Which Domains should be added to DomainsList?
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -1193,6 +1194,7 @@ tasks:
       id: eaf35e8c-75f8-4f6b-8c7a-95988baa2e6b
       version: -1
       name: How would you like to create a list for PTH?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
