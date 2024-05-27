@@ -660,8 +660,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: 'List of homographs to hunt. provided in the following format:
-          ```json {   "example_domain": [     "example",     "ex4mple",     "exampl3",     "xample"   ],   "another_domain":
-          [     "permu7ation1",     "permutat1on2",     "p3rmutation3"   ] } ```'
+          ```json {   "domain1": [     "domain1_homograph1",     "domain1_homograph2",     "domain1_homograph3"],   "domain2":
+          [     "domain2_homograph1",     "domain2_homograph2",     "domain2_homograph3"   ] } ```'
         tooltip: 'Note: If using LLM, Please change only the domain names and leave
           the homographs lists with the examples'
         readonly: false
