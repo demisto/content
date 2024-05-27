@@ -6361,7 +6361,7 @@ def arg_to_number(arg, arg_name=None, required=False):
     via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
     if the input is invalid. If the input is None, it will throw a ValueError
     if required is ``True``, or ``None`` if required is ``False.
-
+arg_to_number
     :type arg: ``Any``
     :param arg: argument to convert
 

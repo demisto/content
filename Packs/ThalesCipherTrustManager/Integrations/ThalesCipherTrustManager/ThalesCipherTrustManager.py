@@ -5,7 +5,7 @@ from urllib.parse import quote
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+import datetime
 metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
                                           description="Manage Secrets and Protect Sensitive Data through HashiCorp Vault.",
                                           display="Thales CipherTrust Manager",
@@ -154,19 +154,20 @@ class CertificateRevokeReason(enum.Enum):
 
 
 ''' YML METADATA '''
-PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='page to return.'),
+PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='Page to return.'),
                      InputArgument(name=CommandArguments.PAGE_SIZE,
-                                   description=f'number of entries per page. defaults to {MAX_PAGE_SIZE} in case only page was provided. max is {MAX_PAGE_SIZE}'),
+                                   description=f'Number of entries per page. Defaults to {MAX_PAGE_SIZE} (in case only page was '
+                                               f'provided). Maximum entries per page is {MAX_PAGE_SIZE}'),
                      InputArgument(name=CommandArguments.LIMIT,
-                                   description='The max number of resources to return. defaults to 50',
+                                   description='The max number of entries to return. Defaults to 50',
                                    default=DEFAULT_LIMIT), ]
-GROUP_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Group name to filter by.'),
+GROUP_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description='Filter by group name.'),
                      InputArgument(name=CommandArguments.USER_ID,
-                                   description='User id to filter by membership. “nil” will return groups with no members.'),
+                                   description="Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only user id. Using '-' at the beginning of user_id will return groups that the user is not part of."),
                      InputArgument(name=CommandArguments.CONNECTION,
-                                   description='Connection id or name to filter by.'),
+                                   description='Filter by connection name or ID.'),
                      InputArgument(name=CommandArguments.CLIENT_ID,
-                                   description='Client id to filter by membership. “nil” will return groups with no members.'),
+                                   description="Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client id will return groups that the client is not part of."),
                      ] + PAGINATION_INPUTS
 GROUP_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group.'),
                        InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.'), ]
@@ -461,8 +462,8 @@ GROUP_LIST_OUTPUT = [
                    description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."),
     #todo: dynamic : messages arrayAn optional list of warning messages, usually used to note when unsupported query parameters were ignored. items {"type":"string"}
     OutputArgument(name="resources.name", output_type=str, description="name of the group"),
-    OutputArgument(name="resources.created_at", output_type=datetime, description="The time the group was created."),
-    OutputArgument(name="resources.updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="resources.created_at", output_type=datetime.datetime, description="The time the group was created."),
+    OutputArgument(name="resources.updated_at", output_type=datetime.datetime, description="The time the group was last updated."),
     OutputArgument(name="resources.user_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="resources.app_metadata", output_type=dict,
@@ -476,8 +477,8 @@ GROUP_LIST_OUTPUT = [
 
 GROUP_CREATE_OUTPUT = [
     OutputArgument(name="name", output_type=str, description="The name of the group."),
-    OutputArgument(name="created_at", output_type=datetime, description="The time the group was created."),
-    OutputArgument(name="updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="created_at", output_type=datetime.datetime, description="The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime.datetime, description="The time the group was last updated."),
     OutputArgument(name="user_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="app_metadata", output_type=dict,
@@ -490,8 +491,8 @@ GROUP_CREATE_OUTPUT = [
 
 GROUP_UPDATE_OUTPUT = [
     OutputArgument(name="name", output_type=str, description="The name of the group."),
-    OutputArgument(name="created_at", output_type=datetime, description="The time the group was created."),
-    OutputArgument(name="updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="created_at", output_type=datetime.datetime, description="The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime.datetime, description="The time the group was last updated."),
     OutputArgument(name="user_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="app_metadata", output_type=dict,
@@ -504,8 +505,8 @@ GROUP_UPDATE_OUTPUT = [
 
 USER_TO_GROUP_ADD_OUTPUT = [
     OutputArgument(name="name", output_type=str, description="The name of the group."),
-    OutputArgument(name="created_at", output_type=datetime, description="The time the group was created."),
-    OutputArgument(name="updated_at", output_type=datetime, description="The time the group was last updated."),
+    OutputArgument(name="created_at", output_type=datetime.datetime, description="The time the group was created."),
+    OutputArgument(name="updated_at", output_type=datetime.datetime, description="The time the group was last updated."),
     OutputArgument(name="user_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="app_metadata", output_type=dict,
@@ -540,22 +541,22 @@ USERS_LIST_OUTPUT = [
     OutputArgument(name="resources.app_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
     OutputArgument(name="resources.logins_count", output_type=int, description="Count for the number of logins"),
-    OutputArgument(name="resources.last_login", output_type=datetime, description="Timestamp of last login"),
-    OutputArgument(name="resources.created_at", output_type=datetime, description="Timestamp of when user was created"),
-    OutputArgument(name="resources.updated_at", output_type=datetime, description="Timestamp of last update of the user"),
+    OutputArgument(name="resources.last_login", output_type=datetime.datetime, description="Timestamp of last login"),
+    OutputArgument(name="resources.created_at", output_type=datetime.datetime, description="Timestamp of when user was created"),
+    OutputArgument(name="resources.updated_at", output_type=datetime.datetime, description="Timestamp of last update of the user"),
     OutputArgument(name="resources.allowed_auth_methods", output_type=list,
                    description="List of login authentication methods allowed to the user."),
-    OutputArgument(name="resources.expires_at", output_type=datetime,
+    OutputArgument(name="resources.expires_at", output_type=datetime.datetime,
                    description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
     OutputArgument(name="resources.password_policy", output_type=str,
                    description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
     OutputArgument(name="resources.allowed_client_types", output_type=list,
                    description="List of client types allowed to the user."),
-    OutputArgument(name="resources.last_failed_login_at", output_type=datetime, description="Timestamp of last failed login"),
+    OutputArgument(name="resources.last_failed_login_at", output_type=datetime.datetime, description="Timestamp of last failed login"),
     OutputArgument(name="resources.failed_logins_count", output_type=int, description="Count of failed logins"),
-    OutputArgument(name="resources.failed_logins_initial_attempt_at", output_type=datetime,
+    OutputArgument(name="resources.failed_logins_initial_attempt_at", output_type=datetime.datetime,
                    description="Timestamp of first failed login"),
-    OutputArgument(name="resources.account_lockout_at", output_type=datetime, description="Timestamp of account lockout"),
+    OutputArgument(name="resources.account_lockout_at", output_type=datetime.datetime, description="Timestamp of account lockout"),
 ]
 
 USER_CREATE_OUTPUT = [
@@ -575,13 +576,13 @@ USER_CREATE_OUTPUT = [
     OutputArgument(name="app_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
     OutputArgument(name="logins_count", output_type=int, description="Count for the number of logins"),
-    OutputArgument(name="last_login", output_type=datetime, description="Timestamp of last login"),
+    OutputArgument(name="last_login", output_type=datetime.datetime, description="Timestamp of last login"),
 
-    OutputArgument(name="created_at", output_type=datetime, description="Timestamp of when user was created"),
-    OutputArgument(name="updated_at", output_type=datetime, description="Timestamp of last update of the user"),
+    OutputArgument(name="created_at", output_type=datetime.datetime, description="Timestamp of when user was created"),
+    OutputArgument(name="updated_at", output_type=datetime.datetime, description="Timestamp of last update of the user"),
     OutputArgument(name="allowed_auth_methods", output_type=list,
                    description="List of login authentication methods allowed to the user."),
-    OutputArgument(name="expires_at", output_type=datetime,
+    OutputArgument(name="expires_at", output_type=datetime.datetime,
                    description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
     OutputArgument(name="password_policy", output_type=str,
                    description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
@@ -605,12 +606,12 @@ USER_UPDATE_OUTPUT = [
     OutputArgument(name="app_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
     OutputArgument(name="logins_count", output_type=int, description="Count for the number of logins"),
-    OutputArgument(name="last_login", output_type=datetime, description="Timestamp of last login"),
-    OutputArgument(name="created_at", output_type=datetime, description="Timestamp of when user was created"),
-    OutputArgument(name="updated_at", output_type=datetime, description="Timestamp of last update of the user"),
+    OutputArgument(name="last_login", output_type=datetime.datetime, description="Timestamp of last login"),
+    OutputArgument(name="created_at", output_type=datetime.datetime, description="Timestamp of when user was created"),
+    OutputArgument(name="updated_at", output_type=datetime.datetime, description="Timestamp of last update of the user"),
     OutputArgument(name="allowed_auth_methods", output_type=list,
                    description="List of login authentication methods allowed to the user."),
-    OutputArgument(name="expires_at", output_type=datetime,
+    OutputArgument(name="expires_at", output_type=datetime.datetime,
                    description="The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions."),
     OutputArgument(name="password_policy", output_type=str,
                    description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
@@ -620,6 +621,7 @@ USER_UPDATE_OUTPUT = [
 USER_PASSWORD_CHANGE_OUTPUT = []
 
 ''' DESCRIPTIONS '''
+GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
     'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
@@ -900,7 +902,7 @@ def optional_arg_to_datetime_string(arg, date_format=DATE_FORMAT):
 
 
 def add_expires_at_param(request_data: dict, expires_at_arg: str):
-    #todo :
+    #todo : agreed prompt to never
     if expires_at_arg == "":
         request_data['expires_at'] = expires_at_arg
     else:
@@ -936,10 +938,8 @@ def test_module(client: CipherTrustClient):
 
 
 @metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
-                            inputs_list=GROUP_LIST_INPUTS, outputs_list=GROUP_LIST_OUTPUT)
+                            inputs_list=GROUP_LIST_INPUTS, outputs_list=GROUP_LIST_OUTPUT, description=GROUP_LIST_DESCRIPTION)
 def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
-    """
-    """
     skip, limit = derive_skip_and_limit_for_pagination(args[CommandArguments.LIMIT],
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
@@ -963,16 +963,6 @@ def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
 @metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUP_CREATE_INPUTS,
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
 def group_create_command(client: CipherTrustClient, args: dict):
-    """
-
-        client (CipherTrustClient): CipherTrust client to use.
-        name (str): Name of the group. required=True
-        description(str): description of the group.
-
-    Context Outputs:
-        {'name': 'maya test', 'created_at': '2024-05-15T14:16:03.088821Z', 'updated_at': '2024-05-15T14:16:03.088821Z', 'description': 'mayatest'}
-
-    """
     request_data = assign_params(name=args.get(CommandArguments.NAME),
                                  description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.create_group(request_data=request_data)
@@ -1443,7 +1433,7 @@ def main():
         client = CipherTrustClient(
             username=username,
             password=password,
-            base_url=server_url,
+            server_url=server_url,
             verify=verify,
             proxy=proxy)
 

@@ -89,7 +89,7 @@ class CommandArguments:
 
 
 '''
-Mock Data
+Mock Data 
 '''
 
 GROUPS_LIST_TEST_ARGS = [
@@ -108,7 +108,8 @@ GROUPS_LIST_TEST_ARGS = [
     },
     {
         CommandArguments.PAGE: '2',
-        CommandArguments.PAGE_SIZE: '5'
+        CommandArguments.PAGE_SIZE: '5',
+        CommandArguments.LIMIT: '50'  #there will always be a limit since set to default in the integration
     }
 ]
 
@@ -141,33 +142,32 @@ EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = []
 ''' HELPER FUNCTIONS TESTS'''
 
 
-def test_derive_skip_and_limit_for_pagination():
+@pytest.mark.parametrize('limit, page, page_size, expected_skip, expected_limit',
+                         [('100', '2', '25', 25, 25), ('200', None, None, 0, 200), (None, '2', '30', 30, 30),
+                          (None, '2', None, 50, 50), (None, '3', None, 100, 50)])
+def test_derive_skip_and_limit_for_pagination(limit, page, page_size, expected_skip, expected_limit):
     from ThalesCipherTrustManager import derive_skip_and_limit_for_pagination
-    assert derive_skip_and_limit_for_pagination('100', '2', '25') == (25, 25)
-    assert derive_skip_and_limit_for_pagination('200', None, None) == (0, 200)
-    assert derive_skip_and_limit_for_pagination(None, '2', '30') == (30, 30)
-    assert derive_skip_and_limit_for_pagination(None, '2', None) == (50, 50)
-    assert derive_skip_and_limit_for_pagination(None, '3', None) == (100, 50)
+    assert derive_skip_and_limit_for_pagination(limit, page, page_size) == (expected_skip, expected_limit)
+
+
+@pytest.mark.parametrize('limit, page, page_size',
+                         [(None, '1', '101'), (None, 'invalid', '30'), ('invalid', None, None)])
+def test_derive_skip_and_limit_for_pagination_invalid_input(limit, page, page_size):
+    from ThalesCipherTrustManager import derive_skip_and_limit_for_pagination
     with pytest.raises(ValueError):
-        derive_skip_and_limit_for_pagination(None, '1', '101')
-        derive_skip_and_limit_for_pagination(None, 'invalid', '30')
-        derive_skip_and_limit_for_pagination('invalid', None, None)
+        derive_skip_and_limit_for_pagination(limit, page, page_size)
 
 
-def test_add_expires_at_param():
+@pytest.mark.parametrize('expires_at_arg, expected_output', [("",""), ("2023-05-26T15:30:00" ,"2023-05-26T15:30:00.000000Z"), (None, None)])
+def test_add_expires_at_param(expires_at_arg, expected_output):
     from ThalesCipherTrustManager import add_expires_at_param
     request_data = {}
-    add_expires_at_param(request_data, "")
-    assert request_data['expires_at'] == ""
+    add_expires_at_param(request_data, expires_at_arg)
+    assert request_data['expires_at'] == expected_output
 
-    request_data = {}
-    add_expires_at_param(request_data, "2023-05-26T15:30:00")
-    assert request_data['expires_at'] == "2023-05-26T15:30:00.000000Z"
 
-    request_data = {}
-    add_expires_at_param(request_data, None)
-    assert request_data['expires_at'] is None
-
+def test_add_expires_at_param_invalid_input():
+    from ThalesCipherTrustManager import add_expires_at_param
     with pytest.raises(ValueError):
         request_data = {}
         add_expires_at_param(request_data, "invalid-datetime")
