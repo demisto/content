@@ -123,11 +123,12 @@ def main():  # pragma: no cover
         if args.get('yara_signatures', ''):
             yara_rules: str = args['yara_signatures']
 
-        elif args.get('entryID', ''):
+        elif args.get('entry_id', ''):
             file_path = demisto.getFilePath(args['entry_id'])['path']
             with open(file_path) as f:
                 yara_rules = f.read()
 
+        else:
             raise Exception('Please provide exactly one input to the script yara_signatures or entry_id.')
 
         return_results(parse_rules(yara_rules))
