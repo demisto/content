@@ -141,8 +141,8 @@ def test_block_builder_command_url(mocker):
 
     response = slack_block_builder_command(COMMAND_ARGS)
     assert response.readable_output == 'Message sent to Slack successfully.\nThread ID is: 1660645689.649679'
-    
-    
+
+
 def test_block_builder_command_url_return_fail(mocker):
     """
     Given: A URL which contains a valid URI encoded Slack Block JSON.
@@ -166,9 +166,10 @@ def test_block_builder_command_url_return_fail(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["blocks_url"] = BLOCKS_URL
     mocker.patch.object(demisto, 'args', return_value=COMMAND_ARGS)
-    
+
     with pytest.raises(DemistoException, match="Could not find any destination to send to."):
         slack_block_builder_command(COMMAND_ARGS)
+
 
 def test_image_id_bug_XSUP_31982(mocker):
     """Tests the block carrier when given an url containing an image.
