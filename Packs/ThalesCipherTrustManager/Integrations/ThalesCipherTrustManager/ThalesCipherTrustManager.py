@@ -997,7 +997,7 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict):
 def user_to_group_remove_command(client: CipherTrustClient, args: dict):
     client.remove_user_from_group(group_name=args.get(CommandArguments.GROUP_NAME), user_id=args.get(CommandArguments.USER_ID))
     return CommandResults(
-        readable_output=f'{args.get(CommandArguments.USER_ID]} has been deleted successfully from {args.get(CommandArguments.GROUP_NAME)}'
+        readable_output=f'{args.get(CommandArguments.USER_ID)} has been deleted successfully from {args.get(CommandArguments.GROUP_NAME)}'
     )
 
 
@@ -1093,7 +1093,7 @@ def user_update_command(client: CipherTrustClient, args: dict):
 def user_delete_command(client: CipherTrustClient, args: dict):
     client.delete_user(args.get(CommandArguments.USER_ID))
     return CommandResults(
-        readable_output=f'{args.get(CommandArguments.USER_ID]} has been deleted successfully!'
+        readable_output=f'{args.get(CommandArguments.USER_ID)} has been deleted successfully!'
     )
 
 
@@ -1108,7 +1108,7 @@ def user_password_change_command(client: CipherTrustClient, args: dict):
     )
     client.change_current_user_password(request_data=request_data)
     return CommandResults(
-        readable_output=f'Password has been changed successfully for {args.get(CommandArguments.USERNAME]}!'
+        readable_output=f'Password has been changed successfully for {args.get(CommandArguments.USERNAME)}!'
     )
 
 
@@ -1271,7 +1271,7 @@ def certificate_list_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-local-certificate-delete', inputs_list=LOCAL_CERTIFICATE_DELETE_INPUTS,
                             description=CERTIFICATE_DELETE_DESCRIPTION)
 def local_certificate_delete_command(client: CipherTrustClient, args: dict):
-    client.delete_certificate(ca_id=args.get(CommandArguments.CA_ID), local_ca_id=args.get(CommandArguments.LOCAL_CA_ID)
+    client.delete_certificate(ca_id=args.get(CommandArguments.CA_ID), local_ca_id=args.get(CommandArguments.LOCAL_CA_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.LOCAL_CA_ID)} has been deleted successfully!'
     )
