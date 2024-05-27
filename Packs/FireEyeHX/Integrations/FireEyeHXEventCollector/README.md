@@ -1,5 +1,9 @@
 Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure FireEye HX Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
