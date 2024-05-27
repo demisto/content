@@ -6,7 +6,6 @@ import traceback
 from datetime import datetime
 import urllib3
 import re
-from enum import Enum
 
 import requests
 
