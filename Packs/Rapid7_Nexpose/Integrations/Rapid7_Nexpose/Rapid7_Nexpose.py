@@ -5574,6 +5574,9 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
     Returns:
         CommandResults: Results of the tag creation.
     """
+    if type != "Custom" and color != "Default":
+        raise DemistoException("color argument is only relevant for “Custom” type.")
+    
     filters_data = parse_asset_filters(
         client=client,
         ip_address_is=ip_address_is,

@@ -2347,6 +2347,7 @@ script:
     - name: asset_group_ids
       isArray: true
       description: List of asset group identifiers.
+    description: Add included targets to a site.
   - name: nexpose-remove-site-included-target
     arguments:
     - name: site_id
@@ -2360,6 +2361,7 @@ script:
     - name: asset_group_ids
       isArray: true
       description: List of asset group identifiers.
+    description: Remove included targets from a site.
   - name: nexpose-list-site-included-asset
     arguments:
     - name: site_id
