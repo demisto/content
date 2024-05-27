@@ -120,7 +120,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
     'geo-us': 'https://securitycenter.onmicrosoft.com',
     'geo-eu': 'https://securitycenter.onmicrosoft.com',
     'geo-uk': 'https://securitycenter.onmicrosoft.com',
-    'gcc': 'https://securitycenter.onmicrosoft.us',
+    'gcc': 'https://securitycenter.onmicrosoft.com',
     'gcc-high': 'https://securitycenter.onmicrosoft.us',
     'dod': 'https://securitycenter.onmicrosoft.us',
 }
@@ -140,7 +140,7 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
 
 MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
 }
 
