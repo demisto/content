@@ -86,7 +86,7 @@ configuration:
   type: 9
   section: Connect
   required: false
-description: Deploy and manage storage accounts and blob services.
+description: Deploy and manage storage accounts and blob services dasd.
 display: Azure Storage Management
 name: Azure Storage
 script:
@@ -1012,7 +1012,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.665621
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

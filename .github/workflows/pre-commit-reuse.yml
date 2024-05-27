@@ -47,7 +47,7 @@ jobs:
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
-          demisto-sdk pre-commit --mode=docker_autoupdate || PRE_COMMIT_SUCCESS=1
+          demisto-sdk pre-commit -g --mode=docker_autoupdate --show-diff-on-failure --verbose
         else
           echo "Not in docker auto update branch, pre commit on CI mode."
           demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci

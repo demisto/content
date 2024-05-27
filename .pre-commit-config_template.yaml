@@ -76,6 +76,7 @@ repos:
     language: system
     # skip nightly since we don't care about warnings in nightly
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: pylint-in-docker
     name: pylint-in-docker
@@ -163,12 +164,14 @@ repos:
     - Tests/scripts/pytest/conftest.py
     skip:commit: true
     run_isolated: true
+    skip:docker_autoupdate: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
 
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
+    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
@@ -180,6 +183,7 @@ repos:
 
   - id: validate-content-paths
     name: validate-content-paths
+    skip:docker_autoupdate: true
     entry: validate-content-path
     language: system
     require_serial: true
@@ -198,6 +202,7 @@ repos:
     files: Tests/conf.json
     skip:commit: true
     skip:nightly: true
+    skip:docker_autoupdate: true
     entry: validate-conf-json
     pass_filenames: false
     language: system
@@ -257,6 +262,7 @@ repos:
     require_serial: true
     skip:commit: true
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: format
     name: format
@@ -269,6 +275,7 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+    skip:docker_autoupdate: true
 
   - id: secrets
     name: secrets
