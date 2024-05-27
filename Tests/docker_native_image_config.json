@@ -174,6 +174,14 @@
                 "native:dev",
                 "native:candidate"
             ]
+        },
+        {
+            "id":"ZipFile",
+            "reason":"see CIAC-10361",
+            "ignored_native_images":[
+                "native:8.6",
+                "native:candidate"
+            ]
         }
     ],
     "flags_versions_mapping":{
