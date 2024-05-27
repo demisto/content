@@ -3164,7 +3164,7 @@ def qradar_search_delete_command(client: Client, args: dict) -> CommandResults:
     response = client.search_delete(search_id)
 
     return CommandResults(
-        readable_output=f'Delete Search ID {search_id}',
+        readable_output=f'Search ID {search_id} was successfully deleted.',
         raw_response=response
     )
 
@@ -3185,9 +3185,12 @@ def qradar_search_cancel_command(client: Client, args: dict) -> CommandResults:
 
     # if this call fails, raise an error and stop command execution
     response = client.search_cancel(search_id)
-
+    if response.get('status') == 'COMPLETED':
+        output = f'Search ID {search_id} is already in a completed status.'
+    else:
+        output = f'Search ID {search_id} was successfully cancelled.'
     return CommandResults(
-        readable_output=f'Search ID {search_id} was successfully cancelled.',
+        readable_output=output,
         raw_response=response
     )
 
@@ -4247,7 +4250,12 @@ def qradar_search_retrieve_events_command(
         print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
         events = []
         status = QueryStatus.WAIT.value
-
+    if is_last_run and status == QueryStatus.WAIT.value:
+        print_debug_msg("Its the last run of the polling, will cancel the query request. ")
+        client.search_cancel(search_id=search_id)
+        return CommandResults(
+            readable_output='Got polling timeout. Quary got cancelled.',
+        )
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(

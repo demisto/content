@@ -15,7 +15,7 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, \
     Client, ASSET_PROPERTIES_NAME_MAP, REFERENCE_SETS_RAW_FORMATTED, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY, qradar_search_cancel_command
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
@@ -846,6 +846,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_search_create_command, 'search_create'),
                              (qradar_search_status_get_command, 'search_status_get'),
                              (qradar_search_results_get_command, 'search_results_get'),
+                             (qradar_search_cancel_command, 'search_cancel'),
                              (qradar_reference_sets_list_command, 'reference_sets_list'),
                              (qradar_reference_set_create_command, 'reference_set_create'),
                              (qradar_reference_set_delete_command, 'reference_set_delete'),
