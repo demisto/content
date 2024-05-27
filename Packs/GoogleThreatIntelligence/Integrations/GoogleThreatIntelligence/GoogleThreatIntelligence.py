@@ -2619,16 +2619,21 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
     )
 
 
+def arg_to_relationships(arg):
+    """Get an argument and return the relationship list."""
+    return (','.join(argToList(arg))).replace('* ', '').replace(' ', '_')
+
+
 def main(params: dict, args: dict, command: str):
     results: Union[CommandResults, str, List[CommandResults]]
     handle_proxy()
     client = Client(params)
     score_calculator = ScoreCalculator(params)
 
-    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(' ', '_')
-    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(' ', '_')
-    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(' ', '_')
-    file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(' ', '_')
+    ip_relationships = arg_to_relationships(params.get('ip_relationships'))
+    url_relationships = arg_to_relationships(params.get('url_relationships'))
+    domain_relationships = arg_to_relationships(params.get('domain_relationships'))
+    file_relationships = arg_to_relationships(params.get('file_relationships'))
 
     disable_private_ip_lookup = argToBoolean(params.get('disable_private_ip_lookup', False))
 

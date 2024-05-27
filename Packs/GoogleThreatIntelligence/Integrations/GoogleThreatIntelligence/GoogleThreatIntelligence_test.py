@@ -272,7 +272,7 @@ def test_file_command(mocker, requests_mock):
     from GoogleThreatIntelligence import file_command, ScoreCalculator, Client
     import CommonServerPython
 
-    file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    file_hash = '0000000000000000000000000000000000000000000000000000000000000000'
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
@@ -286,7 +286,7 @@ def test_file_command(mocker, requests_mock):
                       json=mock_response)
 
     for extended_data in [True, False]:
-        file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+        file_hash = '0000000000000000000000000000000000000000000000000000000000000000'
         mocker.patch.object(demisto, 'args', return_value={'file': file_hash, 'extended_data': extended_data})
 
         if extended_data:
@@ -319,7 +319,7 @@ def test_not_found_file_command(mocker, requests_mock):
     from GoogleThreatIntelligence import file_command, ScoreCalculator, Client
     import CommonServerPython
     # Setup Mocks
-    file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    file_hash = '0000000000000000000000000000000000000000000000000000000000000000'
     mocker.patch.object(demisto, 'args', return_value={'file': file_hash, 'extended_data': 'false'})
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
@@ -780,7 +780,7 @@ def test_gti_assessment_command(mocker, requests_mock):
     import CommonServerPython
 
     for resource, resource_type, endpoint in [
-        ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
+        ('0000000000000000000000000000000000000000000000000000000000000000', 'file', 'files'),
         ('8.8.8.8', 'ip', 'ip_addresses'),
         ('www.example.com', 'domain', 'domains'),
         ('https://www.example.com', 'url', 'urls'),
@@ -856,7 +856,7 @@ def test_gti_comments_command(mocker, requests_mock):
     }
 
     for resource, resource_type, endpoint in [
-        ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
+        ('0000000000000000000000000000000000000000000000000000000000000000', 'file', 'files'),
         ('8.8.8.8', 'ip', 'ip_addresses'),
         ('www.example.com', 'domain', 'domains'),
         ('https://www.example.com', 'url', 'urls'),
@@ -911,7 +911,7 @@ def test_gti_add_comments_command(mocker, requests_mock):
     }
 
     for resource, resource_type, endpoint in [
-        ('699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3', 'file', 'files'),
+        ('0000000000000000000000000000000000000000000000000000000000000000', 'file', 'files'),
         ('8.8.8.8', 'ip', 'ip_addresses'),
         ('www.example.com', 'domain', 'domains'),
         ('https://www.example.com', 'url', 'urls'),
@@ -1152,7 +1152,7 @@ def test_file_sigma_analysis_command(mocker, requests_mock):
     from GoogleThreatIntelligence import file_sigma_analysis_command, Client
     import CommonServerPython
 
-    file_hash = '699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3'
+    file_hash = '0000000000000000000000000000000000000000000000000000000000000000'
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 

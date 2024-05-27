@@ -1,8 +1,8 @@
 {
   "type": "file",
-  "id": "699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3",
+  "id": "0000000000000000000000000000000000000000000000000000000000000000",
   "links": {
-    "self": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3"
+    "self": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000"
   },
   "relationships": {
     "contacted_domains": {
@@ -13,8 +13,8 @@
         }
       ],
       "links": {
-        "self": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3/relationships/contacted_domains?limit=20",
-        "related": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3/contacted_domains"
+        "self": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000/relationships/contacted_domains?limit=20",
+        "related": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000/contacted_domains"
       }
     }
   },
@@ -69,7 +69,7 @@
     },
     "reputation": -889,
     "sha1": ":sha1:",
-    "sha256": "699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
     "size": 22,
     "ssdeep": ":ssdeep:",
     "tags": [

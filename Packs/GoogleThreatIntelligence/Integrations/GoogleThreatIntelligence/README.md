@@ -36,7 +36,7 @@ This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
 
 ### Acquiring your API key
 
-Your API key can be found in your GoogleThreatIntelligence account user menu:
+Your API key can be found in your GoogleThreatIntelligence account user menu, clicking on your avatar:
 ![How to get api key in GoogleThreatIntelligence](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
@@ -238,14 +238,14 @@ Checks the file reputation of the specified hash.
 
 #### Command Example
 
-```!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
+```!file file=0000000000000000000000000000000000000000000000000000000000000000```
 
 #### Context Example
 
 ```json
 {
     "DBotScore": {
-        "Indicator": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "Indicator": "0000000000000000000000000000000000000000000000000000000000000000",
         "Reliability": "A - Completely reliable",
         "Score": 2,
         "Type": "file",
@@ -253,9 +253,9 @@ Checks the file reputation of the specified hash.
     },
     "File": {
         "Extension": "txt",
-        "MD5": "bea65efcc00169dec4f7e2ed612e041f",
-        "SHA1": "24a0006bc375afc0987493f743ebc422ded9d561",
-        "SHA256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "MD5": "00000000000000000000000000000000",
+        "SHA1": "0000000000000000000000000000000000000000",
+        "SHA256": "0000000000000000000000000000000000000000000000000000000000000000",
         "SSDeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
         "Size": 103,
         "Tags": [
@@ -302,7 +302,7 @@ Checks the file reputation of the specified hash.
                 "last_modification_date": 1617088964,
                 "last_submission_date": 1613356237,
                 "magic": "ASCII text, with no line terminators",
-                "md5": "bea65efcc00169dec4f7e2ed612e041f",
+                "md5": "00000000000000000000000000000000",
                 "meaningful_name": "brokencert.exe",
                 "names": [
                     "brokencert.exe"
@@ -317,8 +317,8 @@ Checks the file reputation of the specified hash.
                     "suggested_threat_label": "eicar/test"
                 },
                 "reputation": 0,
-                "sha1": "24a0006bc375afc0987493f743ebc422ded9d561",
-                "sha256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+                "sha1": "0000000000000000000000000000000000000000",
+                "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
                 "size": 103,
                 "ssdeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
                 "tags": [
@@ -335,9 +335,9 @@ Checks the file reputation of the specified hash.
                 "type_tag": "text",
                 "unique_sources": 1
             },
-            "id": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+            "id": "0000000000000000000000000000000000000000000000000000000000000000",
             "links": {
-                "self": "https://www.virustotal.com/api/v3/files/6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e"
+                "self": "https://www.virustotal.com/api/v3/files/0000000000000000000000000000000000000000000000000000000000000000"
             },
             "type": "file"
         }
@@ -347,11 +347,11 @@ Checks the file reputation of the specified hash.
 
 #### Human Readable Output
 
->### Results of file hash 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+>### Results of file hash 0000000000000000000000000000000000000000000000000000000000000000
 >
 >|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|
 >|---|---|---|---|---|---|---|---|
->| 24a0006bc375afc0987493f743ebc422ded9d561 | 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | bea65efcc00169dec4f7e2ed612e041f | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
+>| 0000000000000000000000000000000000000000 | 0000000000000000000000000000000000000000000000000000000000000000 | 00000000000000000000000000000000 | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
 
 ### url-scan
 
