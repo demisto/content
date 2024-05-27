@@ -1,4 +1,5 @@
-Generate an as built document, as HTML, based on the running XSOAR instance. Requires an instance of the Demisto API integration configured.
+Generates a configuration file for Cortex XSOAR As-Built document.
+A Json file is generated that can be downloaded and used to generate the As-Built document for Cortex XSOAR.
 
 ## Script Data
 

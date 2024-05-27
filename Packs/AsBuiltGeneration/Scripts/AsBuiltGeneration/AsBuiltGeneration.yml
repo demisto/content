@@ -11,14 +11,14 @@ args:
 - description: Retrieve more information such as dependencies from a specific use case. For multiple playbooks enter comma-separated values.
   isArray: true
   name: playbook
-comment: Generate an as built document, as HTML, based on the running XSOAR instance. Requires an instance of the Demisto API integration configured.
+comment: "Generates a configuration file for Cortex XSOAR As-Built document.\nA Json file is generated that can be downloaded and used to generate the As-Built document for Cortex XSOAR."
 commonfields:
   id: AsBuiltGeneration
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/teams:1.0.0.94081
+dockerimage: demisto/teams:1.0.0.96164
 enabled: true
 engineinfo: {}
 name: AsBuiltGeneration

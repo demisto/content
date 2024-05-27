@@ -174,64 +174,6 @@ def get_all_incidents(days=60, size=1000):
     r = post_api_request("/incidents/search", body)
     return r.get("data")
 
-# def get_incident_data(days=30, size=1000):
-#     layout_list = []
-#     incident_layout = {
-#         'Case Details': layout_list ,
-#         'Evidence': None,
-#         'Investigation': None,
-#         'Indicator': None
-#     }
-#     body = {
-#         "userFilter": False,
-#         "filter": {
-#             "page": 0,
-#             "size": int(size),
-#             "query": "-category:job",
-#             "sort": [
-#                 {
-#                     "field": "id",
-#                     "asc": False
-#                 }
-#             ],
-#             "period": {
-#                 "by": "day",
-#                 "fromValue": int(days)
-#             }
-#         }
-#     }
-#     incident_data = post_api_request("/incidents/search", body).get("data")
-#     g = post_api_request("/indicators/search", {})
-#     f = post_api_request("/evidence/search", {"incidentID" : "6843"})
-#     for i_d in incident_data:
-#         case_value = {'name': None,
-#             'id': None,
-#             'occurred': None,
-#             'type': None,
-#             'severity': None,
-#             'investigationId': None,
-#             'playbookId': None,
-#             'owner': None
-#         }
-#         # print(i_d)
-#         case_value['name'] = i_d.get('name')
-#         case_value['occurred'] = i_d.get('occurred')
-#         case_value['id'] = i_d.get('id')
-#         case_value['type'] = i_d.get('type')
-#         case_value['severity'] = i_d.get('severity')
-#         case_value['investigationId'] = i_d.get('investigationId')
-#         case_value['details'] = i_d.get('details')
-#         case_value['owner'] = i_d.get('owner')
-#         case_value['playbookId'] = i_d.get('playbookId')
-#         layout_list.append(case_value)
-#     incident_layout['case details'] =
-#     print(r.get("data"))
-#     print("Indicator data", g)
-#     for evidence in f.get("evidences"):
-#         print(evidence)
-#     print("INcident data is", incident_layout)
-#     return r.get("data")
-
 
 def get_open_incidents(days=7, size=1000):
     """Get open incidents from API.
@@ -316,55 +258,24 @@ def get_enabled_integrations(max_request_size: int):
     return enabled_instances
 
 
-def get_installed_packs():
-    """Get all the installed Content Packs
+# def get_installed_packs():
+#     """Get all the installed Content Packs
 
-    Returns:
-        SortedTableData: TableData object with the installed Content Packs.
-    """
-    # if tis doesn't work, return nothing.
-    r = get_api_request("/contentpacks/metadata/installed")
-    if not r:
-        return NoneTableData()
-    else:
-        return r
+#     Returns:
+#         SortedTableData: TableData object with the installed Content Packs.
+#     """
+#     # if tis doesn't work, return nothing.
+#     r = get_api_request("/contentpacks/metadata/installed")
+#     if not r:
+#         return NoneTableData()
+#     else:
+#         return r
 
 
 def get_custom_playbooks():
     resp = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks")
     pb_names = [pb["name"] for pb in resp]
     return pb_names
-
-
-def get_custom_reports():
-    """
-    Return all the custom reports installed in XSOAR.
-    :return: TableData
-    """
-    # r = get_api_request("/report/6843/latest")
-    r = get_api_request("/reports")
-    reports = []
-    for report in r:
-        # Check it's not an inbuilt (system) report
-        if not report.get("system"):
-            reports.append(report)
-    # print("Data for reports is", r)
-    return reports
-
-
-def get_custom_dashboards():
-    """Return all the custom dashboards configured in XSOAR
-
-    Returns:
-        TableData: TableData object with the custom dashboards.
-    """
-    r = get_api_request("/dashboards")
-    dashboards = []
-    for dashboard in r.values():
-        # Check it's not an inbuilt (system) dashboard
-        if not dashboard.get("system"):
-            dashboards.append(dashboard)
-    return dashboards
 
 
 def get_all_playbooks():
@@ -381,72 +292,11 @@ def get_all_playbooks():
     return r
 
 
-def get_playbook_stats(playbooks, days=7, size=1000):
-    """Pull all the incident types and associated playbooks,
-    then join this with the incident stats to determine how often each playbook has been used.
-
-    Args:
-        playbooks (SortedTableData): TableData object with the custom playbooks.
-        days (int, optional): max number of days. Defaults to 7.
-        size (int, optional): max request size. Defaults to 1000.
-
-    Returns:
-        Dict: Dictionary of playbook stats.
-    """
-    # incident_types = get_api_request(DEMISTO_INCIDENT_TYPE_PATH)
-    incidents = get_all_incidents(days, size)
-    playbook_stats = {}
-    for incident in incidents:
-        playbook = incident.get("playbookId")
-        if playbook not in playbook_stats:
-            playbook_stats[playbook] = 0
-
-        playbook_stats[playbook] = playbook_stats[playbook] + 1
-
-    table = []
-    for playbook, count in playbook_stats.items():
-        # Try to join this with the playbooks we previously retrieved to populate
-        # more info.
-        playbook_data = playbooks.search("id", playbook)
-        if playbook_data:
-            table.append({
-                "playbook": playbook_data.get("name"),
-                "incidents": count
-            })
-        else:
-            table.append({
-                "playbook": playbook,
-                "incidents": count
-            })
-    return table
-
-
 def get_layouts():
-    # d = []
-    # final_data = []
-    # items  = []
-    # names = []
-    # field_type = {}
     fields = ['description', 'details', 'detailsV2', 'group', 'id', 'modified', 'name', 'packID', 'packName', 'system']
     resp = get_api_request("/layouts")
     # print("Data in incident fields are", incident_fields)
     filtered_data = create_context(resp, fields)
-    # for b in filtered_data:
-    #     t = b.get('detailsV2')
-    #     if t is not None:
-    #         e = t.get("tabs")
-    #         for test in e:
-    #             if 'sections' in test.keys():
-    #                 final_data = test.get("sections")
-    #                 for l in final_data:
-    #                     items = l.get('items')
-    #                     if items is not None:
-    #                         for j in items:
-    #                             for a in incident_fields:
-    #                                 if j.get("fieldId") == a.get('cliName'):
-    #                                     if j.get("fieldId") not in field_type.keys():
-    #                                         field_type[j.get("fieldId")] = a.get("type")
-    # field_list.append(field_type)
     return filtered_data
 
 
@@ -772,45 +622,6 @@ def get_custom_automations():
 def get_system_config():
     r = get_api_request("/system/config").get("defaultMap")
     return r
-
-# def get_auto():
-
-#     resp = get_api_request("/automation/export/fac8164a-92ab-4816-88a8-a60d69113de9")
-#     print("Response data is", resp)
-
-# def playbook_use_case(playbook: str, author: str, customer: str):
-#     """Given a playbook, generate a use case document.
-
-#     Args:
-#         playbook (str): playbook name
-#         author (str): author name
-#         customer (str): company name
-#     """
-#     r = get_playbook_dependencies(playbook)
-#     print(r)
-
-
-def platform_as_built_use_case(max_request_size: int, max_days: int, author: str, customer: str):
-    """Generate a platform as built use case document.
-
-    Args:
-        max_request_size (int): max request size
-        max_days (int): max number of days
-        author (str): author name
-        customer (str): company name
-    """
-    open_incidents = get_open_incidents(max_days, max_request_size)
-    closed_incidents = get_closed_incidents(max_days, max_request_size)
-
-    system_config = get_system_config()
-    integrations = get_enabled_integrations(max_request_size)
-    installed_packs = get_installed_packs()
-    playbooks = get_custom_playbooks()
-    automations = get_custom_automations()
-    playbook_stats = get_playbook_stats(playbooks, max_days, max_request_size)
-
-    reports = get_custom_reports()
-    dashboards = get_custom_dashboards()
 
 
 def sub_data(playbook):
