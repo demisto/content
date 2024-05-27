@@ -112,7 +112,7 @@ Found safe by relationship files. total_malicious=0 >= 3
   For more information regarding Domain relationships, see: <https://gtidocs.virustotal.com/reference/domain-info>
   For more information regarding File relationships, see: <https://gtidocs.virustotal.com/reference/file-info>
 
-- Starting with XSOAR version 6.8.0, You may monitor API usage via the *GoogleThreatIntelligence Execution Metrics* dashboard.
+- Starting with XSOAR version 6.9.0, You may monitor API usage via the *GoogleThreatIntelligence Execution Metrics* dashboard.
 ### Comments
 
 In GoogleThreatIntelligence you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
