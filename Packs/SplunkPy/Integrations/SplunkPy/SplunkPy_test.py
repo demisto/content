@@ -1042,14 +1042,14 @@ def test_store_incidents_for_mapping(integration_context, incidents, output):
     assert integration_context.get(splunk.INCIDENTS, []) == output
 
 
-@pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
-    ({}, {}, False, "", ""),
+@pytest.mark.parametrize('notable_data, raw, earliest, latest', [
+    ({}, {}, "", ""),
     ({"drilldown_earliest": f"${splunk.INFO_MIN_TIME}$",
       "drilldown_latest": f"${splunk.INFO_MAX_TIME}$"},
-     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
-    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
+     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, '1', '2'),
+    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, '1', '2')
 ])
-def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mocker):
+def test_get_drilldown_timeframe(notable_data, raw, earliest, latest, mocker):
     """
     Scenario: Trying to get the drilldown's timeframe from the notable's data
 
@@ -1065,8 +1065,7 @@ def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mo
     - Return the expected result
     """
     mocker.patch.object(demisto, 'info')
-    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
-    assert task_status == status
+    earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
     assert earliest_offset == earliest
     assert latest_offset == latest
 
