@@ -128,8 +128,12 @@
             "integrations": "Cortex XDR - IR"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
+            "timeout": 1200
         },
         {
             "integrations": "Twitter v2",
