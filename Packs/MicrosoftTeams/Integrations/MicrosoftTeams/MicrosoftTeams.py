@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
+from enum import Enum
 import re
 import time
 from distutils.util import strtobool
