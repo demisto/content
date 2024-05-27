@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 import traceback
 import urllib.parse
-import json
+
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 ''' STANDALONE FUNCTION '''
 
