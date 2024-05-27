@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-import pyzipper
 from CommonServerPython import *  # noqa: F401
 
 import uuid
@@ -225,6 +224,9 @@ def create_zip_with_password(args: dict, generated_password: str, zip_password: 
             if res:
                 demisto.info('zf.testzip() failed')
                 raise DemistoException(f'There was a problem with zipping the file: {res} is corrupted')
+
+        with open(zip_file_name, 'rb') as zip_file:
+            zip_content = zip_file.read()
 
     except Exception as e:
         raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
