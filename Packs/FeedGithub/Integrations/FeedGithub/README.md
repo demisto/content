@@ -10,25 +10,21 @@ This integration was integrated and tested with version xx of Github Feed.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
-    | Server URL | The URL to the github repository | False |
-    | Owner | Username of the repository owner | True |
-    | Repository / Path to fetch | The repository name | True |
-    | Feed type | Predefined list of indicator types | True |
-    | Head branch name/sha | The name of the main branch to which you would like to compare | True |
-    | files extensions To Fetch | Choosing an extension for the file names you want to target | True |
+    | Base URL | The URL to the github api | True |
     | API Token |  | False |
-    | since commit SHA |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+    | Trust any certificate (not secure) |  | False |
+    | Owner | Username of the repository owner | True |
+    | Repository / Path to fetch | The name of the repository | True |
+    | Feed type | Predefined list of indicator types:<br/>- YARA: Parses YARA rules from the feed.<br/>- STIX: Parses STIX data from the feed.<br/>- IOCs: Parses Indicators of Compromise \(IOCs\) using regex patterns.<br/> | True |
+    | Branch name | The name of the main branch to which you would like to compare | True |
+    | Files extensions to fetch | Choosing an extension for the file names you want to target | True |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | First fetch time | First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    |  |  | False |
-    |  |  | False |
-    | Tags | Supports CSV values. | False |
-
+    | Tags | Insert as a comma-separated list | False |
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
@@ -39,7 +35,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### github-get-indicators
 
 ***
-Gets indicators from the feed.
+Gets indicators from the feed within a specified date range and up to a maximum limit..
 
 #### Base Command
 
@@ -49,8 +45,8 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since |  Default is 7 days. | Optional | 
-| until |  | Optional | 
+| since | The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc. Default is 7 days. | Optional | 
+| until | The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc. | Optional | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
