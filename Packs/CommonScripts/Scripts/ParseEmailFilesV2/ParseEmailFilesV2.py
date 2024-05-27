@@ -45,6 +45,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
         md += f"""* Body/HTML:\t{email_data['HTML'] or ""}\n"""
 
     md += f"""* Attachments:\t{email_data.get('Attachments') or ""}\n"""
+    md += f"""* AttachmentNames:\t{email_data.get('AttachmentNames') or ""}\n"""
     md += "\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
     return md
 
