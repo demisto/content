@@ -131,6 +131,15 @@ repos:
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     - --files
+    args:docker_autoupdate:
+    - /src/Tests/scripts/script_runner.py
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    - --files
     copy_files:
     - Tests/scripts/pytest/conftest.py
     skip:commit: true
