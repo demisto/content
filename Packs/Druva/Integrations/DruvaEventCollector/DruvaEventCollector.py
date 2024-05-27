@@ -73,7 +73,7 @@ def test_module(client: Client) -> str:
         client.search_events()
     except Exception as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure Server URL, Client ID and Secret Key are correctly entered.'
         else:
             raise e
     return 'ok'
