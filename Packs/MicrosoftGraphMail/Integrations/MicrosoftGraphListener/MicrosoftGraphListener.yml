@@ -376,6 +376,8 @@ script:
       required: true
     - description: The contents (body) of the email.
       name: body
+    - description: The content in html format (htmlBody) of the email.
+      name: htmlBody
     - auto: PREDEFINED
       description: 'The body type of the email. Can be: "text", or "HTML".'
       name: body_type
