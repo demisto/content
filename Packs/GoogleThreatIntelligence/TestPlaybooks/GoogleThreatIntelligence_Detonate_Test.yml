@@ -304,4 +304,4 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.10.0
