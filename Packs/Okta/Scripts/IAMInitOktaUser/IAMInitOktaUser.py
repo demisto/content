@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import uuid
-import pyminizip
+from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
 
 DEFAULT_PWD_GENERATION_SCRIPT = "GeneratePassword"
 TEXT_FILE_NAME = "Okta_Password"  # File name for the text file (within the zip file) to use
@@ -209,10 +209,17 @@ def create_zip_with_password(args: dict, generated_password: str, zip_password: 
         with open(text_file_name, 'w') as text_file:
             text_file.write(generated_password)
 
-        pyminizip.compress(text_file_name, '', zip_file_name, zip_password, 1)
+        demisto.debug(f'zipping {text_file_name=}')
+        with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, 'utf-8')
+            for file_name in text_file_name:
+                zf.write(file_name)
 
-        with open(zip_file_name, 'rb') as zip_file:
-            zip_content = zip_file.read()
+            res = zf.testzip()
+            if res:
+                demisto.info('zf.testzip() failed')
+                raise DemistoException(f'There was a problem with zipping the file: {res} is corrupted')
+
 
     except Exception as e:
         raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
