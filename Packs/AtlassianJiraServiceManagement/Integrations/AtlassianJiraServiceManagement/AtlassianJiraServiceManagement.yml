@@ -264,21 +264,6 @@ script:
       - contextPath: JiraAsset.Object.ObjectKey
         description: The auto-generated object key.
         type: String
-      - contextPath: JiraAsset.Object.Avatar.url16
-        description: The icon for the object in size 16.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url48
-        description: The icon for the new object in size 48.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url72
-        description: The icon for the new object in size 72.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url144
-        description: The icon for the new object in size 144.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url288
-        description: The icon for the new object in size 288.
-        type: String
       - contextPath: JiraAsset.Object.Avatar.objectId
         description: Id of the newly created object.
         type: Number
@@ -301,9 +286,6 @@ script:
         description: The name of the newly created object.
         type: String
   - arguments:
-      - description: The object type that will be updated.
-        name: object_type_id
-        required: true
       - description: Id of the object that will be updated.
         name: object_id
         required: true
@@ -335,21 +317,6 @@ script:
       - contextPath: JiraAsset.Object.ObjectKey
         description: The auto-generated object key.
         type: String
-      - contextPath: JiraAsset.Object.Avatar.url16
-        description: The icon for the object in size 16.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url48
-        description: The icon for the object in size 48.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url72
-        description: The icon for the object in size 72.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url144
-        description: The icon for the object in size 144.
-        type: String
-      - contextPath: JiraAsset.Object.Avatar.url288
-        description: The icon for the object in size 288.
-        type: String
       - contextPath: JiraAsset.Object.Avatar.objectId
         description: Id of the retrieved object.
         type: Number
@@ -363,7 +330,7 @@ script:
         description: Does this object has an Avatar.
         type: Boolean
       - contextPath: JiraAsset.Object.Timestamp
-        description: JiraAsset.Object.Avatar.objectId
+        description: Epoch version of the object's creation date.
         type: Date
       - contextPath: JiraAsset.Object.ExtendedInfo.openIssuesExists
         description: Does this object appear in any open issues.

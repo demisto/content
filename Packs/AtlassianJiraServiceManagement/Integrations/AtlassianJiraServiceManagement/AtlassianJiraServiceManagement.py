@@ -141,6 +141,18 @@ def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
             return 'Bitbucket Repository'
 
 
+def get_object_outputs(objects: List[Dict[str, Any]]) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    outputs = []
+    readable_outputs = []
+    for obj in objects:
+        obj_type = obj['ObjectType']['name']
+        output = {k: v for k, v in obj.items() if k != 'ObjectType' and k != 'Avatar'}
+        readable_output = {**output, "Type": obj_type}
+        outputs.append(output)
+        readable_outputs.append(readable_output)
+    return outputs, readable_outputs
+
+
 def clean_object_attributes(attributes: List[Dict[str, any]]) -> List[Dict[str, any]]:
     pascal_attributes = convert_keys_to_pascal(attributes, {'id': 'ID'})
     string_typed_attributes = [{
@@ -335,11 +347,12 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    object_type_id = args.get('object_type_id')
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
     object_id = args.get('object_id')
 
+    jira_object = client.http_get(f'/object/{object_id}')
+    object_type_id = jira_object.get('objectType').get('id')
     json_data = get_json_data(object_type_id, attributes, attributes_json)
     res = client.update_object(object_id, json_data)
     _, object_id = parse_object_results(res).values()
@@ -364,15 +377,16 @@ def jira_asset_object_delete_command(client: Client, args: dict[str, Any]) -> Co
 def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
 
-    res = client.http_get(f'/object/{object_id}')
-    outputs = convert_keys_to_pascal([res], {'id': 'ID'})
-    hr_headers = ['ID', 'Label', 'Type']
-    readable_output = []
-    for output in outputs:
-        obj_type = output['ObjectType']['name']
-        del output['ObjectType']
-        del output['Attributes']
-        readable_output.append({**output, 'Type': obj_type})
+    try:
+        res = client.http_get(f'/object/{object_id}')
+        pascal_res = convert_keys_to_pascal([res], {'id': 'ID'})
+        hr_headers = ['ID', 'Label', 'Type', 'Created']
+        outputs, readable_output = get_object_outputs(pascal_res)
+    except DemistoException as e:
+        if e.res.status_code == 404:
+            return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
+        else:
+            raise e
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
@@ -396,13 +410,9 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
     }
 
     res = client.http_get(url_suffix='/aql/objects', params=params)
-    outputs = convert_keys_to_pascal(res['objectEntries'], {'id': 'ID'})
+    pascal_res = convert_keys_to_pascal(res['objectEntries'], {'id': 'ID'})
     hr_headers = ['ID', 'Label', 'Type', 'ObjectKey']
-    readable_output = []
-    for output in outputs:
-        obj_type = output['ObjectType']['name']
-        del output['ObjectType']
-        readable_output.append({**output, 'Type': obj_type})
+    outputs, readable_output = get_object_outputs(pascal_res)
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
         outputs_key_field='ID',
