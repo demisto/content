@@ -6,7 +6,7 @@ This pack includes Cortex XSIAM content.
   
 ## Configuration on Server Side
 You need to configure BIG-IP AWAF to forward Syslog messages.
-In order to do so, create a logging profile and setting remote logging to the relevant server.
+In order to do so, create a logging profile and set remote logging to the relevant server.
 
 * The product documentation is available [here](https://techdocs.f5.com/kb/en-us/products/big-ip_asm/manuals/product/asm-implementations-11-6-0/14.html). 
 
@@ -31,7 +31,7 @@ In order to do so, create a logging profile and setting remote logging to the re
 
 ### Supported Timestamp Ingestion 
 Timestamp ingestion is supported for the format: **%Y-%m-%dT%H:%M:%S%Ez** (yyyy-mm-ddTHH:MM:SS+ZZ:ZZ).
-In order to configure the required timestamp for Syslog messagesm follow these instructions:
+In order to configure the required timestamp for Syslog messages follow these instructions:
 
 * The product documentation is available [here](https://my.f5.com/manage/s/article/K02138840). 
 
