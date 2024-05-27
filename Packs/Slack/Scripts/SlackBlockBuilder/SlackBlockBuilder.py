@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 import traceback
 import urllib.parse
-
+import json
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 ''' STANDALONE FUNCTION '''
 
@@ -305,7 +305,6 @@ def slack_block_builder_command(args: dict[str, Any]):
                                     channel_id=channel_id, channel=channel, threadID=thread_id)
     notification.send()
     send_response = notification.send_response[0]
-    
     human_readable = send_response['HumanReadable']
     if isinstance(send_response.get('Contents'), str):
         raise DemistoException(f"{send_response.get('Contents')}")
