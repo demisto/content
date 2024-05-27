@@ -266,7 +266,7 @@ references:
   #         # Checks if the $XSOAR_BOT_TEST_CONTENT exist. for security reasons only non forked pr's have access to it.
   #         if [[ -n $XSOAR_BOT_TEST_CONTENT && -e $ARTIFACTS_FOLDER/coverage_report/html/index.html ]]; then
   #           echo "Adding unit tests coverage comment to the pr"
-  #           python3 ./Tests/scripts/add_pr_comment.py
+  #           python3 ./.circleci/add_pr_comment.py
   #         fi
   #         exit $EXIT_CODE
   #       fi
@@ -282,7 +282,7 @@ references:
                 USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
                 $CONTRIB_REPO="content"
-                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO -gt $GITHUB_TOKEN
+                python3 ./.circleci/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO -gt $GITHUB_TOKEN
 
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:
@@ -293,7 +293,7 @@ references:
             when: always
             command: |
               SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $ENV_RESULTS_PATH)
-              python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
+              python3 ./.circleci/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
   nightly_jobs: &nightly_jobs
     - Setup Environment:
@@ -389,24 +389,6 @@ jobs:
 
 workflows:
   version: 2
-  commit:
-    when:
-      matches:
-        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
-        pattern: pull/[0-9]+
-        value: << pipeline.git.branch >>
-    jobs:
-      - Setup Environment
-      - Run Unit Testing And Lint:
-          requires:
-            - Setup Environment
-          matrix:
-            parameters:
-              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "native:candidate", "from-yml" ]
-          name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
-      - Run Validations:
-          requires:
-            - Setup Environment
 
   nightly:
     triggers:
