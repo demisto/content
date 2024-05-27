@@ -61,11 +61,7 @@ def _file_has_extension(file_name, extensions):
     :param extensions: extensions to test if exists in file_name.
     :return: True if one of the extensions is in the file_name
     """
-    for ext in extensions:
-        if file_name.endswith(ext):
-            return True
-
-    return False
+    return any(file_name.endswith(ext) for ext in extensions)
 
 
 def _find_entry_id_by_name(file_name, extensions=None):
@@ -121,7 +117,7 @@ def get_entry_from_args():
     res = demisto.executeCommand('getFilePath', {'id': entry_id})
 
     if len(res) > 0 and res[0]['Type'] == entryTypes['error']:
-        return_error('Failed to get the file path for entry: {}'.format(entry_id))
+        return_error(f'Failed to get the file path for entry: {entry_id}')
 
     return res, entry_id
 
@@ -365,11 +361,11 @@ def get_markdown_output(http_flows):
 
     for i, flow in enumerate(http_flows):
         row = result_template.format(
-            req=tableToMarkdown("HTTPRequest #{}".format(i + 1),
+            req=tableToMarkdown(f"HTTPRequest #{i + 1}",
                                 flow["Request"],
                                 flow["Request"].keys()
                                 ),
-            res=tableToMarkdown("HTTPResponse #{}".format(i + 1),
+            res=tableToMarkdown(f"HTTPResponse #{i + 1}",
                                 flow["Response"],
                                 flow["Response"].keys()
                                 )
@@ -419,7 +415,7 @@ def main():
                          "EntryContext": {"PcapHTTPFlows": context_output}})
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error('Failed to execute PcapHTTPExtractor Script. Error: {}'.format(str(e)))
+        return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
     finally:
         sys.stderr = serr
 
