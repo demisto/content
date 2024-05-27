@@ -20,10 +20,17 @@ call f5_waf_generic_fields
 | filter _raw_log ~= "01420002"
 | alter
     get_01420002_user = arrayindex(regextract(_raw_log, "user=([^\=]+)\s+\S+="), 0),
-    get_01420002_folder = arrayindex(regextract(_raw_log, "folder=([^\=]+)\s+\S+="), 0)
+    get_01420002_folder = arrayindex(regextract(_raw_log, "folder=([^\=]+)\s+\S+="), 0),
+    get_01420002_module = arrayindex(regextract(_raw_log, "module=\(([^\)]+)\)\#\s+\S+="), 0),
+    get_01420002_status = arrayindex(regextract(_raw_log, "status=\s*\[([^\]]+)\]"), 0),
+    get_01420002_cmd_data = arrayindex(regextract(_raw_log, "cmd_data=\s*([^\;]+)"), 0)
 | alter
     xdm.source.user.username = get_01420002_user,
-    xdm.source.process.executable.directory = get_01420002_folder;
+    xdm.source.process.executable.directory = get_01420002_folder,
+    xdm.observer.type = get_01420002_module,
+    xdm.source.process.command_line = get_01420002_cmd_data,
+    xdm.event.outcome = if(get_01420002_status = "Command OK", XDM_CONST.OUTCOME_SUCCESS, get_01420002_status = null, null, to_string(get_01420002_status));
+
 
 call f5_waf_generic_fields    
 // Event ID 01260009
