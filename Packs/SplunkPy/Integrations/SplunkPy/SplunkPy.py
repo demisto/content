@@ -1106,11 +1106,13 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                         demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
                 else:
                     demisto.debug(f'Failed getting the drilldown timeframe for notable {notable_data[EVENT_ID]}')
+                    jobs_and_queries.append((None, None, None))
             else:
                 demisto.debug(
                     f"Couldn't build search query for notable {notable_data[EVENT_ID]} "
                     f"with the following drilldown search {query_search}"
                 )
+                jobs_and_queries.append((None, None, None))
     else:
         demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
         jobs_and_queries.append((None, None, None)) # TODO: Consult about it
