@@ -160,4 +160,3 @@ def test_fetch_events_command(mocker, mock_client):
     assert len(events) == 1
     assert third_run.get('tracker') == "yyyy"
     assert events[0].get('eventID') == 1
-
