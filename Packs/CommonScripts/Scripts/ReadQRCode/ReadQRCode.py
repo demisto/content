@@ -8,19 +8,18 @@ from wurlitzer import pipes
 
 def read_qr_code(filename: str) -> list:
 
-    debug_messages = []  # don't use demisto.debug under the context manager.
-    with pipes() as (out, _):
+    debug_message = 'successfully decoded with pyzbar'
+    with pipes() as (out, err):  # don't use demisto.debug under the context manager.
         img = cv2.imread(filename)
         text = [d.data.decode() for d in pyzbar.decode(img)]
 
         if not text:
-            debug_messages.append("Couldn't extract text with pyzbar, retrying with cv2.")
+            debug_message = "Couldn't extract text with pyzbar, retrying with cv2."
             detect = cv2.QRCodeDetector()
             text, *_ = detect.detectAndDecode(img)
 
-        debug_messages.append(f'stdout: {out.read()}')
-
-    demisto.debug('\n'.join(debug_messages))
+    demisto.debug(debug_message)
+    demisto.debug(f'pipes stdout: {out.read()}, sterr: {err.read()}')
     return text if isinstance(text, list) else [text]
 
 
@@ -44,7 +43,6 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
         raise DemistoException('Error parsing file. Please make sure it is a valid image file.') from e
     except ValueError:  # raised by demisto.getFilePath when the entry_id is not found
         raise DemistoException(f'Invalid entry ID: {entry_id=}')
-
     return CommandResults(
         outputs_prefix='QRCodeReader',
         outputs=({'Text': text} | indicators),
