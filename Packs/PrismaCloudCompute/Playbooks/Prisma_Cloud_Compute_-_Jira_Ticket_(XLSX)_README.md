@@ -53,4 +53,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Prisma Cloud Compute - Jira Ticket (XLSX)](../doc_files/Prisma_Cloud_Compute_-_Jira_Ticket_(XLSX).png)
+![Prisma Cloud Compute - Jira Ticket (XLSX)](../doc_files/Prisma_Cloud_Compute_-_Jira_Ticket_XLSX.png)

@@ -1614,6 +1614,13 @@
             "playbookID": "test_delete_context"
         },
         {
+            "scripts": [
+                "DeleteContext"
+            ],
+            "playbookID": "DeleteContext-test",
+            "fromversion": "6.9.0"
+        },
+        {
             "playbookID": "DeleteContext-auto-test"
         },
         {
@@ -5662,6 +5669,10 @@
         {
             "integrations": "Redmine",
             "playbookID": "Redmine-Test"
+        },
+        {
+            "integrations": "Palo Alto Networks AIOps",
+            "playbookID": "PaloAltoNetworksAIOps-Test"
         }
     ],
     "skipped_tests": {
@@ -6033,7 +6044,8 @@
         "PrismaCloudCompute",
         "ExpanseV2",
         "PrismaSaasSecurity",
-        "PaloAltoNetworks_IoT"
+        "PaloAltoNetworks_IoT",
+        "PaloAltoNetworksAIOps"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",

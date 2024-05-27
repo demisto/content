@@ -1,5 +1,4 @@
 import json
-import io
 import demistomock as demisto
 from pytest_mock import MockerFixture
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -10,7 +9,7 @@ from VaronisSaaS import *
 def util_load_json(file):
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     full_path = os.path.join(__location__, file)
-    with io.open(full_path, mode='r', encoding='utf-8') as f:
+    with open(full_path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -81,7 +80,7 @@ def test_varonis_close_alert_command(requests_mock):
     )
 
     args = {
-        'close_reason': 'Account misclassification',
+        'close_reason': 'Inaccurate alert logic',
         'alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
     }
 
@@ -158,14 +157,13 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
     expected_alerts = util_load_json('test_data/fetch_incidents_output.json')
 
-    expected_incidents = list(map(lambda alert:
-                                  {
-                                      'name': f'Varonis alert {alert[AlertAttributes.Alert_Rule_Name]}',
-                                      'occurred': f'{alert[AlertAttributes.Alert_Time]}Z',
-                                      'rawJSON': json.dumps(alert),
-                                      'type': 'Varonis SaaS Incident',
-                                      'severity': IncidentSeverity.MEDIUM,
-                                  }, expected_alerts))
+    expected_incidents = [{
+        'name': f'Varonis alert {alert[AlertAttributes.Alert_Rule_Name]}',
+        'occurred': f'{alert[AlertAttributes.Alert_Time]}Z',
+        'rawJSON': json.dumps(alert),
+        'type': 'Varonis SaaS Incident',
+        'severity': IncidentSeverity.MEDIUM,
+    } for alert in expected_alerts]
 
     assert incidents == expected_incidents
 
@@ -196,7 +194,7 @@ def test_varonis_authenticate(requests_mock: MockerFixture):
 
 def test_enrich_with_url():
     from VaronisSaaS import enrich_with_url
-    obj = dict()
+    obj = {}
     baseUrl = 'http://test.com'
     id = '1'
     expectedUrl = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
