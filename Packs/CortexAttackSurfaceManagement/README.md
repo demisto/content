@@ -144,7 +144,7 @@ A playbook that given the IP address enriches Azure information relevant to ASM 
 
 A playbook to enrich certificate information.
 
-![Cortex ASM - Certificate Enrichment]()
+![Cortex ASM - Certificate Enrichment](https://raw.githubusercontent.com/demisto/content/40617981cad1fbf6ee241a890a14807568840aa6/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Certificate_Enrichment.png)
 
 #### Cortex ASM - Cortex Endpoint Enrichment
 
