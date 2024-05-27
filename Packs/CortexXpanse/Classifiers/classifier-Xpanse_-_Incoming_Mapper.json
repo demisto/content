@@ -6,195 +6,198 @@
         "Xpanse Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-				"Xpanse Alert ID": {
-					"complex": {
-						"filters": [],
-						"root": "alert_id",
-						"transformers": []
-					}
-				},
-				"Xpanse Asset IDs": {
-					"complex": {
-						"filters": [],
-						"root": "asset_ids",
-						"transformers": []
-					}
-				},
+                "Xpanse Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alert_id",
+                        "transformers": []
+                    }
+                },
+                "Xpanse Asset IDs": {
+                    "complex": {
+                        "filters": [],
+                        "root": "asset_ids",
+                        "transformers": []
+                    }
+                },
                 "Xpanse Business Units": {
-					"complex": {
-						"accessor": "name",
-						"filters": [],
-						"root": "business_unit_hierarchies.[].[]",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
-				"Xpanse Country Code": {
-					"complex": {
-						"filters": [],
-						"root": "country_codes",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
-				"Xpanse Description": {
-					"complex": {
-						"filters": [],
-						"root": "description",
-						"transformers": []
-					}
-				},
-				"Xpanse External ID": {
-					"complex": {
-						"filters": [],
-						"root": "external_id",
-						"transformers": []
-					}
-				},
-				"Xpanse Host Name": {
-					"complex": {
-						"filters": [],
-						"root": "domain_names",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
-				"Xpanse IP": {
-					"complex": {
-						"filters": [],
-						"root": "ipv4_addresses",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
-				"Xpanse Port": {
-					"complex": {
-						"filters": [],
-						"root": "action_remote_port",
-						"transformers": []
-					}
-				},
-				"Xpanse Progress Status": {
-					"complex": {
-						"filters": [],
-						"root": "resolution_status",
-						"transformers": []
-					}
-				},
-				"Xpanse Protocol": {
-					"complex": {
-						"filters": [],
-						"root": "port_protocol",
-						"transformers": []
-					}
-				},
-				"Xpanse Provider": {
-					"complex": {
-						"filters": [],
-						"root": "cloud_providers",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
-				"Xpanse Remediation Guidance": {
-					"complex": {
-						"filters": [],
-						"root": "remediation_guidance",
-						"transformers": []
-					}
-				},
-				"Xpanse Service ID": {
-					"complex": {
-						"filters": [],
-						"root": "service_ids",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
-				"Xpanse Tags": {
-					"complex": {
-						"filters": [],
-						"root": "tags",
-						"transformers": [
-							{
-								"args": {
-									"applyIfEmpty": {
-										"isContext": true
-									},
-									"defaultValue": {
-										"isContext": true,
-										"value": {
-											"simple": "original_tags"
-										}
-									}
-								},
-								"operator": "SetIfEmpty"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "business_unit_hierarchies.[].[]",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Xpanse Country Code": {
+                    "complex": {
+                        "filters": [],
+                        "root": "country_codes",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Xpanse Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Xpanse External ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "external_id",
+                        "transformers": []
+                    }
+                },
+                "Xpanse Host Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "domain_names",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Xpanse IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ipv4_addresses",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Xpanse Port": {
+                    "complex": {
+                        "filters": [],
+                        "root": "action_remote_port",
+                        "transformers": []
+                    }
+                },
+                "Xpanse Progress Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resolution_status",
+                        "transformers": []
+                    }
+                },
+                "Xpanse Protocol": {
+                    "complex": {
+                        "filters": [],
+                        "root": "port_protocol",
+                        "transformers": []
+                    }
+                },
+                "Xpanse Provider": {
+                    "complex": {
+                        "filters": [],
+                        "root": "cloud_providers",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Xpanse Remediation Guidance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation_guidance",
+                        "transformers": []
+                    }
+                },
+                "Xpanse Service ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "service_ids",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Xpanse Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": true
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "original_tags"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
                 "Xpanse Category": {
                     "simple": "asm_alert_categories"
+                },
+                "Xpanse Attack Surface Rule Name": {
+                    "simple": "attack_surface_rule_name"
                 }
             }
-		},
+        },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-				"Description": {
-					"simple": "description"
-				},
-				"Destination IP": {
-					"complex": {
-						"filters": [],
-						"root": "ipv4_addresses",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
-				"Protocol": {
-					"complex": {
-						"filters": [],
-						"root": "port_protocol",
-						"transformers": []
-					}
-				},
-				"Tags": {
-					"complex": {
+                "Description": {
+                    "simple": "description"
+                },
+                "Destination IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ipv4_addresses",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Protocol": {
+                    "complex": {
+                        "filters": [],
+                        "root": "port_protocol",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
                         "filters": [],
                         "root": "tags",
                         "transformers": []
                     }
-				}
-			}
+                }
+            }
         }
     },
     "name": "Xpanse - Incoming Mapper",
