@@ -3065,7 +3065,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
                 previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
             )
         if is_fetch_assets:
-            since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            since_datetime = arg_to_datetime('3 hours').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             fetch_assets(client=client, since_datetime=since_datetime)
     else:
         build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
