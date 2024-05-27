@@ -6,9 +6,6 @@ from freezegun import freeze_time
 import demistomock as demisto
 
 
-URL = "https://openphish.com/feed.txt"
-
-
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
@@ -33,14 +30,6 @@ def mock_client():
         repo="",
         headers={},
     )
-
-
-def test_get_base_head_commits_sha(mocker):
-    pass
-
-
-def test_extract_commits(mocker):
-    pass
 
 
 def test_get_content_files_from_repo(mocker):
@@ -155,6 +144,7 @@ def test_parse_and_map_yara_content(mocker):
     rule_2_input = {"example.com": util_load_txt("test_data/yara-rule-2.yar")}
     rule_3_input = {"example.com": util_load_txt("test_data/yara-rule-3.yar")}
     list_rules_input = {"example.com": util_load_txt("test_data/test-split-yara-1.yar")}
+    
     parsed_rule1 = parse_and_map_yara_content(rule_1_input)
     parsed_rule2 = parse_and_map_yara_content(rule_2_input)
     parsed_rule3 = parse_and_map_yara_content(rule_3_input)

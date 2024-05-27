@@ -194,7 +194,7 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "rulestrings": make_grid_layout(parsed_rule.get("strings", {})),
                 "condition": " ".join(parsed_rule["condition_terms"]),
                 "references": file_path,
-                "raw rule": f"``` \n {parsed_rule} \n ```",
+                "raw rule": f"``` \n {text_content} \n ```",
             }
             indicator_obj = {
                 "value": value_,
