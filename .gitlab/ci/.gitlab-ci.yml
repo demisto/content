@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: CIAC-10490/run-validate-on-untracked-files-in-external-contrib-branch
+  CURRENT_BRANCH_NAME: CIAC-10490-run-validate-on-untracked-files-in-external-contrib-branch
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: CIAC-10490/run-validate-on-untracked-files-in-external-contrib-branch
+    ref: CIAC-10490-run-validate-on-untracked-files-in-external-contrib-branch
     project: "${CI_PROJECT_NAMESPACE}/infra"
