@@ -524,7 +524,8 @@ class Enrichment:
     SUCCESSFUL = 'Enrichment successfully handled'
     HANDLED = (EXCEEDED_TIMEOUT, FAILED, SUCCESSFUL)
 
-    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None, query_name=None, query_search=None):
+    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None,
+                 query_name=None, query_search=None):
         self.type = enrichment_type
         self.id = enrichment_id
         self.data = data or []
@@ -547,7 +548,8 @@ class Enrichment:
             The created enrichment (Enrichment)
         """
         if job:
-            return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"], query_name=query_name, query_search=query_search)
+            return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"],
+                       query_name=query_name, query_search=query_search)
         else:
             return cls(enrichment_type=enrichment_type, status=Enrichment.FAILED)
 
@@ -1075,7 +1077,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 parsed_query_name = build_drilldown_search(notable_data, query_name, raw_dict)
                 if not parsed_query_name:  # if parsing failed - keep original unparsed name
                     demisto.debug(
-                        f'Failed parsing drilldown search query name, using the original un-parsed name instead: {query_name}.')
+                        f'Failed parsing drilldown search query name, using the original '
+                        f'un-parsed query name instead: {query_name}.')
                     parsed_query_name = query_name  # TODO: consult with Yuval about keeping the original name here.
             except Exception as e:
                 demisto.debug(
