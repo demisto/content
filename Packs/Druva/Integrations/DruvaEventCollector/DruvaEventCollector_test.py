@@ -1,5 +1,5 @@
 from CommonServerPython import DemistoException
-from DruvaEventCollector import Client, test_module, get_events, fetch_events
+from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events
 import pytest
 
 
@@ -20,19 +20,11 @@ def test_test_module_command(mocker, mock_client):
     - Test module passed
     """
     mocker.patch.object(mock_client, "search_events", return_value={})
-    result = test_module(client=mock_client)
+    result = run_test_module(client=mock_client)
     assert result == "ok"
 
 
-@pytest.mark.parametrize(
-    "return_value, expected_result",
-    [
-        (DemistoException(message='Forbidden'),
-         'Authorization Error: make sure Server URL, Client ID and Secret Key are correctly entered.'),
-        (DemistoException(message='Error: Request failed with status code 404'), 'Error: Request failed with status code 404')
-    ]
-)
-def test_test_module_command_failures(mocker, mock_client, return_value, expected_result):
+def test_test_module_command_failure(mocker, mock_client):
     """
     Given:
     - test module command
@@ -41,16 +33,12 @@ def test_test_module_command_failures(mocker, mock_client, return_value, expecte
     - Pressing test button
 
     Then:
-    - Test module failed with Authorization Error
-    - Test module failed with any other exception
+    - Test module failed
     """
-    mocker.patch.object(mock_client, "search_events", side_effect=return_value)
-    try:
-        result = test_module(client=mock_client)
-    except DemistoException as exp:
-        assert expected_result == exp.message
-    else:
-        assert expected_result == result
+    mocker.patch.object(mock_client, "search_events", side_effect=DemistoException(message='Error: invalid_grant'))
+    with pytest.raises(DemistoException) as exp:
+        run_test_module(client=mock_client)
+    assert "Make sure Server URL, Client ID and Secret Key are correctly entered." in exp.value.args[0]
 
 
 EVENT_1 = {

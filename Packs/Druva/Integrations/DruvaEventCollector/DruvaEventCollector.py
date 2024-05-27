@@ -72,10 +72,10 @@ def test_module(client: Client) -> str:
     try:
         client.search_events()
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure Server URL, Client ID and Secret Key are correctly entered.'
-        else:
-            raise e
+        # 403 - "User is not authorized to access this resource with an explicit deny" - reason: tracker is expired (Not our case)
+        # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
+        raise DemistoException(f'Error in test-module: {e}\n'
+                               f'Make sure Server URL, Client ID and Secret Key are correctly entered.') from e
     return 'ok'
 
 
@@ -198,7 +198,8 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}\n'
+                     f'Make sure Server URL, Client ID and Secret Key are correctly entered.')
 
 
 ''' ENTRY POINT '''
