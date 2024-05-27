@@ -86,7 +86,7 @@ configuration:
   type: 9
   section: Connect
   required: false
-description: Deploy and manage storage accounts and blob services dasd.
+description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management
 name: Azure Storage
 script:
