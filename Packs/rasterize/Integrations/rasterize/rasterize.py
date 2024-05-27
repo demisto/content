@@ -1,3 +1,5 @@
+import csv
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
@@ -102,6 +104,7 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 PORT_FILE_PATH = '/var/port.txt'
+CHROME_INSTANCES_FILE_PATH = '/var/chrome_instances.tsv'
 RASTERIZATIONS_COUNTER_FILE_PATH = '/var/rasterizations_counter.txt'
 
 
@@ -295,6 +298,13 @@ def write_info_file(filename, contents, overwrite=False):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
+def write_to_tsv_file(filename, contents):
+    demisto.info(f"Saving File '{filename}' with {contents}.")
+    with open(filename) as file:
+        tsv_writer = csv.writer(file, delimiter='\t')
+        tsv_writer.writerow(contents)
+
+
 def opt_name(opt):
     return opt.split('=', 1)[0]
 
@@ -443,7 +453,7 @@ def chrome_manager():
         if "\t" not in edited_info[0] and 1 <= len(edited_info[0]) <= 5:  # written in the file just port
             chrome_port = edited_info[0]
             new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
-            write_info_file(PORT_FILE_PATH, new_row, overwrite=True)
+            write_info_file(CHROME_INSTANCES_FILE_PATH, new_row, overwrite=True)
             edited_info = [new_row]
             return generate_new_chrome_instance(instance_name, chrome_options)
         ports_tuple, instances_name_tuple, chromes_options_tuple = zip(*[line.strip().split('\t') for line in edited_info])
@@ -468,13 +478,13 @@ def chrome_manager():
         return generate_new_chrome_instance(instance_name, chrome_options)
     elif instance_name in instances_name and chrome_options in chromes_options:
         # Case 5: The instance conf exists in the file and the chrome conf match to it
-        browser_options = instance_name_to_chrome_options.get(instance_name)
-        if browser_options == chrome_options:
+        chrome_options_from_info_file = instance_name_to_chrome_options.get(instance_name)
+        if chrome_options_from_info_file == chrome_options:
             chrome_port = chrome_options_to_port.get(chrome_options)
             browser = is_chrome_running_locally(chrome_port)
             if browser:
                 return browser, chrome_port
-            # TODO: what error should i add here?
+            # TODO: if no browser, what error should i add here?
             demisto.error(f'ERROR')
             return None, None
         else:
