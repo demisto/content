@@ -133,9 +133,6 @@ repos:
     - --files
     args:docker_autoupdate:
     - /src/Tests/scripts/script_runner.py
-    - -p
-    - --source=.
-    - -m
     - pytest
     - -v
     - --override-ini='asyncio_mode=auto'
