@@ -7,482 +7,484 @@
                 "type": "summary"
             },
             {
-				"id": "caseinfoid",
-				"name": "Incident Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "type",
-								"height": 22,
-								"id": "incident-type-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 22,
-								"id": "incident-severity-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "owner",
-								"height": 22,
-								"id": "incident-owner-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "incident-sourceBrand-field",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 22,
-								"id": "incident-sourceInstance-field",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 22,
-								"id": "incident-playbookId-field",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Case Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"moved": false,
-						"name": "Notes",
-						"static": false,
-						"type": "notes",
-						"w": 1,
-						"x": 2,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"moved": false,
-						"name": "Work Plan",
-						"static": false,
-						"type": "workplan",
-						"w": 1,
-						"x": 0,
-						"y": 5
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"maxW": 3,
-						"moved": false,
-						"name": "Linked Incidents",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 1,
-						"x": 1,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"moved": false,
-						"name": "Child Incidents",
-						"static": false,
-						"type": "childInv",
-						"w": 1,
-						"x": 0,
-						"y": 9
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-						"maxW": 3,
-						"moved": false,
-						"name": "Evidence",
-						"static": false,
-						"type": "evidence",
-						"w": 1,
-						"x": 0,
-						"y": 7
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-						"maxW": 3,
-						"moved": false,
-						"name": "Team Members",
-						"static": false,
-						"type": "team",
-						"w": 1,
-						"x": 2,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-						"maxW": 3,
-						"moved": false,
-						"name": "Indicators",
-						"query": "",
-						"queryType": "input",
-						"static": false,
-						"type": "indicators",
-						"w": 2,
-						"x": 1,
-						"y": 2
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-						"items": [
-							{
-								"endCol": 1,
-								"fieldId": "occurred",
-								"height": 22,
-								"id": "incident-occurred-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 1,
-								"fieldId": "dbotmodified",
-								"height": 22,
-								"id": "incident-modified-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 22,
-								"id": "incident-dueDate-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotcreated",
-								"height": 22,
-								"id": "incident-created-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-closed-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 1
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Timeline Information",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-dbotClosed-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closereason",
-								"height": 22,
-								"id": "incident-closeReason-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closenotes",
-								"height": 22,
-								"id": "incident-closeNotes-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Closing Information",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 8
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "details",
-								"height": 22,
-								"id": "incident-details-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Investigation Data",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideName": false,
-						"i": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "xpanseprogressstatus",
-								"height": 22,
-								"id": "5a6b69e0-b447-11ed-9fd0-85eb99e8103b",
-								"index": 0,
-								"listId": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpansealertid",
-								"height": 22,
-								"id": "41ea5f70-b447-11ed-9fd0-85eb99e8103b",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "xpanseexternalid",
-								"height": 22,
-								"id": "50df69d0-b447-11ed-9fd0-85eb99e8103b",
-								"index": 2,
-								"listId": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "xpanseassetids",
-								"height": 22,
-								"id": "10e43460-1459-11ee-b6c6-ab5ba5fed5f6",
-								"index": 3,
-								"listId": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpanseserviceid",
-								"height": 22,
-								"id": "17f151c0-1459-11ee-b6c6-ab5ba5fed5f6",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpanseip",
-								"height": 22,
-								"id": "446375c0-b447-11ed-9fd0-85eb99e8103b",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpanseport",
-								"height": 22,
-								"id": "46dc16e0-b447-11ed-9fd0-85eb99e8103b",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpanseprotocol",
-								"height": 22,
-								"id": "25fa7580-1459-11ee-b6c6-ab5ba5fed5f6",
-								"index": 7,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpansebusinessunits",
-								"height": 22,
-								"id": "896d87f0-2675-11ee-9bd7-d3698cbd65c3",
-								"index": 8,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpansehostname",
-								"height": 22,
-								"id": "4a073f20-b447-11ed-9fd0-85eb99e8103b",
-								"index": 9,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpansecountrycode",
-								"height": 22,
-								"id": "2a83a720-1459-11ee-b6c6-ab5ba5fed5f6",
-								"index": 10,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "xpansetags",
-								"height": 22,
-								"id": "5c16a8e0-b447-11ed-9fd0-85eb99e8103b",
-								"index": 11,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Xpanse Alert Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "caseinfoid-ef2d3920-1458-11ee-b6c6-ab5ba5fed5f6",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "xpanseremediationguidance",
-								"height": 22,
-								"id": "0803b690-1459-11ee-b6c6-ab5ba5fed5f6",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Remediation Guidance",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "caseinfoid-7b0787c0-1459-11ee-b6c6-ab5ba5fed5f6",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "xpansedescription",
-								"height": 22,
-								"id": "9cfff8d0-1459-11ee-b6c6-ab5ba5fed5f6",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Alert Details",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 0
-					}
-				],
-				"type": "custom"
-			},
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 7,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 8,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "incident-closeNotes-field",
+                                "index": 11,
+                                "listId": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7,
+                        "hideName": false
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 1,
+                        "y": 11,
+                        "query": "",
+                        "queryType": "input"
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Xpanse Alert Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2,
+                        "hideName": false,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpanseattacksurfacerulename",
+                                "height": 22,
+                                "id": "031ed8a0-0ed9-11ef-a7ed-df76d588cdce",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xpanseprogressstatus",
+                                "height": 22,
+                                "id": "5a6b69e0-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 1,
+                                "listId": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpansealertid",
+                                "height": 22,
+                                "id": "41ea5f70-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xpanseexternalid",
+                                "height": 22,
+                                "id": "50df69d0-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 4,
+                                "listId": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xpanseassetids",
+                                "height": 22,
+                                "id": "10e43460-1459-11ee-b6c6-ab5ba5fed5f6",
+                                "index": 5,
+                                "listId": "caseinfoid-227c69d0-b447-11ed-9fd0-85eb99e8103b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpanseserviceid",
+                                "height": 22,
+                                "id": "17f151c0-1459-11ee-b6c6-ab5ba5fed5f6",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpanseip",
+                                "height": 22,
+                                "id": "446375c0-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpanseport",
+                                "height": 22,
+                                "id": "46dc16e0-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpanseprotocol",
+                                "height": 22,
+                                "id": "25fa7580-1459-11ee-b6c6-ab5ba5fed5f6",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpansebusinessunits",
+                                "height": 22,
+                                "id": "896d87f0-2675-11ee-9bd7-d3698cbd65c3",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expanseprovider",
+                                "height": 22,
+                                "id": "ff30fca0-0ed8-11ef-a7ed-df76d588cdce",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpansehostname",
+                                "height": 22,
+                                "id": "4a073f20-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpansecountrycode",
+                                "height": 22,
+                                "id": "2a83a720-1459-11ee-b6c6-ab5ba5fed5f6",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpansetags",
+                                "height": 22,
+                                "id": "5c16a8e0-b447-11ed-9fd0-85eb99e8103b",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-ef2d3920-1458-11ee-b6c6-ab5ba5fed5f6",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Remediation Guidance",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xpanseremediationguidance",
+                                "height": 106,
+                                "id": "0803b690-1459-11ee-b6c6-ab5ba5fed5f6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7b0787c0-1459-11ee-b6c6-ab5ba5fed5f6",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Alert Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpansedescription",
+                                "height": 22,
+                                "id": "9cfff8d0-1459-11ee-b6c6-ab5ba5fed5f6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-ad139040-0ed8-11ef-a7ed-df76d588cdce",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xpanseservicedetails",
+                                "height": 106,
+                                "id": "d1468800-0ed8-11ef-a7ed-df76d588cdce",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-ad139040-0ed8-11ef-a7ed-df76d588cdce"
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Service Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "caseinfoid-b8ee8960-0ed8-11ef-a7ed-df76d588cdce",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xpanseresponsiveipasset",
+                                "height": 106,
+                                "id": "1f9b3c80-115e-11ef-ab77-e15edc2e0527",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-b8ee8960-0ed8-11ef-a7ed-df76d588cdce"
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xpansecertificateasset",
+                                "height": 106,
+                                "id": "19698b00-115e-11ef-ab77-e15edc2e0527",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-b8ee8960-0ed8-11ef-a7ed-df76d588cdce"
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xpansedomainasset",
+                                "height": 106,
+                                "id": "26cf53a0-12ef-11ef-8bc1-834c92adb1be",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "xpansecloudasset",
+                                "height": 106,
+                                "id": "2d281520-12ef-11ef-8bc1-834c92adb1be",
+                                "index": 3,
+                                "listId": "caseinfoid-b8ee8960-0ed8-11ef-a7ed-df76d588cdce",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Asset Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 7,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "minH": 1
+                    }
+                ],
+                "type": "custom"
+            },
             {
                 "id": "warRoom",
                 "name": "War Room",
