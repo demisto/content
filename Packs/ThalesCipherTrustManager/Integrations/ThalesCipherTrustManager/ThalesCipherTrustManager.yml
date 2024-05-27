@@ -104,19 +104,19 @@ script:
       default: false
     - name: page
       isArray: false
-      description: page to return.
+      description: Page to return.
       required: false
       secret: false
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of resources to return. defaults to 50
+      description: The max number of entries to return. Defaults to 50
       required: false
       secret: false
       default: false
@@ -215,19 +215,19 @@ script:
       default: false
     - name: page
       isArray: false
-      description: page to return.
+      description: Page to return.
       required: false
       secret: false
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of resources to return. defaults to 50
+      description: The max number of entries to return. Defaults to 50
       required: false
       secret: false
       default: false
@@ -249,12 +249,20 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: allow_user_authentication
       isArray: false
       description: If set to true, the certificates signed by the specified CA can be used for user authentication.
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     outputs: []
   - deprecated: false
     description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
@@ -314,48 +322,48 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: "\n    "
+    description: Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
     name: ciphertrust-group-list
     arguments:
     - name: group_name
       isArray: false
-      description: Group name to filter by.
+      description: Filter by group name.
       required: false
       secret: false
       default: false
     - name: user_id
       isArray: false
-      description: User id to filter by membership. “nil” will return groups with no members.
+      description: Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only user id. Using '-' at the beginning of user_id will return groups that the user is not part of.
       required: false
       secret: false
       default: false
     - name: connection
       isArray: false
-      description: Connection id or name to filter by.
+      description: Filter by connection name or ID.
       required: false
       secret: false
       default: false
     - name: client_id
       isArray: false
-      description: Client id to filter by membership. “nil” will return groups with no members.
+      description: Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client id will return groups that the client is not part of.
       required: false
       secret: false
       default: false
     - name: page
       isArray: false
-      description: page to return.
+      description: Page to return.
       required: false
       secret: false
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of resources to return. defaults to 50
+      description: The max number of entries to return. Defaults to 50
       required: false
       secret: false
       default: false
@@ -378,10 +386,10 @@ script:
       type: String
     - contextPath: CipherTrust.Group.resources.created_at
       description: The time the group was created.
-      type: Unknown
+      type: Date
     - contextPath: CipherTrust.Group.resources.updated_at
       description: The time the group was last updated.
-      type: Unknown
+      type: Date
     - contextPath: CipherTrust.Group.resources.user_metadata
       description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
       type: Unknown
@@ -535,6 +543,10 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: issuer
       isArray: false
       description: Filter by issuer
@@ -559,19 +571,19 @@ script:
       default: false
     - name: page
       isArray: false
-      description: page to return.
+      description: Page to return.
       required: false
       secret: false
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of resources to return. defaults to 50
+      description: The max number of entries to return. Defaults to 50
       required: false
       secret: false
       default: false
@@ -622,12 +634,20 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: allow_user_authentication
       isArray: false
       description: If set to true, the certificates signed by the specified CA can be used for user authentication.
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     outputs: []
   - deprecated: false
     description: Deletes a local certificate.
@@ -733,6 +753,10 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: prevent_ui_login
       isArray: false
       description: 'If true, user is not allowed to login from Web UI. '
@@ -740,12 +764,20 @@ script:
       secret: false
       default: false
       defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: password_change_required
       isArray: false
       description: Password change required flag. If set to true, user will be required to change their password on next successful login.
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: password_policy
       isArray: false
       description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
@@ -867,6 +899,10 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
       description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
@@ -915,6 +951,10 @@ script:
       secret: false
       default: false
       defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: password_policy
       isArray: false
       description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
@@ -974,6 +1014,10 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
       description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
@@ -1009,21 +1053,25 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     - name: page
       isArray: false
-      description: page to return.
+      description: Page to return.
       required: false
       secret: false
       default: false
     - name: page_size
       isArray: false
-      description: number of entries per page. defaults to 2000 in case only page was provided. max is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of resources to return. defaults to 50
+      description: The max number of entries to return. Defaults to 50
       required: false
       secret: false
       default: false

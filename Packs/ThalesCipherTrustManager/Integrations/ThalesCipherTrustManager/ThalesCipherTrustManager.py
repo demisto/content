@@ -115,6 +115,9 @@ class CommandArguments:
     EXTERNAL_CA_ID = 'external_ca_id'
     SERIAL_NUMBER = 'serial_number'
 
+class BooleanStr(enum.Enum):
+    TRUE = 'true'
+    FALSE = 'false'
 
 class AllowedAuthMethods(enum.Enum):
     PASSWORD = "password"
@@ -197,6 +200,7 @@ USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User
                                    description='User associated with certain group will be excluded'),
                      InputArgument(name=CommandArguments.AUTH_DOMAIN_NAME, description='Filter by user’s auth domain'),
                      InputArgument(name=CommandArguments.ACCOUNT_EXPIRED,
+                                   input_type=BooleanStr,
                                    description='Filter the expired users (Boolean)'),
                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
                                    input_type=AllowedAuthMethods,
@@ -217,6 +221,7 @@ USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User
                      InputArgument(name=CommandArguments.PASSWORD_POLICY,
                                    description='Filter based on assigned password policy'),
                      InputArgument(name=CommandArguments.RETURN_GROUPS,
+                                      input_type=BooleanStr,
                                    description='If set to ‘true’ it will return the group’s name in which user is associated, Boolean'),
                      ] + PAGINATION_INPUTS
 USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
@@ -253,12 +258,15 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 "date of the user account.The supported date-time format is "
                                                 "2025-03-02T06:13:27.71402Z"),
                       InputArgument(name=CommandArguments.IS_DOMAIN_USER,
+                                    input_type=BooleanStr,
                                     description="This flag can be used to create the user "
                                                 "in a non-root domain where user "
                                                 "management is allowed."),
                       InputArgument(name=CommandArguments.PREVENT_UI_LOGIN, default='false',
+                                    input_type=BooleanStr,
                                     description='If true, user is not allowed to login from Web UI. '),
                       InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED,
+                                    input_type=BooleanStr,
                                     description='Password change required '
                                                 'flag. If set to true, '
                                                 'user will be required to '
@@ -277,6 +285,7 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                     description="The password used to secure the user's account."),
                       InputArgument(name=CommandArguments.EMAIL, description='Users email'),
                       InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED,
+                                    input_type=BooleanStr,
                                     description='Password change required flag. If set to true, '
                                                 'user will be required to '
                                                 'change their password on '
@@ -310,6 +319,7 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                       InputArgument(name=CommandArguments.FAILED_LOGINS_COUNT,
                                     description='Set it to 0 to unlock a locked user account.'),
                       InputArgument(name=CommandArguments.PREVENT_UI_LOGIN, default='false',
+                                    input_type=BooleanStr,
                                     description='If true, user is not allowed to login from Web UI.'),
 
                       InputArgument(name=CommandArguments.PASSWORD_POLICY,
@@ -349,6 +359,7 @@ LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True,
 LOCAL_CA_LIST = [InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
                  InputArgument(name=CommandArguments.LOCAL_CA_ID, description='Filter by local CA ID'),
                  InputArgument(name=CommandArguments.CHAINED,
+                               input_type=BooleanStr,
                                description='When set to ‘true’ the full CA chain is returned with the certificate'),
                  InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
                  InputArgument(name=CommandArguments.STATE, input_type=LocalCAState, description='Filter by state'),
@@ -358,9 +369,11 @@ LOCAL_CA_LIST = [InputArgument(name=CommandArguments.SUBJECT, description='Filte
 LOCAL_CA_UPDATE_INPUTS = [
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
     InputArgument(name=CommandArguments.ALLOW_CLIENT_AUTHENTICATION,
+                  input_type=BooleanStr,
                   description='If set to true, the certificates signed by the specified CA can be used '
                               'for client authentication.'),
     InputArgument(name=CommandArguments.ALLOW_USER_AUTHENTICATION,
+                  input_type=BooleanStr,
                   description='If set to true, the certificates signed by the specified CA can be used '
                               'for user authentication.'),
 ]
@@ -439,8 +452,10 @@ EXTERNAL_CERTIFICATE_DELETE_INPUTS = [
 EXTERNAL_CERTIFICATE_UPDATE_INPUTS = [
     InputArgument(name=CommandArguments.EXTERNAL_CA_ID, required=True, description='The identifier of the certificate resource'),
     InputArgument(name=CommandArguments.ALLOW_CLIENT_AUTHENTICATION,
+                  input_type=BooleanStr,
                   description='If set to true, the certificates signed by the specified CA can be used for client authentication.'),
     InputArgument(name=CommandArguments.ALLOW_USER_AUTHENTICATION,
+                  input_type=BooleanStr,
                   description='If set to true, the certificates signed by the specified CA can be used for user authentication.'),
 ]
 
@@ -1034,6 +1049,7 @@ def users_list_command(client: CipherTrustClient, args: dict):
         readable_output=tableToMarkdown(name='users list',
                                         t=raw_response.get('resources') if raw_response.get('resources') else raw_response),
     )
+#todo - if resources is empty, return empty list?
 
 
 @metadata_collector.command(command_name='ciphertrust-user-create', description=USER_CREATE_DESCRIPTION,
