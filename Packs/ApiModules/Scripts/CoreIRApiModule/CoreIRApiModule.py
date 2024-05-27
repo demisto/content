@@ -209,7 +209,7 @@ class CoreClient(BaseClient):
                 'value': status
             })
 
-        if starred and starred_incidents_fetch_window:
+        if starred and starred_incidents_fetch_window and demisto.command() == 'fetch-incidents':
             filters.append({
                 'field': 'starred',
                 'operator': 'eq',
@@ -220,47 +220,60 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
-            if demisto.command() == 'fetch-incidents':
-                if len(filters) > 0:
-                    request_data['filters'] = filters
-                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
-                return incidents
 
-        else:
-            if lte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
-                })
+            if len(filters) > 0:
+                request_data['filters'] = filters
+            incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+            return incidents
 
-            if gte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
-                })
+        if starred is not None and demisto.command() != 'fetch-incidents':
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': starred
+            })
 
-            if lte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
-                })
+        if lte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+            })
 
-            if gte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
-                })
+        if gte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+            })
+        elif starred and starred_incidents_fetch_window and demisto.command() != 'fetch-incidents':
+            # backwards compatibility of starred_incidents_fetch_window
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
 
-            if gte_creation_time_milliseconds > 0:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': gte_creation_time_milliseconds
-                })
+        if lte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_creation_time_milliseconds > 0:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
 
         if len(filters) > 0:
             request_data['filters'] = filters
@@ -646,7 +659,7 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201, 500,),
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -663,9 +676,13 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/remove/',
             json_data={'request_data': request_data},
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
-        return reply.get('reply')
+        res = reply.get('reply')
+        if isinstance(res, dict) and res.get('err_code') == 500:
+            raise DemistoException(f"{res.get('err_msg')}\nThe requested hash might not be in the blocklist.")
+        return res
 
     def allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
@@ -2299,8 +2316,15 @@ def restore_file_command(client, args):
     )
 
 
+def validate_sha256_hashes(hash_list):
+    for hash_value in hash_list:
+        if detect_file_indicator_type(hash_value) != 'sha256':
+            raise DemistoException(f'The provided hash {hash_value} is not a valid sha256.')
+
+
 def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
@@ -2333,6 +2357,7 @@ def blocklist_files_command(client, args):
 
 def remove_blocklist_files_command(client: CoreClient, args: Dict) -> CommandResults:
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
@@ -4172,7 +4197,7 @@ def get_incidents_command(client, args):
 
     statuses = argToList(args.get('status', ''))
 
-    starred = args.get('starred')
+    starred = argToBoolean(args.get('starred')) if args.get('starred', None) not in ('', None) else None
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 

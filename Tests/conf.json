@@ -123,8 +123,9 @@
             "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
+            "timeout": 1200,
+            "integrations": "Cortex XDR - IR"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -308,6 +309,16 @@
             "integrations": "AWS-WAF",
             "playbookID": "TEST_AWS_WAF",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "AWS - IAM Identity Center",
+            "playbookID": "AWS-IAMIdentityCenter-Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Exabeam Data Lake",
+            "playbookID": "ExabeamDataLake-test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "GoogleDrive",
@@ -867,7 +878,8 @@
         {
             "integrations": "AlienVault OTX v2",
             "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130
+            "memory_threshold": 130,
+            "timeout": 500
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -2091,7 +2103,8 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_names": "no_sync"
+            "instance_names": "no_sync",
+            "timeout": 600
         },
         {
             "playbookID": "test-domain-indicator",
@@ -3038,6 +3051,11 @@
         {
             "integrations": "Exabeam",
             "playbookID": "Exabeam - Test"
+        },
+        {
+            "integrations": "ExabeamSecOpsPlatform",
+            "playbookID": "ExabeamSecurityOperationsPlatform-test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "Cisco Spark",
@@ -4220,6 +4238,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Venafi"
+            ]
+        },
+        {
+            "playbookID": "VenafiV2_Test",
+            "fromversion": "6.9.0",
+            "integrations": [
+                "VenafiTLSProtect"
             ]
         },
         {
@@ -5653,6 +5678,10 @@
             "playbookID": "Fortimail"
         },
         {
+            "integrations": "Zoom Mail",
+            "playbookID": "ZoomMailTest"
+        },
+        {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
@@ -5852,7 +5881,10 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "VMWare Test": "CIAC-10276"
+        "VMWare Test": "CIAC-10276",
+        "AWS_DynamoDB-Test": "CIAC-10426",
+        "AWS - EC2 Test Playbook": "CIAC-10426",
+        "AWS SNS Listener - Test": "CIAC-10426"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
