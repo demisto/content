@@ -84,6 +84,5 @@
         "marketplacev2",
         "xpanse"
     ],
-    "hybrid": true,
-    "defaultDataSource": "PrismaCloud v2"
+    "hybrid": true
 }
