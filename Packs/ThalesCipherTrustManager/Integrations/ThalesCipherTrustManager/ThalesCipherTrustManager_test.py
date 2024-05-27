@@ -93,25 +93,27 @@ Mock Data
 '''
 
 GROUPS_LIST_TEST_ARGS = [
+    {},  # No arguments
+    {CommandArguments.GROUP_NAME: 'group1'},  # Only GROUP_NAME
+    {CommandArguments.USER_ID: 'user1'},  # Only USER_ID
+    {CommandArguments.CONNECTION: 'connection1'},  # Only CONNECTION
+    {CommandArguments.CLIENT_ID: 'client1'},  # Only CLIENT_ID
     {
-        CommandArguments.GROUP_NAME: 'Admins',
-        CommandArguments.USER_ID: '123',
-        CommandArguments.CONNECTION: 'conn1',
-        CommandArguments.CLIENT_ID: '456',
-        CommandArguments.LIMIT: '10',
-        CommandArguments.PAGE: '1',
-        CommandArguments.PAGE_SIZE: '10'
-    },
+        CommandArguments.GROUP_NAME: 'group2',
+        CommandArguments.USER_ID: 'user2'
+    },  # Combination of GROUP_NAME and USER_ID
     {
-        CommandArguments.GROUP_NAME: 'Users',
-        CommandArguments.LIMIT: '5'
-    },
+        CommandArguments.CONNECTION: 'connection2',
+        CommandArguments.CLIENT_ID: 'client2'
+    },  # Combination of CONNECTION and CLIENT_ID
     {
-        CommandArguments.PAGE: '2',
-        CommandArguments.PAGE_SIZE: '5',
-        CommandArguments.LIMIT: '50'  #there will always be a limit since set to default in the integration
-    }
+        CommandArguments.GROUP_NAME: 'group3',
+        CommandArguments.USER_ID: 'user3',
+        CommandArguments.CONNECTION: 'connection3',
+        CommandArguments.CLIENT_ID: 'client3'
+    }  # All arguments
 ]
+
 
 GROUP_CREATE_TEST_ARGS = []
 GROUP_DELETE_TEST_ARGS = []
