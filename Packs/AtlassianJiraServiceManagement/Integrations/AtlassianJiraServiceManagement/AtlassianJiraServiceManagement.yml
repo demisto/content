@@ -280,7 +280,7 @@ script:
         description: Epoch version of the object's creation date.
         type: Date
       - contextPath: JiraAsset.Object.Links.self
-        description: The link to view this object in Jira  web app.
+        description: The link to view this object in Jira web app.
         type: String
       - contextPath: JiraAsset.Object.Name
         description: The name of the newly created object.
@@ -317,9 +317,6 @@ script:
       - contextPath: JiraAsset.Object.ObjectKey
         description: The auto-generated object key.
         type: String
-      - contextPath: JiraAsset.Object.Avatar.objectId
-        description: Id of the retrieved object.
-        type: Number
       - contextPath: JiraAsset.Object.Created
         description: The date in which this object was created.
         type: Date
@@ -339,7 +336,75 @@ script:
         description: Does this object has any attachments.
         type: Boolean
       - contextPath: JiraAsset.Object.Links.self
-        description: The link to view this object in Jira  web app.
+        description: The link to view this object in Jira web app.
+        type: String
+      - contextPath: JiraAsset.Object.Name
+        description: The name of the object.
+        type: String
+  - arguments:
+    - description: A ql query to search objects by. View https://support.atlassian.com/jira-service-management-cloud/docs/use-assets-query-language-aql/ for further details.
+      name: ql_query
+      required: true
+    - description: Whether to include the attributes structure in the response.
+      name: include_attributes
+      defaultvalue: false
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    - description: Page number.
+      name: page
+    - description: Use this argument or limit, but not both. Size of the page. Defaults to 50.
+      name: page_size
+      defaultvalue: 50
+    - description: Use this argument or a combination of page and page_size, but not both. Limit the number of entries returned by the command.
+      name: limit
+    name: jira-asset-object-search
+    outputs:
+      - contextPath: JiraAsset.Object.ID
+        description: Id of the retrieved object.
+        type: Number
+      - contextPath: JiraAsset.Object.Label
+        description: The value of the attribute that is marked as Label for this object type.
+        type: String
+      - contextPath: JiraAsset.Object.ObjectKey
+        description: The auto-generated object key.
+        type: String
+      - contextPath: JiraAsset.Object.Created
+        description: The date in which this object was created.
+        type: Date
+      - contextPath: JiraAsset.Object.Updated
+        description: The date in which this object was last updated.
+        type: Date
+      - contextPath: JiraAsset.Object.HasAvatar
+        description: Does this object has an Avatar.
+        type: Boolean
+      - contextPath: JiraAsset.Object.Timestamp
+        description: Epoch version of the object's creation date.
+        type: Date
+      - contextPath: JiraAsset.Object.Attributes.id
+        description: The id of the attribute.
+        type: Number
+      - contextPath: JiraAsset.Object.Attributes.objectTypeAttributeId
+        description: The id of the attribute, not relative to the object type.
+        type: Number
+      - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.value
+        description: The value of the specific attribute for this object.
+        type: String
+      - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.referencedType
+        description: Whether this attribute is referenced by other types.
+        type: Boolean
+      - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.displayValue
+        description: The display value for this attribute.
+        type: String
+      - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.searchValue
+        description: The search value for this attribute.
+        type: String
+      - contextPath: JiraAsset.Object.Attributes.objectId
+        description: The id of the object this attribute is assigned to.
+        type: Number
+      - contextPath: JiraAsset.Object.Links.self
+        description: The link to view this object in Jira web app.
         type: String
       - contextPath: JiraAsset.Object.Name
         description: The name of the object.
