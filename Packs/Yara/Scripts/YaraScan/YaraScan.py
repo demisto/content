@@ -31,7 +31,7 @@ def main():
     if len(fileInfos) < 1:
         return_error('No files were found for scanning, please check the entry IDs')
 
-    yaraRulesRaw = args.get('yaraRules')
+    yaraRuleRaw = args.get('yaraRule')
 
     for fileInfo in fileInfos:
         with open(fileInfo['path'], 'rb') as fp:
@@ -46,12 +46,25 @@ def main():
                 "Errors": []
             }
             try:
-                cRule = yara.compile(sources=json.loads(yaraRulesRaw))
-            except (Exception, TypeError, json.JSONDecodeError) as err:
-                thisMatch['HasError'] = True
-                thisMatch['Errors'].append(str(err))
-                entries.append(thisMatch)
-                continue
+                rules = json.loads(yaraRuleRaw)
+
+                if isinstance(rules, dict):
+                    try:
+                        cRule = yara.compile(sources=rules)
+                    except yara.Error as ye:
+                        thisMatch['HasError'] = True
+                        thisMatch['Errors'].append(str(ye))
+                        entries.append(thisMatch)
+                        continue
+
+            except json.JSONDecodeError:
+                try:
+                    cRule = yara.compile(source=yaraRuleRaw)
+                except yara.SyntaxError as se:
+                    thisMatch['HasError'] = True
+                    thisMatch['Errors'].append(str(se))
+                    entries.append(thisMatch)
+                    continue
             try:
                 matches = cRule.match(data=fp.read())
             except Exception as err:

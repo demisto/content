@@ -271,7 +271,7 @@ tasks:
       yaraRule:
         complex:
           root: foundIndicators
-          accessor: rawrules
+          accessor: rawrule
           transformers:
           - operator: uniq
     separatecontext: false
