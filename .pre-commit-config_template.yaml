@@ -133,7 +133,6 @@ repos:
     - --files
     args:docker_autoupdate:
     - /src/Tests/scripts/script_runner.py
-    - run
     - -p
     - --source=.
     - -m
