@@ -63,6 +63,13 @@ class Client(BaseClient):
             json_data=json_data
         )
 
+    def http_post(self, url_suffix, json_data):
+        return self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=json_data
+        )
+
     def update_object(self, object_id: str, json_data: Dict[str, Any]):
         return self._http_request(
             method='PUT',
@@ -419,6 +426,38 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
         outputs=outputs,
         readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers)
     )
+
+
+def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any]):
+    object_type_id = args.get('object_type_id')
+    url_suffix = f'objecttype/{object_type_id}/attributes'
+
+    params = {'onlyValueEditable': args.get('is_editable', False)}
+    res = client.http_get(url_suffix, params)
+    if args.get('is_required'):
+        res = [attribute for attribute in res if attribute.get('minimumCardinality') > 0]
+    outputs = {'attributes': [{
+        "objectTypeAttributeId": attribute.get("id"),
+        "objectAttributeValues": [{"value": ''}]
+    } for attribute in res]}
+
+    return CommandResults()
+
+
+def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_id = args.get('object_id')
+    comment = args.get('comment')
+    res = client.http_post('/comment/create', {'objectId': object_id, 'comment': comment})
+    outputs = convert_keys_to_pascal([res], {'id': 'ID'})
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Comment',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=f'Comment was added successfully to object with id: {object_id}'
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -483,6 +522,14 @@ def main() -> None:
 
         elif command == 'jira-asset-object-search':
             result = jira_asset_object_search_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-attribute-json-create':
+            result = jira_asset_attribute_json_create_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-comment-create':
+            result = jira_asset_comment_create_command(client, args)
             return_results(result)
 
         else:

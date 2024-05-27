@@ -409,6 +409,60 @@ script:
       - contextPath: JiraAsset.Object.Name
         description: The name of the object.
         type: String
+  - arguments:
+    - description: Id of the object that the comment will be added to. You could use the  jira-asset-object-search to find objects.
+      name: object_id
+      required: true
+    - description: Body of the comment that will be created.
+      name: comment
+      required: true
+    name: jira-asset-comment-create
+    outputs:
+      - contextPath: JiraAsset.Comment.Created
+        description: The date in which this comment was created.
+        type: Date
+      - contextPath: JiraAsset.Comment.Updated
+        description: The date in which this object was last updated.
+        type: Date
+      - contextPath: JiraAsset.Comment.Id
+        description: The id of the newly created comment.
+        type: Number
+      - contextPath: JiraAsset.Comment.Actor.AvatarUrl
+        description: URL to the avatar of the author of the comment.
+        type: String
+      - contextPath: JiraAsset.Comment.Actor.DisplayName
+        description: Display name of the author of the comment.
+        type: String
+      - contextPath: JiraAsset.Comment.Actor.Name
+        description: Name of the author of the comment.
+        type: String
+      - contextPath: JiraAsset.Comment.Actor.Key
+        description: Key of the author of the comment.
+        type: String
+      - contextPath: JiraAsset.Comment.Actor.RenderedLink
+        description: A link to the author's jira profile.
+        type: String
+      - contextPath: JiraAsset.Comment.Actor.IsDeleted
+        description: Is the author of the comment deleted.
+        type: Boolean
+      - contextPath: JiraAsset.Comment.Role
+        description: ''
+        type: Number
+      - contextPath: JiraAsset.Comment.Comment
+        description: The body of the comment that was newly added.
+        type: String
+      - contextPath: JiraAsset.Comment.CommentOutput
+        description: The body of the comment that was newly added.
+        type: String
+      - contextPath: JiraAsset.Comment.ObjectId
+        description: The id of the object the new comment was added to.
+        type: Number
+      - contextPath: JiraAsset.Comment.CanEdit
+        description: Whether the comment is editable.
+        type: Boolean
+      - contextPath: JiraAsset.Comment.CanDelete
+        description: Whether the comment can be deleted.
+        type: Boolean
   runonce: false
   script: '-'
   type: python
