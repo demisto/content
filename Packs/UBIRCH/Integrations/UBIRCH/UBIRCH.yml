@@ -40,7 +40,7 @@ display: UBIRCH
 name: UBIRCH
 script:
   commands:
-  - description: Create a list of sample incidents
+  - description: Create a list of sample incidents.
     name: create-sample-incidents
   dockerimage: demisto/paho-mqtt:1.0.0.56447
   longRunning: true

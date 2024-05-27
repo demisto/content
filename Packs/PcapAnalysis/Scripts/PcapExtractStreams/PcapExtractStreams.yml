@@ -18,7 +18,7 @@ args:
   predefined:
   - text-based-protocol
   - human-readable
-- description: 'Filter to apply on pcap. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
+- description: 'Filter to apply on pcap. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'.
   name: pcap_filter
 - description: The RSA decryption key in base64.
   name: rsa_decrypt_key
