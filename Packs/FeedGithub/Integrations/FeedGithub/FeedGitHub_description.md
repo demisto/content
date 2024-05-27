@@ -12,7 +12,6 @@ The integration supports the following workflow:
 
 To generate your personal access token, visit:[GitHub](https://github.com/settings/tokens)
 
-### Required fields
 
 - `Owner:` The owner of the repository (see the example)
 - `Repository:` The name of the repository (see the example)

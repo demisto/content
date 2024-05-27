@@ -101,28 +101,6 @@ def test_filter_out_files_by_status():
     assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
 
 
-def test_split_yara_rules():
-    """
-    Test the split_yara_rules function.
-    Given:
-    - Yara rule sets from 'test_data/test-split-yara-critical-rule.yar' and 'test_data/test-split-yara-1.yar'.
-    - Expected split result from 'test_data/split-critical-yara-rule-res.json'.
-    When:
-    - split_yara_rules is called on both Yara rule sets.
-    Then:
-    - The number of rules from 'test_data/test-split-yara-1.yar' is 6.
-    - The split result of 'test_data/test-split-yara-critical-rule.yar' matches the expected result.
-    """
-    from FeedGitHub import split_yara_rules
-
-    aaa = util_load_txt("test_data/test-split-yara-critical-rule.yar")
-    bbb = split_yara_rules(aaa)
-    yara_content = util_load_txt("test_data/test-split-yara-1.yar")
-    yara_rules = split_yara_rules(yara_content)
-    assert len(yara_rules) == 6
-    assert bbb == util_load_json("test_data/split-critical-yara-rule-res.json")
-
-
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_parse_and_map_yara_content(mocker):
     """

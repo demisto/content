@@ -139,28 +139,6 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
         return [], base_commit
 
 
-def split_yara_rules(str) -> list[str]:
-    """
-    Splits a string containing multiple Yara rules into a list of individual Yara rules.
-
-    The regex pattern used here is:
-    - `r"(rule.*?})\s*(?=rule|$)"`
-    - `rule`: Matches the literal word "rule" which indicates the start of a Yara rule.
-    - `.*?`: A non-greedy match for any character (except for newline) zero or more times, capturing the content of the rule.
-    - `}`: Matches the closing brace of a Yara rule.
-    - `\s*`: Matches zero or more whitespace characters following the closing brace.
-    - `(?=rule|$)`: Positive lookahead that asserts the position is followed by the word "rule" or the end of the string (`$`). This ensures the match captures one rule at a time.
-
-    Args:
-    yara_rules_str (str): A string containing one or more Yara rules.
-
-    Returns:
-    list[str]: A list of individual Yara rules as strings.
-    """
-    pattern = re.compile(r"(rule.*?})\s*(?=rule|$)", re.DOTALL)
-    return pattern.findall(str)
-
-
 def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
     """
     Parses YARA rules from a given content item and maps their attributes.
