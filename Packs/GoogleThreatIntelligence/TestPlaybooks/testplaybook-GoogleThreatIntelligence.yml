@@ -936,5 +936,5 @@ inputs:
   description: hash to check reputation
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.10.0
 description: Test playbook of GoogleThreatIntelligence.
