@@ -6,7 +6,7 @@ This pack includes Cortex XSIAM content.
   
 ## Configuration on Server Side
 You need to configure BIG-IP AWAF to forward Syslog messages.
-In order to do so, you need to create a logging profile and setting remote logging to the relevant server.
+In order to do so, create a logging profile and setting remote logging to the relevant server.
 
 * The product documentation is available [here](https://techdocs.f5.com/kb/en-us/products/big-ip_asm/manuals/product/asm-implementations-11-6-0/14.html). 
 
