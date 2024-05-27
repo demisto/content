@@ -1903,10 +1903,10 @@ def test_remove_tag_asset_command(mocker, mock_client, tag_id, asset_id):
 
 
 @pytest.mark.parametrize("target_type, site_id, assets, asset_group_ids", [
-    ("included", "1", "8.8.8.8,www", None),
-    ("included", "2", None, "789,612"),
-    ("excluded", "1", "8.8.8.8,www", None),
-    ("excluded", "2", None, "789,612")
+    ("included", "1", "8.8.8.8,www", None),  # test add included asset
+    ("included", "2", None, "789,612"),  # test add included asset group
+    ("excluded", "1", "8.8.8.8,www", None),  # test add excluded asset
+    ("excluded", "2", None, "789,612")  # test add excluded asset group
 ])
 def test_add_site_target_command(mocker, mock_client, site_id, target_type, assets, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
@@ -1931,10 +1931,10 @@ def test_add_site_target_command(mocker, mock_client, site_id, target_type, asse
 
 
 @pytest.mark.parametrize("target_type, site_id, assets, asset_group_ids", [
-    ("included", "1", "8.8.8.8,www", None),
-    ("included", "2", None, "789,612"),
-    ("excluded", "1", "8.8.8.8,www", None),
-    ("excluded", "2", None, "789,612")
+    ("included", "1", "8.8.8.8,www", None),  # test remove included asset
+    ("included", "2", None, "789,612"),  # test remove included asset group
+    ("excluded", "1", "8.8.8.8,www", None),  # test remove excluded asset
+    ("excluded", "2", None, "789,612")  # test remove excluded asset group
 ])
 def test_remove_site_target_command(mocker, mock_client, target_type, site_id, assets, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})

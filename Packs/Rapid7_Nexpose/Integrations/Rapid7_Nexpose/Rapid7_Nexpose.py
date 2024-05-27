@@ -5639,14 +5639,12 @@ def get_list_tag_command(client: Client, id: str | None = None, name: str | None
         limit_int = arg_to_number(limit, required=False)
         tags = client.get_tags_list(name=name, type=type, page_size=page_size_int, page=page_int, limit=limit_int)
 
-    readable_tags = tags.copy()
-    remove_dict_key(readable_tags, "searchCriteria")
-
     return CommandResults(
         outputs_prefix="Nexpose.Tag",
         outputs_key_field="id",
         outputs=tags,
-        readable_output=tableToMarkdown("Tags list", readable_tags, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Tags list", remove_dict_key(deepcopy(tags), "searchCriteria"),
+                                        headerTransform=string_to_table_header),
         raw_response=tags
     )
 
@@ -5669,7 +5667,8 @@ def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: s
         site_id_in (str, optional): Site IDs to filter for. Can be a comma-separated list.
         site_name_in (str, optional): Site names to filter for. Can be a comma-separated list.
         query (str, optional): Additional queries to use as a filter, following the Search Criteria API standard.
-        match (str, optional): Operator to determine how to match filters. "All" requires all filters to match, "Any" requires only one filter to match.
+        match (str, optional): Operator to determine how to match filters.
+            "All" requires all filters to match, "Any" requires only one filter to match.
 
     Returns:
         CommandResults: Results of the search criteria update.
@@ -5825,7 +5824,8 @@ def remove_tag_asset_command(client: Client, tag_id: str, asset_id: str):
     return CommandResults(readable_output=f"Asset {asset_id_int} was removed from tag {tag_id_int} successfully")
 
 
-def add_site_target_command(client: Client, target_type: str, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+def add_site_target_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
+                            asset_group_ids: str | None = None):
     """
     Add assets or asset groups to a site's included/excluded assets.
 
@@ -5855,7 +5855,8 @@ def add_site_target_command(client: Client, target_type: str, site_id: str, asse
     return CommandResults(readable_output=f"Added {added_assets} to site with ID {site_id_int}")
 
 
-def remove_site_target_command(client: Client, target_type: str, site_id: str, assets: str | None = None, asset_group_ids: str | None = None):
+def remove_site_target_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
+                               asset_group_ids: str | None = None):
     """
     Remove assets or asset groups from a site's included/excluded assets.
 

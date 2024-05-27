@@ -2408,21 +2408,6 @@ There is no context output for this command.
 There is no context output for this command.
 #### Command example
 ```!nexpose-add-site-included-asset site_id=848 assets=8.8.8.8```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -2449,21 +2434,6 @@ Remove an asset from a tag. Please note that the asset must be added through the
 There is no context output for this command.
 #### Command example
 ```!nexpose-remove-tag-asset asset_id=25 tag_id=61```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -2496,16 +2466,6 @@ Return a list of assets for a tag.
 #### Context Example
 ```json
 {
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    },
     "Nexpose": {
         "TagAsset": [
             {
@@ -2586,16 +2546,6 @@ Return a list of included assets for a site.
 #### Context Example
 ```json
 {
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    },
     "Nexpose": {
         "IncludedAsset": {
             "addresses": [
@@ -2613,8 +2563,8 @@ Return a list of included assets for a site.
 >### Asset list for site ID 848
 >|Addresses|
 >|---|
->| 8.5.8.8 |
->| 18.215.71.16 |
+>| 8.8.8.8 |
+>| 1.1.1.1 |
 
 
 ### nexpose-list-site-excluded-asset-group
@@ -2644,16 +2594,6 @@ Return a list of excluded asset groups for a site.
 #### Context Example
 ```json
 {
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    },
     "Nexpose": {
         "ExcludedAssetGroup": {
             "resources": [],
@@ -2662,11 +2602,6 @@ Return a list of excluded asset groups for a site.
     }
 }
 ```
-
-#### Human Readable Output
-
->### Asset group list for site ID 848
->**No entries.**
 
 
 ### nexpose-list-site-included-asset-group
@@ -2696,16 +2631,6 @@ Return a list of included asset groups for a site.
 #### Context Example
 ```json
 {
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    },
     "Nexpose": {
         "IncludedAssetGroup": {
             "resources": [],
@@ -2742,21 +2667,6 @@ Remove an asset group from a tag.
 There is no context output for this command.
 #### Command example
 ```!nexpose-remove-tag-asset-group asset_group_id=1 tag_id=61```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -2814,21 +2724,6 @@ Add an existing asset to an existing tag.
 There is no context output for this command.
 #### Command example
 ```!nexpose-add-tag-asset asset_id=25 tag_id=61```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -2856,21 +2751,6 @@ Remove excluded targets from a site.
 There is no context output for this command.
 #### Command example
 ```!nexpose-remove-site-excluded-target site_id=848 assets=8.8.8.8```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -2897,21 +2777,6 @@ There is no context output for this command.
 There is no context output for this command.
 #### Command example
 ```!nexpose-remove-site-included-target site_id=848 assets=8.8.8.8```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -2990,16 +2855,6 @@ Return a list of excluded assets for a site.
 #### Context Example
 ```json
 {
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    },
     "Nexpose": {
         "ExcludedAsset": {
             "site_id": 848
@@ -3040,16 +2895,6 @@ Return a list of asset groups for a tag.
 #### Context Example
 ```json
 {
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    },
     "Nexpose": {
         "TagAssetGroup": [
             3
@@ -3090,22 +2935,78 @@ Return a list of tags.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.Tag.resources.color | String | The color associated with the tag. | 
-| Nexpose.Tag.resources.created | Date | The date when the tag was created. | 
-| Nexpose.Tag.resources.id | Number | The unique identifier of the tag. | 
-| Nexpose.Tag.resources.name | String | The name of the tag. | 
-| Nexpose.Tag.resources.searchCriteria.match | String | The match criteria used for the tag search \(e.g., "all" or "any"\). | 
-| Nexpose.Tag.resources.searchCriteria.filters.field | String | The field name used in the tag search filter. | 
-| Nexpose.Tag.resources.searchCriteria.filters.operator | String | The operator used in the tag search filter \(e.g., "is", "contains", "is-greater-than"\). | 
-| Nexpose.Tag.resources.searchCriteria.filters.lower | String | The lower bound of the range used in the tag search filter. | 
-| Nexpose.Tag.resources.searchCriteria.filters.upper | String | The upper bound of the range used in the tag search filter. | 
-| Nexpose.Tag.resources.source | String | The source of the tag. | 
-| Nexpose.Tag.resources.type | String | The type of the tag. | 
-| Nexpose.Tag.resources.searchCriteria.filters.value | String | The value used in the tag search filter. | 
+| Nexpose.Tag.color | String | The color associated with the tag. | 
+| Nexpose.Tag.created | Date | The date when the tag was created. | 
+| Nexpose.Tag.id | Number | The unique identifier of the tag. | 
+| Nexpose.Tag.name | String | The name of the tag. | 
+| Nexpose.Tag.searchCriteria.match | String | The match criteria used for the tag search \(e.g., "all" or "any"\). | 
+| Nexpose.Tag.searchCriteria.filters.field | String | The field name used in the tag search filter. | 
+| Nexpose.Tag.searchCriteria.filters.operator | String | The operator used in the tag search filter \(e.g., "is", "contains", "is-greater-than"\). | 
+| Nexpose.Tag.searchCriteria.filters.lower | String | The lower bound of the range used in the tag search filter. | 
+| Nexpose.Tag.searchCriteria.filters.upper | String | The upper bound of the range used in the tag search filter. | 
+| Nexpose.Tag.source | String | The source of the tag. | 
+| Nexpose.Tag.type | String | The type of the tag. | 
+| Nexpose.Tag.searchCriteria.filters.value | String | The value used in the tag search filter. | 
 | Nexpose.Tag.page.number | Number | The current page number in the paginated response. | 
 | Nexpose.Tag.page.size | Number | The number of items per page in the paginated response. | 
 | Nexpose.Tag.page.totalResources | Number | The total number of resources available. | 
 | Nexpose.Tag.page.totalPages | Number | The total number of pages available. | 
+
+
+#### Command example
+```!nexpose-list-tag limit=2 name=test```
+
+#### Context Example
+```json
+{
+    "resources": [
+        {
+            "color": "default",
+            "created": "2024-05-06T13:32:58.454Z",
+            "id": 45,
+            "name": "test",
+            "searchCriteria": {
+                "match": "all",
+                "filters": [
+                    {
+                        "field": "risk-score",
+                        "operator": "in-range",
+                        "lower": "193.841",
+                        "upper": "187.841"
+                    }
+                ]
+            },
+            "source": "custom",
+            "type": "Owner"
+        },
+        {
+            "color": "default",
+            "created": "2024-05-06T13:43:52.874Z",
+            "id": 46,
+            "name": "new_test2",
+            "searchCriteria": {
+                "match": "any",
+                "filters": [
+                    {
+                        "field": "ip-address",
+                        "operator":"is",
+                        "value":"3.3.3.3"
+                    }
+                ]
+            },
+            "source": "custom",
+            "type": "Owner"
+        }
+    ],
+    "page": {
+        "number": 0,
+        "size": 2,
+        "totalResources": 8,
+        "totalPages": 4
+    }
+}
+```
+
 
 ### nexpose-add-site-excluded-target
 
@@ -3129,21 +3030,6 @@ Add excluded targets to a site.
 There is no context output for this command.
 #### Command example
 ```!nexpose-add-site-excluded-target site_id=848 assets=8.8.8.8```
-#### Context Example
-```json
-{
-    " Nexpose": {
-        "Tag": [
-            {
-                "id": 48
-            },
-            {
-                "id": 49
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 

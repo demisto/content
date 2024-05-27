@@ -2154,10 +2154,13 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included.
+        "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+      description: Additional queries to use as a filter, following the Search Criteria API standard.
+        The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
+        For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     description: Create a tag.
     outputs:
     - contextPath: Nexpose.Tag.id
@@ -2185,40 +2188,40 @@ script:
       description: A number of records to limit the response to.
     description: Return a list of tags.
     outputs:
-    - contextPath: Nexpose.Tag.resources.color
+    - contextPath: Nexpose.Tag.color
       description: The color associated with the tag.
       type: String
-    - contextPath: Nexpose.Tag.resources.created
+    - contextPath: Nexpose.Tag.created
       description: The date when the tag was created.
       type: Date
-    - contextPath: Nexpose.Tag.resources.id
+    - contextPath: Nexpose.Tag.id
       description: The unique identifier of the tag.
       type: Number
-    - contextPath: Nexpose.Tag.resources.name
+    - contextPath: Nexpose.Tag.name
       description: The name of the tag.
       type: String
-    - contextPath: Nexpose.Tag.resources.searchCriteria.match
+    - contextPath: Nexpose.Tag.searchCriteria.match
       description: The match criteria used for the tag search (e.g., "all" or "any").
       type: String
-    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.field
+    - contextPath: Nexpose.Tag.searchCriteria.filters.field
       description: The field name used in the tag search filter.
       type: String
-    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.operator
+    - contextPath: Nexpose.Tag.searchCriteria.filters.operator
       description: The operator used in the tag search filter (e.g., "is", "contains", "is-greater-than").
       type: String
-    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.lower
+    - contextPath: Nexpose.Tag.searchCriteria.filters.lower
       description: The lower bound of the range used in the tag search filter.
       type: String
-    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.upper
+    - contextPath: Nexpose.Tag.searchCriteria.filters.upper
       description: The upper bound of the range used in the tag search filter.
       type: String
-    - contextPath: Nexpose.Tag.resources.source
+    - contextPath: Nexpose.Tag.source
       description: The source of the tag.
       type: String
-    - contextPath: Nexpose.Tag.resources.type
+    - contextPath: Nexpose.Tag.type
       description: The type of the tag.
       type: String
-    - contextPath: Nexpose.Tag.resources.searchCriteria.filters.value
+    - contextPath: Nexpose.Tag.searchCriteria.filters.value
       description: The value used in the tag search filter.
       type: String
     - contextPath: Nexpose.Tag.page.number
@@ -2256,10 +2259,13 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included.
+        "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+      description: Additional queries to use as a filter, following the Search Criteria API standard.
+        The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
+        For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     - name: overwrite
       auto: PREDEFINED
       predefined:
@@ -2301,7 +2307,7 @@ script:
     - name: tag_id
       required: true
       description: The tag ID.
-    description: Return a list of assets for a tag.
+    description: Return the tag assets list.
     outputs:
     - contextPath: Nexpose.TagAsset.id
       description: Asset ID.
@@ -2326,14 +2332,17 @@ script:
     - name: asset_id
       required: true
       description: The asset ID.
-    description: Remove an asset from a tag. Please note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
+    description: Remove an asset from a tag. Please note that the asset must be added through the asset or tag.
+      If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
   - name: nexpose-add-site-included-asset
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's included scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to add to the site's included scan targets.
+        Each address is a string that can represent either a hostname,
+        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
       isArray: true
     - name: asset_group_ids
       isArray: true
@@ -2345,7 +2354,9 @@ script:
       description: A URL parameter.
     - name: assets
       isArray: true
-      description: List of addresses to remove from the site's included scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to remove from the site's included scan targets.
+        Each address is a string that can represent either a hostname,
+        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       isArray: true
       description: List of asset group identifiers.
@@ -2381,7 +2392,9 @@ script:
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's excluded scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to add to the site's excluded scan targets.
+        Each address is a string that can represent either a hostname,
+        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to exclude.
     description: Add excluded targets to a site.
@@ -2391,7 +2404,9 @@ script:
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to remove from the site's excluded scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to remove from the site's excluded scan targets.
+        Each address is a string that can represent either a hostname,
+        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to remove from the site's exclusion list.
     description: Remove excluded targets from a site.
@@ -2425,7 +2440,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.95956
 fromversion: 5.0.0
 tests:
 - nexpose_test
