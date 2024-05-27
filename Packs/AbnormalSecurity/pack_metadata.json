@@ -23,5 +23,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "Abnormal Security Event Collector"
 }

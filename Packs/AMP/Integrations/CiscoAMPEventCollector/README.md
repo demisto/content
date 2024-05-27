@@ -1,6 +1,10 @@
 This is the Cisco AMP event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version v1 of CiscoAMPEventCollector.
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure Cisco AMP Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -1,5 +1,9 @@
 This integration was integrated and tested with version 3 of Jira Event Collector rest API.
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure Jira Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.

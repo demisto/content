@@ -65,5 +65,6 @@
         "MalwareInvestigationAndResponse",
         "CommonPlaybooks",
         "CommonTypes"
-    ]
+    ],
+    "defaultDataSource": "Microsoft 365 Defender Event Collector"
 }

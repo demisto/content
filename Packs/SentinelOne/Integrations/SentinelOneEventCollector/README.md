@@ -1,6 +1,10 @@
 This integration fetches activities, threats, and alerts from SentinelOne.
 This integration was integrated and tested with API version 2.1 of SentinelOne.
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure SentinelOne Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.

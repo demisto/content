@@ -1,5 +1,9 @@
 Microsoft 365 Defender event collector integration for Cortex XSIAM.
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure Microsoft 365 Defender Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
