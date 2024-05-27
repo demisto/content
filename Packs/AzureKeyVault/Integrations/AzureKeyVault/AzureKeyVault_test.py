@@ -41,7 +41,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
