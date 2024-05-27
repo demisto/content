@@ -114,10 +114,25 @@ GROUPS_LIST_TEST_ARGS = [
     }  # All arguments
 ]
 
-
-GROUP_CREATE_TEST_ARGS = []
-GROUP_DELETE_TEST_ARGS = []
-GROUP_UPDATE_TEST_ARGS = []
+GROUP_CREATE_TEST_ARGS = [
+    {
+        CommandArguments.NAME: 'group1',
+    },
+    {
+        CommandArguments.NAME: 'group2',
+        CommandArguments.DESCRIPTION: 'description2'
+    }
+]
+GROUP_DELETE_TEST_ARGS = [
+    {CommandArguments.GROUP_NAME: 'group1'},
+    {CommandArguments.GROUP_NAME: 'group2', CommandArguments.FORCE: 'true'}
+]
+GROUP_UPDATE_TEST_ARGS = [
+    {
+        CommandArguments.GROUP_NAME: 'group1',
+        CommandArguments.DESCRIPTION: 'description1_updated'
+    }
+]
 USER_TO_GROUP_ADD_TEST_ARGS = []
 USER_TO_GROUP_REMOVE_TEST_ARGS = []
 USERS_LIST_TEST_ARGS = []
@@ -160,7 +175,8 @@ def test_derive_skip_and_limit_for_pagination_invalid_input(limit, page, page_si
         derive_skip_and_limit_for_pagination(limit, page, page_size)
 
 
-@pytest.mark.parametrize('expires_at_arg, expected_output', [("",""), ("2023-05-26T15:30:00" ,"2023-05-26T15:30:00.000000Z"), (None, None)])
+@pytest.mark.parametrize('expires_at_arg, expected_output',
+                         [("", ""), ("2023-05-26T15:30:00", "2023-05-26T15:30:00.000000Z"), (None, None)])
 def test_add_expires_at_param(expires_at_arg, expected_output):
     from ThalesCipherTrustManager import add_expires_at_param
     request_data = {}

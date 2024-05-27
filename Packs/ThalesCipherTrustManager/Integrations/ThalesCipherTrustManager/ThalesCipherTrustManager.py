@@ -173,12 +173,12 @@ GROUP_LIST_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, description
                                    description="Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client id will return groups that the client is not part of."),
                      ] + PAGINATION_INPUTS
 GROUP_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group.'),
-                       InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.'), ]
+                       InputArgument(name=CommandArguments.DESCRIPTION, description='Description of the group.'), ]
 GROUP_DELETE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, description='Name of the group'),
                        InputArgument(name=CommandArguments.FORCE,
                                      description='When set to true, groupmaps within this group will be deleted'), ]
-GROUP_UPDATE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True, description='Name of the group.'),
-                       InputArgument(name=CommandArguments.DESCRIPTION, description='description of the group.'), ]
+GROUP_UPDATE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True, description='Name of the group to update.'),
+                       InputArgument(name=CommandArguments.DESCRIPTION, description='New description of the group.'), ]
 USER_TO_GROUP_ADD_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True,
                                           description='Name of the group.By default it will be added to the Key Users Group.'),
                             InputArgument(name=CommandArguments.USER_ID, required=True,
@@ -637,6 +637,9 @@ USER_PASSWORD_CHANGE_OUTPUT = []
 
 ''' DESCRIPTIONS '''
 GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
+GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
+GROUP_DELETE_DESCRIPTION = 'Deletes a group given the group name.'
+GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group name.'
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
     'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
@@ -963,7 +966,7 @@ def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
 
 
 @metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUP_CREATE_INPUTS,
-                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_CREATE_OUTPUT, description=GROUP_CREATE_DESCRIPTION)
 def group_create_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(name=args.get(CommandArguments.NAME),
                                  description=args.get(CommandArguments.DESCRIPTION))
@@ -975,7 +978,7 @@ def group_create_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-group-delete', inputs_list=GROUP_DELETE_INPUTS)
+@metadata_collector.command(command_name='ciphertrust-group-delete', inputs_list=GROUP_DELETE_INPUTS,description= GROUP_DELETE_DESCRIPTION )
 def group_delete_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(force=args.get(CommandArguments.FORCE))
     client.delete_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)
@@ -985,7 +988,7 @@ def group_delete_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-group-update', inputs_list=GROUP_UPDATE_INPUTS,
-                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_UPDATE_OUTPUT, description=GROUP_UPDATE_DESCRIPTION)
 def group_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.update_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)

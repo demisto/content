@@ -1,1 +1,4 @@
 !ciphertrust-group-list group_name='test' page=0 page_size=1
+!ciphertrust-group-create group_name='test' description='this is a test group'
+!ciphertust-group-delete group_name='test' force='true'
+!ciphertrust-group-update group_name='test' description='this is a modified description'
