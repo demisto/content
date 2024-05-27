@@ -39,5 +39,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "Slack Event Collector"
 }

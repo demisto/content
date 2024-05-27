@@ -316,6 +316,11 @@
             "fromversion": "6.10.0"
         },
         {
+            "integrations": "Exabeam Data Lake",
+            "playbookID": "ExabeamDataLake-test",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
             "fromversion": "5.0.0",
@@ -873,7 +878,8 @@
         {
             "integrations": "AlienVault OTX v2",
             "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130
+            "memory_threshold": 130,
+            "timeout": 500
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -2097,7 +2103,8 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_names": "no_sync"
+            "instance_names": "no_sync",
+            "timeout": 600
         },
         {
             "playbookID": "test-domain-indicator",
@@ -3044,6 +3051,11 @@
         {
             "integrations": "Exabeam",
             "playbookID": "Exabeam - Test"
+        },
+        {
+            "integrations": "ExabeamSecOpsPlatform",
+            "playbookID": "ExabeamSecurityOperationsPlatform-test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "Cisco Spark",
