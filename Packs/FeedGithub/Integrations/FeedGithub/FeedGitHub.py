@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from TAXII2ApiModule import *
 import plyara
+import plyara.utils
 import tldextract
 
 CONTEXT_PREFIX = "GITHUB"
@@ -190,11 +191,11 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "author": metadata.get("author", ""),
                 "rulereference": metadata.get("reference", ""),
                 "sourcetimestamp": metadata.get("date", ""),
-                "id": metadata.get("id", ""),
+                "ruleid": metadata.get("id", ""),
                 "rulestrings": make_grid_layout(parsed_rule.get("strings", {})),
                 "condition": " ".join(parsed_rule["condition_terms"]),
                 "references": file_path,
-                "raw rule": f"``` \n {text_content} \n ```",
+                "rawrule": f'```\n {plyara.utils.rebuild_yara_rule(parsed_rule)} \n```',
             }
             indicator_obj = {
                 "value": value_,
