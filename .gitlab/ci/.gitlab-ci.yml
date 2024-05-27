@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: remove_pre_commit_and_validate_from_docker_auto_update
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: remove_pre_commit_and_validate_from_docker_auto_update
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
