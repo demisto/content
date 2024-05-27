@@ -42,12 +42,14 @@ jobs:
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        BRANCH_NAME: ${{ github.head_ref }}
       run: |
         source .venv/bin/activate
-        if [[ "$CI_COMMIT_BRANCH" =~ ^AUD-demisto/.* ]]; then
-          echo "In docker auto update branch, Pre Commit only changed files with relevant hooks."
+        if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
+          echo "In docker auto update branch, pre commit on docker_autoupdate mode."
           demisto-sdk pre-commit --mode=docker_autoupdate || PRE_COMMIT_SUCCESS=1
         else
+          echo "Not in docker auto update branch, pre commit on CI mode."
           demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
         fi
 
