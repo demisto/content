@@ -222,6 +222,7 @@ class PychromeEventHandler:
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
+
 # endregion
 
 
@@ -249,11 +250,10 @@ def count_running_chromes(port):
 
 
 def is_chrome_running_locally(port):
-
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
-            demisto.debug(f"Trying to connect to {browser_url=}, iteration {i+1}/{DEFAULT_RETRIES_COUNT}")
+            demisto.debug(f"Trying to connect to {browser_url=}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
@@ -266,10 +266,10 @@ def is_chrome_running_locally(port):
             exp_str = str(exp)
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
-                demisto.debug(f"Failed to connect to Chrome on prot {port} on iteration {i+1}. {connection_refused}")
+                demisto.debug(f"Failed to connect to Chrome on prot {port} on iteration {i + 1}. {connection_refused}")
             else:
                 demisto.debug(
-                    f"Failed to connect to Chrome on port {port} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
+                    f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}")
 
         # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
@@ -287,10 +287,11 @@ def read_info_file(filename):
         return None
 
 
-def write_info_file(filename, contents):
+def write_info_file(filename, contents, overwrite=False):
     demisto.info(f"Saving File '{filename}' with {contents}.")
-    with open(filename, 'w') as file:
-        file.write(f"{contents}")
+    mode = 'w' if overwrite else 'a'
+    with open(filename, mode) as file:
+        file.write(f"{contents}\n")
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
@@ -379,19 +380,132 @@ def terminate_chrome(browser):
     demisto.debug('terminate_chrome, Finish')
 
 
+def get_chrome_port():
+    first_chrome_port = FIRST_CHROME_PORT
+    ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
+    random.shuffle(ports_list)
+    demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
+    for chrome_port in ports_list:
+        len_running_chromes = count_running_chromes(chrome_port)
+        demisto.debug(f"Found {len_running_chromes=} on port {chrome_port} has ")
+
+        if len_running_chromes == 0:
+            # There's no Chrome listening on that port, Start a new Chrome there
+            demisto.debug(f"No Chrome found on port {chrome_port}")
+            demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
+            return chrome_port
+
+
+def setup_new_chrome_instance(chrome_port, instance_name, chrome_options):
+    new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
+    write_info_file(PORT_FILE_PATH, new_row, overwrite=True)
+    browser, chrome_port = start_chrome_headless(str(chrome_port))
+    if browser:
+        return browser, chrome_port
+    return None, None
+
+
+def get_port_to_instance_name_and_instance_name_to_chrome_option_and_chrome_options_to_port():
+    port_to_instance_name = {}
+    instance_name_to_chrome_option = {}
+    chrome_options_to_port = {}
+    info = read_info_file(PORT_FILE_PATH)
+    lines = info.splitlines()
+    for line in lines:
+        column = line.strip().split('\t')
+        port, instance_name, chrome_options = column
+        port_to_instance_name[port] = instance_name
+        instance_name_to_chrome_option[instance_name] = chrome_options
+        chrome_options_to_port[chrome_options] = port
+
+    return port_to_instance_name, instance_name_to_chrome_option, chrome_options_to_port
+
+
+def chrome_manager():
+    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+    chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
+
+    port_to_instance_name, instance_name_to_chrome_option, chrome_options_to_port = \
+        get_port_to_instance_name_and_instance_name_to_chrome_option_and_chrome_options_to_port()
+    info = read_info_file(PORT_FILE_PATH)
+    if info:
+        edited_info = [item.replace('\\t', '\t') for item in info]
+        ports_tuple, instances_name_tuple, chromes_options_tuple = zip(*[line.strip().split('\t') for line in edited_info])
+        ports = list(ports_tuple)
+        instances_name = list(instances_name_tuple)
+        chromes_options = list(chromes_options_tuple)
+    if not info or (chrome_options not in chromes_options and instance_name not in instances_name):
+        # case 1: file is empty, that means no chrome open on the machine
+        # or
+        # case 3: chrome_options not exist and integration instance not exist in the fileinfo = {list: 1} ['1234    instance_name2    chrome_options2']
+        # -> create new chrome
+        chrome_port = get_chrome_port()
+        browser, chrome_port = setup_new_chrome_instance(chrome_port, instance_name, chrome_options)
+        if browser:
+            return browser, chrome_port
+        demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
+        return None, None
+    elif chrome_options in chromes_options and instance_name not in instances_name:
+        # case 2: new instance with the same configuration as another instance
+        # -> create new chrome
+        chrome_port = get_chrome_port()
+        browser, chrome_port = setup_new_chrome_instance(chrome_port, instance_name, chrome_options)
+        if browser:
+            return browser, chrome_port
+        demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
+        return None, None
+    elif chrome_options not in chromes_options and instance_name in instances_name:
+        # case 4: instance updated before with different configuration
+        # should kill the chrome and create new one
+        chrome_port = port_to_instance_name.get(instance_name)
+        # TODO: get browser from port and terminate chrome
+        chrome_port = get_chrome_port()
+        browser, chrome_port = setup_new_chrome_instance(chrome_port, instance_name, chrome_options)
+        if browser:
+            return browser, chrome_port
+        demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
+        return None, None
+    elif instance_name in instances_name and chrome_options not in chromes_options:
+        # Case 5: The instance conf exists in the file and the chrome conf match to it
+        browser_options = instance_name_to_chrome_option.get(instance_name)
+        if browser_options == chrome_options:
+            port = chrome_options_to_port.get(chrome_options)
+            # TODO: get browser from port and return it
+        else:
+            # TODO: Think if this option possible
+            return None, None
+
+
 def ensure_chrome_running():  # pragma: no cover
 
     # Check if we have a file with the port.
     # If we have a file - Try to use it.
     # If there's no file, or we cannot use it - Find a free port
+
+    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+    chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
+
     browser = None
-    chrome_port = read_info_file(PORT_FILE_PATH)
-    if chrome_port:
-        browser = is_chrome_running_locally(chrome_port)
-        if browser:
-            return browser, chrome_port
-        else:
-            write_info_file(PORT_FILE_PATH, '')
+    info = read_info_file(PORT_FILE_PATH)
+    lines = info.splitlines()
+    if "\t" not in lines[0] and 1 <= len(lines[0]) <= 5:  # written in the file just port
+        chrome_port = lines[0]
+        if chrome_port:
+            browser = is_chrome_running_locally(chrome_port)
+            if browser:
+                new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
+                write_info_file(PORT_FILE_PATH, new_row, overwrite=True)
+                return browser, chrome_port
+            else:
+                write_info_file(PORT_FILE_PATH, '')
+    else:  # written port,instance_name,chrome_options lines
+        for line in lines:
+            chrome_port = line.split("\t")[0]
+            browser = is_chrome_running_locally(chrome_port)
+            if browser:
+                return browser, chrome_port
+            else:
+                write_info_file(PORT_FILE_PATH, '')
 
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
@@ -894,6 +1008,7 @@ def rasterize_command():  # pragma: no cover
             res.append(current_res)
 
             demisto.results(res)
+
 
 # endregion
 

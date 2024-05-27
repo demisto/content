@@ -9,11 +9,19 @@ import http.server
 import time
 import threading
 import pytest
+import csv
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 RETURN_ERROR_TARGET = 'rasterize.return_error'
+
+
+def util_load_tsv(path):
+    with open(path, encoding='utf-8') as f:
+        reader = csv.reader(f, delimiter='\t', quotechar='"')
+        return next(reader)
+
 
 
 def test_rasterize_email_image(caplog, capfd, mocker):
@@ -364,3 +372,47 @@ def test_get_output_filenames():
     assert get_list_item(file_names, 2, "FOO.png") == 'foo_03.png'
     assert get_list_item(file_names, 3, "FOO.png") == 'FOO.png'
     assert get_list_item(file_names, 4, "FOO.png") == 'FOO.png'
+
+
+def test_ports_file_is_not_exist_then_create_new_browser(mocker):
+    from rasterize import chrome_manager
+
+    mocker.patch.object(rasterize, 'get_port_to_instance_name_and_instance_name_to_chrome_option_and_chrome_options_to_port',
+                        return_value=[{}, {}, {}])
+    mocker.patch.object(rasterize, 'read_info_file', return_value=None)
+    mocker.patch.object(rasterize, 'setup_new_chrome_instance', return_value=["browser_object", "chrome_port"])
+    browser, chrome_port = chrome_manager()
+
+    assert browser == "browser_object"
+    assert chrome_port == "chrome_port"
+
+
+def test_chrome_options_not_in_chromes_options_and_instance_name_not_in_instances_name(mocker):
+    from rasterize import chrome_manager
+
+    mock_context = {
+        'context': {
+            'IntegrationInstance': "instance_name"
+        },
+        'params': {
+            'chrome_options': "chrome_options"
+        }
+    }
+
+    port = 1234
+    instance_name = "instance_name2"
+    chrome_options = "chrome_options2"
+    port_str = str(port)
+
+    mock_file_content = util_load_tsv("test_data/info.tsv")
+
+    mocker.patch.object(demisto, 'callingContext', mock_context)
+    mocker.patch.object(rasterize, 'get_port_to_instance_name_and_instance_name_to_chrome_option_and_chrome_options_to_port',
+                        return_value=[{port_str: instance_name}, {instance_name: chrome_options},
+                                      {chrome_options: port_str}])
+    mocker.patch.object(rasterize, 'read_info_file', return_value=mock_file_content)
+    mocker.patch.object(rasterize, 'setup_new_chrome_instance', return_value=["browser_object", "chrome_port"])
+    browser, chrome_port = chrome_manager()
+
+    assert browser == "browser_object"
+    assert chrome_port == "chrome_port"
