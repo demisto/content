@@ -5,7 +5,6 @@ from collections.abc import Iterable
 from urllib.parse import urljoin
 
 import requests
-PER_PAGE = 100  # value of `per_page` request parameter
 
 
 def main():
@@ -14,25 +13,21 @@ def main():
     parser.add_argument('-b', '--branch', help='The contrib branch')
     parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
     parser.add_argument('-u', '--username', help='The contrib user name')
-    parser.add_argument("-gt", "--github_token", help="The Github token")
     args = parser.parse_args()
 
     pr_number = args.pr_number
     username = args.username
     repo = args.contrib_repo
     branch = args.branch
-    github_token = args.github_token
 
-    packs_dir_names = get_files_from_github(
-        username, branch, pr_number, repo, github_token
-    )
+    packs_dir_names = get_files_from_github(username, branch, pr_number, repo)
     if packs_dir_names:
         print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
               f'{", Packs/".join(packs_dir_names)}')
 
 
-def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
+def get_pr_files(pr_number: str) -> Iterable[str]:
     """
     Get changed files names from a contribution pull request.
     Args:
@@ -41,13 +36,11 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
     Returns:
         A list of changed file names (under the Packs dir), if found.
     """
+
     page = 1
     while True:
-        response = requests.get(
-            f"https://api.github.com/repos/demisto/content/pulls/{pr_number}/files",
-            params={"page": str(page), "per_page": str(PER_PAGE)},
-            headers={"Authorization": f"Bearer {github_token}"},
-        )
+        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
+                                params={'page': str(page)})
         response.raise_for_status()
         files = response.json()
         if not files:
@@ -58,9 +51,7 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
         page += 1
 
 
-def get_files_from_github(
-    username: str, branch: str, pr_number: str, repo: str, github_token: str
-) -> list[str]:
+def get_files_from_github(username: str, branch: str, pr_number: str, repo: str) -> list[str]:
     """
     Write the changed files content repo
     Args:
@@ -75,16 +66,12 @@ def get_files_from_github(
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
-    for file_path in get_pr_files(pr_number, github_token):
+    for file_path in get_pr_files(pr_number):
         abs_file_path = os.path.join(content_path, file_path)
         abs_dir = os.path.dirname(abs_file_path)
         if not os.path.isdir(abs_dir):
             os.makedirs(abs_dir)
-        with open(abs_file_path, "wb") as changed_file, requests.get(
-            urljoin(base_url, file_path),
-            stream=True,
-            headers={"Authorization": f"Bearer {github_token}"},
-        ) as file_content:
+        with open(abs_file_path, 'wb') as changed_file, requests.get(urljoin(base_url, file_path), stream=True) as file_content:
             file_content.raise_for_status()
             for data in file_content.iter_content(chunk_size=chunk_size):
                 changed_file.write(data)

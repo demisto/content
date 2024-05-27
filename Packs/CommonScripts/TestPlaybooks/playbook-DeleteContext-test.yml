@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 417ccc9c-3ffd-4cb0-8d30-beff0b508135
+    taskid: 00c4f368-ee94-4c65-800a-4bd7e2b4ca02
     type: condition
     task:
-      id: 417ccc9c-3ffd-4cb0-8d30-beff0b508135
+      id: 00c4f368-ee94-4c65-800a-4bd7e2b4ca02
       version: -1
       name: Check if excluded key exists
       type: condition
@@ -129,14 +129,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isEqualNumber
           left:
             value:
               simple: key2.key2_1
             iscontext: true
           right:
             value:
-              simple: value2_1
+              simple: '"value2_1" '
       - - operator: isExists
           left:
             value:
@@ -689,7 +689,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,        
+          "x": -40,
           "y": 2005
         }
       }
@@ -717,4 +717,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.9.0
+fromversion: 6.10.0

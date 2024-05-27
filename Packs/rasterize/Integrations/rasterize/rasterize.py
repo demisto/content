@@ -208,6 +208,23 @@ class PychromeEventHandler:
             self.start_frame = frameId
             demisto.debug(f'Frame started loading: {frameId}')
 
+    def page_frame_stopped_loading(self, frameId):
+        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {frameId=}')
+        if self.start_frame == frameId:
+            try:
+                with self.screen_lock:
+                    try:
+                        self.tab.Page.stopLoading()
+                    except Exception as ex:
+                        demisto.info(f'Failed to stop tab loading due to {ex}')
+                        raise ex
+                    # Activate current tab
+                    activation_result = self.browser.activate_tab(self.tab.id)
+                    activation_result, operation_time = backoff(activation_result)
+                    self.tab_ready_event.set()
+            except pychrome.exceptions.PyChromeException as pce:
+                demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
+
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
         demisto.debug(f'PychromeEventHandler.network_data_received, {requestId=}')
         if requestId and not self.request_id:
@@ -418,6 +435,7 @@ def setup_tab_event(browser, tab):
     tab.Network.dataReceived = tab_event_handler.network_data_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
+    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
 
     return tab_event_handler, tab_ready_event
 
@@ -437,6 +455,13 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
             tab.Page.navigate(url=path)
+
+        success_flag = tab_ready_event.wait(navigation_timeout)
+
+        if not success_flag:
+            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
+            demisto.error(message)
+            return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")

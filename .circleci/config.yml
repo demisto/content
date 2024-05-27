@@ -53,7 +53,7 @@ parameters:
   node-orb-version:
     type: string
     default: "5.0.1" # disable-secrets-detection
-
+  
 references:
   environment: &environment
     environment:
@@ -69,9 +69,9 @@ references:
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
-
+  
   install_build_dependencies: &install_build_dependencies
-    python/install-packages:
+    python/install-packages: 
         pkg-manager: "poetry"
         args: "--with ci"
         cache-version: << pipeline.parameters.cache-version >>
@@ -300,7 +300,7 @@ references:
                 USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
                 $CONTRIB_REPO="content"
-                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO -gt $GITHUB_TOKEN
+                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO
 
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:

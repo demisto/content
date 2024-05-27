@@ -72,9 +72,8 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, proxy: bool,
                  verify: bool):
-        self.api_key = api_token
         headers = {
-            "Authorization": f"bearer {self.api_key}",
+            "Authorization": f"bearer {api_token}",
         }
         super().__init__(
             base_url=base_url,
@@ -230,19 +229,6 @@ class Client(BaseClient):
             'vm': vm,
             'playbook': playbook
         })
-
-        # When the sample is a file, send the api_key via the data request
-        if files:
-            demisto.debug(
-                "the sample id is a file, added the api_key to data request"
-            )
-            if self._headers:
-                self._headers.pop("Authorization")
-            payload = {
-                "api_key": self.api_key,
-                "classify": True
-            }
-
         return self._http_request("POST",
                                   urljoin(API_V2_PREFIX, "samples"),
                                   files=files,
@@ -1009,16 +995,6 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
 
     if "sample_id" not in args:
         command_results = upload_sample_command(client, args)
-        if not dict_safe_get(command_results.raw_response, ["analyzing"]):
-            return PollResult(
-                response=CommandResults(
-                    readable_output=(
-                        "The file has not been analyzed. Reason:"
-                        " The file type is not supported or the file is low risk "
-                    )
-                ),
-                continue_to_poll=False,
-            )
         sample_id = command_results.raw_response["id"]  # type: ignore[index]
         args["sample_id"] = sample_id
     else:

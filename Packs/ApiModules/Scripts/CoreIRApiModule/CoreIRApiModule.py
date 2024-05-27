@@ -2862,7 +2862,7 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     :return: XDR close-reason in snake_case format e.g. 'resolved_false_positive'.
     """
     # Initially setting the close reason according to the default mapping.
-    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
+    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'Other')
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")

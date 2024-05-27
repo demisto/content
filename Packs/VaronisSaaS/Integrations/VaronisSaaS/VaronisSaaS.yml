@@ -56,7 +56,7 @@ configuration:
   required: false
   type: 15
 - display: Varonis threat model name
-  additionalinfo: Pipe-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
+  additionalinfo: Comma-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
   hidden: false
   name: threat_model
   required: false
@@ -80,7 +80,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: List of requested threat models to retrieve (pipe-separated).
+      description: List of requested threat models to retrieve.
       isArray: true
       name: threat_model_name
       required: false
@@ -98,25 +98,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of requested alerts status (pipe-separated).
+      description: List of required alerts status.
       isArray: true
       name: alert_status
       required: false
       secret: false
     - default: false
-      description: List of requested alerts severity (pipe-separated).
+      description: List of required alerts severity.
       isArray: true
       name: alert_severity
       required: false
       secret: false
     - default: false
-      description: List of required alerts device name (pipe-separated).
+      description: List of required alerts device name.
       isArray: true
       name: device_name
       required: false
       secret: false
     - default: false
-      description: User domain name.
+      description: User domain name (cannot be provided without user_name).
       isArray: false
       name: user_name
       required: false
@@ -181,13 +181,12 @@ script:
     - contextPath: Varonis.Alert.CloseReason.Name
       description: |-
         Reason the alert was closed. Options are:
-        - Other
-        - Benign activity
-        - True positive
-        - Environment misconfiguration
-        - Alert recently customized
-        - Inaccurate alert logic
-        - Authorized activity.
+        - Resolved
+        - Misconfiguration
+        - Threat model disabled or deleted
+        - Account misclassification
+        - Legitimate activity
+        - Other.
       type: String
     - contextPath: Varonis.Alert.Location.BlacklistedLocation
       description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred.
@@ -257,7 +256,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Requested alerts (pipe-separated).
+      description: Requested alerts.
       isArray: true
       name: alert_id
       required: true
@@ -274,7 +273,7 @@ script:
     name: varonis-alert-add-note
   - arguments:
     - default: false
-      description: Requested alerts (pipe-separated).
+      description: Requested alerts.
       isArray: true
       name: alert_id
       required: true
@@ -312,13 +311,12 @@ script:
       default: false
       description: The reason the alert was closed.
       predefined:
+      - Resolved
+      - Misconfiguration
+      - Threat model disabled or deleted
+      - Account misclassification
+      - Legitimate activity
       - Other
-      - Benign activity
-      - True positive
-      - Environment misconfiguration
-      - Alert recently customized
-      - Inaccurate alert logic
-      - Authorized activity
       isArray: false
       name: close_reason
       required: true
@@ -335,7 +333,7 @@ script:
     name: varonis-close-alert
   - arguments:
     - default: false
-      description: List of alert IDs (pipe-separated).
+      description: List of alert IDs.
       isArray: true
       name: alert_id
       required: true
@@ -359,7 +357,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Extra fields (pipe-separated).
+      description: Extra fields.
       isArray: false
       name: extra_fields
       required: false
@@ -494,11 +492,59 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of requested threat model names (pipe-separated and wildcard supported).
+      description: List of requested threat model ids.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model names.
       isArray: true
       name: name
       required: false
       secret: false
+    - default: false
+      description: List of requested threat model categories.
+      isArray: true
+      name: category
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Exfiltration'
+      - 'Reconnaissance'
+      - 'Intrusion'
+      - 'Privilege Escalation'
+      - 'Lateral movement'
+      - 'Exploitation'
+      - 'Obfuscation (anti-forensics)'
+      - 'Denial of Service'
+      - 'Other'
+    - default: false
+      description: List of requested threat model severities.
+      isArray: true
+      name: severity
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Emergency'
+      - 'Alert'
+      - 'Critical'
+      - 'Error'
+      - 'Warning'
+      - 'Notice'
+      - 'Informational'
+    - default: false
+      description: List of requested threat model sources.
+      isArray: true
+      name: source
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Predefined'
+      - 'User-defined'
     deprecated: false
     description: Get Varonis threat models.
     execution: false
@@ -508,6 +554,15 @@ script:
       type: String
     - contextPath: Name
       description: Name of the threat model.
+      type: String
+    - contextPath: Category
+      description: Category of the threat model.
+      type: String
+    - contextPath: Severity
+      description: Severity of the threat model.
+      type: String
+    - contextPath: Source
+      description: Predefined/User-defined.
       type: String
     name: varonis-get-threat-models
   dockerimage: demisto/python3:3.10.14.91134

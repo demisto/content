@@ -240,9 +240,6 @@ tasks:
       username:
         complex:
           root: inputs.username
-      sourceIP:
-        complex:
-          root: inputs.sourceIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -305,9 +302,6 @@ tasks:
       username:
         complex:
           root: inputs.username
-      sourceIP:
-        complex:
-          root: inputs.sourceIP
     separatecontext: false
     continueonerrortype: ""
     loop:
