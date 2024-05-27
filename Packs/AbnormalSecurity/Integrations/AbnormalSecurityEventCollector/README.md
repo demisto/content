@@ -1,6 +1,10 @@
 Abnormal Security Event Collector integration for XSIAM.
 This integration was integrated and tested with version 01 of Abnormal Security Event Collector
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure Abnormal Security Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
