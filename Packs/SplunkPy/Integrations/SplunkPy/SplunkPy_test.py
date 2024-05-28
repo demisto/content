@@ -994,7 +994,7 @@ def test_reset_enriching_fetch_mechanism(mocker):
 def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
                                          output):
     """
-    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
+    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
      the data gathered so far.
 
     Given:
@@ -1100,6 +1100,7 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     assert value == expected_value
 
 
+# TODO: add scenarios of query name.
 @pytest.mark.parametrize('notable_data, search, raw, expected_search', [
     ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
     ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
@@ -1150,6 +1151,196 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
     - Return the expected result
     """
     assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
+    
+@pytest.mark.parametrize('enrichments, expected_result', [
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1'),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='3')], 3),
+     ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1'),
+      splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 1),
+      ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1'),
+      splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 0)
+])
+def test_drilldown_searches_counter(enrichments, expected_result):
+    """
+     Tests the drilldown searches enrichment counter.
+
+    Given:
+    - A Notable with 3 drilldown enrichments.
+    - A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+    - A Notable with 2 asset enrichments and 1 identity enrichment.
+
+    When:
+    - drilldown_searches_counter function is called
+
+    Then:
+    - Return the expected result - number of drilldown enrichments.
+    """
+    notable = splunk.Notable({},notable_id='id', enrichments=enrichments)
+    assert notable.drilldown_searches_counter() == expected_result
+    
+    
+
+@pytest.mark.parametrize('enrichments, expected_data', [
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name2',query_search='query_search2', data=[{'result1':'c'}, {'result2': 'd'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='3', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name3',query_search='query_search3', data=[{'result1':'e'}, {'result2': 'f'}])],
+     {'query_name1': {'query_search': 'query_search1', 'query_results': [{'result1':'a'}, {'result2': 'b'}]},
+      'query_name2': {'query_search': 'query_search2', 'query_results': [{'result1':'c'}, {'result2': 'd'}]},
+      'query_name3': {'query_search': 'query_search3', 'query_results': [{'result1':'e'}, {'result2': 'f'}]}}
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name2',query_search='query_search2', data=[{'result1':'c'}, {'result2': 'd'}])],
+     {'query_name1': {'query_search': 'query_search1', 'query_results': [{'result1':'a'}, {'result2': 'b'}]},
+      'query_name2': {'query_search': 'query_search2', 'query_results': [{'result1':'c'}, {'result2': 'd'}]}}
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1':'a'}, {'result2': 'b'}])],
+    [{'result1':'a'}, {'result2': 'b'}]
+    ),
+    ([], None)
+])
+def test_to_incident_notable_enrichments_data(enrichments, expected_data):
+    """
+     Tests the logic of the Notable.to_incident() function, regarding the results data of multiple drilldown enrichments.
+
+    Given:
+        1. A Notable with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment.
+        2. A Notable with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+        3. A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+        4. A Notable without drilldown enrichments, 1 asset enrichments and 1 identity enrichment.
+
+    When:
+    - Notable.to_incident() function is called
+
+    Then:
+    - Verify that the data of the notable includes the expected enrichements result as follow:
+        1. A dictionary with the results of the 3 drilldown searches by query names.
+        2. A dictionary with the results of the 2 drilldown searches by query names.
+        3. A list of the drilldown searches results (backwards competability).
+        4. No 'Drilldown' key in the notables data.
+    
+    """
+    notable = splunk.Notable({},notable_id='id', enrichments=enrichments)
+    enrichments_to_add = [
+        splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='111', status=splunk.Enrichment.SUCCESSFUL,
+                          data=[{'result1':'a'}, {'result2': 'b'}]),
+        splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='222', status=splunk.Enrichment.FAILED,
+                          data=[{'result1':'a'}, {'result2': 'b'}])
+    ]
+    notable.enrichments.extend(enrichments_to_add)
+    
+    service = Service('DONE')
+    mapper = splunk.UserMappingObject(service, False)
+    notable.to_incident(mapper, 'comment_tag_to_splunk', 'comment_tag_from_splunk')
+    
+    assert notable.data.get(splunk.ASSET_ENRICHMENT) == [{'result1': 'a'}, {'result2': 'b'}]
+    assert notable.data.get(splunk.IDENTITY_ENRICHMENT) == [{'result1': 'a'}, {'result2': 'b'}]
+    assert notable.data.get(splunk.DRILLDOWN_ENRICHMENT) == expected_data
+    
+    
+@pytest.mark.parametrize('enrichments, enrichment_type, expected_stauts_result', [
+    ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.ASSET_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.ASSET_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.IDENTITY_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.IDENTITY_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1':'a'}, {'result2': 'b'}])],
+     splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1':'a'}, {'result2': 'b'}])],
+     splunk.DRILLDOWN_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+      ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+       ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1':'a'}, {'result2': 'b'}]),
+       splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1':'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     )
+])
+def test_to_incident_notable_enrichments_status(enrichments, enrichment_type, expected_stauts_result):
+    """
+     Tests the logic of the Notable.to_incident() function, regarding the statuses of enrichments.
+
+    Given:
+        1. A Notable with 1 successful Asset enrichment.
+        2. A Notable with 1 failed Asset enrichment.
+        3. A Notable with 1 successful Identity enrichment.
+        4. A Notable with 1 failed Identity enrichment.
+        5. A Notable with 1 successful Drilldown enrichment.
+        6. A Notable with 1 failed Drilldown enrichment.
+        7. A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful).
+        8. A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful).
+        9. A Notable with 2 Drilldown enrichments [failed, failed].
+        10. A Notable with 2 Drilldown enrichments [successful, successful].
+        11. A Notable with 3 Drilldown enrichments [failed, successful, failed].
+
+
+    When:
+    - Notable.to_incident() function is called
+
+    Then:
+    - Verify that the status of the notable enrichments is as follow:
+        1. Asset Enrichment status is: successful_asset_enrichment = True.
+        2. Asset Enrichment status is: successful_asset_enrichment = False.
+        3. Identity Enrichment status is: successful_identity_enrichment = True.
+        4. Identity Enrichment status is: successful_identity_enrichment = False.
+        
+        # In Drilldown enrichment - if at least one drilldown enrichment is successful the status is Success.
+        5. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        6. Drilldown Enrichment status is: successful_drilldown_enrichment = False.
+        7. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        8. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        9. Drilldown Enrichment status is: successful_drilldown_enrichment = False.
+        10. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        11. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+    
+    """
+    notable = splunk.Notable({},notable_id='id', enrichments=enrichments)
+    service = Service('DONE')
+    mapper = splunk.UserMappingObject(service, False)
+    notable.to_incident(mapper, 'comment_tag_to_splunk', 'comment_tag_from_splunk')
+    
+    assert notable.data[splunk.ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[enrichment_type]] == expected_stauts_result
+
+
 
 
 """ ========== Mirroring Mechanism Tests ========== """
