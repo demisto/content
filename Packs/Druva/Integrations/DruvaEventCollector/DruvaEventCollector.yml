@@ -32,7 +32,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to true in order to create events, otherwise the command will only display them.
+      description: Set this argument to true in order to create XSIAM events, otherwise the command will only display them.
       name: should_push_events
       predefined:
         - 'true'
