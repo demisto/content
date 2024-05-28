@@ -1,5 +1,9 @@
 Amazon Web Services Guard Duty Service Event Collector integration for Cortex XSIAM.
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure AWS - GuardDuty Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
