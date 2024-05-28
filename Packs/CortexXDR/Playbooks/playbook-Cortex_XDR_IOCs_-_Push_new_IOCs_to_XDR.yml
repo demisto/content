@@ -536,6 +536,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "45"
   "31":
     id: "31"
     taskid: f515a7d6-8aef-4727-804b-bc26cee421a3
@@ -1083,7 +1086,7 @@ inputs:
   playbookInputQuery:
 - key: query
   value:
-    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active and -tags:xdr_pushed and -tags:xdr_not_processed
+    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active and (-tags:xdr_pushed or -tags:xdr_not_processed)
   required: true
   description: ""
   playbookInputQuery:
