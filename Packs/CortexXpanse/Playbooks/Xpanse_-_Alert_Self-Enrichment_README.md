@@ -1,8 +1,12 @@
-This playbook handles ASM alerts by enriching alert information with Xpanse service and asset details.
+Enrichment on the alert itself using Cortex Xpanse APIs.
 
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
+
+### Sub-playbooks
+
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -10,22 +14,19 @@ Cortex Xpanse
 
 ### Scripts
 
-GridFieldSetup
+* GridFieldSetup
+* Set
 
 ### Commands
 
-* asm-list-external-service
-* asm-list-asset-internet-exposure
+* asm-get-asset-internet-exposure
 * asm-get-external-service
+* extractIndicators
 
 ## Playbook Inputs
 
 ---
-
-| **Name**                        | **Description**                                                                                                                                                                                                                                                                      | **Default Value** | **Required** |
-|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  | --- |
-| Provider                        | The externally detected provider for the alert.                                                                                                                                                                                                                                      | ${incident.xpanseprovider} | Required |
-| IP                              | The external IP address associated with the alert.                                                                                                                                                                                                                                   | ${incident.xpanseip} | Required |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
