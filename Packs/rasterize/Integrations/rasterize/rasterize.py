@@ -298,7 +298,7 @@ def write_info_file(filename, contents, overwrite=False):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
-def write_to_tsv_file(filename, contents):
+def write_into_tsv_file(filename, contents):  # TODO: make sure its appending and not overwrite
     demisto.info(f"Saving File '{filename}' with {contents}.")
     with open(filename) as file:
         tsv_writer = csv.writer(file, delimiter='\t')
@@ -338,6 +338,7 @@ def get_chrome_options(default_options, user_options):
     return options
 
 
+# TODO: check this function, shoule avoid write to port file again..
 def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
     global CHROME_PROCESS
     try:
@@ -438,6 +439,19 @@ def generate_new_chrome_instance(instance_name, chrome_options):
         return browser, chrome_port
     demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
     return None, None
+
+
+# TODO: write function that check's if exist port.txt file, if yes take the port and search it in the tsv file
+# TODO: if its exist there just delete the port.txt file otherwise add it with the verbose info and delete the file
+
+def handle_port_file_if_exist(instance_name, chrome_options, port_to_instance_name):
+    port = read_info_file(PORT_FILE_PATH)
+    if port:
+        instance_name_from_tsv_file = port_to_instance_name.get(port)
+        if not instance_name_from_tsv_file:
+            new_row = f"{port}\t{instance_name}\t{chrome_options}"
+            write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
+        os.remove(PORT_FILE_PATH)
 
 
 def chrome_manager():
@@ -710,7 +724,6 @@ def perform_rasterize(path: str | list[str],
     :param height: window height
     """
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
-    # browser, chrome_port = ensure_chrome_running() TODO: remove this line
     browser, chrome_port = chrome_manager()
     if browser:
         support_multithreading()
