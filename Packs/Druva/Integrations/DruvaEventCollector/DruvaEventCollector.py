@@ -24,7 +24,7 @@ class Client(BaseClient):
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {base_64_string}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
         response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
-        access_token = response_json.get('access_token')
+        access_token = response_json['access_token']
         headers = {'Authorization': f'Bearer {access_token}'}
         self._headers = headers
 
