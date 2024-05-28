@@ -457,11 +457,20 @@ def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> C
         readable_output=f'Comment was added successfully to object with id: {object_id}'
     )
 
+
 def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
     res = client.http_get(f'/comment/object/{object_id}')
-    outputs = convert_keys_to_pascal([res], {'id': 'ID'})
-    outputs = [{k: v} for k, v in outputs.items() if k != 'Actor']
+    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    outputs = [{k: v for k, v in output.items() if k != 'Actor'} for output in outputs]
+    hr_headers = ['ID', 'Comment']
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Comment',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Comments', outputs, headers=hr_headers)
+    )
 
 
 ''' MAIN FUNCTION '''
