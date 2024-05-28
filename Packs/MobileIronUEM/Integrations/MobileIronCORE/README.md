@@ -2,7 +2,7 @@
 
 This integration was created and tested with version *11.0.0* of MobileIronCORE
 
-This is the default integration for this content pack when configured by the Data Onboarder in XSIAM.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## MobileIron Core - Getting Started
 

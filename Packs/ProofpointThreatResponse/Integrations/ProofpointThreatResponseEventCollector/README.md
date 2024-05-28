@@ -1,6 +1,6 @@
 Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 
-This is the default integration for this content pack when configured by the Data Onboarder in XSIAM.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure Proofpoint Threat Response Event Collector on Cortex XSIAM
 

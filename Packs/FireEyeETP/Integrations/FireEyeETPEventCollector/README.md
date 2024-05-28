@@ -1,6 +1,6 @@
 Use this integration to fetch email security incidents from FireEye ETP as XSIAM events.
 
-This is the default integration for this content pack when configured by the Data Onboarder in XSIAM.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure FireEye ETP Event Collector on Cortex XSOAR
 

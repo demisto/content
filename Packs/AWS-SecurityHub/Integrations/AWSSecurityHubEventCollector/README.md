@@ -1,6 +1,6 @@
 An XSIAM event collector for AWS Security Hub.
 
-This is the default integration for this content pack when configured by the Data Onboarder in XSIAM.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure AWS Security Hub Event Collector on Cortex XSIAM
 
