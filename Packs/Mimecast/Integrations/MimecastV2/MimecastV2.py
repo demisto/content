@@ -1049,7 +1049,6 @@ def create_block_sender_policy_command():
     context = {}
     policy_args = demisto.args()
     policy_obj, option = get_arguments_for_policy_command(policy_args)
-    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
     policy_list = create_or_update_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
@@ -1154,7 +1153,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
     return policy_obj, option, policy_id
 
 
-def update_policy():
+def update_block_sender_policy_command():
     """
           Update policy according to policy ID
      """
@@ -1166,7 +1165,6 @@ def update_policy():
     if not policy_id:
         raise Exception("You need to enter policy ID")
     policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
-    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
     response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
     policy = response.get('policy')
     title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
@@ -1228,6 +1226,10 @@ def update_policy():
 
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type='blockedsenders'):
     # Setup required variables
+
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy = {k: v for k, v in policy.items() if v is not None and v != ""}
+
     api_endpoint = '/api/policy/blockedsenders/create-policy'
     payload = {
         'data': [{
@@ -3122,10 +3124,7 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
 
-    data = {}
-
-    if query:
-        data["query"] = query
+    data = assign_params(query=query)
 
     result_list = request_with_pagination(
         api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
@@ -3146,13 +3145,7 @@ def get_search_logs_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    data = {}
-    if query:
-        data['query'] = query
-    if start:
-        data['start'] = start
-    if end:
-        data['end'] = end
+    data = assign_params(query=query, start=start, end=end)
 
     api_endpoint = "/api/archive/get-archive-search-logs"
     result_list, _ = request_with_pagination(
@@ -3173,13 +3166,7 @@ def get_view_logs_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    data = {}
-    if query:
-        data['query'] = query
-    if start:
-        data['start'] = start
-    if end:
-        data['end'] = end
+    data = assign_params(query=query, start=start, end=end)
 
     response = request_with_pagination(
         "/api/archive/get-view-logs", [data], limit=limit, page=page, page_size=page_size  # type: ignore
@@ -3202,17 +3189,8 @@ def list_account_command(args: dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    data = {}
-    if account_name:
-        data['accountName'] = account_name
-    if account_code:
-        data['accountCode'] = account_code
-    if admin_email:
-        data['adminEmail'] = admin_email
-    if region:
-        data['region'] = region
-    if user_count:
-        data['userCount'] = user_count
+    data = assign_params(accountName=account_name, accountCode=account_code, adminEmail=admin_email, region=region,
+                         userCount=user_count)
 
     response = request_with_pagination(
         "/api/account/get-account", [data], limit=limit, page=page, page_size=page_size  # type: ignore
@@ -3274,61 +3252,18 @@ def list_policies_command(args: dict) -> CommandResults:
 
 
 def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
-    option = args.get('option')
-    bidirectional = args.get('bidirectional')
-    comment = args.get('comment')
-    spf_domain = args.get('spf_domain')
-    description = args.get('description')
-    enabled = args['enabled']
-    enforced = args['enforced']
+    policy_obj, option = get_arguments_for_policy_command(args)
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+
     from_attribute_id = args.get('from_attribute_id')
     from_attribute_name = args.get('from_attribute_name')
     from_attribute_value = args.get('from_attribute_value')
-    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
-    from_eternal = argToBoolean(args['from_eternal'])
-    from_part = args.get('from_part')
-    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
-    to_eternal = argToBoolean(args['to_eternal'])
-    override = argToBoolean(args.get('override')) if args.get('override') else None
-    from_type = args.get('from_type')
-    from_value = args.get('from_value')
-    to_type = args.get('to_type')
-    to_value = args.get('to_value')
 
     data: dict[str, Any] = {
         "option": option,
-        "policy": {
-            "description": description,
-            "fromType": from_type,
-            "toType": to_type,
-        }
+        "policy": policy_obj
     }
-    if from_value:
-        data['policy']['fromValue'] = from_value
-    if to_value:
-        data['policy']['toValue'] = to_value
-    if bidirectional:
-        data['policy']['bidirectional'] = bidirectional
-    if comment:
-        data['policy']['comment'] = comment
-    if enabled:
-        data['policy']['enabled'] = enabled
-    if enforced:
-        data['policy']['enforced'] = enforced
-    if from_date:
-        data['policy']['fromDate'] = from_date
-    if from_eternal:
-        data['policy']['fromEternal'] = from_eternal
-    if from_part:
-        data['policy']['fromPart'] = from_part
-    if override:
-        data['policy']['override'] = override
-    if to_date:
-        data['policy']['toDate'] = to_date
-    if to_eternal:
-        data['policy']['toEternal'] = to_eternal
-    if spf_domain:
-        data['policy']['conditions'] = {'spfDomains': [spf_domain]}
 
     from_attribute_data = {}
     if from_attribute_id:
@@ -3367,35 +3302,19 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
     from_part = args.get('from_part')
     to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
     to_eternal = argToBoolean(args.get('to_eternal'))
-    if args.get('bidirectional'):
-        bidirectional = argToBoolean(args.get('bidirectional'))
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
     option = args.get('option')
+
+    policy = assign_params(description=description, enabled=enabled, fromDate=from_date, fromEternal=from_eternal,
+                           fromPart=from_part, toDate=to_date, toEternal=to_eternal, bidirectional=bidirectional)
 
     data: dict[str, Any] = {
         'id': id,
         'option': option,
-        'policy': {}
+        'policy': policy
     }
 
-    if description:
-        data['policy']['description'] = description
-    if enabled:
-        data['policy']['enabled'] = enabled
-    if from_date:
-        data['policy']['fromDate'] = from_date
-    if from_eternal:
-        data['policy']['fromEternal'] = from_eternal
-    if from_part:
-        data['policy']['fromPart'] = from_part
-    if to_date:
-        data['policy']['toDate'] = to_date
-    if to_eternal:
-        data['policy']['toEternal'] = to_eternal
-    if args.get('bidirectional'):
-        data['policy']['toEternal'] = bidirectional
-
     payload = {"data": [data]}
-
     api_endpoint = '/api/policy/antispoofing-bypass/update-policy'
     response = http_request('POST', api_endpoint, payload)
 
@@ -3411,6 +3330,7 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
 
 def create_address_alteration_policy_command(args: dict) -> CommandResults:
     policy_obj, _ = get_arguments_for_policy_command(args)
+    # Using dictionary comprehension to filter out keys with None or empty string values
     policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
     folder_id = args.get('folder_id')
 
@@ -3435,44 +3355,14 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
 
 def update_address_alteration_policy_command(args: dict) -> CommandResults:
     id = args.get('policy_id')
-    policy_description = args.get('policy_description')
-    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
-    comment = args.get('comment')
-    conditions = args.get('conditions')
-    enabled = argToBoolean(args.get('enabled'))  # default value
-    enforced = argToBoolean(args.get('enforced'))  # default value
-    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
-    from_eternal = argToBoolean(args.get('from_eternal'))  # default value
-    from_part = args.get('from_part')
-    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
-    to_eternal = argToBoolean(args.get('to_eternal'))  # default value
-    override = args.get('override')
+    policy_obj, _ = get_arguments_for_policy_command(args)
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
 
     data: dict[str, Any] = {
         'id': id,
-        'policy': {
-            'description': policy_description,
-            'enabled': enabled,
-            'enforced': enforced,
-            'fromEternal': from_eternal,
-            'toEternal': to_eternal,
-        }
+        'policy': policy_obj
     }
-
-    if comment:
-        data['comment'] = comment
-    if conditions:
-        data['policy']['conditions'] = {'sourceIPs': [conditions]}
-    if from_date:
-        data['fromDate'] = from_date
-    if from_part:
-        data['fromPart'] = from_part
-    if to_date:
-        data['toDate'] = to_date
-    if override:
-        data['override'] = override
-    if bidirectional:
-        data['bidirectional'] = bidirectional
 
     payload = {'data': [data]}
     api_endpoint = '/api/policy/address-alteration/update-policy'
@@ -3516,7 +3406,7 @@ def main():
         elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
             demisto.results(create_block_sender_policy_command())
         elif command == 'mimecast-update-policy' or command == 'mimecast-update-block-sender-policy':
-            demisto.results(update_policy())
+            demisto.results(update_block_sender_policy_command())
         elif command == 'mimecast-delete-policy':
             demisto.results(delete_policy())
         elif command == 'mimecast-manage-sender':

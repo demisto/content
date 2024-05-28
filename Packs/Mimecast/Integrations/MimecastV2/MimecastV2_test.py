@@ -122,7 +122,7 @@ def test_update_policy(mocker):
     mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
 
-    res = MimecastV2.update_policy()
+    res = MimecastV2.update_block_sender_policy_command()
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
 
@@ -131,7 +131,7 @@ def test_update_policy(mocker):
                         return_value=set_empty_value_args_res_list_all)
     mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    res = MimecastV2.update_policy()
+    res = MimecastV2.update_block_sender_policy_command()
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
     assert res['Contents']['Sender']['Domain'] == 'gmail.com'
