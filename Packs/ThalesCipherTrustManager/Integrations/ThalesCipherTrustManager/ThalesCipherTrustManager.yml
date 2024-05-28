@@ -288,7 +288,7 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: Create a new group. The group name is required.
     name: ciphertrust-group-create
     arguments:
     - name: name
@@ -299,13 +299,37 @@ script:
       default: false
     - name: description
       isArray: false
-      description: description of the group.
+      description: Description of the group.
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
   - deprecated: false
-    description: ''
+    description: Deletes a group given the group name.
     name: ciphertrust-group-delete
     arguments:
     - name: name
@@ -406,22 +430,46 @@ script:
       description: It returns the total user count associated with the group
       type: Number
   - deprecated: false
-    description: ''
+    description: Update the properties of a group given the group name.
     name: ciphertrust-group-update
     arguments:
     - name: group_name
       isArray: false
-      description: Name of the group.
+      description: Name of the group to update.
       required: true
       secret: false
       default: false
     - name: description
       isArray: false
-      description: description of the group.
+      description: New description of the group.
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
   - deprecated: false
     description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
     name: ciphertrust-local-ca-create
@@ -826,35 +874,60 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
     name: ciphertrust-user-to-group-add
     arguments:
     - name: group_name
       isArray: false
-      description: Name of the group.By default it will be added to the Key Users Group.
+      description: Name of the group. By default it will be added to the Key Users Group.
       required: true
       secret: false
       default: false
+      defaultValue: Key Users
     - name: user_id
       isArray: false
-      description: User id. Can be retrieved by using the command ciphertrust-users-list
+      description: The user_id of the user. Can be retrieved by using the command ciphertrust-users-list
       required: true
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
   - deprecated: false
-    description: ''
+    description: Removes a user from a group.
     name: ciphertrust-user-to-group-remove
     arguments:
     - name: group_name
       isArray: false
-      description: Name of the group.By default it will be added to the Key Users Group.
+      description: Name of the group.
       required: true
       secret: false
       default: false
     - name: user_id
       isArray: false
-      description: User id. Can be retrieved by using the command ciphertrust-users-list
+      description: The user_id of the user. Can be retrieved by using the command ciphertrust-users-list
       required: true
       secret: false
       default: false

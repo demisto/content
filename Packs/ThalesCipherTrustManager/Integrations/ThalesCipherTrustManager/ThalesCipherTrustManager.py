@@ -6,6 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import datetime
+
 metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
                                           description="Manage Secrets and Protect Sensitive Data through HashiCorp Vault.",
                                           display="Thales CipherTrust Manager",
@@ -115,9 +116,11 @@ class CommandArguments:
     EXTERNAL_CA_ID = 'external_ca_id'
     SERIAL_NUMBER = 'serial_number'
 
+
 class BooleanStr(enum.Enum):
     TRUE = 'true'
     FALSE = 'false'
+
 
 class AllowedAuthMethods(enum.Enum):
     PASSWORD = "password"
@@ -180,13 +183,16 @@ GROUP_DELETE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, 
 GROUP_UPDATE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True, description='Name of the group to update.'),
                        InputArgument(name=CommandArguments.DESCRIPTION, description='New description of the group.'), ]
 USER_TO_GROUP_ADD_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True,
-                                          description='Name of the group.By default it will be added to the Key Users Group.'),
+                                          default='Key Users',
+                                          description='Name of the group. By default it will be added to the Key Users Group.'),
                             InputArgument(name=CommandArguments.USER_ID, required=True,
-                                          description='User id. Can be retrieved by using the command ciphertrust-users-list'), ]
+                                          description='The user_id of the user. Can be retrieved by using the command '
+                                                      'ciphertrust-users-list'), ]
 USER_TO_GROUP_REMOVE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True,
-                                             description='Name of the group.By default it will be added to the Key Users Group.'),
+                                             description='Name of the group.'),
                                InputArgument(name=CommandArguments.USER_ID, required=True,
-                                             description='User id. Can be retrieved by using the command ciphertrust-users-list'), ]
+                                             description='The user_id of the user. Can be retrieved by using the command '
+                                                      'ciphertrust-users-list'), ]
 USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
                      InputArgument(name=CommandArguments.USER_ID,
                                    description='If provided, get the user with the specified id'),
@@ -221,7 +227,7 @@ USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User
                      InputArgument(name=CommandArguments.PASSWORD_POLICY,
                                    description='Filter based on assigned password policy'),
                      InputArgument(name=CommandArguments.RETURN_GROUPS,
-                                      input_type=BooleanStr,
+                                   input_type=BooleanStr,
                                    description='If set to ‘true’ it will return the group’s name in which user is associated, Boolean'),
                      ] + PAGINATION_INPUTS
 USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
@@ -478,7 +484,8 @@ GROUP_LIST_OUTPUT = [
     #todo: dynamic : messages arrayAn optional list of warning messages, usually used to note when unsupported query parameters were ignored. items {"type":"string"}
     OutputArgument(name="resources.name", output_type=str, description="name of the group"),
     OutputArgument(name="resources.created_at", output_type=datetime.datetime, description="The time the group was created."),
-    OutputArgument(name="resources.updated_at", output_type=datetime.datetime, description="The time the group was last updated."),
+    OutputArgument(name="resources.updated_at", output_type=datetime.datetime,
+                   description="The time the group was last updated."),
     OutputArgument(name="resources.user_metadata", output_type=dict,
                    description="A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences."),
     OutputArgument(name="resources.app_metadata", output_type=dict,
@@ -558,7 +565,8 @@ USERS_LIST_OUTPUT = [
     OutputArgument(name="resources.logins_count", output_type=int, description="Count for the number of logins"),
     OutputArgument(name="resources.last_login", output_type=datetime.datetime, description="Timestamp of last login"),
     OutputArgument(name="resources.created_at", output_type=datetime.datetime, description="Timestamp of when user was created"),
-    OutputArgument(name="resources.updated_at", output_type=datetime.datetime, description="Timestamp of last update of the user"),
+    OutputArgument(name="resources.updated_at", output_type=datetime.datetime,
+                   description="Timestamp of last update of the user"),
     OutputArgument(name="resources.allowed_auth_methods", output_type=list,
                    description="List of login authentication methods allowed to the user."),
     OutputArgument(name="resources.expires_at", output_type=datetime.datetime,
@@ -567,11 +575,13 @@ USERS_LIST_OUTPUT = [
                    description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
     OutputArgument(name="resources.allowed_client_types", output_type=list,
                    description="List of client types allowed to the user."),
-    OutputArgument(name="resources.last_failed_login_at", output_type=datetime.datetime, description="Timestamp of last failed login"),
+    OutputArgument(name="resources.last_failed_login_at", output_type=datetime.datetime,
+                   description="Timestamp of last failed login"),
     OutputArgument(name="resources.failed_logins_count", output_type=int, description="Count of failed logins"),
     OutputArgument(name="resources.failed_logins_initial_attempt_at", output_type=datetime.datetime,
                    description="Timestamp of first failed login"),
-    OutputArgument(name="resources.account_lockout_at", output_type=datetime.datetime, description="Timestamp of account lockout"),
+    OutputArgument(name="resources.account_lockout_at", output_type=datetime.datetime,
+                   description="Timestamp of account lockout"),
 ]
 
 USER_CREATE_OUTPUT = [
@@ -640,6 +650,8 @@ GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments c
 GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
 GROUP_DELETE_DESCRIPTION = 'Deletes a group given the group name.'
 GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group name.'
+USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
+USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = (
     'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
@@ -671,10 +683,10 @@ class CipherTrustClient(BaseClient):
     def __init__(self, username: str, password: str, server_url: str, proxy: bool, verify: bool, api_version='v1'):
         base_url = urljoin(server_url, f'api/{api_version}')
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
-        res = self._create_auth_token(username, password)
+        res = self.create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
 
-    def _create_auth_token(self, username, password):  # todo: before each request to make sure isn't expired?
+    def create_auth_token(self, username, password):  # todo: before each request to make sure isn't expired?
         return self._http_request(
             method='POST',
             url_suffix=AUTHENTICATION_URL_SUFFIX,
@@ -966,7 +978,8 @@ def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
 
 
 @metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUP_CREATE_INPUTS,
-                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_CREATE_OUTPUT, description=GROUP_CREATE_DESCRIPTION)
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_CREATE_OUTPUT,
+                            description=GROUP_CREATE_DESCRIPTION)
 def group_create_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(name=args.get(CommandArguments.NAME),
                                  description=args.get(CommandArguments.DESCRIPTION))
@@ -978,7 +991,8 @@ def group_create_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-group-delete', inputs_list=GROUP_DELETE_INPUTS,description= GROUP_DELETE_DESCRIPTION )
+@metadata_collector.command(command_name='ciphertrust-group-delete', inputs_list=GROUP_DELETE_INPUTS,
+                            description=GROUP_DELETE_DESCRIPTION)
 def group_delete_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(force=args.get(CommandArguments.FORCE))
     client.delete_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)
@@ -988,7 +1002,8 @@ def group_delete_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-group-update', inputs_list=GROUP_UPDATE_INPUTS,
-                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_UPDATE_OUTPUT, description=GROUP_UPDATE_DESCRIPTION)
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_UPDATE_OUTPUT,
+                            description=GROUP_UPDATE_DESCRIPTION)
 def group_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.update_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)
@@ -1000,7 +1015,7 @@ def group_update_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-user-to-group-add', inputs_list=USER_TO_GROUP_ADD_INPUTS,
-                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX)
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=USER_TO_GROUP_ADD_OUTPUT, description=USER_TO_GROUP_ADD_DESCRIPTION)
 def user_to_group_add_command(client: CipherTrustClient, args: dict):
     raw_response = client.add_user_to_group(group_name=args.get(CommandArguments.GROUP_NAME),
                                             user_id=args.get(CommandArguments.USER_ID))
@@ -1011,7 +1026,7 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-to-group-remove', inputs_list=USER_TO_GROUP_REMOVE_INPUTS)
+@metadata_collector.command(command_name='ciphertrust-user-to-group-remove', inputs_list=USER_TO_GROUP_REMOVE_INPUTS, description=USER_TO_GROUP_REMOVE_DESCRIPTION)
 def user_to_group_remove_command(client: CipherTrustClient, args: dict):
     client.remove_user_from_group(group_name=args.get(CommandArguments.GROUP_NAME), user_id=args.get(CommandArguments.USER_ID))
     return CommandResults(
@@ -1052,6 +1067,8 @@ def users_list_command(client: CipherTrustClient, args: dict):
         readable_output=tableToMarkdown(name='users list',
                                         t=raw_response.get('resources') if raw_response.get('resources') else raw_response),
     )
+
+
 #todo - if resources is empty, return empty list?
 
 

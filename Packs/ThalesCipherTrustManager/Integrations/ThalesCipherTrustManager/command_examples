@@ -1,4 +1,6 @@
-!ciphertrust-group-list group_name='test' page=0 page_size=1
-!ciphertrust-group-create group_name='test' description='this is a test group'
-!ciphertust-group-delete group_name='test' force='true'
-!ciphertrust-group-update group_name='test' description='this is a modified description'
+!ciphertrust-group-list group_name='test_group' page=0 page_size=1
+!ciphertrust-group-create group_name='test_group' description='this is a test group'
+!ciphertust-group-delete group_name='test_group' force='true'
+!ciphertrust-group-update group_name='test_group' description='this is a modified description'
+!ciphertrust-user-to-group-add group_name='test_group' user_id='local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab'
+!ciphertrust-user-to-group-remove group_name='test_group' user_id='local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab'

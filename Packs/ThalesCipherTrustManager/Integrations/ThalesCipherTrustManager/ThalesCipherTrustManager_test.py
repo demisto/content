@@ -1,6 +1,7 @@
 import json
 
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
+MOCKER_CREATE_AUTH_TOKEN = f"ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
 MOCK_SERVER_URL = 'https://example.com'
@@ -133,8 +134,18 @@ GROUP_UPDATE_TEST_ARGS = [
         CommandArguments.DESCRIPTION: 'description1_updated'
     }
 ]
-USER_TO_GROUP_ADD_TEST_ARGS = []
-USER_TO_GROUP_REMOVE_TEST_ARGS = []
+USER_TO_GROUP_ADD_TEST_ARGS = [
+    {
+        CommandArguments.GROUP_NAME: 'group1',
+        CommandArguments.USER_ID: 'user1'
+    }
+]
+USER_TO_GROUP_REMOVE_TEST_ARGS = [
+{
+        CommandArguments.GROUP_NAME: 'group1',
+        CommandArguments.USER_ID: 'user1'
+    }
+]
 USERS_LIST_TEST_ARGS = []
 USER_CREATE_TEST_ARGS = []
 USER_UPDATE_TEST_ARGS = []
@@ -195,6 +206,14 @@ def test_add_expires_at_param_invalid_input():
 ''' COMMAND FUNCTIONS TESTS '''
 
 
+@pytest.fixture(autouse=True)
+def patch_create_auth_token(monkeypatch):
+    def mock_create_auth_token(*args, **kwargs):
+        return util_load_json('test_data/mock_create_auth_token_response.json')
+
+    monkeypatch.setattr(MOCKER_CREATE_AUTH_TOKEN, mock_create_auth_token)
+
+
 @pytest.mark.parametrize('args', GROUPS_LIST_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 def test_group_list_command(mock_get_group_list, args):
@@ -233,7 +252,7 @@ def test_group_create_command(mock_create_group, args):
 @patch(MOCKER_HTTP_METHOD)
 def test_group_delete_command(mock_delete_group, args):
     from ThalesCipherTrustManager import CipherTrustClient, group_delete_command
-    mock_delete_group.return_value = util_load_json('test_data/mock_group_delete_response.json')
+    mock_delete_group.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -250,13 +269,13 @@ def test_group_delete_command(mock_delete_group, args):
 @pytest.mark.parametrize('args', GROUP_UPDATE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 def test_group_update_command(mock_update_group, args):
-    from ThalesCipherTrustManager import CipherTrustClient, group_create_command
+    from ThalesCipherTrustManager import CipherTrustClient, group_update_command
     mock_update_group.return_value = util_load_json('test_data/mock_group_update_response.json')
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
-    result = group_create_command(client, args)
+    result = group_update_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == GROUP_CONTEXT_OUTPUT_PREFIX
@@ -285,7 +304,7 @@ def test_user_to_group_add_command(mock_add_user_to_group, args):
 @patch(MOCKER_HTTP_METHOD)
 def test_user_to_group_remove_command(mock_remove_user_from_group, args):
     from ThalesCipherTrustManager import CipherTrustClient, user_to_group_remove_command
-    mock_remove_user_from_group.return_value = util_load_json('test_data/mock_user_to_group_remove_response.json')
+    mock_remove_user_from_group.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
