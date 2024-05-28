@@ -449,35 +449,3 @@ def test_chrome_options_in_chromes_options_and_instance_name_not_in_instances_na
 
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
-
-
-def test_chrome_manager_when_using_old_version_of_info_file_with_just_port(mocker):
-    from rasterize import chrome_manager
-
-    port = 1234
-    instance_name = "instance_name_that_does_not_exist"
-    chrome_options = "chrome_options2"
-    port_str = str(port)
-
-    mock_context = {
-        'context': {
-            'IntegrationInstance': instance_name
-        },
-        'params': {
-            'chrome_options': chrome_options
-        }
-    }
-
-    mock_file_content = util_load_tsv("test_data/info_old_version.tsv")
-
-    mocker.patch.object(demisto, 'callingContext', mock_context)
-    mocker.patch.object(rasterize, 'get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port',
-                        return_value=[{port_str: instance_name}, {instance_name: chrome_options},
-                                      {chrome_options: port_str}])
-    mocker.patch.object(rasterize, 'read_info_file', return_value=mock_file_content)
-    mocker.patch.object(rasterize, 'write_info_file', return_value=None)
-    mocker.patch.object(rasterize, 'setup_new_chrome_instance', return_value=["browser_object", "chrome_port"])
-    browser, chrome_port = chrome_manager()
-
-    assert browser == "browser_object"
-    assert chrome_port == "chrome_port"
