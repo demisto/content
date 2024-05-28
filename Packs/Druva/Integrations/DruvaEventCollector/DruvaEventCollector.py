@@ -75,7 +75,7 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[
     Gets events from Druva API in one batch (max 500), if a tracker is given, the API returns events starting from its timestamp.
     Args:
         client: Druva client to use.
-        tracker: A pointer to the last event we received.
+        tracker: A string received in a previous run, marking the point in time from which we want to fetch.
 
     Returns:
         Druva's events and tracker
