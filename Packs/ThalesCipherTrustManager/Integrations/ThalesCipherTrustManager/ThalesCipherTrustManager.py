@@ -734,7 +734,7 @@ class CipherTrustClient(BaseClient):
         res = self.create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
 
-    def create_auth_token(self, username, password):  # todo: before each request to make sure isn't expired?
+    def create_auth_token(self, username, password):
         return self._http_request(
             method='POST',
             url_suffix=AUTHENTICATION_URL_SUFFIX,
@@ -1306,7 +1306,6 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
     )
 
 
-#todo: figure out how to properly test + what does install exactly mean
 @metadata_collector.command(command_name='ciphertrust-local-ca-install', inputs_list=LOCAL_CA_INSTALL_INPUTS,
                             description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX)
 def local_ca_install_command(client: CipherTrustClient, args: dict):
