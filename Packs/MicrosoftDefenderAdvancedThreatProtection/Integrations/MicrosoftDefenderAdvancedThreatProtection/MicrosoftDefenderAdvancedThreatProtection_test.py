@@ -8,7 +8,8 @@ import json
 import pytest
 
 from CommonServerPython import DemistoException
-from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, list_machines_by_ip_command, parse_ip_addresses, \
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, list_machines_by_ip_command, \
+    parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
     get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
