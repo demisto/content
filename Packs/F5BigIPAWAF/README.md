@@ -25,7 +25,7 @@ In order to do so, create a logging profile and set remote logging to the releva
 3. Click the name of the logging profile for which you want to set up remote logging.
 4. Select the **Remote Storage** checkbox.
 5. From the *Remote Storage Type* list, select **Remote**.
-6. For the **Protocol** setting, select **TCP**.
+6. For the *Protocol* setting, select **TCP**.
 7. For **Server Addresses**, Type the IP Address, Port Number (default is 514), and click **Add**.
 8. Click **Finished**. 
 
