@@ -94,25 +94,25 @@ Mock Data
 '''
 
 GROUPS_LIST_TEST_ARGS = [
-    {},  # No arguments
-    {CommandArguments.GROUP_NAME: 'group1'},  # Only GROUP_NAME
-    {CommandArguments.USER_ID: 'user1'},  # Only USER_ID
-    {CommandArguments.CONNECTION: 'connection1'},  # Only CONNECTION
-    {CommandArguments.CLIENT_ID: 'client1'},  # Only CLIENT_ID
+    {},
+    {CommandArguments.GROUP_NAME: 'group1'},
+    {CommandArguments.USER_ID: 'user1'},
+    {CommandArguments.CONNECTION: 'connection1'},
+    {CommandArguments.CLIENT_ID: 'client1'},
     {
         CommandArguments.GROUP_NAME: 'group2',
         CommandArguments.USER_ID: 'user2'
-    },  # Combination of GROUP_NAME and USER_ID
+    },
     {
         CommandArguments.CONNECTION: 'connection2',
         CommandArguments.CLIENT_ID: 'client2'
-    },  # Combination of CONNECTION and CLIENT_ID
+    },
     {
         CommandArguments.GROUP_NAME: 'group3',
         CommandArguments.USER_ID: 'user3',
         CommandArguments.CONNECTION: 'connection3',
         CommandArguments.CLIENT_ID: 'client3'
-    }  # All arguments
+    }
 ]
 
 GROUP_CREATE_TEST_ARGS = [
@@ -141,12 +141,27 @@ USER_TO_GROUP_ADD_TEST_ARGS = [
     }
 ]
 USER_TO_GROUP_REMOVE_TEST_ARGS = [
-{
+    {
         CommandArguments.GROUP_NAME: 'group1',
         CommandArguments.USER_ID: 'user1'
     }
 ]
-USERS_LIST_TEST_ARGS = []
+
+USERS_LIST_TEST_ARGS = [
+    {
+        CommandArguments.NAME: "John Doe",
+        CommandArguments.USERNAME: "johndoe",
+        CommandArguments.EMAIL: "john.doe@example.com",
+        CommandArguments.GROUPS: "group1,group2",
+        CommandArguments.EXCLUDE_GROUPS: "group3",
+        CommandArguments.AUTH_DOMAIN_NAME: "example_domain",
+        CommandArguments.ACCOUNT_EXPIRED: "true",
+        CommandArguments.ALLOWED_AUTH_METHODS: "password",
+        CommandArguments.ALLOWED_CLIENT_TYPES: "confidential",
+        CommandArguments.PASSWORD_POLICY: "example_policy",
+        CommandArguments.RETURN_GROUPS: "true"
+    },
+]
 USER_CREATE_TEST_ARGS = []
 USER_UPDATE_TEST_ARGS = []
 USER_DELETE_TEST_ARGS = []
@@ -342,8 +357,7 @@ def test_users_list_command_id_provided(mock_get_user):
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
-    #todo: pass user_id
-    args = {}
+    args = {CommandArguments.USER_ID: 'user1'}
 
     result = users_list_command(client, args)
 

@@ -762,6 +762,8 @@ script:
       predefined:
       - password
       - user_certificate
+      - password,user_certificate
+      - user_certificate,password
       - password_with_user_certificate
       - empty
       auto: PREDEFINED
@@ -985,6 +987,8 @@ script:
       predefined:
       - password
       - user_certificate
+      - password,user_certificate
+      - user_certificate,password
       - password_with_user_certificate
       - empty
       auto: PREDEFINED
@@ -1036,42 +1040,42 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: ''
+    description: 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
     name: ciphertrust-users-list
     arguments:
     - name: name
       isArray: false
-      description: User’s name
+      description: Filter by the user's name
       required: false
       secret: false
       default: false
     - name: user_id
       isArray: false
-      description: If provided, get the user with the specified id
+      description: If provided, gets the user with the specified user_id.  If the user_id 'self' is provided, it will return the current user's information.
       required: false
       secret: false
       default: false
     - name: username
       isArray: false
-      description: username
+      description: Filter by the user’s username
       required: false
       secret: false
       default: false
     - name: email
       isArray: false
-      description: User’s email
+      description: Filter by the user’s email
       required: false
       secret: false
       default: false
     - name: groups
       isArray: true
-      description: Filter by users in the given group name. Provide multiple groups  to get users in all of those groups. Using nil as the group name will return users that are not part of any group.
+      description: Filter by users in the given group name. Provide multiple groups separated by comma (',') to get users in all of those groups. Using 'nil' as the group name will return users that are not part of any group.
       required: false
       secret: false
       default: false
     - name: exclude_groups
       isArray: true
-      description: User associated with certain group will be excluded
+      description: Users associated with given group will be excluded from the result. Provide multiple groups separated by comma (',') to exclude multiple groups in the result.
       required: false
       secret: false
       default: false
@@ -1083,7 +1087,7 @@ script:
       default: false
     - name: account_expired
       isArray: false
-      description: Filter the expired users (Boolean)
+      description: Filters the list of users whose expiration time has passed.
       required: false
       secret: false
       default: false
@@ -1093,19 +1097,21 @@ script:
       auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
-      description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
+      description: Filter by the login authentication method allowed to the users. It is a comma seperated list of values. A special value `empty` can be specified to get users to whom no authentication method is allowed.
       required: false
       secret: false
       default: false
       predefined:
       - password
       - user_certificate
+      - password,user_certificate
+      - user_certificate,password
       - password_with_user_certificate
       - empty
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: allowed_client_types
+      description: Filter by the client types that can authenticate the user. It is a comma separated list of values.
       required: false
       secret: false
       default: false
@@ -1116,13 +1122,13 @@ script:
       auto: PREDEFINED
     - name: password_policy
       isArray: false
-      description: Filter based on assigned password policy
+      description: Filter the list of users based on assigned password policy
       required: false
       secret: false
       default: false
     - name: return_groups
       isArray: false
-      description: If set to ‘true’ it will return the group’s name in which user is associated, Boolean
+      description: If set to 'true', it returns the group's name in which user is associated along with all users information.
       required: false
       secret: false
       default: false
@@ -1149,7 +1155,106 @@ script:
       secret: false
       default: false
       defaultValue: 50
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Users.limit
+      description: The max number of records returned. Equivalent to 'limit' in SQL.
+      type: Number
+    - contextPath: CipherTrust.Users.skip
+      description: The index of the first record returned. Equivalent to 'offset' in SQL.
+      type: Number
+    - contextPath: CipherTrust.Users.total
+      description: The total records matching the query.
+      type: Number
+    - contextPath: CipherTrust.Users.messages
+      description: An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.userid
+      description: A unique identifier for API call usage.
+      type: String
+    - contextPath: CipherTrust.Users.resources.username
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated.
+      type: String
+    - contextPath: CipherTrust.Users.resources.connection
+      description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
+      type: String
+    - contextPath: CipherTrust.Users.resources.email
+      description: E-mail of the user
+      type: String
+    - contextPath: CipherTrust.Users.resources.name
+      description: Full name of the user
+      type: String
+    - contextPath: CipherTrust.Users.resources.certificate_subject_dn
+      description: The Distinguished Name of the user in certificate
+      type: String
+    - contextPath: CipherTrust.Users.resources.enable_cert_auth
+      description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate.'
+      type: Boolean
+    - contextPath: CipherTrust.Users.resources.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.logins_count
+      description: Count for the number of logins
+      type: Number
+    - contextPath: CipherTrust.Users.resources.last_login
+      description: Timestamp of last login
+      type: Date
+    - contextPath: CipherTrust.Users.resources.created_at
+      description: Timestamp of when user was created
+      type: Date
+    - contextPath: CipherTrust.Users.resources.updated_at
+      description: Timestamp of last update of the user
+      type: Date
+    - contextPath: CipherTrust.Users.resources.allowed_auth_methods
+      description: List of login authentication methods allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.expires_at
+      description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
+      type: Date
+    - contextPath: CipherTrust.Users.resources.password_policy
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      type: String
+    - contextPath: CipherTrust.Users.resources.allowed_client_types
+      description: List of client types allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.last_failed_login_at
+      description: Timestamp of last failed login
+      type: Date
+    - contextPath: CipherTrust.Users.resources.failed_logins_count
+      description: Count of failed logins
+      type: Number
+    - contextPath: CipherTrust.Users.resources.failed_logins_initial_attempt_at
+      description: Timestamp of first failed login
+      type: Date
+    - contextPath: CipherTrust.Users.resources.account_lockout_at
+      description: Timestamp of account lockout
+      type: Date
+    - contextPath: CipherTrust.Users.resources.nickname
+      description: Nickname of the user
+      type: String
+    - contextPath: CipherTrust.Users.resources.user_id
+      description: The user's unique identifier
+      type: String
+    - contextPath: CipherTrust.Users.resources.password_changed_at
+      description: Timestamp of when the password was last changed
+      type: Date
+    - contextPath: CipherTrust.Users.resources.password_change_required
+      description: Flag indicating if password change is required
+      type: Boolean
+    - contextPath: CipherTrust.Users.resources.groups
+      description: List of groups the user belongs to
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.auth_domain
+      description: Authentication domain ID
+      type: String
+    - contextPath: CipherTrust.Users.resources.login_flags
+      description: Flags related to user login
+      type: Unknown
+    - contextPath: CipherTrust.Users.resources.auth_domain_name
+      description: Name of the authentication domain
+      type: String
   script: '-'
   type: python
   subtype: python3

@@ -7,6 +7,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import datetime
 
+from typing import Dict, Any
+
 metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
                                           description="Manage Secrets and Protect Sensitive Data through HashiCorp Vault.",
                                           display="Thales CipherTrust Manager",
@@ -117,6 +119,9 @@ class CommandArguments:
     SERIAL_NUMBER = 'serial_number'
 
 
+''' YML CONSTANTS '''
+
+
 class BooleanStr(enum.Enum):
     TRUE = 'true'
     FALSE = 'false'
@@ -192,43 +197,33 @@ USER_TO_GROUP_REMOVE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, r
                                              description='Name of the group.'),
                                InputArgument(name=CommandArguments.USER_ID, required=True,
                                              description='The user_id of the user. Can be retrieved by using the command '
-                                                      'ciphertrust-users-list'), ]
-USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
+                                                         'ciphertrust-users-list'), ]
+USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description="Filter by the user's name"),
                      InputArgument(name=CommandArguments.USER_ID,
-                                   description='If provided, get the user with the specified id'),
-                     InputArgument(name=CommandArguments.USERNAME, description='username'),
-                     InputArgument(name=CommandArguments.EMAIL, description='User’s email'),
+                                   description="If provided, gets the user with the specified user_id.  If the user_id 'self' is provided, it will return the current user's information."),
+                     InputArgument(name=CommandArguments.USERNAME, description='Filter by the user’s username'),
+                     InputArgument(name=CommandArguments.EMAIL, description='Filter by the user’s email'),
                      InputArgument(name=CommandArguments.GROUPS, is_array=True,
-                                   description='Filter by users in the given group name. Provide multiple groups  to get users '
-                                               'in all of those groups. Using nil as the group name will return users that are '
-                                               'not part of any group.'),
+                                   description="Filter by users in the given group name. Provide multiple groups separated by comma (',') to get users in all of those groups. Using 'nil' as the group name will return users that are not part of any group."),
                      InputArgument(name=CommandArguments.EXCLUDE_GROUPS, is_array=True,
-                                   description='User associated with certain group will be excluded'),
+                                   description="Users associated with given group will be excluded from the result. Provide multiple groups separated by comma (',') to exclude multiple groups in the result."),
                      InputArgument(name=CommandArguments.AUTH_DOMAIN_NAME, description='Filter by user’s auth domain'),
                      InputArgument(name=CommandArguments.ACCOUNT_EXPIRED,
                                    input_type=BooleanStr,
-                                   description='Filter the expired users (Boolean)'),
+                                   description='Filters the list of users whose expiration time has passed.'),
                      InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
                                    input_type=AllowedAuthMethods,
-                                   description='Filter by the login'
-                                               'authentication '
-                                               'method allowed to '
-                                               'the users. It is a '
-                                               'list of values. A '
-                                               '[]'
-                                               'can be'
-                                               'specified to get '
-                                               'users to whom no '
-                                               'authentication '
-                                               'method is allowed.'),
+                                   description="Filter by the login authentication method allowed to the users. It is a comma "
+                                               "seperated list of values. A special value `empty` can be specified to get users "
+                                               "to whom no authentication method is allowed."),
                      InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True,
                                    input_type=AllowedClientTypes,
-                                   description=""),
+                                   description="Filter by the client types that can authenticate the user. It is a comma separated list of values."),
                      InputArgument(name=CommandArguments.PASSWORD_POLICY,
-                                   description='Filter based on assigned password policy'),
+                                   description='Filter the list of users based on assigned password policy'),
                      InputArgument(name=CommandArguments.RETURN_GROUPS,
                                    input_type=BooleanStr,
-                                   description='If set to ‘true’ it will return the group’s name in which user is associated, Boolean'),
+                                   description="If set to 'true', it returns the group's name in which user is associated along with all users information."),
                      ] + PAGINATION_INPUTS
 USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
                       InputArgument(name=CommandArguments.USER_ID),
@@ -471,6 +466,38 @@ EXTERNAL_CERTIFICATE_LIST_INPUTS = [
                                        InputArgument(name=CommandArguments.SERIAL_NUMBER, description='Filter by serial number'),
                                        InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
                                    ] + PAGINATION_INPUTS
+
+''' DESCRIPTIONS '''
+GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
+GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
+GROUP_DELETE_DESCRIPTION = 'Deletes a group given the group name.'
+GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group name.'
+USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
+USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
+USERS_LIST_DESCRIPTION = 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
+USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
+USER_CREATE_DESCRIPTION = (
+    'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
+    'are always created in the local, internal user database, but might have references to external '
+    'identity providers.')
+USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
+USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
+LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
+LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
+LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
+LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
+LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
+LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
+CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
+CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
+CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
+CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
+CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
+EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
+EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
+EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
+EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certificates. The results can be filtered, using the query parameters.'
+
 ''' OUTPUTS '''
 
 GROUP_LIST_OUTPUT = [
@@ -480,8 +507,8 @@ GROUP_LIST_OUTPUT = [
                    description="The index of the first record returned. Equivalent to 'offset' in SQL."),
     OutputArgument(name="total", output_type=int, description="The total records matching the query."),
     OutputArgument(name="messages", output_type=list,
-                   description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."),
-    #todo: dynamic : messages arrayAn optional list of warning messages, usually used to note when unsupported query parameters were ignored. items {"type":"string"}
+                   description="An optional list of warning messages, usually used to note when unsupported query parameters "
+                               "were ignored."),
     OutputArgument(name="resources.name", output_type=str, description="name of the group"),
     OutputArgument(name="resources.created_at", output_type=datetime.datetime, description="The time the group was created."),
     OutputArgument(name="resources.updated_at", output_type=datetime.datetime,
@@ -538,7 +565,9 @@ USER_TO_GROUP_ADD_OUTPUT = [
     OutputArgument(name="description", output_type=str, description="The description of the group."),
     OutputArgument(name="users_count", output_type=int, description="The total user count associated with the group."),
 ]
-
+'''
+I've added the fields nickname, user_id, password_changed_at, password_change_required, groups, auth_domain, login_flags, and auth_domain_name based on the provided JSON response.
+'''
 USERS_LIST_OUTPUT = [
     OutputArgument(name="limit", output_type=int,
                    description="The max number of records returned. Equivalent to 'limit' in SQL."),
@@ -582,6 +611,18 @@ USERS_LIST_OUTPUT = [
                    description="Timestamp of first failed login"),
     OutputArgument(name="resources.account_lockout_at", output_type=datetime.datetime,
                    description="Timestamp of account lockout"),
+    OutputArgument(name="resources.nickname", output_type=str, description="Nickname of the user"),
+    OutputArgument(name="resources.user_id", output_type=str, description="The user's unique identifier"),
+    OutputArgument(name="resources.password_changed_at", output_type=datetime.datetime,
+                   description="Timestamp of when the password was last changed"),
+    OutputArgument(name="resources.password_change_required", output_type=bool,
+                   description="Flag indicating if password change is required"),
+    OutputArgument(name="resources.groups", output_type=list, description="List of groups the user belongs to"),
+    OutputArgument(name="resources.auth_domain", output_type=str, description="Authentication domain ID"),
+    OutputArgument(name="resources.login_flags", output_type=dict,
+                   description="Flags related to user login"),
+    OutputArgument(name="resources.auth_domain_name", output_type=str,
+                   description="Name of the authentication domain"),
 ]
 
 USER_CREATE_OUTPUT = [
@@ -645,35 +686,6 @@ USER_UPDATE_OUTPUT = [
 
 USER_PASSWORD_CHANGE_OUTPUT = []
 
-''' DESCRIPTIONS '''
-GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
-GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
-GROUP_DELETE_DESCRIPTION = 'Deletes a group given the group name.'
-GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group name.'
-USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
-USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
-USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
-USER_CREATE_DESCRIPTION = (
-    'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
-    'are always created in the local, internal user database, but might have references to external '
-    'identity providers.')
-USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
-USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
-LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
-LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
-LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
-LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
-LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
-LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
-CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
-CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
-CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
-CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
-CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
-EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
-EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
-EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
-EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certificates. The results can be filtered, using the query parameters.'
 '''CLIENT CLASS'''
 
 
@@ -980,7 +992,7 @@ def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
 @metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUP_CREATE_INPUTS,
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_CREATE_OUTPUT,
                             description=GROUP_CREATE_DESCRIPTION)
-def group_create_command(client: CipherTrustClient, args: dict):
+def group_create_command(client: CipherTrustClient, args: Dict[str, Any]):
     request_data = assign_params(name=args.get(CommandArguments.NAME),
                                  description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.create_group(request_data=request_data)
@@ -1015,7 +1027,8 @@ def group_update_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-user-to-group-add', inputs_list=USER_TO_GROUP_ADD_INPUTS,
-                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=USER_TO_GROUP_ADD_OUTPUT, description=USER_TO_GROUP_ADD_DESCRIPTION)
+                            outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=USER_TO_GROUP_ADD_OUTPUT,
+                            description=USER_TO_GROUP_ADD_DESCRIPTION)
 def user_to_group_add_command(client: CipherTrustClient, args: dict):
     raw_response = client.add_user_to_group(group_name=args.get(CommandArguments.GROUP_NAME),
                                             user_id=args.get(CommandArguments.USER_ID))
@@ -1026,7 +1039,8 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict):
     )
 
 
-@metadata_collector.command(command_name='ciphertrust-user-to-group-remove', inputs_list=USER_TO_GROUP_REMOVE_INPUTS, description=USER_TO_GROUP_REMOVE_DESCRIPTION)
+@metadata_collector.command(command_name='ciphertrust-user-to-group-remove', inputs_list=USER_TO_GROUP_REMOVE_INPUTS,
+                            description=USER_TO_GROUP_REMOVE_DESCRIPTION)
 def user_to_group_remove_command(client: CipherTrustClient, args: dict):
     client.remove_user_from_group(group_name=args.get(CommandArguments.GROUP_NAME), user_id=args.get(CommandArguments.USER_ID))
     return CommandResults(
@@ -1035,7 +1049,8 @@ def user_to_group_remove_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-users-list', inputs_list=USERS_LIST_INPUTS,
-                            outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX)
+                            outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX, outputs_list=USERS_LIST_OUTPUT,
+                            description=USERS_LIST_DESCRIPTION)
 def users_list_command(client: CipherTrustClient, args: dict):
     if user_id := args.get(CommandArguments.USER_ID):
         raw_response = client.get_user(user_id=user_id)
