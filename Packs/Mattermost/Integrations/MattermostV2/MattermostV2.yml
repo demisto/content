@@ -117,16 +117,16 @@ script:
       description: Does the team allow open invites.
       type: Unknown
     - contextPath: Mattermost.Team.scheme_id
-      description: The scheme id of the team.
+      description: The scheme ID of the team.
       type: String
     - contextPath: Mattermost.Team.policy_id
-      description: The policy id of the team.
+      description: The policy ID of the team.
       type: String
   - arguments:
     - description: The name of the team to list channels from. Default is the Team Name in the integration configuration.
       name: team
       required: false
-    - description: Include private channels or not. Default is false.
+    - description: Whether to include private channels. Default is false.
       name: include_private_channels
       required: false
       predefined:
@@ -173,7 +173,7 @@ script:
       description: The purpose of the channel.
       type: String
     - contextPath: Mattermost.Channel.last_post_at
-      description: The last post of the channel.
+      description: When was the last post to the channel made.
       type: Unknown
     - contextPath: Mattermost.Channel.total_msg_count
       description: The total massage count of the channel.
@@ -239,7 +239,7 @@ script:
       description: The purpose of the channel.
       type: String
     - contextPath: Mattermost.Channel.last_post_at
-      description: The last post of the channel.
+      description: When was the last post to the channel made.
       type: Unknown
     - contextPath: Mattermost.Channel.total_msg_count
       description: The total massage count of the channel.
@@ -377,6 +377,14 @@ script:
       required: false
     - description: Adds the war room link to the message.
       name: ignoreAddURL
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: mattermost_ask
+      description: The message as a JSON for asking questions to the user. Default value is false.
+      type: boolean
       required: false
       predefined:
       - 'true'

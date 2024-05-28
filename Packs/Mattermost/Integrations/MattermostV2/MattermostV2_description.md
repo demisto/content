@@ -1,10 +1,10 @@
-## To use the mattermost integration:
+## To use the Mattermost integration:
 
 1. Create a new bot to access Mattermost on behalf of a user, as described in the [instructions](https://developers.mattermost.com/integrate/reference/bot-accounts/):
 
 * Go to **System Console > Integrations > Bot Accounts**.
 * Set Enable Bot Account Creation to **true**.
-* Once set, System Admin can create bot accounts for integrations using the **Integrations > Bot Accounts** link in the description provided.
+* Once set, the system administrator can create bot accounts for integrations using the **Integrations > Bot Accounts** link in the description provided.
 
 1. Under **Manage Members**, make it a System Admin.
 2. Create a Personal Access Token for the new account [(Detailed Instruction)](https://developers.mattermost.com/integrate/reference/personal-access-token/)

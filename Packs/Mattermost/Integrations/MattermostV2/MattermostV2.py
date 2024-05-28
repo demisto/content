@@ -41,6 +41,7 @@ CACHE_EXPIRY: float
 MESSAGE_FOOTER = '\n**From Mattermost**'
 MIRROR_TYPE = 'mirrorEntry'
 OBJECTS_TO_KEYS = {
+    'mirrors': 'investigation_id',
     'messages': 'entitlement',
 }
 DEFAULT_OPTIONS: Dict[str, Any] = {
@@ -296,6 +297,20 @@ class HTTPClient(BaseClient):
 
         return response
 
+    def update_post_request(self, message: str, root_id: str) -> dict[str, Any]:  # noqa: E501
+        "Sends a notification"
+        data = {
+            "message": message,
+            "id": root_id,
+        }
+        demisto.debug(f"MM: {data=}")
+        remove_nulls_from_dictionary(data)
+        response = self._http_request(method='PUT', url_suffix=f'/api/v4/posts/{root_id}', json_data=data,
+                                      headers={'authorization': f'Bearer {self.bot_access_token}'})
+
+        demisto.debug(f"MM: response fom update message. {response=}")
+        return response
+
     def get_user_by_email_request(self, user_email: str) -> dict[str, Any]:
         "Gets a user by email"
         response = self._http_request(method='GET', url_suffix=f'/api/v4/users/email/{user_email}')
@@ -347,7 +362,15 @@ def next_expiry_time() -> float:
     return (datetime.now(timezone.utc) + timedelta(seconds=5)).timestamp()
 
 
-async def check_and_handle_entitlement(text: str, message_id: str, user_name: str) -> str:  # pragma: no cover
+def get_current_utc_time() -> datetime:
+    """
+    Returns:
+        The current UTC time.
+    """
+    return datetime.utcnow()
+
+
+async def check_and_handle_entitlement(answer_text: str, root_id: str, user_name: str) -> str:  # pragma: no cover
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -357,16 +380,18 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
     integration_context = fetch_context(force_refresh=True)
     messages = integration_context.get('messages', [])
     reply = ''
-    if not messages or not message_id:
+    if not messages:
         return reply
     messages = json.loads(messages)
-    message_filter = list(filter(lambda q: q.get('message_id') == message_id, messages))
+    demisto.debug(f"MM: messages with entitlements. {messages=}")
+    message_filter = list(filter(lambda q: q.get('root_id') == root_id, messages))
     if message_filter:
+        demisto.debug("MM: Found correct message")
         message = message_filter[0]
         entitlement = message.get('entitlement')
-        reply = message.get('reply', f'Thank you {user_name} for your response {text}.')
+        reply = message.get('reply')
         guid, incident_id, task_id = extract_entitlement(entitlement)
-        demisto.handleEntitlementForUser(incident_id, guid, user_name, text, task_id)
+        demisto.handleEntitlementForUser(incident_id, guid, user_name, answer_text, task_id)
         message['remove'] = True
         set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
     return reply
@@ -436,7 +461,7 @@ def long_running_loop():  # pragma: no cover
     while True:
         error = ''
         try:
-            # check_for_unanswered_questions()
+            check_for_unanswered_messages()
             time.sleep(tts)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the MatterMost endpoint: {str(e)}'
@@ -447,6 +472,31 @@ def long_running_loop():  # pragma: no cover
             if error:
                 demisto.error(error)
                 demisto.updateModuleHealth(error)
+
+
+def check_for_unanswered_messages():
+    demisto.debug('MM: checking for unanswered messages')
+    integration_context = fetch_context()
+    messages = integration_context.get('messages')
+    if messages:
+        messages = json.loads(messages)
+        now = datetime.utcnow()
+        updated_messages = []
+
+        for message in messages:
+            if message.get('expiry'):
+                # Check if the question expired - if it did, answer it with the default response
+                # and remove it
+                expiry = datetime.strptime(message['expiry'], DATE_FORMAT)
+                if expiry < now:
+                    demisto.debug(f"MM: message expired: {message}, answering it with the default response")
+                    _ = answer_question(message.get('default_response'), message, email='')
+                    updated_messages.append(message)
+                    continue
+            updated_messages.append(message)
+
+        if updated_messages:
+            set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
 
 
 async def event_handler(client: WebSocketClient, req: str):
@@ -549,6 +599,16 @@ def get_username_by_email(client: HTTPClient, email: str) -> str:
     return result.get('username', '')
 
 
+def get_username_by_id(client: HTTPClient, user_id: str) -> str:
+    """
+    Gets a username from the id
+    :param email: str: The email of the user
+    :return: str: The username of the user
+    """
+    result = client.get_user_request(user_id)
+    return result.get('username', '')
+
+
 def fetch_context(force_refresh: bool = False) -> dict:
     """
     Fetches the integration instance context from the server if the CACHE_EXPIRY is smaller than the current epoch time
@@ -640,7 +700,7 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response, t
     if messages:
         messages = json.loads(integration_context['messages'])
     messages.append({
-        'message_id': message_id,
+        'root_id': message_id,
         'entitlement': entitlement,
         'reply': reply,
         'expiry': expiry,
@@ -648,7 +708,6 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response, t
         'default_response': default_response,
         'to_id': to_id
     })
-
     set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
 
 
@@ -657,7 +716,6 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     Extracts entitlement components from an entitlement string
     Args:
         entitlement: The entitlement itself
-        text: The actual reply text
 
     Returns:
         Entitlement components
@@ -676,12 +734,12 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     return guid, incident_id, task_id
 
 
-async def answer_question(text: str, question: dict, email: str = ''):
+async def answer_question(text: str, message: dict, email: str = ''):
     """Answers a question from MattermostAskUser
     """
     global CLIENT
-    entitlement = question.get('entitlement', '')
-    to_id = question.get('to_id')
+    entitlement = message.get('entitlement', '')
+    to_id = message.get('to_id')
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
@@ -690,7 +748,7 @@ async def answer_question(text: str, question: dict, email: str = ''):
             _ = await process_entitlement_reply(text, to_id)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
-    question['remove'] = True
+    message['remove'] = True
     return incident_id
 
 
@@ -698,27 +756,30 @@ async def send_notification_async(client: HTTPClient, channel_id, message, root_
     client.send_notification_request(channel_id, message, root_id=root_id)
 
 
+async def update_post_async(client: HTTPClient, message, root_id):
+    client.update_post_request(message, root_id)
+
+
 async def process_entitlement_reply(  # pragma: no cover
     entitlement_reply: str,
-    to_id: str | None = None,
+    root_id: str | None = None,
     user_name: str | None = None,
-    action_text: str | None = None,
+    answer_text: str | None = None,
 ):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
     :param entitlement_reply: str: The text to update the asking question with.
     :param user_name: str: name of the user who answered the entitlement
-    :param action_text: str: The text attached to the button, used for string replacement.
-    :param accountId: str: Zoom account ID
+    :param answer_text: str: The text attached to the button, used for string replacement.
     :return: None
     """
     global CLIENT
     if '{user}' in entitlement_reply:
         entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
-    if '{response}' in entitlement_reply and action_text:
-        entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-
-    await send_notification_async(CLIENT, to_id, entitlement_reply)
+    if '{response}' in entitlement_reply and answer_text:
+        entitlement_reply = entitlement_reply.replace('{response}', str(answer_text))
+    demisto.debug('')
+    await update_post_async(CLIENT, entitlement_reply, root_id)
 
 
 async def handle_text_received_from_mm(investigation_id: str, text: str, operator_email: str, operator_name: str):
@@ -749,7 +810,6 @@ async def handle_posts(payload):
     :return: None
     """
     global CLIENT
-    payload.get("broadcast", {})
     post = json.loads(payload.get("data", {}).get("post"))
     message = post.get('message', {})
     channel_id = post.get("channel_id")
@@ -761,21 +821,26 @@ async def handle_posts(payload):
         demisto.debug("MM: Got a bot message. Will not mirror.")
         return
 
-    # Check if the message is being sent directly to our bot.
-    if is_dm(payload):
-        await handle_dm(user_id, message, channel_id, CLIENT)  # type: ignore
+    # If a thread, we will check if it is a reply to a MattermostAsk task.
+    if is_thread(post):
+        demisto.debug(f"MM: Got a thread message. {payload=}")
+        username = get_username_by_id(CLIENT, user_id)
+        answer_text = post.get('message', '')
+        root_id = post.get('root_id', '')
+        entitlement_reply = await check_and_handle_entitlement(answer_text, root_id, username)
+        demisto.debug(f"MM: {entitlement_reply=}")
+        if entitlement_reply:
+            await process_entitlement_reply(entitlement_reply, root_id, username, answer_text)
+
         reset_listener_health()
         return
 
-    # If a thread, we will check if it is a reply to a MatterMostAsk task.
-    if is_thread(post):
-        pass
-        # action_text = ''
-        # entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
-        # if entitlement_reply:
-        #     await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
-        #     reset_listener_health()
-        #     return
+    # Check if the message is being sent directly to our bot.
+    if is_dm(payload):
+        demisto.debug(f"MM: Got a dm message. {payload=}")
+        await handle_dm(user_id, message, channel_id, CLIENT)
+        reset_listener_health()
+        return
 
     integration_context = fetch_context()
     if not integration_context or 'mirrors' not in integration_context:
@@ -992,7 +1057,7 @@ def update_integration_context_samples(incidents: list, max_samples: int = MAX_S
 
 
 def reset_listener_health():
-    demisto.updateModuleHealth("")
+    demisto.updateModuleHealth("MatterMost V2 - Event handled successfully.")
     demisto.info("MatterMost V2 - Event handled successfully.")
 
 
@@ -1446,14 +1511,22 @@ def send_notification(client: HTTPClient, **args):
     """
     Sends notification for a MatterMost channel
     """
-
+    demisto.debug(f'MM: {args=}')
     to = args.get('to', '')
     entry = args.get('entry')
     channel_name = args.get('channel', '')
-    mattermost_ask = argToBoolean(args.get('mattermost_ask', False))
     message_to_send = args.get("message", "")
     ignore_add_url = argToBoolean(args.get('ignoreAddURL', False))
-    # entitlement = args.get('entitlement', '')
+    mattermost_ask = argToBoolean(args.get('mattermost_ask', False))
+    entitlement = ''
+
+    if mattermost_ask:
+        parsed_message = json.loads(args.get("message", ''))
+        entitlement = parsed_message.get('entitlement', '')
+        expiry = parsed_message.get('expiry', '')
+        default_response = parsed_message.get('default_response', '')
+        reply = parsed_message.get('reply', '')
+        message_to_send = parsed_message.get('message', '')
 
     message_type = args.get('messageType', '')  # From server
     original_message = args.get('originalMessage', '')  # From server
@@ -1493,59 +1566,15 @@ def send_notification(client: HTTPClient, **args):
                     message_to_send += f'\nView it on: {link}#/home'
     channel_id = get_channel_id_to_send_notif(client, to, channel_name, investigation_id)
 
-    if mattermost_ask:
-        pass
-        # create the dict with the data for the poll
-        # poll = create_poll(message_to_send)
-
     raw_data = client.send_notification_request(channel_id, message_to_send, props=poll)
     message_id = raw_data.get("id")
     demisto.debug(f'MM: Got replay from post: {raw_data}')
-    # if entitlement:
-    #     save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
+    if entitlement:
+        demisto.debug(f'MM: Found entitlement, saving message to context: {entitlement}')
+        save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
     return CommandResults(
         readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}'
     )
-
-
-def create_poll(message: str, option_1: str = 'option 1', option_2: str = 'option 2'):  # pragma: no cover
-    """
-    Creates a poll for the MattermostAsk script
-    """
-    instance_name = demisto.integrationInstance()
-    demisto.debug(f'MM: {DEMISTO_URL=}')
-    demisto.debug(f'MM: {instance_name=}')
-    attachments = {
-        "attachments": [
-            {
-                "pretext": "Choose an option:",
-                "text": message,
-                "actions": [
-                    {
-                        "name": option_1,
-                        "integration": {
-                            "url": DEMISTO_URL,
-                            "context": {
-                                "action": "vote",
-                                "vote": option_1,
-                            }
-                        }
-                    }, {
-                        "name": option_2,
-                        "integration": {
-                            "url": DEMISTO_URL,
-                            "context": {
-                                "action": "vote",
-                                "vote": option_2,
-                            }
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-
-    return attachments
 
 
 ''' MAIN FUNCTION '''

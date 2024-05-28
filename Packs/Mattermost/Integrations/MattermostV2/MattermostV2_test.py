@@ -261,6 +261,7 @@ def test_save_entitlement():
     default_response = "Default Response"
     to_id = "user@example.com"
     OBJECTS_TO_KEYS = {
+        'mirrors': 'investigation_id',
         'messages': 'entitlement',
     }
 
@@ -277,7 +278,7 @@ def test_save_entitlement():
         expected_data = {
             'messages': [
                 {
-                    'message_id': message_id,
+                    'root_id': message_id,
                     'entitlement': entitlement,
                     'reply': reply,
                     'expiry': expiry,

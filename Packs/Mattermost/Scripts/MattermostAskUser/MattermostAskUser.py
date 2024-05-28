@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 
 def main():
     res = demisto.executeCommand('addEntitlement', {
@@ -22,18 +24,39 @@ def main():
         option2 = 'no'
     entitlementString = entitlement + '@' + demisto.investigation()['id']
 
+    args = demisto.args()
+    lifetime = args.get('lifetime', '1 day')
+    try:
+        parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None, f'Could not parse in {lifetime}'
+        expiry = datetime.strftime(parsed_date,
+                                   DATE_FORMAT)
+    except Exception:
+        parsed_date = dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None
+        expiry = datetime.strftime(parsed_date,
+                                   DATE_FORMAT)
+    default_response = args.get('defaultResponse')
+    reply = args.get('reply')
+
     if demisto.get(demisto.args(), 'task'):
         entitlementString += '|' + demisto.get(demisto.args(), 'task')
-    message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'],
-                                                        option1,
-                                                        entitlementString,
-                                                        option2,
-                                                        entitlementString)
+
+    message = '**{}** - Please reply to this thread with `{}` or `{}`'.format(args['message'], option1, option2)
+    message_dict = json.dumps({
+        'message': message,
+        'entitlement': entitlementString,
+        'reply': reply,
+        'expiry': expiry,
+        'default_response': default_response
+    })
+
     demisto.results(demisto.executeCommand('send-notification', {
         'to': demisto.get(demisto.args(), 'user'),
-        'message': message,
+        'message': message_dict,
         'ignoreAddURL': 'true',
-        'using-brand': 'mattermost'
+        'mattermost_ask': True,
+        'using-brand': 'MattermostV2',
     }))
 
 
