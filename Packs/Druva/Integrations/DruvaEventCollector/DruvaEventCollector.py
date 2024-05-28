@@ -73,7 +73,7 @@ def test_module(client: Client) -> str:
 
 def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[Any], Optional[Any]]:
     """
-    Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
+    Gets events from Druva API in one batch (max 500), if a tracker is given, the API returns events starting from its timestamp.
     Args:
         client: Druva client to use.
         tracker: A pointer to the last event we received.
