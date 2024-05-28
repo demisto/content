@@ -1,4 +1,3 @@
-import json
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -54,7 +53,7 @@ class Client(BaseClient):
         """
 
         url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
-        headers = self._headers | {'accept': 'application/json'}
+        headers = (self._headers or {}) | {'accept': 'application/json'}
         try:
             response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
                                           headers=headers)
@@ -82,7 +81,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[list], Optional[str]]:
+def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict], str]:
     """
     Gets events from Druva API in one batch (max 500), if a tracker is given, the API returns events starting from its timestamp.
     Args:
@@ -94,7 +93,7 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[
     """
 
     response = client.search_events(tracker)
-    return response.get('events'), response.get('tracker')
+    return response.get('events', [{}]), response.get('tracker', "")
 
 
 def fetch_events(client: Client, last_run: dict[str, str]) -> tuple[list[dict], dict[str, str]]:
@@ -133,7 +132,7 @@ def add_time_to_events(events: list[dict]):
     if events:
         for event in events:
             create_time = arg_to_datetime(event['timestamp'])
-            event['_time'] = create_time.strftime(DATE_FORMAT)  # type: ignore[arg-type]
+            event['_time'] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def main() -> None:  # pragma: no cover
@@ -156,7 +155,8 @@ def main() -> None:  # pragma: no cover
         client = Client(
             base_url=params['url'],
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy
+        )
 
         # The validity of the Access Token is 30 minutes.
         client.refresh_access_token(encoded_credentials)

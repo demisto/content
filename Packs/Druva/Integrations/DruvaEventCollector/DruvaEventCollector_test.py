@@ -35,8 +35,8 @@ def test_test_module_command_failure(mocker, mock_client):
     Then:
     - Test module failed
     """
-    mocker.patch.object(mock_client, "search_events", side_effect=DemistoException(message='Error: invalid_grant'))
-    with pytest.raises(DemistoException, match="Make sure Server URL, Client ID and Secret Key are correctly entered") as exp:
+    mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException(message='Error: invalid_grant'))
+    with pytest.raises(DemistoException):
         run_test_module(client=mock_client)
 
 
@@ -84,6 +84,24 @@ def test_get_events_command(mocker, mock_client):
 
     assert tracker == 'xxxx'
     assert len(events) == 1
+
+
+def test_refresh_access_token(mocker, mock_client):
+    """
+    Given:
+    - a mock client
+
+    When:
+    - running refresh_access_token method
+
+    Then:
+    - Ensure exception is thrown
+    - Ensure informative message was shown
+    """
+    client = Client(base_url="client_test")
+    mocker.patch.object(client, "_http_request", side_effect=DemistoException(message='Error: invalid_grant'))
+    with pytest.raises(DemistoException, match="Make sure Server URL, Client ID and Secret Key are correctly entered."):
+        client.refresh_access_token(encoded_credentials=b"test")
 
 
 EVENT_2 = {
