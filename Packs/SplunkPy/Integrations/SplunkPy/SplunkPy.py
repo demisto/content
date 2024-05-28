@@ -668,7 +668,6 @@ class Notable:
     def to_incident(self, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
-        demisto.debug("in to_incident function")
 
         total_drilldown_searches = self.drilldown_searches_counter()
 
