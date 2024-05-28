@@ -49,7 +49,7 @@ class Client(BaseClient):
         """
 
         url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
-        headers = {'Authorization': self._headers.get('Authorization'), 'accept': 'application/json'}
+        headers = {'Authorization': self._headers['Authorization'], 'accept': 'application/json'}
         response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
                                       headers=headers)
         return response
@@ -140,12 +140,12 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    proxy = params.get('proxy') == 'false'
+    proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
 
     druva_client_id = params["credentials"]["identifier"]
     druva_secret_key = params["credentials"]["password"]
-    druva_base_url = params.get('url')
+    druva_base_url = params['url']
     str_to_encode = f'{druva_client_id}:{druva_secret_key}'
     base_64_string = base64.b64encode(str_to_encode.encode())
 
