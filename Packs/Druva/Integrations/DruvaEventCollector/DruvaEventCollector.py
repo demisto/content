@@ -19,9 +19,12 @@ PRODUCT = 'Druva'
 
 class Client(BaseClient):
 
-    def update_headers(self, base_64_string: bytes):
-        base_64_string = base_64_string.decode("utf-8")
-        headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {base_64_string}'}
+    def refresh_access_token(self, encoded_credentials: bytes):
+        """
+        Since the validity of the Access Token is 30 minutes, this method refreshes it.
+        """
+        decoded_credentials = encoded_credentials.decode("utf-8")
+        headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {decoded_credentials}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
         response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
         access_token = response_json['access_token']
@@ -137,8 +140,7 @@ def main() -> None:  # pragma: no cover
 
     druva_client_id = params["credentials"]["identifier"]
     druva_secret_key = params["credentials"]["password"]
-    str_to_encode = f'{druva_client_id}:{druva_secret_key}'
-    base_64_string = base64.b64encode(str_to_encode.encode())
+    encoded_credentials = base64.b64encode(f'{druva_client_id}:{druva_secret_key}'.encode())
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -147,7 +149,8 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy)
 
-        client.update_headers(base_64_string)
+        # The validity of the Access Token is 30 minutes.
+        client.refresh_access_token(encoded_credentials)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
