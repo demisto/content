@@ -66,7 +66,7 @@ To create or configure the Broker VM, use the information described [here](https
 You can configure the specific vendor and product for this instance.
  
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
-2. Go to the **Apps** column under the **Brokers** tab and add the **Syslog Collector** app for the relevant broker instance. If the app already exists, hover over it and click **Configure**.
+2. Go to the *Apps* column under the *Brokers* tab and add the *Syslog Collector* app for the relevant broker instance. If the app already exists, hover over it and click **Configure**.
 3. Click **Add New** for adding a new syslog data source.
 4. When configuring the new syslog data source, set the following values:
    | Parameter     | Value   
