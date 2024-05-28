@@ -4,5 +4,6 @@
 !ciphertrust-group-update group_name="test_group" description="this is a modified description"
 !ciphertrust-user-to-group-add group_name="test_group" user_id="local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab"
 !ciphertrust-user-to-group-remove group_name="test_group" user_id="local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab"
-!ciphertrust-users-list !ciphertrust-users-list exclude_groups="group_to_exclude1,group_to_exclude2" account_expired=true allowed_client_types="confidential,public" allowed_auth_methods="user_certificate,password"
+!ciphertrust-users-list exclude_groups="group_to_exclude1,group_to_exclude2" account_expired=true allowed_client_types="confidential,public" allowed_auth_methods="user_certificate,password"
 !ciphertrust-users-list user_id="local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab"
+!ciphertrust-user-create username="test_user" password="123ABC!123abc" allowed_auth_methods="password,user_certificate" allowed_client_types="empty" certificate_subject_dn="OU=organization unit,O=organization,L=location,ST=state,C=country"

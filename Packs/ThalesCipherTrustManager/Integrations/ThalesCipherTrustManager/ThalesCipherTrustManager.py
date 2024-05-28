@@ -225,27 +225,36 @@ USERS_LIST_INPUTS = [InputArgument(name=CommandArguments.NAME, description="Filt
                                    input_type=BooleanStr,
                                    description="If set to 'true', it returns the group's name in which user is associated along with all users information."),
                      ] + PAGINATION_INPUTS
-USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
-                      InputArgument(name=CommandArguments.USER_ID),
-                      InputArgument(name=CommandArguments.USERNAME),
-                      InputArgument(name=CommandArguments.PASSWORD),
-                      InputArgument(name=CommandArguments.EMAIL, description='Users email'),
+USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Full name of the user'),
+                      InputArgument(name=CommandArguments.USER_ID,
+                                    description='The user_id is the ID of an existing root domain user. This field is used only when adding an existing root domain user to a different domain.'),
+                      InputArgument(name=CommandArguments.USERNAME,
+                                    description='The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.'),
+                      InputArgument(name=CommandArguments.PASSWORD,
+                                    description='The password used to secure the users account. Allowed passwords are defined by the password policy.Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods.In all other cases, password is required. It is not included in user resource responses.'),
+                      InputArgument(name=CommandArguments.EMAIL, description='E-mail of the user'),
                       InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
                                     input_type=AllowedAuthMethods,
-                                    description='Filter by the login'
-                                                'authentication '
-                                                'method allowed to '
-                                                'the users. It is a '
-                                                'list of values. A '
-                                                '[]'
-                                                'can be'
-                                                'specified to get '
-                                                'users to whom no '
-                                                'authentication '
-                                                'method is allowed.'),
+                                    description='Comma seperated login authentication methods allowed to the user. Default '
+                                                'value - "password" i.e. Password Authentication is allowed by default. '
+                                                'Setting it to empty, i.e "empty", means no authentication method is allowed to the '
+                                                'user. If both enable_cert_auth and allowed_auth_methods are provided in the '
+                                                'request, enable_cert_auth is ignored. Setting it to '
+                                                '"password_with_user_certificate", means two-factor authentication is enabled '
+                                                'for the user. The user will require both username-password and '
+                                                'user_certificate for authentication. Valid values are: password '
+                                                'user_certificate password_with_user_certificate This property does not control '
+                                                'login behavior for users in admin group.'),
                       InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True,
                                     input_type=AllowedClientTypes,
-                                    description=""),
+                                    description="List of client types that can authenticate using the user's credentials. "
+                                                "Default value - \"unregistered,public,confidential\" i.e. all clients can "
+                                                "authenticate the user using user's credentials. Setting it to empty, \"empty\", "
+                                                "authenticate the user using user's credentials. Setting it to empty, \"empty\", "
+                                                "means no client can authenticate this user, which effectively means no one can "
+                                                "login into this user. Valid values in the array are: unregistered public "
+                                                "confidential This property does not control login behavior for users in admin "
+                                                "group."),
                       InputArgument(name=CommandArguments.CERTIFICATE_SUBJECT_DN,
                                     description='The Distinguished Name of the user in certificate'),
                       InputArgument(name=CommandArguments.CONNECTION, default='local_account',
@@ -255,9 +264,8 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 "of the 'admin' and 'User Admins' groups can add expiration to an existing "
                                                 "local user account or modify the expiration date. Once the expires_at date is "
                                                 "reached, the user account gets disabled and the user is not able to perform "
-                                                "any actions. Setting the expires_at field to empty, removes the expiration "
-                                                "date of the user account.The supported date-time format is "
-                                                "2025-03-02T06:13:27.71402Z"),
+                                                "any actions. Setting the expires_at field to \"empty\", removes the expiration "
+                                                "date of the user account."),
                       InputArgument(name=CommandArguments.IS_DOMAIN_USER,
                                     input_type=BooleanStr,
                                     description="This flag can be used to create the user "
@@ -265,7 +273,7 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                                 "management is allowed."),
                       InputArgument(name=CommandArguments.PREVENT_UI_LOGIN, default='false',
                                     input_type=BooleanStr,
-                                    description='If true, user is not allowed to login from Web UI. '),
+                                    description='If true, user is not allowed to login from Web UI.'),
                       InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED,
                                     input_type=BooleanStr,
                                     description='Password change required '
@@ -277,9 +285,8 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Use
                                     description='The password policy applies only to local user accounts and overrides the '
                                                 'global password policy. By default, the global password policy is applied to '
                                                 'the users.')
-
                       ]
-UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='User’s name'),
+UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Full name of the user'),
                       InputArgument(name=CommandArguments.USER_ID, required=True),
                       InputArgument(name=CommandArguments.USERNAME, description='username'),
                       InputArgument(name=CommandArguments.PASSWORD,
@@ -476,10 +483,7 @@ USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempote
 USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
 USERS_LIST_DESCRIPTION = 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
-USER_CREATE_DESCRIPTION = (
-    'Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users '
-    'are always created in the local, internal user database, but might have references to external '
-    'identity providers.')
+USER_CREATE_DESCRIPTION = "Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
 USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
 LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
@@ -626,7 +630,7 @@ USERS_LIST_OUTPUT = [
 ]
 
 USER_CREATE_OUTPUT = [
-    OutputArgument(name="userid", output_type=str, description="A unique identifier for API call usage."),
+    OutputArgument(name="user_id", output_type=str, description="A unique identifier for API call usage."),
     OutputArgument(name="username", output_type=str,
                    description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
     OutputArgument(name="connection", output_type=str,
@@ -643,7 +647,6 @@ USER_CREATE_OUTPUT = [
                    description="A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles."),
     OutputArgument(name="logins_count", output_type=int, description="Count for the number of logins"),
     OutputArgument(name="last_login", output_type=datetime.datetime, description="Timestamp of last login"),
-
     OutputArgument(name="created_at", output_type=datetime.datetime, description="Timestamp of when user was created"),
     OutputArgument(name="updated_at", output_type=datetime.datetime, description="Timestamp of last update of the user"),
     OutputArgument(name="allowed_auth_methods", output_type=list,
@@ -653,6 +656,21 @@ USER_CREATE_OUTPUT = [
     OutputArgument(name="password_policy", output_type=str,
                    description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
     OutputArgument(name="allowed_client_types", output_type=list, description="List of client types allowed to the user."),
+
+    # Additional fields from provided examples
+    OutputArgument(name="nickname", output_type=str, description="Nickname of the user"),
+    OutputArgument(name="failed_logins_count", output_type=int, description="Count of failed login attempts"),
+    OutputArgument(name="account_lockout_at", output_type=datetime.datetime,
+                   description="Timestamp when the account was locked out"),
+    OutputArgument(name="failed_logins_initial_attempt_at", output_type=datetime.datetime,
+                   description="Timestamp of the initial failed login attempt"),
+    OutputArgument(name="last_failed_login_at", output_type=datetime.datetime,
+                   description="Timestamp of the last failed login attempt"),
+    OutputArgument(name="password_changed_at", output_type=datetime.datetime,
+                   description="Timestamp of when the password was last changed"),
+    OutputArgument(name="password_change_required", output_type=bool, description="Indicates if a password change is required"),
+    OutputArgument(name="auth_domain", output_type=str, description="Authentication domain of the user"),
+    OutputArgument(name="login_flags", output_type=dict, description="Flags related to login permissions"),
 ]
 
 USER_UPDATE_OUTPUT = [
@@ -930,12 +948,16 @@ def optional_arg_to_datetime_string(arg, date_format=DATE_FORMAT):
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
-def add_expires_at_param(request_data: dict, expires_at_arg: str):
-    #todo : agreed prompt to never
-    if expires_at_arg == "":
-        request_data['expires_at'] = expires_at_arg
-    else:
-        request_data['expires_at'] = optional_arg_to_datetime_string(expires_at_arg)
+def add_empty_date_param(request_data: dict, arg_name: str, empty_arg_value: str = "empty"):
+    argument_value = request_data.get(arg_name)
+    if argument_value is not None:
+        request_data[arg_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
+
+
+def add_empty_list_param(request_data: dict, arg_name: str, empty_arg_value: str = "empty"):
+    argument_value = request_data.get(arg_name)
+    if argument_value is not None:
+        request_data[arg_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
 
 
 def optional_safe_load_json(raw_json_string, json_entry_id):
@@ -1088,11 +1110,10 @@ def users_list_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-user-create', description=USER_CREATE_DESCRIPTION,
-                            inputs_list=USER_CREATE_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX)
+                            inputs_list=USER_CREATE_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
+                            outputs_list=USER_CREATE_OUTPUT)
 def user_create_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
-        allowed_auth_methods=argToList(args.get(CommandArguments.ALLOWED_AUTH_METHODS)),
-        allowed_client_types=argToList(args.get(CommandArguments.ALLOWED_CLIENT_TYPES)),
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         connection=args.get(CommandArguments.CONNECTION),
         email=args.get(CommandArguments.EMAIL),
@@ -1105,7 +1126,9 @@ def user_create_command(client: CipherTrustClient, args: dict):
         user_id=args.get(CommandArguments.USER_ID),
         username=args.get(CommandArguments.USERNAME),
     )
-    add_expires_at_param(request_data, args.get(CommandArguments.EXPIRES_AT))
+    add_empty_date_param(request_data, CommandArguments.EXPIRES_AT)
+    add_empty_list_param(request_data, CommandArguments.ALLOWED_AUTH_METHODS)
+    add_empty_list_param(request_data, CommandArguments.ALLOWED_CLIENT_TYPES)
     raw_response = client.create_user(request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -1130,7 +1153,7 @@ def user_update_command(client: CipherTrustClient, args: dict):
         password_policy=args.get(CommandArguments.PASSWORD_POLICY),
         username=args.get(CommandArguments.USERNAME),
     )
-    add_expires_at_param(request_data, args.get(CommandArguments.EXPIRES_AT))
+    add_empty_date_param(request_data, CommandArguments.EXPIRES_AT)
     raw_response = client.update_user(user_id=args.get(CommandArguments.USER_ID), request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,

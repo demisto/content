@@ -720,56 +720,54 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.
+    description: "Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
     name: ciphertrust-user-create
     arguments:
     - name: name
       isArray: false
-      description: User’s name
+      description: Full name of the user
       required: false
       secret: false
       default: false
     - name: user_id
       isArray: false
-      description: user_id
+      description: The user_id is the ID of an existing root domain user. This field is used only when adding an existing root domain user to a different domain.
       required: false
       secret: false
       default: false
     - name: username
       isArray: false
-      description: username
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.
       required: false
       secret: false
       default: false
     - name: password
       isArray: false
-      description: password
+      description: The password used to secure the users account. Allowed passwords are defined by the password policy.Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods.In all other cases, password is required. It is not included in user resource responses.
       required: false
       secret: false
       default: false
     - name: email
       isArray: false
-      description: Users email
+      description: E-mail of the user
       required: false
       secret: false
       default: false
     - name: allowed_auth_methods
       isArray: true
-      description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
+      description: 'Comma seperated login authentication methods allowed to the user. Default value - "password" i.e. Password Authentication is allowed by default. Setting it to empty, i.e "empty", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. Valid values are: password user_certificate password_with_user_certificate This property does not control login behavior for users in admin group.'
       required: false
       secret: false
       default: false
       predefined:
       - password
       - user_certificate
-      - password,user_certificate
-      - user_certificate,password
       - password_with_user_certificate
       - empty
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: allowed_client_types
+      description: "List of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e. all clients can authenticate the user using user's credentials. Setting it to empty, \"empty\", authenticate the user using user's credentials. Setting it to empty, \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. Valid values in the array are: unregistered public confidential This property does not control login behavior for users in admin group."
       required: false
       secret: false
       default: false
@@ -793,7 +791,7 @@ script:
       defaultValue: local_account
     - name: expires_at
       isArray: false
-      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to empty, removes the expiration date of the user account.The supported date-time format is 2025-03-02T06:13:27.71402Z
+      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to "empty", removes the expiration date of the user account.
       required: false
       secret: false
       default: false
@@ -809,7 +807,7 @@ script:
       auto: PREDEFINED
     - name: prevent_ui_login
       isArray: false
-      description: 'If true, user is not allowed to login from Web UI. '
+      description: If true, user is not allowed to login from Web UI.
       required: false
       secret: false
       default: false
@@ -834,7 +832,85 @@ script:
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Users.user_id
+      description: A unique identifier for API call usage.
+      type: String
+    - contextPath: CipherTrust.Users.username
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated.
+      type: String
+    - contextPath: CipherTrust.Users.connection
+      description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
+      type: String
+    - contextPath: CipherTrust.Users.email
+      description: E-mail of the user
+      type: String
+    - contextPath: CipherTrust.Users.name
+      description: Full name of the user
+      type: String
+    - contextPath: CipherTrust.Users.certificate_subject_dn
+      description: The Distinguished Name of the user in certificate
+      type: String
+    - contextPath: CipherTrust.Users.enable_cert_auth
+      description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate.'
+      type: Boolean
+    - contextPath: CipherTrust.Users.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Users.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Users.logins_count
+      description: Count for the number of logins
+      type: Number
+    - contextPath: CipherTrust.Users.last_login
+      description: Timestamp of last login
+      type: Date
+    - contextPath: CipherTrust.Users.created_at
+      description: Timestamp of when user was created
+      type: Date
+    - contextPath: CipherTrust.Users.updated_at
+      description: Timestamp of last update of the user
+      type: Date
+    - contextPath: CipherTrust.Users.allowed_auth_methods
+      description: List of login authentication methods allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.expires_at
+      description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
+      type: Date
+    - contextPath: CipherTrust.Users.password_policy
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      type: String
+    - contextPath: CipherTrust.Users.allowed_client_types
+      description: List of client types allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.nickname
+      description: Nickname of the user
+      type: String
+    - contextPath: CipherTrust.Users.failed_logins_count
+      description: Count of failed login attempts
+      type: Number
+    - contextPath: CipherTrust.Users.account_lockout_at
+      description: Timestamp when the account was locked out
+      type: Date
+    - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
+      description: Timestamp of the initial failed login attempt
+      type: Date
+    - contextPath: CipherTrust.Users.last_failed_login_at
+      description: Timestamp of the last failed login attempt
+      type: Date
+    - contextPath: CipherTrust.Users.password_changed_at
+      description: Timestamp of when the password was last changed
+      type: Date
+    - contextPath: CipherTrust.Users.password_change_required
+      description: Indicates if a password change is required
+      type: Boolean
+    - contextPath: CipherTrust.Users.auth_domain
+      description: Authentication domain of the user
+      type: String
+    - contextPath: CipherTrust.Users.login_flags
+      description: Flags related to login permissions
+      type: Unknown
   - deprecated: false
     description: Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to.
     name: ciphertrust-user-delete
@@ -940,7 +1016,7 @@ script:
     arguments:
     - name: name
       isArray: false
-      description: User’s name
+      description: Full name of the user
       required: false
       secret: false
       default: false
@@ -987,8 +1063,6 @@ script:
       predefined:
       - password
       - user_certificate
-      - password,user_certificate
-      - user_certificate,password
       - password_with_user_certificate
       - empty
       auto: PREDEFINED
@@ -1104,8 +1178,6 @@ script:
       predefined:
       - password
       - user_certificate
-      - password,user_certificate
-      - user_certificate,password
       - password_with_user_certificate
       - empty
       auto: PREDEFINED

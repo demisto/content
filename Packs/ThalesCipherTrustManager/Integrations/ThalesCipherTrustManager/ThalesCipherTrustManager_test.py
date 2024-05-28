@@ -162,7 +162,81 @@ USERS_LIST_TEST_ARGS = [
         CommandArguments.RETURN_GROUPS: "true"
     },
 ]
-USER_CREATE_TEST_ARGS = []
+USER_CREATE_TEST_ARGS = [
+    {
+        "name": "Test User",
+        "user_id": "root|12345678-1234-1234-1234-123456789012",
+        "username": "testuser",
+        "password": "TestPassword!123",
+        "email": "testuser@example.com",
+        "allowed_auth_methods": "password",
+        "allowed_client_types": "unregistered,public,confidential",
+        "certificate_subject_dn": "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+        "connection": "local_account",
+        "expires_at": "2025-01-01T00:00:00.000Z",
+        "is_domain_user": "false",
+        "prevent_ui_login": "false",
+        "password_change_required": "false",
+        "password_policy": "default_policy"
+    },
+    {
+        "name": "Domain User",
+        "username": "domainuser",
+        "email": "domainuser@example.com",
+        "allowed_auth_methods": "password_with_user_certificate",
+        "allowed_client_types": "public,confidential",
+        "certificate_subject_dn": "CN=Domain User,OU=Domain Unit,O=Domain Organization,L=Domain City,ST=Domain State,C=Domain "
+                                  "Country",
+        "connection": "domain_account",
+        "is_domain_user": "true",
+        "prevent_ui_login": "true",
+        "password_change_required": "true",
+        "password_policy": "strict_policy"
+    },
+    {
+        "name": "Cert Auth User",
+        "username": "certauthuser",
+        "email": "certauthuser@example.com",
+        "allowed_auth_methods": "user_certificate",
+        "allowed_client_types": "unregistered",
+        "certificate_subject_dn": "CN=Cert Auth User,OU=Cert Unit,O=Cert Organization,L=Cert City,ST=Cert State,C=Cert Country",
+        "enable_cert_auth": "true",
+        "password_policy": "cert_policy"
+    },
+    {
+        "name": "Expiring User",
+        "username": "expiringuser",
+        "email": "expiringuser@example.com",
+        "allowed_auth_methods": "password",
+        "allowed_client_types": "unregistered,public,confidential",
+        "expires_at": "tomorrow",
+        "prevent_ui_login": "false",
+        "password_change_required": "false",
+        "password_policy": "default_policy"
+    },
+    {
+        "name": "Empty Expiration User",
+        "username": "emptyexpirationuser",
+        "email": "emptyexpirationuser@example.com",
+        "allowed_auth_methods": "password",
+        "allowed_client_types": "unregistered,public,confidential",
+        "expires_at": "empty",
+        "prevent_ui_login": "false",
+        "password_change_required": "false",
+        "password_policy": "default_policy"
+    },
+    {
+        "name": "Empty Auth Methods User",
+        "username": "noauthmethodsuser",
+        "email": "noauthmethodsuser@example.com",
+        "allowed_auth_methods": "empty",
+        "allowed_client_types": "unregistered,public,confidential",
+        "prevent_ui_login": "false",
+        "password_change_required": "false",
+        "password_policy": "default_policy"
+    }
+]
+
 USER_UPDATE_TEST_ARGS = []
 USER_DELETE_TEST_ARGS = []
 USER_PASSWORD_CHANGE_TEST_ARGS = []
@@ -201,21 +275,42 @@ def test_derive_skip_and_limit_for_pagination_invalid_input(limit, page, page_si
         derive_skip_and_limit_for_pagination(limit, page, page_size)
 
 
-@pytest.mark.parametrize('expires_at_arg, expected_output',
-                         [("", ""), ("2023-05-26T15:30:00", "2023-05-26T15:30:00.000000Z"), (None, None)])
-def test_add_expires_at_param(expires_at_arg, expected_output):
-    from ThalesCipherTrustManager import add_expires_at_param
-    request_data = {}
-    add_expires_at_param(request_data, expires_at_arg)
-    assert request_data['expires_at'] == expected_output
+@pytest.mark.parametrize('arg_name, arg_value, expected_output',
+                         [("test_date", "empty", ""),
+                          ("test_date", "2023-05-26T15:30:00", "2023-05-26T15:30:00.000000Z"),
+                          ("test_date", None, None)])
+def test_add_empty_date_param(arg_name, arg_value, expected_output):
+    from ThalesCipherTrustManager import add_empty_date_param
+    request_data = {arg_name: arg_value}
+    add_empty_date_param(request_data, arg_name)
+    assert request_data[arg_name] == expected_output
 
 
-def test_add_expires_at_param_invalid_input():
-    from ThalesCipherTrustManager import add_expires_at_param
+def test_add_empty_date_param_invalid_input():
+    from ThalesCipherTrustManager import add_empty_date_param
     with pytest.raises(ValueError):
-        request_data = {}
-        add_expires_at_param(request_data, "invalid-datetime")
-        assert request_data['expires_at'] is None
+        request_data = {"test_date": "invalid-datetime"}
+        add_empty_date_param(request_data, "test_date")
+        assert request_data['test_date'] is None
+
+
+@pytest.mark.parametrize('arg_name, arg_value, expected_output',
+                         [("test_list", "empty", []),
+                          ("test_list", "item1,item2,item3", ["item1", "item2", "item3"]),
+                          ("test_list", "", []),
+                          ("test_list", None, None)])
+def test_add_empty_list_param(arg_name, arg_value, expected_output):
+    from ThalesCipherTrustManager import add_empty_list_param
+    request_data = {arg_name: arg_value}
+    add_empty_list_param(request_data, arg_name)
+    assert request_data[arg_name] == expected_output
+
+
+def test_add_empty_list_param_no_value():
+    from ThalesCipherTrustManager import add_empty_list_param
+    request_data = {}
+    add_empty_list_param(request_data, "test_list")
+    assert request_data.get('test_list') is None
 
 
 ''' COMMAND FUNCTIONS TESTS '''
