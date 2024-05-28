@@ -5576,7 +5576,7 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
     """
     if type != "Custom" and color != "Default":
         raise DemistoException("color argument is only relevant for “Custom” type.")
-    
+
     filters_data = parse_asset_filters(
         client=client,
         ip_address_is=ip_address_is,
@@ -5693,9 +5693,7 @@ def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: s
     if not argToBoolean(overwrite):
         tag_data = client.get_tag_by_id(tag_id_int)  # type: ignore[arg-type]
         old_filters = tag_data.get("searchCriteria", {}).get("filters", [])
-        new_fields = [filter.get("field") for filter in filters]
-        unused_old_filters = filter(lambda f: f.get("field") not in new_fields, old_filters)
-        filters.extend(unused_old_filters)
+        filters.extend(old_filters)
 
     client.update_tag_search_criteria(tag_id_int, filters, match)  # type: ignore[arg-type]
     return CommandResults(readable_output=f"Tag {tag_id_int} search criteria were updated successfully")
@@ -5827,8 +5825,8 @@ def remove_tag_asset_command(client: Client, tag_id: str, asset_id: str):
     return CommandResults(readable_output=f"Asset {asset_id_int} was removed from tag {tag_id_int} successfully")
 
 
-def add_site_target_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
-                            asset_group_ids: str | None = None):
+def add_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
+                           asset_group_ids: str | None = None):
     """
     Add assets or asset groups to a site's included/excluded assets.
 
@@ -5858,8 +5856,8 @@ def add_site_target_command(client: Client, target_type: str, site_id: str, asse
     return CommandResults(readable_output=f"Added {added_assets} to site with ID {site_id_int}")
 
 
-def remove_site_target_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
-                               asset_group_ids: str | None = None):
+def remove_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
+                              asset_group_ids: str | None = None):
     """
     Remove assets or asset groups from a site's included/excluded assets.
 
@@ -6084,17 +6082,17 @@ def main():  # pragma: no cover
         elif command == "nexpose-remove-tag-asset":
             results = remove_tag_asset_command(client=client, **args)
         elif command == "nexpose-add-site-included-asset":
-            results = add_site_target_command(client=client, target_type="included", **args)
-        elif command == "nexpose-remove-site-included-target":
-            results = remove_site_target_command(client=client, target_type="included", **args)
+            results = add_site_asset_command(client=client, target_type="included", **args)
+        elif command == "nexpose-remove-site-included-asset":
+            results = remove_site_asset_command(client=client, target_type="included", **args)
         elif command == "nexpose-list-site-included-asset":
             results = list_site_assets_command(client=client, asset_type="assets", target_type="included", **args)
         elif command == "nexpose-list-site-included-asset-group":
             results = list_site_assets_command(client=client, asset_type="asset_groups", target_type="included", **args)
-        elif command == "nexpose-add-site-excluded-target":
-            results = add_site_target_command(client=client, target_type="excluded", **args)
-        elif command == "nexpose-remove-site-excluded-target":
-            results = remove_site_target_command(client=client, target_type="excluded", **args)
+        elif command == "nexpose-add-site-excluded-asset":
+            results = add_site_asset_command(client=client, target_type="excluded", **args)
+        elif command == "nexpose-remove-site-excluded-asset":
+            results = remove_site_asset_command(client=client, target_type="excluded", **args)
         elif command == "nexpose-list-site-excluded-asset":
             results = list_site_assets_command(client=client, asset_type="assets", target_type="excluded", **args)
         elif command == "nexpose-list-site-excluded-asset-group":

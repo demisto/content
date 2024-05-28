@@ -2400,7 +2400,7 @@ There is no context output for this command.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site_id | A URL parameter. | Required | 
-| assets | List of addresses to add to the site's included scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| assets | List of addresses to add to the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
 | asset_group_ids | List of asset group identifiers. | Optional | 
 
 #### Context Output
@@ -2416,7 +2416,7 @@ There is no context output for this command.
 ### nexpose-remove-tag-asset
 
 ***
-Remove an asset from a tag. Please note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
+Remove an asset from a tag. Note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
 
 #### Base Command
 
@@ -2729,54 +2729,54 @@ There is no context output for this command.
 
 >Asset 25 was added in tag 61 successfully
 
-### nexpose-remove-site-excluded-target
+### nexpose-remove-site-excluded-asset
 
 ***
-Remove excluded targets from a site.
+Remove excluded assets from a site.
 
 #### Base Command
 
-`nexpose-remove-site-excluded-target`
+`nexpose-remove-site-excluded-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site_id | A URL parameter. | Required | 
-| assets | List of addresses to remove from the site's excluded scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| assets | List of addresses to remove from the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
 | asset_group_ids | List of asset group IDs to remove from the site's exclusion list. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!nexpose-remove-site-excluded-target site_id=848 assets=8.8.8.8```
+```!nexpose-remove-site-excluded-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
 
 >Removed assets 8.8.8.8 from site with ID 848
 
-### nexpose-remove-site-included-target
+### nexpose-remove-site-included-asset
 
 ***
 
 #### Base Command
 
-`nexpose-remove-site-included-target`
+`nexpose-remove-site-included-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site_id | A URL parameter. | Required | 
-| assets | List of addresses to remove from the site's included scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| assets | List of addresses to remove from the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
 | asset_group_ids | List of asset group identifiers. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!nexpose-remove-site-included-target site_id=848 assets=8.8.8.8```
+```!nexpose-remove-site-included-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
 
@@ -3008,28 +3008,28 @@ Return a list of tags.
 ```
 
 
-### nexpose-add-site-excluded-target
+### nexpose-add-site-excluded-asset
 
 ***
-Add excluded targets to a site.
+Add excluded assets to a site.
 
 #### Base Command
 
-`nexpose-add-site-excluded-target`
+`nexpose-add-site-excluded-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site_id | A URL parameter. | Required | 
-| assets | List of addresses to add to the site's excluded scan targets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| assets | List of addresses to add to the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
 | asset_group_ids | List of asset group IDs to exclude. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!nexpose-add-site-excluded-target site_id=848 assets=8.8.8.8```
+```!nexpose-add-site-excluded-asset site_id=848 assets=8.8.8.8```
 
 #### Human Readable Output
 

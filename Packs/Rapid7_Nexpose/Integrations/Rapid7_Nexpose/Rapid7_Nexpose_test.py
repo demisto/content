@@ -1711,10 +1711,10 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
 @pytest.mark.parametrize(
     "name, type, color, ip_address_is, match, expected_post_data",
     [
-        ("test", "Owner", "Red", "3.3.3.3", "Any",
+        ("test", "Custom", "Red", "3.3.3.3", "Any",
             {
                 "name": "test",
-                "type": "Owner",
+                "type": "Custom",
                 "color": "Red",
                 "searchCriteria": {
                     "filters": [
@@ -1908,11 +1908,11 @@ def test_remove_tag_asset_command(mocker, mock_client, tag_id, asset_id):
     ("excluded", "1", "8.8.8.8,www", None),  # test add excluded asset
     ("excluded", "2", None, "789,612")  # test add excluded asset group
 ])
-def test_add_site_target_command(mocker, mock_client, site_id, target_type, assets, asset_group_ids):
+def test_add_site_asset_command(mocker, mock_client, site_id, target_type, assets, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
-    add_site_target_command(client=mock_client, target_type=target_type, site_id=site_id,
-                            assets=assets, asset_group_ids=asset_group_ids)
+    add_site_asset_command(client=mock_client, target_type=target_type, site_id=site_id,
+                           assets=assets, asset_group_ids=asset_group_ids)
 
     if assets is not None:
         http_request.assert_called_with(
@@ -1936,11 +1936,11 @@ def test_add_site_target_command(mocker, mock_client, site_id, target_type, asse
     ("excluded", "1", "8.8.8.8,www", None),  # test remove excluded asset
     ("excluded", "2", None, "789,612")  # test remove excluded asset group
 ])
-def test_remove_site_target_command(mocker, mock_client, target_type, site_id, assets, asset_group_ids):
+def test_remove_site_asset_command(mocker, mock_client, target_type, site_id, assets, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
-    remove_site_target_command(client=mock_client, target_type=target_type, site_id=site_id,
-                               assets=assets, asset_group_ids=asset_group_ids)
+    remove_site_asset_command(client=mock_client, target_type=target_type, site_id=site_id,
+                              assets=assets, asset_group_ids=asset_group_ids)
 
     if assets:
         http_request.assert_called_with(

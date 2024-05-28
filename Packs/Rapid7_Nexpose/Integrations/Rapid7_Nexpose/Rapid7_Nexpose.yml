@@ -2332,7 +2332,7 @@ script:
     - name: asset_id
       required: true
       description: The asset ID.
-    description: Remove an asset from a tag. Please note that the asset must be added through the asset or tag.
+    description: Remove an asset from a tag. Note that the asset must be added through the asset or tag.
       If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
   - name: nexpose-add-site-included-asset
     arguments:
@@ -2340,28 +2340,28 @@ script:
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's included scan targets.
+      description: List of addresses to add to the site's included scan assets.
         Each address is a string that can represent either a hostname,
         IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
       isArray: true
     - name: asset_group_ids
       isArray: true
       description: List of asset group identifiers.
-    description: Add included targets to a site.
-  - name: nexpose-remove-site-included-target
+    description: Add included assets to a site.
+  - name: nexpose-remove-site-included-asset
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     - name: assets
       isArray: true
-      description: List of addresses to remove from the site's included scan targets.
+      description: List of addresses to remove from the site's included scan assets.
         Each address is a string that can represent either a hostname,
         IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       isArray: true
       description: List of asset group identifiers.
-    description: Remove included targets from a site.
+    description: Remove included assets from a site.
   - name: nexpose-list-site-included-asset
     arguments:
     - name: site_id
@@ -2388,30 +2388,30 @@ script:
     - contextPath: Nexpose.IncludedAssetGroup.resources
       description: The asset group ID.
       type: int
-  - name: nexpose-add-site-excluded-target
+  - name: nexpose-add-site-excluded-asset
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's excluded scan targets.
+      description: List of addresses to add to the site's excluded scan assets.
         Each address is a string that can represent either a hostname,
         IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to exclude.
-    description: Add excluded targets to a site.
-  - name: nexpose-remove-site-excluded-target
+    description: Add excluded assets to a site.
+  - name: nexpose-remove-site-excluded-asset
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to remove from the site's excluded scan targets.
+      description: List of addresses to remove from the site's excluded scan assets.
         Each address is a string that can represent either a hostname,
         IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to remove from the site's exclusion list.
-    description: Remove excluded targets from a site.
+    description: Remove excluded assets from a site.
   - name: nexpose-list-site-excluded-asset
     arguments:
     - name: site_id
