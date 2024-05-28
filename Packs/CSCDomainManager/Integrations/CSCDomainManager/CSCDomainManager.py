@@ -29,19 +29,19 @@ DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
 MAX_QUALIFIED_DOMAIN_NAMES = 50
 ACCEPT_VAL = "application/json"
-HR_HEADERS_FOR_DOMAINS_SEARCH =['Qualified Domain Name',
-                                'Domain',
-                                'Managed Status',
-                                'Registration Date',
-                                'Registry Expiry Date',
-                                'Paid Through Date',
-                                'Name Servers',
-                                'Dns Type',
-                                'WhoisContacts'
-                                #  'Whois Contact first Name',
-                                #  'Whois Contact last Name',
-                                #  'Whois Contact email'
-                                ]
+HR_HEADERS_FOR_DOMAINS_SEARCH = ['Qualified Domain Name',
+                                 'Domain',
+                                 'Managed Status',
+                                 'Registration Date',
+                                 'Registry Expiry Date',
+                                 'Paid Through Date',
+                                 'Name Servers',
+                                 'Dns Type',
+                                 #  'WhoisContacts'
+                                 'Whois Contact first Name',
+                                 'Whois Contact last Name',
+                                 'Whois Contact email'
+                                 ]
 HR_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
                                     'Domain Label',
                                     'Domain Status Code',
@@ -52,32 +52,32 @@ HR_HEADERS_FOR_DOMAIN_CONFI_LIST = ['Domain',
                                     'Account Number',
                                     'Account Name'
                                     ]
-HR_HEADERS_FOR_DOMAIN =['Qualified Domain Name',
-                        'Domain',
-                        'Idn',
-                        'Generic top-level domains',
-                        'Managed Status',
-                        'Registration Date',
-                        'Registry Expiry Date',
-                        'Paid Through Date',
-                        'Country Code',
-                        'Server Delete Prohibited',
-                        'Server Transfer Prohibited',
-                        'Server Update Prohibited',
-                        'Name Servers',
-                        'Dns Type',
-                        'Whois Contact first Name',
-                        'Whois Contact last Name',
-                        'Whois Contact email'
-]
+HR_HEADERS_FOR_DOMAIN = ['Qualified Domain Name',
+                         'Domain',
+                         'Idn',
+                         'Generic top-level domains',
+                         'Managed Status',
+                         'Registration Date',
+                         'Registry Expiry Date',
+                         'Paid Through Date',
+                         'Country Code',
+                         'Server Delete Prohibited',
+                         'Server Transfer Prohibited',
+                         'Server Update Prohibited',
+                         'Name Servers',
+                         'Dns Type',
+                         'Whois Contact first Name',
+                         'Whois Contact last Name',
+                         'Whois Contact email'
+                         ]
 
 HR_HEADERS_FOR_AVAILABILITY = ['Qualified Domain Name',
-                                'Code',
-                                'Message',
-                                'Price',
-                                'Currency',
-                                'List of the terms (months) available for registration'
-]
+                               'Code',
+                               'Message',
+                               'Price',
+                               'Currency',
+                               'List of the terms (months) available for registration'
+                               ]
 SEARCH_OPERATORS = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
 SELECTORS_MAPPING = {
     'domain_name': 'domain',
@@ -146,7 +146,7 @@ def create_params_string(args):
     return params_str
 
 
-def extract_required_fields_for_domains_search_hr(domains_list):
+def extract_required_fields_for_domains_search_hr(domains_list) -> list:
     filtered_domains = []
 
     for domain in domains_list:
@@ -159,24 +159,20 @@ def extract_required_fields_for_domains_search_hr(domains_list):
             'Paid Through Date': domain.get('paidThroughDate'),
             'Name Servers': domain.get('nameServers'),
             'Dns Type': domain.get('dnsType'),
-            'WhoisContacts': []
+            'Whois Contact first Name': [get_whois_contacts_fields_for_search_domains_command
+                                         (domain.get('whoisContacts'), 'firstName')],
+            'Whois Contact last Name': [get_whois_contacts_fields_for_search_domains_command
+                                        (domain.get('whoisContacts'), 'lastName')],
+            'Whois Contact email': [get_whois_contacts_fields_for_search_domains_command
+                                    (domain.get('whoisContacts'), 'email')]
         }
-
-        whois_contacts = domain.get('whoisContacts', [])
-        for contact in whois_contacts:
-            filtered_contact = {
-                'firstName': contact.get('firstName'),
-                'lastName': contact.get('lastName'),
-                'email': contact.get('email')
-            }
-            filtered_domain['WhoisContacts'].append(filtered_contact)
 
         filtered_domains.append(filtered_domain)
 
     return filtered_domains
 
 
-def extract_required_fields_for_domains_configurations_list_hr(configurations):
+def extract_required_fields_for_domains_configurations_list_hr(configurations) -> list:
     filtered_configurations = []
 
     for config in configurations:
@@ -196,42 +192,50 @@ def extract_required_fields_for_domains_configurations_list_hr(configurations):
 
     return filtered_configurations
 
-def extract_required_fields_for_domain_hr(domain):
-    filterd = {'Qualified Domain Name' : domain.get('qualifiedDomainName'),
-                'Domain' : domain.get('domain'),
-                'Idn' : domain.get('idn'),
-                'Generic top-level domains' : domain.get('newGtld'),
-                'Managed Status' : domain.get('managedStatus'),
-                'Registration Date' : domain.get('registrationDate'),
+
+def extract_required_fields_for_domain_hr(domain) -> dict:
+    filtered = {'Qualified Domain Name': domain.get('qualifiedDomainName'),
+                'Domain': domain.get('domain'),
+                'Idn': domain.get('idn'),
+                'Generic top-level domains': domain.get('newGtld'),
+                'Managed Status': domain.get('managedStatus'),
+                'Registration Date': domain.get('registrationDate'),
                 'Registry Expiry Date': domain.get('registryExpiryDate'),
-                'Paid Through Date' : domain.get('paidThroughDate'),
-                'Country Code' : domain.get('countryCode'),
-                'Server Delete Prohibited' : domain.get('countryCode'),
-                'Server Transfer Prohibited' : domain.get('serverDeleteProhibited'),
-                'Server Update Prohibited' : domain.get('serverTransferProhibited'),
-                'Name Servers' : domain.get('nameServers'),
-                'Dns Type' : domain.get('dnsType'),
+                'Paid Through Date': domain.get('paidThroughDate'),
+                'Country Code': domain.get('countryCode'),
+                'Server Delete Prohibited': domain.get('countryCode'),
+                'Server Transfer Prohibited': domain.get('serverDeleteProhibited'),
+                'Server Update Prohibited': domain.get('serverTransferProhibited'),
+                'Name Servers': domain.get('nameServers'),
+                'Dns Type': domain.get('dnsType'),
                 'Whois Contact first Name': domain.get('whoisContacts')[0].get('firstName'),
-                'Whois Contact last Name' : domain.get('whoisContacts')[0].get('lastName'),
-                'Whois Contact email' : domain.get('whoisContacts')[0].get('email')
-    }
-    
+                'Whois Contact last Name': domain.get('whoisContacts')[0].get('lastName'),
+                'Whois Contact email': domain.get('whoisContacts')[0].get('email')
+                }
+
     domain.get('whoisContacts')
-    return filterd
-    
-    
+    return filtered
 
 
-def get_info_from_whois_contacts(whois_contact, field_names, contact_type_condition):
+def get_whois_contacts_fields_for_domain_command(whois_contact, field_names: str | List[str],
+                                                 contact_type_condition: str) -> list:
     results = []
     if isinstance(field_names, str):
         field_names = [field_names]
-        
+
     for contact in whois_contact:
         if contact.get('contactType') == contact_type_condition:
             combined_fields = ' '.join(contact[field] for field in field_names)
             results.append(combined_fields)
-    
+
+    return results
+
+
+def get_whois_contacts_fields_for_search_domains_command(whois_contacts, field_name: str) -> list:
+    results = []
+    for contact in whois_contacts:
+        results.append(contact.get(field_name))
+
     return results
 
 
@@ -291,20 +295,23 @@ def csc_domains_search_command(client: Client, args) -> Any:
     return results
 
 
-def csc_domains_availability_check_command(client: Client, args) -> str:
+def csc_domains_availability_check_command(client: Client, args) -> Any:
     domain_names = args.get('domain_name')
-    params = f'qualifiedDomainNames=={domain_names}'
-    available_domains_results = (client.send_get_request("/availability", params)).get['results']
+    params = f'qualifiedDomainNames={domain_names}'
+    available_domains_results = (client.send_get_request("/availability", params)).get('results')
+
     hr_output = {
-        'Qualified Domain Name' : [result.get('qualifiedDomainName') for result in available_domains_results],
-        'Code' : [result.get('result').get('code') for result in available_domains_results],
-        'Message' : [result.get('result').get('message') for result in available_domains_results],
-        'Price' : [result.get('basePrice').get('price') for result in available_domains_results],
-        'Currency' : [result.get('basePrice').get('currency') for result in available_domains_results],
-        'List of the terms (months) available for registration' : [result.get('availableTerms') for result
-                                                                   in available_domains_results]
+        'Qualified Domain Name': [result.get('qualifiedDomainName') for result in available_domains_results],
+        'Code': [result.get('result').get('code') for result in available_domains_results],
+        'Message': [result.get('result').get('message') for result in available_domains_results],
+        'Price': [result.get('basePrice').get('price') for result
+                  in available_domains_results if result.get('basePrice').get('price')],
+        'Currency': [result.get('basePrice').get('currency') for result
+                     in available_domains_results if result.get('basePrice').get('currency')],
+        'List of the terms (months) available for registration': [result.get('availableTerms') for result
+                                                                  in available_domains_results if result.get('availableTerms')]
     }
-        
+
     results = CommandResults(
         readable_output=tableToMarkdown('Domains Availability', hr_output, headers=HR_HEADERS_FOR_AVAILABILITY),
         outputs_prefix='CSCDomainManager.Domain.Availability',
@@ -313,7 +320,7 @@ def csc_domains_availability_check_command(client: Client, args) -> str:
     return results
 
 
-def csc_domains_configuration_list_command(client: Client, args):
+def csc_domains_configuration_list_command(client: Client, args) -> Any:
     args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE
     if args.get('limit'):
         args['page'] = '1'
@@ -336,56 +343,58 @@ def csc_domains_configuration_list_command(client: Client, args):
     return results
 
 
-def domain(client, args, reliability):
+def domain(client, args, reliability) -> Any:
     qualified_domain_name = args.get('domain')
     domain_json = client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")
-    # domains_with_required_fields = extract_required_fields_for_domains_search_hr(domains_list)
 
-    dbot_score = Common.DBotScore (
-    indicator= qualified_domain_name,
-    indicator_type=DBotScoreType.DOMAIN,
-    integration_name="CSCDomainManager",
-    score=Common.DBotScore.NONE,
-    reliability=reliability
+    dbot_score = Common.DBotScore(
+        indicator=qualified_domain_name,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="CSCDomainManager",
+        score=Common.DBotScore.NONE,
+        reliability=reliability
     )
-    
-    domain_context = Common.Domain (
-        domain = domain_json.get('domain'),
-        creation_date = domain_json.get('registrationDate'),
-        domain_idn_name = domain_json.get('idn'),
-        expiration_date = domain_json.get('registryExpiryDate'),
-        name_servers = domain_json.get('nameServers'),
-        
-        registrant_name =get_info_from_whois_contacts(domain_json.get('whoisContacts'), ['firstName', 'lastName'], 'REGISTRANT'),
-        registrant_email = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'email', 'REGISTRANT'),
-        registrant_phone = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'phone', 'REGISTRANT'),
-        registrant_country = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'country', 'REGISTRANT'),
-        
-        admin_name = get_info_from_whois_contacts(domain_json.get('whoisContacts'), ['firstName', 'lastName'], 'ADMINISTRATIVE'),
-        admin_email = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'email', 'ADMINISTRATIVE'),
-        admin_phone = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'phone', 'ADMINISTRATIVE'),
-        admin_country = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'country', 'ADMINISTRATIVE'),
-        
-        tech_country = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'country', 'TECHNICAL'),
-        tech_name =get_info_from_whois_contacts(domain_json.get('whoisContacts'), ['firstName', 'lastName'], 'TECHNICAL'),
-        tech_organization = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'organization', 'TECHNICAL'),
-        tech_email = get_info_from_whois_contacts(domain_json.get('whoisContacts'), 'email', 'TECHNICAL'),
-        
-        dbot_score = dbot_score
+
+    domain_context = Common.Domain(
+        domain=domain_json.get('domain'),
+        creation_date=domain_json.get('registrationDate'),
+        domain_idn_name=domain_json.get('idn'),
+        expiration_date=domain_json.get('registryExpiryDate'),
+        name_servers=domain_json.get('nameServers'),
+        registrant_name=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                                     ['firstName', 'lastName'], 'REGISTRANT'),
+        registrant_email=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                                      'email', 'REGISTRANT'),
+        registrant_phone=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                                      'phone', 'REGISTRANT'),
+        registrant_country=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                                        'country', 'REGISTRANT'),
+        admin_name=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                                ['firstName', 'lastName'], 'ADMINISTRATIVE'),
+        admin_email=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'email', 'ADMINISTRATIVE'),
+        admin_phone=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'phone', 'ADMINISTRATIVE'),
+        admin_country=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'country', 'ADMINISTRATIVE'),
+        tech_country=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'country', 'TECHNICAL'),
+        tech_name=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                               ['firstName', 'lastName'], 'TECHNICAL'),
+        tech_organization=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+                                                                       'organization', 'TECHNICAL'),
+        tech_email=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'email', 'TECHNICAL'),
+        dbot_score=dbot_score
     )
 
     hr_data = extract_required_fields_for_domain_hr(domain_json)
-    
+
     context_res = {}
     context_res.update(dbot_score.to_context())
     context_res.update(domain_context.to_context())
 
     results = CommandResults(
         readable_output=tableToMarkdown('Domain', hr_data, headers=HR_HEADERS_FOR_DOMAIN),
-        outputs_prefix ='CSCDomainManager.Domain',
-        outputs = context_res
+        outputs_prefix='CSCDomainManager.Domain',
+        outputs=context_res
         # outputs_key_field ='QualifiedDomainName',
-        #indicator = domain_context
+        # indicator = domain_context
     )
     return results
 
