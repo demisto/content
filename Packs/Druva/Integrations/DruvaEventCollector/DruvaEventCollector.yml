@@ -38,7 +38,7 @@ script:
         - 'true'
         - 'false'
       required: true
-    - description: A pointer to the last event we received.
+    - description: A string received in a previous run, marking the point in time from which we want to fetch.
       name: tracker
       required: false
     description: Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from here.
