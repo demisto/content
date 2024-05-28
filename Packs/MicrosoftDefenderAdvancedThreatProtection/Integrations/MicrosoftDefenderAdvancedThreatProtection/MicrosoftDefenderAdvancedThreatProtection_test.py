@@ -8,7 +8,7 @@ import json
 import pytest
 
 from CommonServerPython import DemistoException
-from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, handle_machines, list_machines_by_ip_command, parse_ip_addresses, \
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, list_machines_by_ip_command, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
     get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
@@ -88,11 +88,13 @@ def test_third_fetch_incidents(mocker):
 
 
 test_list_machines_by_ip_data = [
-    ({'ip':'8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'}, #case no limit and all_results is True
-    3), #expected two machines
-    ({'ip':'8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'}, #case with limit
-    1 ) #expected only 1 machine
+    ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
+     3),  # expected two machines
+    ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
+     1)  # expected only 1 machine
 ]
+
+
 @pytest.mark.parametrize('params, expected_len', test_list_machines_by_ip_data)
 def test_list_machines_by_ip(mocker, params, expected_len):
     """_summary_
@@ -106,14 +108,13 @@ def test_list_machines_by_ip(mocker, params, expected_len):
         _type_: _description_
     """
     from MicrosoftApiModule import MicrosoftClient
-    raw_response = {'value': [{},{},{}]}
+    raw_response = {'value': [{}, {}, {}]}
     mock_http_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     list_machines_by_ip_command(client_mocker, params)
-    assert mock_http_request.call_args.kwargs == {'method': 'GET', 'url_suffix': "machines/findbyip(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)"}
+    assert mock_http_request.call_args.kwargs == {'method': 'GET',
+                                                  'url_suffix': "machines/findbyip(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)"}
     assert len(mock_handle_machines.call_args.args[0]) == expected_len
-
-
 
 
 def test_get_alert_related_ips_command(mocker):

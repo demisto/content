@@ -5089,7 +5089,7 @@ def handle_machines(machines_response):
     Returns:
         CommandResults list.
     """
-    
+
     headers = ['ID', 'Hostname', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
 
     machines_outputs = []
@@ -5109,7 +5109,7 @@ def handle_machines(machines_response):
             outputs=machine_data,
             indicator=endpoint_indicator,
         ))
-            
+
     if not machines_outputs:
         machines_outputs.append(CommandResults(
             readable_output=f"{INTEGRATION_NAME} no device found.",
@@ -5117,8 +5117,10 @@ def handle_machines(machines_response):
         ))
     return machines_outputs
 
-def list_machines_by_ip_command(client: MsClient, args: dict)-> list[CommandResults]:
-    """Retrieves machines that comunicated with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+
+def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Retrieves machines that comunicated with the requested internal IP in the time range of 15 minutes prior and after a given
+    timestamp.
 
     Returns:
         CommandResults list.
@@ -5126,14 +5128,14 @@ def list_machines_by_ip_command(client: MsClient, args: dict)-> list[CommandResu
     ip = args['ip']
     timestamp = args['timestamp']
     limit = arg_to_number(args.get('limit', 50))
-    all_results = argToBoolean(args.get('all_results',False))
-    
-    machines_response = client.ms_client.http_request(method='GET', url_suffix=f"machines/findbyip(ip='{ip}',timestamp={timestamp})")
-    
-    machines_response= machines_response.get('value', [])[:limit] if not all_results else machines_response.get('value', [])
-    
+    all_results = argToBoolean(args.get('all_results', False))
+
+    machines_response = client.ms_client.http_request(
+        method='GET', url_suffix=f"machines/findbyip(ip='{ip}',timestamp={timestamp})")
+
+    machines_response = machines_response.get('value', [])[:limit] if not all_results else machines_response.get('value', [])
+
     return handle_machines(machines_response)
-    
 
 
 def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
@@ -5147,8 +5149,8 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     ids = argToList(args.get('id', ''))
     validate_args_endpoint_command(hostnames, ips, ids)
     machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
-    machines_response =  machines_response.get('value', [])
-    
+    machines_response = machines_response.get('value', [])
+
     return handle_machines(machines_response)
 
 
@@ -5591,7 +5593,7 @@ def main():  # pragma: no cover
                                 'Please use `!microsoft-atp-test` command to test the connection')
             test_module(client)
             demisto.results('ok')
-        
+
         elif command == 'microsoft-atp-test':
             test_module(client)
             return_results('✅ Success!')
@@ -5600,7 +5602,7 @@ def main():  # pragma: no cover
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
-            
+
         elif command == 'microsoft-atp-list-machines-by-ip':
             return_results(list_machines_by_ip_command(client, args))
 
