@@ -15,100 +15,98 @@
     "name": "API Execution Metrics",
     "layout": [
         {
-            "id": "e7377a00-e12b-11ee-8377-d592a71a5531",
-            "forceRange": false,
-            "x": 8,
-            "y": 0,
-            "i": "e7377a00-e12b-11ee-8377-d592a71a5531",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "0821903b-1099-4f3d-8c30-27decd8c5c06",
-                "version": 3,
-                "cacheVersn": 0,
-                "modified": "2024-03-13T11:21:27.174372329Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for FortiSandbox2",
-                "prevName": "API Call Results for FortiSandbox2",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and name:FortiSandboxv2",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
+			"id": "e7377a00-e12b-11ee-8377-d592a71a5531",
+			"forceRange": false,
+			"x": 8,
+			"y": 0,
+			"i": "e7377a00-e12b-11ee-8377-d592a71a5531",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "0821903b-1099-4f3d-8c30-27decd8c5c06",
+				"version": 3,
+				"cacheVersn": 0,
+				"modified": "2024-03-13T07:21:27.174372329-04:00",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "API Call Results for FortiSandbox2",
+				"prevName": "API Call Results for FortiSandbox2",
+				"dataType": "metrics",
+				"widgetType": "line",
+				"query": "type:integration and name:FortiSandboxv2",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "days",
+						"byFrom": "hours",
+						"toValue": 0,
+						"fromValue": 3,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"General Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "GeneralError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "General Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"modified(h)",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"referenceLine": {},
+					"timeFrame": "hours",
+					"valuesFormat": "abbreviated",
+					"xAxisLabel": "Time",
+					"yAxisLabel": "Request Counts"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
         {
             "id": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
             "forceRange": false,
@@ -219,9 +217,7 @@
                     "limitType": "top",
                     "valuesFormat": "abbreviated"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -277,9 +273,7 @@
                     ],
                     "valuesFormat": "abbreviated"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -287,7 +281,7 @@
             "id": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
             "forceRange": false,
             "x": 8,
-            "y": 3,
+            "y": 0,
             "i": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
             "w": 4,
             "h": 3,
@@ -389,9 +383,7 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -533,9 +525,7 @@
                     "xAxisLabel": "Enrichment Command name ",
                     "yAxisLabel": "Error count"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -543,7 +533,7 @@
             "id": "63de01c0-e0e1-11ec-a7f6-39e12e3bcb7a",
             "forceRange": false,
             "x": 8,
-            "y": 6,
+            "y": 3,
             "i": "63de01c0-e0e1-11ec-a7f6-39e12e3bcb7a",
             "w": 4,
             "h": 3,
@@ -660,9 +650,7 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -670,7 +658,7 @@
             "id": "8caf2770-583a-11ed-b0d6-31717adfe334",
             "forceRange": false,
             "x": 8,
-            "y": 9,
+            "y": 6,
             "i": "8caf2770-583a-11ed-b0d6-31717adfe334",
             "w": 4,
             "h": 3,
@@ -770,9 +758,7 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -880,9 +866,7 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -890,7 +874,7 @@
             "id": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
             "forceRange": false,
             "x": 8,
-            "y": 12,
+            "y": 9,
             "i": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
             "w": 4,
             "h": 2,
@@ -1020,9 +1004,7 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -1133,9 +1115,7 @@
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 3,
-                "widgetType": "line",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "widgetType": "line"
             },
             "x": 0,
             "y": 8
@@ -1244,9 +1224,7 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "category": ""
             },
             "reflectDimensions": true
         },
@@ -1349,130 +1327,6 @@
                         "sum|totalAPICalls"
                     ],
                     "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "adcecad0-17a8-11ef-b89d-b728009392bd",
-            "forceRange": false,
-            "x": 0,
-            "y": 14,
-            "i": "adcecad0-17a8-11ef-b89d-b728009392bd",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "eff19897-4635-44c4-889c-f106373be355",
-                "version": 5,
-                "cacheVersn": 0,
-                "modified": "2024-05-21T19:31:05.883188536Z",
-                "created": "2024-05-21T10:22:20.546514077Z",
-                "sizeInBytes": 0,
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results For Gmail Single User",
-                "prevName": "API Call Results For Gmail Single User",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and name:\"Gmail Single User\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "hours",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "ConnectionError": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "ConnectionError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "ConnectionError"
-                            },
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
                     "timeFrame": "hours",
                     "valuesFormat": "abbreviated",
                     "xAxisLabel": "Time",
