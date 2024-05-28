@@ -767,25 +767,28 @@ class Client:
         We might not have Beautiful Soup so just do regex search
         """
         attachments = []
+        file_results = []
         cleanBody = ''
         lastIndex = 0
         for i, m in enumerate(
                 re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I | re.S)):
             maintype, subtype = m.group(2).split('/', 1)
             name = f"image{i}.{subtype}"
-            att = {
+            cid = f'{name}@{random_word_generator(8)}_{random_word_generator(8)}'
+            attachment = {
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
-                'name': name,
-                'cid': f'{name}@{random_word_generator(8)}_{random_word_generator(8)}'
+                'name': f'{cid}-imageName:{name}',
+                'cid': cid
             }
-            attachments.append(att)
-            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+            attachments.append(attachment)
+            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
             lastIndex = m.end() - 1
+            file_results.append(fileResult(attachment['name'], attachment['data']))
 
         cleanBody += htmlBody[lastIndex:]
-        return cleanBody, attachments
+        return cleanBody, attachments, file_results
 
     def collect_inline_attachments(self, attach_cids):
         """
@@ -890,7 +893,7 @@ class Client:
                 msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
                 if att['cid'] is not None:
                     msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_txt.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_txt.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_txt.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -900,7 +903,7 @@ class Client:
                 msg_img = MIMEImage(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_img.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_img.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -910,7 +913,7 @@ class Client:
                 msg_aud = MIMEAudio(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_aud.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_aud.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -920,7 +923,7 @@ class Client:
                 msg_app = MIMEApplication(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_app.add_header('Content-ID', '<' + att['cid'] + '>')
                 else:
                     msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_app)
@@ -930,7 +933,7 @@ class Client:
                 msg_base.set_payload(att['data'])
                 if att['cid'] is not None:
                     msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_base.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_base.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -991,7 +994,7 @@ class Client:
 
             if htmlBody:
                 # htmlBody, htmlAttachments = handle_html(htmlBody)
-                htmlBody, htmlAttachments = self.handle_html(htmlBody)
+                htmlBody, htmlAttachments, file_results = self.handle_html(htmlBody)
                 msg = MIMEText(htmlBody, 'html', 'utf-8')
                 attach_body_to.attach(msg)  # type: ignore
                 if attach_cid:
@@ -1018,7 +1021,7 @@ class Client:
         command_args = {'raw': encoded_message.decode()}
         emailfrom = emailfrom or EMAIL
 
-        return self.send_email_request(email_from=emailfrom, body=command_args)
+        return self.send_email_request(email_from=emailfrom, body=command_args), file_results
 
     def send_email_request(self, email_from: str, body: dict) -> dict:
         """
@@ -1109,20 +1112,30 @@ def mail_command(client: Client, args: dict, email_from, send_as, subject_prefix
 
     rendering_body = html_body if body_type == "html" else body
 
-    result = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
+    result, file_results = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
                               attach_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
                               transient_file_cid, additional_headers, template_param, in_reply_to, references)
     send_mail_result = client.sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, html_body,
                                                  rendering_body, subject)
 
+    temp_array = []
+    temp_array.append(send_mail_result)
     if render_body:
         html_result = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['html'],
             'Contents': html_body
         }
-
+        if file_results:
+            temp_array.append(html_result)
+            for file in file_results:
+                temp_array.append(file)
+            return temp_array
         return [send_mail_result, html_result]
+    if file_results:
+        for file in file_results:
+            temp_array.append(file)
+        return temp_array
     return send_mail_result
 
 
