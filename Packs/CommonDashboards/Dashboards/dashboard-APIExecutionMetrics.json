@@ -1481,6 +1481,129 @@
                 "category": ""
             },
             "reflectDimensions": true
+        },
+        {
+            "id": "8b8ff8c0-1cc8-11ef-96e7-ed8f9716b66d",
+            "forceRange": false,
+            "x": 4,
+            "y": 14,
+            "i": "8b8ff8c0-1cc8-11ef-96e7-ed8f9716b66d",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "274a87c0-5890-421d-8523-12bf02a26f97",
+                "version": 3,
+                "cacheVersn": 0,
+                "modified": "2024-05-28T08:01:48.215216475Z",
+                "created": "2024-05-28T07:52:50.73979591Z",
+                "sizeInBytes": 0,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "API Call Results For QRadar",
+                "prevName": "API Call Results For QRadar",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "\"type:integration and name: \"QRadar v3\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "hours",
+                        "byFrom": "hours",
+                        "toValue": 0,
+                        "fromValue": 3,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "ConnectionError": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ConnectionError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "ConnectionError"
+                            },
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(h)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "showOthers": false,
+                    "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
         }
     ],
     "fromVersion": "6.8.0",

@@ -1,0 +1,118 @@
+{
+  "Cache": null,
+  "packName": "",
+  "dataType": "metrics",
+  "itemVersion": "",
+  "sizeInBytes": 1340,
+  "params": {
+    "customGroupBy": [
+      null,
+      {
+        "ConnectionError": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "ConnectionError",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "ConnectionError"
+        },
+        "General Error": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "GeneralError",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "General Error"
+        },
+        "Quota Error": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "QuotaError",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "Quota Error"
+        },
+        "Success": {
+          "conditions": [
+            [
+              {
+                "field": "apiResponseType",
+                "operator": "isEqualCaseString",
+                "right": "Successful",
+                "type": "string"
+              }
+            ]
+          ],
+          "name": "Success"
+        }
+      }
+    ],
+    "groupBy": [
+      "modified(h)",
+      "apiResponseType"
+    ],
+    "keys": [
+      "sum|totalAPICalls"
+    ],
+    "showOthers": false,
+    "timeFrame": "hours",
+    "valuesFormat": "abbreviated",
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Request Counts"
+  },
+  "query": "\"type:integration and name: \"QRadar v3\"",
+  "created": "2024-05-28T07:52:50.73979591Z",
+  "modified": "2024-05-28T08:01:48.215216475Z",
+  "shouldCommit": false,
+  "fromServerVersion": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "name": "API Call Results For QRadar",
+  "definitionId": "",
+  "vcShouldKeepItemLegacyProdMachine": false,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "by": "",
+      "byTo": "hours",
+      "byFrom": "hours",
+      "toValue": 0,
+      "fromValue": 3,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "commitMessage": "",
+  "isPredefined": false,
+  "vcShouldIgnore": false,
+  "packID": "",
+  "version": 3,
+  "toServerVersion": "",
+  "id": "274a87c0-5890-421d-8523-12bf02a26f97",
+  "cacheVersn": 0,
+  "category": "",
+  "prevName": "API Call Results For QRadar",
+  "widgetType": "line",
+  "customCalculation": {
+    "operation": "sum",
+    "fieldName": "totalAPICalls",
+    "expression": "totalAPICalls"
+  }
+}
