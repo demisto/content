@@ -22,7 +22,8 @@ from Utils.github_workflow_scripts.utils import (
     load_json,
     get_content_reviewers,
     CONTENT_ROLES_PATH,
-    get_support_level
+    get_support_level,
+    get_metadata
 )
 from demisto_sdk.commands.common.tools import get_pack_name
 from urllib3.exceptions import InsecureRequestWarning
@@ -253,7 +254,26 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(pr_files: list[str]) -> bool:
+def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
+    pack_metadata = {}
+    pack_dirs_to_check = packs_to_check_in_pr(pr_files)
+    try:
+        fork_owner = os.getenv('GITHUB_ACTOR')
+        with Checkout(
+            repo=Repo(Path().cwd(), search_parent_directories=True),
+            branch_to_checkout=external_pr_branch,
+            # in marketplace contributions the name of the owner should be xsoar-contrib
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            repo_name=repo_name
+        ):
+            pack_metadata = get_metadata(pack_dirs_to_check)
+    except Exception as error:
+        print("couldn't checkout branch to get metadata")
+    print(f'the metadata is: {pack_metadata}')
+    return True
+
+
+def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
     This is where the actual search for feed:True or relevant tags or categories are being searched
     according to the login in is_tim_reviewer_needed
@@ -269,6 +289,8 @@ def is_tim_content(pr_files: list[str]) -> bool:
         if 'CONTRIBUTORS.json' in file:
             continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
+        if not integration:
+            return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
         print(f'integration is: {integration}')
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
@@ -283,7 +305,7 @@ def is_tim_content(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
+def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
     """
     Checks whether the PR need to be reviewed by a TIM reviewer.
     It check the yml file of the integration - if it has the feed: True
@@ -297,7 +319,7 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     Returns: True or false if tim reviewer needed
     """
     if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-        return is_tim_content(pr_files)
+        return is_tim_content(pr_files, external_pr_branch, repo_name)
     return False
 
 
@@ -484,7 +506,7 @@ def main():
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
-    if is_tim_reviewer_needed(pr_files, support_label):
+    if is_tim_reviewer_needed(pr_files, support_label, pr.head.ref, repo_name):
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 

@@ -120,19 +120,20 @@ class Checkout:  # pragma: no cover
                 self.repo.create_remote(name=forked_remote_name, url=url)
                 print(f'Successfully created remote {forked_remote_name} for repo {url}')  # noqa: T201
             except Exception as error:
-                print(f'could not create remote from {url}, {error=}')  # noqa: T201
-                # handle the case where the name of the forked repo is not content
-                if github_event_path := os.getenv("GITHUB_EVENT_PATH"):
-                    try:
-                        payload = json.loads(github_event_path)
-                    except ValueError:
-                        print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
-                        raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
-                    # forked repo name includes fork_owner + repo name, for example foo/content.
-                    forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
-                    self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")
-                else:
-                    raise
+                if f'{forked_remote_name} already exists' not in str(error):
+                    print(f'could not create remote from {url}, {error=}')  # noqa: T201
+                    # handle the case where the name of the forked repo is not content
+                    if github_event_path := os.getenv("GITHUB_EVENT_PATH"):
+                        try:
+                            payload = json.loads(github_event_path)
+                        except ValueError:
+                            print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
+                            raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
+                        # forked repo name includes fork_owner + repo name, for example foo/content.
+                        forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
+                        self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")
+                    else:
+                        raise
 
             forked_remote = self.repo.remote(forked_remote_name)
             forked_remote.fetch(branch_to_checkout)
@@ -248,3 +249,21 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
         raise ValueError("Cannot get doc reviewer")
     return reviewer
+
+
+def get_metadata(pack_dirs: set[str]) -> dict:
+    """
+    Get the pack metadata.
+
+    Args:
+        pack_dirs (set): paths to the packs that were changed
+    """
+    pack_metadata = dict()
+
+    for pack_dir in pack_dirs:
+        if pack_metadata := get_pack_metadata(pack_dir):
+            print(f"pack metadata was retrieved for pack {pack_dir}")
+        else:
+            print(f'Could not find pack support level for pack {pack_dir}')
+
+    return pack_metadata
