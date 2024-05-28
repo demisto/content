@@ -139,15 +139,14 @@ INCIDENT_FIELDS = [
     "severity",
     "IPThreatTypes",
     "CloseReason",
+    "CloseNotes",
     "NumOfAlertedEvents",
     "ContainsFlaggedData",
     "ContainMaliciousExternalIP",
     "ContainsSensitiveData",
     "Locations",
     "Devices",
-    "Users",
-    "mirror_direction",
-    "mirror_instance"
+    "Users"
 ]
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
@@ -1296,7 +1295,7 @@ ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
 CLOSE_REASONS = {
     'none': 0,
     'other': 1,
-    'begin activity': 2,
+    'benign activity': 2,
     'true positive': 3,
     'environment misconfiguration': 4,
     'alert recently customized': 5,
@@ -1728,7 +1727,7 @@ def fetch_incidents_command(client: Client, last_run: dict[str, datetime], first
             'occurred': f'{alert_time}Z',
             'rawJSON': json.dumps(alert_converted),
             'type': 'Varonis SaaS Incident',
-            'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
+            'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name])
         }
 
         incidents.append(incident)
@@ -2021,38 +2020,37 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {list(parsed_args.delta)}.')
 
-    demisto.debug(f'Sending incident with remote ID [{alert_id}] to remote system.')
+    demisto.debug(f'Sending incident with remote ID [{alert_id}] to remote system. Status {parsed_args.inc_status}.')
+    demisto.debug(f'Got the following data {parsed_args.data}.')
 
     if (
-        ("Status" in parsed_args.delta or "CloseReason" in parsed_args.delta)
-        and parsed_args.data.get("Status").lower() == "closed"
+        ('Status' in parsed_args.delta or 'CloseReason' in parsed_args.delta)
+        and (parsed_args.data.get('Status', '').lower() == 'closed' or parsed_args.inc_status == IncidentStatus.DONE)
     ):
-        demisto.debug(f"Closing remote incident {alert_id}")
-        note = "Closed from XSOAR"
-        close_reason = parsed_args.data.get("CloseReason", "").lower()
-        close_reason_id = CLOSE_REASONS.get(close_reason, CLOSE_REASONS["other"])
+        demisto.debug(f'Closing remote incident {alert_id}')
+        note = parsed_args.data.get('CloseNotes', 'Closed from XSOAR')
+        close_reason = parsed_args.data.get('CloseReason', '').lower()
+        close_reason_id = CLOSE_REASONS.get(close_reason, CLOSE_REASONS['other'])
         if not close_reason_id:
-            close_reason_id = CLOSE_REASONS["other"]
+            close_reason_id = CLOSE_REASONS['other']
         varonis_update_alert(
             client,
             close_reason_id,
-            ALERT_STATUSES["closed"],
+            ALERT_STATUSES['closed'],
             argToList(alert_id),
             note
         )
     elif (
-        "Status" in parsed_args.delta
-        and parsed_args.data.get("Status").lower() != "closed"
+        'Status' in parsed_args.delta
+        and parsed_args.data.get('Status').lower() != 'closed'
+        or parsed_args.inc_status == IncidentStatus.ACTIVE
     ):
-        demisto.debug(f"Update remote incident {alert_id}")
-        note = "Status changed from XSOAR"
-        status = parsed_args.data.get("Status", "").lower()
+        demisto.debug(f'Update remote incident {alert_id}')
+        note = 'Status changed from XSOAR'
+        status = parsed_args.data.get('Status', 'action required').lower()
         status_id = ALERT_STATUSES.get(status)
 
-        if not status_id:
-            return alert_id
-
-        close_reason_id = CLOSE_REASONS["none"]
+        close_reason_id = CLOSE_REASONS['none']
         varonis_update_alert(
             client,
             close_reason_id,

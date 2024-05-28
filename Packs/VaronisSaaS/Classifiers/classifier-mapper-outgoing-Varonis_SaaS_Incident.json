@@ -11,6 +11,9 @@
                 },
                 "CloseReason": {
                     "simple": "varonissaasclosereason"
+                },
+                "CloseNotes": {
+                    "simple": "closeNotes"
                 }
             }
         }
