@@ -1,9 +1,7 @@
 Collects Vectra Detections and Audits into XSIAM Events.
 This integration was integrated and tested with version 2.2 of Vectra.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure Vectra Event Collector on Cortex XSIAM
 
