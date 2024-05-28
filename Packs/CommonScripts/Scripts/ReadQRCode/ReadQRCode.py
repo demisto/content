@@ -7,7 +7,7 @@ from wurlitzer import pipes
 
 
 def read_qr_code(filename: str) -> list:
-
+    demisto.debug('read_qr_code: enter')
     debug_message = 'successfully decoded with pyzbar'
     with pipes() as (out, err):  # don't use demisto.debug under the context manager.
         img = cv2.imread(filename)
@@ -20,14 +20,18 @@ def read_qr_code(filename: str) -> list:
 
     demisto.debug(debug_message)
     demisto.debug(f'pipes stdout: {out.read()}, sterr: {err.read()}')
+    demisto.debug('read_qr_code: exit')
     return text if isinstance(text, list) else [text]
 
 
 def extract_indicators_from_text(text: list) -> dict:
+    demisto.debug('extract_indicators_from_text: enter')
     res = demisto.executeCommand('extractIndicators', {'text': text})
+    demisto.debug(f'extract_indicators_from_text: {res=}')
     if is_error(res):
         demisto.debug(f'Error in "extractIndicators": {get_error(res)}')
         return {}
+    demisto.debug('extract_indicators_from_text: exit')
     return json.loads(res[0]['Contents'])  # type: ignore
 
 
@@ -60,4 +64,6 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    demisto.debug('begin ReadQRCode')
     main()
+    demisto.debug('end ReadQRCode')
