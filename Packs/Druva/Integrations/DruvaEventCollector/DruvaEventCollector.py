@@ -120,7 +120,7 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('timestamp'))
+            create_time = arg_to_datetime(event['timestamp'])
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
