@@ -1,9 +1,7 @@
 This is the Digital Guardian ARC event collector integration for XSIAM.
 This integration was integrated and tested with version 3.10.0 of DigitalGuardianARCEventCollector
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Known Limitations
 The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
