@@ -255,11 +255,11 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
-    print(f'start of check_new_pack_metadata, pack dirs to check {pack_dirs_to_check}')
     pack_metadata = {}
     pack_dirs_to_check = packs_to_check_in_pr(pr_files)
-    for dir in pack_dirs_to_check:
-        yml_path, _ = get_yml_paths_in_dir(dir)
+    print(f'start of check_new_pack_metadata, pack dirs to check {pack_dirs_to_check}')
+    for dir1 in pack_dirs_to_check:
+        yml_path, _ = get_yml_paths_in_dir(dir1)
         print(f'The YML path is: {yml_path}')
         for yml in yml_path:
             content_yml = get_yaml(file_path=yml)
