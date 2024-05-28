@@ -138,14 +138,13 @@ def main() -> None:  # pragma: no cover
 
     druva_client_id = params["credentials"]["identifier"]
     druva_secret_key = params["credentials"]["password"]
-    druva_base_url = params['url']
     str_to_encode = f'{druva_client_id}:{druva_secret_key}'
     base_64_string = base64.b64encode(str_to_encode.encode())
 
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
-            base_url=druva_base_url,
+            base_url=params['url'],
             verify=verify_certificate,
             headers=None,
             proxy=proxy)
