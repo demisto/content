@@ -29,5 +29,6 @@
     "support": "partner",
     "tags": [],
     "url": "https://support.vectra.ai",
-    "useCases": []
+    "useCases": [],
+    "defaultDataSource": "VectraAIEventCollector"
 }
