@@ -27,7 +27,7 @@ In order to do so, create a logging profile and set remote logging to the releva
 5. From the **Remote Storage Type** list, select **Remote**.
 6. For the **Protocol** setting, select **TCP**.
 7. For **Server Addresses**, Type the IP Address, Port Number (default is 514), and click **Add**.
-8. Click on **Finished**. 
+8. Click **Finished**. 
 
 ### Supported Timestamp Ingestion 
 Timestamp ingestion is supported for the format: **%Y-%m-%dT%H:%M:%S%Ez** (yyyy-mm-ddTHH:MM:SS+ZZ:ZZ).
