@@ -405,7 +405,7 @@ def test_chrome_options_not_in_chromes_options_and_instance_name_not_in_instance
     }
 
     mock_file_content = util_load_tsv("test_data/info.tsv")
-
+    mock_file_content = "".join(mock_file_content)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(rasterize,
                         'get_chrome_instances_info_dictionaries',
@@ -437,7 +437,7 @@ def test_chrome_options_in_chromes_options_and_instance_name_not_in_instances_na
     }
 
     mock_file_content = util_load_tsv("test_data/info.tsv")
-
+    mock_file_content = "".join(mock_file_content)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(rasterize,
                         'get_chrome_instances_info_dictionaries',

@@ -301,7 +301,7 @@ def write_into_tsv_file(filename, contents):
     demisto.info(f"Saving File '{filename}' with {contents}.")
     with open(filename, 'a') as file:
         tsv_writer = csv.writer(file, delimiter='\t')
-        tsv_writer.writerow(contents)
+        tsv_writer.writerow(contents.split('\t'))
 
 
 def opt_name(opt):
@@ -416,16 +416,19 @@ def get_chrome_instances_info_dictionaries():
     chrome_options_to_port = {}
     instance_name_to_port = {}
     info = read_info_file(CHROME_INSTANCES_FILE_PATH)
-    lines = info.splitlines()
-    for line in lines:
-        column = line.strip().split('\t')
-        port, instance_name, chrome_options = column
-        port_to_instance_name[port] = instance_name
-        instance_name_to_chrome_options[instance_name] = chrome_options
-        chrome_options_to_port[chrome_options] = port
-        instance_name_to_port[instance_name] = port
+    if info:
+        lines = info.splitlines()
+        for line in lines:
+            column = line.strip().split('\t')
+            port, instance_name, chrome_options = column
+            port_to_instance_name[port] = instance_name
+            instance_name_to_chrome_options[instance_name] = chrome_options
+            chrome_options_to_port[chrome_options] = port
+            instance_name_to_port[instance_name] = port
 
-    return port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port
+        return port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port
+
+    return {}, {}, {}, {}
 
 
 def generate_new_chrome_instance(instance_name, chrome_options):
@@ -438,6 +441,7 @@ def generate_new_chrome_instance(instance_name, chrome_options):
 
 
 def chrome_manager():
+    demisto.log("in chrome_manager")
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
 
@@ -446,13 +450,19 @@ def chrome_manager():
 
     info = read_info_file(CHROME_INSTANCES_FILE_PATH)
     if info:
-        edited_info = [line.replace('\\t', '\t') for line in info]
+        demisto.log("if info")
+        try:
+            splitted_info = info.splitlines()
+        except:
+            splitted_info = [info]
+        edited_info = [line.replace('\\t', '\t') for line in splitted_info]
         ports_tuple, instances_name_tuple, chromes_options_tuple = zip(*[line.strip().split('\t') for line in edited_info])
         ports = list(ports_tuple)
         instances_name = list(instances_name_tuple) if instances_name_tuple else []
         chromes_options = list(chromes_options_tuple) if chromes_options_tuple else []
     if not info or (chrome_options in chromes_options and instance_name not in instances_name) or (
         chrome_options not in chromes_options and instance_name not in instances_name):
+        demisto.log("in chrome manager first if - case 1,2,3")
         # case 1: file is empty, that means no chrome open on the machine
         # or
         # case 2: new instance with the same configuration as another instance
@@ -461,6 +471,7 @@ def chrome_manager():
         # -> create new chrome
         return generate_new_chrome_instance(instance_name, chrome_options)
     elif chrome_options not in chromes_options and instance_name in instances_name:
+        demisto.log("in chrome manager second if - case 4")
         # case 4: instance updated before with different configuration
         # should kill the chrome and create new one
         chrome_port = instance_name_to_port.get(instance_name)
@@ -469,6 +480,7 @@ def chrome_manager():
         return generate_new_chrome_instance(instance_name, chrome_options)
     elif (instance_name in instances_name) and (chrome_options in chromes_options) and (instance_name_to_chrome_options.get(
         instance_name) == chrome_options):
+        demisto.log("in chrome manager third if - case 5")
         # Case 5: The instance conf exists in the file and the chrome conf match to it
         chrome_port = chrome_options_to_port.get(chrome_options)
         browser = is_chrome_running_locally(chrome_port)
@@ -477,6 +489,7 @@ def chrome_manager():
         demisto.error(f'Could not find browser for {instance_name=}, {chromes_options=}')
         return None, None
     else:
+        demisto.log("in chrome manager fourth if - could not find")
         message = f"Cannot connect to Chrome with these parameters: {instance_name=}, {chromes_options=}"
         demisto.info(message)
         demisto.error(message)
@@ -699,6 +712,7 @@ def perform_rasterize(path: str | list[str],
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
     if browser:
+        demisto.log("in perform_rasterize found browser")
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
