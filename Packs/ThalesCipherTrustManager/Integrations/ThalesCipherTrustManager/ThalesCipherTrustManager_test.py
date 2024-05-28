@@ -237,7 +237,39 @@ USER_CREATE_TEST_ARGS = [
     }
 ]
 
-USER_UPDATE_TEST_ARGS = []
+USER_UPDATE_TEST_ARGS = [
+    {
+        CommandArguments.NAME: "John Doe",
+        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
+        CommandArguments.USERNAME: "johndoe",
+        CommandArguments.PASSWORD: "password123",
+        CommandArguments.EMAIL: "john.doe@example.com",
+        CommandArguments.PASSWORD_CHANGE_REQUIRED: "true",
+        CommandArguments.ALLOWED_AUTH_METHODS: "password,user_certificate",
+        CommandArguments.ALLOWED_CLIENT_TYPES: "public,confidential",
+        CommandArguments.CERTIFICATE_SUBJECT_DN: "CN=John Doe,OU=Example,O=Example Corp,C=US",
+        CommandArguments.EXPIRES_AT: "2025-12-31T23:59:59Z",
+        CommandArguments.FAILED_LOGINS_COUNT: 0,
+        CommandArguments.PREVENT_UI_LOGIN: "true",
+        CommandArguments.PASSWORD_POLICY: "complex"
+    }
+    ,
+    {
+        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
+    },
+    {
+        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
+        CommandArguments.EXPIRES_AT: "tomorrow",
+    },
+    {
+        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
+        CommandArguments.EXPIRES_AT: "empty",
+        CommandArguments.ALLOWED_AUTH_METHODS: "empty",
+        CommandArguments.ALLOWED_CLIENT_TYPES: "empty"
+
+    }
+
+]
 USER_DELETE_TEST_ARGS = []
 USER_PASSWORD_CHANGE_TEST_ARGS = []
 LOCAL_CA_CREATE_TEST_ARGS = []
@@ -275,42 +307,57 @@ def test_derive_skip_and_limit_for_pagination_invalid_input(limit, page, page_si
         derive_skip_and_limit_for_pagination(limit, page, page_size)
 
 
-@pytest.mark.parametrize('arg_name, arg_value, expected_output',
+@pytest.mark.parametrize('param_name, argument_value, expected_output',
                          [("test_date", "empty", ""),
                           ("test_date", "2023-05-26T15:30:00", "2023-05-26T15:30:00.000000Z"),
                           ("test_date", None, None)])
-def test_add_empty_date_param(arg_name, arg_value, expected_output):
+def test_add_empty_date_param(param_name, argument_value, expected_output):
     from ThalesCipherTrustManager import add_empty_date_param
-    request_data = {arg_name: arg_value}
-    add_empty_date_param(request_data, arg_name)
-    assert request_data[arg_name] == expected_output
+    request_data = {}
+    add_empty_date_param(request_data, argument_value, param_name)
+    assert request_data.get(param_name) == expected_output
 
 
 def test_add_empty_date_param_invalid_input():
     from ThalesCipherTrustManager import add_empty_date_param
     with pytest.raises(ValueError):
-        request_data = {"test_date": "invalid-datetime"}
-        add_empty_date_param(request_data, "test_date")
+        request_data = {}
+        add_empty_date_param(request_data, "invalid-datetime", "test_date")
+    with pytest.raises(KeyError):
         assert request_data['test_date'] is None
 
 
-@pytest.mark.parametrize('arg_name, arg_value, expected_output',
+@pytest.mark.parametrize('param_name, argument_value, expected_output',
                          [("test_list", "empty", []),
                           ("test_list", "item1,item2,item3", ["item1", "item2", "item3"]),
                           ("test_list", "", []),
                           ("test_list", None, None)])
-def test_add_empty_list_param(arg_name, arg_value, expected_output):
+def test_add_empty_list_param(param_name, argument_value, expected_output):
     from ThalesCipherTrustManager import add_empty_list_param
-    request_data = {arg_name: arg_value}
-    add_empty_list_param(request_data, arg_name)
-    assert request_data[arg_name] == expected_output
+    request_data = {}
+    add_empty_list_param(request_data, argument_value, param_name)
+    assert request_data.get(param_name) == expected_output
 
 
 def test_add_empty_list_param_no_value():
     from ThalesCipherTrustManager import add_empty_list_param
-    request_data = {}
-    add_empty_list_param(request_data, "test_list")
-    assert request_data.get('test_list') is None
+    with pytest.raises(KeyError):
+        request_data = {}
+        add_empty_list_param(request_data, None, "test_list")
+        assert request_data['test_list'] is None
+
+
+@pytest.mark.parametrize('request_data, argument_value, flag_name, expected_login_flags', [
+    ({}, "some_value", "flag1", {"flag1": "some_value"}),
+    ({'login_flags': {'existing_flag': 'existing_value'}}, "new_value", "new_flag",
+     {'existing_flag': 'existing_value', 'new_flag': 'new_value'}),
+    ({}, None, "flag1", None),
+    ({'login_flags': {}}, "some_value", "flag1", {"flag1": "some_value"})
+])
+def test_add_login_flags(request_data, argument_value, flag_name, expected_login_flags):
+    from ThalesCipherTrustManager import add_login_flags
+    add_login_flags(request_data, argument_value, flag_name)
+    assert request_data.get('login_flags') == expected_login_flags
 
 
 ''' COMMAND FUNCTIONS TESTS '''

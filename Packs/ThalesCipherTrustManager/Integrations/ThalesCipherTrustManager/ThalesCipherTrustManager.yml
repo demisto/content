@@ -1011,24 +1011,24 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.
+    description: Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.
     name: ciphertrust-user-update
     arguments:
     - name: name
       isArray: false
-      description: Full name of the user
+      description: The user's full name.
       required: false
       secret: false
       default: false
     - name: user_id
       isArray: false
-      description: user_id
+      description: The user_id of the user.
       required: true
       secret: false
       default: false
     - name: username
       isArray: false
-      description: username
+      description: The login name of the user.
       required: false
       secret: false
       default: false
@@ -1040,7 +1040,7 @@ script:
       default: false
     - name: email
       isArray: false
-      description: Users email
+      description: The email of the user
       required: false
       secret: false
       default: false
@@ -1056,7 +1056,7 @@ script:
       auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
-      description: Filter by the loginauthentication method allowed to the users. It is a list of values. A []can bespecified to get users to whom no authentication method is allowed.
+      description: 'List of login authentication methods allowed to the user. Setting it to empty, i.e "empty", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. Valid values in the array are: password user_certificate password_with_user_certificate This property does not control login behavior for users in admin group.'
       required: false
       secret: false
       default: false
@@ -1068,7 +1068,7 @@ script:
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: allowed_client_types
+      description: "List of client types that can authenticate using the user's credentials. Setting it to empty, i.e \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. Valid values in the array are: unregistered public confidential This property does not control login behavior for users in admin group."
       required: false
       secret: false
       default: false
@@ -1079,13 +1079,13 @@ script:
       auto: PREDEFINED
     - name: certificate_subject_dn
       isArray: false
-      description: The Distinguished Name of the user in certificate
+      description: The Distinguished Name of the user in certificate. e.g.OU=organization unit,O=organization,L=location,ST=state,C=country.
       required: false
       secret: false
       default: false
     - name: expires_at
       isArray: false
-      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to empty, removes the expiration date of the user account.The supported date-time format is 2025-03-02T06:13:27.71402Z
+      description: The "expires_at" field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add expiration to an existing local user account or modify the expiration date. Once the "expires_at" date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the "expires_at" argument to "empty", removes the expiration date of the user account.
       required: false
       secret: false
       default: false
@@ -1112,7 +1112,82 @@ script:
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.Users.user_id
+      description: A unique identifier for API call usage.
+      type: String
+    - contextPath: CipherTrust.Users.username
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated.
+      type: String
+    - contextPath: CipherTrust.Users.connection
+      description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
+      type: String
+    - contextPath: CipherTrust.Users.email
+      description: E-mail of the user
+      type: String
+    - contextPath: CipherTrust.Users.name
+      description: Full name of the user
+      type: String
+    - contextPath: CipherTrust.Users.nickname
+      description: Nickname of the user
+      type: String
+    - contextPath: CipherTrust.Users.certificate_subject_dn
+      description: The Distinguished Name of the user in certificate
+      type: String
+    - contextPath: CipherTrust.Users.enable_cert_auth
+      description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate.'
+      type: Boolean
+    - contextPath: CipherTrust.Users.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Users.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Users.logins_count
+      description: Count for the number of logins
+      type: Number
+    - contextPath: CipherTrust.Users.last_login
+      description: Timestamp of last login
+      type: Date
+    - contextPath: CipherTrust.Users.created_at
+      description: Timestamp of when user was created
+      type: Date
+    - contextPath: CipherTrust.Users.updated_at
+      description: Timestamp of last update of the user
+      type: Date
+    - contextPath: CipherTrust.Users.allowed_auth_methods
+      description: List of login authentication methods allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.expires_at
+      description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
+      type: Date
+    - contextPath: CipherTrust.Users.password_policy
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      type: String
+    - contextPath: CipherTrust.Users.allowed_client_types
+      description: List of client types allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.failed_logins_count
+      description: Count of failed login attempts
+      type: Number
+    - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
+      description: Timestamp of the initial failed login attempt.
+      type: Date
+    - contextPath: CipherTrust.Users.account_lockout_at
+      description: Timestamp of when the account was locked.
+      type: Date
+    - contextPath: CipherTrust.Users.last_failed_login_at
+      description: Timestamp of the last failed login attempt.
+      type: Date
+    - contextPath: CipherTrust.Users.password_changed_at
+      description: Timestamp of when the password was last changed.
+      type: Date
+    - contextPath: CipherTrust.Users.password_change_required
+      description: Indicates if a password change is required at next login.
+      type: Boolean
+    - contextPath: CipherTrust.Users.login_flags
+      description: Flags related to login, such as prevent_ui_login.
+      type: Unknown
   - deprecated: false
     description: 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
     name: ciphertrust-users-list

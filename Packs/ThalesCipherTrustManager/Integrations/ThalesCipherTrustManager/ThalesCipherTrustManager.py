@@ -286,12 +286,12 @@ USER_CREATE_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Ful
                                                 'global password policy. By default, the global password policy is applied to '
                                                 'the users.')
                       ]
-UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Full name of the user'),
-                      InputArgument(name=CommandArguments.USER_ID, required=True),
-                      InputArgument(name=CommandArguments.USERNAME, description='username'),
+UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description="The user's full name."),
+                      InputArgument(name=CommandArguments.USER_ID, required=True, description="The user_id of the user."),
+                      InputArgument(name=CommandArguments.USERNAME, description='The login name of the user.'),
                       InputArgument(name=CommandArguments.PASSWORD,
                                     description="The password used to secure the user's account."),
-                      InputArgument(name=CommandArguments.EMAIL, description='Users email'),
+                      InputArgument(name=CommandArguments.EMAIL, description='The email of the user'),
                       InputArgument(name=CommandArguments.PASSWORD_CHANGE_REQUIRED,
                                     input_type=BooleanStr,
                                     description='Password change required flag. If set to true, '
@@ -300,30 +300,34 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description='Ful
                                                 'next successful login.'),
                       InputArgument(name=CommandArguments.ALLOWED_AUTH_METHODS, is_array=True,
                                     input_type=AllowedAuthMethods,
-                                    description='Filter by the login'
-                                                'authentication '
-                                                'method allowed to '
-                                                'the users. It is a '
-                                                'list of values. A '
-                                                '[]'
-                                                'can be'
-                                                'specified to get '
-                                                'users to whom no '
-                                                'authentication '
-                                                'method is allowed.'),
+                                    description="List of login authentication methods allowed to the user. Setting it to empty, "
+                                                "i.e \"empty\", means no authentication method is allowed to the user. If both "
+                                                "enable_cert_auth and allowed_auth_methods are provided in the request, "
+                                                "enable_cert_auth is ignored. Setting it to "
+                                                "\"password_with_user_certificate\", means two-factor authentication is "
+                                                "enabled for the user. The user will require both username-password and "
+                                                "user_certificate for authentication. User cannot have \"password\" or "
+                                                "\"user_certificate\" with \"password_with_user_certificate\" in "
+                                                "allowed_auth_methods. Valid values in the array are: password user_certificate "
+                                                "password_with_user_certificate This property does not control login behavior "
+                                                "for users in admin group."),
                       InputArgument(name=CommandArguments.ALLOWED_CLIENT_TYPES, is_array=True,
                                     input_type=AllowedClientTypes,
-                                    description=""),
+                                    description="List of client types that can authenticate using the user's credentials. "
+                                                "Setting it to empty, i.e \"empty\", means no client can authenticate this user, "
+                                                "which effectively means no one can login into this user. Valid values in the "
+                                                "array are: unregistered public confidential This property does not control "
+                                                "login behavior for users in admin group."),
                       InputArgument(name=CommandArguments.CERTIFICATE_SUBJECT_DN,
-                                    description='The Distinguished Name of the user in certificate'),
+                                    description='The Distinguished Name of the user in certificate. e.g.OU=organization unit,'
+                                                'O=organization,L=location,ST=state,C=country.'),
                       InputArgument(name=CommandArguments.EXPIRES_AT,
-                                    description="The expires_at field is applicable only for local user account. Only members "
-                                                "of the 'admin' and 'User Admins' groups can add expiration to an existing "
-                                                "local user account or modify the expiration date. Once the expires_at date is "
-                                                "reached, the user account gets disabled and the user is not able to perform "
-                                                "any actions. Setting the expires_at field to empty, removes the expiration "
-                                                "date of the user account.The supported date-time format is "
-                                                "2025-03-02T06:13:27.71402Z"),
+                                    description="The \"expires_at\" field is applicable only for local user account. Only "
+                                                "members of the 'admin' and 'User Admins' groups can add expiration to an "
+                                                "existing local user account or modify the expiration date. Once the "
+                                                "\"expires_at\" date is reached, the user account gets disabled and the user is "
+                                                "not able to perform any actions. Setting the \"expires_at\" argument to "
+                                                "\"empty\", removes the expiration date of the user account."),
                       InputArgument(name=CommandArguments.FAILED_LOGINS_COUNT,
                                     description='Set it to 0 to unlock a locked user account.'),
                       InputArgument(name=CommandArguments.PREVENT_UI_LOGIN, default='false',
@@ -482,8 +486,8 @@ GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group nam
 USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
 USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
 USERS_LIST_DESCRIPTION = 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
-USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the change password route. The user will not be able to change their password to the same password.'
 USER_CREATE_DESCRIPTION = "Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
+USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.'
 USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
 LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
@@ -674,13 +678,14 @@ USER_CREATE_OUTPUT = [
 ]
 
 USER_UPDATE_OUTPUT = [
-    OutputArgument(name="userid", output_type=str, description="A unique identifier for API call usage."),
+    OutputArgument(name="user_id", output_type=str, description="A unique identifier for API call usage."),
     OutputArgument(name="username", output_type=str,
                    description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
     OutputArgument(name="connection", output_type=str,
                    description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
     OutputArgument(name="email", output_type=str, description="E-mail of the user"),
     OutputArgument(name="name", output_type=str, description="Full name of the user"),
+    OutputArgument(name="nickname", output_type=str, description="Nickname of the user"),
     OutputArgument(name="certificate_subject_dn", output_type=str,
                    description="The Distinguished Name of the user in certificate"),
     OutputArgument(name="enable_cert_auth", output_type=bool,
@@ -700,6 +705,19 @@ USER_UPDATE_OUTPUT = [
     OutputArgument(name="password_policy", output_type=str,
                    description="The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users."),
     OutputArgument(name="allowed_client_types", output_type=list, description="List of client types allowed to the user."),
+    OutputArgument(name="failed_logins_count", output_type=int,
+                   description="Count of failed login attempts"),
+    OutputArgument(name="failed_logins_initial_attempt_at", output_type=datetime.datetime,
+                   description="Timestamp of the initial failed login attempt."),
+    OutputArgument(name="account_lockout_at", output_type=datetime.datetime,
+                   description="Timestamp of when the account was locked."),
+    OutputArgument(name="last_failed_login_at", output_type=datetime.datetime,
+                   description="Timestamp of the last failed login attempt."),
+    OutputArgument(name="password_changed_at", output_type=datetime.datetime,
+                   description="Timestamp of when the password was last changed."),
+    OutputArgument(name="password_change_required", output_type=bool,
+                   description="Indicates if a password change is required at next login."),
+    OutputArgument(name="login_flags", output_type=dict, description="Flags related to login, such as prevent_ui_login."),
 ]
 
 USER_PASSWORD_CHANGE_OUTPUT = []
@@ -948,16 +966,21 @@ def optional_arg_to_datetime_string(arg, date_format=DATE_FORMAT):
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
-def add_empty_date_param(request_data: dict, arg_name: str, empty_arg_value: str = "empty"):
-    argument_value = request_data.get(arg_name)
+def add_empty_date_param(request_data: dict, argument_value: str, param_name: str, empty_arg_value: str = "empty"):
     if argument_value is not None:
-        request_data[arg_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
+        request_data[param_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
 
 
-def add_empty_list_param(request_data: dict, arg_name: str, empty_arg_value: str = "empty"):
-    argument_value = request_data.get(arg_name)
+def add_empty_list_param(request_data: dict, argument_value: str, param_name: str, empty_arg_value: str = "empty"):
     if argument_value is not None:
-        request_data[arg_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
+        request_data[param_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
+
+
+def add_login_flags(request_data: dict, argument_value: str, flag_name: str):
+    if argument_value is not None:
+        if 'login_flags' not in request_data:
+            request_data['login_flags'] = {}
+        request_data['login_flags'][flag_name] = argument_value
 
 
 def optional_safe_load_json(raw_json_string, json_entry_id):
@@ -1118,7 +1141,6 @@ def user_create_command(client: CipherTrustClient, args: dict):
         connection=args.get(CommandArguments.CONNECTION),
         email=args.get(CommandArguments.EMAIL),
         is_domain_user=optional_arg_to_bool(args.get(CommandArguments.IS_DOMAIN_USER)),
-        login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
         password=args.get(CommandArguments.PASSWORD),
         password_change_required=optional_arg_to_bool(args.get(CommandArguments.PASSWORD_CHANGE_REQUIRED)),
@@ -1126,9 +1148,10 @@ def user_create_command(client: CipherTrustClient, args: dict):
         user_id=args.get(CommandArguments.USER_ID),
         username=args.get(CommandArguments.USERNAME),
     )
-    add_empty_date_param(request_data, CommandArguments.EXPIRES_AT)
-    add_empty_list_param(request_data, CommandArguments.ALLOWED_AUTH_METHODS)
-    add_empty_list_param(request_data, CommandArguments.ALLOWED_CLIENT_TYPES)
+    add_empty_date_param(request_data, args.get(CommandArguments.EXPIRES_AT), "expires_at")
+    add_empty_list_param(request_data, args.get(CommandArguments.ALLOWED_AUTH_METHODS), "allowed_auth_methods")
+    add_empty_list_param(request_data, args.get(CommandArguments.ALLOWED_CLIENT_TYPES), "allowed_client_types")
+    add_login_flags(request_data, optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN)), "prevent_ui_login")
     raw_response = client.create_user(request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -1138,22 +1161,23 @@ def user_create_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-user-update', description=USER_UPDATE_DESCRIPTION,
-                            inputs_list=UPDATE_USER_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX)
+                            inputs_list=UPDATE_USER_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
+                            outputs_list=USER_UPDATE_OUTPUT)
 def user_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
-        allowed_auth_methods=argToList(args.get(CommandArguments.ALLOWED_AUTH_METHODS)),
-        allowed_client_types=argToList(args.get(CommandArguments.ALLOWED_CLIENT_TYPES)),
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         email=args.get(CommandArguments.EMAIL),
         failed_logins_count=arg_to_number(args.get(CommandArguments.FAILED_LOGINS_COUNT)),
-        login_flags={"prevent_ui_login": optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN))},
         name=args.get(CommandArguments.NAME),
         password=args.get(CommandArguments.PASSWORD),
         password_change_required=optional_arg_to_bool(args.get(CommandArguments.PASSWORD_CHANGE_REQUIRED)),
         password_policy=args.get(CommandArguments.PASSWORD_POLICY),
         username=args.get(CommandArguments.USERNAME),
     )
-    add_empty_date_param(request_data, CommandArguments.EXPIRES_AT)
+    add_empty_date_param(request_data, args.get(CommandArguments.EXPIRES_AT), "expires_at")
+    add_empty_list_param(request_data, args.get(CommandArguments.ALLOWED_AUTH_METHODS), "allowed_auth_methods")
+    add_empty_list_param(request_data, args.get(CommandArguments.ALLOWED_CLIENT_TYPES), "allowed_client_types")
+    add_login_flags(request_data, optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN)), "prevent_ui_login")
     raw_response = client.update_user(user_id=args.get(CommandArguments.USER_ID), request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
