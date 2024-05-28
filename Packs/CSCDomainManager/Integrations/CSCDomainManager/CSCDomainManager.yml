@@ -51,7 +51,7 @@ script:
     - description: domain name to filter by, can start with like=, in=
       name: domain_name
       required: false
-    - description: registration date to filter by, can start with gt=, ge=, lt=, le=
+    - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024 
       name: registration_date
       required: false
     - description: email to filter by, can start with like=, in=
@@ -60,7 +60,7 @@ script:
     - description: organization to filter by, can start with like=, in=
       name: organization
       required: false
-    - description: registry expiry date to filter by, can start with gt=, ge=, lt=, le=
+    - description: registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024 
       name: registry_expiry_date
       required: false
     - description: can write your own filter according to ? #TODO
@@ -121,14 +121,29 @@ script:
     description: 
     name: csc-domains-availability-check
     outputs:
-    - contextPath: CSCDomainManager.Domain.Availability
+    - contextPath: CSCDomainManager.Domain.Availability.QualifiedDomainName
       description: 
-      type: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Availability.Code
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Availability.Message
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Availability.Price
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Availability.Currency
+      description: 
+      type: String
+    - contextPath: CSCDomainManager.Domain.Availability.ListOfTheTerms
+      description: 
+      type: String
   - arguments:
     - description: domain name to filter by, can start with like=, in=
       name: domain_name
       required: false
-    - description: registration date to filter by, can start with gt=, ge=, lt=, le=
+    - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024 
       name: registration_date
       required: false
     - description: email to filter by, can start with like=, in=
