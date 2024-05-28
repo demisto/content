@@ -32,7 +32,7 @@ function setLock(guid, info, version) {
     }
 }
 var lockName = args.name || 'Default';
-
+// add comment to test TPB
 switch (command) {
     case 'test-module':
         return 'ok';
