@@ -13,7 +13,7 @@ In order to do so, create a logging profile and set remote logging to the releva
 ### Creating a logging profile
 1. On the Main tab, click **Security** &rarr; **Event Logs** &rarr; **Logging Profiles**.
 2. Click **Create**.
-3. In the **Profile Name** field, type a unique name for the profile.
+3. In the *Profile Name* field, type a unique name for the profile.
 4. Select the **Application Security** check box.
 5. On the **Application Security** tab, for **Configuration**, select **Advanced**.
 6. Select the **Remote Storage** check box.
