@@ -1,6 +1,8 @@
 Use Workday Event Collector integration to get activity loggings from Workday.
 This integration was integrated and tested with API v1.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Workday Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

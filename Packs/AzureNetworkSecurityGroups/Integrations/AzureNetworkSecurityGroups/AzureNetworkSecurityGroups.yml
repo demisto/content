@@ -56,27 +56,28 @@ configuration:
   additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow or Azure Managed Identities.
   options:
   - Authorization Code
+  - Client Credentials
   - Device Code
   - Azure Managed Identities
   section: Connect
 - name: tenant_id
-  display: Tenant ID (for user-auth mode)
+  display: Tenant ID
   defaultvalue:
   type: 0
   additionalinfo: ""
   section: Connect
   required: false
 - name: credentials
-  display: Client Secret (for user-auth mode)
+  display: Client Secret
   defaultvalue:
   type: 9
   additionalinfo: ""
-  displaypassword: Client Secret (for user-auth mode)
+  displaypassword: Client Secret
   hiddenusername: true
   section: Connect
   required: false
 - name: redirect_uri
-  display: Application redirect URI (for user-auth mode)
+  display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
