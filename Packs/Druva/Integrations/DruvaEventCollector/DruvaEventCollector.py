@@ -174,10 +174,9 @@ def main() -> None:  # pragma: no cover
                 )
 
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
-                last_run=last_run,
+                last_run=demisto.getLastRun(),
             )
 
             add_time_to_events(events)
