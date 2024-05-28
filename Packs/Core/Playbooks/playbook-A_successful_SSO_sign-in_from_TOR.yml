@@ -258,6 +258,7 @@ tasks:
           right:
             value:
               simple: RelatedAlertsThreshold
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
