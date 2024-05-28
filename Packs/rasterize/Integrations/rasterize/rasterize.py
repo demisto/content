@@ -467,23 +467,19 @@ def chrome_manager():
         browser = is_chrome_running_locally(chrome_port)
         terminate_chrome(browser)
         return generate_new_chrome_instance(instance_name, chrome_options)
-    elif instance_name in instances_name and chrome_options in chromes_options:
+    elif (instance_name in instances_name) and (chrome_options in chromes_options) and (instance_name_to_chrome_options.get(
+        instance_name) == chrome_options):
         # Case 5: The instance conf exists in the file and the chrome conf match to it
-        chrome_options_from_info_file = instance_name_to_chrome_options.get(instance_name)
-        if chrome_options_from_info_file == chrome_options:
-            chrome_port = chrome_options_to_port.get(chrome_options)
-            browser = is_chrome_running_locally(chrome_port)
-            if browser:
-                return browser, chrome_port
-            # TODO: if no browser, what error should i add here?
-            demisto.error(f'ERROR')
-            return None, None
-        else:
-            # TODO: Think if this option possible
-            return None, None
+        chrome_port = chrome_options_to_port.get(chrome_options)
+        browser = is_chrome_running_locally(chrome_port)
+        if browser:
+            return browser, chrome_port
+        demisto.error(f'Could not find browser for {instance_name=}, {chromes_options=}')
+        return None, None
     else:
-        # TODO: what should be here?
-        pass
+        message = f"Cannot connect to Chrome with these parameters: {instance_name=}, {chromes_options=}"
+        demisto.info(message)
+        demisto.error(message)
 
 
 def setup_tab_event(browser, tab):
