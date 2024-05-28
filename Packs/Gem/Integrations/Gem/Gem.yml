@@ -41,6 +41,11 @@ configuration:
     type: 8
     section: Connect
     required: false
+  - display: Trust any certificate (not secure)
+    name: unverify
+    type: 8
+    section: Connect
+    required: false
   - display: Fetch incidents
     name: isFetch
     type: 8
