@@ -1,5 +1,5 @@
 Removes items from the given list of values if they match any of the patterns in the provided `filters`.
-  If the match_exact argument is 'yes', direct string compare is used, otherwise the comparison is done using regex.
+If the match_exact argument is 'yes', direct string compare is used, otherwise the comparison is done using regex.
 
 ### Example:
 
@@ -7,8 +7,14 @@ Removes items from the given list of values if they match any of the patterns in
 
 ##### value (Get):
 
-```text
-${.}
+```json
+[
+    "https://domain1.com/some/url",
+    "http://another.url.com",
+    "domain2.com/faq",
+    "domain3.com/login",
+    "sub.domain3.com/login"
+]
 ```
 
 ##### filters:
@@ -17,6 +23,15 @@ ${.}
 ^*.\.domain1.com/.*\n
 ^*.\.domain2.com/.*\n
 ^sub.domain3.com/.*
+```
+
+##### Result:
+
+```json
+[    
+    "http://another.url.com",
+    "domain3.com/login"
+]
 ```
 
 ## Script Data
