@@ -1,6 +1,4 @@
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in XSIAM.
 
 ## Configure Mimecast Event Collector on Cortex XSOAR
 

@@ -1,8 +1,6 @@
 Microsoft Defender for Cloud Apps Event Collector integration.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in XSIAM.
 
 ## Configure Microsoft Defender for Cloud Apps Event Collector on Cortex XSOAR
 
