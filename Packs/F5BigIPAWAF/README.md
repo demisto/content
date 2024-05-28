@@ -31,7 +31,7 @@ In order to do so, create a logging profile and set remote logging to the releva
 
 ### Supported Timestamp Ingestion 
 Timestamp ingestion is supported for the format: **%Y-%m-%dT%H:%M:%S%Ez** (yyyy-mm-ddTHH:MM:SS+ZZ:ZZ).
-In order to configure the required timestamp for Syslog messages follow these instructions:
+In order to configure the required timestamp for syslog messages, follow these instructions:
 
 * The product documentation is available [here](https://my.f5.com/manage/s/article/K02138840). 
 
