@@ -91,8 +91,8 @@ def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any
         client (Client): Druva client to use.
         last_run (dict): A dict with a key containing a pointer to the latest event created time we got from last fetch.
     Returns:
-        dict: Next run dict containing the next tracker (a pointer to the next event).
-        list: List of events that will be created in XSIAM.
+        new_tracker (dict): Next run dict containing the next tracker (a pointer to the next event).
+        events (list): List of events that will be created in XSIAM.
     """
 
     tracker = last_run.get('tracker')
