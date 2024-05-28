@@ -1949,6 +1949,434 @@ def main():  # pragma: no cover
             demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
 
             send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
+#             vulnerabilities = [
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 2,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Service detection",
+#         "Id": 22964,
+#         "Name": "Service Detection",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 2,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 166602,
+#         "Name": "Asset Attribute: Fully Qualified Domain Name (FQDN)",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Settings",
+#         "Id": 19506,
+#         "Name": "Nessus Scan Information",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 1
+#             }
+#         ],
+#         "CvssBaseScore": 2.6,
+#         "Family": "Misc.",
+#         "Id": 71049,
+#         "Name": "SSH Weak MAC Algorithms Enabled",
+#         "RecastedCount": 0,
+#         "Severity": "Low",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 39520,
+#         "Name": "Backported Security Patch Detection (SSH)",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Misc.",
+#         "Id": 70657,
+#         "Name": "SSH Algorithms and Languages Supported",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 66293,
+#         "Name": "Unix Operating System on Extended Support",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 54615,
+#         "Name": "Device Type",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Service detection",
+#         "Id": 149334,
+#         "Name": "SSH Password Authentication Accepted",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Misc.",
+#         "Id": 153588,
+#         "Name": "SSH SHA-1 HMAC Algorithms Enabled",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 10287,
+#         "Name": "Traceroute Information",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Settings",
+#         "Id": 117886,
+#         "Name": "OS Security Patch Assessment Not Available",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 10881,
+#         "Name": "SSH Protocol Versions Supported",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Resurfaced"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Service detection",
+#         "Id": 10884,
+#         "Name": "Network Time Protocol (NTP) Server Detection",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 2
+#             }
+#         ],
+#         "CvssBaseScore": 4.3,
+#         "Family": "Misc.",
+#         "Id": 90317,
+#         "Name": "SSH Weak Algorithms Supported",
+#         "RecastedCount": 0,
+#         "Severity": "Medium",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 45590,
+#         "Name": "Common Platform Enumeration (CPE)",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 1
+#             }
+#         ],
+#         "Cvss3BaseScore": 3.7,
+#         "CvssBaseScore": 2.6,
+#         "Family": "Misc.",
+#         "Id": 70658,
+#         "Name": "SSH Server CBC Mode Ciphers Enabled",
+#         "RecastedCount": 0,
+#         "Severity": "Low",
+#         "VprScore": 3.6,
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 25220,
+#         "Name": "TCP/IP Timestamps Supported",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Web Servers",
+#         "Id": 18261,
+#         "Name": "Apache Banner Linux Distribution Disclosure",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "CvssBaseScore": 2.1,
+#         "Family": "General",
+#         "Id": 10114,
+#         "Name": "ICMP Timestamp Request Remote Date Disclosure",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VprScore": 4.2,
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 12053,
+#         "Name": "Host Fully Qualified Domain Name (FQDN) Resolution",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 10919,
+#         "Name": "Open Port Re-check",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "General",
+#         "Id": 11936,
+#         "Name": "OS Identification",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 1
+#             }
+#         ],
+#         "Cvss3BaseScore": 3.7,
+#         "CvssBaseScore": 2.6,
+#         "Family": "Misc.",
+#         "Id": 153953,
+#         "Name": "SSH Weak Key Exchange Algorithms Enabled",
+#         "RecastedCount": 0,
+#         "Severity": "Low",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Settings",
+#         "Id": 110723,
+#         "Name": "Target Credential Status by Authentication Protocol - No Credentials Provided",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     },
+#     {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 1,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Service detection",
+#         "Id": 10267,
+#         "Name": "SSH Server Type and Version Information",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 1,
+#         "VulnerabilityState": "Active"
+#     }
+# ]
+            demisto.debug(f"sending {len(vulnerabilities)} to server.")
             send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
             demisto.info("Done Sending data to XSIAM.")
