@@ -379,8 +379,8 @@ Get files exposed to a specific email address
 | Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
 | Reco.Assets.data_category | String | The data category of the asset | 
 | Reco.Assets.data_categories | String | The data categories of the asset |
-| Reco.SensitiveAssets.location | String | The path of the asset. |
-| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
+| Reco.Assets.location | String | The path of the asset. |
+| Reco.Assets.source | String | SaaS tool source of the asset. |
 | Reco.Assets.last_access_date | String | The last access date of the asset |
 | Reco.Assets.email_account | String | The last access date of the asset |
 | Reco.Assets.file_owner | String | SaaS tool source of the asset | 
@@ -412,3 +412,28 @@ Get files exposed to a specific email address
 | Reco.Assets.source | String | SaaS tool source of the asset | 
 | Reco.Assets.last_access_date | String | The last access date of the asset |
 | Reco.Assets.file_owner | String | SaaS tool source of the asset |
+
+### reco-get-private-email-list-with-access
+
+***
+Get private email list with access
+
+#### Base Command
+
+`reco-get-private-email-list-with-access`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description**           |
+| --- |----------|---------------------------|
+| Reco.PrivateEmails.email_account | String   | The email account         | 
+| Reco.PrivateEmails.primary_email | String   | The primary email account | 
+| Reco.PrivateEmails.files_num | String   | Number of files           | 
+| Reco.PrivateEmails.user_category | String   | The category of the user  | 
+
+
