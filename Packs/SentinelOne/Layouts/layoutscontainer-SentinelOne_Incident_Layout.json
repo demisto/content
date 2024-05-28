@@ -816,6 +816,26 @@
 							},
 							{
 								"args": {
+									"agents_ids": {
+										"simple": "${incident.agentid}",
+										"userMarkedRequired": false
+									}
+								},
+								"buttonClass": "error",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "72ef46a0-1cef-11ef-a286-5514d85dec6e",
+								"index": 10,
+								"listId": "caseinfoid-5a8fe730-18cc-11ef-ab74-d74e442a39cc",
+								"name": "sentinelone Move Agent",
+								"scriptId": "SentinelOne V2|||sentinelone-move-agent",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
 									"created_after": {
 										"simple": "",
 										"userMarkedRequired": true
@@ -834,7 +854,7 @@
 								"fieldId": "",
 								"height": 44,
 								"id": "b42ce200-18f1-11ef-bb23-c36fb4725c79",
-								"index": 10,
+								"index": 11,
 								"name": "SentinelOne Get Activities",
 								"scriptId": "SentinelOne V2|||sentinelone-get-activities",
 								"sectionItemType": "button",
@@ -851,7 +871,7 @@
 								"fieldId": "",
 								"height": 44,
 								"id": "3445a100-18f4-11ef-bb23-c36fb4725c79",
-								"index": 11,
+								"index": 12,
 								"name": "SentinelOne Get Hash",
 								"scriptId": "SentinelOne V2|||sentinelone-get-hash",
 								"sectionItemType": "button",
