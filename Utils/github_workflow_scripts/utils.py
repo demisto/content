@@ -128,7 +128,8 @@ class Checkout:  # pragma: no cover
                             payload = json.loads(github_event_path)
                         except ValueError:
                             print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
-                            raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
+                            raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the '
+                                             f'owner {fork_owner}')
                         # forked repo name includes fork_owner + repo name, for example foo/content.
                         forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
                         self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")

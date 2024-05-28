@@ -8,7 +8,7 @@ from github import Github
 from git import Repo
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from demisto_sdk.commands.common.tools import get_pack_metadata
+from demisto_sdk.commands.common.tools import get_pack_metadata, get_yaml, get_yml_paths_in_dir
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
@@ -255,9 +255,16 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
+    print(f'start of check_new_pack_metadata, pack dirs to check {pack_dirs_to_check}')
     pack_metadata = {}
     pack_dirs_to_check = packs_to_check_in_pr(pr_files)
-    print (f'start of check_new_pack_metadata, pack dirs to check {pack_dirs_to_check}')
+    for dir in pack_dirs_to_check:
+        yml_path, _ = get_yml_paths_in_dir(dir)
+        print(f'The YML path is: {yml_path}')
+        for yml in yml_path:
+            content_yml = get_yaml(file_path=yml)
+            print(f'the content of yml is: {content_yml}')
+
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
@@ -270,8 +277,13 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             pack_metadata = get_metadata(pack_dirs_to_check)
     except Exception as error:
         print("couldn't checkout branch to get metadata")
+        return False
     print(f'the metadata is: {pack_metadata}')
-    return True
+    tags = pack_metadata.get("tags")
+    categories = pack_metadata.get("categories")
+    if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+        return True
+    return False
 
 
 def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
