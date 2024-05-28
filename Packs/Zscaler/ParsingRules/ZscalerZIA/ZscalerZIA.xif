@@ -1,0 +1,73 @@
+/*----------------------------------------------------------------------------------
+   Cloud NSS Feeds Ingestion Rule 
+  ---------------------------------------------------------------------------------*/
+/* This rule supports cloud NSS feeds, flattening individual web log JSON records form 
+  an array, and parsing timestamp to _time for web logs, dns logs & audit logs.    
+------------------------------------------------------------------------------------*/
+[INGEST:vendor="zscaler", product="nss", target_dataset="zscaler_nss_raw", no_hit=keep]
+// Audit & DNS logs with a valid supported timestamp/timezone 
+filter _raw_log -> [] = null
+| alter _raw_log = to_json_string(event)
+| call ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS
+| alter tmp_datetime = coalesce(
+    arrayindex(regextract(tmp_datetime, $TIMESTAMP1_REGEX_CAPTURE), 0),
+    arrayindex(regextract(tmp_datetime, $TIMESTAMP2_REGEX_CAPTURE), 0))
+| filter (tmp_epochtime ~= $EPOCH_REGEX and len(tmp_epochtime) = 10) or (tmp_tz = "GMT" and tmp_datetime != null) 
+| alter _time = if(
+    tmp_epochtime != null, to_timestamp(to_integer(tmp_epochtime), "SECONDS"), 
+    tmp_datetime ~= $TIMESTAMP2_REGEX, parse_timestamp("%b %d %T %Y", tmp_datetime),
+    tmp_datetime ~= $TIMESTAMP1_REGEX, parse_timestamp("%F %T", tmp_datetime))
+| call ZSCALER_NSS_REMOVE_REDUNDANT_FIELDS;
+
+// Audit & DNS logs without a valid supported timestamp/timezone 
+filter _raw_log -> [] = null
+| alter _raw_log = to_json_string(event)
+| call ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS
+| filter (tmp_epochtime !~= $EPOCH_REGEX or len(tmp_epochtime) != 10) and (tmp_tz != "GMT" or (tmp_datetime !~= $TIMESTAMP1_REGEX and tmp_datetime !~= $TIMESTAMP2_REGEX))
+| call ZSCALER_NSS_REMOVE_REDUNDANT_FIELDS;
+
+// Web logs with a valid supported timestamp/timezone 
+filter _raw_log -> [] != null
+| call ZSCALER_NSS_FLATTEN_ARRAY_RECORDS
+| call ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS
+| filter (tmp_epochtime ~= $EPOCH_REGEX and len(tmp_epochtime) = 10) or (tmp_tz = "GMT" and tmp_datetime ~= $TIMESTAMP1_REGEX)
+| alter _time = if(
+    tmp_epochtime != null, to_timestamp(to_integer(tmp_epochtime), "SECONDS"), 
+    parse_timestamp("%F %T", tmp_datetime)) 
+| call ZSCALER_NSS_REMOVE_REDUNDANT_FIELDS;
+
+// web logs without a valid supported timestamp/timezone 
+filter _raw_log -> [] != null
+| call ZSCALER_NSS_FLATTEN_ARRAY_RECORDS
+| call ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS
+| filter (tmp_epochtime !~= $EPOCH_REGEX or len(tmp_epochtime) != 10) and (tmp_tz != "GMT" or tmp_datetime !~= $TIMESTAMP1_REGEX) 
+| call ZSCALER_NSS_REMOVE_REDUNDANT_FIELDS;
+
+/*----------------------------------------------------------
+   Constants - regex patterns for supported datetime formats 
+  ----------------------------------------------------------*/
+[CONST]
+EPOCH_REGEX = "\d{10}"; // e.g. 1716797554 (seconds)
+TIMESTAMP1_REGEX = "\d{4}\-\d{2}\-\d{2}\s+\d{2}\:\d{2}\:\d{2}";  // e.g. 2024-05-27 08:12:34
+TIMESTAMP1_REGEX_CAPTURE = "(\d{4}\-\d{2}\-\d{2}\s+\d{2}\:\d{2}\:\d{2})"; 
+TIMESTAMP2_REGEX = "\w{3}\s+\d{2}\s+\d{2}\:\d{2}\:\d{2}\s+\d{4}"; // e.g. "May 27 08:12:34 2024"
+TIMESTAMP2_REGEX_CAPTURE = "(\w{3}\s+\d{2}\s+\d{2}\:\d{2}\:\d{2}\s+\d{4})"; 
+
+/*---------
+   RULES 
+ --------*/
+[RULE:ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS]
+alter // timestamp could be populated either as an epoch value (in seconds), or as a formatted string
+    tmp_tz = _raw_log -> tz,
+    tmp_epochtime = to_string(_raw_log -> epochtime), 
+    tmp_datetime = to_string(coalesce(_raw_log -> time, _raw_log -> datetime));
+
+[RULE:ZSCALER_NSS_FLATTEN_ARRAY_RECORDS]
+alter _raw_log = _raw_log -> []
+| arrayexpand _raw_log
+| alter 
+    sourcetype = _raw_log -> sourcetype,
+    _raw_log = _raw_log -> event{};
+
+[RULE:ZSCALER_NSS_REMOVE_REDUNDANT_FIELDS]
+fields - tmp_*, event;
