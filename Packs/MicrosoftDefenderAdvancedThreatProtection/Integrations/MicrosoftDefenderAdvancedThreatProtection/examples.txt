@@ -71,3 +71,4 @@ microsoft-atp-advanced-hunting-cover-up query_purpose=action_types username=demi
 microsoft-atp-advanced-hunting-cover-up query_purpose=common_files  username=demisto
 microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424
 microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424
+microsoft-atp-list-machines-by-ip ip=10.128.0.27 timestamp=2024-05-23T10:15:00Z
