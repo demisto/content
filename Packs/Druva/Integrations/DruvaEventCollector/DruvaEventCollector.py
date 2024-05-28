@@ -155,7 +155,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == 'druva-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
+            should_push_events = argToBoolean(args['should_push_events'])
             tracker, events = get_events(client, args.get('tracker'))
             return_results(
                 CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events),
