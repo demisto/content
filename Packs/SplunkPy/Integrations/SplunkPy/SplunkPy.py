@@ -708,14 +708,19 @@ class Notable:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
             self.enrichments) >= len(ENABLED_ENRICHMENTS)
-        # The number of notable enrichments could be larger than the enabled enrichments because there could be
-        # multiple drilldown searches to enrich.
+        # The number of notable enrichments could be larger than the ENABLED_ENRICHMENTS because there could be
+        # multiple drilldown searches to enrich, but it should never be smaller than the ENABLED_ENRICHMENTS.
+        # That is because if the user has asked for a certain enrichment type we will create an enrichment object of this type in
+        # the notable.enrichments list, regardless the existence of the enrichment type in the notable fetched data.
+        # (Meaning, if the notable doesn't include an enrichment in it's fetched data we will create the enrichment object in the
+        # notable.enrichments list with status failed.)
+        
         # TODO: consult with Yuval regarding the delicate change in the second condition here.
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and len(
-            self.enrichments) == len(ENABLED_ENRICHMENTS)
+            self.enrichments) >= len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
@@ -1078,7 +1083,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                     demisto.debug(
                         f'Failed parsing drilldown search query name, using the original '
                         f'un-parsed query name instead: {query_name}.')
-                    parsed_query_name = query_name  # TODO: consult with Yuval about keeping the original name here.
+                    parsed_query_name = query_name
             except Exception as e:
                 demisto.debug(
                     f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
@@ -1146,7 +1151,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
             kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
-            demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
+            demisto.error(f"Caught an exception in identity_enrichment function: {str(e)}")
     else:
         demisto.debug(f'No users were found in notable. {error_msg}')
 
@@ -1247,7 +1252,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                         demisto.debug(f'{notable.id} {enrichment.type} status is successful. {len(enrichment.data)=}')
-                    else:
+                    else: # TODO: need to improve the logs here if possible - it could be confusing for multiple drilldown enrichments
                         demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
                 except Exception as e:
 
