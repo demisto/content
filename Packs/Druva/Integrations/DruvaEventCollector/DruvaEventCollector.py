@@ -95,7 +95,7 @@ def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any
         events (list): List of events that will be created in XSIAM.
     """
 
-    tracker = last_run.get('tracker')
+    tracker = last_run.get('tracker')  # None on first run
     demisto.debug(f'fetching events, {tracker=}')
     new_tracker, events = get_events(client, tracker)
     demisto.debug(f"fetched {len(events or [])} events, {new_tracker=}")
