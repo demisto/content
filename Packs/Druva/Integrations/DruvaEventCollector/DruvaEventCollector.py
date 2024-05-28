@@ -99,6 +99,7 @@ def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any
     tracker = last_run.get('tracker')
     demisto.debug(f'Fetched events with tracker: {tracker}.')
     new_tracker, events = get_events(client, tracker)
+    demisto.debug(f"fetched {len(events or [])} events, {new_tracker=}")
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'tracker': new_tracker}
