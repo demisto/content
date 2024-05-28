@@ -1,8 +1,6 @@
 This is the Hello World event collector integration for XSIAM.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure HelloWorld Event Collector on Cortex XSOAR
 

@@ -9,9 +9,7 @@ Please refer to ServiceNow documentation for additional information. We especial
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
