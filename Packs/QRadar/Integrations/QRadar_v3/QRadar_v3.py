@@ -1244,6 +1244,7 @@ def safely_update_context_data(
                                                                      should_update_last_mirror,
                                                                      should_add_reset_key,
                                                                      should_force_update)
+            print_debug_msg(f"{updated_context=}")
 
             set_integration_context(updated_context, version=new_version)
             print_debug_msg(f'Updated integration context after version {new_version}.')
@@ -2235,7 +2236,9 @@ def poll_offense_events_with_retry(
         if retry < max_retries - 1:
             time.sleep(EVENTS_INTERVAL_SECS)
 
-    print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
+    print_debug_msg(f'Max retries for getting events for offense {offense_id}. Cancel query search_id: {search_id}')
+    # need to cancel query
+    client.search_cancel(search_id=search_id)
     return [], 'Fetching events is in progress'
 
 
@@ -4240,9 +4243,11 @@ def qradar_search_retrieve_events_command(
     if not end_date or end_date.year == 1:
         end_date = None
     # determine if this is the last run of the polling command
-    is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
+    is_last_run = (datetime.now() + timedelta(seconds=120)).timestamp() >= end_date.timestamp() \
         if end_date else False
     try:
+        print_debug_msg(f'{is_last_run=}')
+        print_debug_msg(f'{end_date=}')
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id'))
     except (DemistoException, requests.Timeout) as e:
         if is_last_run:
@@ -4250,12 +4255,12 @@ def qradar_search_retrieve_events_command(
         print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
         events = []
         status = QueryStatus.WAIT.value
-    if is_last_run and status == QueryStatus.WAIT.value:
-        print_debug_msg("Its the last run of the polling, will cancel the query request. ")
-        client.search_cancel(search_id=search_id)
-        return CommandResults(
-            readable_output='Got polling timeout. Quary got cancelled.',
-        )
+    # if is_last_run and status == QueryStatus.WAIT.value:
+    #     print_debug_msg("Its the last run of the polling, will cancel the query request. ")
+    #     client.search_cancel(search_id=search_id)
+    #     return CommandResults(
+    #         readable_output='Got polling timeout. Quary got cancelled.',
+    #     )
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
