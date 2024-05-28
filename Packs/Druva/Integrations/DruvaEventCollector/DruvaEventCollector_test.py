@@ -36,9 +36,8 @@ def test_test_module_command_failure(mocker, mock_client):
     - Test module failed
     """
     mocker.patch.object(mock_client, "search_events", side_effect=DemistoException(message='Error: invalid_grant'))
-    with pytest.raises(DemistoException) as exp:
+    with pytest.raises(DemistoException, match="Make sure Server URL, Client ID and Secret Key are correctly entered") as exp:
         run_test_module(client=mock_client)
-    assert "Make sure Server URL, Client ID and Secret Key are correctly entered." in exp.value.args[0]
 
 
 EVENT_1 = {
