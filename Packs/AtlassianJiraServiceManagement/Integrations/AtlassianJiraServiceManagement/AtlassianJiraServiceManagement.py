@@ -457,6 +457,12 @@ def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> C
         readable_output=f'Comment was added successfully to object with id: {object_id}'
     )
 
+def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_id = args.get('object_id')
+    res = client.http_get(f'/comment/object/{object_id}')
+    outputs = convert_keys_to_pascal([res], {'id': 'ID'})
+    outputs = [{k: v} for k, v in outputs.items() if k != 'Actor']
+
 
 ''' MAIN FUNCTION '''
 
@@ -530,6 +536,10 @@ def main() -> None:
 
         elif command == 'jira-asset-comment-create':
             result = jira_asset_comment_create_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-comment-list':
+            result = jira_asset_comment_list_command(client, args)
             return_results(result)
 
         else:
