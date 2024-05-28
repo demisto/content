@@ -769,11 +769,13 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         m.send_and_save()
     return m, file_results
 
+
 def random_word_generator(length):
     """Generate a random string of given length
     """
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
+
 
 def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
     """
@@ -792,7 +794,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
         attachment = {
             'data': base64.b64decode(m.group(3)),
             'name': name
-            
+
         }
         attachment['cid'] = cid
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
@@ -808,6 +810,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
     demisto.debug(f"{attachments=}")
     demisto.debug(f"{file_results=}")
     return clean_body, attachments, file_results
+
 
 def get_message_for_body_type(body, body_type, html_body):
     """
