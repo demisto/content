@@ -164,11 +164,11 @@ def test_query_values(mocker):
 def test_query_values_escape_chars(mocker):
     """
     Given:
-        An array of indicator value (Test~.com, Test2~.com).
+        An array of indicator value with special chars that need escape
     When:
         Running GetIndicatorDBotScoreFromCache script.
     Then:
-        Ensure all values in the query to demisto.searchIndicators has \".
+        Ensure all values in the query to demisto.searchIndicators are correct.
     """
     mocker.patch.object(demisto, "args", return_value={"value": ["\nhello\rhow\tare"]})
     mocker.patch.object(demisto, "searchIndicators")
