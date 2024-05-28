@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
 from TAXII2ApiModule import *
 import plyara
 import plyara.utils
@@ -48,29 +48,37 @@ class Client(BaseClient):
         demisto.debug(f"list of all commits in the given time frame{all_commits}")
         return all_commits
 
-    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list, str]:
+    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list[dict[str,str]], str]:
         """
-        Retrieves the list of files modified between two commits.
+        Retrieves the list of files changed between two commits and the SHA of the base commit.
 
-        Args:
-        base (str): The SHA of the base commit.
-        head (str): The SHA of the head commit.
-        include_base_commit (bool): A flag indicating if this is the first fetch.
+        This function compares two commits in a repository to determine the files that have changed between them.
+        Depending on the `include_base_commit` flag, it adjusts the comparison to include the base commit or not.
+        If the comparison fails due to a "Not Found" error, the function handles this specific case by fetching
+        the indicators including the first commit in the repository.
 
-        Returns:
-        list: A list of files modified between the specified base and head commits.
-        str: The SHA of the last commit in the comparison.
+        :type base: ``str``
+        :param base: The SHA of the base commit.
 
-        Warning:
-        This method will not work correctly if the base commit is the very first commit in the repository.
-        In such a case, the base commit cannot be used for comparison in the way this function is designed.
+        :type head: ``str``
+        :param head: The SHA of the head commit.
+
+        :type include_base_commit: ``bool``
+        :param include_base_commit: Flag to indicate if the base commit should be included in the comparison.
+
+        :return: A tuple containing a list of files changed between the commits and the SHA of the base commit.
+        :rtype: ``tuple[list, str]``
+
+        :raises Exception: If an error occurs during the HTTP request.
         """
         url_suffix = f"/compare/{base}...{head}" if not include_base_commit else f"/compare/{base}^...{head}"
         try:
             response = self._http_request("GET", url_suffix)
         except Exception as e:
             if "Not Found" in str(e):
+                demisto.debug("in get_files_between_commits func: Case: fetch indicators including the first commit in the repo")
                 response = self._http_request("GET", f"/compare/{base}...{head}")
+                response["files"] += self._http_request("GET", f"/commits/{base}")["files"]
             else:
                 demisto.error(f"in get_files_between_commits func  error message: {e}")
                 raise
@@ -158,7 +166,6 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
     raw_rules = parser.parse_string(text_content)
     current_time = datetime.now().isoformat()
     for parsed_rule in raw_rules:
-        
         try:
             metadata = {key: value for d in parsed_rule["metadata"] for key, value in d.items()}
             value_ = parsed_rule["rule_name"]
@@ -173,7 +180,7 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "rulestrings": make_grid_layout(parsed_rule.get("strings", {})),
                 "condition": " ".join(parsed_rule["condition_terms"]),
                 "references": file_path,
-                "rawrule": f'```\n {plyara.utils.rebuild_yara_rule(parsed_rule)} \n```',
+                "rawrule": f"```\n {plyara.utils.rebuild_yara_rule(parsed_rule)} \n```",
             }
             indicator_obj = {
                 "value": value_,
