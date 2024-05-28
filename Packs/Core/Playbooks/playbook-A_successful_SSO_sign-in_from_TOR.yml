@@ -1,0 +1,833 @@
+id: A successful SSO sign-in from TOR
+version: -1
+name: A successful SSO sign-in from TOR
+description: |-
+  This playbook is designed to handle the following alerts:
+  A successful SSO sign-in from TOR
+  A successful SSO sign-in from TOR via a mobile device
+
+  The playbook executes the following stages:
+
+  Early Containment:
+  Clear/revoke the user sessions and force re-authentication.
+
+  Investigation:
+  Check the user's risk score.
+  Check for related XDR alerts using MITRE tactics to identify any malicious activity.
+
+  Remediation:
+  Based on the user's risk score and related alerts, the playbook will disable the account if any malicious parameters are found. By default, account disabling requires analyst approval.
+tags:
+- T1090
+- Proxy
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48d3588d-43e5-4b43-8b35-48ca384bcb15
+    type: start
+    task:
+      id: 48d3588d-43e5-4b43-8b35-48ca384bcb15
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ff3d375d-21d5-461d-89f1-3afa5ba7f00b
+    type: title
+    task:
+      id: ff3d375d-21d5-461d-89f1-3afa5ba7f00b
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8656afbe-1707-475f-8519-54e06e80f10a
+    type: title
+    task:
+      id: 8656afbe-1707-475f-8519-54e06e80f10a
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7c3162b1-b3f7-45ec-8bbf-2e392d0c58b5
+    type: regular
+    task:
+      id: 7c3162b1-b3f7-45ec-8bbf-2e392d0c58b5
+      version: -1
+      name: Get User Risk Level
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      user_id:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 8e8785e3-b02b-4d1b-8c32-8e827d42e2fb
+    type: playbook
+    task:
+      id: 8e8785e3-b02b-4d1b-8c32-8e827d42e2fb
+      version: -1
+      name: Get entity alerts by MITRE tactics
+      description: |-
+        This playbook searches XDR alerts related to specific entities, on a given timeframe, based on MITRE tactics.
+        Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
+      playbookName: Get entity alerts by MITRE tactics
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      EntityID:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+      EntityType:
+        simple: username
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntCredentialAccessTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      RunAll:
+        simple: "True"
+      timeRange:
+        simple: 6 hours
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f71ecce2-028b-408a-80a4-404a3f3b1a25
+    type: condition
+    task:
+      id: f71ecce2-028b-408a-80a4-404a3f3b1a25
+      version: -1
+      name: Found Suspicious Related Alerts?
+      description: Checks whether the number of related alerts found during the investigation phase is greater than the 'RelatedAlertsThreshold' to determine if the activity is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: NumOfRelatedAlerts
+            iscontext: true
+          right:
+            value:
+              simple: RelatedAlertsThreshold
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 8e822cf1-8d7d-48e5-87dd-05987e87cad1
+    type: regular
+    task:
+      id: 8e822cf1-8d7d-48e5-87dd-05987e87cad1
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "A successful SSO sign-in from TOR"
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c787ef1f-6b33-43ec-8f2b-ef107513f04a
+    type: title
+    task:
+      id: c787ef1f-6b33-43ec-8f2b-ef107513f04a
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 45e3979f-e817-4ba4-869a-cd079538fe2c
+    type: playbook
+    task:
+      id: 45e3979f-e817-4ba4-869a-cd079538fe2c
+      version: -1
+      name: Containment Plan - Clear User Sessions
+      description: |-
+        ## Containment Plan - Clear User Sessions
+
+        This playbook is a sub-playbook within the containment plan playbook.
+        The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
+      playbookName: Containment Plan - Clear User Sessions
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      ClearUserSessions:
+        simple: "True"
+      IAMUserDomain:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "1"
+      Username:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: alert.username
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.auth_server
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Azure
+              rhsB: {}
+              then:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.auth_identity
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 711a24d2-a527-4852-80aa-357940d4bc52
+    type: regular
+    task:
+      id: 711a24d2-a527-4852-80aa-357940d4bc52
+      version: -1
+      name: Get alert extra data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+          transformers:
+          - operator: uniq
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 3d0aa7fa-a646-434b-8d07-a79ec333688e
+    type: condition
+    task:
+      id: 3d0aa7fa-a646-434b-8d07-a79ec333688e
+      version: -1
+      name: Is the user risk level High?
+      description: Checks whether the user risk level is High.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4202bd9d-216a-4815-8cfa-b1a3b8acb995
+    type: regular
+    task:
+      id: 4202bd9d-216a-4815-8cfa-b1a3b8acb995
+      version: -1
+      name: Set Number of Related Alerts
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: NumOfRelatedAlerts
+      value:
+        complex:
+          root: foundIncidents
+          accessor: severity
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Number Of Found Related Alerts
+      output:
+        simple: NumOfRelatedAlerts
+    - incidentfield: Alert Search Results
+      output:
+        complex:
+          root: foundIncidents
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: foundIncidents.severity
+                iscontext: true
+              right:
+                value:
+                  simple: medium
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: foundIncidents.severity
+                iscontext: true
+              right:
+                value:
+                  simple: high
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: foundIncidents.severity
+                iscontext: true
+              right:
+                value:
+                  simple: critical
+    - incidentfield: User Risk Level
+      output:
+        simple: ${Core.RiskyUser.risk_level}
+    - incidentfield: Failed Logon Events
+      output:
+        complex:
+          root: AzureFailLoginCount
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NumOfOktaFailedLogon
+                iscontext: true
+    - incidentfield: Email
+      output:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: mail
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.auth_identity
+                iscontext: true
+          - operator: uniq
+    - incidentfield: Account Member Of
+      output:
+        simple: ${ActiveDirectory.Users.memberOf}
+    - incidentfield: Cloud Account ID
+      output:
+        simple: ${MSGraphUser.ID}
+    - incidentfield: Account ID
+      output:
+        complex:
+          root: Account.ID
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: Account.ID
+                iscontext: true
+              right:
+                value:
+                  simple: "="
+              ignorecase: true
+    - incidentfield: sAMAccountName
+      output:
+        simple: ${ActiveDirectory.Users.sAMAccountName}
+    - incidentfield: Account Status
+      output:
+        simple: ${Account.Status}
+    - incidentfield: Manager Email Address
+      output:
+        simple: ${UserManagerEmail}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3200a260-eb1d-4089-8bf7-6895ea662306
+    type: title
+    task:
+      id: 3200a260-eb1d-4089-8bf7-6895ea662306
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 379b9976-22f5-47cc-847a-c8cb1796d584
+    type: playbook
+    task:
+      id: 379b9976-22f5-47cc-847a-c8cb1796d584
+      version: -1
+      name: Containment Plan - Disable Account
+      description: |-
+        ## Containment Plan - Disable Account
+
+        This playbook is a sub-playbook within the containment plan playbook.
+        The playbook disables users by utilizing the sub-playbook "Block Account - Generic v2"
+      playbookName: Containment Plan - Disable Account
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      UserContainment:
+        simple: ${inputs.UserContainment}
+      UserVerification:
+        simple: ${inputs.UserVerification}
+      Username:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: alert.username
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.auth_server
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Azure
+              rhsB: {}
+              then:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.auth_identity
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2125,
+        "width": 750,
+        "x": 450,
+        "y": -570
+      }
+    }
+  }
+inputs:
+- key: RelatedAlertsThreshold
+  value:
+    simple: "5"
+  required: false
+  description: |-
+    This is the minimum threshold for XSIAM related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 6 hours.
+    Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.
+    The default value is '5'.
+  playbookInputQuery:
+- key: UserContainment
+  value:
+    simple: "True"
+  required: false
+  description: |
+    Whether to disable the user account using the 'Containment Plan - Disable Account' sub-playbook.
+    Possible values:True/False. Default:True.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Specify if analyst verification is required to disable user accounts.
+    Possible values:True/False. Default:True.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - RelatedAlertsThreshold
+  name: Investigation
+  description: |
+    Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - UserContainment
+  - UserVerification
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

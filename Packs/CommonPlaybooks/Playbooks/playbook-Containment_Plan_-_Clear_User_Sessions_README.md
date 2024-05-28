@@ -1,7 +1,7 @@
 ## Containment Plan - Clear User Sessions
 
 This playbook is a sub-playbook within the containment plan playbook.
-The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
+The playbook clears the users' sessions using Okta and MsGraphUser integrations.
 
 ## Dependencies
 
@@ -22,9 +22,11 @@ This playbook does not use any integrations.
 
 ### Commands
 
+* msgraph-user-session-revoke
 * okta-get-user
-* okta-clear-user-sessions
 * setParentIncidentContext
+* msgraph-user-get
+* okta-clear-user-sessions
 
 ## Playbook Inputs
 
@@ -32,7 +34,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ClearUserSessions | Set to 'True' to clear the user active Okta sessions. | True | Optional |
+| ClearUserSessions | Set to 'True' to clear the user active sessions. | True | Optional |
 | Username | The username to disable. |  | Optional |
 | IAMUserDomain | The Okta IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain. |  | Optional |
 
