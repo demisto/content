@@ -58,7 +58,7 @@ if 'context' in demisto.callingContext \
         and 'ExecutedCommands' in demisto.callingContext['context'] \
         and 'name' in demisto.callingContext['context']['ExecutedCommands'][0]:
     context_executed_commands_name = demisto.callingContext['context']['ExecutedCommands'][0]['name']
-    with open('demisto_info.txt', 'w') as file_demisto_info:
+    with open('script_info', 'w') as file_demisto_info:
         file_demisto_info.write(context_executed_commands_name)
 
 
