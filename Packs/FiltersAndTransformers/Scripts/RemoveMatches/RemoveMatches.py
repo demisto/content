@@ -48,8 +48,8 @@ def filter_items(values: list, filter_list: list, ignore_case: bool, match_exact
 def main():  # pragma: no cover
     try:
         args = demisto.args()
-        ignore_case = argToBoolean(args.get('ignorecase', 'True'))
-        match_exact = argToBoolean(args.get('matchexact', 'False'))
+        ignore_case = argToBoolean(args.get('ignore_case', 'True'))
+        match_exact = argToBoolean(args.get('match_exact', 'False'))
         values = argToList(args.get('value'))
         delimiter = args.get('delimiter', '\n')
         list: str = args.get('filters', '')
