@@ -103,7 +103,6 @@ DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
 LOCAL_CHROME_HOST = "127.0.0.1"
 
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
-PORT_FILE_PATH = '/var/port.txt'
 CHROME_INSTANCES_FILE_PATH = '/var/chrome_instances.tsv'
 RASTERIZATIONS_COUNTER_FILE_PATH = '/var/rasterizations_counter.txt'
 
@@ -287,14 +286,14 @@ def read_info_file(filename):
             demisto.info(f"File '{filename}' contents: {ret_value}.")
             return ret_value
     except FileNotFoundError:
+        demisto.info(f"File '{filename}' does not exist")
         return None
 
 
-def write_info_file(filename, contents, overwrite=False):
+def write_info_file(filename, contents):
     demisto.info(f"Saving File '{filename}' with {contents}.")
-    mode = 'w' if overwrite else 'a'
-    with open(filename, mode) as file:
-        file.write(f"{contents}\n")
+    with open(filename, 'w') as file:
+        file.write(f"{contents}")
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
@@ -338,8 +337,7 @@ def get_chrome_options(default_options, user_options):
     return options
 
 
-# TODO: check this function, shoule avoid write to port file again..
-def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
+def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_binary=CHROME_EXE, user_options=""):
     global CHROME_PROCESS
     try:
         logfile = open(CHROME_LOG_FILE_PATH, 'ab')
@@ -361,10 +359,11 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
             if browser:
-                write_info_file(PORT_FILE_PATH, chrome_port)
+                new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
+                write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
             else:
                 process.kill()
-                write_info_file(PORT_FILE_PATH, '')
+                write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, '')
                 CHROME_PROCESS = None
                 return None, None
             return browser, chrome_port
@@ -377,6 +376,7 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
     return None, None
 
 
+# TODO: make sure its the right browser, and make sure CHROME_PROCESS has a value
 def terminate_chrome(browser):
     global CHROME_PROCESS
     demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
@@ -408,19 +408,18 @@ def get_chrome_port():
 
 
 def setup_new_chrome_instance(chrome_port, instance_name, chrome_options):
-    new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
-    write_info_file(PORT_FILE_PATH, new_row, overwrite=True)
-    browser, chrome_port = start_chrome_headless(str(chrome_port))
+    browser, chrome_port = start_chrome_headless(str(chrome_port), instance_name, chrome_options)
     if browser:
         return browser, chrome_port
     return None, None
 
 
-def get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port():
+def get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port():
     port_to_instance_name = {}
     instance_name_to_chrome_options = {}
     chrome_options_to_port = {}
-    info = read_info_file(PORT_FILE_PATH)
+    instance_name_to_port = {}
+    info = read_info_file(CHROME_INSTANCES_FILE_PATH)
     lines = info.splitlines()
     for line in lines:
         column = line.strip().split('\t')
@@ -428,8 +427,9 @@ def get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_opt
         port_to_instance_name[port] = instance_name
         instance_name_to_chrome_options[instance_name] = chrome_options
         chrome_options_to_port[chrome_options] = port
+        instance_name_to_port[instance_name] = port
 
-    return port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port
+    return port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port
 
 
 def generate_new_chrome_instance(instance_name, chrome_options):
@@ -441,35 +441,16 @@ def generate_new_chrome_instance(instance_name, chrome_options):
     return None, None
 
 
-# TODO: write function that check's if exist port.txt file, if yes take the port and search it in the tsv file
-# TODO: if its exist there just delete the port.txt file otherwise add it with the verbose info and delete the file
-
-def handle_port_file_if_exist(instance_name, chrome_options, port_to_instance_name):
-    port = read_info_file(PORT_FILE_PATH)
-    if port:
-        instance_name_from_tsv_file = port_to_instance_name.get(port)
-        if not instance_name_from_tsv_file:
-            new_row = f"{port}\t{instance_name}\t{chrome_options}"
-            write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
-        os.remove(PORT_FILE_PATH)
-
-
 def chrome_manager():
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
 
-    port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port = \
-        get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port()
-    info = read_info_file(PORT_FILE_PATH)
+    port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port = \
+        get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port()
+
+    info = read_info_file(CHROME_INSTANCES_FILE_PATH)
     if info:
-        edited_info = [item.replace('\\t', '\t') for item in info]
-        # first check if file is in the old version (only port)
-        if "\t" not in edited_info[0] and 1 <= len(edited_info[0]) <= 5:  # written in the file just port
-            chrome_port = edited_info[0]
-            new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
-            write_info_file(CHROME_INSTANCES_FILE_PATH, new_row, overwrite=True)
-            edited_info = [new_row]
-            return generate_new_chrome_instance(instance_name, chrome_options)
+        edited_info = [line.replace('\\t', '\t') for line in info]
         ports_tuple, instances_name_tuple, chromes_options_tuple = zip(*[line.strip().split('\t') for line in edited_info])
         ports = list(ports_tuple)
         instances_name = list(instances_name_tuple) if instances_name_tuple else []
@@ -486,7 +467,7 @@ def chrome_manager():
     elif chrome_options not in chromes_options and instance_name in instances_name:
         # case 4: instance updated before with different configuration
         # should kill the chrome and create new one
-        chrome_port = port_to_instance_name.get(instance_name)
+        chrome_port = instance_name_to_port.get(instance_name)
         browser = is_chrome_running_locally(chrome_port)
         terminate_chrome(browser)
         return generate_new_chrome_instance(instance_name, chrome_options)
