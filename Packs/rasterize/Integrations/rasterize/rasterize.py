@@ -53,7 +53,7 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-CHROME_PROCESS = None
+browser_to_chrome_process = {}
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -297,9 +297,9 @@ def write_info_file(filename, contents):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
-def write_into_tsv_file(filename, contents):  # TODO: make sure its appending and not overwrite
+def write_into_tsv_file(filename, contents):
     demisto.info(f"Saving File '{filename}' with {contents}.")
-    with open(filename) as file:
+    with open(filename, 'a') as file:
         tsv_writer = csv.writer(file, delimiter='\t')
         tsv_writer.writerow(contents)
 
@@ -338,7 +338,6 @@ def get_chrome_options(default_options, user_options):
 
 
 def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_binary=CHROME_EXE, user_options=""):
-    global CHROME_PROCESS
     try:
         logfile = open(CHROME_LOG_FILE_PATH, 'ab')
 
@@ -353,18 +352,17 @@ def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_bin
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
-            CHROME_PROCESS = process
             demisto.debug(f'New Chrome session active on Port {chrome_port}')
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
             if browser:
+                browser_to_chrome_process[browser] = process
                 new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
                 write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
             else:
                 process.kill()
                 write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, '')
-                CHROME_PROCESS = None
                 return None, None
             return browser, chrome_port
         else:
@@ -376,17 +374,15 @@ def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_bin
     return None, None
 
 
-# TODO: make sure its the right browser, and make sure CHROME_PROCESS has a value
 def terminate_chrome(browser):
-    global CHROME_PROCESS
-    demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
+    process = browser_to_chrome_process.get(browser)
+    demisto.debug(f'terminate_chrome, {process=}')
 
     threading.excepthook = excepthook_recv_loop
 
-    if CHROME_PROCESS:
-        demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
-        CHROME_PROCESS.kill()
-        CHROME_PROCESS = None
+    if process:
+        demisto.debug(f'terminate_chrome, {process=}')
+        process.kill()
 
     demisto.debug('terminate_chrome, Finish')
 
@@ -414,7 +410,7 @@ def setup_new_chrome_instance(chrome_port, instance_name, chrome_options):
     return None, None
 
 
-def get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port():
+def get_chrome_instances_info_dictionaries():
     port_to_instance_name = {}
     instance_name_to_chrome_options = {}
     chrome_options_to_port = {}
@@ -446,7 +442,7 @@ def chrome_manager():
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
 
     port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port = \
-        get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port()
+        get_chrome_instances_info_dictionaries()
 
     info = read_info_file(CHROME_INSTANCES_FILE_PATH)
     if info:

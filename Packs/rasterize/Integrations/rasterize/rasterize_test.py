@@ -377,7 +377,7 @@ def test_ports_file_is_not_exist_then_create_new_browser(mocker):
     from rasterize import chrome_manager
 
     mocker.patch.object(rasterize,
-                        'get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port',
+                        'get_chrome_instances_info_dictionaries',
                         return_value=[{}, {}, {}, {}])
     mocker.patch.object(rasterize, 'read_info_file', return_value=None)
     mocker.patch.object(rasterize, 'setup_new_chrome_instance', return_value=["browser_object", "chrome_port"])
@@ -408,7 +408,7 @@ def test_chrome_options_not_in_chromes_options_and_instance_name_not_in_instance
 
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(rasterize,
-                        'get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port',
+                        'get_chrome_instances_info_dictionaries',
                         return_value=[{port_str: instance_name}, {instance_name: chrome_options},
                                       {chrome_options: port_str}, {instance_name: port_str}])
     mocker.patch.object(rasterize, 'read_info_file', return_value=mock_file_content)
@@ -440,7 +440,7 @@ def test_chrome_options_in_chromes_options_and_instance_name_not_in_instances_na
 
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(rasterize,
-                        'get_port_to_instance_name_and_instance_name_to_chrome_options_and_chrome_options_to_port_and_instance_name_to_port',
+                        'get_chrome_instances_info_dictionaries',
                         return_value=[{port_str: instance_name}, {instance_name: chrome_options},
                                       {chrome_options: port_str}, {instance_name: port_str}])
     mocker.patch.object(rasterize, 'read_info_file', return_value=mock_file_content)
