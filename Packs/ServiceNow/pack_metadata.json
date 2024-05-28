@@ -17,5 +17,6 @@
         "xsoar",
         "marketplacev2",
         "xpanse"
-    ]
+    ],
+    "defaultDataSource": "ServiceNow v2"
 }
