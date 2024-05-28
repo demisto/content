@@ -1,8 +1,9 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 import base64
-
 
 MAX_EVENTS = 500
 # Disable insecure warnings
@@ -26,7 +27,17 @@ class Client(BaseClient):
         decoded_credentials = encoded_credentials.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {decoded_credentials}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
-        response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
+        try:
+            response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
+        except Exception as e:
+            # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
+            if "invalid_grant" in str(e):
+                informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
+            else:
+                informative_message = str(e)
+
+            raise DemistoException(f'Error in test-module: {informative_message}') from e
+
         access_token = response_json['access_token']
         headers = {'Authorization': f'Bearer {access_token}'}
         self._headers = headers
@@ -44,8 +55,13 @@ class Client(BaseClient):
 
         url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
         headers = self._headers | {'accept': 'application/json'}
-        response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
-                                      headers=headers)
+        try:
+            response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
+                                          headers=headers)
+        except Exception as e:
+            # 403 - "User is not authorized to access this resource with an explicit deny" - reason: tracker is expired
+            # 400 - "Invalid tracker"
+            raise DemistoException(f'Error in search-events: {str(e)}') from e
         return response
 
 
@@ -62,14 +78,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
-    try:
-        client.search_events()
-    except Exception as e:
-        # 403 - "User is not authorized to access this resource with an explicit deny" - reason: tracker is expired (Not our case)
-        # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
-        raise DemistoException(f'Error in test-module: {e}\n'
-                               f'Make sure Server URL, Client ID and Secret Key are correctly entered.') from e
+    client.search_events()
     return 'ok'
 
 
@@ -190,8 +199,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}\n'
-                     f'Make sure Server URL, Client ID and Secret Key are correctly entered.')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
