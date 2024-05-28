@@ -13,6 +13,7 @@ from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
 from xml.sax import SAXParseException
+from email import _header_value_parser as parser
 import chardet
 import dateparser
 import exchangelib
@@ -51,7 +52,6 @@ from exchangelib.util import MNS, TNS, add_xml_child, create_element
 from exchangelib.version import EXCHANGE_O365
 from oauthlib.oauth2 import OAuth2Token
 from requests.exceptions import ConnectionError
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *
@@ -2111,26 +2111,33 @@ def cast_mime_item_to_message(item):
         else email.message_from_string(mime_content, policy=email_policy)
     return message
 
-@staticmethod
-def items(message):
-        """Get all the message's header fields and values.
 
-        These will be sorted in the order they appeared in the original
-        message, or were added to the message, and may contain duplicates.
-        Any fields deleted and re-inserted are always appended to the header
-        list.
-        """
-        demisto.debug(f"{APP_NAME}: we are in the items method")
-        list_ = []
-        for k, v in message._headers:
-            try:
-                list_.append((k, message.policy.header_fetch_parse(k, v)))
-            except ValueError as ex:
-                demisto.debug(f"{APP_NAME}: {k=},{v=}")
-                if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
-                    list_.append((k, message.policy.header_fetch_parse(k, v.replace('\r', '').replace('\n', ''))))
-                    
-        return list_
+def items(message):
+    """Get all the message's header fields and values.
+
+    These will be sorted in the order they appeared in the original
+    message, or were added to the message, and may contain duplicates.
+    Any fields deleted and re-inserted are always appended to the header
+    list.
+    """
+    headers_list = []
+    for k, v in message._headers:
+        try:
+            headers_list.append((k, message.policy.header_fetch_parse(k, v)))
+        except ValueError as ex:
+            demisto.debug(f"{APP_NAME}: We got an exception regrading to the {k=},{v=} header, The exception is {ex=}")
+            if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
+                address_list, value = parser.get_address_list(v)
+                address = address_list.value
+                demisto.debug(f"{APP_NAME}: The header after parsing is {address=}")
+                if '\r' in address or '\n' in address:
+                    demisto.debug(f"{APP_NAME}: The header contains \r or \n {address=}")
+                    headers_list.append((k, message.policy.header_fetch_parse(k,
+                                                                              address.replace('\r', '').replace('\n', ''))))
+            else:
+                raise ex
+    return headers_list
+
 
 def parse_incident_from_item(item):  # pragma: no cover
     """
@@ -2176,8 +2183,6 @@ def parse_incident_from_item(item):  # pragma: no cover
         labels.append({"type": "Email/html", "value": item.body})
         email_format = "HTML"
     labels.append({"type": "Email/format", "value": email_format})
-
-    # handle attachments
     if item.attachments:
         incident["attachment"] = []
         demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
@@ -2239,14 +2244,6 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
-                        for header in attachment.item.headers:
-                            demisto.debug(f"{APP_NAME}: attached_email header {header=}")
-                        try:
-                            the_headers = items(attached_email)
-                            demisto.debug(f"{APP_NAME}: attached_email {the_headers=}")
-                        except ValueError as ex:
-                            if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
-                                demisto.debug(f"we got the except: {attached_email=}")
                         for h, v in items(attached_email):
                             if not isinstance(v, str):
                                 try:
