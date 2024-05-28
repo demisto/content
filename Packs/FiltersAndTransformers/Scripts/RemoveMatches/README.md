@@ -53,7 +53,7 @@ If the match_exact argument is 'yes', direct string compare is used, otherwise t
 | value | The value on which the transformer is applied. |
 | ignore_case | Whether to ignore the case of the item for which you are searching. Default is "Yes". |
 | match_exact | Whether to match the exact item in the list, or look for any string that contains it. Default is "No". |
-| delimiter | A string used to delimit fields. For example, a new line "\\n" should match the list separator configuration. |
+| delimiter | A string used to delimit fields. For example, a new line "\n" should match the list separator configuration. |
 | filters | A list of patterns to remove from the value. This can be a single string or a list of patterns, separated by the pattern defined in the delimiter Argument. Unless match_exact is yes, Regex pattern are supported. |
 
 ## Outputs
