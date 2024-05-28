@@ -35,7 +35,7 @@ In order to configure the required timestamp for syslog messages, follow these i
 
 * The product documentation is available [here](https://my.f5.com/manage/s/article/K02138840). 
 
-1. Login to BIG-IP command line.
+1. Log in to the BIG-IP command line.
 2. Use Linux editor to edit the syslog-ng configuration, in this case using **nano** editor.
 ```bash 
    nano /etc/syslog-ng/syslog-ng.conf
