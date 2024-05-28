@@ -744,6 +744,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     if not attachments:
         attachments = []
     message_body, inline_attachments, file_results = get_message_for_body_type(body, body_type, html_body)
+    demisto.debug(f"{message_body=}")
     attachments += inline_attachments
     m = Message(
         account=account,
@@ -787,7 +788,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
         name = f'image{i}'
-        cid = (f'{name}@{random_word_generator(8)}_{random_word_generator(8)}')
+        cid = (f'{name}_{random_word_generator(8)}_{random_word_generator(8)}')
         attachment = {
             'data': base64.b64decode(m.group(3)),
             'name': name
@@ -802,6 +803,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
         attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
+    demisto.debug("newwwwwww")
     demisto.debug(f"{clean_body=}")
     demisto.debug(f"{attachments=}")
     demisto.debug(f"{file_results=}")
@@ -825,7 +827,7 @@ def get_message_for_body_type(body, body_type, html_body):
         return (HTMLBody(html_body) if html_body else Body(body)), attachments, file_results
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body), attachments, file_results
-    return (Body(body) if (body or not html_body) else HTMLBody(html_body)), attachments, file_results
+    return (HTMLBody(html_body) if html_body else Body(body)), attachments, file_results
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
