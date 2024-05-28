@@ -965,8 +965,8 @@ def test_parse_incident_from_item_with_attachment_with_corrupted_header(mocker):
     assert incident["attachment"]
     assert incident["rawJSON"]
     mock_file_result.assert_called_once_with(
-       'demisto_untitled_attachment.eml',
-       'MIME-Version: 1.0\r\nMessage-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n'\
-       'X-FAKE-Header: HVALue\r\nX-Who-header: whovALUE'
-       '\r\nDATE: 2023-12-16T12:04:45\r\nFrom: =?utf-8?Q?=F0=9F=8E=81=0A?=<test@test.com>\r\n\r\nHello'
+        "demisto_untitled_attachment.eml",
+        "MIME-Version: 1.0\r\nMessage-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "X-FAKE-Header: HVALue\r\nX-Who-header: whovALUE"
+        "\r\nDATE: 2023-12-16T12:04:45\r\nFrom: =?utf-8?Q?=F0=9F=8E=81=0A?=<test@test.com>\r\n\r\nHello",
     )
