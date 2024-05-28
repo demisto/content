@@ -1,4 +1,4 @@
-**Important:** This integration is supported by Palo Alto Networks.
+**Important:** Contrary to the Druva integration, DruvaEventCollector is supported by Palo Alto Networks.
 
 ## Druva Event Collector
 
