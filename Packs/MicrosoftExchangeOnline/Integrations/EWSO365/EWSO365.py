@@ -2183,6 +2183,8 @@ def parse_incident_from_item(item):  # pragma: no cover
         labels.append({"type": "Email/html", "value": item.body})
         email_format = "HTML"
     labels.append({"type": "Email/format", "value": email_format})
+    
+    # handle attachments
     if item.attachments:
         incident["attachment"] = []
         demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
