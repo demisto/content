@@ -145,7 +145,6 @@ def main() -> None:  # pragma: no cover
         client = Client(
             base_url=params['url'],
             verify=verify_certificate,
-            headers=None,
             proxy=proxy)
 
         client.update_headers(base_64_string)
