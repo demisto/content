@@ -935,16 +935,18 @@ def test_parse_incident_from_item_with_attachment_with_corrupted_header(mocker):
         - Parsing runs successfully
         - Incident attachment is not empty
     """
-    mock_file_result = mocker.patch('EWSO365.fileResult')
-    content = b'MIME-Version: 1.0\r\n' \
-              b'Message-ID:\r\n' \
-              b' <message-test-idRANDOMVALUES@testing.com>' \
-              b'Content-Type: text/plain; charset="us-ascii"\r\n' \
-              b'X-FAKE-Header: HVALue\r\n' \
-              b'X-Who-header: whovALUE\r\n' \
-              b'DATE: 2023-12-16T12:04:45\r\n' \
-              b'From: =?utf-8?Q?=F0=9F=8E=81=0A?=<test@test.com>\r\n' \
-              b'\r\nHello'
+    mock_file_result = mocker.patch("EWSO365.fileResult")
+    content = (
+        b"MIME-Version: 1.0\r\n"
+        b"Message-ID:\r\n"
+        b" <message-test-idRANDOMVALUES@testing.com>"
+        b'Content-Type: text/plain; charset="us-ascii"\r\n'
+        b"X-FAKE-Header: HVALue\r\n"
+        b"X-Who-header: whovALUE\r\n"
+        b"DATE: 2023-12-16T12:04:45\r\n"
+        b"From: =?utf-8?Q?=F0=9F=8E=81=0A?=<test@test.com>\r\n"
+        b"\r\nHello"
+    )
     message = Message(
         datetime_received=EWSDate(year=2021, month=1, day=25),
         datetime_created=EWSDate(year=2021, month=1, day=25),
@@ -954,15 +956,17 @@ def test_parse_incident_from_item_with_attachment_with_corrupted_header(mocker):
                 item=Item(mime_content=content),
                 attachment_id=AttachmentId(),
                 last_modified_time=EWSDate(year=2021, month=1, day=25),
-            )]
+            )
+        ],
     )
     incident = parse_incident_from_item(message)
 
     assert incident
-    assert incident['attachment']
+    assert incident["attachment"]
     assert incident["rawJSON"]
-    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml",
-                                             "MIME-Version: 1.0\r\nMessage-ID:  '\
-                                             '<message-test-idRANDOMVALUES@testing.com>\r\nX-FAKE-Header:'\
-                                            ' HVALue\r\nX-Who-header: whovALUE\r\nDATE: 2023-12-16T12:04:45\r\n'\
-                                            'From: =?utf-8?Q?=F0=9F=8E=81=0A?=<test@test.com>\r\n\r\nHello")
+    mock_file_result.assert_called_once_with(
+       'demisto_untitled_attachment.eml',
+       'MIME-Version: 1.0\r\nMessage-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n'\
+       'X-FAKE-Header: HVALue\r\nX-Who-header: whovALUE'
+       '\r\nDATE: 2023-12-16T12:04:45\r\nFrom: =?utf-8?Q?=F0=9F=8E=81=0A?=<test@test.com>\r\n\r\nHello'
+    )
