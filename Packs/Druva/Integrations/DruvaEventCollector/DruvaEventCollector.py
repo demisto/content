@@ -110,7 +110,7 @@ def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any
 ''' MAIN FUNCTION '''
 
 
-def add_time_to_events(events: List[Dict] | None):
+def add_time_to_events(events: List[Dict]):
     """
     Adds the _time key to the events.
     Args:
