@@ -17,7 +17,7 @@ In order to do so, create a logging profile and set remote logging to the releva
 4. Select the **Application Security** checkbox.
 5. On the *Application Security* tab, for *Configuration*, select **Advanced**.
 6. Select the **Remote Storage** checkbox.
-7. Click on **Finished**.
+7. Click **Finished**.
 
 ### Setting Remote Logging
 1. Connect to the BIG-IP web UI and login with administrative rights.
