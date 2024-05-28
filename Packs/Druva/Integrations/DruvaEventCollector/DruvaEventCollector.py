@@ -41,7 +41,7 @@ class Client(BaseClient):
         """
 
         url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
-        headers = {'Authorization': self._headers['Authorization'], 'accept': 'application/json'}
+        headers = self._headers | {'accept': 'application/json'}
         response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
                                       headers=headers)
         return response
