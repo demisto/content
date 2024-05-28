@@ -11,4 +11,4 @@
 
 ### For sending messages using the ChatBot app and mirroring
 
-To enable a direct communication with Mattermost for mirroring and sending messages by a Mattermost chat bot, make sure both of *Long running instance* and *Enable Incident Mirroring* parameters are checked.
+To enable a direct communication with Mattermost for mirroring and sending messages by a Mattermost chatbot, make sure both the *Long running instance* and *Enable Incident Mirroring* parameters are checked.

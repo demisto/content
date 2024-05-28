@@ -1,8 +1,7 @@
-Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organisations and companies.
-This integration was integrated and tested with version xx of MattermostV2.
+Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organizations and companies.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mattermost-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---mattermost-v2).
 
 ## Configure Mattermost v2 on Cortex XSOAR
 
@@ -480,6 +479,7 @@ Send a message using a chatbot app.
 #### Context Output
 
 There is no context output for this command.
+
 ### mattermost-close-channel
 
 ***
@@ -499,6 +499,7 @@ Closes a channel.
 #### Context Output
 
 There is no context output for this command.
+
 ### close-channel
 
 ***
@@ -518,6 +519,7 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 #### Context Output
 
 There is no context output for this command.
+
 ### mirror-investigation
 
 ***
@@ -539,6 +541,7 @@ Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
 #### Context Output
 
 There is no context output for this command.
+
 ### close-channel
 
 ***
@@ -558,6 +561,7 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 #### Context Output
 
 There is no context output for this command.
+
 ### mattermost-mirror-investigation
 
 ***
@@ -582,21 +586,4 @@ There is no context output for this command.
 
 ## Breaking changes from the previous version of this integration - Mattermost v2
 
-- New configuration parameters were added: Bot Access Token
-- 
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *mirror-investigation* command:
-* *mirrorTo* - this argument was replaced by channelName.
-* *argumentName* - this argument was replaced by XXX.
-
-
-## Additional Considerations for this version
-- A new requierd parameter was introduced
+- New required configuration parameters were added: Bot Access Token
