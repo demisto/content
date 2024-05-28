@@ -1914,12 +1914,20 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
     return attachments
 
 
+def random_word_generator(length):
+    """Generate a random string of given length
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+
 def handle_html(htmlBody):
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
     We might not have Beautiful Soup so just do regex search
     """
+    file_results = []
     attachments = []
     cleanBody = ''
     lastIndex = 0
@@ -1932,19 +1940,21 @@ def handle_html(htmlBody):
     ):
         maintype, subtype = m.group(2).split('/', 1)
         name = f"image{i}.{subtype}"
-        att = {
+        cid = (f'{name}@{random_word_generator(8)}_{random_word_generator(8)}')
+        attachment = {
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': name,
-            'cid': name
+            'name': f'{cid}-imageName:{name}',
+            'cid': cid,
         }
-        attachments.append(att)
-        cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+        attachments.append(attachment)
+        cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
         lastIndex = m.end() - 1
+        file_results.append(fileResult(attachment['name'], attachment['data']))
 
     cleanBody += htmlBody[lastIndex:]
-    return cleanBody, attachments
+    return cleanBody, attachments, file_results
 
 
 def collect_inline_attachments(attach_cids):
@@ -2051,52 +2061,59 @@ def attachment_handler(message, attachments):
     """
     for att in attachments:
         if att['maintype'] == 'text':
+            demisto.debug('11111')
             msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
             if att['cid'] is not None:
                 msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
-                msg_txt.add_header('Content-ID', '<' + att['name'] + '>')
+                msg_txt.add_header('Content-ID', '<' + att['cid'] + '>')
 
             else:
                 msg_txt.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_txt)
 
         elif att['maintype'] == 'image':
+            demisto.debug('222222')
             msg_img = MIMEImage(att['data'], att['subtype'])
             if att['cid'] is not None:
                 msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
-                msg_img.add_header('Content-ID', '<' + att['name'] + '>')
+                msg_img.add_header('Content-ID', '<' + att['cid'] + '>')
 
             else:
                 msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_img)
 
         elif att['maintype'] == 'audio':
+            demisto.debug('33333')
             msg_aud = MIMEAudio(att['data'], att['subtype'])
             if att['cid'] is not None:
                 msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
-                msg_aud.add_header('Content-ID', '<' + att['name'] + '>')
+                msg_aud.add_header('Content-ID', '<' + att['cid'] + '>')
 
             else:
                 msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_aud)
 
         elif att['maintype'] == 'application':
+            demisto.debug('444444')
             msg_app = MIMEApplication(att['data'], att['subtype'])
             if att['cid'] is not None:
                 msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
-                msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                msg_app.add_header('Content-ID', '<' + att['cid'] + '>')
             else:
                 msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_app)
 
         else:
+            demisto.debug('55555555')
             msg_base = MIMEBase(att['maintype'], att['subtype'])
             msg_base.set_payload(att['data'])
             if att['cid'] is not None:
+                demisto.debug('in_the_if')
                 msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
-                msg_base.add_header('Content-ID', '<' + att['name'] + '>')
+                msg_base.add_header('Content-ID', '<' + att['cid'] + '>')
 
             else:
+                demisto.debug('in_the_else')
                 msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_base)
 
@@ -2152,7 +2169,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         inlineAttachments = []  # type: list
 
         if htmlBody:
-            htmlBody, htmlAttachments = handle_html(htmlBody)
+            htmlBody, htmlAttachments, file_results = handle_html(htmlBody)
             msg = MIMEText(htmlBody, 'html', 'utf-8')
             attach_body_to.attach(msg)  # type: ignore
             if attach_cid:
@@ -2187,7 +2204,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
                                                             'https://www.googleapis.com/auth/gmail.send'],
                           delegated_user=emailfrom)
     result = service.users().messages().send(**command_args).execute()
-    return result
+    return result, file_results
 
 
 def send_mail_command():
@@ -2217,9 +2234,10 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
 
-    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
+    result, file_results = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                        attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
                        additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
+    demisto.debug(f"i_have_file_results {file_results=}")
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
@@ -2231,8 +2249,11 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
             raw_response=html_body,
         )
 
+        if file_results:
+            return [send_mail_result, html_result, file_results]
         return [send_mail_result, html_result]
-
+    if file_results:
+        return [send_mail_result, file_results]
     return send_mail_result
 
 

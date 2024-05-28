@@ -242,23 +242,33 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
 
 
-def find_attachments_to_download(attachments, email_html, email_related_incident):
-    """ Filter only new attachment.
+def find_attachments_to_download(attachments, email_html, email_related_incident, labels):
+    """ Filter only new attachment and their identifier.
 
     Args:
         attachments (Attachment): All attachments from the current thread mail
-        email_html (str): email html for the newest message
+        email_related_incident (str): email related incident to retrieve previous files
+        labels : labels to find the integration name
     """
+    integration_name = ''
+    for label in labels:
+        if label.get('type') == 'Brand':
+            integration_name = label.get('value')
     if attachments:
         new_attachment_identifiers_list = ["dummyFileIdentifier"]
         new_attachments = []
         previous_files = get_incident_related_files(email_related_incident)
         previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
         previous_file_names = [file.get("Name") for file in previous_files]
-        previous_file_names_for_reply = [file_name.replace(":", "") for file_name in previous_file_names]
+        previous_file_names_for_reply = [
+            file_name.replace(":", "")
+            if integration_name in ['EWS v2', 'EWSO365']
+            else file_name
+            for file_name in previous_file_names
+        ]
         for attachment in attachments:
             attachment_name = attachment.get('name', '')
-            if attachment_name not in previous_file_names and '-imageName:' in attachment_name and attachment_name.split('-imageName:')[1] not in previous_file_names_for_reply:
+            if attachment_name not in previous_file_names and '-imageName:' in attachment_name and attachment_name.split('-imageName:', 1)[1] not in previous_file_names_for_reply:
                 if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
                     new_attachment_identifiers_list = []
                 identifier_id = attachment.get('name', '').split('-imageName:', 1)[0]
@@ -456,7 +466,7 @@ def main():
         email_html = remove_html_conversation_history(email_html)
 
         # Get attachments IDs for new attacments
-        attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, email_related_incident)
+        attachment_identifiers_array, attachments = find_attachments_to_download(attachments, email_html, email_related_incident, incident.get('labels'))
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.

@@ -96,13 +96,19 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
     if is_error(email_reply):
         return_error(f'Error:\n {get_error(email_reply)}')
 
+    result_array = []
+    for result in email_reply:
+        if result.get('FileID'):
+             result_array.append(result)
+
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:
         msg += f' Cc: {email_cc}'
     if email_bcc:
         msg += f' Bcc: {email_bcc}'
 
-    return msg
+    result_array.append(msg)
+    return result_array
 
 
 def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, body_type, service_mail,
