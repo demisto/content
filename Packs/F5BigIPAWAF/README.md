@@ -20,7 +20,7 @@ In order to do so, create a logging profile and set remote logging to the releva
 7. Click **Finished**.
 
 ### Setting Remote Logging
-1. Connect to the BIG-IP web UI and login with administrative rights.
+1. Connect to the BIG-IP web UI and log in with administrative rights.
 2. Navigate to **Security** &rarr; **Event Logs** &rarr; **Logging Profiles**.
 3. Click the name of the logging profile for which you want to set up remote logging.
 4. Select the **Remote Storage** check box.
