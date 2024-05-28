@@ -82,7 +82,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[Any], Optional[Any]]:
+def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[list], Optional[str]]:
     """
     Gets events from Druva API in one batch (max 500), if a tracker is given, the API returns events starting from its timestamp.
     Args:
@@ -94,10 +94,10 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[Optional[
     """
 
     response = client.search_events(tracker)
-    return response.get('tracker'), response.get('events')
+    return response.get('events'), response.get('tracker')
 
 
-def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any]], Optional[Any]]:
+def fetch_events(client: Client, last_run: dict[str, str]) -> tuple[list[dict], dict[str, str]]:
     """
     Args:
         client (Client): Druva client to use.
@@ -109,24 +109,24 @@ def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any
 
     tracker = last_run.get('tracker')  # None on first run
     demisto.debug(f'fetching events, {tracker=}')
-    new_tracker, events = get_events(client, tracker)
+    events, new_tracker = get_events(client, tracker)
     demisto.debug(f"fetched {len(events or [])} events, {new_tracker=}")
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'tracker': new_tracker}
 
     demisto.debug(f'Setting next run {next_run}.')
-    return next_run, events
+    return events, next_run
 
 
 ''' MAIN FUNCTION '''
 
 
-def add_time_to_events(events: List[Dict]):
+def add_time_to_events(events: list[dict]):
     """
     Adds the _time key to the events.
     Args:
-        events: List[Dict] - list of events to add the _time key to.
+        events: list[dict] - list of events to add the _time key to.
     Returns:
         list: The events with the _time key.
     """
@@ -167,7 +167,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'druva-get-events':
             should_push_events = argToBoolean(args['should_push_events'])
-            tracker, events = get_events(client, args.get('tracker'))
+            events, tracker = get_events(client, args.get('tracker'))
             return_results(
                 CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events),
                                outputs=tracker,
@@ -184,7 +184,7 @@ def main() -> None:  # pragma: no cover
                 )
 
         elif command == 'fetch-events':
-            next_run, events = fetch_events(
+            events, next_run = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
             )

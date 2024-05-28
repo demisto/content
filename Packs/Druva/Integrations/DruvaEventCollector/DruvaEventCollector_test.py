@@ -80,7 +80,7 @@ def test_get_events_command(mocker, mock_client):
     - events and tracker as expected
     """
     mocker.patch.object(mock_client, "search_events", return_value=EVENT_1)
-    tracker, events = get_events(client=mock_client)
+    events, tracker = get_events(client=mock_client)
 
     assert tracker == 'xxxx'
     assert len(events) == 1
@@ -128,7 +128,7 @@ def test_fetch_events_command(mocker, mock_client):
     # First fetch
     mocker.patch.object(mock_client, "search_events", return_value=EVENT_1)
     first_run = {}
-    second_run, events = fetch_events(
+    events, second_run = fetch_events(
         client=mock_client,
         last_run=first_run
     )
@@ -139,7 +139,7 @@ def test_fetch_events_command(mocker, mock_client):
 
     # Second fetch
     mock_search_events = mocker.patch.object(mock_client, "search_events", return_value=EVENT_2)
-    third_run, events = fetch_events(
+    events, third_run = fetch_events(
         client=mock_client,
         last_run=second_run
     )
