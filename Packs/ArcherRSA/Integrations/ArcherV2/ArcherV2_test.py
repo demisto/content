@@ -614,7 +614,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
         field_data = client.get_field_value_list(304, 1)
-        assert VALUE_LIST_FIELD_DATA == field_data
+        assert field_data == VALUE_LIST_FIELD_DATA
 
     @pytest.mark.parametrize('args, expected_response', [(0, RES_DEPTH_0), (1, RES_DEPTH_1), (2, RES_DEPTH_2)])
     def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):
@@ -680,6 +680,27 @@ class TestArcherV2:
                                                       {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
+
+    def test_generate_field_values_list_with_other(self, requests_mock, mocker):
+        """
+            Given:
+                list values with "OtherText" from dictionary type under "fieldsToValues" argument
+
+            When:
+                - running archer-update-record
+
+            Then:
+                - assert fields are generated correctly
+
+        """
+        mocker.patch.object(Client, 'get_field_value_list', return_value={'ValuesList': [{"Name": "NA", "Id": 222}]})
+
+        client = Client(BASE_URL, '', '', '', '', 400)
+        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 1234},
+                                                      {"ValuesList": ["NA"], "OtherText": "test"},
+                                                      {"depth": 1})
+        assert field_key == 'Value'
+        assert field_value == {'ValuesListIds': [222], 'OtherText': 'test'}
 
     def test_generate_invalid_field_users_groups_input(self):
         """

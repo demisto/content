@@ -45,4 +45,5 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1005 - Data from Local System](../doc_files/MITRE_ATT&CK_CoA_-_T1005_-_Data_from_Local_System.png)
+![MITRE ATT&CK CoA - T1005 - Data from Local System](../doc_files/MITRE_ATTand
+CK_CoA_-_T1005_-_Data_from_Local_System.png)
