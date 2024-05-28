@@ -2000,7 +2000,7 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
         if not isinstance(outputs, dict):
             raise DemistoException('outputs is expected to be a dict')
         scheduled_command = ScheduledCommand(
-            command=f'{COMMAND_PREFIX}-private-file-and-analysis-get',
+            command=f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get',
             next_run_in_seconds=interval,
             args={
                 'entryID': args.get('entryID'),
