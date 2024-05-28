@@ -5,7 +5,7 @@ import pytest
 
 @pytest.fixture()
 def mock_client() -> Client:
-    return Client(base_url="test", verify=False, proxy=False, headers=None)
+    return Client(base_url="test", verify=False, proxy=False)
 
 
 def test_test_module_command(mocker, mock_client):
