@@ -97,7 +97,7 @@ def fetch_events(client: Client, last_run: dict) -> tuple[Dict[str, Optional[Any
     """
 
     tracker = last_run.get('tracker')
-    demisto.debug(f'Fetched events with tracker: {tracker}.')
+    demisto.debug(f'fetching events, {tracker=}')
     new_tracker, events = get_events(client, tracker)
     demisto.debug(f"fetched {len(events or [])} events, {new_tracker=}")
 
