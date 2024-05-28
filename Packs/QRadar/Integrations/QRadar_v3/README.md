@@ -1,6 +1,10 @@
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 This integration was integrated and tested with version 14-20 of QRadar v3
 
+<~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder.
+</~XSIAM>
+
 ## Configure IBM QRadar v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
