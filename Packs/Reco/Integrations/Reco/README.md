@@ -355,3 +355,60 @@ Get user context by email address from Reco.
 | Reco.User.groups | String | The groups user is member of. | 
 | Reco.User.full_name | String | The user full name. | 
 | Reco.User.labels | Unknown | User Labels. | 
+
+
+### reco-get-files-exposed-to-email-address
+
+***
+Get files exposed to a specific email address
+
+#### Base Command
+
+`reco-get-files-exposed-to-email-address`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id | 
+| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
+| Reco.Assets.data_category | String | The data category of the asset | 
+| Reco.Assets.data_categories | String | The data categories of the asset |
+| Reco.SensitiveAssets.location | String | The path of the asset. |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
+| Reco.Assets.last_access_date | String | The last access date of the asset |
+| Reco.Assets.email_account | String | The last access date of the asset |
+| Reco.Assets.file_owner | String | SaaS tool source of the asset | 
+
+
+### reco-get-assets-shared-externally
+
+***
+Get files exposed to a specific email address
+
+#### Base Command
+
+`reco-get-assets-shared-externally`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id | 
+| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
+| Reco.Assets.data_category | String | The data category of the asset | 
+| Reco.Assets.data_categories | String | The data categories of the asset | 
+| Reco.Assets.location | String | The path of the asset | 
+| Reco.Assets.source | String | SaaS tool source of the asset | 
+| Reco.Assets.last_access_date | String | The last access date of the asset |
+| Reco.Assets.file_owner | String | SaaS tool source of the asset |
