@@ -1,6 +1,8 @@
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 This integration was integrated and tested with version 14-20 of QRadar v3
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure IBM QRadar v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -85,7 +87,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-update-reference-set-value | qradar-reference-set-value-upsert |  | 
 | qradar-delete-reference-set-value |  qradar-reference-set-value-delete | | 
 | qradar-get-domains | qradar-domains-list |  | 
-| qradar-domains-list | qradar-get-domain-by-id | Specify the *domain_id* argument in the command. |  |
+| qradar-get-domain-by-id| qradar-domains-list | Specify the *domain_id* argument in the command. |  |
 
 
 ## Mirroring

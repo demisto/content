@@ -1381,6 +1381,25 @@ def test_get_remote_data_command_with_message(mocker):
     assert info_message == "Splunk-SDK message: test message"
 
 
+def test_fetch_with_error_in_message(mocker):
+    """
+    Given - fetch result from Splunk return Error message
+    When - fetch incidents
+    Then - assert DemistoException is raised
+    """
+
+    mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
+    mocker.patch('demistomock.getLastRun', return_value={'time': '2018-10-24T14:13:20'})
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[results.Message("FATAL", "Error")])
+
+    # run
+    service = mocker.patch('splunklib.client.connect')
+    with pytest.raises(DemistoException) as e:
+        splunk.fetch_incidents(service, None, None, None)
+    assert 'Failed to fetch incidents, check the provided query in Splunk web search' in e.value.message
+
+
 @pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
                          [({'status_label': 'New', 'event_id': 'id', 'status_end': 'false',
                             'comment': 'new comment from splunk', 'reviewer': 'admin',

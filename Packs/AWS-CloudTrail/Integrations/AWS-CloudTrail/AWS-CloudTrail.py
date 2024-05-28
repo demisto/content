@@ -21,6 +21,10 @@ AWS_ROLE_POLICY = None
 AWS_ACCESS_KEY_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
 AWS_SECRET_ACCESS_KEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
 VERIFY_CERTIFICATE = not PARAMS.get('insecure', True)
+AWS_STS_REGIONAL_ENDPOINTS = PARAMS.get('sts_regional_endpoint') or None
+if AWS_STS_REGIONAL_ENDPOINTS:
+    demisto.debug(f"Sets the environment variable AWS_STS_REGIONAL_ENDPOINTS={AWS_STS_REGIONAL_ENDPOINTS}")
+    os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = AWS_STS_REGIONAL_ENDPOINTS.lower()
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,

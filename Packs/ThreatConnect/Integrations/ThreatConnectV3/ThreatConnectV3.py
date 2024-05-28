@@ -1164,13 +1164,15 @@ def create_group(client: Client, args: dict, name: str = '', event_date: str = '
 
 
 def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indicator: str = '', confidence: str = '0',
-                             description: str = '', tags: list = [],
+                             description: Optional[str] = None, tags: list = [],
                              indicator_type: str = '') -> Any:  # pragma: no cover # noqa
     tags = argToList(args.get('tags', tags))
     confidence = args.get('confidence', confidence)
     rating = args.get('rating', rating)
     indicator = args.get('indicator', indicator)
     indicator_type = args.get('indicatorType', indicator_type)
+    description = args.get('description', description)
+    owner = args.get('owner', demisto.params().get('defaultOrg'))
     if tags:
         tmp = []
         for tag in tags:
@@ -1181,12 +1183,19 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
         "type": indicator_type,
         "confidence": confidence,
         "rating": rating,
+        "ownerName": owner,
         "tags": {
             "data": tags
         },
         "summary": indicator,
-        "body": description
     }
+    if description:
+        payload['attributes'] = {"data": [
+            {"type": "Description",
+             "value": description,
+             "default": True
+             }
+        ]}
     if indicator_type == 'Host':
         payload['hostName'] = indicator
     if indicator_type == 'Address':

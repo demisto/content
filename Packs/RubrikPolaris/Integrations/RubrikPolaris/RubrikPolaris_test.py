@@ -9,7 +9,7 @@ from RubrikPolaris import ERROR_MESSAGES, MAXIMUM_PAGINATION_LIMIT, OUTPUT_PREFI
     TOKEN_EXPIRY_TIME_SPAN, TOKEN_EXPIRY_BUFFER_TIME, IOC_TYPE_ENUM
 from unittest.mock import patch
 
-BASE_URL = "https://rubrik-se-beta.my.rubrik.com/api"
+BASE_URL = "https://demo.my.rubrik.com/api"
 BASE_URL_GRAPHQL = BASE_URL + "/graphql"
 BASE_URL_SESSION = BASE_URL + "/session"
 last_fetch = "2021-10-22T14:55:51.616000Z"
@@ -50,7 +50,7 @@ def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
     """Tests the execution of main function when incorrect credentials are provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta",
+        "url": "demo",
         "email": {
             "identifier": "incorrect@account.com",
             "password": "password"
@@ -79,7 +79,7 @@ def test_main_unknown_commmand(requests_mock, monkeypatch, capfd):
     """Tests the execution of main function when unknown command name is provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta",
+        "url": "demo",
         "email": {
             "identifier": "username@domain.com",
             "password": "password"
@@ -100,7 +100,7 @@ def test_main_no_json_no_email(monkeypatch, capfd):
     """Tests the execution of main function when neither service account json nor email-password have been provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta"})
+        "url": "demo"})
     monkeypatch.setattr(mock_command, lambda: "some_command")
     with pytest.raises(SystemExit):
         capfd.close()
@@ -113,7 +113,7 @@ def test_main_incorrect_json_structure(monkeypatch, capfd, service_account_json,
     """Tests the execution of main function when incorrectly formatted service account json is provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta",
+        "url": "demo",
         "service_account_json": service_account_json})
 
     monkeypatch.setattr(mock_command, lambda: "some_command")
@@ -134,7 +134,7 @@ def client(requests_mock, capfd):
     requests_mock.post(BASE_URL_SESSION, json=data)
     capfd.close()
     client_obj = MyClient(
-        domain="rubrik-se-beta",
+        domain="demo",
         username="dummy_username",
         password="dummy_password",
         insecure=True
@@ -1333,8 +1333,9 @@ def test_gps_vm_snapshot_create_when_success_response(client, requests_mock):
     assert gps_vm_snapshot_create_command_results.outputs == gps_vm_snapshot_create_outputs
 
 
-@pytest.mark.parametrize("empty_response", [True, False])
-def test_gps_snapshot_file_download_success(client, requests_mock, empty_response):
+@pytest.mark.parametrize("empty_response, object_type", [
+    (True, ""), (False, "WindowsFileset"), (False, "VolumeGroup"), (False, "VmwareVm")])
+def test_gps_snapshot_file_download_success(client, requests_mock, empty_response, object_type):
     """Tests success for rubrik_gps_snapshot_file_download."""
     from RubrikPolaris import rubrik_gps_snapshot_files_download_command
 
@@ -1345,7 +1346,7 @@ def test_gps_snapshot_file_download_success(client, requests_mock, empty_respons
                            "test_data/gps_snapshot_file_download_hr.md")) as f:
         gps_snapshot_file_download_hr = f.read()
 
-    args = {"snapshot_id": 1, "file_path": "a"}
+    args = {"snapshot_id": 1, "file_path": "a", "object_type": object_type}
 
     if empty_response:
         requests_mock.post(BASE_URL_GRAPHQL, json=gps_snapshot_file_download_response.get('empty_response'))
@@ -2694,4 +2695,111 @@ def test_rubrik_sonar_file_context_list_command_with_invalid_args(client, args, 
 
     with pytest.raises(ValueError) as e:
         rubrik_sonar_file_context_list_command(client, args=args)
+    assert str(e.value) == error
+
+
+@pytest.mark.parametrize("empty_response_type, message",
+                         [("empty_response", MESSAGES["NO_RECORD_FOUND"].format("snapshot")),
+                          ("empty_response_cdm_id", MESSAGES["NO_RECORD_FOUND"].format("snapshot")),
+                          ("empty_response_cluster_id", MESSAGES["NO_RECORD_FOUND"].format("snapshot")),
+                          ("empty_response_suspicious_file", MESSAGES["NO_RECORDS_FOUND"].format("suspicious files"))])
+def test_rubrik_radar_suspicious_file_list_command_success_with_empty_response(client, requests_mock,
+                                                                               empty_response_type, message):
+    """
+    Test case scenario for rubrik_radar_suspicious_file_list_command with valid case and empty response.
+
+    When:
+        - Calling rubrik_radar_suspicious_file_list_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_radar_suspicious_file_list_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/radar_suspicious_file_list_response.json"))
+
+    args = {"snapshot_id": "00000000-0000-0000-0000-000000000001"}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get(empty_response_type)}])
+    response = rubrik_radar_suspicious_file_list_command(client, args=args)
+    assert response.readable_output == message
+
+
+def test_rubrik_radar_suspicious_file_list_command_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_radar_suspicious_file_list_command with valid case.
+
+    When:
+        - Calling rubrik_radar_suspicious_file_list_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_radar_suspicious_file_list_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/radar_suspicious_file_list_response.json"))
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           "test_data/radar_suspicious_file_list_hr.md")) as f:
+        hr_data = f.read()
+
+    args = {"snapshot_id": "00000000-0000-0000-0000-000000000001"}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    response = rubrik_radar_suspicious_file_list_command(client, args=args)
+
+    assert response.raw_response == response_data.get('raw_response')
+    assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == \
+        remove_empty_elements(response_data.get('outputs'))
+    assert response.readable_output == hr_data
+
+
+def test_rubrik_radar_suspicious_file_list_command_success_when_no_anomalies(client, requests_mock):
+    """
+    Test case scenario for rubrik_radar_suspicious_file_list_command when no anomalies detected.
+
+    When:
+        - Calling rubrik_radar_suspicious_file_list_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_radar_suspicious_file_list_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/radar_suspicious_file_list_response.json"))
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           "test_data/radar_suspicious_file_list_no_anomalies_hr.md")) as f:
+        hr_data = f.read()
+
+    args = {"snapshot_id": "00000000-0000-0000-0000-000000000001"}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response_no_anomalies')}])
+    response = rubrik_radar_suspicious_file_list_command(client, args=args)
+
+    assert response.raw_response == response_data.get('raw_response_no_anomalies')
+    assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == \
+        remove_empty_elements(response_data.get('outputs_when_no_anomalies'))
+    assert response.readable_output == hr_data
+
+
+@pytest.mark.parametrize("args, error", [
+    ({}, ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format("snapshot_id"))
+])
+def test_rubrik_radar_suspicious_file_list_command_with_invalid_args(client, args, error):
+    """
+    Test case scenario for invalid arguments for rubrik_radar_suspicious_file_list_command.
+
+    Given:
+        -args: Contains arguments for the command.
+    When:
+        -Invalid value is passed in arguments
+    Then:
+        -Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_radar_suspicious_file_list_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_radar_suspicious_file_list_command(client, args=args)
     assert str(e.value) == error

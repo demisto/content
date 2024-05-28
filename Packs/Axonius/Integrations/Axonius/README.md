@@ -32,7 +32,7 @@ Gather device info by saved query
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_query_name | The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -120,7 +120,7 @@ Gather user info by saved query
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_query_name | The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -179,7 +179,7 @@ Gather user info by email address
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The user email address to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -240,7 +240,7 @@ Gather user info by email address using regex
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The user email address to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -303,7 +303,7 @@ Gather user info by username
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The username to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -360,7 +360,7 @@ Gather user info by username using regex
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The username to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -416,7 +416,7 @@ Gather device info by hostname
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The hostname to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -498,7 +498,7 @@ Gather device info by hostname using regex
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The hostname to search for within Axonius using regex. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -582,7 +582,7 @@ Gather device info by IP address
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The IP address to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -665,7 +665,7 @@ Gather device info by IP address using regex
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The IP address to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -748,7 +748,7 @@ Gather device info by MAC address
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The MAC address to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 
@@ -831,7 +831,7 @@ Gather device info by MAC address using regex
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The MAC address to search for within Axonius. | Required | 
-| max_results | The maximum number of results to return. | Optional | 
+| max_results | The maximum number of results to return. Default is 50. | Optional | 
 | fields | Comma separated list of Axonius fields to return. | Optional | 
 
 

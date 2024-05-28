@@ -1,0 +1,6 @@
+{
+    "success_no_deleted_details": {
+        "args": {},
+        "command": "safebreach-get-scheduled-scenarios"
+    }
+}

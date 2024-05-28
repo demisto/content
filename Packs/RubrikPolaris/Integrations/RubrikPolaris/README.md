@@ -1085,6 +1085,7 @@ Note: To know about the file information and which file can be downloaded, use t
 | --- | --- | --- |
 | snapshot_id | The Snapshot ID of the file that needs to be downloaded.<br/><br/>Note: Users can retrieve the list of the snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
 | file_path | The absolute path of the file to be downloaded. A list of files can be downloaded as a zip folder. Multiple file paths can be separated with comma(,).<br/><br/>Note: Users can retrieve the list of the files with absolute path by executing the "rubrik-gps-snapshot-files-list" command.<br/><br/>Format accepted: "/&lt;directory name&gt;/&lt;sub directory name or file name&gt;"<br/><br/>Example: "/C:/PerfLogs/Admin", "/C:/Windows/Microsoft.NET". | Required | 
+| object_type | The type of object for which the file to be downloaded.<br/><br/>Possible values are: "WindowsFileset", "LinuxFileset", "VolumeGroup", "VmwareVm". Default is VmwareVm. | Optional | 
 
 
 #### Context Output
@@ -1861,7 +1862,7 @@ Retrieve the user access information.
 >### User Access (Showing Records 1-1 out of 1)
 >|User ID|User Full Name|User Principal Name|Risk Level|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|
->| S-1-0-01-0000000000-0000000000-000000000-0001 | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
+>| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
 >
 >Note: To retrieve the next set of results, use **next_page_token** = "cursor_2".<br/>
 >If **next_page_token** is provided, then it will reset the record numbers. For the initial use of **next_page_token**, please avoid specifying the **page_number**.
@@ -2264,7 +2265,7 @@ Retrieve the user access information based on the provided user ID.
 >### User Access
 >|User ID|User Full Name|User Principal Name|Risk Level|Access Risk Reason(s)|Insecure Reason(s)|Groups|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|---|---|---|
->| S-1-0-01-0000000000-0000000000-000000000-0001 | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
+>| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
 >
 >
 >### Sensitive Hits
@@ -2582,3 +2583,141 @@ Retrieve the context of the file, folder, or file share for the provided object 
 >| uk_national_insurance_number.csv | 120064 | 1712 | 0 | /C:/File Shares/uk_national_insurance_number.csv | INHERITED | 2022-03-24T05:26:20Z | 2022-03-24T05:26:20Z |
 >
 >Note: To retrieve the next set of results use, "next_page_token" = cursor_2
+
+
+### rubrik-radar-suspicious-file-list
+
+***
+Retrieve the suspicious list of files for a snapshot ID with detected file anomalies.
+
+#### Base Command
+
+`rubrik-radar-suspicious-file-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| snapshot_id | The Snapshot ID of the object or Activity Series ID.<br/><br/>Note: Users can get the list of the snapshot IDs by executing the "rubrik-polaris-object-snapshot-list" command. For the Activity Series ID, the users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.SuspiciousFile.id | String | The anomaly result ID. | 
+| RubrikPolaris.SuspiciousFile.snapshotFid | String | The snapshot ID. | 
+| RubrikPolaris.SuspiciousFile.cluster.id | String | The cluster ID. | 
+| RubrikPolaris.SuspiciousFile.cluster.defaultAddress | String | The default address of the cluster. | 
+| RubrikPolaris.SuspiciousFile.cluster.systemStatusAffectedNodes.ipAddress | String | The IP address of the affected node. | 
+| RubrikPolaris.SuspiciousFile.cluster.name | String | The cluster name. | 
+| RubrikPolaris.SuspiciousFile.cluster.version | String | The cluster version. | 
+| RubrikPolaris.SuspiciousFile.cluster.status | String | The cluster status. | 
+| RubrikPolaris.SuspiciousFile.cluster.__typename | String | The type name of the cluster response. | 
+| RubrikPolaris.SuspiciousFile.cdmId | String | The snapshot CDM ID. | 
+| RubrikPolaris.SuspiciousFile.managedId | String | The managed object ID. | 
+| RubrikPolaris.SuspiciousFile.anomalyProbability | Number | The probability of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.workloadId | String | The workload ID. | 
+| RubrikPolaris.SuspiciousFile.location | String | The location of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.isAnomaly | Boolean | Indicates if the file is an anomaly. | 
+| RubrikPolaris.SuspiciousFile.objectType | String | The object type. | 
+| RubrikPolaris.SuspiciousFile.snappableNew.objectType | String | The object type of the snapshot. | 
+| RubrikPolaris.SuspiciousFile.severity | String | The severity of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.detectionTime | Date | The detection time of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.snapshotDate | Date | The snapshot date of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.encryption | String | The encryption standard of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId | String | The ID of the Ransomware Strain. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles | Number | The total number of affected files. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes | Number | The total number of ransomware notes. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath | String | The path of the affected file. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.lastModified | Date | The last modified time of the affected file. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.fileSizeBytes | Number | The size of the affected file in bytes. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.__typename | String | The type name of the affected file response. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath | String | The path of the ransomware note file. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.lastModified | Date | The last modified time of the ransomware note file. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.fileSizeBytes | Number | The size of the ransomware note file in bytes. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.__typename | String | The type name of the ransomware note file response. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.__typename | String | The type name of the strain analysis response. | 
+| RubrikPolaris.SuspiciousFile.anomalyInfo.__typename | String | The type name of the anomaly response. | 
+| RubrikPolaris.SuspiciousFile.__typename | String | The type name of the suspicious file response. | 
+
+#### Command example
+```!rubrik-radar-suspicious-file-list snapshot_id="00000000-0000-0000-0000-000000000001"```
+#### Context Example
+```json
+{
+    "RubrikPolaris": {
+      "SuspiciousFile": {
+        "id": "00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001",
+        "snapshotFid": "00000000-0000-0000-0000-000000000001",
+        "cluster": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "defaultAddress": "cluster.rubrik",
+          "systemStatusAffectedNodes": [
+            {
+              "ipAddress": "0.0.0.0"
+            }
+          ],
+          "name": "Cluster_B",
+          "version": "8.1.3",
+          "status": "Connected",
+          "__typename": "Cluster"
+        },
+        "snappableNew": {
+          "objectType": "VmwareVirtualMachine"
+        },
+        "cdmId": "00000000-0000-0000-0000-000000000001",
+        "managedId": "VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206",
+        "anomalyProbability": 0.949999988079071,
+        "workloadId": "00000000-0000-0000-0000-000000000001-vm-206",
+        "location": "instance.rubrik",
+        "isAnomaly": true,
+        "severity": "Critical",
+        "detectionTime": "2024-02-05T18:49:03.000Z",
+        "snapshotDate": "2024-02-05T16:59:30.000Z",
+        "encryption": "HIGH",
+        "anomalyInfo": {
+          "strainAnalysisInfo": [
+            {
+              "strainId": "LockBit",
+              "totalAffectedFiles": 1,
+              "totalRansomwareNotes": 1,
+              "sampleAffectedFilesInfo": [
+                {
+                  "filePath": "/C:/Shares/Restore-My-Files.txt.lockbit",
+                  "lastModified": "2024-02-05T16:00:44.000Z",
+                  "fileSizeBytes": 2512,
+                  "__typename": "SuspiciousFileInfo"
+                }
+              ],
+              "sampleRansomwareNoteFilesInfo": [
+                {
+                  "filePath": "/C:/Users/Public/Desktop/Restore-My-Files.txt",
+                  "lastModified": "2024-02-08T02:00:03.000Z",
+                  "fileSizeBytes": 2484,
+                  "__typename": "SuspiciousFileInfo"
+                }
+              ],
+              "__typename": "StrainInfo"
+            }
+          ],
+          "__typename": "AnomalyInfo"
+        },
+        "__typename": "GetAnomalyDetailsReply"
+      }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Anomaly Information
+>|Anomaly ID|Is Anomaly|Anomaly Probability|Severity|Encryption|Anomaly Type|Total Suspicious Files|Total Ransomware Note|Detection Time|Snapshot Time|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001 | true | 0.949999988079071 | Critical | HIGH | LockBit | 1 | 1 | 2024-02-05T18:49:03.000Z | 2024-02-05T16:59:30.000Z |
+>
+>
+>### Suspicious Files
+>|File Path|Suspicious Activity|File Size in Bytes|Last Modified Time|
+>|---|---|---|---|
+>| /C:/Shares/Restore-My-Files.txt.lockbit | Ransomware Encryption | 2512 | 2024-02-05T16:00:44.000Z |
+>| /C:/Users/Public/Desktop/Restore-My-Files.txt | Ransomware Note | 2484 | 2024-02-08T02:00:03.000Z |
