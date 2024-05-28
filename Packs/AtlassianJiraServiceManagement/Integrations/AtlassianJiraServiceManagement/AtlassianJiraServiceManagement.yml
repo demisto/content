@@ -410,6 +410,23 @@ script:
         description: The name of the object.
         type: String
   - arguments:
+      - description: Id of the object type that attributes json will be created for. You could use the  jira-asset-object-type-list to find object types.
+        name: object_type_id
+        required: true
+      - description: Whether to fetch only editable attributes.
+        name: is_editable
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+      - description: Whether to fetch only required attributes.
+        name: is_required
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+    name: jira-asset-attribute-json-create
+  - arguments:
     - description: Id of the object that the comment will be added to. You could use the  jira-asset-object-search to find objects.
       name: object_id
       required: true
@@ -495,7 +512,6 @@ script:
         type: Boolean
       - contextPath: JiraAsset.Comment.CanDelete
         description: Whether the comment can be deleted.
-
   runonce: false
   script: '-'
   type: python

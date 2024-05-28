@@ -431,17 +431,18 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
 def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any]):
     object_type_id = args.get('object_type_id')
     url_suffix = f'objecttype/{object_type_id}/attributes'
-
     params = {'onlyValueEditable': args.get('is_editable', False)}
     res = client.http_get(url_suffix, params)
+
     if args.get('is_required'):
         res = [attribute for attribute in res if attribute.get('minimumCardinality') > 0]
+
     outputs = {'attributes': [{
         "objectTypeAttributeId": attribute.get("id"),
         "objectAttributeValues": [{"value": ''}]
     } for attribute in res]}
 
-    return CommandResults()
+    return CommandResults(readable_output=json.dumps(outputs))
 
 
 def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
