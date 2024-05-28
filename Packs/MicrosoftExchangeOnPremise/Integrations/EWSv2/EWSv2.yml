@@ -1101,7 +1101,7 @@ script:
       isArray: true
     - description: The email address from which to reply.
       name: from
-    description: Replies to an email using EWS.
+    description: Replies to an email using EWS. # TRIGGER TPBs
     name: reply-mail
   dockerimage: demisto/py-ews:5.0.3.92093
   isfetch: true
