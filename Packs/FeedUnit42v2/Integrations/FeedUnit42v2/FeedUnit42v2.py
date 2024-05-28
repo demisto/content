@@ -350,7 +350,7 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
         if 'action_type' in coa_indicator['fields']:
             coa_indicator["fields"].pop("action_type")
         if tlp_color:
-            coa_indicator_object['fields']['trafficlightprotocol'] = tlp_color
+            coa_indicator['fields']['trafficlightprotocol'] = tlp_color
 
         course_of_action_indicators.append(coa_indicator)
 

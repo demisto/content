@@ -1,4 +1,4 @@
-Search other emails by sender and/or subject and quarantine
+Search other emails by sender and/or subject and quarantine.
 
 ## Script Data
 
@@ -15,9 +15,9 @@ Search other emails by sender and/or subject and quarantine
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| date_range | Range to cover from the past |
-| by_sender | Get emails from the same sender |
-| by_subject | Get emails with the same subject |
+| date_range | Range to cover from the past. |
+| by_sender | Get emails from the same sender. |
+| by_subject | Get emails with the same subject. |
 
 ## Outputs
 

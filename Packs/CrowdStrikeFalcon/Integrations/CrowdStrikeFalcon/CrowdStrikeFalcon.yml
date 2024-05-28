@@ -2604,6 +2604,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: polling_timeout
+      description: Timeout for polling. Default is 600 seconds.
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -5015,7 +5017,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.91603
+  dockerimage: demisto/py3-tools:1.0.0.96102
   isfetch: true
   ismappable: true
   isremotesyncin: true

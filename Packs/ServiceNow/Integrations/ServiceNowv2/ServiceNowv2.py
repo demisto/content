@@ -1220,8 +1220,10 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     fields_delimiter = args.get('fields_delimiter', ';')
     custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     ticket_type_value = args.get('ticket_type')
+    demisto.debug(f'args(ticket_type): {ticket_type_value}')
     if not ticket_type_value:
         ticket_type_value = demisto.params().get('ticket_type')
+        demisto.debug(f'Empty args(ticket_type), params(ticket_type): {ticket_type_value}')
     ticket_type = client.get_table_name(str(ticket_type_value))
     demisto.debug(f'Using ticket_type: {ticket_type}, from {ticket_type_value}')
     ticket_id = str(args.get('id', ''))

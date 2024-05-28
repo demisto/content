@@ -28,7 +28,6 @@ from exchangelib import (
     ExtendedProperty,
     FileAttachment,
     Folder,
-    FolderCollection,
     HTMLBody,
     Identity,
     ItemAttachment,
@@ -46,8 +45,6 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
 )
-from exchangelib.fields import FieldPath
-from exchangelib.folders import BaseFolder
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from exchangelib.services.common import EWSAccountService, EWSService
@@ -342,11 +339,9 @@ class EWSClient:
             account = self.get_account()
         # handle exchange folder id
         if len(path) == FOLDER_ID_LEN:
-            additional_fields = {FieldPath(field=BaseFolder.get_field_by_fieldname('_id'))}
-            for f in FolderCollection(account, folders=[account.root]).find_folders(depth='Deep',
-                                                                                    additional_fields=additional_fields):
-                if f._id.id == path:
-                    return f
+            folders_map = account.root._folders_map
+            if path in folders_map:
+                return account.root._folders_map[path]
 
         root = account.public_folders_root if is_public else account.root
         folder = root if path == 'AllItems' else root.tois
@@ -1225,7 +1220,7 @@ def search_items_in_mailbox(
         is_public = client.is_default_folder(folder_path, is_public)
         folders = [client.get_folder_by_path(folder_path, account, is_public)]
     else:
-        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()
+        folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = selected_fields == "all"
@@ -1440,15 +1435,16 @@ def find_folders(client: EWSClient, target_mailbox=None):
     :return: Output tuple
     """
     account = client.get_account(target_mailbox)
-    root_collection = FolderCollection(account=account, folders=[account.root])
+    root = account.root
 
     if client.is_public_folder:
-        root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
+        root = account.public_folders_root
     folders = []
-    for f in root_collection.find_folders():  # pylint: disable=E1101
+    for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    readable_output = tableToMarkdown(t=folders, name='Available folders')
+    folders_tree = root.tree()  # pylint: disable=E1101
+    readable_output = folders_tree
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
 
@@ -2004,12 +2000,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
     item = client.get_item_from_mailbox(account, item_id)
 
     if item.mime_content:
-        mime_content = item.mime_content
-        email_policy = SMTP if mime_content.isascii() else SMTPUTF8
-        if isinstance(mime_content, bytes):
-            email_content = email.message_from_bytes(mime_content, policy=email_policy)
-        else:
-            email_content = email.message_from_string(mime_content, policy=email_policy)
+        email_content = cast_mime_item_to_message(item)
         if item.headers:
             # compare header keys case-insensitive
             attached_email_headers = [
@@ -2028,7 +2019,8 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
                             raise err
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        email_data = decode_email_data(email_content)
+        file_result = fileResult(eml_name + ".eml", email_data)
         file_result = (
             file_result if file_result else "Failed uploading eml file to war room"
         )
@@ -2088,6 +2080,37 @@ def handle_incorrect_message_id(message_id: str) -> str:
         demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
         return fixed_message_id
     return message_id
+
+
+def decode_email_data(email_obj: Message):
+    attached_email_bytes = email_obj.as_bytes()
+    chardet_detection = chardet.detect(attached_email_bytes)
+    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+    try:
+        # Trying to decode using the detected encoding
+        data = attached_email_bytes.decode(encoding)
+    except UnicodeDecodeError:
+        # In case the detected encoding fails apply the default encoding
+        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                     f'using utf-8.\nAttached email:\n{email_obj}')
+        try:
+            data = attached_email_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+            data = attached_email_bytes  # type: ignore
+
+    return data
+
+
+def cast_mime_item_to_message(item):
+    mime_content = item.mime_content
+    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+    if isinstance(mime_content, str) and not mime_content.isascii():
+        mime_content = mime_content.encode()
+    message = email.message_from_bytes(mime_content, policy=email_policy) \
+        if isinstance(mime_content, bytes) \
+        else email.message_from_string(mime_content, policy=email_policy)
+    return message
 
 
 def parse_incident_from_item(item):  # pragma: no cover
@@ -2190,13 +2213,7 @@ def parse_incident_from_item(item):  # pragma: no cover
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    mime_content = attachment.item.mime_content
-                    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
-                    if isinstance(mime_content, str) and not mime_content.isascii():
-                        mime_content = mime_content.encode()
-                    attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
-                        if isinstance(mime_content, bytes) \
-                        else email.message_from_string(mime_content, policy=email_policy)
+                    attached_email = cast_mime_item_to_message(attachment.item)
                     if attachment.item.headers:
                         # compare header keys case-insensitive
                         attached_email_headers = []
@@ -2233,22 +2250,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                                     if "There may be at most" not in str(err):
                                         raise err
 
-                    attached_email_bytes = attached_email.as_bytes()
-                    chardet_detection = chardet.detect(attached_email_bytes)
-                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-                    try:
-                        # Trying to decode using the detected encoding
-                        data = attached_email_bytes.decode(encoding)
-                    except UnicodeDecodeError:
-                        # In case the detected encoding fails apply the default encoding
-                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                     f'using utf-8.\nAttached email:\n{attached_email}')
-                        try:
-                            data = attached_email_bytes.decode('utf-8')
-                        except UnicodeDecodeError:
-                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
-                            data = attached_email_bytes  # type: ignore
-
+                    data = decode_email_data(attached_email)
                     file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
 
                 if file_result:

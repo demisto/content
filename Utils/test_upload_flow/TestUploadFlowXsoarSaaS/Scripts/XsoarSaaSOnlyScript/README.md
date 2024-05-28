@@ -1,1 +1,0 @@
-This is a dummy script for test-upload xsoar-saas only flow
