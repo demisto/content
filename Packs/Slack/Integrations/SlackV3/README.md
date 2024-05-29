@@ -149,7 +149,7 @@ messages and the steady flow of the integration.**
    new app to the channel you have configured.
 2. Navigate to your Instance Settings page in Cortex XSOAR and click **Test**. A message should appear in the channel
    from your app.
-3. 
+
 ## Backwards Compatibility with Slack V2
 
 Slack V3 contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This
