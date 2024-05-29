@@ -1,3 +1,7 @@
+import os
+
+from requests import ConnectTimeout
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import hashlib
@@ -13,7 +17,6 @@ from splunklib import client
 from splunklib import results
 from splunklib.data import Record
 from splunklib.binding import AuthenticationError, HTTPError, namespace
-
 
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
@@ -41,6 +44,9 @@ DEFAULT_DISPOSITIONS = {
     'Undetermined': 'disposition:6'
 }
 
+EARLIEST_TIME = 'earliest_time'
+LATEST_TIME = 'latest_time'
+TIMEOUT = 'timeout'
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {
     'None': None,
@@ -117,7 +123,6 @@ class UserMappingObject:
         record = list(self._get_record(self.splunk_user_column_name, splunk_user))
 
         if not record:
-
             demisto.error(
                 "Could not find xsoar user matching splunk's {splunk_user}. "
                 "Consider adding it to the {table_name} lookup.".format(
@@ -232,8 +237,9 @@ def extensive_log(message):
 
 def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str]], window_start_time: str,
                                    window_end_time: str) -> dict[str, Any]:
-    """Remove all the IDs of the fetched incidents that are no longer in the fetch window, to prevent our
-    last run object from becoming too large.
+    """
+        Remove all the IDs of the fetched incidents that are no longer in the fetch window, to prevent our
+        last run object from becoming too large.
 
     Args:
         last_run_fetched_ids (dict[str, tuple]): The IDs incidents that were fetched in previous fetches.
@@ -348,9 +354,9 @@ def build_fetch_query(params):
 
 
 def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str,
-                   cache_object: "Cache" = None, enrich_notables=False):
+                   cache_object: "Cache" = None, enrich_notables=False, **kwargs):
     last_run_data = demisto.getLastRun()
-    params = demisto.params()
+
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
 
@@ -391,6 +397,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     notables = []
     incident_ids_to_add = []
     num_of_dropped = 0
+    human_readable = ''
     for item in reader:
         if handle_message(item):
             if 'Error' in str(item.message) or 'error' in str(item.message):
@@ -601,7 +608,7 @@ class Notable:
 
     @staticmethod
     def create_incident(notable_data, occurred, mapper: UserMappingObject, comment_tag_to_splunk: str,
-                        comment_tag_from_splunk: str):
+                        comment_tag_from_splunk: str) -> dict:
         rule_title, rule_name = '', ''
         params = demisto.params()
         if demisto.get(notable_data, 'rule_title'):
@@ -652,7 +659,7 @@ class Notable:
 
         return incident
 
-    def to_incident(self, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
+    def to_incident(self, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str) -> dict:
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
 
@@ -1339,8 +1346,7 @@ def get_comments_data(service: client.Service, notable_id: str, comment_tag_from
              '| eval last_modified_timestamp=_time ' \
              f'| where rule_id="{notable_id}" ' \
              f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
-             '| fields - time ' \
-
+             '| fields - time '
     demisto.debug(f'Performing get-comments-data command with query: {search}')
 
     for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode=OUTPUT_MODE_JSON)):
@@ -1406,7 +1412,7 @@ def get_remote_data_command(service: client.Service, args: dict,
         status_label = updated_notable['status_label']
 
         if status_label == "Closed" or (status_label in close_extra_labels) \
-                or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
+            or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
             demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
             entries.append({
                 'Type': EntryType.NOTE,
@@ -2080,7 +2086,7 @@ def requests_handler(url, message, **kwargs):
             url,
             data=data,
             headers=headers,
-            verify=VERIFY_CERTIFICATE,
+            verify=False,
             **kwargs
         )
     except requests.exceptions.HTTPError as e:
@@ -2191,7 +2197,6 @@ def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
 
 
 def update_headers_from_field_names(search_result, chosen_fields):
-
     headers: list = []
     search_result_keys: set = set().union(*(list(d.keys()) for d in search_result))
     for field in chosen_fields:
@@ -2530,49 +2535,49 @@ def splunk_parse_raw_command(args: dict):
     ))
 
 
-def test_module(service: client.Service, params: dict) -> None:
-    try:
-        # validate connection
-        service.info()
-    except AuthenticationError:
-        return_error('Authentication error, please validate your credentials.')
-
-    # validate fetch
-    if params.get('isFetch'):
-        t = datetime.utcnow() - timedelta(hours=1)
-        time = t.strftime(SPLUNK_TIME_FORMAT)
-        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON}
-        query = params['fetchQuery']
-        try:
-            if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
-                return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
-                             'timezone of the Splunk server being used in the integration configuration.')
-
-            for item in results.JSONResultsReader(service.jobs.oneshot(query, **kwargs)):
-                if isinstance(item, results.Message):
-                    continue
-
-                if EVENT_ID not in item:
-                    if MIRROR_DIRECTION.get(params.get('mirror_direction', '')):
-                        return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
-                    if ENABLED_ENRICHMENTS:
-                        return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
-                                     'one must use a fetch query of the following format: search `notable` .......\n'
-                                     'Please re-edit the fetchQuery parameter in the integration configuration, reset '
-                                     'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
-                                     'run the fetch again.')
-
-        except HTTPError as error:
-            return_error(str(error))
-    if params.get('hec_url'):
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        try:
-            requests.get(params.get('hec_url', '') + '/services/collector/health', headers=headers,
-                         verify=VERIFY_CERTIFICATE)
-        except Exception as e:
-            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
+# def test_module(service: client.Service, params: dict) -> None:
+#     try:
+#         # validate connection
+#         service.info()
+#     except AuthenticationError:
+#         return_error('Authentication error, please validate your credentials.')
+#
+#     # validate fetch
+#     if params.get('isFetch'):
+#         t = datetime.utcnow() - timedelta(hours=1)
+#         time = t.strftime(SPLUNK_TIME_FORMAT)
+#         kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON}
+#         query = params['fetchQuery']
+#         try:
+#             if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
+#                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
+#                              'timezone of the Splunk server being used in the integration configuration.')
+#
+#             for item in results.JSONResultsReader(service.jobs.oneshot(query, **kwargs)):
+#                 if isinstance(item, results.Message):
+#                     continue
+#
+#                 if EVENT_ID not in item:
+#                     if MIRROR_DIRECTION.get(params.get('mirror_direction', '')):
+#                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
+#                     if ENABLED_ENRICHMENTS:
+#                         return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
+#                                      'one must use a fetch query of the following format: search `notable` .......\n'
+#                                      'Please re-edit the fetchQuery parameter in the integration configuration, reset '
+#                                      'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
+#                                      'run the fetch again.')
+#
+#         except HTTPError as error:
+#             return_error(str(error))
+#     if params.get('hec_url'):
+#         headers = {
+#             'Content-Type': 'application/json'
+#         }
+#         try:
+#             requests.get(params.get('hec_url', '') + '/services/collector/health', headers=headers,
+#                          verify=VERIFY_CERTIFICATE)
+#         except Exception as e:
+#             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):
@@ -2860,15 +2865,92 @@ def handle_message(item: results.Message | dict) -> bool:
     return False
 
 
+def get_splunk_notable_by_id(service: client.Service,
+                             event_id: str,
+                             earliest_time: str,
+                             latest_time: str,
+                             timeout: str
+                             ) -> Notable | None:
+    """
+        Retrieve a notable event from Splunk by its event ID.
+
+        Parameters:
+        service (client.Service): The Splunk service instance to use for the query.
+        event_id (str): The ID of the notable event to retrieve.
+        earliest_time (str, optional): The earliest time for the search query. Will use Splunk's default if provided empty.
+        latest_time (str, optional): The latest time for the search query. Will use Splunk's default if provided empty.
+        timeout (str, optional): The timeout for the search query.  Will use Splunk's default if provided empty.
+
+        Returns:
+        Notable | None: A Notable object if an event is found, or None if no event is found.
+    """
+    search_query = f'search `notable_by_id({event_id})`'
+
+    kwargs_oneshot = {'output_mode': OUTPUT_MODE_JSON}
+    if earliest_time:
+        kwargs_oneshot[EARLIEST_TIME] = earliest_time
+    if latest_time:
+        kwargs_oneshot[LATEST_TIME] = latest_time
+    if timeout:
+        kwargs_oneshot[TIMEOUT] = timeout
+
+    result_stream = service.jobs.oneshot(search_query, **kwargs_oneshot)
+    result = list(results.JSONResultsReader(result_stream))
+    # As only one notable event is expected (or none), the `result` list contains a single entry (or none).
+    return Notable(result.pop()) if result else None
+
+
+def fetch_notable_event_command(service: client.Service,
+                                args: dict,
+                                instance_params: dict,
+                                mapper: UserMappingObject,
+                                comment_tag_to_splunk: str,
+                                comment_tag_from_splunk: str) -> CommandResults:
+    if not params.get('isFetch'):
+        raise DemistoException("'Fetch Incidents' is not enabled. Please enable it within SplunkPy integration instance "
+                               "configuration in order to be able to manually fetch incidents.")
+    # Intentionally not providing a default value, let it throw an error if an `event_id` was not provided.
+    event_id = args.get(EVENT_ID)
+    notable = get_splunk_notable_by_id(service=service,
+                                       event_id=event_id,
+                                       earliest_time=args.get(EARLIEST_TIME, ''),
+                                       latest_time=args.get(LATEST_TIME, ''),
+                                       timeout=args.get(TIMEOUT, ''))
+    if not notable:
+        return CommandResults(readable_output="A notable event with the provided ID was not found within the provided timeframe.")
+
+    incident = notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+    demisto.incidents([incident])
+
+    # if ENABLED_ENRICHMENTS:
+    #     # Submit notable for enrichment.
+    #     integration_context = get_integration_context()
+    #     cache = Cache.load_from_integration_context(integration_context)
+    #     cache.not_yet_submitted_notables.append(notable)
+    #     cache.dump_to_integration_context()
+    #
+    # # Otherwise - put it into integration context 'Cache' object
+    return CommandResults(readable_output=tableToMarkdown(name=f'Notable {notable.id}', t=notable.data))
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
+    command = 'splunk-notable-event-fetch'
+    params.update({
+        'host': os.getenv('SPLUNKPY_HOST'),
+        'port': os.getenv('SPLUNKPY_PORT'),
+        'authentication': {
+            'identifier': os.getenv('SPLUNKPY_AUTH_IDENTIFIER'),
+            'password': os.getenv('SPLUNKPY_AUTH_PASSWORD')
+        },
+        'unsecure': True
+    })
     args = demisto.args()
 
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command(args)
         sys.exit(0)
-    service = None
     proxy = argToBoolean(params.get('proxy', False))
 
     connection_args = get_connection_args(params)
@@ -2905,9 +2987,8 @@ def main():  # pragma: no cover
     mapper = UserMappingObject(service, params.get('userMapping'), params.get('user_map_lookup_name'),
                                params.get('xsoar_user_field'), params.get('splunk_user_field'))
 
-    # The command command holds the command sent from the user.
     if command == 'test-module':
-        test_module(service, params)
+        # test_module(service, params)
         return_results('ok')
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
@@ -2955,7 +3036,6 @@ def main():  # pragma: no cover
             kv_store_collection_data_delete(service, args)
         elif command == 'splunk-kv-store-collection-delete-entry':
             kv_store_collection_delete_entry(service, args)
-
     elif command == 'get-mapping-fields':
         if argToBoolean(params.get('use_cim', False)):
             return_results(get_cim_mapping_field_command())
@@ -2976,9 +3056,12 @@ def main():  # pragma: no cover
         return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
     elif command == 'splunk-get-username-by-xsoar-user':
         return_results(mapper.get_splunk_user_by_xsoar_command(args))
+    elif command == 'splunk-notable-event-fetch':
+        return_results(fetch_notable_event_command(service, args, params, mapper, comment_tag_to_splunk, comment_tag_from_splunk))
+
     else:
         raise NotImplementedError(f'Command not implemented: {command}')
 
-
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+# if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ == '__main__':
     main()

@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy-Dev
   version: -1
 sectionOrder:
 - Connect
@@ -304,8 +304,8 @@ configuration:
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy-Dev
+name: SplunkPy-Dev
 script:
   commands:
   - arguments:
@@ -673,6 +673,30 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
+      
+  - name: splunk-notable-event-fetch
+    description: Fetch a single notable event.
+    arguments:
+    - name: event_id
+      description: Notable event ID.
+      required: true
+    - name: earliest_time
+      description: 'Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. Default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00.'
+      required: false
+    - name: latest_time
+      description: 'Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago).'
+      required: false
+    - name: timeout
+      description: Maximum duration to wait for the search to complete in seconds (e.g. '30')
+      required: false
+    - name: enabled_enrichments
+      description: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
+      options:
+        - Drilldown
+        - Asset
+        - Identity
+      required: false
+
   dockerimage: demisto/splunksdk-py3:1.0.0.91477
   isfetch: true
   ismappable: true
