@@ -586,7 +586,7 @@ class Client(BaseClient):
             "Reported Source": reported_source,
             "Service_Type": service_type,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assignee Login ID": assignee_login_id,
             "Assigned Support Company": assigned_support_company,
@@ -622,7 +622,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,
@@ -649,7 +649,7 @@ class Client(BaseClient):
             company (str): Ticket company.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str):  Assignee company.
-            assigned_support_group_name (str):  Assignee group name.
+            assigned_group (str):  Assignee group name.
             assignee (str): Ticket assignee.
             assignee_login_id (str): Tixcket assignee login ID.
             site_group (str): Site group.
@@ -673,7 +673,7 @@ class Client(BaseClient):
             "Reported Source": reported_source,
             "Service_Type": service_type,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assignee Login ID": assignee_login_id,
             "Assigned Support Company": assigned_support_company,
@@ -873,7 +873,7 @@ class Client(BaseClient):
         root_request_mode: str,
         root_ticket_type: str,
         assigned_support_organization: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         impact: str,
         urgency: str,
         scedulded_start_date: str,
@@ -901,7 +901,7 @@ class Client(BaseClient):
             root_request_mode (str): Root request mode.
             root_ticket_type (str): Parent ticket type.
             assigned_support_organization (str): Assignee organization.
-            assigned_support_group_name (str): Assignee group.
+            assigned_group (str): Assignee group.
             impact (str): Ticket impact.
             urgency (str): Ticket urgency.
             scedulded_start_date (str): Schedulded start date.
@@ -927,7 +927,7 @@ class Client(BaseClient):
             "RootRequestMode": root_request_mode,
             "Support Company": support_company,
             "RootRequestFormName": root_ticket_type,
-            "Assignee Group": assigned_support_group_name,
+            "Assignee Group": assigned_group,
             "Assignee Organization": assigned_support_organization,
             "Impact": impact,
             "Urgency": urgency,
@@ -962,7 +962,7 @@ class Client(BaseClient):
         assignee: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         location_company: str,
         scedulded_start_date: str,
         schedulded_end_date: str,
@@ -984,7 +984,7 @@ class Client(BaseClient):
             assignee (str): Assignee.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str): Assignee company.
-            assigned_support_group_name (str): Assignee group name.
+            assigned_group (str): Assignee group name.
             location_company (str): Company assoiciated with ticet process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
@@ -1003,7 +1003,7 @@ class Client(BaseClient):
             "RootRequestName": root_request_name,
             "Assignee Company": assigned_support_company,
             "Assignee Organization": assigned_support_organization,
-            "Assignee Group": assigned_support_group_name,
+            "Assignee Group": assigned_group,
             "Company": company,
             "Assigned To": assignee,
             "Assignee": assignee,
@@ -1032,7 +1032,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         site_group: str,
         site: str,
@@ -1064,7 +1064,7 @@ class Client(BaseClient):
             company (str): Requester company.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str): Assignee company.
-            assigned_support_group_name (str):Assignee support group.
+            assigned_group (str):Assignee support group.
             assignee (str): Assignee.
             site_group (str): Site group.
             site (str): Site.
@@ -1099,7 +1099,7 @@ class Client(BaseClient):
             "Urgency": urgency,
             "Impact": impact,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assigned Support Company": assigned_support_company,
             "Site": site,
@@ -1142,7 +1142,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,
@@ -1174,7 +1174,7 @@ class Client(BaseClient):
             company (str): Requester company.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str): Assignee company.
-            assigned_support_group_name (str): Assignee group.
+            assigned_group (str): Assignee group.
             assignee (str): Assignee.
             assignee_login_id (str): Assignee login ID.
             site_group (str): Site group.
@@ -1203,7 +1203,7 @@ class Client(BaseClient):
             "Investigation Status": status,
             "Invesitgation Status Reason": status_reason,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assignee Login ID": assignee_login_id,
             "Assigned Support Company": assigned_support_company,
@@ -1240,7 +1240,7 @@ class Client(BaseClient):
         details: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         assigned_group_pbm_mgr: str,
         support_company_pbm_mgr: str,
@@ -1266,7 +1266,7 @@ class Client(BaseClient):
             details (str): Ticket details.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str): Assignee company.
-            assigned_support_group_name (str): Assignee group.
+            assigned_group (str): Assignee group.
             assignee (str): Assignee.
             assigned_group_pbm_mgr (str): Assignee group problem coordinator.
             support_company_pbm_mgr (str): Assignee company problem coordinator.
@@ -1289,7 +1289,7 @@ class Client(BaseClient):
             "Known Error Status": status,
             "Stastus_Reason": status_reason,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assigned Support Company": assigned_support_company,
             "Target Resolution Date": target_resolution_date,
@@ -1896,7 +1896,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("support_group_name")
+    assigned_group = args.get("support_group_name")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
@@ -1926,7 +1926,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
         company=company,
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assignee=assignee,
         assignee_login_id=assignee_login_id,
         site_group=site_group,
@@ -1979,7 +1979,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("support_group_name")
+    assigned_group = args.get("support_group_name")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
@@ -2011,7 +2011,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
         company=company,
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assignee=assignee,
         assignee_login_id=assignee_login_id,
         site_group=site_group,
@@ -2197,7 +2197,7 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     support_company = args.get("support_company")
 
     assigned_support_organization = args.get("assigned_support_organization")
-    assigned_support_group_name = args.get("assigned_support_group")
+    assigned_group = args.get("assigned_support_group")
     assignee = args.get("assignee")
     company = args.get("location_company")
     root_ticket_type = TICKET_TYPE_TO_DELETE_FORM[args.get("root_ticket_type")]
@@ -2226,7 +2226,7 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         location_company=company,
         root_request_mode=root_request_mode,
         root_ticket_type=root_ticket_type,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assigned_support_organization=assigned_support_organization,
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
         scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,
@@ -2279,7 +2279,7 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     site = args.get("site")
     support_company = args.get("support_company")
     assigned_support_organization = args.get("assigned_support_organization")
-    assigned_support_group_name = args.get("assigned_group")
+    assigned_group = args.get("assigned_group")
     assignee = args.get("assignee")
     scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
     schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
@@ -2304,7 +2304,7 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         location_company=location_company,
         status_reason=status_reason,
         assigned_support_organization=assigned_support_organization,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
         schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,
         **additional_fields,
@@ -2338,7 +2338,7 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
     region = args.get("region")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("assigned_group")
+    assigned_group = args.get("assigned_group")
     assignee = args.get("assignee")
     assigned_group_pbm_mgr = args.get("assigned_group_pbm_mgr")
     support_company_pbm_mgr = args.get("support_company_pbm_mgr")
@@ -2359,7 +2359,7 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
     )
 
     validate_related_arguments_provided(
@@ -2380,7 +2380,7 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
         company=company,
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assignee=assignee,
         site_group=site_group,
         site=site,
@@ -2445,7 +2445,7 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
     region = args.get("region")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("assigned_group")
+    assigned_group = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assigned_to")
     assigned_group_pbm_mgr = args.get("assigned_group_pbm_mgr")
@@ -2467,7 +2467,7 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
     )
 
     validate_related_arguments_provided(
@@ -2489,7 +2489,7 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
         company=company,
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assignee=assignee,
         assignee_login_id=assignee_login_id,
         site_group=site_group,
@@ -2533,7 +2533,7 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     region = args.get("region")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("assigned_group")
+    assigned_group = args.get("assigned_group")
     assignee = args.get("assignee")
     assigned_group_pbm_mgr = args.get("assigned_group_pbm_mgr")
     support_company_pbm_mgr = args.get("support_company_pbm_mgr")
@@ -2549,7 +2549,7 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
     )
 
     validate_related_arguments_provided(
@@ -2567,7 +2567,7 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
         company=company,
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assignee=assignee,
         site_group=site_group,
         site=site,
@@ -2624,7 +2624,7 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
     status_reason = args.get("status_reason")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("assigned_group")
+    assigned_group = args.get("assigned_group")
     assignee = args.get("assignee")
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     assigned_group_pbm_mgr = args.get("assigned_group_pbm_mgr")
@@ -2642,7 +2642,7 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
     )
 
     validate_related_arguments_provided(
@@ -2662,7 +2662,7 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
         details=details,
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
+        assigned_group=assigned_group,
         assignee=assignee,
         assigned_group_pbm_mgr=assigned_group_pbm_mgr,
         support_company_pbm_mgr=support_company_pbm_mgr,
