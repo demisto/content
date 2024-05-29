@@ -32,7 +32,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to true in order to create XSIAM events, otherwise the command will only display them.
+      description: When true, the integration creates XSIAM events. Otherwise, they will only be displayed.
       name: should_push_events
       predefined:
       - 'true'
