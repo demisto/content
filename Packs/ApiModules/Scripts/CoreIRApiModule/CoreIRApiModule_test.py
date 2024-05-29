@@ -4065,7 +4065,6 @@ def test_http_request_demisto_call(mocker):
         - Make sure demisto._apiCall() is being called and the method returns the expected result.
     """
     from CoreIRApiModule import CoreClient
-    import CoreIRApiModule
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
