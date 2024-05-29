@@ -1,6 +1,5 @@
 id: Mimecast test api 2.0
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Mimecast test api 2.0
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -445,8 +445,7 @@ tasks:
       id: 13724de6-ea97-4c2a-8c77-bc3f7b482ec9
       version: -1
       name: mimecast-create-address-alteration-policy
-      description: This API endpoint can be used to create a new Address Alteration
-        policy to apply an alteration definition based on sender and recipient values.
+      description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
       script: '|||mimecast-create-address-alteration-policy'
       type: regular
       iscommand: true
@@ -736,6 +735,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -885,6 +885,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1197,3 +1198,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+description: Mimecast test api 2.0
