@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b22dca50-d5bf-4333-846f-59a992cb505e
+    taskid: b9c0e612-09b8-4e05-80e1-498c7f3cfd30
     type: start
     task:
-      id: b22dca50-d5bf-4333-846f-59a992cb505e
+      id: b9c0e612-09b8-4e05-80e1-498c7f3cfd30
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 52ad23d1-1630-49d4-811d-3abff5e9edfa
+    taskid: d468b666-e9fa-4214-8a61-26afa164437e
     type: regular
     task:
-      id: 52ad23d1-1630-49d4-811d-3abff5e9edfa
+      id: d468b666-e9fa-4214-8a61-26afa164437e
       version: -1
       name: mattermost-get-team
       description: Gets a team details.
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9312d6ee-fca1-4e07-8bdd-4a3492f9aecd
+    taskid: fdc038b7-61e6-4c28-8a40-3fda07fa21fe
     type: regular
     task:
-      id: 9312d6ee-fca1-4e07-8bdd-4a3492f9aecd
+      id: fdc038b7-61e6-4c28-8a40-3fda07fa21fe
       version: -1
       name: mattermost-create-channel
       description: Creates a channel.
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d1cdde77-b27f-4b4a-87fc-3116487a3341
+    taskid: 271aef1c-3a4e-481e-891f-1a8cb952352b
     type: condition
     task:
-      id: d1cdde77-b27f-4b4a-87fc-3116487a3341
+      id: 271aef1c-3a4e-481e-891f-1a8cb952352b
       version: -1
       name: Check list-channels
       type: condition
@@ -149,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 356424cd-1cd0-4183-8e00-b7c2c9628ffa
+    taskid: 02af1a20-c1dc-44a5-84f4-e225f484a34e
     type: regular
     task:
-      id: 356424cd-1cd0-4183-8e00-b7c2c9628ffa
+      id: 02af1a20-c1dc-44a5-84f4-e225f484a34e
       version: -1
       name: mattermost-list-users
       description: Lists users.
@@ -186,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: adf2caa5-d0be-4d16-852e-a2085a137018
+    taskid: 71ba0d16-6003-46b2-89c8-36ec0b812f25
     type: regular
     task:
-      id: adf2caa5-d0be-4d16-852e-a2085a137018
+      id: 71ba0d16-6003-46b2-89c8-36ec0b812f25
       version: -1
       name: mattermost-add-channel-member
       description: Adds a channel member.
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: b5221c18-8380-42c1-83b8-706e0d0ec065
+    taskid: f8265688-c1fa-4e1b-8b1e-81046a010b15
     type: regular
     task:
-      id: b5221c18-8380-42c1-83b8-706e0d0ec065
+      id: f8265688-c1fa-4e1b-8b1e-81046a010b15
       version: -1
       name: mattermost-remove-channel-member
       description: Removes a channel member.
@@ -264,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 95168fba-1cdb-4452-879b-e3c89a9d3393
+    taskid: c6d57e48-cb3d-4c7d-8c40-c60d6bdf9b58
     type: regular
     task:
-      id: 95168fba-1cdb-4452-879b-e3c89a9d3393
+      id: c6d57e48-cb3d-4c7d-8c40-c60d6bdf9b58
       version: -1
       name: mattermost-close-channel
       description: Deletes a channel.
@@ -276,6 +276,8 @@ tasks:
       iscommand: true
       brand: MattermostV2
     scriptarguments:
+      channel:
+        simple: ${Mattermost.Channel.name}
       channel_name:
         simple: channel_test_playbook_${RandomString}
       team_name:
@@ -298,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1fda5807-cf3b-4651-8bc8-a0fa29f1264c
+    taskid: 61463f88-bea8-40f9-830e-1970e186433c
     type: regular
     task:
-      id: 1fda5807-cf3b-4651-8bc8-a0fa29f1264c
+      id: 61463f88-bea8-40f9-830e-1970e186433c
       version: -1
       name: mattermost-list-channels
       description: Lists channels.
@@ -335,10 +337,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: a03bc547-904f-4d88-8b42-106fde3aed81
+    taskid: ea7afcbe-22f3-4f68-87bb-7e5ae53a120d
     type: regular
     task:
-      id: a03bc547-904f-4d88-8b42-106fde3aed81
+      id: ea7afcbe-22f3-4f68-87bb-7e5ae53a120d
       version: -1
       name: FileCreateAndUploadV2
       description: |
@@ -373,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f82dac48-f94e-46e3-81d4-8a4dd2fd6655
+    taskid: c73cc8f1-7dcf-4ec3-8545-f7d442ce47eb
     type: regular
     task:
-      id: f82dac48-f94e-46e3-81d4-8a4dd2fd6655
+      id: c73cc8f1-7dcf-4ec3-8545-f7d442ce47eb
       version: -1
       name: mattermost-send-file
       description: Deletes a channel.
@@ -388,6 +390,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      channel:
+        simple: ${Mattermost.Channel.name}
       channel_name:
         simple: ${Mattermost.Channel.name}
       entry_id:
@@ -414,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6affb7da-bf9b-4ce6-81dc-ab1b24a55379
+    taskid: 6c361b08-ebc7-4ce9-8313-deaf4c862a74
     type: regular
     task:
-      id: 6affb7da-bf9b-4ce6-81dc-ab1b24a55379
+      id: 6c361b08-ebc7-4ce9-8313-deaf4c862a74
       version: -1
       name: GenerateRandomString
       description: Generates random string
