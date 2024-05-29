@@ -175,7 +175,7 @@ USER_CREATE_DESCRIPTION = "Create a new user in a domain(including root), or add
 USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.'
 USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
-LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
+LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling the ciphertrust-local-ca-self-sign command or signed by another CA and installed by calling the ciphertrust-local-ca-install command. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
 LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
 LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
 LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
@@ -368,8 +368,10 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description="The
 
                       ]
 USER_DELETE_INPUTS = [InputArgument(name=CommandArguments.USER_ID, required=True, description='The user_id of the user'), ]
-USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True),
-                               InputArgument(name=CommandArguments.PASSWORD, required=True),
+
+USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True , description='The new password.'),
+                               InputArgument(name=CommandArguments.PASSWORD, required=True, description="The own user's current "
+                                                                                                        "password."),
                                InputArgument(name=CommandArguments.USERNAME, required=True,
                                              description='The login name of the current user.'),
                                InputArgument(name=CommandArguments.AUTH_DOMAIN, description='The domain where user needs to '
@@ -383,13 +385,13 @@ LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True,
                           InputArgument(name=CommandArguments.COPY_FROM_CA,
                                         description='ID of any Local CA. If given, the csr properties are copied from the given CA.'),
                           InputArgument(name=CommandArguments.DNS_NAMES, is_array=True,
-                                        description='Subject Alternative Names (SAN) values'),
-                          InputArgument(name=CommandArguments.EMAIL, is_array=True, description='E-mail addresses'),
-                          InputArgument(name=CommandArguments.IP, is_array=True, description='IP addresses'),
+                                        description='Subject Alternative Names (SAN) values (comma seperated string)'),
+                          InputArgument(name=CommandArguments.EMAIL, is_array=True, description='E-mail addresses (comma seperated string)'),
+                          InputArgument(name=CommandArguments.IP, is_array=True, description='IP addresses (comma seperated string)'),
                           InputArgument(name=CommandArguments.NAME,
                                         description='A unique name of CA, if not provided, will be set to localca-<id>.'),
                           InputArgument(name=CommandArguments.NAME_FIELDS_RAW_JSON, is_array=True,
-                                        description='Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country'),
+                                        description='Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]"'),
                           InputArgument(name=CommandArguments.NAME_FIELDS_JSON_ENTRY_ID,
                                         description='Entry Id of the file that contains JSON representation of the name_fields_raw_json'),
                           InputArgument(name=CommandArguments.SIZE,
@@ -722,7 +724,25 @@ USER_UPDATE_OUTPUT = [
     OutputArgument(name="login_flags", output_type=dict, description="Flags related to login, such as prevent_ui_login."),
 ]
 
-USER_PASSWORD_CHANGE_OUTPUT = []
+LOCAL_CA_CREATE_OUTPUT = [
+    OutputArgument(name="id", output_type=str, description="Unique identifier for the CA."),
+    OutputArgument(name="uri", output_type=str, description="Uniform Resource Identifier for the CA."),
+    OutputArgument(name="account", output_type=str, description="Account associated with the CA."),
+    OutputArgument(name="application", output_type=str, description="Application associated with the CA."),
+    OutputArgument(name="devAccount", output_type=str, description="Developer account associated with the CA."),
+    OutputArgument(name="createdAt", output_type=datetime.datetime, description="Timestamp when the CA was created."),
+    OutputArgument(name="updatedAt", output_type=datetime.datetime, description="Timestamp when the CA was last updated."),
+    OutputArgument(name="name", output_type=str, description="Name of the CA."),
+    OutputArgument(name="state", output_type=str, description="State of the CA."),
+    OutputArgument(name="csr", output_type=str, description="Certificate Signing Request (CSR) for the CA."),
+    OutputArgument(name="subject", output_type=str, description="Distinguished Name (DN) of the CA subject."),
+    OutputArgument(name="notBefore", output_type=datetime.datetime, description="Timestamp before which the certificate is not valid."),
+    OutputArgument(name="notAfter", output_type=datetime.datetime, description="Timestamp after which the certificate is not valid."),
+    OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA-1 fingerprint of the CA certificate."),
+    OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA-256 fingerprint of the CA certificate."),
+    OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA-512 fingerprint of the CA certificate."),
+]
+
 
 '''CLIENT CLASS'''
 
@@ -1213,7 +1233,7 @@ def user_password_change_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-create', description=LOCAL_CA_CREATE_DESCRIPTION,
-                            inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
+                            inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, outputs_list=LOCAL_CA_CREATE_OUTPUT)
 def local_ca_create_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         cn=args.get(CommandArguments.CN),

@@ -112,7 +112,7 @@ GROUPS_LIST_TEST_ARGS = [
         CommandArguments.USER_ID: 'user3',
         CommandArguments.CONNECTION: 'connection3',
         CommandArguments.CLIENT_ID: 'client3'
-    }
+    },
 ]
 
 GROUP_CREATE_TEST_ARGS = [
@@ -144,7 +144,7 @@ USER_TO_GROUP_REMOVE_TEST_ARGS = [
     {
         CommandArguments.GROUP_NAME: 'group1',
         CommandArguments.USER_ID: 'user1'
-    }
+    },
 ]
 
 USERS_LIST_TEST_ARGS = [
@@ -234,7 +234,7 @@ USER_CREATE_TEST_ARGS = [
         "prevent_ui_login": "false",
         "password_change_required": "false",
         "password_policy": "default_policy"
-    }
+    },
 ]
 
 USER_UPDATE_TEST_ARGS = [
@@ -267,14 +267,39 @@ USER_UPDATE_TEST_ARGS = [
         CommandArguments.ALLOWED_AUTH_METHODS: "empty",
         CommandArguments.ALLOWED_CLIENT_TYPES: "empty"
 
-    }
+    },
 
 ]
 USER_DELETE_TEST_ARGS = [
     {CommandArguments.USER_ID: 'user1'},
 ]
-USER_PASSWORD_CHANGE_TEST_ARGS = []
-LOCAL_CA_CREATE_TEST_ARGS = []
+USER_PASSWORD_CHANGE_TEST_ARGS = [
+    {
+        CommandArguments.USERNAME: 'user1',
+        CommandArguments.PASSWORD: 'old_password',
+        CommandArguments.NEW_PASSWORD: 'new_password',
+        CommandArguments.AUTH_DOMAIN: 'local_account'
+    },
+]
+
+LOCAL_CA_CREATE_TEST_ARGS = [
+
+    {
+        CommandArguments.CN: "test.localca2",
+    },
+{
+        CommandArguments.CN: "example.localca",
+        CommandArguments.ALGORITHM: "RSA",
+        CommandArguments.COPY_FROM_CA: "abcd1234-ab12-cd34-ef56-abcdef123456",
+        CommandArguments.DNS_NAMES: "example.com,example.org",
+        CommandArguments.EMAIL: "admin@example.com,contact@example.org",
+        CommandArguments.IP: "192.168.1.1,10.0.0.1",
+        CommandArguments.NAME: "example-localca",
+        CommandArguments.NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, {"OU": "ExampleOrg Inc."}]',
+        CommandArguments.SIZE: "2048"
+    },
+]
+
 LOCAL_CA_LIST_TEST_ARGS = []
 LOCAL_CA_UPDATE_TEST_ARGS = []
 LOCAL_CA_DELETE_TEST_ARGS = []
@@ -567,7 +592,7 @@ def test_user_delete_command(mock_delete_user, args):
 @patch(MOCKER_HTTP_METHOD)
 def test_user_password_change_command(mock_change_current_user_password, args):
     from ThalesCipherTrustManager import CipherTrustClient, user_password_change_command
-    mock_change_current_user_password.return_value = util_load_json('test_data/mock_user_password_change_response.json')
+    mock_change_current_user_password.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)

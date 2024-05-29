@@ -471,7 +471,7 @@ script:
       description: The total user count associated with the group.
       type: Number
   - deprecated: false
-    description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
+    description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling the ciphertrust-local-ca-self-sign command or signed by another CA and installed by calling the ciphertrust-local-ca-install command. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
     name: ciphertrust-local-ca-create
     arguments:
     - name: cn
@@ -494,19 +494,19 @@ script:
       default: false
     - name: dns_names
       isArray: true
-      description: Subject Alternative Names (SAN) values
+      description: Subject Alternative Names (SAN) values (comma seperated string)
       required: false
       secret: false
       default: false
     - name: email
       isArray: true
-      description: E-mail addresses
+      description: E-mail addresses (comma seperated string)
       required: false
       secret: false
       default: false
     - name: ip
       isArray: true
-      description: IP addresses
+      description: IP addresses (comma seperated string)
       required: false
       secret: false
       default: false
@@ -518,7 +518,7 @@ script:
       default: false
     - name: name_fields_raw_json
       isArray: true
-      description: Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. O=organization, OU=organizational unit, L=location, ST=state/province, C=country
+      description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]"'
       required: false
       secret: false
       default: false
@@ -534,7 +534,55 @@ script:
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.LocalCA.id
+      description: Unique identifier for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.uri
+      description: Uniform Resource Identifier for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.createdAt
+      description: Timestamp when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.updatedAt
+      description: Timestamp when the CA was last updated.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.state
+      description: State of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.csr
+      description: Certificate Signing Request (CSR) for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.subject
+      description: Distinguished Name (DN) of the CA subject.
+      type: String
+    - contextPath: CipherTrust.LocalCA.notBefore
+      description: Timestamp before which the certificate is not valid.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.notAfter
+      description: Timestamp after which the certificate is not valid.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.sha1Fingerprint
+      description: SHA-1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha256Fingerprint
+      description: SHA-256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha512Fingerprint
+      description: SHA-512 fingerprint of the CA certificate.
+      type: String
   - deprecated: false
     description: Deletes a local CA given the local CA's ID.
     name: ciphertrust-local-ca-delete
@@ -917,7 +965,7 @@ script:
     arguments:
     - name: user_id
       isArray: false
-      description: user_id
+      description: The user_id of the user
       required: true
       secret: false
       default: false
@@ -928,13 +976,13 @@ script:
     arguments:
     - name: new_password
       isArray: false
-      description: new_password
+      description: The new password.
       required: true
       secret: false
       default: false
     - name: password
       isArray: false
-      description: password
+      description: The own user's current password.
       required: true
       secret: false
       default: false
