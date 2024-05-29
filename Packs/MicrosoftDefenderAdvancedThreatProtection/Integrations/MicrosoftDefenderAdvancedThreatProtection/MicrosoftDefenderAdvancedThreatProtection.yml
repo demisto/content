@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Defender Advanced Threat Protection
+  id: Microsoft Defender Advanced Threat Protection Dev V1
   version: -1
 configuration:
 - defaultvalue: Worldwide
@@ -237,8 +237,8 @@ configuration:
   advanced: true
   required: false
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
-display: Microsoft Defender for Endpoint
-name: Microsoft Defender Advanced Threat Protection
+display: Microsoft Defender for Endpoint Dev V1
+name: Microsoft Defender Advanced Threat Protection Dev V1
 script:
   commands:
   - name: microsoft-atp-list-machines-by-ip
@@ -254,8 +254,8 @@ script:
     - name: limit
       defaultValue: '50'
       description: Maximum number of results to return.
-    - name: all_results	
-      description: Whether to retrieve all results. The "limit" argument will be ignored.'
+    - name: all_results
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
       defaultValue: false
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
