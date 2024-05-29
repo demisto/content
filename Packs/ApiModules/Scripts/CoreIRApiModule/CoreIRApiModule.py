@@ -145,7 +145,7 @@ ALERT_EVENT_AZURE_FIELDS = {
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
-                                                            build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
 
 class CoreClient(BaseClient):
 
@@ -155,39 +155,45 @@ class CoreClient(BaseClient):
 
     
     def _http_request(self, method, url_suffix='', full_url=None,  headers=None, json_data=None,
-                params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
-                error_handler=None, with_metrics=False, resp_type='json'):
+                      params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
+                      error_handler=None, with_metrics=False, resp_type='json'):
         '''
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
             :param method: The HTTP method, for example: GET, POST, and so on.
 
+
             :type url_suffix: ``str``
             :param url_suffix: The API endpoint.
-            
+
+
             :type full_url: ``str``
             :param full_url:
                 Bypasses the use of self._base_url + url_suffix. This is useful if you need to
                 make a request to an address outside of the scope of the integration
                 API.
 
+
             :type headers: ``dict``
             :param headers: Headers to send in the request. If None, will use self._headers.
-            
+
+
             :type params: ``dict``
             :param params: URL parameters to specify the query.
 
+
             :type data: ``dict``
             :param data: The data to send in a 'POST' request.
-            
+
+
             :type raise_on_status ``bool``
                 :param raise_on_status: Similar meaning to ``raise_on_redirect``:
                     whether we should raise an exception, or return a response,
                     if status falls in ``status_forcelist`` range and retries have
                     been exhausted.
-            
-            
+
+
             :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
@@ -212,16 +218,15 @@ class CoreClient(BaseClient):
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
         response = demisto._apiCall(
-                    method=method,
-                    path=address,
-                    data=data,
-                    headers=self._headers,
-                    timeout=timeout
-                )
+           method=method,
+           path=address,
+           data=data,
+           headers=self._headers,
+           timeout=timeout
+        )
         if ok_codes and response.get('status') not in ok_codes:
-                self._handle_error(error_handler, response, with_metrics)
+            self._handle_error(error_handler, response, with_metrics)
         return json.loads(response['data'])
-
 
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
@@ -430,7 +435,6 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
         endpoints = response.get('reply', {}).get('endpoints', [])
-        
         return endpoints
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
