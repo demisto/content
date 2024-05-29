@@ -6,22 +6,28 @@
 !mimecast-release-hold-message id="eNpVzskOgjAABNB_6RUPpQUBEw8ILkiCuOByMpGWRW0RaKvR-O_C0fObycwHtDSVDS0JGAERLQN8LHPjRmq30nCzWUTels15Hpq-_Xh5eVAU1iwONXN6umZBcsguUoXOKnKjGKHrPtFbQVKKFJzwp3Zy_PC58y2ToWklmI2Nx3v9wrGCsTsGA1DcSd3vWthA0B46xgAIxvsjshW0YTruQoo2bVlxMNI75YR2CiHqoJZU0vNf__sDnRk_cQ"
 !mimecast-list-email-queues from_date="2015-11-16T14:49:18+0000" to_date="2022-11-16T14:49:18+0000"
 !mimecast-search-processing-message
-!mimecast-get-archive-search-logs limit=25 query=teste@gmail.com
-!mimecast-get-search-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000  query=teste@gmail.com limit=105
-!mimecast-get-view-logs start=2017-09-16T14:49:18+0000 end=2024-09-16T14:49:18+0000 query=teste@gmail.com limit=105
-!mimecast-list-account account_code=CUSA111111 account_name="API Networks"
-!mimecast-get-policy policyType="address-alteration" policyID=eNoVjr0OgjAYAN-lKw5111
-!mimecast-get-policy policyType="antispoofing-bypass" policyID=eNo1jr0OgjAYAN-ls0NLQ11111
-!mimecast-get-policy policyType=blockedsenders policyID=eNo1jrsOgjAAAP-lqw6F1111
-!mimecast-list-blocked-sender-policies
-!mimecast-list-policies policyType="address-alteration" page_size=2 page=2
-!mimecast-list-policies policyType="antispoofing-bypass" page_size=2 page=2
-!mimecast-list-policies policyType=blockedsenders page_size=2 page=2
-!mimecast-create-policy description=test fromPart=both fromType=email_domain fromValue=gmail.com toType=email_domain toValue=gmail.com option=no_action
-!mimecast-create-block-sender-policy description=aa fromType=everyone option=block_sender toType=everyone
-!mimecast-create-antispoofing-bypass-policy description=test from_type=email_domain from_value=mail.google.com option=disable_bypass to_type=everyone spf_domain=google.com
-!mimecast-create-address-alteration-policy policy_id=eNoVj111111 from_type=everyone to_type=external_addresses policy_description=test102
-!mimecast-update-block-sender-policy policy_id=eNo1jrsOgjAAAP11111111111111111
-!mimecast-update-antispoofing-bypass-policy id=eNo1jr0O1111111 option=disable_bypass
-!mimecast-update-address-alteration-policy id=eNo1jrsOgjAA1111111
-!mimecast-delete-policy policyType="antispoofing-bypass" policyID=eNo1jrsOgjAAAP-ls4mFFl-1111
+
+!mimecast-get-archive-search-logs query="Message Tracking Search" limit=1
+!mimecast-get-search-logs start="1 year" limit=1 end=now query="Message Tracking Search"
+!mimecast-get-view-logs limit=1 start="1 year" end=now
+
+!mimecast-list-account limit=1
+
+!mimecast-list-policies policyType=blockedsenders limit=1
+!mimecast-list-policies policyType="antispoofing-bypass" limit=1
+!mimecast-list-policies policyType="address-alteration" limit=1
+
+!mimecast-get-policy policyType=blockedsenders policyID=eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg
+!mimecast-get-policy policyType="antispoofing-bypass" policyID=eNo1jrsOgjAAAP-ls0OhRcXEwQgiUQkoD3XDUrA-KC0Fg8Z_Fwb3u9x9QE1JIynLwAzcsUJi4_u5SIUyS6fdemHnBAlxjdvkFSnkS8OqCfQjK05s98KLaFOmeKprD_m8nlF6Kmgo-NpIFAvS6mU6qLzhncA436PGi-_saL-z_Word3MwAhV_MNINZQ2Zpj4CpKkVf1JJeEb7nWV0WGhQX-ho3NMtlTXjZQ__zbCrqDvYEELt-wPL3EG1
+!mimecast-get-policy policyType="address-alteration" policyID=eNoVjr0OgjAYAN-lKw5QoAqJQ5H4AwZQUBM2hKJV5IutFcX47uJ8yd19kGSlEoxXyEXqLNMl8frQfnVci4Mrk8XFwunCq09G3h5MvVknETV4crYK_6htaTaZZw7gFXO4jTecxHcVBTYmmh4WqnprPQ1Fv4jpdkxMv4Z83wDsu3QGUzRCpZIPuDFRQsWG-myXUkPHFJtkgE8mJIcWucYI1dBUTPwXiWUN9u8P87s5UQ
+
+!mimecast-create-block-sender-policy description=test fromType=everyone option=block_sender toType=everyone
+!mimecast-create-antispoofing-bypass-policy description=test from_type=email_domain from_value=mail.google.com option=disable_bypass to_type=everyone spf_domain=google.com bidirectional=no comment=test
+!mimecast-create-address-alteration-policy folder_id=eNoVjr0OgjAYAN-lKw5QoAqJQ5H4AwZQUBM2hKJV5IutFcX47uJ8yd19kGSlEoxXyEXqLNMl8frQfnVci4Mrk8XFwunCq09G3h5MvVknETV4crYK_6htaTaZZw7gFXO4jTecxHcVBTYmmh4WqnprPQ1Fv4jpdkxMv4Z83wDsu3QGUzRCpZIPuDFRQsWG-myXUkPHFJtkgE8mJIcWucYI1dBUTPwXiWUN9u8P87s5UQ from_type=everyone to_type=everyone policy_description=test
+
+!mimecast-update-block-sender-policy policy_id=eNo1jrsOgjAAAP-ls4mFFkUTB3wT8YVW0LhgW7UIFAuIaPx3cXC_y90bZJwWigsGusB4-sl5qvrIPNnPUFsqZjnHZrz2qG2E7ZLkaKWMYUbhigx33sg-yQuZJQE2dS1S8fWAgv2Fb-9yani5WAdp2ZmgJMTzO8ZnFxWL3U34oxdzx46a90ADpDIStPqlNdQ2zQagRZbLmCsqGa9_BmRjaVC3dNSq6QdXmZBJDf_NbZVy-2dDiOHnC7oIQZI description=test fromPart=both fromType=email_domain fromValue=google.com option=block_sender toType=everyone
+!mimecast-update-antispoofing-bypass-policy option=disable_bypass policy_id=eNo1jrsOgjAAAP-ls0OhRcXEwQgiUQkoD3XDUrA-KC0Fg8Z_Fwb3u9x9QE1JIynLwAzcsUJi4_u5SIUyS6fdemHnBAlxjdvkFSnkS8OqCfQjK05s98KLaFOmeKprD_m8nlF6Kmgo-NpIFAvS6mU6qLzhncA436PGi-_saL-z_Word3MwAhV_MNINZQ2Zpj4CpKkVf1JJeEb7nWV0WGhQX-ho3NMtlTXjZQ__zbCrqDvYEELt-wPL3EG1 bidirectional=no description=test enabled=no from_date="3 year" from_eternal=no from_part=both to_date=now to_eternal=no
+!mimecast-update-address-alteration-policy policy_id=eNo1jrsOgjAAAP-ls0NLi4qJgxFEohhUHsKGpWrlUSggovHfxcH9LndvUDPaSsYTMAPdMq6OWiUezyIyeWvfzDAN831ALfU-6bwGO1LVawodT_cDwzqLq7cpYjJVUCbzW4Tj8MrcSqzVoOH7uOw0Exd3YleEXA643fkpPxmv5LDaSnsORqAUGaf9r4wIQnAEaFs3ImeSioQNO0vvuEBQWSh4PNAPJmsuigH-m25fMutnQwXCzxcnXEIt bidirectional=no comment=test conditions=8.8.8.8/24 enabled=no enforced=no from_date="3 year" from_eternal=no from_part=both override=no policy_description=test to_date=now to_eternal=no
+
+!mimecast-delete-policy policyType="antispoofing-bypass" policyID=eNo1jrsOgjAAAP-ls0OhRcXEwQgiUQkoD3XDUrA-KC0Fg8Z_Fwb3u9x9QE1JIynLwAzcsUJi4_u5SIUyS6fdemHnBAlxjdvkFSnkS8OqCfQjK05s98KLaFOmeKprD_m8nlF6Kmgo-NpIFAvS6mU6qLzhncA436PGi-_saL-z_Word3MwAhV_MNINZQ2Zpj4CpKkVf1JJeEb7nWV0WGhQX-ho3NMtlTXjZQ__zbCrqDvYEELt-wPL3EG1
+!mimecast-delete-policy policyType="address-alteration" policyID=eNo1jrsOgjAAAP-ls0NLi4qJgxFEohhUHsKGpWrlUSggovHfxcH9LndvUDPaSsYTMAPdMq6OWiUezyIyeWvfzDAN831ALfU-6bwGO1LVawodT_cDwzqLq7cpYjJVUCbzW4Tj8MrcSqzVoOH7uOw0Exd3YleEXA643fkpPxmv5LDaSnsORqAUGaf9r4wIQnAEaFs3ImeSioQNO0vvuEBQWSh4PNAPJmsuigH-m25fMutnQwXCzxcnXEIt

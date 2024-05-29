@@ -328,6 +328,8 @@ script:
       description: Policy validation start date.
       type: date
     - contextPath: Mimecast.BlockedSendersPolicy.Todate
+      description: Policy expiration date.
+      type: date
     - contextPath: Mimecast.AntispoofingBypassPolicy.ID
       description: Policy ID.
       type: string
@@ -356,6 +358,8 @@ script:
       description: Policy validation start date.
       type: date
     - contextPath: Mimecast.AntispoofingBypassPolicy.Todate
+      description: Policy expiration date.
+      type: date
     - contextPath: Mimecast.AddressAlterationPolicy.ID
       description: Policy ID.
       type: string
