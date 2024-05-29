@@ -81,7 +81,7 @@ script:
       - "True"
       - "False"
       required: true
-  dockerimage: demisto/fastapi:1.0.0.36992
+  dockerimage: demisto/fastapi:1.0.0.86524
   isfetchevents: true
   subtype: python3
 marketplaces:

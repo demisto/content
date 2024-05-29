@@ -1,0 +1,20 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/incidents/$entity",
+    "id": "12345",
+    "tenantId": "dummy-tenant-id",
+    "status": "redirected",
+    "incidentWebUrl": "https://security.microsoft.com/incidents/1234",
+    "redirectIncidentId": "1234",
+    "displayName": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)",
+    "createdDateTime": "2024-03-13T15:05:19.5066667Z",
+    "lastUpdateDateTime": "2024-03-13T15:22:26.2766667Z",
+    "assignedTo": "Cortex XSOAR MS Graph Dev",
+    "classification": "truePositive",
+    "determination": "unknown",
+    "severity": "medium",
+    "customTags": [],
+    "systemTags": [],
+    "description": null,
+    "lastModifiedBy": "API-App:Cortex XSOAR MS Graph Dev",
+    "comments": []
+}

@@ -514,3 +514,18 @@ def test_duplicated_indicator_in_the_same_batch(mocker):
     indicators_occurrences = collections.Counter(indicators_values)
     assert indicators_occurrences.get('http://www.test.duckdns.org/') == 1
     assert indicators_occurrences.get('http://www.test.duckdns.ORG/') == 1
+
+
+def test_client_init_with_null_values():
+    """
+    Given:
+     - malicious_threshold, suspicious_threshold, and risk_score_threshold params all set to None
+
+    When:
+     - Initializing a client
+
+    Then:
+     - Verify that no errors were thrown (especially the part that check that malicious_threshold <= suspicious_threshold)
+    """
+    Client(indicator_type='ip', api_token='123', services=[
+        'fusion'], malicious_threshold=None, suspicious_threshold=None)

@@ -30,12 +30,19 @@ configuration:
   name: first_fetch
   type: 0
   required: false
-- additionalinfo: the maximum number of incidents to fetch
+- additionalinfo: The maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
   required: false
+- defaultvalue: https://HOST:8443
+  additionalinfo: Broker Server URL (Optional).  Required to use Broker commands.
+  display: Broker Server URL
+  name: broker_url
+  required: false
+  type: 0
+  section: Connect
 description: Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
 display: Covalence Managed Security
 name: Covalence Managed Security
@@ -162,13 +169,16 @@ script:
       default: false
       isArray: false
       secret: false
-      description: This ARO ID to transition.
+      description: The ARO ID to transition.
     - name: resolution
       required: true
-      default: false
-      isArray: false
-      secret: false
-      description: 'Resolution to transition the ARO to.  Options include: Unresolved, Help Requested, Resolved, or Dismissed.'
+      description: 'Resolution to transition the ARO to.'
+      auto: PREDEFINED
+      predefined:
+      - Unresolved
+      - Help Requested
+      - Resolved
+      - Dismissed
     - name: comment
       required: false
       default: false
@@ -260,7 +270,240 @@ script:
     - contextPath: FESPortal.Aro.type
       description: Type.
       type: String
-  dockerimage: demisto/python3:3.10.13.82467
+  - name: cov-mgsec-comment-aro
+    arguments:
+    - name: aro_id
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      description: The ARO ID to comment on.
+    - name: comment
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      description: Comment to leave on the ARO.
+    - name: is_comment_sensitive
+      required: false
+      default: false
+      isArray: false
+      secret: false
+      description: Optionally mark the comment as sensitive.
+    description: Comment on an ARO.
+    outputs:
+    - contextPath: FESPortal.Aro.ID
+      description: 'ID.'
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged
+      description: Acknowledged.
+      type: Boolean
+    - contextPath: FESPortal.Aro.acknowledged_by.ID
+      description: Acknowledged By ID.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.avatar_file_url
+      description: Acknowledged By.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.email
+      description: Acknowledged By Email.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.first_name
+      description: Acknowledged By First Name.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.last_name
+      description: Acknowledged By Last Name.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_time
+      description: Acknowledged Time.
+      type: Date
+    - contextPath: FESPortal.Aro.aro_id
+      description: ARO ID.
+      type: String
+    - contextPath: FESPortal.Aro.author.ID
+      description: Author ID.
+      type: String
+    - contextPath: FESPortal.Aro.author.avatar_file_url
+      description: Author Avatar File URL.
+      type: String
+    - contextPath: FESPortal.Aro.author.email
+      description: Author Email.
+      type: String
+    - contextPath: FESPortal.Aro.author.first_name
+      description: Author First Name.
+      type: String
+    - contextPath: FESPortal.Aro.author.last_name
+      description: Author Last Name.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization.ID
+      description: Author Organization ID.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization.email
+      description: Author Organization Email.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization.name
+      description: Author Organization Name.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization_type
+      description: Author Organization Type.
+      type: String
+    - contextPath: FESPortal.Aro.available_only_to_organization_id
+      description: ARO Comment Available Only to Organization ID.
+      type: String
+    - contextPath: FESPortal.Aro.available_only_to_provider_id
+      description: ARO Comment Available Only to Provider ID.
+      type: String
+    - contextPath: FESPortal.Aro.created_time
+      description: ARO Created Time.
+      type: Date
+    - contextPath: FESPortal.Aro.id
+      description: ARO Comment ID.
+      type: String
+    - contextPath: FESPortal.Aro.last_updated_time
+      description: ARO Comment Last Updated Time.
+      type: Date
+    - contextPath: FESPortal.Aro.sensitive
+      description: ARO Comment Sensitive.
+      type: Boolean
+    - contextPath: FESPortal.Aro.source
+      description: ARO Comment Source.
+      type: String
+    - contextPath: FESPortal.Aro.text
+      description: ARO Comment Text.
+      type: String
+    - contextPath: FESPortal.Aro.type
+      description: ARO Comment Type.
+      type: String
+    - contextPath: FESPortal.Aro.visible_to.ID
+      description: ARO Comment Visible to ID.
+      type: String
+    - contextPath: FESPortal.Aro.visible_to.email
+      description: ARO Comment Visible to Email.
+      type: String
+    - contextPath: FESPortal.Aro.visible_to.name
+      description: ARO Comment Visible to Name.
+      type: String
+  - name: cov-mgsec-broker-ping
+    arguments: []
+    description: Broker - Test connectivity to the Broker service.
+    outputs:
+    - contextPath: FESBroker.APIStatus
+      description: 'API Status.'
+      type: String
+  - name: cov-mgsec-broker-list-org
+    description: Broker - List organizations.
+    arguments: []
+    outputs:
+    - contextPath: FESBroker.ID
+      description: 'Organization ID.'
+      type: String
+    - contextPath: FESBroker.name
+      description: 'Organization Name.'
+      type: String
+    - contextPath: FESBroker.client_id
+      description: 'Client ID.'
+      type: String
+  - name: cov-mgsec-broker-endpoint-action-by-host
+    description: Broker - Endpoint Action By Host.
+    arguments:
+    - name: action_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ISOLATE
+      - UNISOLATE
+      - SHUTDOWN
+      - RESTART
+      - DEFENDER_QUICK_SCAN
+      - DEFENDER_FULL_SCAN
+      - DEFENDER_SIGNATURE_UPDATE
+      description: Action to send to Host.
+      type: unknown
+    - name: org_id
+      required: true
+      description: Organization ID (eg. "00000000-1111-2222-3333-444444444444").
+    - name: host_identifier
+      required: true
+      description: Hostname.
+    outputs:
+    - contextPath: FESBroker.host_identifier
+      description: 'Host Identifier.'
+      type: String
+    - contextPath: FESBroker.agent_uuid
+      description: 'Agent UUID.'
+      type: String
+    - contextPath: FESBroker.covalence_appliance
+      description: 'Covalence Appliance ID.'
+      type: String
+    - contextPath: FESBroker.task_id
+      description: 'Endpoint Action Task ID.'
+      type: Number
+  - name: cov-mgsec-broker-endpoint-action-by-aro
+    description: Broker - Endpoint Action By ARO.
+    arguments:
+    - name: action_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ISOLATE
+      - UNISOLATE
+      - SHUTDOWN
+      - RESTART
+      - DEFENDER_QUICK_SCAN
+      - DEFENDER_FULL_SCAN
+      - DEFENDER_SIGNATURE_UPDATE
+      description: Action to send to Host.
+      type: unknown
+    - name: aro_id
+      required: true
+      description: ARO ID (eg. "00000000-1111-2222-3333-444444444444").
+    outputs:
+    - contextPath: FESBroker.host_identifier
+      description: 'Host Identifier.'
+      type: String
+    - contextPath: FESBroker.agent_uuid
+      description: 'Agent UUID.'
+      type: String
+    - contextPath: FESBroker.covalence_appliance
+      description: 'Covalence Appliance ID.'
+      type: String
+    - contextPath: FESBroker.task_id
+      description: 'Endpoint Action Task ID.'
+      type: Number
+  - name: cov-mgsec-broker-cloud-action-by-aro
+    description: Broker - Cloud Action By ARO.
+    arguments:
+    - name: action_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DISABLE_USER
+      - ENABLE_USER
+      - REVOKE_SESSIONS
+      description: Action to perform.
+      type: unknown
+    - name: aro_id
+      required: true
+      description: ARO ID (eg. "00000000-1111-2222-3333-444444444444").
+    outputs:
+    - contextPath: FESBroker.action_id
+      description: Action ID.
+      type: String
+    - contextPath: FESBroker.action_type
+      description: Action Type.
+      type: String
+    - contextPath: FESBroker.action_params
+      description: Action Parameters.
+      type: Unknown
+    - contextPath: FESBroker.created_time
+      description: Created Time.
+      type: String
+    - contextPath: FESBroker.status
+      description: Status.
+      type: String
+    - contextPath: FESBroker.result
+      description: Result.
+      type: String
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   runonce: false
   script: ''

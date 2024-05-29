@@ -1,0 +1,16 @@
+{
+    "success": {
+        "args": {
+            "details": "true",
+            "deleted": "true",
+            "simulator_or_node_name": "DesktopXWindowsCrowd",
+            "connectionUrl": "test.com",
+            "cloudProxyUrl": "proxy.com",
+            "name": "updatedName",
+            "tunnel": "tunnel",
+            "preferredInterface": "localhost",
+            "preferredIp": "localhost"
+        },
+        "command": "safebreach-delete-simulator"
+    }
+}

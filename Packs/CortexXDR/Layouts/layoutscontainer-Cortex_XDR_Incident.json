@@ -1343,6 +1343,400 @@
 				],
 				"type": "custom"
 			},
+{
+                "filters": [
+                    [
+                        {
+                            "id": 0,
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "alerttags"
+                                }
+                            },
+                            "operator": "containsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "DT:Identity Analytics"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "wmtowidpmp",
+                "name": "Identity Analytics",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wmtowidpmp-bf27ef60-bdc0-11ee-a451-7b39f6b1cb95",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "numberoffoundrelatedalerts",
+                                "height": 53,
+                                "id": "12f10ff0-bdc1-11ee-a451-7b39f6b1cb95",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "failedlogonevents",
+                                "height": 53,
+                                "id": "18745900-bdc1-11ee-a451-7b39f6b1cb95",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userrisklevel",
+                                "height": 53,
+                                "id": "3d79a2a0-bdc6-11ee-81b8-1dd092d8ebaf",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Investigation Results",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "wmtowidpmp-c1842ee0-bdc0-11ee-a451-7b39f6b1cb95",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict",
+                        "query": "VerdictResult",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "wmtowidpmp-452c1a00-bdc1-11ee-a451-7b39f6b1cb95",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdralertsearchresults",
+                                "height": 106,
+                                "id": "4b98ffc0-bdc1-11ee-a451-7b39f6b1cb95",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "FOUND RELATED ALERTS",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wmtowidpmp-79b11410-bdc1-11ee-a451-7b39f6b1cb95",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "99d3be40-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 0,
+                                "name": "Clear User's Sessions - Okta ",
+                                "scriptId": "Okta v2|||okta-clear-user-sessions",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "9d567c60-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 1,
+                                "name": "Revoke User's Sessions - Azure",
+                                "scriptId": "Microsoft Graph User|||msgraph-user-session-revoke",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "ddbdbf80-d4a0-11ee-a1be-156b316886a1",
+                                "index": 2,
+                                "name": "Reset Password - Active Directory",
+                                "scriptId": "Active Directory Query v2|||ad-set-new-password",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "9eb80830-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 3,
+                                "name": "Disable Account",
+                                "scriptId": "DisableUserWrapper",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Response Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wmtowidpmp-a767f590-bdc1-11ee-a451-7b39f6b1cb95",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 26,
+                                "id": "30f34b20-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountstatus",
+                                "height": 26,
+                                "id": "37d783c0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "email",
+                                "height": 26,
+                                "id": "3d0580e0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountmemberof",
+                                "height": 26,
+                                "id": "41c8ae40-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cloudaccountid",
+                                "height": 26,
+                                "id": "4738bd70-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountid",
+                                "height": 26,
+                                "id": "4c778370-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "manageremailaddress",
+                                "height": 26,
+                                "id": "535e5420-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Identity Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wmtowidpmp-a9ad51b0-bdc1-11ee-a451-7b39f6b1cb95",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 26,
+                                "id": "0dc9ad10-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "asn",
+                                "height": 26,
+                                "id": "120ef7e0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "countrycode",
+                                "height": 26,
+                                "id": "1b4efad0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ipreputation",
+                                "height": 26,
+                                "id": "2020f540-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Connection Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wmtowidpmp-ac89e4c0-bdc1-11ee-a451-7b39f6b1cb95",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertname",
+                                "height": 26,
+                                "id": "6334e4e0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrdescription",
+                                "height": 26,
+                                "id": "67cae7c0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detecteduser",
+                                "height": 26,
+                                "id": "27211850-bdd8-11ee-81b8-1dd092d8ebaf",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detectedips",
+                                "height": 26,
+                                "id": "2b5e73e0-bdd8-11ee-81b8-1dd092d8ebaf",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 26,
+                                "id": "8cfc63c0-bdc2-11ee-a451-7b39f6b1cb95",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alerttags",
+                                "height": 26,
+                                "id": "8e352020-bde9-11ee-b6e4-23c51981518e",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
 			{
 				"filters": [
 					[
@@ -2080,6 +2474,238 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+            {
+				"filters": [
+					[
+						{
+							"ignoreCase": false,
+							"left": {
+								"isContext": true,
+								"value": {
+									"simple": "xdralertname"
+								}
+							},
+							"operator": "containsGeneral",
+							"right": {
+								"isContext": false,
+								"value": {
+									"simple": "Large Upload"
+								}
+							},
+							"type": "multiSelect"
+						}
+					]
+				],
+				"hidden": false,
+				"id": "vycnvdgk6l",
+				"name": "Large Upload",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-6774ac10-dfdd-11ee-a718-2d25454b6746",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "alertname",
+								"height": 22,
+								"id": "7fc88c00-dfdd-11ee-a718-2d25454b6746",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "xdrdescription",
+								"height": 22,
+								"id": "8640e370-dfdd-11ee-a718-2d25454b6746",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "bb2f26a0-dfdd-11ee-a718-2d25454b6746",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostname",
+								"height": 22,
+								"id": "f9cac5d0-dfe3-11ee-a718-2d25454b6746",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "xdrusers",
+								"height": 22,
+								"id": "17b59de0-dfe4-11ee-a718-2d25454b6746",
+								"index": 4,
+								"listId": "1vduzkpmlh-6774ac10-dfdd-11ee-a718-2d25454b6746",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-469b1ee0-dfe5-11ee-a718-2d25454b6746",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "xdrnetworkartifacts",
+								"height": 106,
+								"id": "11883550-dfe8-11ee-a718-2d25454b6746",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Network Artifacts",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-8a36af70-e071-11ee-9f1d-c7e880f68802",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "verdict",
+								"height": 22,
+								"id": "534d3880-e071-11ee-9f1d-c7e880f68802",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "partofcampaign",
+								"height": 22,
+								"id": "a2f3d880-e071-11ee-9f1d-c7e880f68802",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "relatedreport",
+								"height": 22,
+								"id": "ab7c7250-e071-11ee-9f1d-c7e880f68802",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "commandline",
+								"height": 22,
+								"id": "7ae9b4c0-dfe7-11ee-a718-2d25454b6746",
+								"index": 3,
+								"listId": "1vduzkpmlh-fc683030-dfe7-11ee-a718-2d25454b6746",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commandlineverdict",
+								"height": 22,
+								"id": "c51aa040-dfe7-11ee-a718-2d25454b6746",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "threathuntingdetectedhostnames",
+								"height": 22,
+								"id": "f14e00a0-e148-11ee-9a3d-4f29cba1e42e",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "threathuntingdetectedip",
+								"height": 22,
+								"id": "f4749500-e148-11ee-9a3d-4f29cba1e42e",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-ea6fb620-e071-11ee-9f1d-c7e880f68802",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "containmentsla",
+								"height": 22,
+								"id": "955e68b0-e072-11ee-9f1d-c7e880f68802",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "remediationsla",
+								"height": 22,
+								"id": "a8baebe0-e072-11ee-9f1d-c7e880f68802",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Containment and Remediation Status",
+						"static": false,
+						"w": 1,
+						"x": 2,
 						"y": 0
 					}
 				],

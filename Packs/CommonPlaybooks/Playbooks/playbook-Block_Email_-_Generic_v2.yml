@@ -31,8 +31,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -230
+          "x": 960,
+          "y": -220
         }
       }
     note: false
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 680
+          "x": 960,
+          "y": 710
         }
       }
     note: false
@@ -106,65 +106,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 0f8c5d9f-3217-4e43-8956-560aabf63ea5
-    type: condition
-    task:
-      id: 0f8c5d9f-3217-4e43-8956-560aabf63ea5
-      version: -1
-      name: Is Cisco Email Security Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CiscoEmailSecurity
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -70,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -241,47 +182,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: e16965eb-49c2-4d54-87ca-6861f04b7170
-    type: regular
-    task:
-      id: e16965eb-49c2-4d54-87ca-6861f04b7170
-      version: -1
-      name: Cisco Email Security (Deprecated)
-      description: Performs actions on list entries. Supports add, edit, and append.
-      script: '|||cisco-email-security-list-entry-add'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      action:
-        simple: append
-      list_type:
-        simple: blocklist
-      sender_addresses:
-        complex:
-          root: inputs.EmailToBlock
-      view_by:
-        simple: sender
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -70,
-          "y": 490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -415,36 +315,6 @@ tasks:
       {
         "position": {
           "x": 1170,
-          "y": 130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 042406d1-8d98-483a-86a3-fba433057d27
-    type: title
-    task:
-      id: 042406d1-8d98-483a-86a3-fba433057d27
-      version: -1
-      name: Cisco Email Security
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -70,
           "y": 130
         }
       }
@@ -635,7 +505,6 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "13"
       - "15"
       - "12"
       - "11"
@@ -654,8 +523,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -90
+          "x": 960,
+          "y": -80
         }
       }
     note: false
@@ -670,21 +539,19 @@ view: |-
   {
     "linkLabelsPosition": {
       "16_17_yes": 0.62,
-      "16_2_#default#": 0.32,
-      "18_2_#default#": 0.67,
-      "4_2_#default#": 0.21,
-      "4_8_yes": 0.62,
-      "5_2_#default#": 0.27,
+      "16_2_#default#": 0.24,
+      "18_2_#default#": 0.12,
+      "5_2_#default#": 0.16,
       "5_9_yes": 0.62,
       "6_10_yes": 0.62,
       "6_2_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 975,
-        "width": 2020,
-        "x": -70,
-        "y": -230
+        "height": 995,
+        "width": 1620,
+        "x": 330,
+        "y": -220
       }
     }
   }

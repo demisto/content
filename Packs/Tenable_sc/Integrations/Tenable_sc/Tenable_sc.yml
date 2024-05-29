@@ -50,7 +50,7 @@ configuration:
   section: Connect
   required: false
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   section: Collect
@@ -1809,7 +1809,7 @@ script:
       description: Relevant only when query_id is not given. Manageable Query filter operator.
       type: String
     - contextPath: TenableSC.Query.Manageable.Filters.Value
-      description: Relevant only when query_id is not given. Manageable Query filter value
+      description: Relevant only when query_id is not given. Manageable Query filter value.
       type: String
     - contextPath: TenableSC.Query.Manageable.Groups
       description: Relevant only when query_id is not given. Manageable Query groups.
@@ -1881,7 +1881,7 @@ script:
       description: Relevant only when query_id is not given. Manageable Query filter value type.
       type: String
     - contextPath: TenableSC.Query.Manageable.Filters.Value.UUID
-      description: Relevant only when query_id is not given. Manageable Query filter value UUID
+      description: Relevant only when query_id is not given. Manageable Query filter value UUID.
       type: String
     - contextPath: TenableSC.Query.Manageable.Filters
       description: Relevant only when query_id is not given. Manageable Query filters.
@@ -2016,7 +2016,7 @@ script:
       description: Relevant only when query_id is given. Query browse sort columns.
       type: String
     - contextPath: TenableSC.Query.BrowseSortDirection
-      description: Relevant only when query_id is given. Query browse sort direction
+      description: Relevant only when query_id is given. Query browse sort direction.
       type: String
     - contextPath: TenableSC.Query.CanManage
       description: Relevant only when query_id is given. Query permissions.
@@ -2103,7 +2103,7 @@ script:
       description: Relevant only when query_id is given. Query target group name.
       type: String
     - contextPath: TenableSC.Query.Tool
-      description: Relevant only when query_id is given. Query tool
+      description: Relevant only when query_id is given. Query tool.
       type: String
     - contextPath: TenableSC.Query.Type
       description: Relevant only when query_id is given. Query type.
@@ -2476,7 +2476,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.90168
 tests:
 - tenable-sc-test
 fromversion: 5.0.0

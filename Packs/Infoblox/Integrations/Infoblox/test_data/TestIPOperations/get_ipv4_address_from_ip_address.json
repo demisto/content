@@ -1,0 +1,19 @@
+{
+    "result": [
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjEvMA:192.168.1.1", 
+            "ip_address": "192.168.1.1", 
+            "is_conflict": false, 
+            "mac_address": "", 
+            "names": [], 
+            "network": "192.168.1.0/24", 
+            "network_view": "default", 
+            "objects": [], 
+            "status": "USED", 
+            "types": [
+                "UNMANAGED"
+            ], 
+            "usage": []
+        }
+    ]
+}

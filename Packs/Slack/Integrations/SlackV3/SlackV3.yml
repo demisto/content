@@ -103,8 +103,14 @@ configuration:
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
-  section: Collect
+  section: Connect
   required: false
+- display: Enable Outbound File Mirroring
+  name: enable_outbound_file_mirroring
+  type: 8
+  section: Connect
+  required: false
+  additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
@@ -492,7 +498,7 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.86601
+  dockerimage: demisto/slackv3:1.0.0.88538
   longRunning: true
   runonce: false
   script: '-'

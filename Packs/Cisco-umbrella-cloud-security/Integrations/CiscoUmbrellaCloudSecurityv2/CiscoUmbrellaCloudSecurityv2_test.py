@@ -59,7 +59,7 @@ def test_list_destinations_command(requests_mock, mock_client):
     - A destination list ID
 
     When:
-    - list_destinations_command
+    - Running the umbrella-destinations-list command.
 
     Then:
     - Ensure that the CommandResults outputs_prefix is correct.
@@ -111,7 +111,7 @@ def test_list_destinations_command_fetch_destinations(requests_mock, mock_client
     - A destination list ID
 
     When:
-    - list_destinations_command
+    - Running the umbrella-destinations-list command.
 
     Then:
     - Ensure that the CommandResults outputs_prefix is correct.
@@ -168,7 +168,7 @@ def test_add_destinations_command(requests_mock, mock_client):
     - A destination list ID and destinations
 
     When:
-    - add_destinations_command
+    - Running the umbrella-destination-add command.
 
     Then:
     - Ensure that the CommandResults raw_response is correct.
@@ -206,7 +206,7 @@ def test_delete_destination_command(requests_mock, mock_client):
     - A destination list ID and destination IDs
 
     When:
-    - delete_destination_command
+    - Running the umbrella-destination-delete command.
 
     Then:
     - Ensure that the CommandResults readable_output is correct.
@@ -243,7 +243,7 @@ def test_list_destination_lists_command(requests_mock, mock_client):
     - A destination list ID
 
     When:
-    - list_destination_lists_command
+    - Running the umbrella-destination-lists-list command.
 
     Then:
     - Ensure that the CommandResults outputs_prefix is correct.
@@ -280,7 +280,7 @@ def test_list_destination_lists_command_list_request(requests_mock, mock_client)
     - Nothing
 
     When:
-    - list_destination_lists_command
+    - Running the umbrella-destination-lists-list command.
 
     Then:
     - Ensure that the CommandResults outputs_prefix is correct.
@@ -314,7 +314,7 @@ def test_create_destination_list_command(requests_mock, mock_client):
         for a new destination list
 
     When:
-    - create_destination_list_command
+    - Running the umbrella-destination-list-create command.
 
     Then:
     - Ensure that the CommandResults outputs_prefix is correct.
@@ -356,7 +356,7 @@ def test_update_destination_list_command(requests_mock, mock_client):
     - A destination list ID and a new name
 
     When:
-    - update_destination_list_command
+    - Running the umbrella-destination-list-update command.
 
     Then:
     - Ensure that the CommandResults outputs_prefix is correct.
@@ -418,3 +418,28 @@ def test_delete_destination_list_command(requests_mock, mock_client):
 
     assert command_results.readable_output == expected_readable_output
     assert command_results.raw_response == response
+
+
+def test_get_access_token(requests_mock, mock_client):
+    """
+    Scenario:
+    - Test the flow of getting an access token
+    When:
+    - Running the get_access_token method.
+    Then:
+    - Ensure that an access token is returned.
+    """
+
+    response = {
+        "token_type": "bearer",
+        "access_token": "Pichu",
+        "expires_in": 3600
+    }
+    requests_mock.post(
+        url=f'{CiscoUmbrellaCloudSecurityv2.BASE_URL}/auth/v2/token',
+        json=response
+    )
+
+    access_token = CiscoUmbrellaCloudSecurityv2.Client.get_access_token(mock_client)
+
+    assert access_token == response.get('access_token')

@@ -44,7 +44,7 @@ def test_get_record_command(mocker):
     client = Client(credentials={})
     mocker.patch.object(ServiceNowClient, 'http_request', return_value=GET_RECORD_RESPONSE)
     result = get_record_command(client, args={'class': 'test_class', 'sys_id': 'record_id'})
-    assert EXPECTED_GET_RECORD == result[1]
+    assert result[1] == EXPECTED_GET_RECORD
 
 
 def test_create_record_command(mocker):
@@ -61,7 +61,7 @@ def test_create_record_command(mocker):
     client = Client(credentials={})
     mocker.patch.object(ServiceNowClient, 'http_request', return_value=CREATE_RECORD_RESPONSE)
     result = create_record_command(client, args={'class': 'test_class', 'attributes': 'name=Test Create Record'})
-    assert EXPECTED_CREATE_RECORD == result[1]
+    assert result[1] == EXPECTED_CREATE_RECORD
 
 
 def test_update_record_command(mocker):
@@ -77,7 +77,7 @@ def test_update_record_command(mocker):
     mocker.patch.object(ServiceNowClient, 'http_request', return_value=UPDATE_RECORD_RESPONSE)
     result = update_record_command(client, args={'class': 'test_class', 'sys_id': 'record_id',
                                                  'attributes': 'name=Test Create Record'})
-    assert EXPECTED_UPDATE_RECORD == result[1]
+    assert result[1] == EXPECTED_UPDATE_RECORD
 
 
 def test_add_relation_command(mocker):
@@ -97,7 +97,7 @@ def test_add_relation_command(mocker):
         'sys_id': 'record_id',
         'inbound_relations': "[{'type': 'relation_type', 'target':'target', 'sys_class_name':'class_name'}]"
     })
-    assert EXPECTED_ADD_RELATION == result[1]
+    assert result[1] == EXPECTED_ADD_RELATION
 
 
 def test_delete_relation_command(mocker):
@@ -114,4 +114,4 @@ def test_delete_relation_command(mocker):
     mocker.patch.object(ServiceNowClient, 'http_request', return_value=DELETE_RELATION_RESPONSE)
     result = delete_relation_command(client, args={'class': 'test_class', 'sys_id': 'record_id',
                                                    'relation_sys_id': 'rel_id'})
-    assert EXPECTED_DELETE_RELATION == result[1]
+    assert result[1] == EXPECTED_DELETE_RELATION

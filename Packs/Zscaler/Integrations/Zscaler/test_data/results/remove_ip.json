@@ -1,6 +1,6 @@
 {
   "Type": 1,
-  "Contents": [
+  "Contents":
     {
       "configuredName": "Phishing-Suspected",
       "customCategory": true,
@@ -15,7 +15,7 @@
       ],
       "val": 144
     }
-  ],
+  ,
   "ContentsFormat": "json",
   "ReadableContentsFormat": "markdown",
   "HumanReadable": "Removed the following IP addresses to category CUSTOM_1:\n- 1.2.3.4\n- 8.8.8.8\n",

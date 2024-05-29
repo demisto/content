@@ -358,7 +358,8 @@ tasks:
           - operator: uniq
       InternalDomainName: {}
       InternalHostRegex: {}
-      InternalRange: {}
+      InternalRange:
+        simple: ${inputs.InternalRange}
       MD5:
         complex:
           root: File
@@ -415,7 +416,8 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-      InternalRange: {}
+      InternalRange:
+        simple: ${inputs.InternalRange}
       InvestigationIPFields:
         simple: sourceip,destinationip
       InvestigationUserFields:
@@ -1035,6 +1037,30 @@ inputs:
     simple: https://codecov.io/bash+in:file
   required: false
   description: Github query to search for Codecov bash uploader use.
+  playbookInputQuery:
+- key: InternalRange
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 outputs: []
 tests:

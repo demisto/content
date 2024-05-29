@@ -1,4 +1,3 @@
-import io
 import json
 import pytest
 import demistomock as demisto
@@ -10,7 +9,7 @@ server_url = 'https://vigilant.alienvault.cloud/api/2.0/alarms?page=0&size=1' \
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -93,24 +92,27 @@ def test_get_time_range():
 
     dt = datetime.now()
     start, end = get_time_range('Today', None, None)
-    assert datetime.fromtimestamp(start / 1000).date() == dt.date() and approximate_compare(dt, end)
+    assert datetime.fromtimestamp(start / 1000).date() == dt.date()
+    assert approximate_compare(dt, end)
 
     dt = datetime.now()
     # should ignore the start/end time values
     start, end = get_time_range('Today', 'asfd', 'asdf')
-    assert datetime.fromtimestamp(start / 1000).date() == dt.date() and approximate_compare(dt, end)
+    assert datetime.fromtimestamp(start / 1000).date() == dt.date()
+    assert approximate_compare(dt, end)
 
     dt = datetime.now()
     start, end = get_time_range('Yesterday', None, None)
-    assert datetime.fromtimestamp(start / 1000).date() == (dt.date() - timedelta(days=1)) and approximate_compare(dt, end)
+    assert datetime.fromtimestamp(start / 1000).date() == (dt.date() - timedelta(days=1))
+    assert approximate_compare(dt, end)
 
     start, end = get_time_range('Custom', '2019-12-30T01:02:03Z', '2019-12-30T04:05:06Z')
     assert ((start, end) == (date_to_timestamp(dateparser.parse('2019-12-30T01:02:03Z')),
                              date_to_timestamp(dateparser.parse('2019-12-30T04:05:06Z'))))
 
     start, end = get_time_range('Custom', '2019-12-30T01:02:03Z', None)
-    assert (start == date_to_timestamp(dateparser.parse('2019-12-30T01:02:03Z'))
-            and approximate_compare(end, datetime.now()))
+    assert start == date_to_timestamp(dateparser.parse('2019-12-30T01:02:03Z'))
+    assert approximate_compare(end, datetime.now())
 
 
 parsed_regular_alarm = {'ID': 'some_uuid',

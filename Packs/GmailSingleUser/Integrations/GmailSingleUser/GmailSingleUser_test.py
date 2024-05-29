@@ -1,8 +1,9 @@
 import json
 import pytest
+from pytest_mock import MockerFixture
 import demistomock as demisto
 
-from GmailSingleUser import Client, send_mail_command, MIMEMultipart
+from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
 from email.utils import parsedate_to_datetime
 import base64
 
@@ -12,6 +13,86 @@ def gmail_client(mocker):
     client = Client()
     mocker.patch.object(client, 'get_access_token', return_value='token')
     return client
+
+
+class MockAttachments:
+    def get(self, **kwargs):
+        return MockExecute()
+
+
+class MockExecute:
+    def execute(self):
+        return {'attachmentId': '67890', 'size': 1024, 'data': 'mock_data'}
+
+
+class MockSend:
+    def execute(self):
+        return {'id': '12345'}
+
+
+class MockGet:
+    def execute(self):
+        return {'id': '12345', 'snippet': 'Test email content'}
+
+
+class MockList:
+    def execute(self):
+        return {'messages': [{'id': '12345'}, {'id': '67890'}]}
+
+
+class MockMessages:
+    def send(self, **kwargs):
+        return MockSend()
+
+    def get(self, **kwargs):
+        return MockGet()
+
+    def attachments(self, **kwargs):
+        return MockAttachments()
+
+    def list(self, **kwargs):
+        return MockList()
+
+
+class MockUsers:
+    def messages(self):
+        return MockMessages()
+
+
+class MockService:
+    def users(self):
+        return MockUsers()
+
+
+@pytest.fixture
+def mock_service():
+    return MockService()
+
+
+def test_execute_gmail_action_send(mock_service):
+    result = execute_gmail_action(mock_service, "send", {})
+    assert result == {'id': '12345'}
+
+
+def test_execute_gmail_action_get(mock_service):
+    result = execute_gmail_action(mock_service, "get", {})
+    assert result == {'id': '12345', 'snippet': 'Test email content'}
+
+
+def test_execute_gmail_action_get_attachments(mock_service):
+    result = execute_gmail_action(mock_service, "get_attachments", {})
+    assert result == {'attachmentId': '67890', 'size': 1024, 'data': 'mock_data'}
+
+
+def test_execute_gmail_action_list(mock_service):
+    result = execute_gmail_action(mock_service, "list", {})
+    assert result == {'messages': [{'id': '12345'}, {'id': '67890'}]}
+
+
+def test_execute_gmail_action_unsupported(mock_service):
+    action_kwargs = {}
+    with pytest.raises(ValueError, match="Unsupported action: unsupported_action"):
+        execute_gmail_action(mock_service, "unsupported_action", action_kwargs)
 
 
 MOCK_MAIL_NO_LABELS = {
@@ -26,7 +107,7 @@ MOCK_MAIL_NO_LABELS = {
             {
                 'name': 'Received',
                 'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
-                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
                 'name': 'Content-Type',
                 'value': 'mixed; boundary="===============4922146810840031257=="'
@@ -103,7 +184,7 @@ EXPECTED_GMAIL_CONTEXT = {
         {
             'Name': 'Received',
             'Value': 'from 1041831412594 named '
-                     u'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                     'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
             'Name': 'Content-Type',
             'Value': 'mixed; boundary="===============4922146810840031257=="'
@@ -291,7 +372,7 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
     )
 
 
-def test_send_mail_MIMEMultipart_constructor(mocker):
+def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
     """
     Given:
         - Client object
@@ -304,13 +385,19 @@ def test_send_mail_MIMEMultipart_constructor(mocker):
     import GmailSingleUser
 
     gmail_single_user_client = Client()
+    # Mock the chain of calls: service.users().messages().send().execute()
+    mock_execute = mocker.Mock(return_value={'id': 'mock_message_id'})
+    mock_send = mocker.Mock(return_value=mock_execute)
+    mock_messages = mocker.Mock(send=mocker.Mock(return_value=mock_send))
+    mock_users = mocker.Mock(messages=mocker.Mock(return_value=mock_messages))
+    mock_service = mocker.Mock(users=mocker.Mock(return_value=mock_users))
+    # Patch the service object in the Client class to use the mocked service
+    mocker.patch.object(GmailSingleUser.Client, 'get_service', new=mock_service)
     # Replace MIMEMultipart with the mock object
     mocker_obj = mocker.patch.object(
         GmailSingleUser, "MIMEMultipart", return_value=MIMEMultipart()
     )
-    mocker = mocker.patch.object(
-        gmail_single_user_client, "send_email_request", return_value=True
-    )
+
     gmail_single_user_client.send_mail(
         emailto="test@gmail.com",
         emailfrom="test@gmail.com",
@@ -331,6 +418,7 @@ def test_send_mail_MIMEMultipart_constructor(mocker):
         additional_headers=[],
         templateParams=None,
     )
+
     mocker_obj.assert_called_once()
     assert mocker_obj.call_args.args == ()
 
@@ -375,6 +463,47 @@ def test_handle_html(mocker):
                             <img src="cid:image1.jpeg"/>
                         </body>
                       </html>"""
+
+    cleanBody, attachments = client.handle_html(htmlBody)
+
+    assert expected_cleanBody == cleanBody
+    assert expected_attachments == attachments
+
+
+def test_handle_html_image_with_new_line(mocker):
+    """
+    Given:
+        - html body of a message with an attached base64 image.
+    When:
+        - run handle_html function.
+    Then:
+        - Ensure attachments list contains correct data, name and cid fields.
+    """
+    client = Client()
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    htmlBody = """
+<html>
+    <body>
+        <img\n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
+    </body>
+</html>"""
+
+    expected_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": base64.b64decode("Aa=="),
+            "name": "image0.png",
+            "cid": "image0.png",
+        }
+    ]
+    expected_cleanBody = """
+<html>
+    <body>
+        <img
+\t\t\t\t\t  src="cid:image0.png"/>
+    </body>
+</html>"""
 
     cleanBody, attachments = client.handle_html(htmlBody)
 

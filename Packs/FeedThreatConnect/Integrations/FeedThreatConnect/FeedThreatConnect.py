@@ -7,7 +7,6 @@ import hmac
 from contextlib import contextmanager
 from enum import Enum
 from math import ceil
-from typing import Tuple
 
 # Local packages
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -29,7 +28,7 @@ Development info:
 INTEGRATION_NAME = 'ThreatConnect Feed'
 INTEGRATION_COMMAND_NAME = 'tc'
 INTEGRATION_CONTEXT_NAME = 'ThreatConnect'
-COMMAND_OUTPUT = Tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
+COMMAND_OUTPUT = tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
 INDICATOR_MAPPING_NAMES = {
     'Address': FeedIndicatorType.IP,
     'CIDR': FeedIndicatorType.CIDR,
@@ -96,10 +95,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                      'threatAssessRating': 'verdict',
                      'threatAssessConfidence': 'confidence',
                      'description': 'description',
-                     'summary': 'name',
-                     'Key Name': 'keyvalue.name',
-                     'Value Name': 'keyvalue.data',
-                     'Key Type': 'keyvalue.type'},
+                     'summary': 'name'},
     'URL': {'dateAdded': 'firstseenbysource',
             'lastModified': 'updateddate',
             'threatAssessRating': 'verdict',
@@ -149,7 +145,6 @@ INDICATOR_TYPES = ['EmailAddress',
                    'URL',
                    'ASN',
                    'CIDR',
-                   'Email Subject',
                    'Hashtag',
                    'Mutex',
                    'Registry Key',
@@ -203,7 +198,7 @@ def create_types_query(params: dict, endpoint: str) -> str:
         raise DemistoException('No indicator type or group type were chosen, please choose at least one.')
     if endpoint == 'indicators':
         if 'All' in indicator_types:
-            return ''
+            types.extend(INDICATOR_TYPES)
         else:
             types.extend(indicator_types)
     else:
@@ -235,8 +230,22 @@ def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) 
     return score
 
 
+def create_rk_grid_field(indicator: dict):
+    """Creating the Key Value field for the registry key indicator type
+
+    Args:
+        indicator (dict): The data of the indicator
+    """
+    key_value = [{'name': indicator.get('Key Name'),
+                 'type': indicator.get('Value Name'),
+                  'data': indicator.get('Key Type')
+                  }]
+
+    return key_value
+
+
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
-    """ Parsing indicator by indicators demisto convension.
+    """ Parsing indicator by indicators demisto convention.
     Args:
         indicator: Indicator as raw response.
     Returns:
@@ -261,7 +270,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 def create_indicator_fields(indicator, indicator_type):
     """Creating an indicator fields from a raw indicator"""
     params = demisto.params()
-    indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
+    indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR.get(indicator_type, {})
+
     fields: dict = {}
 
     for indicator_key, xsoar_indicator_key in indicator_fields_mapping.items():
@@ -281,6 +291,7 @@ def create_indicator_fields(indicator, indicator_type):
     if indicator_type == 'Course of Action':
         fields['action'] = indicator.get('attributes', {}).get('action', '')
     if indicator_type == 'Registry Key':
+        fields['Key Value'] = create_rk_grid_field(indicator)
         fields['namefield'] = indicator.get('Key Name', '')
 
     tlp_color = params.get('tlp_color', '')
@@ -415,7 +426,7 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
             return_error(str(e))
 
 
-def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> Tuple[
+def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tuple[
     List[Dict[str, Any]], List[Dict[str, Any]]]:  # noqa  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
@@ -581,8 +592,12 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
 
         types = argToList(args.get("indicator_type"))
         query = ''
-        if types and 'All' not in types:
-            query = 'AND typeName IN ("' + '","'.join(types) + '")'
+
+        if types:
+            if 'All' in types:
+                query = 'AND typeName IN ("' + '","'.join(INDICATOR_TYPES) + '")'
+            else:
+                query = 'AND typeName IN ("' + '","'.join(types) + '")'
 
         tql = active_only + confidence + threat_score + confidence + owners + query
         tql = tql.replace('AND ', '', 1)
@@ -604,6 +619,7 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
                                                t=t, removeNull=True)  # type: ignore # noqa
 
         return readable_output, {}, list(response)  # type: ignore
+    return {}
 
 
 def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover

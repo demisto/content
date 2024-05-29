@@ -6,12 +6,14 @@ import urllib3
 from blessings import Terminal
 from github import Github
 from git import Repo
+from github.PullRequest import PullRequest
 from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
-
+from random import randint
+import re
 
 from Utils.github_workflow_scripts.utils import (
     get_env_var,
@@ -62,11 +64,58 @@ SECURITY_CONTENT_ITEMS = [
     "Dashboards",
     "Triggers"
 ]
+PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
+LABELS_TO_SKIP_PR_REVIEW = {'contribution on hold'}
 
 
-def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
-    """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
-    was requested from the user for each potential reviewer and returns the user with the smallest amount
+def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
+    """Check if there is more than one reviewer with the lowest number of assigned contribution PRs.
+        If yes, choose one randomly.
+        If no, choose the one with the lowest number of assigned contribution PRs.
+
+        Args:
+            assigned_prs_per_potential_reviewer (dict): A dict of the reviewers and the amount of assigned PRs each has.
+            an example of this dictionary:
+            {
+                'reviewer1': 1,
+                'reviewer2': 2,
+                'reviewer3': 3,
+            }
+
+        Returns:
+            int: The location of the chosen assignee in the sorted array.
+    """
+    values = sorted([assigned_prs_per_potential_reviewer[key] for key in assigned_prs_per_potential_reviewer])
+    while len(values) > 1:
+        equal = all(reviewer == values[0] for reviewer in values)
+        if equal:
+            return randint(0, len(values) - 1)
+        values.pop(len(values) - 1)
+    return 0
+
+
+def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bool:
+    """ Checks if the current PR has the label "contribution on hold" or pr is in draft state,
+        if so - the PR won't be counted for the PR count to determine reviewer
+
+        Args:
+            pr (PullRequest): The PR
+            pr_labels (list): The PR labels
+
+        Returns:
+            bool: if PR need to be skipped
+    """
+    pr_labels_set = set(pr_labels)
+    if pr.draft or LABELS_TO_SKIP_PR_REVIEW.issubset(pr_labels_set):
+        print(f'PR number {pr.number} with draft status {pr.draft} and labels {pr_labels_set} will be skipped from count ')
+        return True
+    return False
+
+
+def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
+    """Checks the number of open 'Contribution' PRs that have been assigned to a user
+    for each potential reviewer and returns the user with the smallest amount.
+    If all the reviewers have the same amount, it will select one randomly.
 
     Args:
         potential_reviewers (List): The github usernames from which a reviewer will be selected
@@ -81,15 +130,17 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     for pull in pulls:
         # we only consider 'Contribution' prs when computing who to assign
         pr_labels = [label.name.casefold() for label in pull.labels]
-        if label_to_consider not in pr_labels:
+        if label_to_consider not in pr_labels or skip_pr_from_count_for_reviewer(pull, pr_labels):
             continue
         assignees = {assignee.login for assignee in pull.assignees}
         for reviewer in potential_reviewers:
             if reviewer in assignees:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     print(f'{assigned_prs_per_potential_reviewer=}')
+    n = get_location_of_reviewer(assigned_prs_per_potential_reviewer)
+    print(f'the chosen location in the sorted array is: {n}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
-                               key=assigned_prs_per_potential_reviewer.get)[0]  # type: ignore
+                               key=assigned_prs_per_potential_reviewer.get)[n]  # type: ignore
     print(f'{selected_reviewer=}')
     return selected_reviewer
 
@@ -214,6 +265,8 @@ def is_tim_content(pr_files: list[str]) -> bool:
     """
     integrations_checked = []
     for file in pr_files:
+        if 'CONTRIBUTORS.json' in file:
+            continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
@@ -244,6 +297,96 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
         return is_tim_content(pr_files)
     return False
+
+
+def get_user_from_pr_body(pr: PullRequest) -> str:
+    """
+    Get user from PR that was opened from XSOAR UI by searching for the substring "Contribytor\n@" in the body of the PR
+    Arguments:
+    - pr - the opened PR
+
+    Returns:
+    - Found User
+    """
+    body = pr.body
+    matcher = re.search(PR_AUTHOR_PATTERN, body)
+    if matcher:
+        return matcher.groups()[0]
+    return ""
+
+
+def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_number: str) -> list:
+    """
+    find all open pr's that were opened by the same user as the current PR, excluding current PR
+    Arguments:
+    - content_repo: the content repository
+    - pr_creator: the author of the current PR
+    - pr_number: number of the current PR
+
+    Returns:
+    - list of all open PR's with similar author as the current PR
+    """
+    print(f'PR author is: {pr_creator}')
+    all_prs = content_repo.get_pulls()
+    similar_prs = []
+    for pr in all_prs:
+        if pr.number == pr_number:  # Exclude current PR
+            continue
+        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
+        if existing_pr_author == pr_creator:
+            similar_prs.append(pr)
+    print(f'PR\'s by the same author: {similar_prs}')
+    return similar_prs
+
+
+def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_reviewers: list[str]) -> str:
+    """
+    Get all PR's that are currently open from the same author, filter the list and return reviewer if reviewer is part
+    of the current contribution round
+    Arguments:
+    - other_prs_by_same_user - list of opened PR's
+
+    Returns:
+    - Reviewer of the found pr's
+    """
+    content_reviewers_set = set(content_reviewers)
+    for pr in other_prs_by_same_user:
+        reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
+        existing_reviewer = content_reviewers_set.intersection(reviewer_names)
+        if existing_reviewer:
+            return existing_reviewer.pop()
+        else:
+            print("There are other PR's by same author, but their reviewer is not in the current contribution round")
+    return ''
+
+
+def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number: str, content_reviewers: list[str]) -> str:
+    """
+    Gets the content repo, PR and pr_number. Will return reviewer to assign
+    Argument:
+    - content_repo - the content repository
+    - pr - current new PR
+    - pr_number - number of current_pr
+
+    Returns:
+    - Reviewer to assign
+    """
+    if pr.user.login == "xsoar-bot":
+        pr_creator = get_user_from_pr_body(pr)
+    else:
+        pr_creator = pr.user.login
+
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
+
+    reviewer_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
+    if reviewer_to_assign:
+        print(f'The reviewer from other PR\'s by similar author is: {reviewer_to_assign}')
+        content_reviewer = reviewer_to_assign
+    else:
+        print('The reviewer is going to be determined randomly')
+        content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
+        print(f'Determined random reviewer, who is: {content_reviewer}')
+    return content_reviewer
 
 
 def main():
@@ -327,7 +470,8 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    content_reviewer = determine_reviewer(content_reviewers, content_repo)
+    content_reviewer = find_reviewer_to_assign(content_repo, pr, pr_number, content_reviewers)
+
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 

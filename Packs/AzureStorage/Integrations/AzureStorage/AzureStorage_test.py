@@ -1,4 +1,3 @@
-import io
 import json
 import requests
 
@@ -20,7 +19,7 @@ def client(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -126,7 +125,7 @@ def test_storage_blob_service_properties_get(client, mocker):
                                                  params={'subscription_id': subscription_id,
                                                          'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
-                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n'\
+                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n' \
                   '|---|---|---|---|---|---|---|\n' \
                   '| default | account_name | subscription_id | resource_group_name |  | false ' \
                   '|  |\n'

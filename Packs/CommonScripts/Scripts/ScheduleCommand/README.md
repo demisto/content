@@ -23,8 +23,8 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| command | The command to schedule |
-| cron | The scheduled time to run |
+| command | The command to schedule. |
+| cron | The scheduled time to run. Uses UTC (Coordinated Universal Time). |
 | endDate | When should we end the schedule. Will be only relevant if times is not provided. Optional. Format is 'Mon, 02 Jan 2006 15:04:05 MST' |
 | times | The number of times to run. Optional. |
 | scheduledEntryGuid | The GUID of the scheduled entry that runs the polling command. |

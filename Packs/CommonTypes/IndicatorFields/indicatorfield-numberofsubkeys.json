@@ -1,0 +1,31 @@
+{
+    "id": "indicator_numberofsubkeys",
+    "version": -1,
+    "modified": "2024-03-19T11:19:05.071808862Z",
+    "name": "Number of subkeys",
+    "ownerOnly": false,
+    "cliName": "numberofsubkeys",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Registry Key"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

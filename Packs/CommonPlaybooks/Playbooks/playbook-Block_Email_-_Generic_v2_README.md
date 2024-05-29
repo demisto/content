@@ -25,10 +25,9 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* mimecast-create-policy
-* cisco-email-security-list-entry-add
 * cisco-sma-list-entry-append
 * fireeye-ex-update-blockedlist
+* mimecast-create-policy
 
 ## Playbook Inputs
 

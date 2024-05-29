@@ -46,7 +46,7 @@ def test_okta_client_no_required_params():
     OktaClient(
         base_url='https://test.url',
         api_token='X',
-        auth_type=AuthType.NO_AUTH
+        auth_type=AuthType.API_TOKEN,
     )
 
 
@@ -56,7 +56,6 @@ def test_assign_app_role(mocker):
     When: Assigning a role to a client application
     Then: Assure the call is made properly, and that the 'auth_type' parameter overrides the client's auth type.
     """
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(
         base_url='https://test.url',
         api_token='X',
@@ -116,7 +115,6 @@ def test_generate_jwt_token(mocker):
     When: Generating a JWT token
     Then: Assure the token is generated correctly.
     """
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(
         base_url='https://test.url',
         api_token='X',
@@ -169,7 +167,6 @@ def test_generate_oauth_token(mocker):
     When: Generating an OAuth token
     Then: Assure the token generation API call is called correctly.
     """
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(
         base_url='https://test.url',
         api_token='X',
@@ -209,7 +206,6 @@ def test_get_token_create_new_token(mocker):
     Then: Assure a new token is generated, and that the integration context is updated with the new token.
     """
     import OktaApiModule
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(  # 'initial_setup' is called within the constructor
         base_url='https://test.url',
         api_token='X',
@@ -240,7 +236,6 @@ def test_get_token_use_existing(mocker):
     Then: Assure the existing token is returned.
     """
     import OktaApiModule
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(  # 'initial_setup' is called within the constructor
         base_url='https://test.url',
         api_token='X',
@@ -264,7 +259,6 @@ def test_get_token_regenerate_existing(mocker):
     Then: Assure a new token is generated
     """
     import OktaApiModule
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(  # 'initial_setup' is called within the constructor
         base_url='https://test.url',
         api_token='X',
@@ -291,7 +285,6 @@ def test_http_request_no_auth(mocker):
     When: Making an API call with no authentication
     Then: Assure the call is made without any authentication headers.
     """
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(
         base_url='https://test.url',
         api_token='X',
@@ -322,7 +315,6 @@ def test_http_request_api_token_auth(mocker):
     When: Making an API call with API token authentication
     Then: Assure the call is made with the API token properly used in the 'Authorization' header.
     """
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(
         base_url='https://test.url',
         api_token='X',
@@ -354,7 +346,6 @@ def test_http_request_oauth_auth(mocker):
     When: Making an API call with OAuth authentication
     Then: Assure the call is made with the JWT token properly used in the 'Authorization' header.
     """
-    mocker.patch.object(OktaClient, 'initial_setup')
     client = OktaClient(
         base_url='https://test.url',
         api_token='X',

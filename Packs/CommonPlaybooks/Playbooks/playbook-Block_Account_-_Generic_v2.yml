@@ -74,7 +74,7 @@ tasks:
       {
         "position": {
           "x": -1070,
-          "y": 1260
+          "y": 1470
         }
       }
     note: false
@@ -971,7 +971,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "48"
+      - "76"
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
@@ -1551,15 +1551,14 @@ tasks:
     scriptarguments:
       username:
         complex:
-          root: Blocklist
-          accessor: Final
+          root: UserAD
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 920
+          "x": 1050,
+          "y": 1290
         }
       }
     note: false
@@ -1914,7 +1913,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "69"
+      - "78"
     scriptarguments:
       brandname:
         simple: Microsoft Graph User
@@ -2129,15 +2128,14 @@ tasks:
     scriptarguments:
       user:
         complex:
-          root: Blocklist
-          accessor: Final
+          root: UserMSGraph
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1480,
-          "y": 920
+          "y": 1290
         }
       }
     note: false
@@ -2363,7 +2361,176 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "76":
+    id: "76"
+    taskid: da02de44-c739-4db1-85bc-3c053f8aa183
+    type: regular
+    task:
+      id: da02de44-c739-4db1-85bc-3c053f8aa183
+      version: -1
+      name: Active Directory - Get User
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      extend-context:
+        simple: UserAD=attributes.sAMAccountName
+      ignore-outputs:
+        simple: "true"
+      username:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 419df6f0-2416-4a48-8124-eb64ce5da93a
+    type: condition
+    task:
+      id: 419df6f0-2416-4a48-8124-eb64ce5da93a
+      version: -1
+      name: Does the username exist?
+      description: Verify that the user exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: UserAD
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: e56d753f-ac0c-417d-83b3-1eec253d740b
+    type: regular
+    task:
+      id: e56d753f-ac0c-417d-83b3-1eec253d740b
+      version: -1
+      name: Microsoft Graph User - Get User
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0.
+        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      extend-context:
+        simple: UserMSGraph=id
+      ignore-outputs:
+        simple: "true"
+      user:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 6a4ebfcb-e506-4333-81b5-8889065e2fbe
+    type: condition
+    task:
+      id: 6a4ebfcb-e506-4333-81b5-8889065e2fbe
+      version: -1
+      name: Does the username exist?
+      description: Verify that the user exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: UserMSGraph
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2384,7 +2551,6 @@ view: |-
       "32_33_yes": 0.24,
       "36_2_#default#": 0.1,
       "37_2_#default#": 0.12,
-      "37_48_yes": 0.42,
       "43_44_yes": 0.49,
       "52_39_#default#": 0.2,
       "53_2_#default#": 0.1,
@@ -2396,7 +2562,6 @@ view: |-
       "59_2_#default#": 0.1,
       "59_33_yes": 0.14,
       "63_2_#default#": 0.1,
-      "63_69_yes": 0.44,
       "65_2_#default#": 0.1,
       "65_33_yes": 0.1,
       "67_2_#default#": 0.1,
@@ -2410,7 +2575,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 2985,
         "width": 8080,
         "x": -5370,
         "y": -1450

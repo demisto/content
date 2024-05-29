@@ -1,7 +1,7 @@
 Enrich a file using one or more integrations.
 
 - Provide threat information
-- File Reputation using !file command
+- Determine file reputation using the !file command
 
 ## Dependencies
 

@@ -3,8 +3,8 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 
 ## Authentication
 
-For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
-Note: eDiscovery commands only support the `Delegated (work or school account)` permission type.
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
+*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 
 ## Important Notes:
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
@@ -12,7 +12,6 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
-- For Threat Assessment commands the only authorization that supported is [Authorize on Behalf of a User](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
     - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
      
@@ -23,23 +22,26 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
 ### Required Permissions
 
-Legacy Alerts:
+**Legacy Alerts**:
 
 1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: `msg-update-alert`)
 3. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
+4. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident`)
+5. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`)
+6. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
-Alerts v2:
+**Alerts v2**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
-EDiscovery:
+**eDiscovery**:
 
 1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
 2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update-ediscovery` commands)
 
-Threat Assessment:
+**Threat Assessment**:
 
 1. Mail.Read.Shared - Delegated
 2. ThreatAssessment.ReadWrite.All - Delegated
@@ -74,6 +76,7 @@ Threat Assessment:
     | Fetch incidents of the given providers only. | Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provider\}". If empty, incidents of all providers will be fetched. | False |
     | Fetch incidents of the given service sources only. | Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched. | False |
     | Fetched incidents filter | Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
+    | Microsoft 365 Defender context | Check to save the hunt query result to also in the Microsoft 365 Defender context path. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -377,19 +380,19 @@ Update an editable alert property within any integrated solution to keep alert s
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id | The Alert ID. Provider-generated GUID/unique identifier. | Required | 
-| assigned_to | Name of the analyst the alert is assigned to for triage, investigation, or remediation. | Optional | 
-| closed_date_time | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY. | Optional | 
-| comments | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management). | Optional | 
-| feedback | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| status | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new. | Optional | 
-| tags | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW). | Optional | 
-| vendor_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft. | Optional | 
-| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP. | Optional | 
-| classification | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| determination | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, apt, malware, phishing, other, securityPersonnel, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional | 
+| **Argument Name**    | **Description**                                                                                                                                                                                                                                  | **Required** |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| alert_id             | The Alert ID. Provider-generated GUID/unique identifier.                                                                                                                                                                                         | Required     | 
+| assigned_to          | Name of the analyst the alert is assigned to for triage, investigation, or remediation.                                                                                                                                                          | Optional     | 
+| closed_date_time     | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.                                                                                                                                                      | Optional     | 
+| comments             | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).                                                                                                                                                  | Optional     | 
+| feedback             | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive.                                                                                                       | Optional     | 
+| status               | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new.                                                                                                                                               | Optional     | 
+| tags                 | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).                                                                                             | Optional     | 
+| vendor_information   | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.                                                                                                                                               | Optional     | 
+| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.                                                                                                                                    | Optional     | 
+| classification       | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, informationalExpectedActivity.                                                                      | Optional     | 
+| determination        | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, malware, phishing, other, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional     | 
 
 #### Context Output
 
@@ -454,6 +457,8 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### eDiscovery Commands
 ### msg-list-ediscovery-cases
 
 ***
@@ -1701,27 +1706,8 @@ There is no context output for this command.
 
 >eDiscovery search e7282eff-ba81-43cb-9027-522a343f6692 was deleted successfully.
 
-### msg-generate-login-url
 
-***
-Generate the login URL used for authorization code flow.
-
-#### Base Command
-
-`msg-generate-login-url`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Human Readable Output
-
-
+### Threat Assessment Commands
 ### msg-create-mail-assessment-request
 
 ***
@@ -2168,9 +2154,261 @@ Retrieve all threat assessment requests.
 >| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
 >| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
 
+
+### msg-generate-login-url
+
+***
+Generate the login URL used for the authorization code flow.
+
+#### Base Command
+
+`msg-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+### msg-advanced-hunting
+
+***
+Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security.
+To save result in context to 'Microsoft365Defender' as well, you can check the 'Microsoft 365 Defender context' checkbox in Instance Setting.
+
+#### Base Command
+
+`msg-advanced-hunting`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Advanced hunting query. | Required | 
+| limit | Number of entries. Enter -1 for unlimited query, In case a limit also appears in the query, priority will be given to the query. | Optional | 
+| timeout | The time limit in seconds for the http request to run | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Hunt.query | String | The query used, also acted as a key. | 
+| MsGraph.Hunt.results | Unknown | The results of the query. | 
+| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. | 
+| Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
+
+#### Command example
+```!msg-advanced-hunting query=AlertInfo limit=1```
+#### Context Example
+```json
+{
+    "Microsoft365Defender": {
+        "Hunt": {
+            "query": "AlertInfo | limit 1 ",
+            "results": [
+                {
+                    "AlertId": "abc123",
+                    "AttackTechniques": "",
+                    "Category": "Exfiltration",
+                    "DetectionSource": "Microsoft Data Loss Prevention",
+                    "ServiceSource": "Microsoft Data Loss Prevention",
+                    "Severity": "Medium",
+                    "Timestamp": "2024-03-19T03:00:08Z",
+                    "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)"
+                }
+            ]
+        }
+    },
+    "MsGraph": {
+        "Hunt": {
+            "query": "AlertInfo | limit 1 ",
+            "results": [
+                {
+                    "AlertId": "abc123",
+                    "AttackTechniques": "",
+                    "Category": "Exfiltration",
+                    "DetectionSource": "Microsoft Data Loss Prevention",
+                    "ServiceSource": "Microsoft Data Loss Prevention",
+                    "Severity": "Medium",
+                    "Timestamp": "2024-03-19T03:00:08Z",
+                    "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>See Results Above
+
+### msg-list-security-incident
+
+***
+Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, enter an incident ID.
+
+#### Base Command
+
+`msg-list-security-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident's ID. | Optional | 
+| limit | Number of incidents in the list. Maximum is 50. Default is 50. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+| status | The status of the incident. Possible values are: active, redirected, resolved, inProgress, unknownFutureValue, awaitingAction. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional | 
+| classification | The specification for the incident. | Optional | 
+| odata | Filter incidents using 'odata' query. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Incident.assignedTo | string | Owner of the incident, or null if no owner is assigned. Free editable text. | 
+| MsGraph.Incident.classification | string | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
+| MsGraph.Incident.comments | string | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
+| MsGraph.Incident.createdDateTime | date | Time when the incident was first created. | 
+| MsGraph.Incident.customTags | string | Array of custom tags associated with an incident. | 
+| MsGraph.Incident.description | string | Description of the incident. | 
+| MsGraph.Incident.determination | string | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
+| MsGraph.Incident.displayName | string | The incident name. | 
+| MsGraph.Incident.id | number | Unique identifier to represent the incident. | 
+| MsGraph.Incident.incidentWebUrl | string | The URL for the incident page in the Microsoft 365 Defender portal. | 
+| MsGraph.Incident.lastModifiedBy | string | The identity that last modified the incident. | 
+| MsGraph.Incident.lastUpdateDateTime | string | Time when the incident was last updated. | 
+| MsGraph.Incident.redirectIncidentId | string | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
+| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.status | string | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
+| MsGraph.Incident.tenantId | string | The Microsoft Entra tenant in which the alert was created. | 
+| MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
+
+#### Command example
+```!msg-list-security-incident limit=1```
+#### Context Example
+```json
+{
+    "MsGraph": {
+        "Incident": {
+            "@odata.count": 26176,
+            "value": [
+                {
+                    "Assigned to": null,
+                    "Classification": "unknown",
+                    "Created date time": "2024-03-19T08:08:33.2533333Z",
+                    "Custom tags": "",
+                    "Determination": "unknown",
+                    "Display name": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user",
+                    "Severity": "medium",
+                    "Status": "active",
+                    "System tags": "",
+                    "Updated date time": "2024-03-19T08:08:33.36Z",
+                    "id": "12345"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incidents:
+>|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 12345 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
+
+
+### msg-update-security-incident
+
+***
+Update the incident with the given ID.
+
+#### Base Command
+
+`msg-update-security-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident's ID. | Required | 
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: active, resolved, redirected, unknownFutureValue. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| determination | Determination of the incident. Possible values are: unknown, apt, malware, securityPersonnel, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, notMalicious. | Optional | 
+| classification | The specification for the incident. Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | Optional | 
+| custom_tags | Array of custom tags associated with an incident. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Incident.assignedTo | String | Owner of the incident, or null if no owner is assigned. Free editable text. | 
+| MsGraph.Incident.classification | String | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
+| MsGraph.Incident.comments | String | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
+| MsGraph.Incident.createdDateTime | Date | Time when the incident was first created. | 
+| MsGraph.Incident.customTags | String | Array of custom tags associated with an incident. | 
+| MsGraph.Incident.description | String | Description of the incident. | 
+| MsGraph.Incident.determination | String | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
+| MsGraph.Incident.displayName | String | The incident name. | 
+| MsGraph.Incident.id | String | Unique identifier to represent the incident. | 
+| MsGraph.Incident.incidentWebUrl | String | The URL for the incident page in the Microsoft 365 Defender portal. | 
+| MsGraph.Incident.lastModifiedBy | String | The identity that last modified the incident. | 
+| MsGraph.Incident.lastUpdateDateTime | Date | Time when the incident was last updated. | 
+| MsGraph.Incident.redirectIncidentId | String | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
+| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.status | String | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
+| MsGraph.Incident.tenantId | String | The Microsoft Entra tenant in which the alert was created. | 
+| MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
+
+#### Command example
+```!msg-update-security-incident incident_id=12345```
+#### Context Example
+```json
+{
+    "MsGraph": {
+        "Incidents": {
+            "assignedTo": "test5",
+            "classification": "unknown",
+            "comments": [],
+            "createdDateTime": "2024-03-17T15:50:31.9033333Z",
+            "customTags": [],
+            "description": null,
+            "determination": "unknown",
+            "displayName": "Exfiltration incident involving one user",
+            "id": "12345",
+            "incidentWebUrl": "https://security.microsoft.com/incidents/12345?tid=abc123",
+            "lastModifiedBy": "Microsoft 365 Defender-AlertCorrelation",
+            "lastUpdateDateTime": "2024-03-19T07:24:34.7066667Z",
+            "redirectIncidentId": null,
+            "severity": "medium",
+            "status": "active",
+            "systemTags": [],
+            "tenantId": "abc123"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated incident No. 12345:
+>|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |

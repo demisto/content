@@ -10,6 +10,9 @@ ignore=RM102
 [file:layoutscontainer-AWS_CloudTrail_Misconfiguration.json]
 ignore=BA101
 
+[file:playbook-Prisma_Cloud_-_Network__API_and_Anomaly_Incidents.yml]
+ignore=PB106
+
 [file:layoutscontainer-AWS_EC2_Instance_Misconfiguration.json]
 ignore=BA101
 

@@ -7,7 +7,6 @@ import os
 import tempfile
 import shutil
 import traceback
-from typing import List
 
 
 def find_zombie_processes():
@@ -29,35 +28,35 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) -> List[str]:
+def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) -> list[str]:
     try:
         run_cmd = ['soffice', '--headless', '-env:UserInstallation=file:///tmp/convertfile/.config',
                    '--convert-to', out_format, file_path, '--outdir', outdir]
         env = os.environ.copy()
         env['HOME'] = '/tmp/convertfile'
         res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, universal_newlines=True, env=env)
-        demisto.debug("completed running: {}. With result: {}".format(run_cmd, res))
+        demisto.debug(f"completed running: {run_cmd}. With result: {res}")
         if all_files:
             files = glob.glob(outdir + '/*')
         else:
             ext = out_format.split(':')[0]
             files = glob.glob(outdir + '/*.' + ext)
         if not files:
-            raise ValueError('Failed convert for output format: {}. Convert process log: {}'.format(out_format, res))
+            raise ValueError(f'Failed convert for output format: {out_format}. Convert process log: {res}')
         return files
     finally:
         # make sure we don't have zombie processes (seen when converting pdf to html)
         try:
             zombies, ps_out = find_zombie_processes()
             if zombies:  # pragma no cover
-                demisto.info("Found zombie processes will waitpid: {}".format(ps_out))
+                demisto.info(f"Found zombie processes will waitpid: {ps_out}")
                 for pid in zombies:
                     waitres = os.waitpid(int(pid), os.WNOHANG)
-                    demisto.info("waitpid result: {}".format(waitres))
+                    demisto.info(f"waitpid result: {waitres}")
             else:
-                demisto.debug("No zombie processes found for ps output: {}".format(ps_out))
+                demisto.debug(f"No zombie processes found for ps output: {ps_out}")
         except Exception as ex:
-            demisto.error("Failed checking for zombie processes: {}. Trace: {}".format(ex, traceback.format_exc()))
+            demisto.error(f"Failed checking for zombie processes: {ex}. Trace: {traceback.format_exc()}")
 
 
 def main():
@@ -68,8 +67,8 @@ def main():
     try:
         result = demisto.getFilePath(entry_id)
         if not result:
-            return_error("Couldn't find entry id: {}".format(entry_id))
-        demisto.debug('going to convert: {}'.format(result))
+            return_error(f"Couldn't find entry id: {entry_id}")
+        demisto.debug(f'going to convert: {result}')
         file_path = result['path']
         file_path_name_only = os.path.splitext(os.path.basename(file_path))[0]
         file_name = result.get('name')
@@ -78,7 +77,7 @@ def main():
         with tempfile.TemporaryDirectory() as outdir:
             files = convert_file(file_path, out_format, all_files, outdir)
             if not files:
-                return_error('No file result returned for convert format: {}'.format(out_format))
+                return_error(f'No file result returned for convert format: {out_format}')
                 return
             for f in files:
                 temp = demisto.uniqueFile()
@@ -94,9 +93,9 @@ def main():
                     'FileID': temp
                 })
     except subprocess.CalledProcessError as e:
-        return_error("Failed converting file. Output: {}. Error: {}".format(e.output, e))
+        return_error(f"Failed converting file. Output: {e.output}. Error: {e}")
     except Exception as e:
-        return_error("Failed converting file. General exception: {}.\n\nTrace:\n{}".format(e, traceback.format_exc()))
+        return_error(f"Failed converting file. General exception: {e}.\n\nTrace:\n{traceback.format_exc()}")
 
 
 # python2 uses __builtin__ python3 uses builtins
