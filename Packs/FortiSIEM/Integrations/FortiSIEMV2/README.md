@@ -1,9 +1,7 @@
 Use FortiSIEM v2 to fetch and update incidents, search events and manage FortiSIEM watchlists.
 This integration was integrated and tested with FortiSIEMV2 version 6.3.2.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 Changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fortisiem-v2).
