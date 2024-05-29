@@ -11,6 +11,12 @@ you are implementing with your integration
 """
 
 import json
+from CSCDomainManager import *
+from CSCDomainManager import Client
+
+EXAMPLE_BASE_URL = 'https://test.com/api/v1'
+VERIFY = True
+ACCEPT_VAL = "example"
 
 
 def util_load_json(path):
@@ -18,24 +24,35 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+GET_REQUEST_EXAMPLE1 = util_load_json('./test_data/get_request_example1.json')
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+def create_mock_client():
+    return Client(
+        base_url=EXAMPLE_BASE_URL,
+        verify=VERIFY,
+        headers={'test': 'test'}
+    )
 
-    client = Client(base_url='some_mock_url', verify=False)
+
+def test_csc_domains_search(mocker):
+    client = create_mock_client()
     args = {
-        'dummy': 'this is a dummy response'
+        'domain_name': 'csc-panw'
     }
-    response = baseintegration_dummy_command(client, args)
+    mocker.patch.object(client, 'send_get_request', return_value=GET_REQUEST_EXAMPLE1)
+    result = csc_domains_search_command(client, args)
+    result.to_context().get('Contents')
+    # print(result_output)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+def test_csc_domains_availability_check():
+    pass
+
+
+def test_csc_domains_configuration_list():
+    pass
+
+
+def test_domain():
+    pass

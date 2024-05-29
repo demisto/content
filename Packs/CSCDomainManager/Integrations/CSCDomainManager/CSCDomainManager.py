@@ -24,11 +24,13 @@ from CommonServerUserPython import *  # noqa
 
 
 ''' CONSTANTS '''
-
-DEFAULT_PAGE_SIZE = 50
+DEFAULT_PAGE = 1
+DEFAULT_PAGE_SIZE_SEARCH = 50
+DEFAULT_PAGE_SIZE_CONFI = 1
 DEFAULT_LIMIT = 50
 MAX_QUALIFIED_DOMAIN_NAMES = 50
 ACCEPT_VAL = "application/json"
+BEARER = 'Bearer '
 HR_HEADERS_FOR_DOMAINS_SEARCH = ['Qualified Domain Name',
                                  'Domain',
                                  'Managed Status',
@@ -70,7 +72,6 @@ HR_HEADERS_FOR_DOMAIN = ['Qualified Domain Name',
                          'Whois Contact last Name',
                          'Whois Contact email'
                          ]
-
 HR_HEADERS_FOR_AVAILABILITY = ['Qualified Domain Name',
                                'Code',
                                'Message',
@@ -79,19 +80,18 @@ HR_HEADERS_FOR_AVAILABILITY = ['Qualified Domain Name',
                                'List of the terms (months) available for registration'
                                ]
 SEARCH_OPERATORS = ["gt=", "ge=", "lt=", "le=", "in=", "like="]
-SELECTORS_MAPPING = {
-    'domain_name': 'domain',
-    'registration_date': 'registrationDate',
-    'registration_org': 'regOrg',
-    'admin_email': 'adminEmail',
-    'email': 'email',
-    'organization': 'organization',
-    'registry_expiry_date': 'registryExpiryDate',
-    'filter': 'filter',
-    'sort': 'sort',
-    'page': 'page',
-    'page_size': 'size',
-}
+SELECTORS_MAPPING = {'domain_name': 'domain',
+                     'registration_date': 'registrationDate',
+                     'registration_org': 'regOrg',
+                     'admin_email': 'adminEmail',
+                     'email': 'email',
+                     'organization': 'organization',
+                     'registry_expiry_date': 'registryExpiryDate',
+                     'filter': 'filter',
+                     'sort': 'sort',
+                     'page': 'page',
+                     'page_size': 'size',
+                     }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -107,8 +107,8 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url: str, verify: bool, headers: dict, proxy: bool):
-        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+    def __init__(self, base_url: str, verify: bool, headers: dict):
+        super().__init__(base_url=base_url, verify=verify, headers=headers)
 
     def send_get_request(self, url_suffix, params) -> Any:
         results = self._http_request(
@@ -274,7 +274,6 @@ def csc_domains_search_command(client: Client, args) -> Any:
         domains_results = client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")
 
     else:
-        args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE
         if args.get('limit'):
             args['page'] = '1'
             args['page_size'] = args.get('limit')
@@ -321,7 +320,9 @@ def csc_domains_availability_check_command(client: Client, args) -> Any:
 
 
 def csc_domains_configuration_list_command(client: Client, args) -> Any:
-    args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE
+    args['page'] = args.get('page') or DEFAULT_PAGE_SIZE_CONFI
+    args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE_SEARCH
+
     if args.get('limit'):
         args['page'] = '1'
         args['page_size'] = args.get('limit')
@@ -393,8 +394,6 @@ def domain(client, args, reliability) -> Any:
         readable_output=tableToMarkdown('Domain', hr_data, headers=HR_HEADERS_FOR_DOMAIN),
         outputs_prefix='CSCDomainManager.Domain',
         outputs=context_res
-        # outputs_key_field ='QualifiedDomainName',
-        # indicator = domain_context
     )
     return results
 
@@ -416,9 +415,8 @@ def main() -> None:
         verify = not params.get('insecure', False)
         token = params.get('token', {}).get('password')
         apikey = params.get('credentials', {}).get('password')
-        proxy = params.get('proxy', False)
         headers = {
-            'Authorization': 'Bearer ' + token,
+            'Authorization': BEARER + token,
             'apikey': apikey,
             'Accept': ACCEPT_VAL
         }
@@ -436,7 +434,6 @@ def main() -> None:
             base_url=base_url,
             verify=verify,
             headers=headers,
-            proxy=proxy
         )
 
         if demisto.command() == 'test-module':
