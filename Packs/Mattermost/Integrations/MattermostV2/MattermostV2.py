@@ -461,7 +461,7 @@ def long_running_loop():  # pragma: no cover
     while True:
         error = ''
         try:
-            check_for_unanswered_messages()
+            _ = check_for_unanswered_messages()
             time.sleep(tts)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the MatterMost endpoint: {str(e)}'
@@ -490,12 +490,14 @@ def check_for_unanswered_messages():
                 expiry = datetime.strptime(message['expiry'], DATE_FORMAT)
                 if expiry < now:
                     demisto.debug(f"MM: message expired: {message}, answering it with the default response")
-                    _ = answer_question(message.get('default_response'), message, email='')
+                    answer_question(message.get('default_response'), message, email='')
+                    message['remove'] = True
                     updated_messages.append(message)
                     continue
             updated_messages.append(message)
 
         if updated_messages:
+            
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
 
 
@@ -734,18 +736,18 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     return guid, incident_id, task_id
 
 
-async def answer_question(text: str, message: dict, email: str = ''):
+def answer_question(text: str, message: dict, email: str = ''):
     """Answers a question from MattermostAskUser
     """
     global CLIENT
+    demisto.debug("MM: answer_question")
     entitlement = message.get('entitlement', '')
-    to_id = message.get('to_id')
+    root_id = message.get('root_id', '')
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
-        bot_access_token = CLIENT.bot_access_token
-        if bot_access_token:
-            _ = await process_entitlement_reply(text, to_id)
+        demisto.debug("MM: aFTER handleEntitlementForUser")
+        _ = process_entitlement_reply(text, root_id)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
     message['remove'] = True
@@ -760,9 +762,9 @@ async def update_post_async(client: HTTPClient, message, root_id):
     client.update_post_request(message, root_id)
 
 
-async def process_entitlement_reply(  # pragma: no cover
+def process_entitlement_reply(  # pragma: no cover
     entitlement_reply: str,
-    root_id: str | None = None,
+    root_id: str = '',
     user_name: str | None = None,
     answer_text: str | None = None,
 ):
@@ -778,8 +780,8 @@ async def process_entitlement_reply(  # pragma: no cover
         entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
     if '{response}' in entitlement_reply and answer_text:
         entitlement_reply = entitlement_reply.replace('{response}', str(answer_text))
-    demisto.debug('')
-    await update_post_async(CLIENT, entitlement_reply, root_id)
+    demisto.debug(f'MM: process entitlement reply with {entitlement_reply} for {root_id}')
+    CLIENT.update_post_request(entitlement_reply, root_id)
 
 
 async def handle_text_received_from_mm(investigation_id: str, text: str, operator_email: str, operator_name: str):
@@ -830,7 +832,7 @@ async def handle_posts(payload):
         entitlement_reply = await check_and_handle_entitlement(answer_text, root_id, username)
         demisto.debug(f"MM: {entitlement_reply=}")
         if entitlement_reply:
-            await process_entitlement_reply(entitlement_reply, root_id, username, answer_text)
+            process_entitlement_reply(entitlement_reply, root_id, username, answer_text)
 
         reset_listener_health()
         return
