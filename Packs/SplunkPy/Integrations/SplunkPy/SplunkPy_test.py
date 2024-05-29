@@ -1469,7 +1469,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [
          ("View all login attempts by system 'test_src'",
           '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"')]),
-    
+
     ({'event_id': 'test_id2', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
             "ntication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
@@ -1520,13 +1520,22 @@ def test_drilldown_enrichment(notable_data, expected_result):
       "drilldown_latest": "00101", "drilldown_earliest": "00001"},
      "Couldn't build search query for notable test_id with the following drilldown search "),
 
-    ({'event_id': 'test_id', 'drilldown_searches': ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
-                                                    "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user = $user|s$\",\"earliest\":,\"latest\":}"],
-      '_raw': "src=\'test_src\', user='test_user'"}, 'Failed getting the drilldown timeframe for notable test_id'),
+    ({'event_id': 'test_id',
+      'drilldown_searches': [
+          "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentica"\
+              "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
+              "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="\
+                  "$user|s$\",\"earliest\":,\"latest\":}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     'Failed getting the drilldown timeframe for notable test_id'),
 
-    ({'event_id': 'test_id', 'drilldown_searches': ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
-                                                    "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user = $user|s$\",\"earliest\":,\"latest\":}"],
-      '_raw': ""}, "Couldn't build search query for notable test_id with the following drilldown search"),
+    ({'event_id': 'test_id',
+      'drilldown_searches':
+          ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentic"\
+              "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
+              "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="\
+                  "$user|s$\",\"earliest\":,\"latest\":}"], '_raw': ""},
+     "Couldn't build search query for notable test_id with the following drilldown search"),
 ])
 def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_log_message):
     """
