@@ -255,11 +255,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
-    pack_metadata = {}
     pack_dirs_to_check = packs_to_check_in_pr(pr_files)
-    print(f'start of check_new_pack_metadata, pack dirs to check {pack_dirs_to_check}')
-
-
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
@@ -274,9 +270,8 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             for file in pr_files:
                 if "yml" in file and "Integrations" in file:
                     content_yml = get_yaml(file_path=file)
-                    print(f'the content of the yml is: {content_yml}')
-                    is_feed = content_yml.get("script").get("feed", "")
-                    print(f'the is_feed is: {is_feed}')
+                    is_feed = content_yml.get("script").get("feed", "False")
+                    print(f'Is it a feed: {is_feed}')
                     if is_feed:
                         return True
     except Exception as error:
