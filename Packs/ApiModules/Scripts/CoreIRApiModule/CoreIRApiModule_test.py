@@ -2710,7 +2710,6 @@ def test_parse_get_script_execution_results():
          'command_output': ['command_output']}]
     assert res == expected_res
 
-
 class TestGetAlertByFilter:
 
     @freeze_time("2022-05-03 11:00:00 GMT")
@@ -4071,10 +4070,10 @@ def test_http_request_demisto_call(mocker):
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch.object(demisto, "_apiCall" ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                          'status': 200,
-                                         'data': '{"reply":[{"container": ["1.1.1.1"]}]'})
+                                         'data': '{"reply":[{"container": ["1.1.1.1"]}]}'})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
-    assert res['data'] == {"reply":[{"container": ["1.1.1.1"]}]}
+    assert res == {"reply":[{"container": ["1.1.1.1"]}]}
 
 
 def test_http_request_base_client(mocker):
@@ -4090,7 +4089,7 @@ def test_http_request_base_client(mocker):
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=False)
     mocker.patch.object(BaseClient, "_http_request" ,return_value={'data':{"reply":[{"container": ["1.1.1.1"]}]}})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
