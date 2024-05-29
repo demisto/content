@@ -1360,8 +1360,12 @@ def test_parse_drilldown_searches():
     Then:
     - Verify that the search data was parsed into a python dictionary as expected.
     """
-    searches = ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malware_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}",
-                "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}"
+    searches = ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\"."
+                "\\\"Malware_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":17145"
+                "63300,\"latest\":1715168700}",
+                "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malw"
+                "are\\\".\\\"Malware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature="
+                "$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}"
                 ]
     parsed_searches = splunk.parse_drilldown_searches(searches)
     for search in parsed_searches:
@@ -1373,7 +1377,8 @@ def test_parse_drilldown_searches():
          'latest': 1715168700
          },
         {'name': "View related '$category$' events for $signature$",
-         'search': '| from datamodel:"Malware"."Malware_Attacks" \n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$',
+         'search': '| from datamodel:"Malware"."Malware_Attacks" \n|  fields category, dest, signature | search dest=$dest|s$ '
+         'signature=$signature|s$',
          'earliest': 1714563300,
          'latest': 1715168700
          }
@@ -1416,9 +1421,16 @@ def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call
 
 @pytest.mark.parametrize('notable_data, expected_call_count', [
     ({'event_id': 'test_id', 'drilldown_search': 'test_search', 'drilldown_searches': [{}], '_raw': "{'test':1}"}, 1),
-    ({'event_id': 'test_id', 'drilldown_searches': ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malware_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}",
-                                                    "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}"
-                                                    ]}, 0)
+    ({'event_id': 'test_id',
+      'drilldown_searches':
+          ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malwa"
+              "re_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}",
+           "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"M"
+           "alware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$\",\"ear"
+           "liest\":1714563300,\"latest\":1715168700}"
+           ]
+      },
+     0)
 ])
 def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_count):
     """
@@ -1451,12 +1463,23 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
 @pytest.mark.parametrize('notable_data, expected_result', [
     ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
       'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
-      'drilldown_searches': "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
-      '_raw': "src=\'test_src\'", "drilldown_latest": "1715126400.000000000", "drilldown_earliest": "1715040000.000000000"}, [("View all login attempts by system 'test_src'", '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"')]),
-    ({'event_id': 'test_id2', 'drilldown_searches': ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
-                                                     "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user = $user|s$\",\"earliest\":1716955500,\"latest\":1716959400}"],
-      '_raw': "src=\'test_src\', user='test_user'"}, [("View all login attempts by system 'test_src'", '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
-                                                      ('View all test involving user="\'test_user\'"', 'search index="test"\n| where user = \'test_user\'')]),
+      'drilldown_searches': "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authent"
+      "ication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
+      '_raw': "src=\'test_src\'", "drilldown_latest": "1715126400.000000000", "drilldown_earliest": "1715040000.000000000"},
+     [
+         ("View all login attempts by system 'test_src'",
+          '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"')]),
+    
+    ({'event_id': 'test_id2', 'drilldown_searches':
+        ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
+            "ntication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
+            "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "user = $user|s$\",\"earliest\":1716955500,\"latest\":1716959400}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     [("View all login attempts by system 'test_src'",
+       '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
+      ('View all test involving user="\'test_user\'"',
+       'search index="test"\n| where user = \'test_user\'')]),
 ])
 def test_drilldown_enrichment(notable_data, expected_result):
     """
@@ -1524,6 +1547,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_l
 
     """
     debug_log = mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'error')
     service = Service('DONE')
     jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
     for i in range(len(jobs_and_queries)):

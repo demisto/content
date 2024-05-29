@@ -711,8 +711,8 @@ class Notable:
             self.enrichments) >= len(ENABLED_ENRICHMENTS) and len(notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
         # Explanation of the conditions:
         # 1. First condition - if any of the notable's enrichments is in progress, it means it was submitted to splunk.
-        # 2. Second condition - The number of notable enrichments could be larger than the ENABLED_ENRICHMENTS because there could be
-        # multiple drilldown searches to enrich. I addition, it should never be smaller than the ENABLED_ENRICHMENTS.
+        # 2. Second condition - The number of notable enrichments could be larger than the ENABLED_ENRICHMENTS because there could
+        # be multiple drilldown searches to enrich. I addition, it should never be smaller than the ENABLED_ENRICHMENTS.
         # That is because if the user has asked for a certain enrichment type we will create an enrichment object of this type in
         # the notable.enrichments list, regardless the existence of the enrichment type in the notable fetched data.
         # (Meaning, if the notable doesn't include an enrichment in it's fetched data we will create the enrichment object in the
@@ -1255,7 +1255,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                         demisto.debug(f'{notable.id} {enrichment.type} status is successful. {len(enrichment.data)=}')
-                    else:  # TODO: need to improve the logs here if possible - it could be confusing for multiple drilldown enrichments
+                    else:  # TODO: improve the logs here if possible - it could be confusing for multiple drilldown enrichments
                         demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
                 except Exception as e:
 
