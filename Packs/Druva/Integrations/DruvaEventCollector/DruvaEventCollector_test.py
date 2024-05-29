@@ -101,7 +101,7 @@ def test_refresh_access_token(mocker, mock_client):
     client = Client(base_url="client_test")
     mocker.patch.object(client, "_http_request", side_effect=DemistoException(message='Error: invalid_grant'))
     with pytest.raises(DemistoException, match="Make sure Server URL, Client ID and Secret Key are correctly entered."):
-        client.refresh_access_token(encoded_credentials=b"test")
+        client.refresh_access_token(credentials="test")
 
 
 EVENT_2 = {

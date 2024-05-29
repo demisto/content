@@ -19,10 +19,11 @@ PRODUCT = 'Druva'
 
 class Client(BaseClient):
 
-    def refresh_access_token(self, encoded_credentials: bytes):
+    def refresh_access_token(self, credentials: str):
         """
         Since the validity of the Access Token is 30 minutes, this method refreshes it.
         """
+        encoded_credentials = base64.b64encode(credentials.encode())
         decoded_credentials = encoded_credentials.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {decoded_credentials}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
@@ -148,7 +149,7 @@ def main() -> None:  # pragma: no cover
 
     druva_client_id = params["credentials"]["identifier"]
     druva_secret_key = params["credentials"]["password"]
-    encoded_credentials = base64.b64encode(f'{druva_client_id}:{druva_secret_key}'.encode())
+    credentials = f'{druva_client_id}:{druva_secret_key}'
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -159,7 +160,7 @@ def main() -> None:  # pragma: no cover
         )
 
         # The validity of the Access Token is 30 minutes.
-        client.refresh_access_token(encoded_credentials)
+        client.refresh_access_token(credentials)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
