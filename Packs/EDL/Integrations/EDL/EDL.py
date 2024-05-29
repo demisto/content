@@ -742,12 +742,11 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
         total_count = added_count + dropped_count + modified_count
 
         header = f"# Created new EDL at {created.isoformat()}\n\n" \
-                f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
-                f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
-                f"{added_count} added.\n" \
-                f"\nAction | Indicator | Raw Indicator | Reason"
+            f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
+            f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
+            f"{added_count} added.\n" \
+            f"\nAction | Indicator | Raw Indicator | Reason"
 
-        
         with open(EDL_FULL_LOG_PATH, 'w+') as new_full_log_file, log_file_wip.open('r') as log_file_data:
             # Finalize the current log: write the headers and the WIP log to full_log_path
             new_full_log_file.write(header)
