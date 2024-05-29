@@ -1,5 +1,5 @@
 import csv
-
+import ast
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
@@ -361,6 +361,7 @@ def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_bin
                 # TODO: remove the log below
                 demisto.log(f"Created new browser at port {chrome_port}")
                 browser_to_chrome_process[browser] = process
+                chrome_options = '"""' + chrome_options.replace('"', '\\"') + '"""'
                 new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
                 write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
             else:
@@ -392,10 +393,12 @@ def terminate_chrome(browser):
 
 def delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_name):
     index_to_delete = -1
-    for index, line in enumerate(info):
-        port_from_info, instance_name_from_info, chrome_options_from_info = line.strip().split('\t')
-        if port_from_info == chrome_port and instance_name_from_info == instance_name:
-            index_to_delete = index
+    for index, lines in enumerate(info):
+        for line in lines:
+            port_from_info, instance_name_from_info, chrome_options_from_info = line.strip().split('\t')
+            if port_from_info == chrome_port and instance_name_from_info == instance_name:
+                index_to_delete = index
+                break
 
     if index_to_delete >= 0:
         del info[index_to_delete]
@@ -416,13 +419,6 @@ def get_chrome_port():
             demisto.debug(f"No Chrome found on port {chrome_port}")
             demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
             return chrome_port
-
-
-def setup_new_chrome_instance(chrome_port, instance_name, chrome_options):
-    browser, chrome_port = start_chrome_headless(str(chrome_port), instance_name, chrome_options)
-    if browser:
-        return browser, chrome_port
-    return None, None
 
 
 def get_chrome_instances_info_dictionaries(info):
@@ -446,7 +442,7 @@ def get_chrome_instances_info_dictionaries(info):
 
 def generate_new_chrome_instance(instance_name, chrome_options):
     chrome_port = get_chrome_port()
-    browser, chrome_port = setup_new_chrome_instance(chrome_port, instance_name, chrome_options)
+    browser, chrome_port = start_chrome_headless(str(chrome_port), instance_name, chrome_options)
     if browser:
         return browser, chrome_port
     demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
@@ -459,8 +455,11 @@ def chrome_manager():
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
 
     # TODO: should remove it?
-    if not chrome_options:
+    if chrome_options:
+        chrome_options = ast.literal_eval(chrome_options)
+    else:
         chrome_options = 'None'
+
 
     if instance_name:
         instance_name = instance_name[:-36]  # remove the guid from the instance_name
@@ -523,7 +522,7 @@ def chrome_manager():
         chrome_port = instance_name_to_port.get(instance_name)
         browser = is_chrome_running_locally(chrome_port)
         terminate_chrome(browser)
-        delete_row_with_old_chrome_configurations_from_info_file(edited_info, chrome_port, instance_name)
+        # delete_row_with_old_chrome_configurations_from_info_file(edited_info, chrome_port, instance_name)
         return generate_new_chrome_instance(instance_name, chrome_options)
     elif (instance_name in instances_name and (
         (chrome_options in chromes_options) or (str(chrome_options) in chromes_options))) and (
