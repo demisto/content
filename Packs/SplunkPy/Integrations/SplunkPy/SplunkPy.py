@@ -2919,8 +2919,8 @@ def fetch_notable_event_command(service: client.Service,
     if not notable:
         return CommandResults(readable_output="A notable event with the provided ID was not found within the provided timeframe.")
 
-    if ENABLED_ENRICHMENTS:
-        run_enrichment_mechanism(service, get_integration_context(), mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+    if ENABLED_ENRICHMENTS: pass
+        # TODO - 'run_enrichment_mechanism' is not to be used, since it fetches all unfetched incidents once again.
     else:
         incident = notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
         demisto.incidents([incident])
