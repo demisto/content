@@ -12,12 +12,12 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Bot Access Token | The Bot Access Token to use for connection | True |
-    | Personal Access Token | The Personal Access Token to use for connection | True |
+    | Bot Access Token | The Bot Access Token to use for connection. | True |
+    | Personal Access Token | The Personal Access Token to use for connection. | True |
     | Team Name |  | True |
     | Default Notifications Channel |  | False |
     | Enable Incident Mirroring |  | False |
-    | Allow external users to create incidents via DM |  | False |
+    | Allow external users to create incidents via DM. |  | False |
     | Long running instance. Required for investigation mirroring and direct messages. |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -32,7 +32,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### mattermost-get-team
 
 ***
-Gets a team details.
+Gets a team's details.
 
 #### Base Command
 
@@ -115,7 +115,7 @@ Lists channels.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team | The name of the team to list channels from. Default is the Team Name in the integration configuration. | Optional | 
-| include_private_channels | Include private channels or not. Default is false. Possible values are: true, false. | Optional | 
+| include_private_channels | Whether to include private channels. Default is false. Possible values are: true, false. | Optional | 
 | page | The page number to retrieve. Default value is 0. | Optional | 
 | page_size | The size of the page to retrieve. Default value is 50. | Optional | 
 | limit | How many results to retrieve. Will override the page and page_size arguments if given. | Optional | 
@@ -133,7 +133,7 @@ Lists channels.
 | Mattermost.Channel.description | String | The description of the channel. | 
 | Mattermost.Channel.header | String | The header of the channel. | 
 | Mattermost.Channel.purpose | String | The purpose of the channel. | 
-| Mattermost.Channel.last_post_at | Unknown | The last post of the channel. | 
+| Mattermost.Channel.last_post_at | Unknown | When was the last post to the channel made. | 
 | Mattermost.Channel.total_msg_count | Unknown | The total massage count of the channel. | 
 | Mattermost.Channel.extra_update_at | Unknown | When was the channel updated. | 
 | Mattermost.Channel.creator_id | String | The creator ID of the channel. | 
@@ -220,7 +220,7 @@ Creates a channel.
 | --- | --- | --- |
 | display_name | The display name of the channel to create. | Required | 
 | name | The name of the channel to create. | Required | 
-| type | The type of the channel to create. Default value is Public. Possible values are: Public, Private. | Optional | 
+| type | The type of the channel to create. Default value is public. Possible values are: public, private. Default is public. | Optional | 
 | purpose | The purpose of the channel to create. | Optional | 
 | header | The header of the channel to create. | Optional | 
 | team | The team name of the channel to create. Default is the Team Name in the configuration. | Optional | 
@@ -238,7 +238,7 @@ Creates a channel.
 | Mattermost.Channel.description | String | The description of the channel. | 
 | Mattermost.Channel.header | String | The header of the channel. | 
 | Mattermost.Channel.purpose | String | The purpose of the channel. | 
-| Mattermost.Channel.last_post_at | Unknown | The last post of the channel. | 
+| Mattermost.Channel.last_post_at | Unknown | When was the last post to the channel made. | 
 | Mattermost.Channel.total_msg_count | Unknown | The total massage count of the channel. | 
 | Mattermost.Channel.extra_update_at | Unknown | When was the channel updated. | 
 | Mattermost.Channel.creator_id | String | The creator ID of the channel. | 
@@ -335,10 +335,10 @@ Lists users.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_name | The name of the team to filter users by. | Optional | 
-| channel_name | The name of the channel to filters users by. If mentioned, a team name must be mentioned as well. | Optional | 
-| page | The page number to retrieve. Should be provided with the page_size argument. | Optional | 
-| page_size | The size of the page to retrieve. Should be provided with the page argument. | Optional | 
-| limit | How many results to retrieve. Default value is 50. If provided, overrides the page and page_size arguments. | Optional | 
+| channel | The name of the channel to filters users by. If mentioned, a team name must be mentioned as well. | Optional | 
+| page | The page number to retrieve. Should be provided with the page_size argument. Default value is 0. | Optional | 
+| page_size | The size of the page to retrieve. Should be provided with the page argument. Default value is 50. | Optional | 
+| limit | How many results to retrieve. If provided, overrides the page and page_size arguments. | Optional | 
 
 #### Context Output
 
@@ -349,8 +349,8 @@ Lists users.
 | Mattermost.User.update_at | Unknown | When was the user updated. | 
 | Mattermost.User.delete_at | Unknown | When was the user deleted. | 
 | Mattermost.User.username | String | The username of the user. | 
-| Mattermost.User.auth_data | String | The auth data of the user. | 
-| Mattermost.User.auth_service | String | The auth service of the user. | 
+| Mattermost.User.auth_data | String | The authorization data of the user. | 
+| Mattermost.User.auth_service | String | The authorization service of the user. | 
 | Mattermost.User.email | String | The email of the user. | 
 | Mattermost.User.nickname | String | The nickname of the user. | 
 | Mattermost.User.first_name | Unknown | The first name of the user. | 
@@ -471,15 +471,15 @@ Send a message using a chatbot app.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message | The message to send. | Required | 
-| channel | The channel name to send the notification to. Default value is the channel config parameter. | Optional | 
+| channel | The channel name to send the notification to. Default value is the channel configuration parameter. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
 | to | The username or email of the user to send the file to. | Optional | 
-| ignoreAddURL | Adds the warroom link to the message. Possible values are: true, false. | Optional | 
+| ignoreAddURL | Adds the war room link to the message. Possible values are: true, false. | Optional | 
+| mattermost_ask | The message as a JSON for asking questions to the user. Default value is false. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### mattermost-close-channel
 
 ***
@@ -499,7 +499,6 @@ Closes a channel.
 #### Context Output
 
 There is no context output for this command.
-
 ### close-channel
 
 ***
@@ -519,7 +518,6 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 #### Context Output
 
 There is no context output for this command.
-
 ### mirror-investigation
 
 ***
@@ -536,7 +534,9 @@ Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
 | type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
 | autoclose | Whether the channel is auto-closed when an investigation is closed. Possible values are: true, false. Default is true. | Optional | 
 | direction | The mirroring direction. Possible values are: Both, FromDemisto, ToDemisto. Default is Both. | Optional | 
-| channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+| channel | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+| kickAdmin | Whether to remove the admin from the newly created channel. Default value is false. Possible values are: true, false. Default is false. | Optional | 
+| mirrorTo | Mirrors the investigation to a group (private channel) or a public channel. Default is group. Possible values are: group, channel. Default is group. | Optional | 
 
 #### Context Output
 
@@ -561,7 +561,6 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 #### Context Output
 
 There is no context output for this command.
-
 ### mattermost-mirror-investigation
 
 ***
@@ -578,7 +577,9 @@ Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
 | type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
 | autoclose | Whether the channel is auto-closed when an investigation is closed. Possible values are: true, false. Default is true. | Optional | 
 | direction | The mirroring direction. Possible values are: Both, FromDemisto, ToDemisto. Default is Both. | Optional | 
-| channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+| channel | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+| kickAdmin | Whether to remove the admin from the newly created channel. Default value is false. Possible values are: true, false. Default is false. | Optional | 
+| mirrorTo | Mirrors the investigation to a group (private channel) or a public channel. Default is group. Possible values are: group, channel. Default is group. | Optional | 
 
 #### Context Output
 
