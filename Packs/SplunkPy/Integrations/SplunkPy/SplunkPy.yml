@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy-Dev
+  id: SplunkPy
   version: -1
 sectionOrder:
 - Connect

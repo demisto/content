@@ -394,7 +394,6 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     notables = []
     incident_ids_to_add = []
     num_of_dropped = 0
-    human_readable = ''
     for item in reader:
         if handle_message(item):
             if 'Error' in str(item.message) or 'error' in str(item.message):
@@ -1412,7 +1411,7 @@ def get_remote_data_command(service: client.Service, args: dict,
         status_label = updated_notable['status_label']
 
         if status_label == "Closed" or (status_label in close_extra_labels) \
-            or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
+                or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
             demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
             entries.append({
                 'Type': EntryType.NOTE,
@@ -2920,10 +2919,10 @@ def fetch_notable_event_command(service: client.Service,
     if not notable:
         return CommandResults(readable_output="A notable event with the provided ID was not found within the provided timeframe.")
 
-    incident = notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     if ENABLED_ENRICHMENTS:
-        run_enrichment_mechanism(service, get_integration_context(), incident, comment_tag_to_splunk, comment_tag_from_splunk)
+        run_enrichment_mechanism(service, get_integration_context(), mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     else:
+        incident = notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
         demisto.incidents([incident])
 
     return CommandResults(readable_output=tableToMarkdown(name=f'Notable {notable.id}', t=notable.data))
