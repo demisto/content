@@ -1,7 +1,3 @@
-import os
-
-from requests import ConnectTimeout
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import hashlib
@@ -354,8 +350,9 @@ def build_fetch_query(params):
 
 
 def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str,
-                   cache_object: "Cache" = None, enrich_notables=False, **kwargs):
+                   cache_object: "Cache" = None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
+    params = demisto.params()
 
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
@@ -2086,7 +2083,7 @@ def requests_handler(url, message, **kwargs):
             url,
             data=data,
             headers=headers,
-            verify=False,
+            verify=VERIFY_CERTIFICATE,
             **kwargs
         )
     except requests.exceptions.HTTPError as e:
@@ -2535,49 +2532,49 @@ def splunk_parse_raw_command(args: dict):
     ))
 
 
-# def test_module(service: client.Service, params: dict) -> None:
-#     try:
-#         # validate connection
-#         service.info()
-#     except AuthenticationError:
-#         return_error('Authentication error, please validate your credentials.')
-#
-#     # validate fetch
-#     if params.get('isFetch'):
-#         t = datetime.utcnow() - timedelta(hours=1)
-#         time = t.strftime(SPLUNK_TIME_FORMAT)
-#         kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON}
-#         query = params['fetchQuery']
-#         try:
-#             if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
-#                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
-#                              'timezone of the Splunk server being used in the integration configuration.')
-#
-#             for item in results.JSONResultsReader(service.jobs.oneshot(query, **kwargs)):
-#                 if isinstance(item, results.Message):
-#                     continue
-#
-#                 if EVENT_ID not in item:
-#                     if MIRROR_DIRECTION.get(params.get('mirror_direction', '')):
-#                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
-#                     if ENABLED_ENRICHMENTS:
-#                         return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
-#                                      'one must use a fetch query of the following format: search `notable` .......\n'
-#                                      'Please re-edit the fetchQuery parameter in the integration configuration, reset '
-#                                      'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
-#                                      'run the fetch again.')
-#
-#         except HTTPError as error:
-#             return_error(str(error))
-#     if params.get('hec_url'):
-#         headers = {
-#             'Content-Type': 'application/json'
-#         }
-#         try:
-#             requests.get(params.get('hec_url', '') + '/services/collector/health', headers=headers,
-#                          verify=VERIFY_CERTIFICATE)
-#         except Exception as e:
-#             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
+def test_module(service: client.Service, params: dict) -> None:
+    try:
+        # validate connection
+        service.info()
+    except AuthenticationError:
+        return_error('Authentication error, please validate your credentials.')
+
+    # validate fetch
+    if params.get('isFetch'):
+        t = datetime.utcnow() - timedelta(hours=1)
+        time = t.strftime(SPLUNK_TIME_FORMAT)
+        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON}
+        query = params['fetchQuery']
+        try:
+            if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
+                return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
+                             'timezone of the Splunk server being used in the integration configuration.')
+
+            for item in results.JSONResultsReader(service.jobs.oneshot(query, **kwargs)):
+                if isinstance(item, results.Message):
+                    continue
+
+                if EVENT_ID not in item:
+                    if MIRROR_DIRECTION.get(params.get('mirror_direction', '')):
+                        return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
+                    if ENABLED_ENRICHMENTS:
+                        return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
+                                     'one must use a fetch query of the following format: search `notable` .......\n'
+                                     'Please re-edit the fetchQuery parameter in the integration configuration, reset '
+                                     'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
+                                     'run the fetch again.')
+
+        except HTTPError as error:
+            return_error(str(error))
+    if params.get('hec_url'):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        try:
+            requests.get(params.get('hec_url', '') + '/services/collector/health', headers=headers,
+                         verify=VERIFY_CERTIFICATE)
+        except Exception as e:
+            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):
@@ -2936,16 +2933,6 @@ def fetch_notable_event_command(service: client.Service,
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-    command = 'splunk-notable-event-fetch'
-    params.update({
-        'host': os.getenv('SPLUNKPY_HOST'),
-        'port': os.getenv('SPLUNKPY_PORT'),
-        'authentication': {
-            'identifier': os.getenv('SPLUNKPY_AUTH_IDENTIFIER'),
-            'password': os.getenv('SPLUNKPY_AUTH_PASSWORD')
-        },
-        'unsecure': True
-    })
     args = demisto.args()
 
     if command == 'splunk-parse-raw':
@@ -2988,7 +2975,7 @@ def main():  # pragma: no cover
                                params.get('xsoar_user_field'), params.get('splunk_user_field'))
 
     if command == 'test-module':
-        # test_module(service, params)
+        test_module(service, params)
         return_results('ok')
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
@@ -3062,6 +3049,5 @@ def main():  # pragma: no cover
     else:
         raise NotImplementedError(f'Command not implemented: {command}')
 
-# if __name__ in ['__main__', '__builtin__', 'builtins']:
-if __name__ == '__main__':
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
