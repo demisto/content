@@ -1993,9 +1993,7 @@ class MsClient:
 
     def download_file(self, url_link):
         try:
-            demisto.info(f"{url_link=}")
             response = requests.get(url=url_link, verify=self.ms_client.verify, timeout=300)
-            demisto.info(f"{response=}")
         except Exception as e:
             raise Exception(f'Could not download file. {url_link=}. error: {str(e)}')
         return response
@@ -2992,7 +2990,6 @@ def download_file_after_successful_status(client, res):
 
     # download link, create file result. File comes back as compressed gz file.
     f_data = client.download_file(file_uri)
-    demisto.info(f"{f_data.content=}")
     md_results = {
         'Machine Action Id': res.get('id'),
         'MachineId': res.get('machineId'),
