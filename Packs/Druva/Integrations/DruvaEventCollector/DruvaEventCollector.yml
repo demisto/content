@@ -23,7 +23,7 @@ configuration:
   name: proxy
   section: Connect
   type: 8
-description: This is the Druva event collector integration for Cortex XSIAM.
+description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 display: Druva Event Collector
 name: DruvaEventCollector
 supportlevelheader: xsoar
