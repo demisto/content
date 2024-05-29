@@ -147,14 +147,14 @@ RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
                                                              build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
 
+
 class CoreClient(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
-    
-    def _http_request(self, method, url_suffix='', full_url=None,  headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                       error_handler=None, with_metrics=False, resp_type='json'):
         '''
@@ -206,7 +206,7 @@ class CoreClient(BaseClient):
                                             url_suffix=url_suffix,
                                             full_url=full_url,
                                             headers=headers,
-                                            json_data=json_data,params=params, data=data,
+                                            json_data=json_data, params=params, data=data,
                                             timeout=timeout,
                                             raise_on_status=raise_on_status,
                                             ok_codes=ok_codes,
@@ -218,16 +218,15 @@ class CoreClient(BaseClient):
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
         response = demisto._apiCall(
-           method=method,
-           path=address,
-           data=data,
-           headers=self._headers,
-           timeout=timeout
+            method=method,
+            path=address,
+            data=data,
+            headers=self._headers,
+            timeout=timeout
         )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         return json.loads(response['data'])
-
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
