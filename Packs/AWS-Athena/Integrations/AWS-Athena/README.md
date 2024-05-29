@@ -18,8 +18,9 @@ Amazon Web Services Athena.
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+   
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
