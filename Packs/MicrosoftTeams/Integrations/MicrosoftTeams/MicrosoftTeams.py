@@ -2150,6 +2150,7 @@ def mirror_investigation():
     team_name: str = demisto.args().get('team', '')
     if not team_name:
         team_name = demisto.params().get('team', '')
+
     team_aad_id: str = get_team_aad_id(team_name)
     mirrored_channels = []
     teams: list = json.loads(integration_context.get('teams', '[]'))
@@ -2198,6 +2199,7 @@ def mirror_investigation():
             'channel_name': channel_name
         })
         demisto.results(f'Investigation mirrored successfully in channel {channel_name}.')
+
     team['mirrored_channels'] = mirrored_channels
     integration_context['teams'] = json.dumps(teams)
     set_integration_context(integration_context)

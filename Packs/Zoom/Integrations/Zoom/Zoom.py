@@ -2222,12 +2222,14 @@ def send_notification(client, **args):
         channel_id = channel_id.lower() + '@conference.xmpp.zoom.us'
 
     if zoom_ask:
+
         parsed_message = json.loads(args.get("message", ''))
         entitlement = parsed_message.get('entitlement')
         message = parsed_message.get('blocks')
         reply = parsed_message.get('reply')
         expiry = parsed_message.get('expiry')
         default_response = parsed_message.get('default_response')
+
     else:
         message = {"head": {"type": "message", "text": args.get("message", "")}}
     if channel:  # if channel name provided

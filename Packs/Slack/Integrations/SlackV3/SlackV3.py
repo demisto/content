@@ -896,6 +896,7 @@ def check_for_unanswered_questions():
                     _ = answer_question(question.get('default_response'), question, email='')
                     updated_questions.append(question)
                     continue
+
             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
             # since the last polling time. if not, continue to the next question until it has.
             if question.get('last_poll_time'):
@@ -908,6 +909,7 @@ def check_for_unanswered_questions():
                     continue
             question['last_poll_time'] = now_string
             updated_questions.append(question)
+
         if updated_questions:
             set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
