@@ -1228,7 +1228,7 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
 
 
 def run_enrichment_mechanism(service: client.Service, integration_context, mapper: UserMappingObject,
-                             comment_tag_to_splunk, comment_tag_from_splunk):
+                             comment_tag_to_splunk: str, comment_tag_from_splunk: str):
     """ Execute the enriching fetch mechanism
     1. We first handle submitted notables that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched notables, we fetch new notables
@@ -1239,6 +1239,9 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
     Args:
         service (splunklib.client.Service): Splunk service object.
         integration_context (dict): The integration context
+        mapper (UserMappingObject): User mapping object
+        comment_tag_to_splunk (str)
+        comment_tag_from_splunk (str)
     """
     incidents: list = []
     cache_object = Cache.load_from_integration_context(integration_context)
@@ -2865,8 +2868,7 @@ def handle_message(item: results.Message | dict) -> bool:
 def get_splunk_notable_by_id(service: client.Service,
                              event_id: str,
                              earliest_time: str,
-                             latest_time: str,
-                             timeout: str
+                             latest_time: str
                              ) -> Notable | None:
     """
         Retrieve a notable event from Splunk by its event ID.
@@ -2888,11 +2890,12 @@ def get_splunk_notable_by_id(service: client.Service,
         kwargs_oneshot[EARLIEST_TIME] = earliest_time
     if latest_time:
         kwargs_oneshot[LATEST_TIME] = latest_time
-    if timeout:
-        kwargs_oneshot[TIMEOUT] = timeout
 
+    demisto.info(f'[SplunkPy] get_splunk_notable_by_id Executing oneshot search query: {search_query}'
+                 f' with keyword arguments: {str(kwargs_oneshot)}')
     result_stream = service.jobs.oneshot(search_query, **kwargs_oneshot)
     result = list(results.JSONResultsReader(result_stream))
+    demisto.info(f'[SplunkPy] get_splunk_notable_by_id Result: {str(result)}')
     # As only one notable event is expected (or none), the `result` list contains a single entry (or none).
     return Notable(result.pop()) if result else None
 
@@ -2906,27 +2909,23 @@ def fetch_notable_event_command(service: client.Service,
     if not params.get('isFetch'):
         raise DemistoException("'Fetch Incidents' is not enabled. Please enable it within SplunkPy integration instance "
                                "configuration in order to be able to manually fetch incidents.")
-    # Intentionally not providing a default value, let it throw an error if an `event_id` was not provided.
-    event_id = args.get(EVENT_ID)
+
+    if not (event_id := args.get(EVENT_ID)):
+        raise DemistoException("Argument 'event_id' can not be empty.")
+
     notable = get_splunk_notable_by_id(service=service,
                                        event_id=event_id,
                                        earliest_time=args.get(EARLIEST_TIME, ''),
-                                       latest_time=args.get(LATEST_TIME, ''),
-                                       timeout=args.get(TIMEOUT, ''))
+                                       latest_time=args.get(LATEST_TIME, ''))
     if not notable:
         return CommandResults(readable_output="A notable event with the provided ID was not found within the provided timeframe.")
 
     incident = notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
-    demisto.incidents([incident])
+    if ENABLED_ENRICHMENTS:
+        run_enrichment_mechanism(service, get_integration_context(), incident, comment_tag_to_splunk, comment_tag_from_splunk)
+    else:
+        demisto.incidents([incident])
 
-    # if ENABLED_ENRICHMENTS:
-    #     # Submit notable for enrichment.
-    #     integration_context = get_integration_context()
-    #     cache = Cache.load_from_integration_context(integration_context)
-    #     cache.not_yet_submitted_notables.append(notable)
-    #     cache.dump_to_integration_context()
-    #
-    # # Otherwise - put it into integration context 'Cache' object
     return CommandResults(readable_output=tableToMarkdown(name=f'Notable {notable.id}', t=notable.data))
 
 
@@ -3048,6 +3047,7 @@ def main():  # pragma: no cover
 
     else:
         raise NotImplementedError(f'Command not implemented: {command}')
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

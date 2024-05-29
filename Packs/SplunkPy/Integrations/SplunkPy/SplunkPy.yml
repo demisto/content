@@ -686,9 +686,6 @@ script:
     - name: latest_time
       description: 'Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago).'
       required: false
-    - name: timeout
-      description: Maximum duration to wait for the search to complete in seconds (e.g. '30')
-      required: false
     - name: enabled_enrichments
       description: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
       options:
