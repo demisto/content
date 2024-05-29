@@ -41,7 +41,7 @@ script:
     - description: A string received in a previous run, marking the point in time from which we want to fetch.
       name: tracker
       required: false
-    description: Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from the point in time we want to fetch.
+    description: Gets events from Druva API in one batch (max 500). If tracker is given, only its successive events will be fetched.
     execution: false
     name: druva-get-events
   dockerimage: demisto/python3:3.10.14.92207
