@@ -297,9 +297,10 @@ def write_info_file(filename, contents):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
-def write_into_tsv_file(filename, contents):
-    demisto.info(f"Saving File '{filename}' with {contents}.")
-    with open(filename, 'a') as file:
+def write_into_tsv_file(filepath, contents, overwrite=False):
+    demisto.info(f"Saving File '{filepath}' with {contents}.")
+    mode = 'w' if overwrite else 'a'
+    with open(filepath, mode) as file:
         tsv_writer = csv.writer(file, delimiter='\t')
         tsv_writer.writerow(contents.split('\t'))
 
@@ -389,6 +390,18 @@ def terminate_chrome(browser):
     demisto.debug('terminate_chrome, Finish')
 
 
+def delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_name):
+    index_to_delete = -1
+    for index, port_from_info, instance_name_from_info, chrome_options_from_info in enumerate(
+        zip(*[line.strip().split('\t') for line in info])):
+        if port_from_info == chrome_port and instance_name_from_info == instance_name:
+            index_to_delete = index
+
+    if index_to_delete >= 0:
+        del info[index_to_delete]
+        write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, info, overwrite=True)
+
+
 def get_chrome_port():
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
@@ -449,7 +462,9 @@ def chrome_manager():
     if not chrome_options:
         chrome_options = 'None'
 
-    instance_name = instance_name[:-36]  # remove the guid from the instance_name
+    if instance_name:
+        instance_name = instance_name[:-36]  # remove the guid from the instance_name
+
     info = read_info_file(CHROME_INSTANCES_FILE_PATH)
 
     port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port = \
@@ -508,6 +523,7 @@ def chrome_manager():
         chrome_port = instance_name_to_port.get(instance_name)
         browser = is_chrome_running_locally(chrome_port)
         terminate_chrome(browser)
+        delete_row_with_old_chrome_configurations_from_info_file(edited_info, chrome_port, instance_name)
         return generate_new_chrome_instance(instance_name, chrome_options)
     elif (instance_name in instances_name and (
         (chrome_options in chromes_options) or (str(chrome_options) in chromes_options))) and (
