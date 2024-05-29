@@ -38,8 +38,7 @@ class Client(BaseClient):
             raise DemistoException(f'Error in test-module: {informative_message}') from e
 
         access_token = response_json['access_token']
-        headers = {'Authorization': f'Bearer {access_token}'}
-        self._headers = headers
+        self._headers = {'Authorization': f'Bearer {access_token}'}
 
     def search_events(self, tracker: Optional[str] = None) -> dict:
         """
