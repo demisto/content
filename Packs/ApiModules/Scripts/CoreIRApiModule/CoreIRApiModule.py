@@ -145,7 +145,7 @@ ALERT_EVENT_AZURE_FIELDS = {
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
-                                                                     build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
+                                                            build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
 
 class CoreClient(BaseClient):
 
