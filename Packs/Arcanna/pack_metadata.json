@@ -2,13 +2,14 @@
     "name": "ArcannaAI",
     "description": "Siscale Arcanna.Ai Cognitive automation platform that provides AI assistance to IT & Cybersecurity teams",
     "support": "partner",
-    "currentVersion": "1.1.10",
+    "currentVersion": "1.2.10",
     "author": "Siscale Engineering",
     "created": "2021-06-16T20:46:43Z",
     "url": "https://www.arcanna.ai/contact",
     "email": "dev@siscale.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Decision Intelligence"
     ],
     "tags": [],
     "useCases": [],
@@ -17,13 +18,18 @@
         "Arcanna",
         "RPA",
         "ML",
-        "Alert Triage"
+        "Alert Triage",
+        "Decision intelligence",
+        "Decision",
+        "Intelligence"
     ],
     "devEmail": [
-        "mcraciunescu@siscale.com"
+        "mcraciunescu@siscale.com",
+        "bperian@siscale.com"
     ],
     "githubUser": [
-        "marian-craciunescu"
+        "marian-craciunescu",
+        "bperian"
     ],
     "marketplaces": [
         "xsoar",
