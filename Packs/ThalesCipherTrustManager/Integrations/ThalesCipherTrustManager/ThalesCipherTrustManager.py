@@ -163,6 +163,33 @@ class CertificateRevokeReason(enum.Enum):
     PRIVILEGE_WITHDRAWN = 'privilegeWithdrawn'
     AA_COMPROMISE = 'aACompromise'
 
+''' DESCRIPTIONS '''
+GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
+GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
+GROUP_DELETE_DESCRIPTION = 'Deletes a group given the group name.'
+GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group name.'
+USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
+USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
+USERS_LIST_DESCRIPTION = 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
+USER_CREATE_DESCRIPTION = "Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
+USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.'
+USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
+USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
+LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
+LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
+LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
+LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
+LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
+LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
+CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
+CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
+CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
+CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
+CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
+EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
+EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
+EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
+EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certificates. The results can be filtered, using the query parameters.'
 
 ''' YML METADATA '''
 PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='Page to return.'),
@@ -340,7 +367,7 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description="The
                                                 'the users.'),
 
                       ]
-USER_DELETE_INPUTS = [InputArgument(name=CommandArguments.USER_ID, required=True), ]
+USER_DELETE_INPUTS = [InputArgument(name=CommandArguments.USER_ID, required=True, description='The user_id of the user'), ]
 USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True),
                                InputArgument(name=CommandArguments.PASSWORD, required=True),
                                InputArgument(name=CommandArguments.USERNAME, required=True,
@@ -478,33 +505,7 @@ EXTERNAL_CERTIFICATE_LIST_INPUTS = [
                                        InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
                                    ] + PAGINATION_INPUTS
 
-''' DESCRIPTIONS '''
-GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
-GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
-GROUP_DELETE_DESCRIPTION = 'Deletes a group given the group name.'
-GROUP_UPDATE_DESCRIPTION = 'Update the properties of a group given the group name.'
-USER_TO_GROUP_ADD_DESCRIPTION = 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
-USER_TO_GROUP_REMOVE_DESCRIPTION = 'Removes a user from a group.'
-USERS_LIST_DESCRIPTION = 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
-USER_CREATE_DESCRIPTION = "Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
-USER_UPDATE_DESCRIPTION = 'Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.'
-USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to."
-USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
-LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling local-cas/{id}/self-sign or signed by another CA and installed by calling local-cas/{id}/install. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
-LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the query parameters."
-LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
-LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
-LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
-LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
-CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
-CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
-CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
-CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
-CERTIFICATE_RESUME_DESCRIPTION = 'Certificate can be resumed only if it is revoked with reason certificatehold.'
-EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION = 'Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.'
-EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
-EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
-EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certificates. The results can be filtered, using the query parameters.'
+
 
 ''' OUTPUTS '''
 

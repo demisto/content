@@ -270,7 +270,9 @@ USER_UPDATE_TEST_ARGS = [
     }
 
 ]
-USER_DELETE_TEST_ARGS = []
+USER_DELETE_TEST_ARGS = [
+    {CommandArguments.USER_ID: 'user1'},
+]
 USER_PASSWORD_CHANGE_TEST_ARGS = []
 LOCAL_CA_CREATE_TEST_ARGS = []
 LOCAL_CA_LIST_TEST_ARGS = []
@@ -547,7 +549,7 @@ def test_user_update_command(mock_update_user, args):
 @patch(MOCKER_HTTP_METHOD)
 def test_user_delete_command(mock_delete_user, args):
     from ThalesCipherTrustManager import CipherTrustClient, user_delete_command
-    mock_delete_user.return_value = util_load_json('test_data/mock_user_delete_response.json')
+    mock_delete_user.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
