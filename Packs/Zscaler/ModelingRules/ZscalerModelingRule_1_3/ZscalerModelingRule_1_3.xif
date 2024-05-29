@@ -17,7 +17,6 @@ alter
 	xdm.network.http.url_category = cs2,
 	xdm.network.protocol_layers = arraycreate(coalesce(app, "")),
 	xdm.observer.action = act,
-	xdm.observer.name = _reporting_device_name,
 	xdm.session_context_id = externalId,
 	xdm.source.host.hostname = devicehostname,
 	xdm.source.host.ipv4_addresses = arraycreate(coalesce(src, "")),
@@ -167,9 +166,12 @@ filter sourcetype = "zscalernss-web"
 	client_source_port = to_integer(_raw_log -> clt_sport), // The client source port
 	client_tls_version = _raw_log -> clienttlsversion, // The TLS version used for communication between the client and Zscaler
 	cloud_application_name = _raw_log -> appname, // The name of the cloud application
+	device_os_type = _raw_log -> deviceostype, // The OS type of the device
+	device_os_version = _raw_log -> deviceosversion, // The OS version the device uses
 	dlp_incident_id = to_string(_raw_log -> dlpidentifier), // The unique identifier of the DLP incident
 	dlp_rule_name = _raw_log -> dlprulename, // The name of the DLP rule applied to the transaction. Applies only to Allow rules, not Block. 
-	event_id = to_string(coalesce(_raw_log -> event_id, _raw_log -> recordid)),
+	event_id = to_string(coalesce(_raw_log -> event_id, _raw_log -> recordid)), // The unique record identifier for each log
+	external_device_id = _raw_log -> external_devid, // The external device ID that associates a user’s device with the mobile device management (MDM) solution
 	file_scannable_type = _raw_log -> filetype, // The type of file downloaded during the transaction
 	file_unscannable_type = _raw_log -> unscannabletype, // The unscannable file type: Encrypted or password-protected (e.g., GZIP, PDF) Unscannable (e.g., corrupt archive) Undetectable (unable to determine the file type, based on multiple methods)
 	gateway_location_name = replace(_raw_log -> location, "%20", " "), // The gateway location or sub-location of the source.
@@ -210,7 +212,9 @@ filter sourcetype = "zscalernss-web"
     server_ipv4 = if(server_ip ~= "\.",  server_ip),
     server_ipv6 = if(server_ip ~= ":",  server_ip),
 	url_category = if(url_super_category != "User-defined", url_super_category, url_sub_category),
-	user_domain = arrayindex(regextract(user, "@(.+)$"), 0)
+	user_domain = arrayindex(regextract(user, "@(.+)$"), 0),
+	device_os = arraystring(arraycreate(device_os_type, device_os_version), " "),
+	os_upper = uppercase(device_os_type)
 | call zscaler_nss_map_url_category // map url category 
 | alter // XDM mapping 
 	xdm.alert.original_alert_id = dlp_incident_id,
@@ -218,6 +222,7 @@ filter sourcetype = "zscalernss-web"
 	xdm.alert.severity = threat_severity,
 	xdm.alert.subcategory = if(threat_category != "None", threat_category),
 	xdm.event.id = event_id,
+	xdm.event.outcome = if(policy_action ~= "(?i)Allowed", XDM_CONST.OUTCOME_SUCCESS, policy_action ~= "(?i)Blocked", XDM_CONST.OUTCOME_FAILED, policy_action),
 	xdm.event.outcome_reason = policy_reason,
 	xdm.event.type = sourcetype,
 	xdm.intermediate.host.hostname = gateway_location_name,
@@ -236,6 +241,11 @@ filter sourcetype = "zscalernss-web"
 	xdm.network.tls.protocol_version = arraystring(arraydistinct(arraycreate(client_tls_version, server_tls_version)), ","),
 	xdm.observer.action = policy_action,
 	xdm.observer.name = gateway_location_name,
+	xdm.source.host.device_id = external_device_id,
+	xdm.source.ipv4 = client_ipv4,
+	xdm.source.ipv6 = client_ipv6,
+	xdm.source.host.os = device_os,
+	xdm.source.host.os_family = if(os_upper contains "WINDOWS", XDM_CONST.OS_FAMILY_WINDOWS, os_upper contains "MAC", XDM_CONST.OS_FAMILY_MACOS, os_upper contains "LINUX", XDM_CONST.OS_FAMILY_LINUX, os_upper contains "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, os_upper contains "IOS", XDM_CONST.OS_FAMILY_IOS, os_upper contains "UBUNTU", XDM_CONST.OS_FAMILY_UBUNTU, os_upper contains "DEBIAN", XDM_CONST.OS_FAMILY_DEBIAN, os_upper contains "FEDORA", XDM_CONST.OS_FAMILY_FEDORA, os_upper contains "CENTOS", XDM_CONST.OS_FAMILY_CENTOS, os_upper contains "CHROME", XDM_CONST.OS_FAMILY_CHROMEOS, os_upper contains "SOLARIS", XDM_CONST.OS_FAMILY_SOLARIS, os_upper contains "SCADA", XDM_CONST.OS_FAMILY_SCADA, os_upper),
 	xdm.source.host.hostname = client_device_hostname,
 	xdm.source.host.ipv4_addresses = arraydistinct(arraycreate(client_ipv4, client_public_ipv4)),
 	xdm.source.host.ipv4_public_addresses = arraycreate(client_public_ipv4),

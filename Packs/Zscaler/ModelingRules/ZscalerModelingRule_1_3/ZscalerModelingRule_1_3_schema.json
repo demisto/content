@@ -80,10 +80,6 @@
       "type": "string",
       "is_array": false
     },
-    "_reporting_device_name": {
-      "type": "string",
-      "is_array": false
-    },
     "requestClientApplication": {
       "type": "string",
       "is_array": false
