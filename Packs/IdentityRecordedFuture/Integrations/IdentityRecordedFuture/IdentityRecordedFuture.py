@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Recorded Future Identity Integration for Demisto."""
+
+"""Recorded Future Identity Integration for XSOAR."""
 from typing import Dict, Any, Union, Optional
 import requests
 import json
@@ -124,10 +125,12 @@ def main() -> None:
         demisto_params = demisto.params()
         base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("unsecure", False)
-        proxy = demisto_params.get("proxy", False)
-        api_token = demisto_params.get("credential", {}).get("password") or demisto_params.get("token")
+        handle_proxy()
+        api_token = demisto_params.get("credential", {}).get(
+            "password"
+        ) or demisto_params.get("token")
         if not api_token:
-            return_error('Please provide a valid API token')
+            return_error("Please provide a valid API token")
 
         # If user has not set password properties we will get empty string but client require empty list
         headers = {
@@ -139,7 +142,6 @@ def main() -> None:
             base_url=base_url,
             verify=verify_ssl,
             headers=headers,
-            proxy=proxy,
         )
         command = demisto.command()
         actions = Actions(client)

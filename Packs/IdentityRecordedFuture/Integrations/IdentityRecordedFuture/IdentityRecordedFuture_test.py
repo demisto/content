@@ -127,7 +127,9 @@ class RFClientTest(unittest.TestCase):
         error_message_res = {"message": "error"}
         mock_error_response = Mock()
         mock_error_response.json.return_value = error_message_res
-        mock_http_request.side_effect = DemistoException(message="", res=mock_error_response)
+        mock_http_request.side_effect = DemistoException(
+            message="", res=mock_error_response
+        )
         self.client._call(url_suffix=mock_url_suffix)
         return_error_mock.assert_called_once_with(**error_message_res)
 
@@ -137,8 +139,12 @@ class RFClientTest(unittest.TestCase):
 
         mock_url_suffix = "mock_url_suffix"
         mock_error_response = Mock()
-        mock_error_response.json.side_effect = json.JSONDecodeError("some not json error", "some", 3)
-        mock_http_request.side_effect = DemistoException(message="", res=mock_error_response)
+        mock_error_response.json.side_effect = json.JSONDecodeError(
+            "some not json error", "some", 3
+        )
+        mock_http_request.side_effect = DemistoException(
+            message="", res=mock_error_response
+        )
         with self.assertRaises(DemistoException):
             self.client._call(url_suffix=mock_url_suffix)
 
@@ -239,7 +245,12 @@ class MainTest(unittest.TestCase):
     @patch("IdentityRecordedFuture.demisto")
     @patch("IdentityRecordedFuture.Client")
     @patch("IdentityRecordedFuture.Actions")
-    def test_main_general(self, actions_mock: Mock, client_mock: Mock, mocked_demisto: Mock,):
+    def test_main_general(
+        self,
+        actions_mock: Mock,
+        client_mock: Mock,
+        mocked_demisto: Mock,
+    ):
         """Test main function is it runs correctly and calling general things"""
         main()
         client_mock.assert_called_once()

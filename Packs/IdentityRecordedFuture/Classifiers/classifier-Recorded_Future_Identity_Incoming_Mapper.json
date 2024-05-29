@@ -323,6 +323,5 @@
     "name": "Recorded Future Identity - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.10.0",
-    "toVersion": "99.99.99"
+    "fromVersion": "6.10.0"
 }

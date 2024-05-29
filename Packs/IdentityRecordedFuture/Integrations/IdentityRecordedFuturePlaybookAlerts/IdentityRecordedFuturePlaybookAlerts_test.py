@@ -7,8 +7,10 @@ def create_client():
     token = os.environ.get("RF_TOKEN")
     headers = {
         "X-RFToken": token,
-        "X-RF-User-Agent": f"IdentityRecordedFuturePlaybookAlerts.py/{__version__} (Linux-5.13.0-1031-aws-x86_64-with) "
-        "XSOAR/2.4 RFClient/2.4 (Cortex_XSOAR_6.5.0)",
+        "X-RF-User-Agent": (
+            f"IdentityRecordedFuturePlaybookAlerts.py/{__version__} (Linux-5.13.0-1031-aws-x86_64-with) "
+            "XSOAR/2.4 RFClient/2.4 (Cortex_XSOAR_6.5.0)"
+        ),
     }
 
     return Client(base_url=base_url, verify=verify_ssl, headers=headers, proxy=False)
@@ -16,6 +18,9 @@ def create_client():
 
 class TestRFClient:
     def test_whoami(self, mocker):
+        """
+        Test the `whoami` function to ensure it sends a GET request to the correct endpoint.
+        """
         client = create_client()
 
         mock_http_request = mocker.patch.object(client, "_http_request")
@@ -30,7 +35,7 @@ class TestRFClient:
 
     def test_call_with_kwargs(self, mocker):
         """
-        Test _call() with kwargs.
+        Test the `_call` method to ensure it correctly processes additional keyword arguments and sends a request with the expected parameters.
         """
 
         import os
@@ -73,7 +78,7 @@ class TestRFClient:
 
     def test_call_returns_response(self, mocker):
         """
-        Test _call() returns response.
+        Test that the `_call` method correctly returns the response from the HTTP request.
         """
 
         import os
@@ -102,7 +107,7 @@ class TestRFClient:
 
     def test_call_response_processing_return_error(self, mocker):
         """
-        Test _call() return_error response processing.
+        Test that the `_call` method correctly processes a return_error response.
         """
 
         import os
@@ -154,7 +159,7 @@ class TestRFClient:
 
     def test_call_response_processing_404(self, mocker):
         """
-        Test _call() response processing.
+        Test that the `_call` method correctly handles a 404 error response and returns the appropriate CommandResults.
         """
 
         import os
@@ -213,6 +218,9 @@ class TestRFClient:
         assert result.readable_output == "No results found."
 
     def test_fetch_incidents(self, mocker):
+        """
+        Test the `fetch_incidents` method to ensure it sends the correct request and processes the response as expected.
+        """
         import os
         import demistomock as demisto
 
@@ -254,6 +262,9 @@ class TestRFClient:
         assert response == mock_call_response
 
     def test_playbook_alert_search(self, mocker):
+        """
+        Test the `search_playbook_alerts` method to ensure it sends the correct request and processes the response as expected.
+        """
         import os
         import demistomock as demisto
 
@@ -283,6 +294,9 @@ class TestRFClient:
         assert response == mock_call_response
 
     def test_playbook_alert_details_multi_input(self, mocker):
+        """
+        Test the `details_playbook_alerts` method to ensure it correctly processes multiple input arguments.
+        """
         import os
         import demistomock as demisto
 
@@ -316,6 +330,9 @@ class TestRFClient:
         assert response == mock_call_response
 
     def test_playbook_alert_update_multi_input(self, mocker):
+        """
+        Test the `update_playbook_alerts` method to ensure it correctly processes multiple input arguments.
+        """
         import os
         import demistomock as demisto
 
@@ -346,6 +363,9 @@ class TestRFClient:
         assert response == mock_call_response
 
     def test_playbook_alert_search_multi_input(self, mocker):
+        """
+        Test the `search_playbook_alerts` method to ensure it correctly processes multiple input arguments.
+        """
         import os
         import demistomock as demisto
 
@@ -385,6 +405,9 @@ class TestRFClient:
         assert response == mock_call_response
 
     def test_playbook_alert_details(self, mocker):
+        """
+        Test the `details_playbook_alerts` method to ensure it sends the correct request and processes the response as expected.
+        """
         import os
         import demistomock as demisto
 
@@ -414,6 +437,9 @@ class TestRFClient:
         assert response == mock_call_response
 
     def test_playbook_alert_update(self, mocker):
+        """
+        Test the `update_playbook_alerts` method to ensure it sends the correct request and processes the response as expected.
+        """
         import os
         import demistomock as demisto
 
@@ -445,6 +471,9 @@ class TestRFClient:
 
 class TestActions:
     def test_init(self, mocker):
+        """
+        Test the initialization of the `Actions` class to ensure the client is correctly assigned.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         mock_client = mocker.Mock()
@@ -452,6 +481,9 @@ class TestActions:
         assert actions.client == mock_client
 
     def test_process_result_actions_404(self, mocker):
+        """
+        Test the `_process_result_actions` method to ensure it handles a CommandResults response correctly.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
         from CommonServerPython import CommandResults
 
@@ -465,6 +497,9 @@ class TestActions:
         assert result_actions == [response]
 
     def test_process_result_actions_response_is_not_dict(self, mocker):
+        """
+        Test the `_process_result_actions` method to ensure it returns None when the response is not a dictionary.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         mock_client = mocker.Mock()
@@ -478,6 +513,9 @@ class TestActions:
     def test_process_result_actions_no_or_empty_result_actions_in_response(
         self, mocker
     ):
+        """
+        Test the `_process_result_actions` method to ensure it returns None when there are no result actions in the response.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         mock_client = mocker.Mock()
@@ -502,6 +540,9 @@ class TestActions:
         assert result_actions is None
 
     def test_process_result_actions_command_results_only(self, mocker):
+        """
+        Test the `_process_result_actions` method to ensure it processes a response containing CommandResults correctly.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions, CommandResults
 
         mock_client = mocker.Mock()
@@ -536,6 +577,9 @@ class TestActions:
         assert r_a.outputs_key_field == "mock_outputs_key_field"
 
     def test_fetch_incidents_with_attachment(self, mocker):
+        """
+        Test the `fetch_incidents` method to ensure it correctly processes incidents with attachments.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
         import demistomock as demisto
         import json
@@ -596,6 +640,9 @@ class TestActions:
         mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
 
     def test_fetch_incidents_with_incidents_present(self, mocker):
+        """
+        Test the `fetch_incidents` method to ensure it correctly processes incidents when incidents are present in the response.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
         import demistomock as demisto
 
@@ -633,6 +680,9 @@ class TestActions:
         mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
 
     def test_playbook_alert_details_command_with_result_actions(self, mocker):
+        """
+        Test the `playbook_alert_details_command` method to ensure it correctly processes result actions.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         client = create_client()
@@ -664,6 +714,9 @@ class TestActions:
         assert result == mock_process_result_actions_return_value
 
     def test_playbook_alert_details_command_without_result_actions(self, mocker):
+        """
+        Test the `playbook_alert_details_command` method to ensure it handles the case when there are no result actions.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         client = create_client()
@@ -690,6 +743,9 @@ class TestActions:
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
     def test_playbook_alert_search_command_without_result_actions(self, mocker):
+        """
+        Test the `playbook_alert_search_command` method to ensure it handles the case when there are no result actions.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         client = create_client()
@@ -716,6 +772,9 @@ class TestActions:
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
     def test_playbook_alert_update_command(self, mocker):
+        """
+        Test the `playbook_alert_update_command` method to ensure it correctly processes result actions.
+        """
         from IdentityRecordedFuturePlaybookAlerts import Actions
 
         client = create_client()
@@ -746,6 +805,9 @@ class TestActions:
         assert result == mock_process_result_actions_return_value
 
     def test_test_module(self, mocker):
+        """
+        Test the `test-module` command to ensure it verifies the integration setup correctly.
+        """
         import IdentityRecordedFuturePlaybookAlerts
         import demistomock as demisto
         import platform
@@ -766,6 +828,9 @@ class TestActions:
         mocked_return_res.assert_called_with("ok")
 
     def test_test_module_with_boom(self, mocker):
+        """
+        Test the `test-module` command to ensure it handles exceptions and returns the appropriate error message.
+        """
         import IdentityRecordedFuturePlaybookAlerts
         import demistomock as demisto
         import platform

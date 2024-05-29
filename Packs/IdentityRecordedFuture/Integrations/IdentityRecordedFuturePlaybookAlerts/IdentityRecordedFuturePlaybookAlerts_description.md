@@ -7,20 +7,20 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 ---
 
 ## Configuration
-| Parameter                                    | Description                                                                                                                                                                 |
-|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Server URL                                   | The URL to the Recorded Future ConnectAPI.                                                                                                                                  |
-| API Token                                    | Valid API Token from Recorded Future.                                                                                                                                       |
-| Classifier                                   | Select "Recorded Future Identity Playbook Alert Classifier".                                                                                                                |
-| Mapper (Incoming)                            | Select "Recorded Future Identity Playbook Alert Mapper".                                                                                                                    |
-| Trust any certificate (not secure)           | -                                                                                                                                                                           |
-| Use system proxy settings                    | -                                                                                                                                                                           |
-| First incident fetch: Time range             | Limit incidents to include in the first fetch by time range. Input format: "NN hours" or "NN days". E.g., input "5 days" to fetch all incidents created in the last 5 days. |
-| Playbook Alerts: Fetched Categories          | Some listed Alert Categories may be unavailable due to limitations in the current Recorded Future subscription.                                                             |
-| Playbook Alerts: Fetched Statuses            | Choose what statuses that is included in the fetch (New, In Progress, Dismissed. Resolved)                                                                                  |
-| Playbook Alerts: Fetched Priorites Threshold | Choose the threshold of which priorites are fetched (Informational < Moderate < High)                                                                                       |
-| Maximum number of incidents per fetch        | Limits the number of returned incidents per fetch                                                                                                                           |
-| Incidents Fetch Interval                     | Choose the interval of polling for updated alerts                                                                                                                           |
+| Parameter                                     | Description                                                                                                                                                                 |
+|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Server URL                                    | The URL to the Recorded Future ConnectAPI.                                                                                                                                  |
+| API Token                                     | Valid API Token from Recorded Future.                                                                                                                                       |
+| Classifier                                    | Select "Recorded Future Identity Playbook Alert Classifier".                                                                                                                |
+| Mapper (Incoming)                             | Select "Recorded Future Identity Playbook Alert Mapper".                                                                                                                    |
+| Trust any certificate (not secure)            | -                                                                                                                                                                           |
+| Use system proxy settings                     | -                                                                                                                                                                           |
+| First incident fetch: Time range              | Limit incidents to include in the first fetch by time range. Input format: "NN hours" or "NN days". E.g., input "5 days" to fetch all incidents created in the last 5 days. |
+| Playbook Alerts: Fetched Categories           | Some listed Alert Categories may be unavailable due to limitations in the current Recorded Future subscription.                                                             |
+| Playbook Alerts: Fetched Statuses             | Choose what statuses that is included in the fetch (New, In Progress, Dismissed, Resolved).                                                                                 |
+| Playbook Alerts: Fetched Priorities Threshold | Choose the priority threshold to fetch alerts of the selected priority and higher (Informational < Moderate < High).                                                        |
+| Maximum number of incidents per fetch         | Limits the number of returned incidents per fetch                                                                                                                           |
+| Incidents Fetch Interval                      | Choose the interval of polling for updated alerts                                                                                                                           |
 ---
 
 ## Available Actions
@@ -32,4 +32,4 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 * Update action
   * Update the status of Playbook alerts in Recorded Future
 
-Copyright 2020-2023 Recorded Future, Inc.
+Copyright (C) 2020-2024 Recorded Future, Inc.

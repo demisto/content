@@ -4,9 +4,7 @@ commonfields:
 name: IdentityRecordedFuturePlaybookAlerts
 display: 'Recorded Future Identity - Playbook Alerts'
 category: Data Enrichment & Threat Intelligence
-defaultclassifier:
 defaultmapperin: Recorded Future Identity - Incoming Mapper
-image:
 description: 'Fetch & triage | Recorded Future Identity - Playbook Alerts.'
 configuration:
 - display: API URL (e.g., https://api.recordedfuture.com/gw/xsoar-identity/)
@@ -517,7 +515,7 @@ script:
       - account_remediated
       - other
     - name: remove_actions_taken
-      description: Remove 'actions taken' to all alerts in alert_ids. You can specify multiple values by providing a quoted string with values separated by comma.
+      description: Remove 'actions taken' from all alerts in alert_ids. You can specify multiple values by providing a quoted string with values separated by comma.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -610,6 +608,6 @@ script:
       description: Name of the enterprise that owns the alert.
       type: String
   isfetch: true
-fromversion: 6.5.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

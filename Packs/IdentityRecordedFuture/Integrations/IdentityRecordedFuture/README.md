@@ -70,19 +70,21 @@ Get a list of identities for the specified period of time.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| latest-downloaded | Time frame for the leaked identities          | Optional |
-| domain-type       | Type of the domain(Email, Authorization, All) | Optional |
-| domains           | Domains separated by comma (if not specified, domains from app instance will be used) | Optional |
+| **Argument Name** | **Description**                                                                                                                             | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| first-downloaded  | Time period for "first_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time"). Default value: "All time".  | Optional     |
+| latest-downloaded | Time period for "last_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time"). Default value: "All time".   | Optional     |
+| exfiltration-date | Time period for "exfiltration_date_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time"). Default value: "All time". | Optional     |
+| domain-type       | Type of the domain (Email, Authorization, All)                                                                                              | Optional     |
+| domains           | Domains separated by comma (if not specified, domains from app instance will be used)                                                       | Optional     |
 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.Credentials.SearchIdentities | List | List of Identities that were found in search command |
+| **Path**                                    | **Type** | **Description**                                      |
+|---------------------------------------------|----------|------------------------------------------------------|
+| RecordedFuture.Credentials.SearchIdentities | List     | List of Identities that were found in search command |
 
 
 
@@ -149,40 +151,42 @@ Get a detailed info regarding identities.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| identities        | String of identities separated by comma   | Required |
-| first-downloaded  | Time frame for the leaked identities      | Optional |
-| domains           | Domains separated by comma                | Optional |
+| **Argument Name** | **Description**                                                                                                                             | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| identities        | String of identities separated by comma                                                                                                     | Required     |
+| first-downloaded  | Time period for "first_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time"). Default value: "All time".  | Optional     |
+| latest-downloaded | Time period for "last_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time"). Default value: "All time".   | Optional     |
+| exfiltration-date | Time period for "exfiltration_date_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time"). Default value: "All time". | Optional     |
+| domains           | Domains separated by comma                                                                                                                  | Optional     |
 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.Credentials.Identities.identity.subjects | string | Identity value |
-| RecordedFuture.Credentials.Identities.count | number | Leaked credentials count number |
-| RecordedFuture.Credentials.Identities.credentials.subject | string | Identity value |
-| RecordedFuture.Credentials.Identities.credentials.dumps.name | string | Dump name |
-| RecordedFuture.Credentials.Identities.credentials.dumps.description | string | Dump description |
-| RecordedFuture.Credentials.Identities.credentials.dumps.downloaded | string | Datetime string that show the day when dump was downloaded |
-| RecordedFuture.Credentials.Identities.credentials.type | string | Dump type |
-| RecordedFuture.Credentials.Identities.credentials.breaches.name | string | Breach name |
-| RecordedFuture.Credentials.Identities.credentials.breaches.domain | string | Breach domain |
-| RecordedFuture.Credentials.Identities.credentials.breaches.type | string | Breach type |
-| RecordedFuture.Credentials.Identities.credentials.breaches.breached | string | Datetime string that show the day when breach happened |
-| RecordedFuture.Credentials.Identities.credentials.breaches.description | string | Breach description |
-| RecordedFuture.Credentials.Identities.credentials.breaches.site_description | string | Breach site description |
-| RecordedFuture.Credentials.Identities.credentials.first_downloaded | string | Datetime string representing firs time downloaded |
-| RecordedFuture.Credentials.Identities.credentials.latest_downloaded | string | Datetime string representing last time downloaded |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.type | string | Exposed secret type |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.hashes.algorithm | string | Exposed secret hash algorithm |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.hashes.hash | string | Exposed secret hash value |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.effectively_clear | boolean | Exposed secret clear or not |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.properties | string | Exposed secret properties |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.clear_text_hint | string | Exposed secret text hint |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank | string | Rank for the exposed password |
+| **Path**                                                                                 | **Type** | **Description**                                            |
+|------------------------------------------------------------------------------------------|----------|------------------------------------------------------------|
+| RecordedFuture.Credentials.Identities.identity.subjects                                  | string   | Identity value                                             |
+| RecordedFuture.Credentials.Identities.count                                              | number   | Leaked credentials count number                            |
+| RecordedFuture.Credentials.Identities.credentials.subject                                | string   | Identity value                                             |
+| RecordedFuture.Credentials.Identities.credentials.dumps.name                             | string   | Dump name                                                  |
+| RecordedFuture.Credentials.Identities.credentials.dumps.description                      | string   | Dump description                                           |
+| RecordedFuture.Credentials.Identities.credentials.dumps.downloaded                       | string   | Datetime string that show the day when dump was downloaded |
+| RecordedFuture.Credentials.Identities.credentials.type                                   | string   | Dump type                                                  |
+| RecordedFuture.Credentials.Identities.credentials.breaches.name                          | string   | Breach name                                                |
+| RecordedFuture.Credentials.Identities.credentials.breaches.domain                        | string   | Breach domain                                              |
+| RecordedFuture.Credentials.Identities.credentials.breaches.type                          | string   | Breach type                                                |
+| RecordedFuture.Credentials.Identities.credentials.breaches.breached                      | string   | Datetime string that show the day when breach happened     |
+| RecordedFuture.Credentials.Identities.credentials.breaches.description                   | string   | Breach description                                         |
+| RecordedFuture.Credentials.Identities.credentials.breaches.site_description              | string   | Breach site description                                    |
+| RecordedFuture.Credentials.Identities.credentials.first_downloaded                       | string   | Datetime string representing firs time downloaded          |
+| RecordedFuture.Credentials.Identities.credentials.latest_downloaded                      | string   | Datetime string representing last time downloaded          |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.type                    | string   | Exposed secret type                                        |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.hashes.algorithm        | string   | Exposed secret hash algorithm                              |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.hashes.hash             | string   | Exposed secret hash value                                  |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.effectively_clear       | boolean  | Exposed secret clear or not                                |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.properties      | string   | Exposed secret properties                                  |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.clear_text_hint | string   | Exposed secret text hint                                   |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank            | string   | Rank for the exposed password                              |
 
 
 #### Command Example
@@ -471,20 +475,20 @@ Get a detailed info regarding identities.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| password-hash    | Hash representation of password                          | Required |
-| hash-algorithm   | Hash algorithm for the password(MD5, NTLM, SHA1, SHA256) | Required |
+| **Argument Name** | **Description**                                          | **Required** |
+|-------------------|----------------------------------------------------------|--------------|
+| password-hash     | Hash representation of password                          | Required     |
+| hash-algorithm    | Hash algorithm for the password(MD5, NTLM, SHA1, SHA256) | Required     |
 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.Credentials.Password.Password.Hash | String | Recorded Future password hash value. |
-| RecordedFuture.Credentials.Password.Password.Algorithm | String | Recorded Future password hash algorithm. |
-| RecordedFuture.Credentials.Password.ExposureStatus | String | Recorded Future password exposure status. One of Common, UnCommon, NeverExposed |
+| **Path**                                               | **Type** | **Description**                                                                 |
+|--------------------------------------------------------|----------|---------------------------------------------------------------------------------|
+| RecordedFuture.Credentials.Password.Password.Hash      | String   | Recorded Future password hash value.                                            |
+| RecordedFuture.Credentials.Password.Password.Algorithm | String   | Recorded Future password hash algorithm.                                        |
+| RecordedFuture.Credentials.Password.ExposureStatus     | String   | Recorded Future password exposure status. One of Common, UnCommon, NeverExposed |
 
 
 #### Command Example

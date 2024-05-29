@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""Recorded Future Identity Playbook alerts Integration for Demisto."""
+"""Recorded Future Identity Playbook alerts Integration for XSOAR."""
 
 import platform
 import json
@@ -213,7 +213,7 @@ def main() -> None:
         demisto_params = demisto.params()
         base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("insecure", False)
-        proxy = demisto_params.get("proxy", False)
+        handle_proxy()
 
         headers = {
             "X-RFToken": demisto_params["token"].get("password"),
@@ -224,7 +224,9 @@ def main() -> None:
             ),
         }
         client = Client(
-            base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy
+            base_url=base_url,
+            verify=verify_ssl,
+            headers=headers,
         )
         command = demisto.command()
         actions = Actions(client)
