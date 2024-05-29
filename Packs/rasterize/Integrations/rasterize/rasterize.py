@@ -392,8 +392,8 @@ def terminate_chrome(browser):
 
 def delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_name):
     index_to_delete = -1
-    for index, port_from_info, instance_name_from_info, chrome_options_from_info in enumerate(
-        zip(*[line.strip().split('\t') for line in info])):
+    for index, line in enumerate(info):
+        port_from_info, instance_name_from_info, chrome_options_from_info = line.strip().split('\t')
         if port_from_info == chrome_port and instance_name_from_info == instance_name:
             index_to_delete = index
 
