@@ -33,7 +33,7 @@ You will need to [add a Cloud NSS Feed](https://help.zscaler.com/zia/adding-clou
 - [Adding Cloud NSS Feeds for Admin Audit Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-admin-audit-logs)
 
 #### Remarks 
-For each Cloud NSS Feed you configure - 
+For each Cloud NSS Feed you configure: 
   - Set the **`API URL`** to the URL of the Cortex XSIAM HTTP Collector Zscaler instance.
   - Set the **`Key 1`** HTTP header name to *Authorization*.
   - Set the **`Value 1`** Http Header value to the generated token of the Zscaler HTTP Collector instance. 
