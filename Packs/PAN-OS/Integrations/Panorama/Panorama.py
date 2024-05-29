@@ -40,6 +40,8 @@ from urllib.parse import urlparse
 urllib3.disable_warnings()
 
 ''' HELPER FUNCTIONS '''
+
+
 def foo():
     ...
 
