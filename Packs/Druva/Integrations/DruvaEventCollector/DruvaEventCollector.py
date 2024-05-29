@@ -49,7 +49,7 @@ class Client(BaseClient):
             tracker: pointer to the last event we got last time
 
         Returns:
-            List[Dict]: List of events
+            dict: List of events
         """
 
         url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
