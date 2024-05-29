@@ -45,4 +45,4 @@ scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.13.83255
 tests:
-- No tests (auto formatted)
+- MattermostAskUser_testplaybook

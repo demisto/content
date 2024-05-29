@@ -5707,6 +5707,12 @@
         {
             "integrations": "MattermostV2",
             "playbookID": "MattermostV2 - testplaybook"
+        },
+        {
+            "playbookID": "MattermostAskUser_testplaybook",
+            "scripts": [
+                "MattermostAskUser"
+            ]
         }
     ],
     "skipped_tests": {
