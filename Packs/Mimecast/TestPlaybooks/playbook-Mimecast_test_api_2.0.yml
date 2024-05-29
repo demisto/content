@@ -1,6 +1,6 @@
-id: Mimecast test api 2.0
+id: Mimecast Test api 2.0
 version: -1
-name: Mimecast test api 2.0
+name: Mimecast Test api 2.0
 starttaskid: "0"
 tasks:
   "0":
@@ -1199,4 +1199,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.10.0
-description: Mimecast test api 2.0
+description: Mimecast Test api 2.0.
