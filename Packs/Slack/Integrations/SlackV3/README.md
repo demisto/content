@@ -136,7 +136,6 @@ This will bring up a page which confirms that you are installing the app to your
    the *Bot Token* as a credential.
 
 ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
-</br>
 
 **NOTE: When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
 and tokens that should not be used elsewhere. Failure to comply with this requirement may result in issues with incoming
