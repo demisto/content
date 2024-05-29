@@ -14,6 +14,7 @@ def test_test_module_command(mocker, mock_client):
     """
     Given:
     - test module command
+    - an empty (yet valid) response from Druva
 
     When:
     - Pressing test button
