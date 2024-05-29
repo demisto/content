@@ -34,6 +34,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Gets a team's details.
 
+#### Required Permissions
+
+Must be authenticated and have the view_team permission.
+
 #### Base Command
 
 `mattermost-get-team`
@@ -61,8 +65,8 @@ Gets a team's details.
 | Mattermost.Team.allowed_domains | String | The allowed domains of the team. | 
 | Mattermost.Team.invite_id | String | The allowed domains of the team. | 
 | Mattermost.Team.allow_open_invite | Unknown | Does the team allow open invites. | 
-| Mattermost.Team.scheme_id | String | The scheme id of the team. | 
-| Mattermost.Team.policy_id | String | The policy id of the team. | 
+| Mattermost.Team.scheme_id | String | The scheme ID of the team. | 
+| Mattermost.Team.policy_id | String | The policy ID of the team. | 
 
 #### Command example
 ```!mattermost-get-team team_name=panw```
@@ -105,6 +109,10 @@ Gets a team's details.
 
 ***
 Lists channels.
+
+#### Required Permissions
+
+- manage_system
 
 #### Base Command
 
@@ -210,6 +218,10 @@ Lists channels.
 ***
 Creates a channel.
 
+#### Required Permissions
+
+- If creating a public channel, create_public_channel permission is required. If creating a private channel, create_private_channel permission is required.
+
 #### Base Command
 
 `mattermost-create-channel`
@@ -286,6 +298,10 @@ Creates a channel.
 ***
 Adds a channel member.
 
+#### Required Permissions
+
+No permissions required.
+
 #### Base Command
 
 `mattermost-add-channel-member`
@@ -306,6 +322,10 @@ There is no context output for this command.
 ***
 Removes a channel member.
 
+#### Required Permissions
+
+- manage_public_channel_members permission if the channel is public. manage_private_channel_members permission if the channel is private
+
 #### Base Command
 
 `mattermost-remove-channel-member`
@@ -325,6 +345,10 @@ There is no context output for this command.
 
 ***
 Lists users.
+
+#### Required Permissions
+
+- Requires an active session and (if specified) membership to the channel or team being selected from.
 
 #### Base Command
 
@@ -423,14 +447,16 @@ Lists users.
 >|---|---|---|---|
 >| admin | admin@admin.com |  | 8a6t7whumbdbxrawretujh6rre |
 >| dev | admin@ddev.com |  | o9hpcwz73fdwxe9adue8jxo16o |
->| mberger | mberger@paloaltonetworks.com |  | cgyeny19f3b9dgoifsztkmobke |
->| testbot | testbot@localhost |  | tmqcibcsy7yxdejb6gjjmduyda |
 
 
 ### mattermost-send-file
 
 ***
 Sends a file.
+
+#### Required Permissions
+
+- Must have upload_file permission.
 
 #### Base Command
 
@@ -462,6 +488,10 @@ file test.txt was successfully sent to channel test
 ***
 Send a message using a chatbot app.
 
+#### Required Permissions
+
+- Must have create_post permission for the channel the post is being created in.
+
 #### Base Command
 
 `send-notification`
@@ -485,6 +515,10 @@ There is no context output for this command.
 ***
 Closes a channel.
 
+#### Required Permissions
+
+- delete_public_channel permission if the channel is public, delete_private_channel permission if the channel is private, or have manage_system permission.
+
 #### Base Command
 
 `mattermost-close-channel`
@@ -504,6 +538,10 @@ There is no context output for this command.
 ***
 Closes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
 
+#### Required Permissions
+
+- delete_public_channel permission if the channel is public, delete_private_channel permission if the channel is private, or have manage_system permission.
+
 #### Base Command
 
 `close-channel`
@@ -522,6 +560,10 @@ There is no context output for this command.
 
 ***
 Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+
+#### Required Permissions
+
+- no permissions required.
 
 #### Base Command
 
@@ -565,6 +607,10 @@ There is no context output for this command.
 
 ***
 Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+
+#### Required Permissions
+
+- no permissions channel
 
 #### Base Command
 
