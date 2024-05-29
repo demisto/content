@@ -389,7 +389,7 @@ jobs:
 
 workflows:
   version: 2
-    commit:
+  commit:
     when:
       matches:
         # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
