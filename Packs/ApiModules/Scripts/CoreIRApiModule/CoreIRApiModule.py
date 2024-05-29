@@ -198,7 +198,6 @@ class CoreClient(BaseClient):
             return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                             json_data=json_data,params=params, data=data, timeout=timeout,
                                             raise_on_status=raise_on_status)
-        # Replace params if supplied
         address = urljoin(self._base_url, url_suffix)
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
