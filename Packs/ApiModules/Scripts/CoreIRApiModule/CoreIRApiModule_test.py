@@ -4064,11 +4064,12 @@ def test_http_request_demisto_call(mocker):
     Then:
         - Make sure demisto._apiCall() is being called and the method returns the expected result.
     """
-    from CoreIRApiModule import CoreClient
+    from CoreIRApiModule import CoreClient, RBAC_VALIDATIONS_BUILD_NUMBER, RBAC_VALIDATIONS_VERSION
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch.object(demisto, 'demistoVersion', return_value={"platform": "x2", "version": "8.6.0", "buildNumber": "957366"})
+    mocker.patch.object(demisto, 'demistoVersion', return_value={"platform": "x2", "version": RBAC_VALIDATIONS_VERSION,
+                                                                 "buildNumber": RBAC_VALIDATIONS_BUILD_NUMBER})
     mocker.patch.object(demisto, "_apiCall" ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                          'status': 200,
                                          'data': '{"reply":[{"container": ["1.1.1.1"]}]'})
@@ -4086,12 +4087,12 @@ def test_http_request_base_client(mocker):
     Then
         - Make sure demisto._apiCall() is being called and the method returns the expected result.
     """
-    from CoreIRApiModule import CoreClient
-    import CoreIRApiModule
+    from CoreIRApiModule import CoreClient, RBAC_VALIDATIONS_BUILD_NUMBER, RBAC_VALIDATIONS_VERSION
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch.object(demisto, 'demistoVersion', return_value={"platform": "x2", "version": "8.6.0", "buildNumber": "957366"})
+    mocker.patch.object(demisto, 'demistoVersion', return_value={"platform": "x2", "version": RBAC_VALIDATIONS_VERSION,
+                                                                 "buildNumber": RBAC_VALIDATIONS_BUILD_NUMBER})
     mocker.patch.object(BaseClient, "_http_request" ,return_value={'data':{"reply":[{"container": ["1.1.1.1"]}]}})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
