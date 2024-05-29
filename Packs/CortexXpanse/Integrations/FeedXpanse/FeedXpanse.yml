@@ -105,14 +105,14 @@ configuration:
   - suddenDeath
   section: Collect
   required: false
-- defaultvalue: '1440'
+- defaultvalue: '720'
   name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
   section: Collect
   advanced: true
   required: false
-description: 'TODO Add description'
+description: 'TODO Add description, change fetch interval to hours'
 display: 'Xpanse Feed'
 name: Xpanse Feed
 script:
