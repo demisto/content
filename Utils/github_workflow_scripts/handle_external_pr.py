@@ -272,19 +272,13 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             pack_metadata = get_metadata(pack_dirs_to_check)
 
             for file in pr_files:
-                if "yml" in file:
-                    print(f'yml is: {file}')
+                if "yml" in file and "Integrations" in file:
                     content_yml = get_yaml(file_path=file)
-                    print(f'the content of yml is: {content_yml}')
-
-            # for dir1 in pack_dirs_to_check:
-            #     print(f'dir is {dir1}')
-            #     yml_path, _ = get_yml_paths_in_dir(dir1)
-            #     print(f'The YML path is: {yml_path}')
-            #     for yml in yml_path:
-            #         print(f'yml is: {yml}')
-            #         content_yml = get_yaml(file_path=yml)
-            #         print(f'the content of yml is: {content_yml}')
+                    print(f'the content of the yml is: {content_yml}')
+                    is_feed = content_yml.get("script").get("feed", "")
+                    print(f'the is_feed is: {is_feed}')
+                    if is_feed:
+                        return True
     except Exception as error:
         print("couldn't checkout branch to get metadata")
         return False
