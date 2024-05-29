@@ -39,6 +39,11 @@ from urllib.parse import urlparse
 # disable insecure warnings
 urllib3.disable_warnings()
 
+''' HELPER FUNCTIONS '''
+def foo():
+    ...
+
+
 ''' GLOBALS '''
 URL = ''
 API_KEY = None
