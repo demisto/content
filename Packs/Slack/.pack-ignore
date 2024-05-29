@@ -6,6 +6,7 @@ ignore=BA108,BA109
 
 [known_words]
 externalasksubmit
+uninformative
 
 [tests_require_network]
 slackv2
