@@ -6,7 +6,7 @@ def test_main(mocker):
     """
         Tests the full flow of the script
 
-        Given: A valid report and successful responses
+        Given: A valid repor testt and successful responses
         When: Running the QualysCreateIncidentReport script
         Then: Return a successful response
 

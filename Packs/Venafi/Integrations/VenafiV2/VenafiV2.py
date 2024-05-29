@@ -27,7 +27,7 @@ class Client(BaseClient):
     def login(self, client_id: str, username: str, password: str) -> str:
         """
         Log into the Venafi API using the provided credentials.
-        If it's the first time logging in, it will create a new token, save it to the integration context, and log in.
+        If it's the first time l ogging in, it will create a new token, save it to the integration context, and log in.
         Otherwise,
             - if the token is expired, it will use the refresh token, save it to the integration context, and log in.
             - if the token is valid, it will log in.
