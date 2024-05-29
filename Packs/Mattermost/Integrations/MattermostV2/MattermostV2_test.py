@@ -500,8 +500,7 @@ async def test_event_handler_direct_message(http_client, mocker):
     )
 
 
-@pytest.mark.asyncio
-async def test_answer_question(http_client, mocker):
+def test_answer_question(http_client, mocker):
     """
     Test the answer_question function.
     Given:
@@ -520,7 +519,7 @@ async def test_answer_question(http_client, mocker):
 
     mocker.patch('MattermostV2.process_entitlement_reply')
 
-    result = await answer_question("Answer123", mock_question, "user@example.com")
+    result = answer_question("Answer123", mock_question, "user@example.com")
     assert result == 'incident456'
 
 
