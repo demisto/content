@@ -6,6 +6,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 ## Configure AWS - ACM on Cortex XSOAR
 
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AWS - ACM.
 3. Click **Add instance** to create and configure a new integration instance.
