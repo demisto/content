@@ -258,6 +258,9 @@ def get_metadata(pack_dirs: set[str]) -> dict:
 
     Args:
         pack_dirs (set): paths to the packs that were changed
+
+    Return:
+        - pack metadata dictionary
     """
     pack_metadata = dict()
 

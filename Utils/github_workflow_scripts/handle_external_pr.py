@@ -286,7 +286,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                     if is_feed:
                         return True
     except Exception as error:
-        print("couldn't checkout branch to get metadata")
+        print(f"couldn't checkout branch to get metadata, error is {error}")
         return False
     print(f'the metadata is: {pack_metadata}')
     tags = pack_metadata.get("tags")
@@ -310,13 +310,11 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
     """
     integrations_checked = []
     for file in pr_files:
-        print(f"the file is: {file}")
         if 'CONTRIBUTORS.json' in file:
             continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
         if not integration:
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-        print(f'integration is: {integration}')
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
         integrations_checked.append(integration.path)
