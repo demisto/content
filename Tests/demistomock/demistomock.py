@@ -1315,7 +1315,7 @@ def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=
         headers: headers to pass. Use a dictionary such as: `{"key":"value"}`
         method: HTTP method to use.
         path: path to append to the base url.
-        timeout: The amount of time (in seconds) that a request will wait for a client to
+        timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted.
 
         *Note if data is empty then a GET request is performed instead of a POST.
 
