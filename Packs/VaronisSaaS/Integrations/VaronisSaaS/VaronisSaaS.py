@@ -2040,6 +2040,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             argToList(alert_id),
             note
         )
+
     elif (
         'Status' in parsed_args.delta
         and parsed_args.data.get('Status').lower() != 'closed'
