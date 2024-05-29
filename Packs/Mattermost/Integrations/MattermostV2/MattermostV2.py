@@ -44,6 +44,7 @@ OBJECTS_TO_KEYS = {
     'mirrors': 'investigation_id',
     'messages': 'entitlement',
 }
+
 DEFAULT_OPTIONS: Dict[str, Any] = {
     "timeout": 100,
     "request_timeout": None,
@@ -55,6 +56,7 @@ DEFAULT_OPTIONS: Dict[str, Any] = {
     "debug": False,
     "http2": False,
 }
+
 GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
 ''' CLIENT CLASS '''

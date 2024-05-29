@@ -12,6 +12,7 @@ def main():
     if isError(res[0]):
         demisto.results(res)
         sys.exit(0)
+
     entitlement = demisto.get(res[0], 'Contents')
 
     option1 = demisto.get(demisto.args(), 'option1')
@@ -25,6 +26,7 @@ def main():
     entitlementString = entitlement + '@' + demisto.investigation()['id']
 
     args = demisto.args()
+
     lifetime = args.get('lifetime', '1 day')
     try:
         parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
