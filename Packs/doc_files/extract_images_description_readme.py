@@ -3,6 +3,8 @@ import re
 import os
 import json
 import requests
+from pathlib import Path
+
 
 rootFolderPath = r'.'
 PACKS_PATH = "/Users/mmorag/dev/demisto/content/Packs"
@@ -12,15 +14,15 @@ HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
 URL_IMAGE_LINK_REGEX = r'((https?|ftp)://.*?(png|jpe?g|gif|bmp|tiff|webp))'
 
 
-def creating_info_jason(file_path: str, image_link: str, save_to_folder):
-    json_info_file = open(f'{save_to_folder}\images\\{file_path}.json', 'a')
+def creating_info_jason(file_path: str, image_link: str, folder_path, pack):
     image_details = {
         'file_path': file_path,
         'image_link': image_link,
         'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
     }
-    json.dump(image_details, json_info_file, indent=6)
-    json_info_file.close()
+    json_path = file_path[file_path.rfind(pack) + len(pack):].rsplit('/', 1)[0]
+    with open(f'{folder_path}/{json_path}.json', "a") as json_file:
+        json_file.write(json.dumps(image_details))
 
 
 def extract_image_link(text):
@@ -32,7 +34,6 @@ def extract_image_link(text):
 
 
 def download_image_to_folder(folder_path, url):
-    print(f'Downloading image {url} to{folder_path}')
     response = requests.get(url)
     if response.status_code == 200:
         filename = url.split('/')[-1]
@@ -64,7 +65,8 @@ def search_image_links(file_path):
     with open(file_path, encoding='utf-8') as file:
         content = file.read()
         if image_links := extract_image_link(content):
-            folder_path = f'{SAVING_IMAGES_AT}\\{file_path[:-3]}'
+            pack_name = re.search(r'/Packs/([^/]+)/', file_path).group(1)
+            folder_path = f'{SAVING_IMAGES_AT}/{pack_name}'
             try:
                 os.mkdir(folder_path)
                 for image_link in image_links:
@@ -74,25 +76,22 @@ def search_image_links(file_path):
                 print(error)
 
 
-def search_files(root_path, skip_folders=None):
-    if skip_folders is None:
-        skip_folders = []
+def search_files(root_path):
+    readme_paths_links = list(Path(root_path).rglob("README.md"))
+    description_paths_links = list(Path(root_path).rglob("description.md"))
 
-    # Walk through all directories and files in the given folder path
-    for root, dirs, files in os.walk(root_path):
-        # Exclude specified folders from the search
-        dirs[:] = [d for d in dirs if d not in skip_folders]
-        for file_name in files:
-            file_path = os.path.join(root, file_name)
-            if file_name.lower() == "readme" or file_name.lower() == "description":
-                search_image_link(file_path)
+    for link in readme_paths_links:
+        search_image_links(str(link))
+
+    for link in description_paths_links:
+        search_image_links(str(link))
+
+
 
 
 def main():
-    skip_folders = ["ReleaseNotes", "TestPlaybooks", "venv"]
     path = '/Users/mmorag/dev/demisto/content/Packs/Campaign'
-    search_image_link('/Users/mmorag/dev/demisto/content/Packs/Campaign/README.md')
-    search_files(path, skip_folders)
+    search_files(path)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
