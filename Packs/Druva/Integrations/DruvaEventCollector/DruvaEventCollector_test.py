@@ -14,6 +14,7 @@ def test_test_module_command(mocker, mock_client):
     """
     Given:
     - test module command
+    - an empty (yet valid) response from Druva
 
     When:
     - Pressing test button
@@ -148,7 +149,7 @@ def test_fetch_events_command(mocker, mock_client):
     - Running fetch-events command
 
     Then:
-    - Ensure number of events fetched, and next run fields
+    - Ensure number of events fetched, and the next run, match the response data
     """
     # First fetch
     mocker.patch.object(mock_client, "search_events", return_value=EVENT_1)
