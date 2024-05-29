@@ -304,12 +304,18 @@ FAKE_CERT = "-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ
 FAKE_SUBJECT = "/C=FA/ST=Fk/L=FakeCity/O=FakeOrg/OU=FakeUnit/OU=FakeGroup/CN=fake.example.com"
 
 LOCAL_CA_LIST_TEST_ARGS = [
-    {},  # Basic request
-    {"subject": FAKE_SUBJECT, "limit": 10, "page": 1, "issuer": "example_issuer", "state": "active", "cert": FAKE_CERT,
-     "issuer": FAKE_SUBJECT},
+    {},
+    {"subject": FAKE_SUBJECT, "limit": 10, "page": 1,  "state": "active", "cert": FAKE_CERT,"issuer": FAKE_SUBJECT},
 
 ]
-LOCAL_CA_UPDATE_TEST_ARGS = []
+LOCAL_CA_UPDATE_TEST_ARGS = [
+    {CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000"},
+    {
+        CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+        CommandArguments.ALLOW_CLIENT_AUTHENTICATION: "true",
+        CommandArguments.ALLOW_USER_AUTHENTICATION: "true"
+    },
+]
 LOCAL_CA_DELETE_TEST_ARGS = []
 LOCAL_CA_SELF_SIGN_TEST_ARGS = []
 LOCAL_CA_INSTALL_TEST_ARGS = []

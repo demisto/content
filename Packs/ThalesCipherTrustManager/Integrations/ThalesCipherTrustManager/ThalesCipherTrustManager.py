@@ -177,7 +177,7 @@ USER_DELETE_DESCRIPTION = "Deletes a user given the user's user-id. If the curre
 USER_PASSWORD_CHANGE_DESCRIPTION = "Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password."
 LOCAL_CA_CREATE_DESCRIPTION = "Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling the ciphertrust-local-ca-self-sign command or signed by another CA and installed by calling the ciphertrust-local-ca-install command. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates."
 LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The results can be filtered, using the command arguments."
-LOCAL_CA_UPDATE_DESCRIPTION = "Update the properties of a local CA. For instance, the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges."
+LOCAL_CA_UPDATE_DESCRIPTION = "Update a local CA."
 LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA given the local CA's ID."
 LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
 LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
@@ -409,7 +409,7 @@ LOCAL_CA_LIST_INPUTS = [InputArgument(name=CommandArguments.SUBJECT, description
                  ] + PAGINATION_INPUTS
 
 LOCAL_CA_UPDATE_INPUTS = [
-    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
     InputArgument(name=CommandArguments.ALLOW_CLIENT_AUTHENTICATION,
                   input_type=BooleanStr,
                   description='If set to true, the certificates signed by the specified CA can be used '
@@ -771,6 +771,28 @@ LOCAL_CA_LIST_OUTPUT = [
     OutputArgument(name="resources.sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
     OutputArgument(name="resources.purpose.client_authentication", output_type=str, description="Indicates if client authentication is enabled for the CA."),
     OutputArgument(name="resources.purpose.user_authentication", output_type=str, description="Indicates if user authentication is enabled for the CA.")
+]
+
+LOCAL_CA_UPDATE_OUTPUTS = [
+    OutputArgument(name="id", output_type=str, description="A unique identifier for the certificate authority (CA)."),
+    OutputArgument(name="uri", output_type=str, description="Uniform Resource Identifier associated with the CA."),
+    OutputArgument(name="account", output_type=str, description="Account associated with the CA."),
+    OutputArgument(name="name", output_type=str, description="Name of the CA."),
+    OutputArgument(name="state", output_type=str, description="Current state of the CA (e.g., pending, active)."),
+    OutputArgument(name="createdAt", output_type=datetime.datetime, description="Timestamp of when the CA was created."),
+    OutputArgument(name="updatedAt", output_type=datetime.datetime, description="Timestamp of the last update of the CA."),
+    OutputArgument(name="csr", output_type=str, description="Certificate Signing Request for the CA, if updated."),
+    OutputArgument(name="cert", output_type=str, description="Certificate associated with the CA."),
+    OutputArgument(name="serialNumber", output_type=str, description="Serial number of the CA's certificate."),
+    OutputArgument(name="subject", output_type=str, description="Subject of the CA's certificate."),
+    OutputArgument(name="issuer", output_type=str, description="Issuer of the CA's certificate."),
+    OutputArgument(name="notBefore", output_type=datetime.datetime, description="Start date of the CA's certificate validity."),
+    OutputArgument(name="notAfter", output_type=datetime.datetime, description="End date of the CA's certificate validity."),
+    OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA1 fingerprint of the CA's certificate."),
+    OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA256 fingerprint of the CA's certificate."),
+    OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
+    OutputArgument(name="purpose.client_authentication", output_type=str, description="Indicates if client authentication is enabled for the CA."),
+    OutputArgument(name="purpose.user_authentication", output_type=str, description="Indicates if user authentication is enabled for the CA.")
 ]
 
 
@@ -1322,7 +1344,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-update', inputs_list=LOCAL_CA_UPDATE_INPUTS,
-                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX)
+                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_UPDATE_DESCRIPTION, outputs_list=LOCAL_CA_UPDATE_OUTPUTS)
 def local_ca_update_command(client: CipherTrustClient, args: dict):
     request_data = assign_params(
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
