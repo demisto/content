@@ -5710,6 +5710,7 @@
         },
         {
             "playbookID": "MattermostAskUser_testplaybook",
+            "integrations": "MattermostV2",
             "scripts": [
                 "MattermostAskUser"
             ]
