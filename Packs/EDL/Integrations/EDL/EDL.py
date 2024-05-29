@@ -733,20 +733,21 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
         created (datetime): The time the log was created. This will be added to the header.
         log_stats (dict): A statistics dict for the indicator modifications (e.g. {'Added': 5, 'Dropped': 3, 'Modified': 2}
     """
-    added_count = log_stats.get(IndicatorAction.ADDED.value, 0)
-    dropped_count = log_stats.get(IndicatorAction.DROPPED.value, 0)
-    modified_count = log_stats.get(IndicatorAction.MODIFIED.value, 0)
-
-    total_count = added_count + dropped_count + modified_count
-
-    header = f"# Created new EDL at {created.isoformat()}\n\n" \
-             f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
-             f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
-             f"{added_count} added.\n" \
-             f"\nAction | Indicator | Raw Indicator | Reason"
-
     log_file_wip = Path(EDL_FULL_LOG_PATH_WIP)
     if log_file_wip.exists():
+        added_count = log_stats.get(IndicatorAction.ADDED.value, 0)
+        dropped_count = log_stats.get(IndicatorAction.DROPPED.value, 0)
+        modified_count = log_stats.get(IndicatorAction.MODIFIED.value, 0)
+
+        total_count = added_count + dropped_count + modified_count
+
+        header = f"# Created new EDL at {created.isoformat()}\n\n" \
+                f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
+                f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
+                f"{added_count} added.\n" \
+                f"\nAction | Indicator | Raw Indicator | Reason"
+
+        
         with open(EDL_FULL_LOG_PATH, 'w+') as new_full_log_file, log_file_wip.open('r') as log_file_data:
             # Finalize the current log: write the headers and the WIP log to full_log_path
             new_full_log_file.write(header)
