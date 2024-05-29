@@ -322,9 +322,6 @@ tasks:
                       value:
                         simple: inputs.Hostname
                 root: Venafi.Certificate.X509.CN
-                transformers:
-                - operator: uniq
-                - operator: toUpperCase
           operator: isNotEmpty
           right:
             value: {}
@@ -346,12 +343,12 @@ tasks:
     task:
       brand: ""
       description: Check if there are results from Venafi.
-      id: 08c67058-c6f3-40a7-8145-f84f1d3d10b3
+      id: e02f629f-b980-4090-84a3-3601fffe17ca
       iscommand: false
       name: Are there results from Venafi?
       type: condition
       version: -1
-    taskid: 08c67058-c6f3-40a7-8145-f84f1d3d10b3
+    taskid: e02f629f-b980-4090-84a3-3601fffe17ca
     timertriggers: []
     type: condition
     view: |-
