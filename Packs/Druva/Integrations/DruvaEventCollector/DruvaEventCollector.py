@@ -90,7 +90,7 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict
     """
 
     response = client.search_events(tracker)
-    return response.get('events', [{}]), response.get('tracker', "")
+    return response['events'], response['tracker']
 
 
 def fetch_events(client: Client, last_run: dict[str, str]) -> tuple[list[dict], dict[str, str]]:
