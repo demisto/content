@@ -183,5 +183,5 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     assert 'ok' in Microsoft365Defender.return_results.call_args[0][0]
     qs = get_mock.last_request.qs
-    assert qs['resource'] == [Resources.security_center]
+    assert qs['resource'] == [Resources.security]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
