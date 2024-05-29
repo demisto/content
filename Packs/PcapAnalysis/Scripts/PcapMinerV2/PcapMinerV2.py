@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 import pyshark
 import re
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -39,7 +39,7 @@ class PCAP():
         """
 
         # setup data structures
-        self.hierarchy: Dict[str, int] = {}
+        self.hierarchy: dict[str, int] = {}
         self.num_of_packets = 0
         self.tcp_streams = 0
         self.udp_streams = 0
@@ -47,23 +47,23 @@ class PCAP():
         self.bytes_transmitted = 0
         self.min_time = float('inf')
         self.max_time = -float('inf')
-        self.conversations: Dict[tuple, Any] = {}
-        self.flows: Dict[tuple, Any] = {}
-        self.unique_source_ip: set = set([])
-        self.unique_dest_ip: set = set([])
-        self.ips_extracted: set = set([])
-        self.urls_extracted: set = set([])
-        self.emails_extracted: set = set([])
-        self.homemade_extracted: set = set([])
-        self.last_layer: set = set([])
-        self.irc_data: list = list()
-        self.protocol_data: Dict[str, Any] = dict()
+        self.conversations: dict[tuple, Any] = {}
+        self.flows: dict[tuple, Any] = {}
+        self.unique_source_ip: set = set()
+        self.unique_dest_ip: set = set()
+        self.ips_extracted: set = set()
+        self.urls_extracted: set = set()
+        self.emails_extracted: set = set()
+        self.homemade_extracted: set = set()
+        self.last_layer: set = set()
+        self.irc_data: list = []
+        self.protocol_data: dict[str, Any] = {}
         self.entry_id = entry_id
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
         self.unique_ips = unique_ips
         for protocol in extracted_protocols:
-            self.protocol_data[protocol] = dict()
+            self.protocol_data[protocol] = {}
 
         # Regex compilation
         if 'LLMNR' in extracted_protocols:
@@ -89,7 +89,7 @@ class PCAP():
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if 'KERBEROS' in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
-            self.kerb_data: list = list()
+            self.kerb_data: list = []
         if 'SSH' in extracted_protocols:
             self.ssh_data = {
                 'EntryID': entry_id,
@@ -244,10 +244,8 @@ class PCAP():
         if protocol and ssh_layer.get('direction') == 0:
             # direction is client to server
             self.ssh_data['ClientProtocols'].add(protocol)  # type: ignore[attr-defined]
-        if message_code_results:
-            if message_code_results:
-                self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])  # type: ignore[attr-defined]
-        return
+        if message_code_results and message_code_results:
+            self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])  # type: ignore[attr-defined]
 
     @logger
     def extract_irc(self, packet):
@@ -319,7 +317,7 @@ class PCAP():
             self.urls_extracted.update(self.reg_url.findall(str(packet)))
 
         if self.homemade_regex:
-            self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
+            self.homemade_extracted.update(self.reg_homemade.findall(str(packet)))
 
         if 'DNS' in self.extracted_protocols and 'DNS' in layers:
             return self.extract_dns(packet)
@@ -360,6 +358,8 @@ class PCAP():
 
             if 'SMTP' in layers:
                 return self.extract_smtp(packet)
+            return None
+        return None
 
     @logger
     def get_outputs(self, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
@@ -501,7 +501,7 @@ class PCAP():
                     if is_flows:
                         if "src_port" not in locals():
                             continue
-                        if (b, dest_port, a, src_port) in self.flows.keys():
+                        if (b, dest_port, a, src_port) in self.flows:
                             b, a, src_port, dest_port = a, b, dest_port, src_port
                         flow = (a, src_port, b, dest_port)
                         flow_data = self.flows.get(flow, {'EntryID': self.entry_id,
@@ -550,7 +550,7 @@ class PCAP():
                                     'ResponseDate': formatEpochDate(packet_epoch_time)
                                 })
                             add_to_data(self.protocol_data['HTTP'], temp_http)
-                    if (b, a) in self.conversations.keys():
+                    if (b, a) in self.conversations:
                         a, b = b, a
                     hosts = (a, b)
                     self.conversations[hosts] = self.conversations.get(hosts, 0) + 1
@@ -598,9 +598,9 @@ def hierarchy_to_md(hierarchy: dict) -> str:
         A markdown string for displaying the hierarchy in a nice view. The script also counts the number of occurrences
         each hierarchy.
     """
-    final_dict: Dict[str, Any] = {}
+    final_dict: dict[str, Any] = {}
     num_of_all_packets = 0
-    for k in hierarchy.keys():
+    for k in hierarchy:
         layer_heir = ''
         for layer in k.split(','):
             layer_heir += ' -> ' + layer
@@ -664,7 +664,7 @@ def flows_to_ec(flows: dict) -> list:
         flows data in ec format.
     """
     flows_ec = []
-    for flow in flows.keys():
+    for flow in flows:
         flow_data = flows[flow]
         flow_ec = {
             'SourceIP': flow[0],
