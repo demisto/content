@@ -27,7 +27,7 @@ The sections below describe the necessary configurations required on Cortex XSIA
 
 ### Configure a Cloud NSS Feed on Zscaler ZIA Admin Portal
 
-You well need to [add a Cloud NSS Feed](https://help.zscaler.com/zia/adding-cloud-nss-feeds) on the Zscaler ZIA Admin Portal for each log type you wish to subscribe to - 
+You will need to [add a Cloud NSS Feed](https://help.zscaler.com/zia/adding-cloud-nss-feeds) on the Zscaler ZIA Admin Portal for each log type to subscribe to. 
 - [Adding Cloud NSS Feeds for Web Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-web-logs)
 - [Adding Cloud NSS Feeds for DNS Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-dns-logs)
 - [Adding Cloud NSS Feeds for Admin Audit Logs](https://help.zscaler.com/zia/adding-cloud-nss-feeds-admin-audit-logs)
