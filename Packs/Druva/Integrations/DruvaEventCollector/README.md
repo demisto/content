@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### druva-get-events
 
 ***
-Gets events from Druva API in one batch (max 500), if tracker is given, events will be returned from the point in time we want to fetch.
+Gets events from Druva API in one batch (max 500). If tracker is given, only its successive events will be fetched.
 
 #### Base Command
 
