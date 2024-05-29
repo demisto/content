@@ -1,21 +1,6 @@
 import os
 import re
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Match,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
 import os
-import pandas as pd
 import json
 import requests
 
@@ -27,13 +12,13 @@ HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
 URL_IMAGE_LINK_REGEX = r'((https?|ftp)://.*?(png|jpe?g|gif|bmp|tiff|webp))'
 
 
-def creating_info_jason(file_path:str, image_link:str, save_to_folder):
+def creating_info_jason(file_path: str, image_link: str, save_to_folder):
     json_info_file = open(f'{save_to_folder}\images\\{file_path}.json', 'a')
     image_details = {
-                    'file_path': file_path,
-                    'image_link': image_link,
-                    'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
-                }
+        'file_path': file_path,
+        'image_link': image_link,
+        'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
+    }
     json.dump(image_details, json_info_file, indent=6)
     json_info_file.close()
 
@@ -76,7 +61,7 @@ def search_image_links(file_path):
         Then, it creates a folder to save the images and downloads each image to the folder.
         The folder name is derived from the file name by removing the extension and appending it to the specified path 'SAVING_IMAGES_AT'.
     '''
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, encoding='utf-8') as file:
         content = file.read()
         if image_links := extract_image_link(content):
             folder_path = f'{SAVING_IMAGES_AT}\\{file_path[:-3]}'
@@ -89,7 +74,7 @@ def search_image_links(file_path):
                 print(error)
 
 
-def search_files(root_path, skip_folders = None):
+def search_files(root_path, skip_folders=None):
     if skip_folders is None:
         skip_folders = []
 
