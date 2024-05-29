@@ -544,7 +544,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,

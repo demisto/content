@@ -700,7 +700,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
       defaultValue: ""
-    - name: assigned_support_group_name
+    - name: assigned_group
       description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
       defaultValue: ""
     - name: assignee
