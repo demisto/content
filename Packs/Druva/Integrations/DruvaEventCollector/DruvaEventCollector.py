@@ -39,8 +39,7 @@ class Client(BaseClient):
             raise DemistoException(f'Error in test-module: {informative_message}') from e
 
         access_token = response_json['access_token']
-        headers = {'Authorization': f'Bearer {access_token}'}
-        self._headers = headers
+        self._headers = {'Authorization': f'Bearer {access_token}'}
 
     def search_events(self, tracker: Optional[str] = None) -> dict:
         """
@@ -54,7 +53,7 @@ class Client(BaseClient):
         """
 
         url_suffix_tracker = f'?tracker={tracker}' if tracker else ""
-        headers = (self._headers or {}) | {'accept': 'application/json'}
+        headers = (self._headers or {}) | {'accept': 'application/json'}  # self._headers won't really be None, just for mypy
         try:
             response = self._http_request(method='GET', url_suffix=f'/insync/eventmanagement/v2/events{url_suffix_tracker}',
                                           headers=headers)

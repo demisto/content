@@ -152,8 +152,8 @@ def test_fetch_events_command(mocker, mock_client):
     )
 
     assert len(events) == 1
-    assert second_run.get('tracker') == "xxxx"
-    assert events[0].get('eventID') == 0
+    assert second_run['tracker'] == "xxxx"
+    assert events[0]['eventID'] == 0
 
     # Second fetch
     mock_search_events = mocker.patch.object(mock_client, "search_events", return_value=EVENT_2)
@@ -163,5 +163,5 @@ def test_fetch_events_command(mocker, mock_client):
     )
     mock_search_events.assert_called_with(second_run.get('tracker'))
     assert len(events) == 1
-    assert third_run.get('tracker') == "yyyy"
-    assert events[0].get('eventID') == 1
+    assert third_run['tracker'] == "yyyy"
+    assert events[0]['eventID'] == 1
