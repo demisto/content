@@ -128,8 +128,12 @@
             "integrations": "Cortex XDR - IR"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
+            "timeout": 1200
         },
         {
             "integrations": "Twitter v2",
@@ -458,7 +462,7 @@
         {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
-            "instance_names": "azure_nsg_prod",
+            "instance_names": ["azure_nsg_client_cred", "azure_nsg_prod"],
             "playbookID": "Azure NSG - Test"
         },
         {
@@ -3851,6 +3855,7 @@
         {
             "integrations": "Azure Storage",
             "playbookID": "Azure Storage - Test",
+            "instance_names": ["Azure_Storage", "azure_storage_client_cred"],
             "is_mockable": false
         },
         {
