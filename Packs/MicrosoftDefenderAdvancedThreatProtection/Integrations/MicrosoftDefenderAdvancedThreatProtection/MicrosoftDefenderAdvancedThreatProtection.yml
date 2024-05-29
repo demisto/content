@@ -237,8 +237,8 @@ configuration:
   advanced: true
   required: false
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
-display: Microsoft Defender for Endpoint Dev V1
-name: Microsoft Defender Advanced Threat Protection Dev V1
+display: Microsoft Defender for Endpoint
+name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
   - description: Retrieves machines that interacted with the requested internal IP in the time range of 15 minutes prior and after a given timestamp. Note, this command is different than the endpoint command in witch returns data about the given machines.
