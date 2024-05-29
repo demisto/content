@@ -86,7 +86,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                'threatAssessConfidence': 'confidence',
                'description': 'description',
                'summary': 'name',
-               'hostname': 'hostname'},
+               'hostName': 'domainname'},
     'Mutex': {'dateAdded': 'firstseenbysource',
               'threatAssessRating': 'verdict',
               'description': 'description',
