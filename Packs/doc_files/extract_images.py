@@ -1,6 +1,29 @@
 import os
 import re
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Match,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
+from glob import glob
+import os
+import pandas as pd
 
+rootFolderPath = r'.'
+
+counter = 0
+for filename in glob.glob(os.path.join(rootFolderPath, "**", "*.xlsx"), recursive=True):
+    xlsx = pd.excelFile(filename)
+    counter += 1
 
 # def jason(file_path, image_details, pack_name, image_folder):
 #     with open(file_path, 'r', encoding='utf-8') as f:
@@ -18,6 +41,34 @@ import re
 #                     'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
 #                 })
 
+def check_text_content_contain_sub_text(
+    sub_text_list: List[str],
+    is_lower: bool = False,
+    to_split: bool = False,
+    text: str = "",
+) -> List[str]:
+    """
+    Args:
+        sub_text_list (List[str]): list of words/sentences to search in line content.
+        is_lower (bool): True to check when line is lower cased.
+        to_split (bool): True to split the line in order to search specific word
+        text (str): The readme content to search.
+
+    Returns:
+        list of lines which contains the given text.
+    """
+    invalid_lines = []
+
+    for line_num, line in enumerate(text.split("\n")):
+        if is_lower:
+            line = line.lower()
+        if to_split:
+            line = line.split()  # type: ignore
+        for text in sub_text_list:
+            if text in line:
+                invalid_lines.append(str(line_num + 1))
+
+    return invalid_lines
 
 def extract_image_link(text):
     # Regular expression to match URLs ending with common image file extensions
@@ -32,10 +83,6 @@ def count_readme_and_description_files(folder_path, skip_folders=None, image_sav
     array_of_links = []
     if skip_folders is None:
         skip_folders = []
-
-    # Path to save images
-    if image_save_path is None:
-        image_save_path = os.path.join(os.path.expanduser("~"), "dev", "demisto", "content", "Packs", "doc_files", "images")
 
     # Walk through all directories and files in the given folder path
     for root, dirs, files in os.walk(folder_path):
@@ -61,6 +108,8 @@ def count_readme_and_description_files(folder_path, skip_folders=None, image_sav
                 #                 # shutil.copy(file_path, image_save_path)1
 
     return image_count
+
+
 
 
 def main():
