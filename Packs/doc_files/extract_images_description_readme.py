@@ -14,31 +14,25 @@ from typing import (
     Type,
     Union,
 )
-from glob import glob
 import os
 import pandas as pd
 import json
+import requests
 
 rootFolderPath = r'.'
 PACKS_PATH = "/Users/mmorag/dev/demisto/content/Packs"
 SAVING_IMAGES_AT = "/Users/mmorag/dev/demisto/content/Packs/doc_files/images"
-URL_REGEX = r'\!\[.*?\]\((https?|ftp|https?://.*?)\)'
-URL_REGEX_2 = r'\!\[.*?\]\((https?|ftp|https?://.*?png?|jpe?g|gif|bmp|tiff|webp?)\)'
-'''
-1. moving on all the content
-2. if we run into readme/description:
-2.1. search if there is an web image path:
-2.1.1 create a folder with the file link 
-2.1.2 download and save the image in folder {SAVING_IMAGES_AT}\{pack_name}
-2.1.3 save the json file there as well
-'''
+
+HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
+URL_IMAGE_LINK_REGEX = r'((https?|ftp)://.*?(png|jpe?g|gif|bmp|tiff|webp))'
+
 
 def creating_info_jason(file_path:str, image_link:str, save_to_folder):
     json_info_file = open(f'{save_to_folder}\images\\{file_path}.json', 'a')
     image_details = {
                     'file_path': file_path,
                     'image_link': image_link,
-                    # 'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
+                    'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
                 }
     json.dump(image_details, json_info_file, indent=6)
     json_info_file.close()
@@ -46,25 +40,51 @@ def creating_info_jason(file_path:str, image_link:str, save_to_folder):
 
 def extract_image_link(text):
     # Regular expression to match URLs ending with common image file extensions
-    image_link_pattern = r'\b\S+\.(png|jpg|jpeg|gif|bmp)\b'
-    match = re.findall(URL_REGEX, text)
-    return match.group(0) if match is not None else None
+    url_match = re.findall(URL_IMAGE_LINK_REGEX, text)
+    html_match = re.findall(HTML_IMAGE_LINK_REGEX_SDK, text)
+    images_links = url_match + html_match
+    return images_links
 
 
-def download_image_to_folder(folder_path, image_path):
-    print(f'Downloading image {image_path} to{folder_path}')
-    # not finished
+def download_image_to_folder(folder_path, url):
+    print(f'Downloading image {url} to{folder_path}')
+    response = requests.get(url)
+    if response.status_code == 200:
+        filename = url.split('/')[-1]
+        full_path = os.path.join(folder_path, filename)
+        with open(full_path, 'wb') as f:
+            f.write(response.content)
+        print(f"Image downloaded and saved to {full_path}")
+    else:
+        print("Failed to download image")
 
 
-def search_image_link(file_path):
+def search_image_links(file_path):
+    '''
+        Searches for image links in the given file and downloads the images to a folder.
+
+        Parameters:
+            file_path (str): The path to the file containing text with image links.
+
+        Returns:
+            None
+
+        Raises:
+            OSError: If there is an error creating the folder to save images or downloading images.
+
+        The function reads the content of the file located at 'file_path' and extracts image links from it.
+        Then, it creates a folder to save the images and downloads each image to the folder.
+        The folder name is derived from the file name by removing the extension and appending it to the specified path 'SAVING_IMAGES_AT'.
+    '''
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
-        if image_link := extract_image_link(content):
+        if image_links := extract_image_link(content):
             folder_path = f'{SAVING_IMAGES_AT}\\{file_path[:-3]}'
             try:
                 os.mkdir(folder_path)
-                creating_info_jason(file_path, image_link, folder_path)
-                download_image_to_folder(folder_path, file_path)
+                for image_link in image_links:
+                    creating_info_jason(file_path, image_link, folder_path)
+                    download_image_to_folder(folder_path, file_path)
             except OSError as error:
                 print(error)
 
