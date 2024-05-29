@@ -1,5 +1,5 @@
-id: bd01f3e5-621f-46ab-85c4-b222fccb14b7
-version: 38
+id: Mimecast test api 2.0
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Mimecast test api 2.0
 starttaskid: "0"
@@ -1038,7 +1038,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "31"
     scriptarguments:
       policyID:
         simple: ${Mimecast.AntispoofingBypassPolicy.id}
@@ -1051,87 +1051,6 @@ tasks:
         "position": {
           "x": -870,
           "y": 820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 0d9d758d-ca14-425f-8e0b-8433172f7b40
-    type: regular
-    task:
-      id: 0d9d758d-ca14-425f-8e0b-8433172f7b40
-      version: -1
-      name: try mimecast-get-policy
-      description: Get a blocked sender policy by ID.
-      script: '|||mimecast-get-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#error#':
-      - "31"
-      '#none#':
-      - "34"
-    scriptarguments:
-      policyID:
-        simple: ${Mimecast.Policy.ID}
-      policyType:
-        simple: antispoofing-bypass
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 4aa28004-a085-4eeb-8846-912eb8e110f5
-    type: condition
-    task:
-      id: 4aa28004-a085-4eeb-8846-912eb8e110f5
-      version: -1
-      name: raise if not delete
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "36"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: "1"
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 1255
         }
       }
     note: false
@@ -1173,33 +1092,6 @@ tasks:
         "position": {
           "x": -870,
           "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 7f4690f4-0835-4469-8b7c-7a217b9a11de
-    type: title
-    task:
-      id: 7f4690f4-0835-4469-8b7c-7a217b9a11de
-      version: -1
-      name: end
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 1430
         }
       }
     note: false
@@ -1296,7 +1188,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1735,
+        "height": 1560,
         "width": 3030,
         "x": -1300,
         "y": -240
