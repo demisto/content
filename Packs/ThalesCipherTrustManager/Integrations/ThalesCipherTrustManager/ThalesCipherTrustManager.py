@@ -586,7 +586,8 @@ USERS_LIST_OUTPUT = [
                    description="An optional list of warning messages, usually used to note when unsupported query parameters were ignored."),
     OutputArgument(name="resources.userid", output_type=str, description="A unique identifier for API call usage."),
     OutputArgument(name="resources.username", output_type=str,
-                   description="The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated."),
+                   description="The login name of the user. This is the identifier used to login. This attribute is required to "
+                   "create a user, but is omitted when getting or listing user resources. It cannot be updated."),
     OutputArgument(name="resources.connection", output_type=str,
                    description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
     OutputArgument(name="resources.email", output_type=str, description="E-mail of the user"),
