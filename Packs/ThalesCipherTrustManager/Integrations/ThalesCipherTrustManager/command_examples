@@ -10,4 +10,6 @@
 !ciphertrust-user-update user_id="local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab" failed_logins_count=0 allowed_auth_methods="password,user_certificate" allowed_client_types="empty" certificate_subject_dn="OU=organizationUnit,O=organization,L=location,ST=state,C=country"
 !ciphertrust-user-delete user_id="local|123a3b1b-ab12-42ab-b123-a1b2c3b123ab"
 !ciphertrust-user-password-change username="test_user" password="123ABC!123abc" new_password="new_123ABC!123abc"
-!ciphertrust-local-ca-create cn="test.com" algorithm="RSA" name_fields_raw_json="[ {\"O\" : \"FakeCompany\", \"OU\": \"RnD\", \"C\": \"US\", \"ST\": \"CA\", \"L\": \"FakeCity\"}, {\"OU\": \"Fake Group Inc.\"}]" email="fakeemail@fakecompany.com,fakeemail1@fakecompany.com" ip="10.10.10.10,20.20.20.20" dns_names="*.fakecompany.com,*.fakecompany.net"
+!ciphertrust-local-ca-create cn="test.com" name="test_local_ca" algorithm="RSA" name_fields_raw_json="[ {\"O\" : \"FakeCompany\", \"OU\": \"RnD\", \"C\": \"US\", \"ST\": \"CA\", \"L\": \"FakeCity\"}, {\"OU\": \"Fake Group Inc.\"}]" email="fakeemail@fakecompany.com,fakeemail1@fakecompany.com" ip="10.10.10.10,20.20.20.20" dns_names="*.fakecompany.com,*.fakecompany.net"
+!ciphertrust-local-ca-list state=pending subject="/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc."
+!ciphertrust-local-ca-list local_ca_id="test_local_ca" chained=true
