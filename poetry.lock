@@ -4574,6 +4574,22 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
+name = "types-emoji"
+version = "2.1.0.3"
+description = "Typing stubs for emoji"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-emoji-2.1.0.3.tar.gz", hash = "sha256:98ddb0ff5f48622550c431206e4dbfcbde8ca8bc03fcfbb9962a778d2049aa13"},
+    {file = "types_emoji-2.1.0.3-py3-none-any.whl", hash = "sha256:32fe5cf02c4834bb59579380f600a89d1471571fb56e36465cbd0c7d95f669ca"},
+]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
+
+[[package]]
 name = "types-markdown"
 version = "3.6.0.20240316"
 description = "Typing stubs for Markdown"
@@ -5245,4 +5261,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "af79b13c2b7809f4608170349c69730d3c4e4fa1a4f650268917030e4d3d7250"
+content-hash = "9cb337bb3c1454136afb75e57caf829b58dea3c633ca4097e1f3ea57f970c18d"
