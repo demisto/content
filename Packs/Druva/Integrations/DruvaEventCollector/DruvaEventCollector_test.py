@@ -2,6 +2,8 @@ from CommonServerPython import DemistoException
 from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events
 import pytest
 
+import requests
+
 
 @pytest.fixture()
 def mock_client() -> Client:
@@ -98,10 +100,15 @@ def test_refresh_access_token(mocker, mock_client):
     - Ensure exception is thrown
     - Ensure informative message was shown
     """
-    client = Client(base_url="client_test")
-    mocker.patch.object(client, "_http_request", side_effect=DemistoException(message='Error: invalid_grant'))
-    with pytest.raises(DemistoException, match="Make sure Server URL, Client ID and Secret Key are correctly entered."):
-        client.refresh_access_token(credentials="test")
+    response = requests.Response()
+    response.status_code = 400
+
+    mocker.patch.object(mock_client, "_http_request", return_value=response)
+
+    error_message = "Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
+
+    with pytest.raises(DemistoException, match=error_message):
+        mock_client.refresh_access_token(credentials="test")
 
 
 EVENT_2 = {

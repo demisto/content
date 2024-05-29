@@ -27,16 +27,13 @@ class Client(BaseClient):
         decoded_credentials = encoded_credentials.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {decoded_credentials}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
-        try:
-            response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
-        except Exception as e:
-            # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
-            if "invalid_grant" in str(e):
-                informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
-            else:
-                informative_message = str(e)
 
-            raise DemistoException(f'Error in test-module: {informative_message}') from e
+        response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
+
+        # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
+        if response_json.status_code == 400:
+            informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
+            raise DemistoException(f'Error in test-module: {informative_message}')
 
         access_token = response_json['access_token']
         self._headers = {'Authorization': f'Bearer {access_token}'}
