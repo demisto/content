@@ -2,7 +2,7 @@
     "name": "Zabbix",
     "description": "Allow integration with Zabbix api.",
     "support": "developer",
-    "currentVersion": "1.0.34",
+    "currentVersion": "1.0.35",
     "author": "Henrique Caires",
     "url": "https://support.zabbix.com/secure/Dashboard.jspa",
     "email": "henrique@caires.net.br",
