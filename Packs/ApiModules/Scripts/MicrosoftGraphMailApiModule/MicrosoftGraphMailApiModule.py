@@ -53,6 +53,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
     @classmethod
     def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
+        # Added requires_upload for handling the attachment in upload session
         file_attachments_result = []
         for attachment in inline_from_layout_attachments:
             file_attachments_result.append(
@@ -726,7 +727,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
         start_chunk_index = 0
         # The if is for adding functionality of inline attachment sending from layout
-        end_chunk_index = attachment_size if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
+        end_chunk_index = attachment_size -1 if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
 
         chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 
@@ -1553,7 +1554,7 @@ class GraphMailUtils:
         return {'flagStatus': flag}
 
     @staticmethod
-    def build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments, inline_attachments_from_layout=None):
+    def build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments, inline_attachments_from_layout=[]):
         """
         Builds both inline and regular attachments.
 
