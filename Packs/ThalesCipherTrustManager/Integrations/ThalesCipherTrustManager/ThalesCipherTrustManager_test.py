@@ -287,7 +287,7 @@ LOCAL_CA_CREATE_TEST_ARGS = [
     {
         CommandArguments.CN: "test.localca2",
     },
-{
+    {
         CommandArguments.CN: "example.localca",
         CommandArguments.ALGORITHM: "RSA",
         CommandArguments.COPY_FROM_CA: "abcd1234-ab12-cd34-ef56-abcdef123456",
@@ -300,7 +300,15 @@ LOCAL_CA_CREATE_TEST_ARGS = [
     },
 ]
 
-LOCAL_CA_LIST_TEST_ARGS = []
+FAKE_CERT = "-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa\nfeakfafeefaafakfafeakffakeeafffkafeafeekaffakeefaakfefaefaefakfaffka\nfaeffakeeffeakafakefeaefeffaafkekaeffkaeffafakfaefffaeefffaeffakekafa\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n-----END CERTIFICATE REQUEST-----\n",
+FAKE_SUBJECT = "/C=FA/ST=Fk/L=FakeCity/O=FakeOrg/OU=FakeUnit/OU=FakeGroup/CN=fake.example.com"
+
+LOCAL_CA_LIST_TEST_ARGS = [
+    {},  # Basic request
+    {"subject": FAKE_SUBJECT, "limit": 10, "page": 1, "issuer": "example_issuer", "state": "active", "cert": FAKE_CERT,
+     "issuer": FAKE_SUBJECT},
+
+]
 LOCAL_CA_UPDATE_TEST_ARGS = []
 LOCAL_CA_DELETE_TEST_ARGS = []
 LOCAL_CA_SELF_SIGN_TEST_ARGS = []
@@ -648,13 +656,17 @@ def test_local_ca_list_command_id_provided(mock_get_local_ca):
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
     # todo: pass id
-    args = {}
+    args = {"local_ca_id": "123e4567-e89b-12d3-a456-426614174000", "chained": "true"}
     result = local_ca_list_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == {'resources': [mock_get_local_ca.return_value]}
     assert result.raw_response == mock_get_local_ca.return_value
+
+    args = {"chained": "true"}
+    with pytest.raises(ValueError):
+        local_ca_list_command(client, args)
 
 
 @pytest.mark.parametrize('args', LOCAL_CA_UPDATE_TEST_ARGS)

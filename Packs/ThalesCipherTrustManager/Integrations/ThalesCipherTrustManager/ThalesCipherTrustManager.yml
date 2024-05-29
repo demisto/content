@@ -618,7 +618,7 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: Returns a list of local CA certificates. The results can be filtered, using the query parameters.
+    description: Returns a list of local CA certificates. The results can be filtered, using the command arguments.
     name: ciphertrust-local-ca-list
     arguments:
     - name: subject
@@ -629,13 +629,13 @@ script:
       default: false
     - name: local_ca_id
       isArray: false
-      description: Filter by local CA ID
+      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
       required: false
       secret: false
       default: false
     - name: chained
       isArray: false
-      description: When set to ‘true’ the full CA chain is returned with the certificate
+      description: When set to ‘true’ the full CA chain is returned with the certificate.Must be used with the local CA ID.
       required: false
       secret: false
       default: false
@@ -684,7 +684,76 @@ script:
       secret: false
       default: false
       defaultValue: 50
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.LocalCA.limit
+      description: The max number of records returned. Equivalent to 'limit' in SQL.
+      type: Number
+    - contextPath: CipherTrust.LocalCA.skip
+      description: The index of the first record returned. Equivalent to 'offset' in SQL.
+      type: Number
+    - contextPath: CipherTrust.LocalCA.total
+      description: The total records matching the query.
+      type: Number
+    - contextPath: CipherTrust.LocalCA.messages
+      description: An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
+      type: Unknown
+    - contextPath: CipherTrust.LocalCA.resources.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.state
+      description: Current state of the CA (e.g., pending, active).
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.resources.updatedAt
+      description: Timestamp of last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.resources.csr
+      description: Certificate Signing Request for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.cert
+      description: Certificate associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.resources.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.resources.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.resources.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
   - deprecated: false
     description: Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration.
     name: ciphertrust-local-ca-self-sign
