@@ -357,6 +357,8 @@ def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_bin
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
             if browser:
+                # TODO: remove the log below
+                demisto.log(f"Created new browser at port {chrome_port}")
                 browser_to_chrome_process[browser] = process
                 new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
                 write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
@@ -410,12 +412,12 @@ def setup_new_chrome_instance(chrome_port, instance_name, chrome_options):
     return None, None
 
 
-def get_chrome_instances_info_dictionaries():
+def get_chrome_instances_info_dictionaries(info):
     port_to_instance_name = {}
     instance_name_to_chrome_options = {}
     chrome_options_to_port = {}
     instance_name_to_port = {}
-    info = read_info_file(CHROME_INSTANCES_FILE_PATH)
+
     if info:
         lines = info.splitlines()
         for line in lines:
@@ -426,9 +428,7 @@ def get_chrome_instances_info_dictionaries():
             chrome_options_to_port[chrome_options] = port
             instance_name_to_port[instance_name] = port
 
-        return port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port
-
-    return {}, {}, {}, {}
+    return port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port
 
 
 def generate_new_chrome_instance(instance_name, chrome_options):
@@ -445,12 +445,18 @@ def chrome_manager():
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
 
-    port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port = \
-        get_chrome_instances_info_dictionaries()
+    # TODO: should remove it?
+    if not chrome_options:
+        chrome_options = 'None'
 
+    instance_name = instance_name[:-36]  # remove the guid from the instance_name
     info = read_info_file(CHROME_INSTANCES_FILE_PATH)
+
+    port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port = \
+        get_chrome_instances_info_dictionaries(info)
+
     if info:
-        demisto.log("if info")
+        demisto.log("in if info - there is an info")
         try:
             splitted_info = info.splitlines()
         except:
@@ -460,9 +466,31 @@ def chrome_manager():
         ports = list(ports_tuple)
         instances_name = list(instances_name_tuple) if instances_name_tuple else []
         chromes_options = list(chromes_options_tuple) if chromes_options_tuple else []
-    if not info or (chrome_options in chromes_options and instance_name not in instances_name) or (
-        chrome_options not in chromes_options and instance_name not in instances_name):
+
+        if not chromes_options and instances_name:
+            chromes_options.append('None')
+
+        # TODO: remove the log below
+        demisto.log(f"{chromes_options=}, {type(chromes_options[0])}, {instances_name=}")
+
+    if not info or (((chrome_options in chromes_options) or (
+        str(chrome_options) in chromes_options)) and instance_name not in instances_name) or (
+        ((chrome_options not in chromes_options) and (
+            str(chrome_options) not in chromes_options)) and instance_name not in instances_name):
         demisto.log("in chrome manager first if - case 1,2,3")
+        # TODO: remove the block below
+        if not info:
+            demisto.log("first if - no info file found (case 1)")
+        else:
+            demisto.log("first if - info file exist")
+            if ((chrome_options in chromes_options) or (
+                str(chrome_options) in chromes_options)) and instance_name not in instances_name:
+                demisto.log(
+                    f"chrome_options in chromes_options and instance_name not in instances_name (case 2) {chrome_options=}, {instance_name=}")
+            elif ((chrome_options not in chromes_options) and (
+                str(chrome_options) not in chromes_options)) and instance_name not in instances_name:
+                demisto.log(
+                    f"chrome_options not in chromes_options and instance_name not in instances_name (case 3) {chrome_options=}, {instance_name=}")
         # case 1: file is empty, that means no chrome open on the machine
         # or
         # case 2: new instance with the same configuration as another instance
@@ -470,17 +498,23 @@ def chrome_manager():
         # case 3: chrome_options not exist and integration instance not exist in the file
         # -> create new chrome
         return generate_new_chrome_instance(instance_name, chrome_options)
-    elif chrome_options not in chromes_options and instance_name in instances_name:
-        demisto.log("in chrome manager second if - case 4")
+    elif ((chrome_options not in chromes_options) and (
+        str(chrome_options) not in chromes_options)) and instance_name in instances_name:
+        # TODO: remove the log below
+        demisto.log(
+            f"in chrome manager second if - case 4, chrome_options not in chromes_options and instance_name in instances_name {chrome_options=}, {instance_name=}")
         # case 4: instance updated before with different configuration
         # should kill the chrome and create new one
         chrome_port = instance_name_to_port.get(instance_name)
         browser = is_chrome_running_locally(chrome_port)
         terminate_chrome(browser)
         return generate_new_chrome_instance(instance_name, chrome_options)
-    elif (instance_name in instances_name) and (chrome_options in chromes_options) and (instance_name_to_chrome_options.get(
-        instance_name) == chrome_options):
-        demisto.log("in chrome manager third if - case 5")
+    elif (instance_name in instances_name and (
+        (chrome_options in chromes_options) or (str(chrome_options) in chromes_options))) and (
+        instance_name_to_chrome_options.get(
+            instance_name) == chrome_options):
+        # TODO: remove the log below
+        demisto.log(f"in chrome manager third if - case 5 {instance_name=}, {chromes_options=}")
         # Case 5: The instance conf exists in the file and the chrome conf match to it
         chrome_port = chrome_options_to_port.get(chrome_options)
         browser = is_chrome_running_locally(chrome_port)
