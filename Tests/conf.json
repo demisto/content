@@ -1191,6 +1191,10 @@
             "playbookID": "Mimecast test"
         },
         {
+            "integrations": "MimecastV2",
+            "playbookID": "Mimecast Test api 2.0"
+        },
+        {
             "playbookID": "CreateEmailHtmlBody_test_pb",
             "fromversion": "4.1.0"
         },

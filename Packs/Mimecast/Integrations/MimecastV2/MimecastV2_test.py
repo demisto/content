@@ -122,7 +122,7 @@ def test_update_policy(mocker):
     mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
 
-    res = MimecastV2.update_block_sender_policy_command()
+    res = MimecastV2.update_policy_command()
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
 
@@ -131,7 +131,7 @@ def test_update_policy(mocker):
                         return_value=set_empty_value_args_res_list_all)
     mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    res = MimecastV2.update_block_sender_policy_command()
+    res = MimecastV2.update_policy_command()
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
     assert res['Contents']['Sender']['Domain'] == 'gmail.com'
@@ -789,11 +789,11 @@ def test_list_policies_command(mocker):
     """
 
     args = {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'address-alteration'}
-    mock_response = util_load_json('test_data/list_policies_response.json')
+    mock_response = (util_load_json('test_data/list_policies_response.json'), 1)
     mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
     result = MimecastV2.list_policies_command(args)
-    assert result.outputs == mock_response
-    assert result.outputs_prefix == 'Mimecast.Policies'
+    assert result.outputs == mock_response[0]
+    assert result.outputs_prefix == 'Mimecast.AddressAlterationPolicy'
 
 
 def test_create_antispoofing_bypass_policy_command(mocker):
@@ -828,7 +828,7 @@ def test_create_antispoofing_bypass_policy_command(mocker):
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.create_antispoofing_bypass_policy_command(args)
     id = mock_response['data'][0]['id']
-    assert result.outputs["data"] == mock_response.get("data")
+    assert result.outputs == mock_response.get("data")
     assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
     assert result.readable_output == f'Anti-Spoofing Bypass policy {id} was created successfully'
 
@@ -867,7 +867,7 @@ def test_update_antispoofing_bypass_policy_command(mocker):
     )
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     result = MimecastV2.update_antispoofing_bypass_policy_command(args)
-    assert mock_response.get('data') == result.outputs.get('data')
+    assert mock_response.get('data') == result.outputs
     assert f'Policy ID- {args["policy_id"]} has been updated successfully.' == result.readable_output
     assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
 
@@ -903,6 +903,6 @@ def test_update_address_alteration_policy_command(mocker):
     mock_response = util_load_json('test_data/update_address_alteration_policy_response.json')
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.update_address_alteration_policy_command(args)
-    assert result.outputs.get("data") == mock_response.get("data")
+    assert result.outputs == mock_response.get("data")
     assert result.readable_output == f'{id} has been updated successfully'
     assert result.outputs_prefix == 'Mimecast.AddressAlterationPolicy'

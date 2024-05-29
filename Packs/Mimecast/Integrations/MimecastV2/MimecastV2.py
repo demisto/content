@@ -894,18 +894,17 @@ def url_decode_request(url):
     return response.get('data')[0].get('url')
 
 
-def get_policy(args):
+def list_blocked_sender_policies_command(args):
     headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
     contents = []
     context = {}
     policy_id = args.get('policyID')
-    policy_type = args.get('policyType', 'blockedsenders')
-    title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
+    title = 'Mimecast list blocked sender policies: \n These are the existing blocked sender Policies:'
 
     if policy_id:
         title = 'Mimecast Get Policy'
 
-    policies_list = get_policy_request(policy_type, policy_id)
+    policies_list = get_policy_request(policy_type='blockedsenders', policy_id=policy_id)
     policies_context = []
     for policy_list in policies_list:
         policy = policy_list.get('policy', {})
@@ -960,6 +959,72 @@ def get_policy(args):
     }
 
     return results
+
+
+def get_policy_command(args):
+    headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+    contents = []
+    policy_id = args.get('policyID')
+    policy_type = args.get('policyType', 'blockedsenders')
+    title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
+
+    title = f'Mimecast Get {policy_type} Policy'
+
+    policies_list = get_policy_request(policy_type, policy_id)
+    policies_context = []
+    for policy_list in policies_list:
+        policy = policy_list.get('policy', {})
+        sender = policy.get('from', {})
+        reciever = policy.get('to', {})
+        contents.append({
+            'Policy ID': policy_list['id'],
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Email Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Reciever': {
+                'Group': reciever.get('groupId'),
+                'Email Address': reciever.get('emailAddress'),
+                'Domain': reciever.get('emailDomain'),
+                'Type': reciever.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'Start': policy.get('fromDate'),
+            'End': policy.get('toDate')
+        })
+        policies_context.append({
+            'ID': policy_list['id'],
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Reciever': {
+                'Group': reciever.get('groupId'),
+                'Address': reciever.get('emailAddress'),
+                'Domain': reciever.get('emailDomain'),
+                'Type': reciever.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'FromDate': policy.get('fromDate'),
+            'ToDate': policy.get('toDate')
+        })
+
+    output_type = {
+        'blockedsenders': 'BlockedSendersPolicy',
+        'antispoofing-bypass': 'AntispoofingBypassPolicy',
+        'address-alteration': 'AddressAlterationPolicy',
+    }
+
+    return CommandResults(
+        outputs_prefix=f'Mimecast.{output_type[policy_type]}',
+        outputs=policies_context,
+        readable_output=tableToMarkdown(title, contents, headers),
+        outputs_key_field='id'
+    )
 
 
 def get_policy_request(policy_type='blockedsenders', policy_id=None):
@@ -1044,7 +1109,76 @@ def get_arguments_for_policy_command(args):
     return policy_obj, option
 
 
-def create_block_sender_policy_command():
+def create_block_sender_policy_command(policy_args):
+    headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+    policy_obj, option = get_arguments_for_policy_command(policy_args)
+    policy_list = create_or_update_policy_request(policy_obj, option)
+    policy = policy_list.get('policy')
+    policy_id = policy_list.get('id')
+    title = 'Mimecast Create block sender Policy: \n Policy Was Created Successfully!'
+    sender = policy.get('from')
+    receiver = policy.get('to')
+    description = policy.get('description')
+    content = {
+        'Policy ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Email Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Reciever': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'Start': policy.get('fromDate'),
+        'End': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+    policies_context = {
+        'ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Reciever': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'FromDate': policy.get('fromDate'),
+        'ToDate': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+
+    return CommandResults(
+        outputs_prefix='Mimecast.BlockedSendersPolicy',
+        outputs=policies_context,
+        readable_output=tableToMarkdown(title, content, headers),
+        outputs_key_field='id'
+    )
+
+
+def create_policy_command():
     headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
     context = {}
     policy_args = demisto.args()
@@ -1153,7 +1287,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
     return policy_obj, option, policy_id
 
 
-def update_block_sender_policy_command():
+def update_policy_command():
     """
           Update policy according to policy ID
      """
@@ -1224,6 +1358,69 @@ def update_block_sender_policy_command():
     return results
 
 
+def update_block_sender_policy_command(policy_args):
+    """
+          Update policy according to policy ID
+     """
+    headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+    policy_obj, option = get_arguments_for_policy_command(policy_args)
+    policy_id = str(policy_args.get('policy_id', ''))
+    if not policy_id:
+        raise Exception("You need to enter policy ID")
+    policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
+    response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
+    policy = response.get('policy')
+    title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
+    sender = policy.get('from')
+    receiver = policy.get('to')
+    description = policy.get('description')
+    contents = {
+        'Policy ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Email Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'Start': policy.get('fromDate'),
+        'End': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+    policies_context = {
+        'ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'FromDate': policy.get('fromDate'),
+        'ToDate': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+
+    return CommandResults(
+        outputs_prefix='Mimecast.BlockedSendersPolicy',
+        outputs=policies_context,
+        readable_output=tableToMarkdown(title, contents, headers),
+        outputs_key_field='id'
+    )
+
+
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type='blockedsenders'):
     # Setup required variables
 
@@ -1275,7 +1472,6 @@ def delete_policy():
 def delete_policy_request(policy_type, policy_id=None):
     # Setup required variables
     api_endpoints = {
-        'blockedsenders': 'blockedsenders/delete-policy',
         'antispoofing-bypass': 'antispoofing-bypass/delete-policy',
         'address-alteration': 'address-alteration/delete-policy',
     }
@@ -3215,10 +3411,10 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
+    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
 
     contents = []
-    for policy_list in policies_list[0]:
+    for policy_list in policies_list:
         policy = policy_list.get('policy', {})
         sender = policy.get('from', {})
         reciever = policy.get('to', {})
@@ -3244,10 +3440,16 @@ def list_policies_command(args: dict) -> CommandResults:
 
     title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
 
+    output_type = {
+        'blockedsenders': 'BlockedSendersPolicy',
+        'antispoofing-bypass': 'AntispoofingBypassPolicy',
+        'address-alteration': 'AddressAlterationPolicy',
+    }
     return CommandResults(
-        outputs_prefix='Mimecast.Policies',
+        outputs_prefix=f'Mimecast.{output_type[policy_type]}',
         outputs=policies_list,
-        readable_output=tableToMarkdown(title, contents, headers)
+        readable_output=tableToMarkdown(title, contents, headers),
+        outputs_key_field='id'
     )
 
 
@@ -3288,8 +3490,9 @@ def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
-        outputs=response,
-        readable_output=f'Anti-Spoofing Bypass policy {id} was created successfully'
+        outputs=response.get('data'),
+        readable_output=f'Anti-Spoofing Bypass policy {id} was created successfully',
+        outputs_key_field='id'
     )
 
 
@@ -3323,8 +3526,9 @@ def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Mimecast.AntispoofingBypassPolicy',
-        outputs=response,
-        readable_output=f'Policy ID- {id} has been updated successfully.'
+        outputs=response.get('data'),
+        readable_output=f'Policy ID- {id} has been updated successfully.',
+        outputs_key_field='id'
     )
 
 
@@ -3348,8 +3552,9 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Mimecast.AddressAlterationPolicy',
-        outputs=response,
-        readable_output='Address Alteration policy was created successfully'
+        outputs=response.get('data'),
+        readable_output='Address Alteration policy was created successfully',
+        outputs_key_field='id'
     )
 
 
@@ -3373,8 +3578,9 @@ def update_address_alteration_policy_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Mimecast.AddressAlterationPolicy',
-        outputs=response,
-        readable_output=f'{id} has been updated successfully'
+        outputs=response.get('data'),
+        readable_output=f'{id} has been updated successfully',
+        outputs_key_field='id'
     )
 
 
@@ -3401,12 +3607,18 @@ def main():
             fetch_incidents()
         elif command == 'mimecast-query':
             demisto.results(query(args))
-        elif command == 'mimecast-get-policy' or command == 'mimecast-list-blocked-sender-policies':
-            return_results(get_policy(args))
-        elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
-            demisto.results(create_block_sender_policy_command())
-        elif command == 'mimecast-update-policy' or command == 'mimecast-update-block-sender-policy':
-            demisto.results(update_block_sender_policy_command())
+        elif command == 'mimecast-get-policy':
+            return_results(get_policy_command(args))
+        elif command == 'mimecast-list-blocked-sender-policies':
+            return_results(list_blocked_sender_policies_command(args))
+        elif command == 'mimecast-create-policy':
+            demisto.results(create_policy_command())
+        elif command == 'mimecast-create-block-sender-policy':
+            return_results(create_block_sender_policy_command(args))
+        elif command == 'mimecast-update-policy':
+            demisto.results(update_policy_command())
+        elif command == 'mimecast-update-block-sender-policy':
+            return_results(update_block_sender_policy_command(args))
         elif command == 'mimecast-delete-policy':
             demisto.results(delete_policy())
         elif command == 'mimecast-manage-sender':
