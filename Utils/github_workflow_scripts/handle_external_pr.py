@@ -255,6 +255,17 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
+    """
+    Checks if tim reviewer needed, if the pack is new and not part of Master
+
+    Arguments:
+        - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
+        whether a security engineer is required for the review.
+        - 'external_pr_branch': str : name of branch to checkout
+        - 'repo_name': str : name of repository
+
+    Returns: `bool` whether a security engineer should be assigned
+    """
     pack_dirs_to_check = packs_to_check_in_pr(pr_files)
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
@@ -292,6 +303,8 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
 
     Arguments:
     - pr_files: List[str] The list of files changed in the Pull Request.
+    - 'external_pr_branch': str : name of branch to checkout
+    - 'repo_name': str : name of repository
 
     Returns: returns True or False if tim reviewer needed
     """
@@ -327,6 +340,8 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_
     Arguments:
     - pr_files: tThe list of files changed in the Pull Request
     - support_label: the support label of the PR - the highest one.
+    - 'external_pr_branch': str : name of branch to checkout
+    - 'repo_name': str : name of repository
 
     Returns: True or false if tim reviewer needed
     """
