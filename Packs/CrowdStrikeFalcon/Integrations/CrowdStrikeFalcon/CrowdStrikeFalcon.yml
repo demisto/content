@@ -1,7 +1,4 @@
 category: Endpoint
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: CrowdstrikeFalcon
   version: -1
@@ -171,7 +168,7 @@ configuration:
   advanced: true
   required: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 1
+  defaultvalue: '1'
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   type: 0
@@ -194,10 +191,10 @@ script:
       name: filter
     - description: The maximum records to return [1-5000].
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     - description: The offset to start retrieving records from.
       name: offset
-      defaultValue: 0
+      defaultValue: '0'
     - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
     - description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
@@ -442,7 +439,7 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.).
       name: host_ids
       required: true
@@ -738,7 +735,7 @@ script:
       name: timeout
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -2478,7 +2475,7 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Execute an active responder kill command on a single host.
@@ -2511,7 +2508,7 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
@@ -2529,7 +2526,7 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
@@ -2544,7 +2541,7 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
@@ -2564,7 +2561,7 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
@@ -2576,7 +2573,7 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
@@ -2601,7 +2598,7 @@ script:
       name: SHA256
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
+      defaultValue: 'false'
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     - name: polling_timeout
@@ -3664,8 +3661,7 @@ script:
       hidden: true
     - name: hide_polling_output
       hidden: true
-      description: ''
-      defaultValue: true
+      defaultValue: 'true'
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
     polling: true
@@ -4338,7 +4334,6 @@ script:
       name: filter
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
-    outputs: []
   - arguments:
     - description: API type.
       name: type
@@ -4398,7 +4393,7 @@ script:
       name: next_token
     - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
       name: page_size
-      defaultValue: 50
+      defaultValue: '50'
     - description: The page number. Default is 1.
       name: page
     - description: The maximum number of identity entities to list.
@@ -4558,7 +4553,7 @@ script:
       name: service
     - description: The maximum number of entities to list.
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     description: Returns information about current policy settings.
     name: cs-falcon-cspm-list-service-policy-settings
     outputs:
@@ -4775,10 +4770,10 @@ script:
       name: filter
     - description: The integer offset to start retrieving records from.
       name: offset
-      defaultValue: 0
+      defaultValue: '0'
     - description: The maximum number of records to return.
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     description: List users.
     name: cs-falcon-list-users
     outputs:
@@ -5017,17 +5012,15 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.91908
+  dockerimage: demisto/py3-tools:1.0.0.96102
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
-defaultclassifier: CrowdStrike Falcon
-defaultmapperin: CrowdStrike Falcon-Mapper
-defaultmapperout: CrowdStrike Falcon - Outgoing Mapper

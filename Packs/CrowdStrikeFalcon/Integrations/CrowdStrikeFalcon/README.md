@@ -8,17 +8,20 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., <https://api.crowdstrike.com>) |  | True |
-    | Client ID |  | True |
-    | Secret |  | True |
+    | Server URL (e.g., https://api.crowdstrike.com) |  | True |
+    | Client ID |  | False |
+    | Secret |  | False |
+    | Client ID |  | False |
+    | Secret |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max incidents per fetch |  | False |
     | Endpoint Detections fetch query |  | False |
     | Endpoint Incidents fetch query |  | False |
     | IDP Detections fetch query |  | False |
+    | Mobile Detections fetch query |  | False |
     | IOM fetch query | Use the Falcon Query Language. For more information, refer to the integration docs. | False |
-    | IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs. | False |
+    | IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs. | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
@@ -30,8 +33,8 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Incidents Fetch Interval |  | False |
     | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
-
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ### Required API client scope
 
@@ -6140,6 +6143,25 @@ Delete ODS scheduled scans.
 #### Context Output
 
 There is no context output for this command.
+### cs-falcon-ods-delete-scheduled-scan
+
+***
+Delete ODS scheduled scans.
+
+#### Base Command
+
+`cs-falcon-ods-delete-scheduled-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Comma-separated list of scheduled scan IDs to delete. | Optional | 
+| filter | Valid CS-Falcon-FQL filter to delete scans by. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 
 #### Command example
 
@@ -6195,6 +6217,7 @@ List identity entities.
 | CrowdStrike.IDPEntity.RiskScoreSeverity | String | The identity entity risk score severity. | 
 | CrowdStrike.IDPEntity.SecondaryDisplayName | String | The identity entity secondary display name. | 
 | CrowdStrike.IDPEntity.EmailAddresses | String | The identity entity email address. | 
+
 
 #### Base Command
 
@@ -6424,6 +6447,7 @@ Returns information about current policy settings.
 | CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short | String | The NIST benchmark shortname. | 
 | CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number. | 
 | CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 
+
 
 #### Command example
 
@@ -6656,10 +6680,10 @@ List users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID(s) of specific users to list. | Optional | 
-| filter | The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. | Optional | 
-| offset | The integer offset to start retrieving records from. | Optional | 
-| limit | The maximum number of records to return. Default is 100. | Optional | 
+| id | IDs (UUID) of specific users to list. | Optional | 
+| filter | The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. Example: "first_name:'John'". | Optional | 
+| offset | The integer offset to start retrieving records from. Default is 0. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -6672,6 +6696,7 @@ List users.
 | CrowdStrike.Users.last_name | String | The user's last name. | 
 | CrowdStrike.Users.last_login_at | String | The timestamp of the user's last login. | 
 | CrowdStrike.Users.created_at | String | The timestamp of the user's creation. | 
+
 
 ### cs-falcon-get-incident-behavior
 

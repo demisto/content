@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
 import base64
@@ -107,6 +108,8 @@ IOC_KEY_MAP = {
     'severity': 'Severity',
     'tags': 'Tags',
 }
+
+test
 
 IOC_HEADERS = ['ID', 'Action', 'Severity', 'Type', 'Value', 'Expiration', 'CreatedBy', 'CreatedTime', 'Description',
                'ModifiedBy', 'ModifiedTime', 'Platforms', 'Policy', 'ShareLevel', 'Source', 'Tags']
