@@ -107,7 +107,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url: str, verify: bool, headers: dict):
+    def __init__(self, base_url, verify: bool, headers: dict):
         super().__init__(base_url=base_url, verify=verify, headers=headers)
 
     def send_get_request(self, url_suffix, params) -> Any:
@@ -159,12 +159,12 @@ def extract_required_fields_for_domains_search_hr(domains_list) -> list:
             'Paid Through Date': domain.get('paidThroughDate'),
             'Name Servers': domain.get('nameServers'),
             'Dns Type': domain.get('dnsType'),
-            'Whois Contact first Name': [get_whois_contacts_fields_for_search_domains_command
-                                         (domain.get('whoisContacts'), 'firstName')],
-            'Whois Contact last Name': [get_whois_contacts_fields_for_search_domains_command
-                                        (domain.get('whoisContacts'), 'lastName')],
-            'Whois Contact email': [get_whois_contacts_fields_for_search_domains_command
-                                    (domain.get('whoisContacts'), 'email')]
+            'Whois Contact first Name': get_whois_contacts_fields_for_search_domains_command
+                                         (domain.get('whoisContacts'), 'firstName'),
+            'Whois Contact last Name': get_whois_contacts_fields_for_search_domains_command
+                                        (domain.get('whoisContacts'), 'lastName'),
+            'Whois Contact email': get_whois_contacts_fields_for_search_domains_command
+                                    (domain.get('whoisContacts'), 'email')
         }
 
         filtered_domains.append(filtered_domain)
@@ -192,6 +192,22 @@ def extract_required_fields_for_domains_configurations_list_hr(configurations) -
 
     return filtered_configurations
 
+def extract_required_fields_for_domains_availability_check_hr(available_domains):
+    filtered_available_domains = []
+
+    for domain in available_domains:
+        filtered = {
+        'Qualified Domain Name': domain.get('qualifiedDomainName'),
+        'Code': domain.get('result').get('code'),
+        'Message': domain.get('result').get('message'),
+        'Price': domain.get('basePrice').get('price'),
+        'Currency': domain.get('basePrice').get('currency'),
+        'List of the terms (months) available for registration': domain.get('availableTerms')
+        }
+
+        filtered_available_domains.append(filtered)
+
+    return filtered_available_domains
 
 def extract_required_fields_for_domain_hr(domain) -> dict:
     filtered = {'Qualified Domain Name': domain.get('qualifiedDomainName'),
@@ -269,9 +285,9 @@ def test_module(client: Client) -> str:
 
 def csc_domains_search_command(client: Client, args) -> Any:
     domains_results = {}
-    qualified_domain_name = args.get('qualified_domain_name')
-    if qualified_domain_name:
-        domains_results = client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")
+    qualified_domain_name = args.get('domain_name')
+    if qualified_domain_name and '.' in qualified_domain_name:
+        domains_list = [client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")]
 
     else:
         if args.get('limit'):
@@ -280,8 +296,8 @@ def csc_domains_search_command(client: Client, args) -> Any:
 
         params_results = create_params_string(args)
         domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
-
-    domains_list = domains_results.get('domains', [])
+        domains_list = domains_results.get('domains', [])
+        
     domains_with_required_fields = extract_required_fields_for_domains_search_hr(domains_list)
 
     results = CommandResults(
@@ -299,17 +315,7 @@ def csc_domains_availability_check_command(client: Client, args) -> Any:
     params = f'qualifiedDomainNames={domain_names}'
     available_domains_results = (client.send_get_request("/availability", params)).get('results')
 
-    hr_output = {
-        'Qualified Domain Name': [result.get('qualifiedDomainName') for result in available_domains_results],
-        'Code': [result.get('result').get('code') for result in available_domains_results],
-        'Message': [result.get('result').get('message') for result in available_domains_results],
-        'Price': [result.get('basePrice').get('price') for result
-                  in available_domains_results if result.get('basePrice').get('price')],
-        'Currency': [result.get('basePrice').get('currency') for result
-                     in available_domains_results if result.get('basePrice').get('currency')],
-        'List of the terms (months) available for registration': [result.get('availableTerms') for result
-                                                                  in available_domains_results if result.get('availableTerms')]
-    }
+    hr_output = extract_required_fields_for_domains_availability_check_hr(available_domains_results)
 
     results = CommandResults(
         readable_output=tableToMarkdown('Domains Availability', hr_output, headers=HR_HEADERS_FOR_AVAILABILITY),
