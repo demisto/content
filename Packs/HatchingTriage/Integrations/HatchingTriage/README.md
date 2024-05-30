@@ -145,6 +145,10 @@ Gets a summary report of the sample id provided
 | Triage.sample-summaries.status | String | Status of the analysis | 
 | Triage.sample-summaries.target | String | Target for analysis | 
 | Triage.sample-summaries.tasks | String | Tasks performed in the analysis | 
+| DBotScore.Indicator | String | Triage analysis target | 
+| DBotScore.Type | String | The indicator type - File or URL | 
+| DBotScore.Vendor | String | The integration used to generate the indicator | 
+| DBotScore.Score | Number | Analysis verdict as score from 1 to 10 | 
 
 #### Command example
 ```!triage-get-sample-summary sample_id="220807-d5sxnaebbx"```
