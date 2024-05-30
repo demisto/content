@@ -123,7 +123,7 @@ script:
       description: The policy ID of the team.
       type: String
   - arguments:
-    - description: The name of the team to list channels from. Default is the Team Name in the integration configuration.
+    - description: The name of the team to list channels from. Default is the team name from the integration configuration.
       name: team
       required: false
     - description: Whether to include private channels. Default is false.
@@ -191,7 +191,7 @@ script:
     - description: The name of the channel to create.
       name: name
       required: true
-    - description: The type of the channel to create. Default value is public.
+    - description: The type of the channel to create. 
       name: type
       defaultValue: public
       predefined:
@@ -205,7 +205,7 @@ script:
     - description: The header of the channel to create.
       name: header
       required: false
-    - description: The team name of the channel to create. Default is the Team Name in the configuration.
+    - description: The team name of the channel to create. Default is the team name from the integration configuration.
       name: team
       required: false
     description: Creates a channel.
@@ -254,10 +254,10 @@ script:
       description: The scheme ID of the channel.
       type: String
   - arguments:
-    - description: The team name of the channel to add the user to. Default is the Team Name in the configuration.
+    - description: The team name of the channel to add the user to. Default is the team name from the integration configuration.
       name: team
       required: false
-    - description: The channel name of the channel to add the user to.
+    - description: The name of the channel to add the user to.
       name: channel
       required: true
     - description: The ID of the user to add. Use the command 'mattermost-list-users' to fetch the user ID.
@@ -267,7 +267,7 @@ script:
     name: mattermost-add-channel-member
     outputs: []
   - arguments:
-    - description: The team name of the channel to add the user to. Default is the Team Name in the configuration.
+    - description: The team name of the channel to add the user to. Default is the team name from the integration configuration.
       name: team
       required: false
     - description: The channel name of the channel to remove the user from.
@@ -353,7 +353,7 @@ script:
     - description: The message to send to the channel along with the file.
       name: message
       required: true
-    - description: The entry_id of the file.
+    - description: The entry ID of the file.
       name: entry_id
       required: true
     - description: The username or email of the user to send the file to.
@@ -375,7 +375,7 @@ script:
     - description: The username or email of the user to send the file to.
       name: to
       required: false
-    - description: Adds the war room link to the message.
+    - description: Adds the War Room link to the message.
       name: ignoreAddURL
       required: false
       predefined:
@@ -394,7 +394,7 @@ script:
     name: send-notification
     outputs: []
   - arguments:
-    - description: The team name of the channel to close. Default value is the team in the integration configuration.
+    - description: The team name of the channel to close. Default value is the team name from the integration configuration.
       name: team_name
       required: false
     - description: The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists).
@@ -404,13 +404,13 @@ script:
     name: mattermost-close-channel
     outputs: []
   - arguments:
-    - description: The team name of the channel to delete. Default value is the team in the integration configuration.
+    - description: The team name of the channel to delete. Default value is the team name from the integration configuration.
       name: team_name
       required: false
     - description: The channel name of the channel to close.
       name: channel
       required: false
-    description: Closes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
+    description: Closes a mirrored Mattermost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
     name: close-channel
     outputs: []
   - arguments:
@@ -454,7 +454,7 @@ script:
       predefined:
       - 'group'
       - 'channel'
-    description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+    description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
     name: mirror-investigation
   - arguments:
     - auto: PREDEFINED
@@ -492,12 +492,12 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'group'
-      description: Mirrors the investigation to a group (private channel) or a public channel. Default is group.
+      description: Mirrors the investigation to a group (private channel) or a public channel. 
       name: mirrorTo
       predefined:
       - 'group'
       - 'channel'
-    description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+    description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
     name: mattermost-mirror-investigation
   longRunning: true
   runonce: false
