@@ -51,7 +51,6 @@ class Client(BaseClient):
             data={
                 'grant_type': 'client_credentials',
             },
-            headers={"scope": "sp:scope:all"},
             auth=(self.client_id, self.client_secret)
         )
 
@@ -247,7 +246,7 @@ def main() -> None:
     base_url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_events_per_fetch = params.get('max_events_per_fetch') or 50000
+    max_events_per_fetch = arg_to_number(params.get('max_events_per_fetch')) or 50000
 
     demisto.debug(f'Command being called is {command}')
     try:
