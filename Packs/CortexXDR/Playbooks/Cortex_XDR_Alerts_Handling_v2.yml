@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR Alerts Handling v2
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics\n- Masquerading."
 starttaskid: "0"
 tasks:
   "0":
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3779395c-e33b-45d4-8084-c8658dfc1c7e
+    taskid: a4411fb2-41fd-459b-8a37-394d0d05156d
     type: condition
     task:
-      id: 3779395c-e33b-45d4-8084-c8658dfc1c7e
+      id: a4411fb2-41fd-459b-8a37-394d0d05156d
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -67,11 +67,13 @@ tasks:
       - "8"
       RDP Brute-Force:
       - "13"
+      Masquerading:
+      - "23"
     separatecontext: false
     conditions:
-    - label: Malware
+    - label: Masquerading
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               complex:
@@ -86,11 +88,34 @@ tasks:
                       value:
                         simple: inputs.alert_id
                       iscontext: true
-                accessor: Incident.alerts.category
+                accessor: Incident.alerts.mitre_technique_id_and_name
             iscontext: true
           right:
             value:
-              simple: Malware
+              simple: T1036
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: 'PaloAltoNetworksXDR.Incident.alerts.alert_id '
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: mitre_technique_id_and_name
+            iscontext: true
+          right:
+            value:
+              simple: Masquerading
+          ignorecase: true
     - label: Port Scan
       condition:
       - - operator: isEqualString
@@ -261,6 +286,30 @@ tasks:
           right:
             value:
               simple: Large Upload
+          ignorecase: true
+    - label: Malware
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: 'PaloAltoNetworksXDR.Incident.alerts.alert_id '
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: category
+            iscontext: true
+          right:
+            value:
+              simple: Malware
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -675,7 +724,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1580,
+          "x": -1950,
           "y": 750
         }
       }
@@ -732,7 +781,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1580,
+          "x": -1950,
           "y": 405
         }
       }
@@ -984,7 +1033,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1580,
+          "x": -1950,
           "y": 560
         }
       }
@@ -1326,7 +1375,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2420,
+          "x": -2790,
           "y": 750
         }
       }
@@ -1421,7 +1470,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2000,
+          "x": -2370,
           "y": 750
         }
       }
@@ -1472,7 +1521,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2840,
+          "x": -3210,
           "y": 750
         }
       }
@@ -1814,7 +1863,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1160,
+          "x": -1530,
           "y": 750
         }
       }
@@ -1822,6 +1871,172 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 84d50959-532a-42be-81bc-5f6544758e78
+    type: playbook
+    task:
+      id: 84d50959-532a-42be-81bc-5f6544758e78
+      version: -1
+      name: Cortex XDR - T1036 - Masquerading
+      description: |-
+        This playbook handles masquerading alerts based on the MITRE T1036 technique.
+        An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
+
+        **Attacker's Goals:**
+
+        An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
+
+        **Investigative Actions:**
+
+        Investigate the executed process image and verify if it is malicious using:
+
+        * XDR trusted signers
+        * VT trusted signers
+        * VT detection rate
+        * NSRL DB
+
+        **Response Actions**
+
+        The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Auto block indicators
+        * Auto file quarantine
+        * Manual endpoint isolation
+
+        When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication, is executed.
+
+        This phase will execute the following containment actions:
+
+        * Manual block indicators
+        * Manual file quarantine
+        * Auto endpoint isolation
+        * Auto process termination
+
+        External resources:
+
+        [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
+
+        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
+      playbookName: Cortex XDR - T1036 - Masquerading
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AutoCloseAlert:
+        simple: "False"
+      AutoContainment:
+        simple: "False"
+      AutoEradication:
+        simple: "False"
+      AutoRecovery:
+        simple: "False"
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+              ignorecase: true
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
+          - operator: StringifyArray
+      FilePath:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: 'PaloAltoNetworksXDR.Incident.alerts.alert_id '
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: actor_process_image_path
+      FileRemediation:
+        simple: Quarantine
+      FileSHA256:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: actor_process_image_sha256
+      IP:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: host_ip
+      ManualReview:
+        simple: "False"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: user_name
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -1310,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1835,14 +2050,14 @@ view: |-
       "1_18_ Remote PsExec with LOLBIN command": 0.67,
       "1_19_Identity Analytics": 0.9,
       "1_20_Large Upload": 0.89,
-      "1_7_#default#": 0.9,
-      "1_9_Malware": 0.9
+      "1_23_Masquerading": 0.89,
+      "1_7_#default#": 0.9
     },
     "paper": {
       "dimensions": {
         "height": 925,
-        "width": 5450,
-        "x": -2840,
+        "width": 5820,
+        "x": -3210,
         "y": 70
       }
     }

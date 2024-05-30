@@ -43,14 +43,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Entity Enrichment - Generic v3
-* Search and Compare Process Executions - Generic
-* Block Indicators - Generic v3
-* Command-Line Analysis
-* Block Account - Generic v2
-* Cortex XDR - Quarantine File v2
 * Cortex XDR - Endpoint Investigation
+* Search and Compare Process Executions - Generic
+* Cortex XDR - Quarantine File v2
+* Entity Enrichment - Generic v3
 * Isolate Endpoint - Generic V2
+* Block Account - Generic v2
+* Command-Line Analysis
+* Block Indicators - Generic v3
 
 ### Integrations
 
