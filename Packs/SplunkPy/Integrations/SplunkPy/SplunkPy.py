@@ -713,8 +713,8 @@ class Notable:
         # Explanation of the conditions:
         # 1. First condition - if any of the notable's enrichments is 'in progress', it means that it was submitted to splunk.
         # 2. Second condition - The ENABLED_ENRICHMENTS list contains the enrichment types that the user wants to enrich.
-        # According to the logic off the submit_notable() function, in a normal situation (where the code wasn't interrupted)
-        # the notable.enrichments list always includes an enrichment object for each enrichment type that exist in the
+        # According to the logic of the submit_notable() function, in a normal situation (where the code wasn't interrupted)
+        # the notable.enrichments list should include an enrichment object for each enrichment type that exist in the
         # ENABLED_ENRICHMENTS list. That is because in the submit_notable() function we always add Enrichments objects to the
         # notable.enrichments list regardless their statuses (failed\success). So if the function had finished it's run without
         # any interruption we will have at least one enrichment object for each enrichment type (for drilldown enrichment we could
