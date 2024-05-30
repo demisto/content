@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: AzureRiskyUsers_extended
+  id: AzureRiskyUsers
   version: -1
 configuration:
 - display: Client ID
@@ -44,8 +44,8 @@ configuration:
   type: 8
   required: false
 description: Azure Risky Users provides access to all at-risk users and risk detections in the Azure AD environment.
-display: Azure Risky Users Extended
-name: AzureRiskyUsers_extended
+display: Azure Risky Users
+name: AzureRiskyUsers
 script:
   commands:
   - description: Tests the connectivity to Azure.
