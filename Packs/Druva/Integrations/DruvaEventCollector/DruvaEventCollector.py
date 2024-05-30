@@ -27,14 +27,14 @@ class Client(BaseClient):
         decoded_credentials = encoded_credentials.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {decoded_credentials}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
-
-        response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
-
-        # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
-        if response_json.status_code == 400:
-            informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
-            raise DemistoException(f'Error in test-module: {informative_message}')
-
+        try:
+            response_json = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data)
+        except Exception as e:
+            # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
+            if e.res.status_code == 400:  # type:ignore[attr-defined]
+                informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
+                raise DemistoException(f'Error in test-module: {informative_message}') from e
+            raise
         access_token = response_json['access_token']
         self._headers = {'Authorization': f'Bearer {access_token}'}
 
@@ -115,6 +115,23 @@ def fetch_events(client: Client, last_run: dict[str, str]) -> tuple[list[dict], 
     return events, next_run
 
 
+def check_token_validity(client: Client, credentials: str) -> None:
+    """
+    In this function, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
+    Refreshes the token as needed.
+    """
+    cache = demisto.getIntegrationContext()
+    now = datetime.utcnow()
+
+    token_expiration: Optional[datetime] = cache.get('Token') if cache else None
+
+    if token_expiration and (token_expiration - now).total_seconds() > 0:
+        return
+
+    client.refresh_access_token(credentials)
+    demisto.setIntegrationContext({'Token': now + timedelta(minutes=30)})
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -155,8 +172,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy
         )
 
-        # The validity of the Access Token is 30 minutes.
-        client.refresh_access_token(credentials)
+        check_token_validity(client, credentials)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

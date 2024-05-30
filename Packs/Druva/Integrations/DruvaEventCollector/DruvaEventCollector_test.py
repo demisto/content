@@ -1,8 +1,10 @@
 from CommonServerPython import DemistoException
-from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events
+from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events, check_token_validity
 import pytest
-
+import demistomock as demisto
 import requests
+from freezegun import freeze_time
+from datetime import datetime
 
 RESPONSE_WITH_EVENTS_1 = {
     "events": [
@@ -174,7 +176,7 @@ def test_refresh_access_token(mocker, mock_client):
     response = requests.Response()
     response.status_code = 400
 
-    mocker.patch.object(mock_client, "_http_request", return_value=response)
+    mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException(message="invalid_grant", res=response))
 
     error_message = "Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
 
@@ -251,3 +253,41 @@ def test_fetch_events_command(mocker, mock_client):
     assert len(events) == 1
     assert third_run['tracker'] == "yyyy"
     assert events[0]['eventID'] == 1
+
+
+@freeze_time("2022-02-28 11:00:00")
+@pytest.mark.parametrize("integration_context", [({}), ({'Token': datetime(2022, 2, 28, 10, 50)})])
+def test_check_token_validity_invalid_token(mocker, mock_client, integration_context):
+    """
+    Given:
+    - An IntegrationContext without a Token or one that has expired
+
+    When:
+    - Running check_token_validity function
+
+    Then:
+    - Ensure a new token is generated
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+    mock_refresh_access_token = mocker.patch.object(mock_client, "refresh_access_token")
+    check_token_validity(mock_client, "credentials")
+    mock_refresh_access_token.assert_called_once_with("credentials")
+
+
+@freeze_time("2022-02-28 11:00:00")
+def test_check_token_validity_valid_token(mocker, mock_client):
+    """
+    Given:
+    - An IntegrationContext with valid Access Token
+
+    When:
+    - Running check_token_validity function
+
+    Then:
+    - Ensure a new token is not generated
+    """
+    datetime(2022, 2, 28, 10, 50)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'Token': datetime(2022, 2, 28, 11, 10)})
+    mock_refresh_access_token = mocker.patch.object(mock_client, "refresh_access_token")
+    check_token_validity(mock_client, "credentials")
+    assert not mock_refresh_access_token.called
