@@ -130,9 +130,6 @@ script:
     - defaultValue: yes
       description: Retrieve discovered certificates
       name: certificate
-    - defaultValue: yes
-      description: Retrieve IP Ranges
-      name: iprange
     description: Retrieves a limited number of indicators.
     name: xpanse-get-indicators
     outputs:

@@ -12,10 +12,8 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DEFAULT_FEED_TAGS = {'XPANSE'}
-# DEFAULT_ASSET_SEARCH_LIMIT = 5000
-# DEFAULT_IPRANGE_SEARCH_LIMIT = 1000
 DEFAULT_ASSET_SEARCH_LIMIT = 5000
-DEFAULT_IPRANGE_SEARCH_LIMIT = 1000
+# DEFAULT_ASSET_SEARCH_LIMIT = 1000
 V1_URL_SUFFIX = "/public_api/v1"
 
 ''' CLIENT CLASS '''
@@ -33,35 +31,9 @@ class Client(BaseClient):
         self.proxy = proxy
         self.headers= headers
 
-    # TODO Paging from V1, add later
-    def _paginate(self, method: str, url_suffix: str, params: Optional[Dict[str, Any]]) -> Iterable[Any]:
-        next_url: Optional[str] = None
-
-        while True:
-            result = self._http_request(
-                method=method,
-                url_suffix=url_suffix,
-                full_url=next_url,
-                params=params,
-                raise_on_status=True,
-                timeout=30
-            )
-
-            data = result.get('data', [])
-            if data is not None:
-                yield from data
-
-            pagination = result.get('pagination', None)
-            if pagination is None:
-                break
-            next_url = pagination.get('next', None)
-            if next_url is None:
-                break
-
-            params = None
 
     def list_asset_internet_exposure_request(self, search_params: list[dict] = [], search_from: int = 0,
-                                             search_to: int = DEFAULT_ASSET_SEARCH_LIMIT) -> dict[str, Any]:
+                                             search_to: int = DEFAULT_ASSET_SEARCH_LIMIT, use_paging: bool = True) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -72,24 +44,26 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of internet exposure assets.
         """
-        data = {"request_data": {"filters": search_params, "search_to": int(search_to), "search_from": int(search_from), "use_page_token": True}}
+        body = {"request_data": {"filters": search_params, "search_to": int(search_to), "search_from": int(search_from), "use_page_token": True}}
+        full_response = []
+        while True:
+            result = self._http_request(
+                method='POST',
+                url_suffix=f'{V1_URL_SUFFIX}/assets/get_assets_internet_exposure/',
+                json_data=body
+            )
 
-        response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_assets_internet_exposure/', json_data=data)
-
-        return response
-
-
-    def list_external_ip_address_range_request(self, search_params: list[dict] = []) -> dict[str, Any]:
-        """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
-
-        Returns:
-            dict: dict containing list of external ip address ranges.
-        """
-        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_IPRANGE_SEARCH_LIMIT, "use_page_token": True}}
-
-        response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_external_ip_address_ranges/', json_data=data)
-
-        return response
+            data = result.get('reply', {}).get('assets_internet_exposure')
+            if data:
+                full_response.extend(data)
+            if not use_paging:
+                break
+            pagination = result.get('reply', {}).get("next_page_token")
+            if pagination is None:
+                break
+            body["request_data"]["next_page_token"] = pagination
+        
+        return full_response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -108,52 +82,67 @@ def test_module(client: Client):  # pragma: no cover
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    client.list_asset_internet_exposure_request()
+    client.list_asset_internet_exposure_request(search_to=1, use_paging=False)
     return_results('ok')
 
-
-def create_x509_certificate_grids(self, string_object: Optional[str]) -> list:
+# TODO Move these to helper section
+def create_x509_certificate_grids(string_object: Optional[str]) -> list:
         """
         Creates a grid field related to the subject and issuer field of the x509 certificate object.
 
         Args:
-            string_object (Optional[str]): A str in format of C=ZA, ST=Western Cape, L=Cape Town, O=Thawte.
+            string_object (Optional[str]): A str in format of C=ZA,ST=Western Cape,L=Cape Town,O=Thawte.
 
         Returns:
             list: The return value. A list of dict [{"title": "C", "data": "ZA"}].
         """
         result_grid_list = []
         if string_object:
-            key_value_pairs = string_object.split(', ')
+            # TODO sometimes there is something like `, Inc.`, not sure how to account for that
+            key_value_pairs = string_object.split(',')
             for pair in key_value_pairs:
                 result_grid = {}
-                key, value = pair.split('=', 1)
-                result_grid['title'] = key
-                result_grid['data'] = value
-                result_grid_list.append(result_grid)
+                if '=' in pair:
+                    key, value = pair.split('=', 1)
+                    result_grid['title'] = key
+                    result_grid['data'] = value
+                    result_grid_list.append(result_grid)
         return result_grid_list
 
 
+# TODO - might not be bad to add generic descriptin like `<name> <type> from Cortex Xpanse`
 def map_indicator_fields(raw_indicator: Dict[str, Any], asset_type: str) -> Dict[str, Any]:
     indicator_fields = {"internal": True}
     if asset_type == 'Domain':
-        return indicator_fields
-    if asset_type == 'Certificate':
+        if domain_details := raw_indicator.get("domain_details"):
+            fields_mapping = {
+                "creationDate": "creationdate",
+                "registryExpiryDate": "expirationdate",
+            }
+            
+            for key, mapped_key in fields_mapping.items():
+                if detail_value := domain_details.get(key): 
+                    indicator_fields[mapped_key] = timestamp_to_datestring(detail_value)
+    
+    elif asset_type == 'X509 Certificate':
         if cert_details := raw_indicator.get("certificate_details"):
-            if signatureAlgorithm := cert_details.get("signatureAlgorithm"):
-                indicator_fields['signaturealgorithm'] = signatureAlgorithm
-            if serialNumber := cert_details.get("serialNumber"):
-                indicator_fields['serialnumber'] = serialNumber
-            if validNotAfter := cert_details.get("validNotAfter"):
-                indicator_fields['validitynotafter'] = timestamp_to_datestring(validNotAfter)
-            if validNotBefore := cert_details.get("validNotBefore"):
-                indicator_fields['validitynotbefore'] = timestamp_to_datestring(validNotBefore)
-            if issuer := cert_details.get("issuer"):
-                indicator_fields['issuer'] = create_x509_certificate_grids(issuer)
-            if subject := cert_details.get("subject"):
-                indicator_fields['subject'] = create_x509_certificate_grids(subject)
-    else:
-        return indicator_fields
+            fields_mapping = {
+                "signatureAlgorithm": ("signaturealgorithm", None),
+                "serialNumber": ("serialnumber", None),
+                "validNotAfter": ("validitynotafter", timestamp_to_datestring),
+                "validNotBefore": ("validitynotbefore", timestamp_to_datestring),
+                "issuer": ("issuer", create_x509_certificate_grids),
+                "subject": ("subject", create_x509_certificate_grids),
+            }
+
+            for key, (mapped_key, processing_func) in fields_mapping.items():
+                if detail_value := cert_details.get(key):
+                    # Apply processing function if one is defined
+                    if processing_func:
+                        indicator_fields[mapped_key] = processing_func(detail_value)
+                    else:
+                        indicator_fields[mapped_key] = detail_value
+    return indicator_fields
 
 
 def map_indicator_type(asset_type: str) -> str:
@@ -163,10 +152,7 @@ def map_indicator_type(asset_type: str) -> str:
         "CERTIFICATE": "X509 Certificate",
         'CIDR': 'CIDR'
     }
-    try:
-        return asset_types_mapping[asset_type]
-    except:
-        return "None"
+    return asset_types_mapping.get(asset_type, "None")
 
 
 def build_asset_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -175,55 +161,34 @@ def build_asset_indicators(client: Client, raw_indicators: List[Dict[str, Any]])
     """
     demisto.debug(f'Creating {len(raw_indicators)} asset indicators.')
     indicators: List[Dict[str, Any]] = []
+
     for raw_indicator in raw_indicators:
-        # Need to skip IPv6 responsive or not found type
-        if raw_indicator.get("ipv6s") or ((indicator_type := map_indicator_type(raw_indicator.get("asset_type", 'None'))) == 'None'):
+        asset_type = raw_indicator.get("asset_type", 'None')
+        indicator_type = map_indicator_type(asset_type)
+
+        # Skip IPv6 responsive or not found type
+        if raw_indicator.get("ipv6s") or indicator_type == 'None':
             continue
+
         name = raw_indicator.get('name')
-        demisto.debug(f'JW_log {indicator_type} --- {name}')
-        # DomainGlob is a wildcard domain
-        indicator: Dict[str, Any] = {
+        indicator_type = 'DomainGlob' if '*' in name and indicator_type == 'Domain' else indicator_type
+        fields = map_indicator_fields(raw_indicator, indicator_type)
+
+        # Add TLP color and feed tags if they exist
+        if client.tlp_color:
+            fields['trafficlightprotocol'] = client.tlp_color
+        if client.feed_tags:
+            fields['tags'] = client.feed_tags
+
+        indicator = {
             'value': name,
-            'type': 'DomainGlob' if '*' in name and indicator_type == 'Domain' else indicator_type,
-            'fields': map_indicator_fields(raw_indicator, indicator_type),
+            'type': indicator_type,
+            'fields': fields,
             'rawJSON': raw_indicator
         }
-        if tlp_color := client.tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
-        if feed_tags := client.feed_tags:
-            indicator['fields']['tags'] = feed_tags
+
         indicators.append(indicator)
-    return indicators
 
-
-def build_range_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Builds indicators JSON data in XSOAR expected format from the raw response.
-    """
-    demisto.debug(f'Creating {len(raw_indicators)} range indicators.')
-    indicators: List[Dict[str, Any]] = []
-    for raw_indicator in raw_indicators:
-        start_address = raw_indicator.get('first_ip', None)
-        end_address = raw_indicator.get('last_ip', None)
-        if start_address is None or end_address is None:
-            continue
-        try:
-            start_address = IPv4Address(start_address)
-            end_address = IPv4Address(end_address)
-        except AddressValueError:
-            continue
-        for cidr in summarize_address_range(start_address, end_address):
-            indicator: Dict[str, Any] = {
-                'type': 'CIDR',
-                'value': str(cidr),
-                'fields': {"internal": True},
-                'rawJSON': raw_indicator,
-            }
-            if tlp_color := client.tlp_color:
-                indicator['fields']['trafficlightprotocol'] = tlp_color
-            if feed_tags := client.feed_tags:
-                indicator['fields']['tags'] = feed_tags
-            indicators.append(indicator)
     return indicators
 
 
@@ -232,7 +197,7 @@ def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all')
     """
         Fetch indicators from Xpanse API and create indicators in XSOAR.
     """
-    asset_list, range_response, asset_response = [], [], []
+    asset_list, asset_response = [], []
     if asset_type == 'all':
         asset_list = ["CERTIFICATE","DOMAIN","UNASSOCIATED_RESPONSIVE_IP"]
     if 'domain' in asset_type:
@@ -242,43 +207,48 @@ def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all')
     if 'ipv4' in asset_type:
         asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
     # TODO, might move the .get from these to underlying _pagination function
-    asset_response = (client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}])).get("reply", {}).get("assets_internet_exposure", [])
-    # Only doing IPv4 at this time
-    if asset_type == 'all' or 'ipv4_range' in asset_type:
-        range_response = (client.list_external_ip_address_range_request(search_params=[{"field": "Ipaddress_version", "operator": "eq", "value":4}])).get("reply", {}).get("external_ip_address_ranges", [])
+    asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}])
     
     assset_indicators = build_asset_indicators(client, asset_response)
-    range_indicators = build_range_indicators(client, range_response)
     
-    full_response = asset_response + range_response
-    all_indicators = assset_indicators + range_indicators
     if limit:
-        return all_indicators[:limit], full_response
-    return all_indicators, full_response
+        return assset_indicators[:limit], asset_response
+    return assset_indicators, asset_response
 
 
 ''' MAIN FUNCTION '''
 
-#Todo, figure out this logic
-def get_indicators(client, limit):
+
+def get_indicators(client, args: Dict[str, Any]):
     """
     Get indicators from Xpanse API, mainly for debug.
     """
     hr_list = []
     output_list = []
 
+    asset_type = ''
+    if argToBoolean(args.get('ip', 'yes')):
+        asset_type += 'ipv4'
+    if argToBoolean(args.get('domain', 'yes')):
+        asset_type += 'domain'
+    if argToBoolean(args.get('certificate', 'yes')):
+        asset_type += 'certificate'
+    
+    limit = arg_to_number(args.get('limit', None))
+
     if limit and limit <= 0:
         raise ValueError('Limit must be a positive number.')
-    indicators, raw_res = fetch_indicators(client, limit)
+    if asset_type == '':
+        raise ValueError('need to specify at least one asset type')
+    indicators, raw_res = fetch_indicators(client, limit, asset_type)
+
     indicators = indicators[:limit] if isinstance(indicators, List) \
         else [indicators] if indicators else []
     for record in indicators:
-        hr = {'Name': record.get('value'), 'Description': record.get('fields', {}).get('description')}
+        hr = {'Name': record.get('value'), 'Type': record.get('type')}
         hr_list.append(hr)
         output_list.append({'Type': record.get('type'),
-                            'Commands': record.get('fields', {}).get('Commands'),
-                            'Detections': record.get('fields', {}).get('Detections'),
-                            'Paths': record.get('fields', {}).get('Paths')} | hr)
+                            'Name': record.get('value')})
     return CommandResults(outputs=output_list, outputs_prefix='ASM.Indicators', raw_response=raw_res,
                           readable_output=tableToMarkdown("Xpanse indicators", hr_list, headers=['Name', 'Type']),
                           outputs_key_field='Name')
@@ -336,8 +306,8 @@ def main() -> None:  # pragma: no cover
                                           f' {indicator}\n {err}')
                     raise
         elif command == 'xpanse-get-indicators':
-            limit = arg_to_number(demisto.args().get('limit', None))
-            return_results(get_indicators(client, limit))
+            #limit = arg_to_number(demisto.args().get('limit', None))
+            return_results(get_indicators(client, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
