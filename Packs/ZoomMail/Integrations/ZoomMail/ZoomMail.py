@@ -882,7 +882,7 @@ def send_email_command(
     recipients = args.get("to")
 
     # Validate that the email parameter is provided
-    if not body or html_body:
+    if not body or not html_body:
         raise ValueError("Either the 'body' or 'html_body' argument is required.")
     if email is None:
         if not client.default_email:
