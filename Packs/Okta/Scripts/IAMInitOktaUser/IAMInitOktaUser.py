@@ -212,13 +212,7 @@ def create_zip_with_password(args: dict, generated_password: str, zip_password: 
         demisto.debug(f'zipping {text_file_name=}')
         with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
             zf.pwd = bytes(zip_password, 'utf-8')
-            for file_name in text_file_name:
-                zf.write(file_name)
-
-            res = zf.testzip()
-            if res:
-                demisto.info('zf.testzip() failed')
-                raise DemistoException(f'There was a problem with zipping the file: {res} is corrupted')
+            zf.write(text_file_name)
 
         with open(zip_file_name, 'rb') as zip_file:
             zip_content = zip_file.read()
