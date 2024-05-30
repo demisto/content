@@ -17,7 +17,7 @@ SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = "selectcampaignincidents"
 SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = "selectlowsimilarityincidents"
 RECIPIENT_FIELDS = ["CustomFields.emailto", "CustomFields.emailcc", "CustomFields.emailbcc"]
 
-REMOVED_FROM_CAMPAIGNS_FIELD_NAME = "removedfromcampaigns"
+REMOVED_FROM_CAMPAIGNS_FIELD_NAME = "CustomFields.removedfromcampaigns"
 
 # this list of 'fields to display' got from the default value of the fieldsToDisplay argument
 # in `Detect & Manage Phishing Campaigns` playbook
@@ -529,7 +529,7 @@ ACTIONS_MAPPER = {
 def main():
     try:
         similarity: str = demisto.args().get("similarity", "High")
-
+     
         action_field_name = (
             ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME
             if similarity.lower() == "low"
