@@ -2,6 +2,7 @@ import json
 
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCKER_CREATE_AUTH_TOKEN = f"ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
+MOCKER_LOAD_CONTENT_FROM_FILE = 'ThalesCipherTrustManager.load_content_from_file'
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
 MOCK_SERVER_URL = 'https://example.com'
@@ -87,6 +88,8 @@ class CommandArguments:
     PARENT = 'parent'
     EXTERNAL_CA_ID = 'external_ca_id'
     SERIAL_NUMBER = 'serial_number'
+    CERT_ENTRY_ID = 'cert_entry_id'
+    NEW_GROUP_NAME = 'new_group_name'
 
 
 '''
@@ -337,7 +340,13 @@ LOCAL_CA_SELF_SIGN_TEST_MISSING_ARGS = [
     ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000'}),
     ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
 ]
-LOCAL_CA_INSTALL_TEST_ARGS = []
+LOCAL_CA_INSTALL_TEST_ARGS = [
+    {
+        CommandArguments.LOCAL_CA_ID: "123e4567-e89-b12d3-a456-426614174000",
+        CommandArguments.CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
+        CommandArguments.PARENT_ID: "123e4567-e89-b12d3-a456-426614174000",
+    }
+]
 CERTIFICATE_ISSUE_TEST_ARGS = []
 CERTIFICATE_LIST_TEST_ARGS = []
 LOCAL_CERTIFICATE_DELETE_TEST_ARGS = []
@@ -419,6 +428,8 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
     add_login_flags(request_data, argument_value, flag_name)
     assert request_data.get('login_flags') == expected_login_flags
 
+
+#todo: test file loads?
 
 ''' COMMAND FUNCTIONS TESTS '''
 
@@ -760,10 +771,12 @@ def test_local_ca_self_sign_command_missing_arguments(mock_self_sign_local_ca, a
 
 
 @pytest.mark.parametrize('args', LOCAL_CA_INSTALL_TEST_ARGS)
+@patch(MOCKER_LOAD_CONTENT_FROM_FILE)
 @patch(MOCKER_HTTP_METHOD)
-def test_local_ca_install_command(mock_install_local_ca, args):
+def test_local_ca_install_command(mock_install_local_ca, mock_load_content_from_file, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_install_command
     mock_install_local_ca.return_value = util_load_json('test_data/mock_local_ca_install_response.json')
+    mock_load_content_from_file.return_value = FAKE_CERT
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)

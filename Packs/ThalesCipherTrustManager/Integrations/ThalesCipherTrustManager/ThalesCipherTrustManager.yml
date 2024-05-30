@@ -439,6 +439,12 @@ script:
       required: true
       secret: false
       default: false
+    - name: new_group_name
+      isArray: false
+      description: New name of the group.
+      required: false
+      secret: false
+      default: false
     - name: description
       isArray: false
       description: New description of the group.
@@ -595,18 +601,18 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.
+    description: Installs a certificate signed by other CA to act as a local CA. Issuer can be both local or external CA. Typically used for intermediate CAs. The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.
     name: ciphertrust-local-ca-install
     arguments:
     - name: local_ca_id
       isArray: false
-      description: local CA ID
+      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
-    - name: cert
+    - name: cert_entry_id
       isArray: false
-      description: Signed certificate in PEM format to install as a local CA
+      description: The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA
       required: true
       secret: false
       default: false
@@ -616,7 +622,67 @@ script:
       required: true
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.CAInstall.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.CAInstall.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.state
+      description: Current state of the CA (e.g., active, pending).
+      type: String
+    - contextPath: CipherTrust.CAInstall.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.cert
+      description: Certificate associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
   - deprecated: false
     description: Returns a list of local CA certificates. The results can be filtered, using the command arguments.
     name: ciphertrust-local-ca-list

@@ -66,6 +66,7 @@ class CommandArguments:
     PAGE_SIZE = 'page_size'
     LIMIT = 'limit'
     GROUP_NAME = 'group_name'
+    NEW_GROUP_NAME = 'new_group_name'
     USER_ID = 'user_id'
     CONNECTION = 'connection'
     CLIENT_ID = 'client_id'
@@ -105,6 +106,7 @@ class CommandArguments:
     ISSUER = 'issuer'
     STATE = 'state'
     CERT = 'cert'
+    CERT_ENTRY_ID = 'cert_entry_id'
     ALLOW_CLIENT_AUTHENTICATION = 'allow_client_authentication'
     ALLOW_USER_AUTHENTICATION = 'allow_user_authentication'
     DURATION = 'duration'
@@ -184,7 +186,7 @@ LOCAL_CA_LIST_DESCRIPTION = "Returns a list of local CA certificates. The result
 LOCAL_CA_UPDATE_DESCRIPTION = "Update a local CA."
 LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA certificate."
 LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
-LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by another CA to act as a local CA. Issuers can be both local or external CA. Typically used for intermediate CAs.The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
+LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by other CA to act as a local CA. Issuer can be both local or external CA. Typically used for intermediate CAs. The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
 CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
 CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
 CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
@@ -218,6 +220,7 @@ GROUP_DELETE_INPUTS = [InputArgument(name=CommandArguments.NAME, required=True, 
                        InputArgument(name=CommandArguments.FORCE,
                                      description='When set to true, groupmaps within this group will be deleted'), ]
 GROUP_UPDATE_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True, description='Name of the group to update.'),
+                       InputArgument(name=CommandArguments.NEW_GROUP_NAME, description='New name of the group.'),
                        InputArgument(name=CommandArguments.DESCRIPTION, description='New description of the group.'), ]
 USER_TO_GROUP_ADD_INPUTS = [InputArgument(name=CommandArguments.GROUP_NAME, required=True,
                                           default='Key Users',
@@ -445,11 +448,14 @@ LOCAL_CA_SELF_SIGN_INPUTS = [
 
 ]
 
-LOCAL_CA_INSTALL_INPUTS = [InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
-                           InputArgument(name=CommandArguments.CERT, required=True,
-                                         description='Signed certificate in PEM format to install as a local CA'),
-                           InputArgument(name=CommandArguments.PARENT_ID, required=True,
-                                         description='An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.')]
+LOCAL_CA_INSTALL_INPUTS = [
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the resource. This can be '
+                                                                                'either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
+    InputArgument(name=CommandArguments.CERT_ENTRY_ID, required=True,
+                  description='The entry ID of the file to upload that contains the signed certificate in PEM format to install '
+                              'as a local CA'),
+    InputArgument(name=CommandArguments.PARENT_ID, required=True,
+                  description='An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.')]
 
 CERTIFICATE_ISSUE_INPUTS = [
     InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
@@ -842,6 +848,29 @@ LOCAL_CA_SELF_SIGN_OUTPUT = [
                    description="Indicates if user authentication is enabled for the CA.")
 ]
 
+LOCAL_CA_INSTALL_OUTPUT = [
+    OutputArgument(name="id", output_type=str, description="A unique identifier for the certificate authority (CA)."),
+    OutputArgument(name="uri", output_type=str, description="Uniform Resource Identifier associated with the CA."),
+    OutputArgument(name="account", output_type=str, description="Account associated with the CA."),
+    OutputArgument(name="application", output_type=str, description="Application associated with the CA."),
+    OutputArgument(name="devAccount", output_type=str, description="Developer account associated with the CA."),
+    OutputArgument(name="name", output_type=str, description="Name of the CA."),
+    OutputArgument(name="state", output_type=str, description="Current state of the CA (e.g., active, pending)."),
+    OutputArgument(name="createdAt", output_type=datetime.datetime, description="Timestamp of when the CA was created."),
+    OutputArgument(name="updatedAt", output_type=datetime.datetime, description="Timestamp of the last update of the CA."),
+    OutputArgument(name="cert", output_type=str, description="Certificate associated with the CA."),
+    OutputArgument(name="serialNumber", output_type=str, description="Serial number of the CA's certificate."),
+    OutputArgument(name="subject", output_type=str, description="Subject of the CA's certificate."),
+    OutputArgument(name="issuer", output_type=str, description="Issuer of the CA's certificate."),
+    OutputArgument(name="notBefore", output_type=datetime.datetime, description="Start date of the CA's certificate validity."),
+    OutputArgument(name="notAfter", output_type=datetime.datetime, description="End date of the CA's certificate validity."),
+    OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA1 fingerprint of the CA's certificate."),
+    OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA256 fingerprint of the CA's certificate."),
+    OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
+    OutputArgument(name="purpose.client_authentication", output_type=str, description="Indicates if client authentication is enabled for the CA."),
+    OutputArgument(name="purpose.user_authentication", output_type=str, description="Indicates if user authentication is enabled for the CA.")
+]
+
 
 '''' YML METADATA END  '''
 
@@ -1113,6 +1142,16 @@ def optional_safe_load_json(raw_json_string: str | None, json_entry_id: str | No
     return {}
 
 
+def load_content_from_file(entry_id: str) -> str:
+    try:
+        path = demisto.getFilePath(entry_id)
+        with open(path.get('path'), 'r') as file:
+            return file.read()
+    except Exception as e:
+        raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
+
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1185,7 +1224,8 @@ def group_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_UPDATE_OUTPUT,
                             description=GROUP_UPDATE_DESCRIPTION)
 def group_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION))
+    request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION),
+                                 name=args.get(CommandArguments.NEW_GROUP_NAME))
     raw_response = client.update_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
@@ -1419,7 +1459,8 @@ def local_ca_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> 
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-self-sign', inputs_list=LOCAL_CA_SELF_SIGN_INPUTS,
-                            description=LOCAL_CA_SELF_SIGN_DESCRIPTION, outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX, outputs_list=LOCAL_CA_SELF_SIGN_OUTPUT)
+                            description=LOCAL_CA_SELF_SIGN_DESCRIPTION, outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX,
+                            outputs_list=LOCAL_CA_SELF_SIGN_OUTPUT)
 def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if args.get(CommandArguments.NOT_AFTER) is None and args.get(CommandArguments.DURATION) is None:
         raise ValueError('Either the "not_after" or "duration" argument must be provided.')
@@ -1437,15 +1478,16 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-install', inputs_list=LOCAL_CA_INSTALL_INPUTS,
-                            description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX)
+                            description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX, outputs_list=LOCAL_CA_INSTALL_OUTPUT)
 def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+    cert = load_content_from_file(args.get(CommandArguments.CERT_ENTRY_ID))
     request_data = assign_params(
-        cert=args.get(CommandArguments.CERT),
+        cert=cert,
         parent_id=args.get(CommandArguments.PARENT_ID),
     )
     raw_response = client.install_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID), request_data=request_data)
     return CommandResults(
-        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response
     )
