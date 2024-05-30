@@ -1,5 +1,5 @@
 import demistomock as demisto
-from varonis_alert_post_processing import update_alert_status
+from varonisalertpostprocessing import update_alert_status
 
 
 def test_update_alert_status(mocker):
