@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # pragma: no cover
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
         assert parsed_date is not None
         expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
-    default_response = args.get('defaultResponse')
+    default_response = args.get('default_response')
     reply = args.get('reply')
 
     if task := demisto.get(args, 'task'):

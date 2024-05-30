@@ -36,7 +36,7 @@ def test_MattermostAskUser(mocker):
     from MattermostAskUser import main
     mocker.patch.object(demisto, 'args', return_value={'message': 'message', 'persistent': 'persistent',
                                                        'replyEntriesTag': 'replyEntriesTag',
-                                                       'task': '1', 'user': {'email'}})
+                                                       'task': '1', 'user': {'email'}, 'lifetime': 'test'})
     execute_command_add_entitlement_res = [{'Type': EntryType.NOTE, 'Contents': 'some-guid'}]
     execute_command_send_notification_res = [{'Type': EntryType.NOTE, 'HumanReadable':
                                                                       'Message sent to Mattermost successfully.'

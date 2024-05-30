@@ -36,11 +36,11 @@ args:
   description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e., "Thank you **{user}**. You have answered **{response}**.").
   name: reply
 - defaultValue: 1 day
-  description: Time until the question expires. For example - 1 day. When it expires, a default response defined under the 'defaultResponse' argument is sent.
+  description: Time until the question expires. For example - 1 day. When it expires, a default response defined under the 'default_response' argument is sent.
   name: lifetime
 - description: Default response in case the question expires.
-  name: defaultResponse
-  defaultValue: NoResponse
+  name: default_response
+  defaultValue: No response was received from the user.
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.14.96411
