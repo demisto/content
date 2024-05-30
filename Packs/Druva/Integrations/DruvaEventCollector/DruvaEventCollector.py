@@ -11,6 +11,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT_FOR_TOKEN = '%m/%d/%Y, %H:%M:%S'
 VENDOR = 'Druva'
 PRODUCT = 'Druva'
 
@@ -19,7 +20,7 @@ PRODUCT = 'Druva'
 
 class Client(BaseClient):
 
-    def refresh_access_token(self, credentials: str):
+    def refresh_access_token(self, credentials: str) -> str:
         """
         Since the validity of the Access Token is 30 minutes, this method refreshes it.
         """
@@ -37,6 +38,7 @@ class Client(BaseClient):
             raise
         access_token = response_json['access_token']
         self._headers = {'Authorization': f'Bearer {access_token}'}
+        return access_token
 
     def search_events(self, tracker: Optional[str] = None) -> dict:
         """
@@ -59,6 +61,9 @@ class Client(BaseClient):
             # 400 - "Invalid tracker"
             raise DemistoException(f'Error in search-events: {str(e)}') from e
         return response
+
+    def set_headers(self, token: str):
+        self._headers = {'Authorization': f'Bearer {token}'}
 
 
 def test_module(client: Client) -> str:
@@ -120,16 +125,20 @@ def check_token_validity(client: Client, credentials: str) -> None:
     In this function, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
     Refreshes the token as needed.
     """
-    cache = demisto.getIntegrationContext()
+    cache = get_integration_context()
     now = datetime.utcnow()
 
-    token_expiration: Optional[datetime] = cache.get('Token') if cache else None
+    if cache:
+        token = cache.get('Token')
+        expiration_time = datetime.strptime(cache.get('expiration_time'), DATE_FORMAT_FOR_TOKEN)
 
-    if token_expiration and (token_expiration - now).total_seconds() > 0:
-        return
+        # check if token is still valid, and use the old one. otherwise regenerate a new one
+        if (expiration_time - now).total_seconds() > 0:
+            client.set_headers(token)
+            return
 
-    client.refresh_access_token(credentials)
-    demisto.setIntegrationContext({'Token': now + timedelta(minutes=30)})
+    token = client.refresh_access_token(credentials)
+    set_integration_context({'Token': token,  'expiration_time': (now + timedelta(minutes=25)).strftime(DATE_FORMAT_FOR_TOKEN)})
 
 
 ''' MAIN FUNCTION '''
