@@ -15,6 +15,12 @@ def escape_special_characters(text: str) -> str:
     text = text.replace('\n', '\\n')
     text = text.replace('\t', '\\t')
     text = text.replace('\r', '\\r')
+    text = text.replace('(', '\(')
+    text = text.replace(')', '\)')
+    text = text.replace('[', '\[')
+    text = text.replace(']', '\]')
+    text = text.replace('^', '\^')
+    text = text.replace(':', '\:')
     return text
 
 
