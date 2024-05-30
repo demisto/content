@@ -3561,4 +3561,4 @@ Retrieves a list of event collectors.
 | QRadar.EventCollector.HostID | Number | The ID of the host on which this event collector process runs. | 
 | QRadar.EventCollector.ComponentName | String | The name of the component backing this event collector process. Also contained in the "name" field. | 
 | QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 
-
+<details><summary>Toggle</summary> This is the content inside the toggle. </details>
