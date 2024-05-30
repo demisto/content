@@ -1274,7 +1274,7 @@ def test_get_error_need_raise_error_on_non_error_input():
 def test_fileResult(mocker, request, data, data_expected, filename, inv_id):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': inv_id})
-    file_name = f"{inv_id}_test_file_result"
+    file_name = "{}_test_file_result".format(inv_id)
 
     def cleanup():
         try:
