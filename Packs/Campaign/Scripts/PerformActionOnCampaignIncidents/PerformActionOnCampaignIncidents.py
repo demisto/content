@@ -64,6 +64,19 @@ def _set_part_of_campaign_field(incident_id: str, campaign_id: str | None) -> No
         
 
 def _set_removed_from_campaigns_field(incident_id:str, campaign_id:str, action:str) -> None:
+    """
+    Sets or removes the specified campaign ID from the 'removedfromcampaigns' field of the incident.
+
+    Args:
+        incident_id (str): The ID of the incident to update. Required.
+        campaign_id (str): The ID of the campaign to set or remove from the 'removedfromcampaigns' field.
+            Required.
+        action (str): The action to perform. Should be either 'add' to associate the incident with the
+            campaign or 'remove' to disassociate it. Required.
+
+    Raises:
+        RuntimeError: If an error occurs while trying to set the 'removedfromcampaigns' field on the incident.
+    """
     incident_context = _get_incident(incident_id)
     campaign_ids_removed = _get_data_from_incident(incident_context, REMOVED_FROM_CAMPAIGNS_FIELD_NAME)
     if not campaign_ids_removed:
@@ -74,7 +87,7 @@ def _set_removed_from_campaigns_field(incident_id:str, campaign_id:str, action:s
     if action == 'remove':
         if not is_campaign_in_list:
             campaign_ids_removed.append(campaign_id)
-    else: #add
+    else:
         if is_campaign_in_list:
             index = campaign_ids_removed.index(campaign_id)
             del campaign_ids_removed[index]
