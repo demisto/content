@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Cortex XSOAR content"
 authors = ["Cortex XSOAR"]
 license = "MIT"
-package-mode = false
 
 [[tool.poetry.source]]
 name = "pypi-public"
@@ -15,7 +14,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.29.3"
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk", rev = "sf-add-skipped-paths-to-old-validate" }
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
