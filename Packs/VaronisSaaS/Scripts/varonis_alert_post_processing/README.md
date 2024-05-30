@@ -8,7 +8,7 @@ Varonis alert post processing script to set the alert status to closed when an i
 | Tags | post-processing |
 | Cortex XSOAR Version | 6.5.0 |
 
-This script set varonissaasalertstatus field to closed during post-processing when incident is closed.
+This script set varonissaasalertstatus field to closed during post-processing when an incident is closed.
 
 ## Inputs
 ---
