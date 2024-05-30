@@ -211,10 +211,12 @@ def test_list_to_headers_and_lines(list_data, expected_headers, expected_lines):
 
 
 def test_parse_list2(mocker):
+    list_with_new_line_at_the_end=""",mapping_framework,mapping_framework_version,capability_group,capability_id,capability_description,mapping_type,attack_object_id,attack_object_name,attack_version,technology_domain,references,comments,organization,creation_date,last_update
+0,veris,1.3.7,action.hacking,action.hacking.variety.Abuse of functionality,Abuse of functionality.,related-to,T1047,Windows Management Instrumentation,12.1,enterprise,[],,,04/06/2023,04/06/2023
+
+"""
     from GetListRow import parse_list
-    with open('test_list.csv') as f:
-        a = f.read()
-        mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": a}])
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": list_with_new_line_at_the_end}])
     res = parse_list(parse_all='false', header="attack_object_id", value="T1552", list_name='test_list', list_separator=',')
     assert res
     
