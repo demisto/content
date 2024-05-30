@@ -683,7 +683,7 @@ Checks the reputation of a URL.
 | GoogleThreatIntelligence.URL.links.self                                           | String | Link to the response.                                             |
 | GoogleThreatIntelligence.URL.attributes.gti_assessment.verdict.value              | String | GTI verdict of the URL.                                           |
 | GoogleThreatIntelligence.URL.attributes.gti_assessment.severity.value             | String | GTI severity of the URL.                                          |
-| GoogleThreatIntelligence.URL.attributes.gti_assessment.threat_score.value         | Number | GTI threat score of the URL.                                      
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.threat_score.value         | Number | GTI threat score of the URL.                                      |
 
 #### Command Example
 
