@@ -47,7 +47,7 @@ In order to verify that the messaging endpoint is open as expected, you can surf
     - microsoft.com
     - botframework.com
     - microsoftonline.com
- - When installing the bot in Microsoft Teams ([Step four](#Add-the-Demisto-Bot-to-a-Team)), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) It usually takes upto 3-5 business days for the app to reflect in the "built for your org" section.
+When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
 
