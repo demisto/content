@@ -1,6 +1,7 @@
 import hashlib
 import subprocess
 import tempfile
+from typing import List, Optional, Set, Tuple, Union
 
 import magic
 
@@ -67,7 +68,7 @@ class HashCalculator:
         return cls._calculate_by_chunks(hashlib.sha256(), file_path)
 
 
-def get_file_path_from_id(entry_id: str) -> tuple[str, str]:
+def get_file_path_from_id(entry_id: str) -> Tuple[str, str]:
     """Gets a file path and name from entry_id.
 
     Args:
@@ -98,11 +99,11 @@ def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
 
 
 def filter_files(
-        root: str, files: list[str],
-        types: set[str] | None = None,
-        extensions: set[str] | None = None,
-        inclusive_or_exclusive: str | None = None,
-) -> list[str]:
+        root: str, files: List[str],
+        types: Optional[Set[str]] = None,
+        extensions: Optional[Set[str]] = None,
+        inclusive_or_exclusive: Optional[str] = None,
+) -> List[str]:
     """Filtering files by its MIME type and file extension.
 
     Args:
@@ -117,7 +118,7 @@ def filter_files(
     """
     # strip `.` from extension
     if extensions is not None:
-        extensions = {extension.split('.')[-1] for extension in extensions}
+        extensions = set([extension.split('.')[-1] for extension in extensions])
     else:
         extensions = set()
     if types is None:
@@ -151,12 +152,12 @@ def filter_files(
 
 def upload_files(
         file_path: str, dir_path: str,
-        types: set[str] | None = None, extensions: set[str] | None = None,
-        inclusive_or_exclusive: str | None = None,
-        wpa_pwd: str | None = None,
-        rsa_path: str | None = None,
+        types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
+        inclusive_or_exclusive: Optional[str] = None,
+        wpa_pwd: Optional[str] = None,
+        rsa_path: Optional[str] = None,
         limit: int = 5
-) -> CommandResults | str:
+) -> Union[CommandResults, str]:
     """Extracts files and delivers it to CortexSOAR
 
     Args:
@@ -232,11 +233,11 @@ def upload_files(
 
 def main(
         entry_id: str,
-        wpa_password: str | None = None,
-        rsa_decrypt_key_entry_id: str | None = None,
-        types: str | None = None,
-        inclusive_or_exclusive: str | None = 'inclusive',
-        extensions: str | None = None,
+        wpa_password: Optional[str] = None,
+        rsa_decrypt_key_entry_id: Optional[str] = None,
+        types: Optional[str] = None,
+        inclusive_or_exclusive: Optional[str] = 'inclusive',
+        extensions: Optional[str] = None,
         limit: str = '5',
 ):
     """Exports a PCAP file and returns them to the context.
