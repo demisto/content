@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 rootFolderPath = r'.'
 PACKS_PATH = "/Users/mmorag/dev/demisto/content/Packs"
-SAVING_IMAGES_AT = "/Users/mmorag/dev/demisto/content/Packs/doc_files/images"
+SAVING_IMAGES_AT = "/Users/mmorag/dev/demisto/content/Packs/doc_files/Packs_Images"
 
 HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
 URL_IMAGE_LINK_REGEX = r'((https?|ftp)://.*?(png|jpe?g|gif|bmp|tiff|webp))'
@@ -32,25 +32,17 @@ def extract_image_link(lines, final_dst_image_path, original_file_path):
     urls_list = []
     for i, line in enumerate(lines):
         if res := re.search(URL_IMAGE_LINK_REGEX, line):
-            url = res["url"]
+            url = res.group(0)
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
             image_name = url_path.name
-            new_replace_url = os.path.join(final_dst_image_path, image_name)
-            urls_list.append(
-                {
-                    "original_url": url,
-                    "original_file_path": original_file_path,
-                    "final_dst_image_path": new_replace_url,
-                    "image_name": image_name,
-
-                }
-            )
+            new_url = os.path.join(final_dst_image_path, image_name)
+            urls_list.append(url)
     return urls_list
 
 
 def download_image_to_folder(folder_path, url):
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     if response.status_code == 200:
         filename = url.split('/')[-1]
         full_path = os.path.join(folder_path, filename)
@@ -86,10 +78,13 @@ def search_image_links(file_path):
             try:
                 os.mkdir(folder_path)
                 for image_link in image_links:
-                    creating_info_jason(file_path, image_link["original_url"], folder_path, pack_name)
-                    download_image_to_folder(folder_path, file_path)
+                    creating_info_jason(file_path, image_link, folder_path, pack_name)
+                    download_image_to_folder(folder_path, image_link)
             except OSError as error:
                 print(error)
+
+
+
 
 
 def search_files(root_path):
@@ -101,8 +96,6 @@ def search_files(root_path):
 
     for link in description_paths_links:
         search_image_links(str(link))
-
-
 
 
 def main():
