@@ -2,7 +2,7 @@ commonfields:
   id: GoogleThreatIntelligence
   version: -1
 name: GoogleThreatIntelligence
-display: GoogleThreatIntelligence
+display: Google Threat Intelligence
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
@@ -713,7 +713,7 @@ script:
       description: Outgoing links of the URL page.
       type: String
     - contextPath: GoogleThreatIntelligence.URL.attributes.gti_assessment.threat_score.value
-      description: GTI threat score of the file.
+      description: GTI threat score of the URL.
       type: Number
     - contextPath: GoogleThreatIntelligence.URL.attributes.gti_assessment.severity.value
       description: GTI severity of the URL.
@@ -1904,8 +1904,6 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
       type: String
-
   dockerimage: demisto/python3:3.10.14.92207
 tests:
 - GoogleThreatIntelligence-test
-- GoogleThreatIntelligence Detonate Test

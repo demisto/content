@@ -235,6 +235,9 @@ Checks the file reputation of the specified hash.
 | GoogleThreatIntelligence.File.type | String | Type of the indicator \(file\). |
 | GoogleThreatIntelligence.File.id | String | Type ID of the indicator. |
 | GoogleThreatIntelligence.File.links.self | String | Link to the response. |
+| GoogleThreatIntelligence.File.attributes.gti_assessment.verdict.value | String | GTI verdict of the file. |
+| GoogleThreatIntelligence.File.attributes.gti_assessment.severity.value | String | GTI severity of the file. |
+| GoogleThreatIntelligence.File.attributes.gti_assessment.threat_score.value | Number | GTI threat score of the file. |
 
 #### Command Example
 
@@ -434,6 +437,9 @@ Checks the reputation of an IP address.
 | GoogleThreatIntelligence.IP.attributes.whois | String | whois data. | 
 | GoogleThreatIntelligence.IP.type | String | Indicator IP type. | 
 | GoogleThreatIntelligence.IP.id | String | ID of the IP. | 
+| GoogleThreatIntelligence.IP.attributes.gti_assessment.verdict.value | String | GTI verdict of the IP address. |
+| GoogleThreatIntelligence.IP.attributes.gti_assessment.severity.value | String | GTI severity of the IP address. |
+| GoogleThreatIntelligence.IP.attributes.gti_assessment.threat_score.value | Number | GTI threat score of the IP address. |
 
 #### Command example
 ```!ip ip=1.1.1.1```
@@ -629,52 +635,55 @@ Checks the reputation of a URL.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| URL.Data | unknown | Bad URLs found. |
-| URL.Relationships.EntityA | String | The source of the relationship. |
-| URL.Relationships.EntityB | String | The destination of the relationship. |
-| URL.Relationships.Relationship | String | The name of the relationship. |
-| URL.Relationships.EntityAType | String | The type of the source of the relationship. |
-| URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. |
-| URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. |
-| DBotScore.Indicator | unknown | The indicator that was tested. |
-| DBotScore.Type | unknown | The indicator type. |
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score. |
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| GoogleThreatIntelligence.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. |
-| GoogleThreatIntelligence.URL.attributes.favicon.dhash | String | Difference hash. |
-| GoogleThreatIntelligence.URL.attributes.last_modification_date | Number | Last modification date in epoch format. |
-| GoogleThreatIntelligence.URL.attributes.times_submitted | Number | The number of times the url has been submitted. |
-| GoogleThreatIntelligence.URL.attributes.total_votes.harmless | Number | Total number of harmless votes. |
-| GoogleThreatIntelligence.URL.attributes.total_votes.malicious | Number | Total number of malicious votes. |
-| GoogleThreatIntelligence.URL.attributes.threat_names | String | Name of the threats found. |
-| GoogleThreatIntelligence.URL.attributes.last_submission_date | Number | The last submission date in epoch format. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_content_length | Number | The last HTTPS response length. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date | Date | The last response header date. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole | String | DNS sinkhole from last response. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type | String | The content type of the last response. |
-| GoogleThreatIntelligence.URL.attributes.reputation | Number | Reputation of the indicator. |
-| GoogleThreatIntelligence.URL.attributes.last_analysis_date | Number | The date of the last analysis in epoch format. |
-| GoogleThreatIntelligence.URL.attributes.has_content | Boolean | Whether the url has content in it. |
-| GoogleThreatIntelligence.URL.attributes.first_submission_date | Number | The first submission date in epoch format. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256 | String | The SHA-256 hash of the content of the last response. |
-| GoogleThreatIntelligence.URL.attributes.last_http_response_code | Number | Last response status code. |
-| GoogleThreatIntelligence.URL.attributes.last_final_url | String | Last final URL. |
-| GoogleThreatIntelligence.URL.attributes.url | String | The URL itself. |
-| GoogleThreatIntelligence.URL.attributes.title | String | Title of the page. |
-| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. |
-| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. |
-| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. |
-| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. |
-| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. |
-| GoogleThreatIntelligence.URL.attributes.outgoing_links | String | Outgoing links of the URL page. |
-| GoogleThreatIntelligence.URL.type | String | Type of the indicator \(url\). |
-| GoogleThreatIntelligence.URL.id | String | ID of the indicator. |
-| GoogleThreatIntelligence.URL.links.self | String | Link to the response. |
+| **Path**                                                                          | **Type** | **Description**                                                   |
+|-----------------------------------------------------------------------------------| --- |-------------------------------------------------------------------|
+| URL.Data                                                                          | unknown | Bad URLs found.                                                   |
+| URL.Relationships.EntityA                                                         | String | The source of the relationship.                                   |
+| URL.Relationships.EntityB                                                         | String | The destination of the relationship.                              |
+| URL.Relationships.Relationship                                                    | String | The name of the relationship.                                     |
+| URL.Relationships.EntityAType                                                     | String | The type of the source of the relationship.                       |
+| URL.Relationships.EntityBType                                                     | String | The type of the destination of the relationship.                  |
+| URL.Malicious.Vendor                                                              | unknown | For malicious URLs, the vendor that made the decision.            |
+| URL.Malicious.Description                                                         | unknown | For malicious URLs, the reason that the vendor made the decision. |
+| DBotScore.Indicator                                                               | unknown | The indicator that was tested.                                    |
+| DBotScore.Type                                                                    | unknown | The indicator type.                                               |
+| DBotScore.Vendor                                                                  | unknown | The vendor used to calculate the score.                           |
+| DBotScore.Score                                                                   | Number | The actual score.                                                 |
+| DBotScore.Reliability                                                             | String | Reliability of the source providing the intelligence data.        |
+| GoogleThreatIntelligence.URL.attributes.favicon.raw_md5                           | String | The MD5 hash of the URL.                                          |
+| GoogleThreatIntelligence.URL.attributes.favicon.dhash                             | String | Difference hash.                                                  |
+| GoogleThreatIntelligence.URL.attributes.last_modification_date                    | Number | Last modification date in epoch format.                           |
+| GoogleThreatIntelligence.URL.attributes.times_submitted                           | Number | The number of times the url has been submitted.                   |
+| GoogleThreatIntelligence.URL.attributes.total_votes.harmless                      | Number | Total number of harmless votes.                                   |
+| GoogleThreatIntelligence.URL.attributes.total_votes.malicious                     | Number | Total number of malicious votes.                                  |
+| GoogleThreatIntelligence.URL.attributes.threat_names                              | String | Name of the threats found.                                        |
+| GoogleThreatIntelligence.URL.attributes.last_submission_date                      | Number | The last submission date in epoch format.                         |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_content_length         | Number | The last HTTPS response length.                                   |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date           | Date | The last response header date.                                    |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole     | String | DNS sinkhole from last response.                                  |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response.                          |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type   | String | The content type of the last response.                            |
+| GoogleThreatIntelligence.URL.attributes.reputation                                | Number | Reputation of the indicator.                                      |
+| GoogleThreatIntelligence.URL.attributes.last_analysis_date                        | Number | The date of the last analysis in epoch format.                    |
+| GoogleThreatIntelligence.URL.attributes.has_content                               | Boolean | Whether the url has content in it.                                |
+| GoogleThreatIntelligence.URL.attributes.first_submission_date                     | Number | The first submission date in epoch format.                        |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256         | String | The SHA-256 hash of the content of the last response.             |
+| GoogleThreatIntelligence.URL.attributes.last_http_response_code                   | Number | Last response status code.                                        |
+| GoogleThreatIntelligence.URL.attributes.last_final_url                            | String | Last final URL.                                                   |
+| GoogleThreatIntelligence.URL.attributes.url                                       | String | The URL itself.                                                   |
+| GoogleThreatIntelligence.URL.attributes.title                                     | String | Title of the page.                                                |
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless              | Number | The number of engines that found the domain to be harmless.       |
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious             | Number | The number of engines that found the indicator to be malicious.   |
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious            | Number | The number of engines that found the indicator to be suspicious.  |
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected            | Number | The number of engines that could not detect the indicator.        |
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout               | Number | The number of engines that timed out for the indicator.           |
+| GoogleThreatIntelligence.URL.attributes.outgoing_links                            | String | Outgoing links of the URL page.                                   |
+| GoogleThreatIntelligence.URL.type                                                 | String | Type of the indicator \(url\).                                    |
+| GoogleThreatIntelligence.URL.id                                                   | String | ID of the indicator.                                              |
+| GoogleThreatIntelligence.URL.links.self                                           | String | Link to the response.                                             |
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.verdict.value              | String | GTI verdict of the URL.                                           |
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.severity.value             | String | GTI severity of the URL.                                          |
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.threat_score.value         | Number | GTI threat score of the URL.                                      
 
 #### Command Example
 
@@ -786,44 +795,47 @@ Checks the reputation of a domain.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Domain.Name | unknown | Bad domain found. |
-| Domain.Relationships.EntityA | String | The source of the relationship. |
-| Domain.Relationships.EntityB | String | The destination of the relationship. |
-| Domain.Relationships.Relationship | String | The name of the relationship. |
-| Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
-| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| Domain.Malicious.Vendor | unknown | For malicious domains, the vendor that made the decision. |
-| Domain.Malicious.Description | unknown | For malicious domains, the reason that the vendor made the decision. |
-| DBotScore.Indicator | unknown | The indicator that was tested. |
-| DBotScore.Type | unknown | The indicator type. |
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score. |
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| GoogleThreatIntelligence.Domain.attributes.last_dns_records.type | String | The type of the last DNS records. |
-| GoogleThreatIntelligence.Domain.attributes.last_dns_records.value | String | The value of the last DNS records. |
-| GoogleThreatIntelligence.Domain.attributes.last_dns_records.ttl | Number | The time To live \(ttl\) of the last DNS records. |
-| GoogleThreatIntelligence.Domain.attributes.jarm | String | JARM data. |
-| GoogleThreatIntelligence.Domain.attributes.whois | String | whois data. |
-| GoogleThreatIntelligence.Domain.attributes.last_dns_records_date | Number | The last DNS records date in epoch format. |
-| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. |
-| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. |
-| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. |
-| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. |
-| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. |
-| GoogleThreatIntelligence.Domain.attributes.favicon.raw_md5 | String | MD5 hash of the domain. |
-| GoogleThreatIntelligence.Domain.attributes.favicon.dhash | String | Difference hash. |
-| GoogleThreatIntelligence.Domain.attributes.reputation | Number | Reputation of the indicator. |
-| GoogleThreatIntelligence.Domain.attributes.registrar | String | Registrar information. |
-| GoogleThreatIntelligence.Domain.attributes.last_update_date | Number | Last updated date in epoch format. |
-| GoogleThreatIntelligence.Domain.attributes.last_modification_date | Number | Last modification date in epoch format. |
-| GoogleThreatIntelligence.Domain.attributes.creation_date | Number | Creation date in epoch format. |
-| GoogleThreatIntelligence.Domain.attributes.total_votes.harmless | Number | Total number of harmless votes. |
-| GoogleThreatIntelligence.Domain.attributes.total_votes.malicious | Number | Total number of malicious votes. |
-| GoogleThreatIntelligence.Domain.type | String | Type of indicator \(domain\). |
-| GoogleThreatIntelligence.Domain.id | String | ID of the domain. |
-| GoogleThreatIntelligence.Domain.links.self | String | Link to the domain investigation. |
+| **Path**                                                                     | **Type** | **Description**                                                      |
+|------------------------------------------------------------------------------| --- |----------------------------------------------------------------------|
+| Domain.Name                                                                  | unknown | Bad domain found.                                                    |
+| Domain.Relationships.EntityA                                                 | String | The source of the relationship.                                      |
+| Domain.Relationships.EntityB                                                 | String | The destination of the relationship.                                 |
+| Domain.Relationships.Relationship                                            | String | The name of the relationship.                                        |
+| Domain.Relationships.EntityAType                                             | String | The type of the source of the relationship.                          |
+| Domain.Relationships.EntityBType                                             | String | The type of the destination of the relationship.                     |
+| Domain.Malicious.Vendor                                                      | unknown | For malicious domains, the vendor that made the decision.            |
+| Domain.Malicious.Description                                                 | unknown | For malicious domains, the reason that the vendor made the decision. |
+| DBotScore.Indicator                                                          | unknown | The indicator that was tested.                                       |
+| DBotScore.Type                                                               | unknown | The indicator type.                                                  |
+| DBotScore.Vendor                                                             | unknown | The vendor used to calculate the score.                              |
+| DBotScore.Score                                                              | Number | The actual score.                                                    |
+| DBotScore.Reliability                                                        | String | Reliability of the source providing the intelligence data.           |
+| GoogleThreatIntelligence.Domain.attributes.last_dns_records.type             | String | The type of the last DNS records.                                    |
+| GoogleThreatIntelligence.Domain.attributes.last_dns_records.value            | String | The value of the last DNS records.                                   |
+| GoogleThreatIntelligence.Domain.attributes.last_dns_records.ttl              | Number | The time To live \(ttl\) of the last DNS records.                    |
+| GoogleThreatIntelligence.Domain.attributes.jarm                              | String | JARM data.                                                           |
+| GoogleThreatIntelligence.Domain.attributes.whois                             | String | whois data.                                                          |
+| GoogleThreatIntelligence.Domain.attributes.last_dns_records_date             | Number | The last DNS records date in epoch format.                           |
+| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.harmless      | Number | The number of engines that found the domain to be harmless.          |
+| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.malicious     | Number | The number of engines that found the indicator to be malicious.      |
+| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.suspicious    | Number | The number of engines that found the indicator to be suspicious.     |
+| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.undetected    | Number | The number of engines that could not detect the indicator.           |
+| GoogleThreatIntelligence.Domain.attributes.last_analysis_stats.timeout       | Number | The number of engines that timed out for the indicator.              |
+| GoogleThreatIntelligence.Domain.attributes.favicon.raw_md5                   | String | MD5 hash of the domain.                                              |
+| GoogleThreatIntelligence.Domain.attributes.favicon.dhash                     | String | Difference hash.                                                     |
+| GoogleThreatIntelligence.Domain.attributes.reputation                        | Number | Reputation of the indicator.                                         |
+| GoogleThreatIntelligence.Domain.attributes.registrar                         | String | Registrar information.                                               |
+| GoogleThreatIntelligence.Domain.attributes.last_update_date                  | Number | Last updated date in epoch format.                                   |
+| GoogleThreatIntelligence.Domain.attributes.last_modification_date            | Number | Last modification date in epoch format.                              |
+| GoogleThreatIntelligence.Domain.attributes.creation_date                     | Number | Creation date in epoch format.                                       |
+| GoogleThreatIntelligence.Domain.attributes.total_votes.harmless              | Number | Total number of harmless votes.                                      |
+| GoogleThreatIntelligence.Domain.attributes.total_votes.malicious             | Number | Total number of malicious votes.                                     |
+| GoogleThreatIntelligence.Domain.type                                         | String | Type of indicator \(domain\).                                        |
+| GoogleThreatIntelligence.Domain.id                                           | String | ID of the domain.                                                    |
+| GoogleThreatIntelligence.Domain.links.self                                   | String | Link to the domain investigation.                                    |
+| GoogleThreatIntelligence.Domain.attributes.gti_assessment.verdict.value      | String | GTI verdict of the domain.                                           |
+| GoogleThreatIntelligence.Domain.attributes.gti_assessment.severity.value     | String | GTI severity of the domain.                                          |
+| GoogleThreatIntelligence.Domain.attributes.gti_assessment.threat_score.value | Number | GTI threat score of the domain.                                      |
 
 #### Command Example
 
