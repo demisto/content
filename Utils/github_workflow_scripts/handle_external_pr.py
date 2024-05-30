@@ -8,7 +8,7 @@ from github import Github
 from git import Repo
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_yaml, get_yml_paths_in_dir
+from demisto_sdk.commands.common.tools import get_pack_metadata, get_yaml
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
@@ -277,7 +277,6 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             repo_name=repo_name
         ):
             pack_metadata = get_metadata(pack_dirs_to_check)
-
             for file in pr_files:
                 if "yml" in file and "Integrations" in file:
                     content_yml = get_yaml(file_path=file)
@@ -285,13 +284,13 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                     print(f'Is it a feed: {is_feed}')
                     if is_feed:
                         return True
-    except Exception as error:
-        print(f"couldn't checkout branch to get metadata, error is {error}")
+    except Exception as er:
+        print(f"couldn't checkout branch to get metadata, error is {er}")
         return False
     print(f'the metadata is: {pack_metadata}')
     tags = pack_metadata.get("tags")
     categories = pack_metadata.get("categories")
-    if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+    if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
         return True
     return False
 
