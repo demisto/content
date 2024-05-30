@@ -341,7 +341,7 @@ tasks:
     task:
       id: 1b7db857-deca-4bab-889f-c408711864b1
       version: -1
-      name: Got possible verdict?
+      name: Found malicious reputation?
       description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
       type: condition
       iscommand: false
