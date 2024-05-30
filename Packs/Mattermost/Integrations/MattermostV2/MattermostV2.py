@@ -461,7 +461,7 @@ def long_running_loop():  # pragma: no cover
     while True:
         error = ''
         try:
-            _ = check_for_unanswered_messages()
+            check_for_unanswered_messages()
             time.sleep(tts)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the MatterMost endpoint: {str(e)}'
@@ -740,14 +740,13 @@ def answer_question(text: str, message: dict, email: str = ''):
     """Answers a question from MattermostAskUser
     """
     global CLIENT
-    demisto.debug("MM: answer_question")
     entitlement = message.get('entitlement', '')
     root_id = message.get('root_id', '')
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
-        demisto.debug("MM: aFTER handleEntitlementForUser")
-        _ = process_entitlement_reply(text, root_id)
+        process_entitlement_reply(text, root_id)
+        demisto.debug(f"MM: Handled question for {incident_id=}, {task_id=} with {text=}")
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
     message['remove'] = True
