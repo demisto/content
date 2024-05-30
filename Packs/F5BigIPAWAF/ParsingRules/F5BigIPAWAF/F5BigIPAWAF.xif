@@ -1,0 +1,7 @@
+[INGEST:vendor="f5", product="waf", target_dataset="f5_waf_raw", no_hit=keep]
+filter _raw_log ~= "\<\d+\>\s*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[+-]\d{2}\:\d{2}"
+| alter
+    tmp_timestamp = arrayindex(regextract(_raw_log,"\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[+-]\d{2}\:\d{2}"),0)
+| alter
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%Ez", tmp_timestamp)
+| fields -tmp_timestamp;
