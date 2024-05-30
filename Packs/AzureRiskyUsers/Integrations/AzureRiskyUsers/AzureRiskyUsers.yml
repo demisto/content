@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: AzureRiskyUsers
+  id: AzureRiskyUsers_extended
   version: -1
 configuration:
 - display: Client ID
@@ -44,8 +44,8 @@ configuration:
   type: 8
   required: false
 description: Azure Risky Users provides access to all at-risk users and risk detections in the Azure AD environment.
-display: Azure Risky Users
-name: AzureRiskyUsers
+display: Azure Risky Users Extended
+name: AzureRiskyUsers_extended
 script:
   commands:
   - description: Tests the connectivity to Azure.
@@ -89,6 +89,10 @@ script:
       predefined:
         - 'riskLastUpdatedDateTime desc'
         - 'riskLastUpdatedDateTime asc'
+    - description: Displays all RiskyUsers before a specific Date Time. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+      name: updated_before
+    - description: Displays all RiskyUsers after a specific Date Time. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+      name: updated_after
     description: Returns a list of all risky users and their properties.
     name: azure-risky-users-list
     outputs:
