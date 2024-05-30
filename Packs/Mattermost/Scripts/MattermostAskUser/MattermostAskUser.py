@@ -27,8 +27,7 @@ def main():
     args = demisto.args()
     lifetime = args.get('lifetime', '1 day')
     try:
-        
-        parsed_date = arg_to_datetime('in ' + lifetime, arg_name=lifetime)
+        parsed_date = arg_to_datetime('in ' + lifetime)
         assert parsed_date is not None, f'Could not parse in {lifetime}'
         expiry = datetime.strftime(parsed_date, DATE_FORMAT)
     except Exception:
@@ -44,7 +43,7 @@ def main():
         entitlementString += '|' + task
 
     message = f'**{args.get("message")}** - Please reply to this thread with `{option1}` or `{option2}`.'
-    
+
     message_dict = json.dumps({
         'message': message,
         'entitlement': entitlementString,

@@ -497,7 +497,7 @@ def check_for_unanswered_messages():
             updated_messages.append(message)
 
         if updated_messages:
-            
+
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
 
 
