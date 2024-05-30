@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "test-branch-instances"
+  CURRENT_BRANCH_NAME: "collect-test-nightly-changes"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "test-branch-instances"
+    ref: "collect-test-nightly-changes"
     project: "${CI_PROJECT_NAMESPACE}/infra"

@@ -1,7 +1,7 @@
 commonfields:
   id: Abnormal Security Event Collector
   version: -1
-name: Abnormal Security Event Collector
+name: Abnormal Security Event Collector test
 display: Abnormal Security Event Collector
 category: Analytics & SIEM
 description: Abnormal Security Event Collector integration for XSIAM.
