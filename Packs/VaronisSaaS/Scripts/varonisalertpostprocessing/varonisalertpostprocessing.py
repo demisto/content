@@ -13,10 +13,7 @@ def update_alert_status():
 
 
 def main():
-    try:
-        update_alert_status()
-    except Exception as ex:
-        return_error(f'Failed to execute varonis-alert-post-processing. Error: {str(ex)}')
+    update_alert_status()
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
