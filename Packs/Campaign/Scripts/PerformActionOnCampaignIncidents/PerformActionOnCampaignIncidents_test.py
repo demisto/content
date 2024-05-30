@@ -701,7 +701,7 @@ def test_perform_remove_from_campaign_no_incidents_to_remove(
         (None, "remove", ["campaign_id"]),
         ([], "remove", ["campaign_id"]),
         (None, "add", []),
-        ([],"add", []),
+        ([], "add", []),
         (["campaign1", "campaign_id"], "add", ["campaign1"]),
     ]
 )
@@ -712,9 +712,9 @@ def test_set_removed_from_campaigns_field(
     mocker.patch("PerformActionOnCampaignIncidents._get_data_from_incident", return_value=campaign_ids_removed)
     mock_execute_command = mocker.patch("PerformActionOnCampaignIncidents.demisto.executeCommand")
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
-    
+
     _set_removed_from_campaigns_field("incident_id", "campaign_id", action)
-    
+
     mock_execute_command.assert_called_once_with(
         "setIncident", {"id": "incident_id", "removedfromcampaigns": expected_campaign_ids_removed}
     )
