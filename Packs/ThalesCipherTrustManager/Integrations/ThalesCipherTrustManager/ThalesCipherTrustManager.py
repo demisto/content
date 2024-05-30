@@ -925,11 +925,11 @@ class CipherTrustClient(BaseClient):
             params=params,
         )
 
-    def update_local_ca(self, local_ca_id: str, request_data: dict):
+    def update_local_ca(self, local_ca_id: str, params: dict):
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
-            json_data=request_data,
+            params=params,
         )
 
     def delete_local_ca(self, local_ca_id: str):
@@ -1346,11 +1346,11 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-local-ca-update', inputs_list=LOCAL_CA_UPDATE_INPUTS,
                             outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_UPDATE_DESCRIPTION, outputs_list=LOCAL_CA_UPDATE_OUTPUTS)
 def local_ca_update_command(client: CipherTrustClient, args: dict):
-    request_data = assign_params(
+    params = assign_params(
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
         allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
     )
-    raw_response = client.update_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID), request_data=request_data)
+    raw_response = client.update_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID), params=params)
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
