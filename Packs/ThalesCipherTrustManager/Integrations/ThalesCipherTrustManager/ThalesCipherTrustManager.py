@@ -434,12 +434,14 @@ LOCAL_CA_DELETE_INPUTS = [
 ]
 
 LOCAL_CA_SELF_SIGN_INPUTS = [
-    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the resource. This can be '
+                                                                                'either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
     InputArgument(name=CommandArguments.DURATION,
-                  description='Duration in days of certificate. Either duration or notAfter date must be specified.'),
+                  description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides '
+                              'duration if both are given.'),
     InputArgument(name=CommandArguments.NOT_AFTER,
                   description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.'),
-    InputArgument(name=CommandArguments.NOT_BEFORE, description='Start date of certificate. ISO 8601 format'),
+    InputArgument(name=CommandArguments.NOT_BEFORE, description='Start date of certificate.'),
 
 ]
 
@@ -813,6 +815,33 @@ LOCAL_CA_UPDATE_OUTPUTS = [
     OutputArgument(name="purpose.user_authentication", output_type=str,
                    description="Indicates if user authentication is enabled for the CA.")
 ]
+
+LOCAL_CA_SELF_SIGN_OUTPUT = [
+    OutputArgument(name="id", output_type=str, description="A unique identifier for the certificate authority (CA)."),
+    OutputArgument(name="uri", output_type=str, description="Uniform Resource Identifier associated with the CA."),
+    OutputArgument(name="account", output_type=str, description="Account associated with the CA."),
+    OutputArgument(name="application", output_type=str, description="Application associated with the CA."),
+    OutputArgument(name="devAccount", output_type=str, description="Developer account associated with the CA."),
+    OutputArgument(name="name", output_type=str, description="Name of the CA."),
+    OutputArgument(name="state", output_type=str, description="Current state of the CA (e.g., pending, active)."),
+    OutputArgument(name="createdAt", output_type=datetime.datetime, description="Timestamp of when the CA was created."),
+    OutputArgument(name="updatedAt", output_type=datetime.datetime, description="Timestamp of the last update of the CA."),
+    OutputArgument(name="csr", output_type=str, description="Certificate Signing Request for the CA, if updated."),
+    OutputArgument(name="cert", output_type=str, description="Certificate associated with the CA."),
+    OutputArgument(name="serialNumber", output_type=str, description="Serial number of the CA's certificate."),
+    OutputArgument(name="subject", output_type=str, description="Subject of the CA's certificate."),
+    OutputArgument(name="issuer", output_type=str, description="Issuer of the CA's certificate."),
+    OutputArgument(name="notBefore", output_type=datetime.datetime, description="Start date of the CA's certificate validity."),
+    OutputArgument(name="notAfter", output_type=datetime.datetime, description="End date of the CA's certificate validity."),
+    OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA1 fingerprint of the CA's certificate."),
+    OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA256 fingerprint of the CA's certificate."),
+    OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
+    OutputArgument(name="purpose.client_authentication", output_type=str,
+                   description="Indicates if client authentication is enabled for the CA."),
+    OutputArgument(name="purpose.user_authentication", output_type=str,
+                   description="Indicates if user authentication is enabled for the CA.")
+]
+
 
 '''' YML METADATA END  '''
 
@@ -1390,8 +1419,10 @@ def local_ca_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> 
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-self-sign', inputs_list=LOCAL_CA_SELF_SIGN_INPUTS,
-                            description=LOCAL_CA_SELF_SIGN_DESCRIPTION, outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX)
+                            description=LOCAL_CA_SELF_SIGN_DESCRIPTION, outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX, outputs_list=LOCAL_CA_SELF_SIGN_OUTPUT)
 def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+    if args.get(CommandArguments.NOT_AFTER) is None and args.get(CommandArguments.DURATION) is None:
+        raise ValueError('Either the "not_after" or "duration" argument must be provided.')
     request_data = assign_params(
         duration=arg_to_number(args.get(CommandArguments.DURATION)),
         notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
@@ -1399,7 +1430,7 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
     )
     raw_response = client.self_sign_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID), request_data=request_data)
     return CommandResults(
-        outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+        outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
         raw_response=raw_response
     )

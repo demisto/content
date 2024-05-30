@@ -319,7 +319,24 @@ LOCAL_CA_UPDATE_TEST_ARGS = [
 LOCAL_CA_DELETE_TEST_ARGS = [
     {CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000"},
 ]
-LOCAL_CA_SELF_SIGN_TEST_ARGS = []
+LOCAL_CA_SELF_SIGN_TEST_ARGS = [
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
+
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
+
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration': '365'}),
+
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
+      'not_after': '2024-01-01T00:00:00Z'}),
+
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00:00Z',
+      'not_after': 'two weeks'})
+]
+
+LOCAL_CA_SELF_SIGN_TEST_MISSING_ARGS = [
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000'}),
+    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
+]
 LOCAL_CA_INSTALL_TEST_ARGS = []
 CERTIFICATE_ISSUE_TEST_ARGS = []
 CERTIFICATE_LIST_TEST_ARGS = []
@@ -727,6 +744,19 @@ def test_local_ca_self_sign_command(mock_self_sign_local_ca, args):
     assert result.outputs_prefix == CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_self_sign_local_ca.return_value
     assert result.raw_response == mock_self_sign_local_ca.return_value
+
+
+@pytest.mark.parametrize('args', LOCAL_CA_SELF_SIGN_TEST_MISSING_ARGS)
+@patch(MOCKER_HTTP_METHOD)
+def test_local_ca_self_sign_command_missing_arguments(mock_self_sign_local_ca, args):
+    from ThalesCipherTrustManager import CipherTrustClient, local_ca_self_sign_command
+    mock_self_sign_local_ca.return_value = util_load_json('test_data/mock_local_ca_self_sign_response.json')
+
+    client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
+                               proxy=False)
+
+    with pytest.raises(ValueError):
+        result = local_ca_self_sign_command(client, args)
 
 
 @pytest.mark.parametrize('args', LOCAL_CA_INSTALL_TEST_ARGS)

@@ -760,13 +760,13 @@ script:
     arguments:
     - name: local_ca_id
       isArray: false
-      description: local CA ID
+      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
     - name: duration
       isArray: false
-      description: Duration in days of certificate. Either duration or notAfter date must be specified.
+      description: End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.
       required: false
       secret: false
       default: false
@@ -778,11 +778,74 @@ script:
       default: false
     - name: not_before
       isArray: false
-      description: Start date of certificate. ISO 8601 format
+      description: Start date of certificate.
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.CASelfSign.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.CASelfSign.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.state
+      description: Current state of the CA (e.g., pending, active).
+      type: String
+    - contextPath: CipherTrust.CASelfSign.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.csr
+      description: Certificate Signing Request for the CA, if updated.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.cert
+      description: Certificate associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
   - deprecated: false
     description: Update a local CA.
     name: ciphertrust-local-ca-update
