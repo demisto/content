@@ -114,23 +114,6 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### o365-sc-auth-start
-
-***
-OAuth2.0 - Start authorization.
-
-#### Base Command
-
-`o365-sc-auth-start`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-### o365-sc-auth-start
 ***
 OAuth2.0 - Start authorization.
 
@@ -157,23 +140,6 @@ There is no context output for this command.
 
 
 ### o365-sc-auth-complete
-
-***
-OAuth2.0 - Complete authorization.
-
-#### Base Command
-
-`o365-sc-auth-complete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-### o365-sc-auth-complete
 ***
 OAuth2.0 - Complete authorization.
 
@@ -198,23 +164,6 @@ There is no context output for this command.
 
 
 
-### o365-sc-auth-test
-
-***
-OAuth2.0 - Test authorization.
-
-#### Base Command
-
-`o365-sc-auth-test`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
 ### o365-sc-auth-test
 ***
 OAuth2.0 - Test authorization.

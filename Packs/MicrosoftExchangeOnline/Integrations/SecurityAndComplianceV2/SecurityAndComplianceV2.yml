@@ -1,4 +1,7 @@
 category: Email
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: SecurityAndComplianceV2
   version: -1
@@ -1180,7 +1183,7 @@ script:
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
   dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
-  runonce: false
+  runonce: true
   script: ''
   type: powershell
 fromversion: 5.5.0
