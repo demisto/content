@@ -150,7 +150,8 @@ def test_get_events_command(mocker, mock_client):
 def test_get_events_command_failure(mocker, mock_client):
     """
     Given:
-    - get_events command
+    - a mocked client
+    - mocked response: invalid response structure, since it does not have the 'tracker' key as expected
 
     When:
     - running get events command
@@ -260,8 +261,9 @@ def test_fetch_events_command(mocker, mock_client):
 
 @freeze_time("2022-02-28 11:00:00")
 @pytest.mark.parametrize("integration_context", [({}),
-                         ({'Token': 'DUMMY TOKEN',
-                           'expiration_time': datetime(2022, 2, 28, 10, 50).strftime(DATE_FORMAT_FOR_TOKEN)})])
+                                                 ({'Token': 'DUMMY TOKEN',
+                                                   'expiration_time': datetime(2022, 2, 28, 10, 50).strftime(
+                                                       DATE_FORMAT_FOR_TOKEN)})])
 def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     """
     Given:
@@ -275,7 +277,11 @@ def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mock_refresh_access_token = mocker.patch.object(Client, "refresh_access_token", return_value='DUMMY_TOKEN')
+    mock_refresh_access_token = mocker.patch.object(Client, "refresh_access_token", return_value={
+        "access_token": "",
+        "token_type": "bearer",
+        "expires_in": 0
+    })
     Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
     mock_refresh_access_token.assert_called_once_with()
 

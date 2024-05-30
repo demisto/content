@@ -42,13 +42,16 @@ class Client(BaseClient):
                 self.set_headers(token)
                 return
 
-        token = self.refresh_access_token()
-        set_integration_context(
-            {'Token': token, 'expiration_time': (now + timedelta(minutes=25)).strftime(DATE_FORMAT_FOR_TOKEN)})
+        new_token_json: dict = self.refresh_access_token()
 
-    def refresh_access_token(self) -> str:
+        #  token["expires_in"] - 60 seconds for safety
+        set_integration_context(
+            {'Token': new_token_json["access_token"],
+             'expiration_time': (now + timedelta(seconds=(new_token_json["expires_in"] - 60))).strftime(DATE_FORMAT_FOR_TOKEN)})
+
+    def refresh_access_token(self) -> dict:
         """
-        Since the validity of the Access Token is 30 minutes, this method refreshes it.
+        Since the validity of the Access Token is 30 minutes, this method refreshes it and returns the new token json.
         """
         encoded_credentials = base64.b64encode(self.credentials.encode())
         decoded_credentials = encoded_credentials.decode("utf-8")
@@ -62,9 +65,8 @@ class Client(BaseClient):
                 informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
                 raise DemistoException(f'Error in test-module: {informative_message}') from e
             raise
-        access_token = response_json['access_token']
-        self._headers = {'Authorization': f'Bearer {access_token}'}
-        return access_token
+        self._headers = {'Authorization': f'Bearer {response_json["access_token"]}'}
+        return response_json
 
     def search_events(self, tracker: Optional[str] = None) -> dict:
         """
