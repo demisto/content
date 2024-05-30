@@ -1,61 +1,26 @@
+# Introduction
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
-This integration was integrated and tested with version 14-20 of QRadar v3
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
-## Configure IBM QRadar v3 on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IBM QRadar v3.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | -- | --- |
-    | Server URL | \(e.g., https://1.1.1.1\) | True |
-    | Username |  | True |
-    | Password |  | True |
-    | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
-    | Incident Type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | if no offenses are found within the range of first fetch, will be set to fetch the earliest offense. | False |
-    | Fetch mode |  | True |
-    | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than \`event_count\`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5 | False |
-    | Maximum number of events per incident. | The maximal amount of events to pull per incident. | False |
-    | Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
-    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". filtering by status in the query may result in unexpected behavior when changing an incident's status. | False |
-    | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
-    | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
-    | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
-    | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
-    | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
-    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
-4. Click **Test** to validate the URLs, token, and connection.
-
-## Required Permissions
-| Component | Permission |
-| --- | --- |
-| Assets | Vulnerability Management *or* Assets |
-| Domains | Admin |
-| Offenses (Manage Closing Reason) | Manage Offense Closing Reasons |
-| Offenses (Assign Offenses to Users) | Assign Offenses to Users |
-| Offenses (Read) | Offenses |
-| References (Create/Update) | Admin |
-| References (Read) | View Reference Data |
-## Mapping Limitation for Cortex XSOAR Versions below 6.0.0
-The *Pull from instance* option to create a new mapper is not supported in Cortex XSOAR versions below 6.0.0. 
-
-## Creating a Classifier Using the *Pull from instance* Parameter
-QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
-
+# Supported Versions and license needed
+This integration was integrated and tested with version 14-20 of QRadar v3
+# Use cases
+Using the commands in the integration, you can leverage what the QRadar API has to offer, such as:
+- Editing objects
+- Getting object lists
+- Adding notes
+Basically, you can perform tasks that a user would need to do manually in the QRadar UI or would need to provide automations to do.
+# Architecture
+# Special Notes/Disclaimers
 ## Important Note Regarding the *Query to fetch offenses* Parameter
 The *Query to fetch offenses* feature enables defining a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching.   
 If you change the *Query to fetch offenses* value, it will not re-fetch offenses that have already been fetched. To re-fetch those offenses, run the ***qradar-reset-last-run*** command.  
 **Note:**  
-The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query.  
-## Migration from QRadar v2 to QRadar v3
+The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query. 
+
+
+<details><summary><h1 style="display: inline;">Migration-</h1><h2 style="display: inline;"> from QradarV2 to V3</h2></summary>
+
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ### Additions and Changes from QRadar v2 to QRadar v3
 ### New Commands
@@ -87,10 +52,78 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-update-reference-set-value | qradar-reference-set-value-upsert |  | 
 | qradar-delete-reference-set-value |  qradar-reference-set-value-delete | | 
 | qradar-get-domains | qradar-domains-list |  | 
-| qradar-get-domain-by-id| qradar-domains-list | Specify the *domain_id* argument in the command. |  |
+| qradar-get-domain-by-id| qradar-domains-list | Specify the *domain_id* argument in the command. |  | 
+</details>
 
+# Known Limitations
+## Mapping Limitation for Cortex XSOAR Versions below 6.0.0
+The *Pull from instance* option to create a new mapper is not supported in Cortex XSOAR versions below 6.0.0. 
 
-## Mirroring
+## Creating a Classifier Using the *Pull from instance* Parameter
+QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
+
+# System Integration Setup (Device side steps)
+
+<details><summary><h3 style="display: inline;"> PAT (API Key) Authentication</h3></summary> 
+
+#### Use the API Token Instead of Username and Password
+ - In the **Username / API Key** field, type **_api_token_key**.  
+ - In the **Password** field, type your API token.
+
+ </details>
+
+<details><summary><h3 style="display: inline;"> View Your QRadar Version</h3> </summary> 
+
+1. Enter QRadar service.
+2. Click the **Menu** toolbar. A scrolling toolbar will appear.
+3. Click **About**. A new window will appear with the details of your QRadar version.
+   
+If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version. 
+</details>
+   
+
+# Permissions
+| Component | Permission |
+| --- | --- |
+| Assets | Vulnerability Management *or* Assets |
+| Domains | Admin |
+| Offenses (Manage Closing Reason) | Manage Offense Closing Reasons |
+| Offenses (Assign Offenses to Users) | Assign Offenses to Users |
+| Offenses (Read) | Offenses |
+| References (Create/Update) | Admin |
+| References (Read) | View Reference Data |
+
+# Configure Integration on XSOAR (Parameters)
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for IBM QRadar v3.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | -- | --- |
+    | Server URL | \(e.g., https://1.1.1.1\) | True |
+    | Username |  | True |
+    | Password |  | True |
+    | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
+    | Incident Type |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | if no offenses are found within the range of first fetch, will be set to fetch the earliest offense. | False |
+    | Fetch mode |  | True |
+    | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than \`event_count\`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5 | False |
+    | Maximum number of events per incident. | The maximal amount of events to pull per incident. | False |
+    | Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
+    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". filtering by status in the query may result in unexpected behavior when changing an incident's status. | False |
+    | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
+    | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
+    | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
+    | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
+    | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
+    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
+4. Click **Test** to validate the URLs, token, and connection.
+   
+# Mirroring
 This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
 ### Mirroring Events
@@ -102,39 +135,11 @@ When a field of an offense is updated in QRadar services, the update is mirrored
 
 For more information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).  
 
-## Use the API Token Instead of Username and Password
-- In the **Username / API Key** field, type **_api_token_key**.  
-- In the **Password** field, type your API token.
-## Choose Your API Version
-1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
-2. Choose one of the API versions listed under the **Supported REST API versions** column in the line corresponding to your QRadar version.
-
-**Note:**  
-If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
-## View Your QRadar Version
-1. Enter QRadar service.
-2. Click the **Menu** toolbar. A scrolling toolbar will appear.
-3. Click **About**. A new window will appear with the details of your QRadar version.
-
-## Troubleshooting
-
-When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
-Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
-In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
-```
-EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between tries> (default 100),EVENTS_POLLING_TRIES=<number of times to poll for one search> (default 10),
-```
-It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
-Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
-If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
-
-
-## Commands
-
+# Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### qradar-offenses-list
+<details><summary><h3 style="display: inline;"> qradar-offenses-list</h3></summary> 
 
 ***
 Gets offenses from QRadar.
@@ -363,10 +368,9 @@ Gets offenses from QRadar.
 >| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
 >| 13 | Flow Source/Interface Stopped Sending Flows<br/> | Rule | OPEN | 1 | Net-10-172-192.Net_10_0_0_0 | 2023-06-12T08:49:50.145000+00:00 | 2 | {'id': 100270, 'type': 'CRE_RULE', 'name': 'Flow Source Stopped Sending Flows'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 |  | Flow Source Stopped Sending Flows | true | 2 | 2023-06-12T08:19:02.020000+00:00 | 6026 | 1.1.1.1 | https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=13 | 0 | 0 | Mail,<br/>System Failure | 1 | true |
 >| 12 | User Account Created and Used and Deleted within a short time frame (Exp Center)<br/> | Username | OPEN | 5 | Net-10-172-192.Net_172_16_0_0 | 2023-06-12T08:17:33.008000+00:00 | 3 | {'id': 102989, 'type': 'CRE_RULE', 'name': 'EC: User Account Created and Used and Removed'} | 1.1.1.1 |  | badadmin | true | 8 | 2023-06-12T08:15:54.740000+00:00 | 0 | 1.1.1.1 | https://ec2-3.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=12 | 0 | 0 | User Activity | 2 | true |
+</details>
 
-
-### qradar-offense-update
-
+<details><summary><h3 style="display: inline;"> qradar-offense-update</h3></summary> 
 ***
 Updates an offense.
 
@@ -515,10 +519,9 @@ Updates an offense.
 >|ID|Description|OffenseType|Status|Severity|DestinationHostname|LastUpdatedTime|Credibility|Rules|SourceAddress|AssignedTo|OffenseSource|Followup|EventCount|StartTime|FlowCount|DestinationAddress|LinkToOffense|RemoteDestinationCount|Relevance|Categories|Magnitude|Protected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
+</details>
 
-
-### qradar-closing-reasons
-
+<details><summary><h3 style="display: inline;">qradar-closing-reasons</h3></summary> 
 ***
 Retrieves a list of offense closing reasons.
 
@@ -593,9 +596,9 @@ Retrieves a list of offense closing reasons.
 >| 1 | Non-Issue | false | false |
 >| 3 | Policy Violation | false | false |
 >| 4 | System Change (Upgrade, Reset, etc.) | true | false |
+</details>
 
-
-### qradar-offense-notes-list
+<details><summary><h3 style="display: inline;"> qradar-offense-notes-list</h3></summary> 
 
 ***
 Retrieves a list of notes for an offense.
@@ -654,9 +657,9 @@ Retrieves a list of notes for an offense.
 >|---|---|---|---|
 >| 53 | Note Regarding The Offense | API_user: admin | 2023-07-27T13:58:46.428000+00:00 |
 >| 60 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:23:05.473000+00:00 |
+</details>
 
-
-### qradar-offense-note-create
+<details><summary><h3 style="display: inline;"> qradar-offense-note-create</h3></summary> 
 
 ***
 Creates a note on an offense.
@@ -704,10 +707,9 @@ Creates a note on an offense.
 >|ID|Text|CreatedBy|CreateTime|
 >|---|---|---|---|
 >| 65 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:39:15.813000+00:00 |
+</details>
 
-
-### qradar-rules-list
-
+<details><summary><h3 style="display: inline;"> qradar-rules-list</h3></summary> 
 ***
 Retrieves a list of rules.
 
@@ -804,10 +806,9 @@ Retrieves a list of rules.
 >| 100068 | Login Successful After Scan Attempt | COMMON | true | 0 | SYSTEM | 2022-11-21T18:44:32.696000+00:00 | 2007-10-14T20:12:00.374000+00:00 | 0 | 0 | admin | 0 |
 >| 100102 | Potential Botnet Connection (DNS) | COMMON | false | 0 | SYSTEM | 2023-02-23T14:12:52.067000+00:00 | 2006-03-27T10:54:12.077000+00:00 | 0 | 0 | admin | 0 |
 >| 100109 | Host Port Scan Detected by Remote Host | COMMON | true | 0 | SYSTEM | 2023-02-23T14:12:49.992000+00:00 | 2005-12-22T00:54:48.708000+00:00 | 0 | 0 | admin | 0 |
+</details>
 
-
-### qradar-rule-groups-list
-
+<details><summary><h3 style="display: inline;"> qradar-rule-groups-list</h3></summary> 
 ***
 Retrieves a list of the rule groups.
 
@@ -940,10 +941,9 @@ Retrieves a list of the rule groups.
 >| 125 | Asset Reconciliation Exclusion | Rules focused on detection of suspicious asset reconciliation behavior. | admin | 2014-01-06T15:23:26.060000+00:00 | 3 | RULE_GROUP | 100045,<br/>100046,<br/>100047,<br/>100048,<br/>100049,<br/>100050,<br/>100051,<br/>100052,<br/>100053,<br/>100054,<br/>100055,<br/>100056,<br/>1607,<br/>1608,<br/>1609,<br/>1610,<br/>1611,<br/>1612,<br/>1613,<br/>1614,<br/>1615,<br/>1616,<br/>1617,<br/>1618 | 2 |
 >| 100020 | Horizontal Movement | Rules that indicate post-intrusion access activity | admin | 2015-07-08T20:14:12.250000+00:00 | 3 | RULE_GROUP | 100057,<br/>100059 | 2 |
 >| 101 | Anomaly | Rules based on log source and event anomalies such as high event rates or excessive connections. | admin | 2010-08-21T11:48:27.850000+00:00 | 3 | RULE_GROUP | 100001,<br/>100003,<br/>100044,<br/>100323,<br/>1219,<br/>1265,<br/>1335,<br/>1410,<br/>1411,<br/>1412,<br/>1431,<br/>1443,<br/>1460,<br/>1461,<br/>1471,<br/>1481,<br/>1509,<br/>1552,<br/>1566 | 1 |
+</details>
 
-
-### qradar-assets-list
-
+<details><summary><h3 style="display: inline;"> qradar-assets-list</h3></summary> 
 ***
 Retrieves assets list.
 
@@ -1068,10 +1068,8 @@ Retrieves assets list.
 >|IPAddress|
 >|---|
 >| 1.1.1.1 |
-
-
-### qradar-saved-searches-list
-
+</details>
+<details><summary><h3 style="display: inline;"> qradar-saved-searches-list</h3></summary> 
 ***
 Retrieves a list of Ariel saved searches.
 
@@ -1150,10 +1148,9 @@ Retrieves a list of Ariel saved searches.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2817 | EC: AWS Cloud Attack Events | false | select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where "Experience Center" ilike '%AWSCloud%' order by "startTime" desc LIMIT 1000 start '2023-08-02 08:34' stop '2023-08-02 08:39' | 0144c7d8-a3fe-47c1-b16b-12721a34077e | false | 2023-02-23T14:12:52.611000+00:00 | 2019-04-02T17:39:08.493000+00:00 | EVENTS | admin |
 >| 2835 | Potential Ransomware (Suspicious activity, Possible Petya, NotPetya) | true | select * from flows where destinationport = '445' and (FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%70 00 73 00 65 00 78 00 65 00 63 00 73 00 76 00 63 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%50 00 53 00 45 00 58 00 45 00 53 00 56 00 43 00 2e 00 45 00 58 00 45%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%73 00 76 00 63 00 63 00 74 00 6c 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%5c 00 61 00 64 00 6d 00 69 00 6e 00 24 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%ff 53 4d 42 72 00 00 00 00 18 07 c0%') last 24 HOURS | 0791701a-80e3-4a1c-b11f-7bc943b96bf6 | false | 2023-03-05T13:34:00.352000+00:00 | 2017-07-02T18:11:44.984000+00:00 | FLOWS | admin |
+</details>
 
-
-### qradar-searches-list
-
+<details><summary><h3 style="display: inline;">qradar-searches-list</h3></summary> 
 ***
 Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands.
 
@@ -1390,10 +1387,9 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 >| c6a82de6-cfef-444e-9b0f-b124b5599b7b |
 >| 185971cc-ebbb-453d-b826-bffc59836be1 |
 >| 2a45ec38-d060-4aae-9a9c-730f49966fdc |
+</details>
 
-
-### qradar-search-create
-
+<details><summary><h3 style="display: inline;">qradar-search-create</h3></summary> 
 ***
 Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
 
@@ -1440,10 +1436,8 @@ Creates a new asynchronous Ariel search. Returns the search ID. Search status an
 >|ID|Status|
 >|---|---|
 >| 68d4e4e6-f512-4171-b130-d671334cb47d | WAIT |
-
-
-### qradar-search-status-get
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-search-status-get</h3></summary> 
 ***
 Retrieves status information for a search, based on the search ID.
 
@@ -1463,8 +1457,8 @@ Retrieves status information for a search, based on the search ID.
 | --- | --- | --- |
 | QRadar.Search.Status | String | Status of the search. | 
 | QRadar.Search.ID | String | ID of the search. | 
-
-### qradar-search-results-get
+</details>
+<details><summary><h3 style="display: inline;">qradar-search-results-get</h3></summary> 
 
 ***
 Retrieves search results.
@@ -1486,9 +1480,8 @@ Retrieves search results.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
-
-### qradar-reference-sets-list
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-reference-sets-list</h3></summary> 
 ***
 Retrieves a list of reference sets.
 
@@ -1562,10 +1555,8 @@ Retrieves a list of reference sets.
 >| Critical Assets | IP | FIRST_SEEN | 2015-08-27T17:15:40.583000+00:00 | 0 |
 >| BadRabbit_FileHash | ALNIC | FIRST_SEEN | 2017-10-25T16:31:15.992000+00:00 | 6 |
 >| Windows RCE IPs | IP | FIRST_SEEN | 2022-10-03T10:38:51.140000+00:00 | 19 |
-
-
-### qradar-reference-set-create
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-reference-set-create</h3></summary> 
 ***
 Creates a new reference set.
 
@@ -1622,10 +1613,8 @@ Creates a new reference set.
 >|Name|ElementType|TimeToLive|TimeoutType|CreationTime|NumberOfElements|
 >|---|---|---|---|---|---|
 >| Malicious IPs | IP | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN | 2023-08-02T08:39:30.887000+00:00 | 0 |
-
-
-### qradar-reference-set-delete
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-reference-set-delete</h3></summary> 
 ***
 Removes a reference set or purges its contents.
 
@@ -1648,9 +1637,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Request to delete reference Malicious IPs was submitted. Current deletion status: QUEUED
-
-### qradar-reference-set-value-upsert
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-reference-set-value-upsert</h3></summary> 
 ***
 Adds or updates an element in a reference set.
 
@@ -1727,10 +1715,9 @@ Adds or updates an element in a reference set.
 >|CreationTime|Data|ElementType|Name|NumberOfElements|TimeToLive|TimeoutType|
 >|---|---|---|---|---|---|---|
 >| 2023-08-02T08:39:30.887000+00:00 | {'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'} | IP | Malicious IPs | 3 | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN |
+</details>
 
-
-### qradar-reference-set-value-delete
-
+<details><summary><h3 style="display: inline;">qradar-reference-set-value-delete</h3></summary> 
 ***
 Removes a value from a reference set.
 
@@ -1754,9 +1741,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### value: 1.1.1.1 of reference: Malicious IPs was deleted successfully
-
-### qradar-domains-list
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-domains-list</h3></summary> 
 ***
 Gets the list of domains. You must have System Administrator or Security Administrator permissions to call this endpoint if you are trying to retrieve the details of all domains. You can retrieve details of domains that are assigned to your Security Profile without having the System Administrator or Security Administrator permissions. If you do not have the System Administrator or Security Administrator permissions, then for each domain assigned to your security profile you can only view the values for the ID and name fields. All other values return null.
 
@@ -1814,10 +1800,8 @@ Gets the list of domains. You must have System Administrator or Security Adminis
 >|Deleted|ID|TenantID|
 >|---|---|---|
 >| false | 0 | 0 |
-
-
-### qradar-indicators-upload
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-indicators-upload</h3></summary> 
 ***
 Uploads indicators to QRadar.
 
@@ -1849,8 +1833,8 @@ Uploads indicators to QRadar.
 | QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
 | QRadar.Reference.Name | String | Name of the reference set. | 
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
-
-### qradar-geolocations-for-ip
+</details>
+<details><summary><h3 style="display: inline;">qradar-geolocations-for-ip</h3></summary> 
 
 ***
 Retrieves the MaxMind GeoIP data for the specified IP address.
@@ -1954,10 +1938,9 @@ Retrieves the MaxMind GeoIP data for the specified IP address.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Mukilteo | NorthAmerica | 47.913,<br/>-122.3042 | 1.1.1.1 | 1000 | 47.913 | -122.3042 | 819 | America/Los_Angeles | US | United States | 98275 | US | United States |
 >| Mukilteo | NorthAmerica | 47.913,<br/>-122.3042 | 1.1.1.1 | 1000 | 47.913 | -122.3042 | 819 | America/Los_Angeles | US | United States | 98275 | US | United States |
+</details>
 
-
-### qradar-log-sources-list
-
+<details><summary><h3 style="display: inline;">qradar-log-sources-list</h3></summary> 
 ***
 Retrieves a list of log sources.
 
@@ -2127,9 +2110,9 @@ Retrieves a list of log sources.
 >| 68 | Search Results-2 :: ip-172-31-17-10 | Search Results | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.624000+00:00 | last_updated: 0<br/>status: NA | true | 0 | false | false | 355 | 2022-11-21T18:45:24.624000+00:00 | 1970-01-01T00:00:00+00:00 |
 >| 65 | System Notification-2 :: ip-172-31-17-10 | System Notification | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.621000+00:00 | last_updated: 0<br/>status: SUCCESS | true | 0 | false | false | 147 | 2022-11-21T18:45:24.621000+00:00 | 2023-08-02T08:39:00.106000+00:00 |
 >| 1262 | Experience Center: WindowsAuthServer @ 1.1.1.1 | WindowsAuthServer device | false | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 5 | 0 | 2018-10-24T15:25:21.928000+00:00 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | true | 0 | true | false | 12 | 2023-02-23T14:12:45.774000+00:00 | 2023-06-12T08:17:22.292000+00:00 |
+</details>
 
-
-### qradar-get-custom-properties
+<details><summary><h3 style="display: inline;">qradar-get-custom-properties</h3></summary> 
 
 ***
 Retrieves a list of event regex properties.
@@ -2228,10 +2211,9 @@ Retrieves a list of event regex properties.
 >| false | 2012-07-04T17:05:02+00:00 |  | Default custom extraction of Event Summary from DSM payload. | 97 | DEFAULT_EVENT_SUMMARY | en-US | 2022-11-21T18:44:07.572000+00:00 | Event Summary | string | true | admin |
 >| false | 2009-09-04T16:58:12.961000+00:00 |  | Default custom extraction of Avt-App-VolumePackets from DSM payload. | 99 | 4d616180-00d0-4ba0-b423-bfb54e1b8677 | en-US | 2022-11-21T18:44:08.049000+00:00 | Packets | numeric | false | admin |
 >| false | 2010-07-27T13:32:44.494000+00:00 | NULL::character varying |  | 96 | 8eb82a2c-bba7-478f-9248-69fba8baf8c7 | NULL::character varying | 2022-11-21T18:59:14.020000+00:00 | Parent | string | true | admin |
+</details>
 
-
-### qradar-reset-last-run
-
+<details><summary><h3 style="display: inline;">qradar-reset-last-run</h3></summary> 
 ***
 Resets the fetch incidents last run value, which resets the fetch to its initial fetch state. (Will try to fetch the first available offense).
 
@@ -2299,7 +2281,8 @@ Returns the list of incidents IDs that were modified since the last update time.
 #### Context Output
 
 There is no context output for this command.
-### qradar-offenses
+</details>
+<details><summary><h3 style="display: inline;">qradar-offenses</h3></summary> 
 
 ***
 Gets offenses from QRadar.
@@ -2346,8 +2329,8 @@ Gets offenses from QRadar.
 | QRadar.Offense.OffenseType | string | A number that represents the offense type. | 
 | QRadar.Offense.Protected | boolean | Is the offense protected. | 
 | QRadar.Offense.RemoteDestinationCount | Unknown | The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip | 
-
-### qradar-offense-by-id
+</details>
+<details><summary><h3 style="display: inline;">qradar-offense-by-id</h3></summary> 
 
 ***
 Gets offense with matching offense ID from qradar.
@@ -2396,8 +2379,8 @@ Gets offense with matching offense ID from qradar.
 | QRadar.Offense.Protected | boolean | Is the offense protected. | 
 
 | QRadar.Offense.RemoteDestinationCount | Unknown | The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip | 
-
-### qradar-searches
+</details>
+<details><summary><h3 style="display: inline;">qradar-searches</h3></summary> 
 
 ***
 Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
@@ -2419,8 +2402,8 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 | --- | --- | --- |
 | QRadar.Search.ID | number | Search ID. | 
 | QRadar.Search.Status | string | The status of the search. | 
-
-### qradar-get-search
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-search</h3></summary> 
 
 ***
 Gets a specific search id and status.
@@ -2442,8 +2425,9 @@ Gets a specific search id and status.
 | --- | --- | --- |
 | QRadar.Search.ID | number | Search ID. | 
 | QRadar.Search.Status | string | The status of the search. | 
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-search-results</h3></summary> 
 
-### qradar-get-search-results
 
 ***
 Gets search results.
@@ -2466,8 +2450,8 @@ Gets search results.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
-
-### qradar-get-assets
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-assets</h3></summary> 
 
 ***
 List all assets found in the model.
@@ -2498,8 +2482,8 @@ List all assets found in the model.
 | QRadar.Asset.Weight.Value | number | Asset weight. | 
 | QRadar.Asset.Weight.LastUser | string | Last user who updated the weight. | 
 | QRadar.Asset.Name.LastUser | string | Last user who updated the name. | 
-
-### qradar-get-asset-by-id
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-asset-by-id</h3></summary> 
 
 ***
 Retrieves the asset by id.
@@ -2542,9 +2526,8 @@ Retrieves the asset by id.
 | QRadar.Asset.CompliancePlan.LastUser | string | Last user who updated the compliance plan. | 
 | QRadar.Asset.CollateralDamagePotential.LastUser | string | Last user who updated the collateral damage potential. | 
 | QRadar.Asset.Vulnerabilities.LastUser | string | Last user who updated the vulnerabilities. | 
-
-### qradar-get-closing-reasons
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-closing-reasons</h3></summary> 
 ***
 Get closing reasons.
 
@@ -2568,8 +2551,8 @@ Get closing reasons.
 | --- | --- | --- |
 | QRadar.Offense.ClosingReasons.ID | number | Closing reason ID. | 
 | QRadar.Offense.ClosingReasons.Name | string | Closing reason name. | 
-
-### qradar-get-note
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-note</h3></summary> 
 
 ***
 Retrieve a note for an offense.
@@ -2595,8 +2578,8 @@ Retrieve a note for an offense.
 | QRadar.Note.Text | string | Note text. | 
 | QRadar.Note.CreateTime | date | The creation time of the note. | 
 | QRadar.Note.CreatedBy | string | The user who created the note. | 
-
-### qradar-create-note
+</details>
+<details><summary><h3 style="display: inline;">qradar-create-note</h3></summary> 
 
 ***
 Create a note on an offense.
@@ -2622,8 +2605,8 @@ Create a note on an offense.
 | QRadar.Note.Text | string | Note text. | 
 | QRadar.Note.CreateTime | date | The creation time of the note. | 
 | QRadar.Note.CreatedBy | string | The user who created the note. | 
-
-### qradar-get-reference-by-name
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-reference-by-name</h3></summary> 
 
 ***
 Information about the reference set that had data added or updated. This returns the information set, but not the contained data. This feature is supported from version 8.1 and upward.
@@ -2652,9 +2635,8 @@ Information about the reference set that had data added or updated. This returns
 | QRadar.Reference.TimeoutType | string | Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN. | 
 | QRadar.Reference.Data | Unknown | Reference set items. | 
 
-
-### qradar-create-reference-set
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-create-reference-set</h3></summary> 
 ***
 Creates a new reference set. If the provided name is already in use, this command will fail.
 
@@ -2680,8 +2662,8 @@ Creates a new reference set. If the provided name is already in use, this comman
 | QRadar.Reference.Name | string | Name of the reference set. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements in the created reference set. | 
 | QRadar.Reference.TimeoutType | string | Timeout type of the reference. The allowed values are FIRST_SEEN, LAST_SEEN and UNKNOWN. | 
-
-### qradar-delete-reference-set
+</details>
+<details><summary><h3 style="display: inline;">qradar-delete-reference-set</h3></summary> 
 
 ***
 Deletes a reference set corresponding to the name provided.
@@ -2699,8 +2681,8 @@ Deletes a reference set corresponding to the name provided.
 #### Context Output
 
 There is no context output for this command.
-### qradar-create-reference-set-value
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-create-reference-set-value</h3></summary> 
 ***
 Add or update a value in a reference set.
 
@@ -2726,8 +2708,8 @@ Add or update a value in a reference set.
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN. | 
-
-### qradar-update-reference-set-value
+</details>
+<details><summary><h3 style="display: inline;">qradar-update-reference-set-value</h3></summary> 
 
 ***
 Adds or updates a value in a reference set.
@@ -2754,8 +2736,10 @@ Adds or updates a value in a reference set.
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN | 
+</details>
+<details><summary><h3 style="display: inline;">qradar-delete-reference-set-value</h3></summary> 
 
-### qradar-delete-reference-set-value
+### 
 
 ***
 Deletes a value in a reference set.
@@ -2781,8 +2765,10 @@ Deletes a value in a reference set.
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN. | 
+</details>
+<details><summary><h3 style="display: inline;">qradar-delete-reference-set-value</h3></summary> 
 
-### qradar-delete-reference-set-value
+### 
 
 ***
 Deletes a value in a reference set.
@@ -2808,8 +2794,8 @@ Deletes a value in a reference set.
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN | 
-
-### qradar-get-domains
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-domains</h3></summary> 
 
 ***
 Retrieve all Domains.
@@ -2843,8 +2829,8 @@ Retrieve all Domains.
 | QRadar.Domains.Name | String | Name of the Domain. | 
 | QRadar.Domains.QVMScannerIDs | Number | Array of QVM Scanner IDs. | 
 | QRadar.Domains.TenantID | Number | ID of the Domain tenant. | 
-
-### qradar-get-domain-by-id
+</details>
+<details><summary><h3 style="display: inline;">qradar-get-domain-by-id</h3></summary> 
 
 ***
 Retrieves Domain information By ID.
@@ -2877,8 +2863,8 @@ Retrieves Domain information By ID.
 | QRadar.Domains.Name | String | Name of the Domain. | 
 | QRadar.Domains.QVMScannerIDs | Number | Array of QVM Scanner IDs. | 
 | QRadar.Domains.TenantID | Number | ID of the Domain tenant. | 
-
-### qradar-upload-indicators
+</details>
+<details><summary><h3 style="display: inline;">qradar-upload-indicators</h3></summary> 
 
 ***
 Uploads indicators from Demisto to QRadar.
@@ -2902,7 +2888,8 @@ Uploads indicators from Demisto to QRadar.
 #### Context Output
 
 There is no context output for this command.
-### qradar-ips-source-get
+</details>
+<details><summary><h3 style="display: inline;">qradar-ips-source-get</h3></summary> 
 
 ***
 Get Source IPs
@@ -2968,8 +2955,8 @@ Get Source IPs
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 654 | 2023-07-26T14:31:44.753000+00:00 | 31 | 2023-07-26T15:31:06.386000+00:00 | 64 | 0 | Net-10-172-192.Net_192_168_0_0 | 14 | 1.1.1.1 |
 
-
-### qradar-ips-local-destination-get
+</details>
+<details><summary><h3 style="display: inline;">qradar-ips-local-destination-get</h3></summary> 
 
 ***
 Get Source IPs
@@ -3009,8 +2996,8 @@ Get Source IPs
 >### Local Destination IPs
 >**No entries.**
 
-
-### qradar-search-retrieve-events
+</details>
+<details><summary><h3 style="display: inline;">qradar-search-retrieve-events</h3></summary> 
 
 ***
 Polling command to search for events of a specific offense.
@@ -3059,8 +3046,8 @@ Polling command to search for events of a specific offense.
 #### Human Readable Output
 
 >Search ID: 9c2c18a8-5e06-4edb-bc26-53ad44421148
-
-### qradar-remote-network-cidr-create
+</details>
+<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-create</h3></summary> 
 
 ***
 Create remote network CIDRs.
@@ -3083,7 +3070,8 @@ Create remote network CIDRs.
 #### Context Output
 
 There is no context output for this command.
-### qradar-remote-network-cidr-list
+</details>
+<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-list</h3></summary> 
 
 ***
 Retrieves the list of staged remote networks.
@@ -3113,8 +3101,8 @@ Retrieves the list of staged remote networks.
 | QRadar.RemoteNetworkCIDR.id | Number | ID of each CIDR remote network that is part of the group. | 
 | QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name as it appears in QRadar. | 
 | QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description as it appears in QRadar. | 
-
-### qradar-remote-network-cidr-delete
+</details>
+<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-delete</h3></summary> 
 
 ***
 Deletes an existing staged remote network.
@@ -3132,7 +3120,8 @@ Deletes an existing staged remote network.
 #### Context Output
 
 There is no context output for this command.
-### qradar-remote-network-cidr-update
+</details>
+<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-update</h3></summary> 
 
 ***
 Updates an existing staged remote network.
@@ -3162,8 +3151,8 @@ Updates an existing staged remote network.
 | QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
 | QRadar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
 | QRadar.RemoteNetworkCIDR.description | String | The description of the remote network. | 
-
-### qradar-remote-network-deploy-execution
+</details>
+<details><summary><h3 style="display: inline;">qradar-remote-network-deploy-execution</h3></summary> 
 
 ***
 Executes a deployment.
@@ -3187,7 +3176,8 @@ Potentially harmful: This API command executes any waiting system deployments in
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.deploy.status | String | The deployment status \(INITIALIZING, IN_PROGRESS, COMPLETE\). | 
-### qradar-log-source-extensions-list
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-extensions-list</h3></summary> 
 
 ***
 Retrieves a list of log source extensions.
@@ -3213,8 +3203,8 @@ Retrieves a list of log source extensions.
 | QRadar.LogSourceExtension.Description | String | The description of the log source extension. | 
 | QRadar.LogSourceExtension.ID | Number | The ID of the extension. | 
 | QRadar.LogSourceExtension.UUID | String | The UUID string of the log source extension. | 
-
-### qradar-log-source-delete
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-delete</h3></summary> 
 
 ***
 Deletes a log source by ID or name. One of the arguments must be provided.
@@ -3233,7 +3223,9 @@ Deletes a log source by ID or name. One of the arguments must be provided.
 #### Context Output
 
 There is no context output for this command.
-### qradar-wincollect-destinations-list
+</details>
+
+<details><summary><h3 style="display: inline;">qradar-wincollect-destinations-list</h3></summary> 
 
 ***
 Retrieves a list of WinCollect destinations. 
@@ -3265,9 +3257,8 @@ In order to get wincollect_external_destination_ids - filter internal=false need
 | QRadar.WinCollectDestination.TransportProtocol | String | The protocol that is used to send event data to this WinCollect destination. Possible values are TCP or UDP. | 
 | QRadar.WinCollectDestination.IsInternal | Boolean | Set to "true" if the destination corresponds to a QRadar event collector process from this deployment; otherwise, it is set to false if it is any other host. | 
 | QRadar.WinCollectDestination.EventRateThrottle | Number | The events-per-second rate that is used to throttle the event flow to this destination. | 
-
-### qradar-log-source-create
-
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-create</h3></summary> 
 ***
 Creates a new log source.
 
@@ -3321,9 +3312,9 @@ Creates a new log source.
 | QRadar.LogSource.Gateway | Boolean | Whether log source is configured as a gateway. | 
 | QRadar.LogSource.Status | unknown | Status of the log source. | 
 | QRadar.LogSource.TargetEventCollectorID | Number | The ID of the event collector where the log source sends its data. | 
+</details>
 
-### qradar-log-source-languages-list
-
+<details><summary><h3 style="display: inline;">qradar-log-source-languages-list</h3></summary> 
 ***
 Retrieves a list of log source languages.
 
@@ -3346,8 +3337,8 @@ Retrieves a list of log source languages.
 | --- | --- | --- |
 | QRadar.LogSourceLanguage.ID | Number | The ID of the language. This ID does not change across deployments. | 
 | QRadar.LogSourceLanguage.Name | String | The display name of the language. | 
-
-### qradar-log-source-protocol-types-list
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-protocol-types-list</h3></summary> 
 
 ***
 Retrieves the list of protocol types.
@@ -3402,8 +3393,8 @@ Retrieves the list of protocol types.
 | QRadar.LogSourceProtocolType.TestingCapabilities.can_collect_events | Boolean | Indicates whether the protocol type can collect test events. | 
 | QRadar.LogSourceProtocolType.TestingCapabilities.testable | Boolean | Indicates whether the protocol type is testable. | 
 | QRadar.LogSourceProtocolType.Version | String | The version of the protocol type component. | 
-
-### qradar-disconnected-log-collectors-list
+</details>
+<details><summary><h3 style="display: inline;">qradar-disconnected-log-collectors-list</h3></summary> 
 
 ***
 Retrieves a list of disconnected log collectors.
@@ -3431,8 +3422,8 @@ Retrieves a list of disconnected log collectors.
 | QRadar.DisconnectedLogCollector.Protocol | String | The transport protocol used by the disconnected log collector to send events to QRadar. Possible values are TLS and UDP. | 
 | QRadar.DisconnectedLogCollector.UUID | String | The UUID of the disconnected log collector. | 
 | QRadar.DisconnectedLogCollector.Version | String | The version of the disconnected log collector. | 
-
-### qradar-log-source-update
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-update</h3></summary> 
 
 ***
 Updates an exising log source.
@@ -3469,7 +3460,8 @@ Updates an exising log source.
 #### Context Output
 
 There is no context output for this command.
-### qradar-log-source-types-list
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-types-list</h3></summary> 
 
 ***
 Retrieves a list of log sources types.
@@ -3503,8 +3495,8 @@ Retrieves a list of log sources types.
 | QRadar.LogSourceTypesList.supported_language_ids | List | The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html | 
 | QRadar.LogSourceTypesList.uuid | String | A UUID string of the log source type. | 
 | QRadar.LogSourceTypesList.version | String | The log source type plugin version. | 
-
-### qradar-log-source-groups-list
+</details>
+<details><summary><h3 style="display: inline;">qradar-log-source-groups-list</h3></summary> 
 
 ***
 Retrieves a list of log source languages.
@@ -3534,9 +3526,9 @@ Retrieves a list of log source languages.
 | QRadar.LogSourceGroup.Name | String | The name of the group. | 
 | QRadar.LogSourceGroup.Owner | String | The name of the user who owns the group. | 
 | QRadar.LogSourceGroup.ParentID | Number | The ID of the group's parent group. The root node group has a null parent_ID. | 
+</details>
 
-### qradar-event-collectors-list
-
+<details><summary><h3 style="display: inline;">qardar-event-collectors-list</h3></summary> 
 ***
 Retrieves a list of event collectors.
 
@@ -3562,3 +3554,21 @@ Retrieves a list of event collectors.
 | QRadar.EventCollector.ComponentName | String | The name of the component backing this event collector process. Also contained in the "name" field. | 
 | QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 
 
+
+
+
+# Troubleshooting
+<details> <summary>Instance Configuration </summary> TEST </details>
+<details> <summary> Fetch command </summary>
+
+When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
+Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
+In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
+```
+EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARCH_RETRY_SECONDS=<amount of seconds to wait between tries> (default 100),EVENTS_POLLING_TRIES=<number of times to poll for one search> (default 10),
+```
+It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
+Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
+If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
+</details>
+<details> <summary> General </summary> Test</details>
