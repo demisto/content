@@ -8,7 +8,7 @@ description: |-
 
   Keep in mind when running Phishing tests:
   - Never send an email from the phishing mailbox to the same phishing mailbox, as this can cause an infinite loop situation where an email is received, an acknowledgement email is sent to the sender, and then the acknowledgement email is received in the phishing mailbox, which causes a new incident to fetch, thus triggering another acknowledgement email, etc.
-  - It's important to ensure that emails are eventually deleted from the mailbox of the email that will be detected as the reporter of the email.
+  - It's important to ensure that acknowledgement emails are eventually deleted from the mailbox of the email that will be detected as the reporter of the email.
 starttaskid: "0"
 tasks:
   "0":
