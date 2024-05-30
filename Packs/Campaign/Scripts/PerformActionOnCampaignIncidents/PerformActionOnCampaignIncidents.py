@@ -61,9 +61,9 @@ def _set_part_of_campaign_field(incident_id: str, campaign_id: str | None) -> No
         return_error(
             f"Error occurred while trying to set the partofcampaign field on the incident: {get_error(res)}"
         )
-        
 
-def _set_removed_from_campaigns_field(incident_id:str, campaign_id:str, action:str) -> None:
+
+def _set_removed_from_campaigns_field(incident_id: str, campaign_id: str, action: str) -> None:
     """
     Sets or removes the specified campaign ID from the 'removedfromcampaigns' field of the incident.
 
@@ -81,9 +81,9 @@ def _set_removed_from_campaigns_field(incident_id:str, campaign_id:str, action:s
     campaign_ids_removed = _get_data_from_incident(incident_context, REMOVED_FROM_CAMPAIGNS_FIELD_NAME)
     if not campaign_ids_removed:
         campaign_ids_removed = []
-    
+
     is_campaign_in_list: bool = campaign_id in campaign_ids_removed
-    
+
     if action == 'remove':
         if not is_campaign_in_list:
             campaign_ids_removed.append(campaign_id)
@@ -91,7 +91,7 @@ def _set_removed_from_campaigns_field(incident_id:str, campaign_id:str, action:s
         if is_campaign_in_list:
             index = campaign_ids_removed.index(campaign_id)
             del campaign_ids_removed[index]
-            
+
     res = demisto.executeCommand(
         "setIncident", {"id": incident_id, "removedfromcampaigns": campaign_ids_removed}
     )
@@ -542,7 +542,7 @@ ACTIONS_MAPPER = {
 def main():
     try:
         similarity: str = demisto.args().get("similarity", "High")
-     
+
         action_field_name = (
             ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME
             if similarity.lower() == "low"
