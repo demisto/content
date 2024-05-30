@@ -17,7 +17,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 """
 
 from CommonServerUserPython import *  # noqa
-
+import pytest
 
 # Disable insecure warnings
 # urllib3.disable_warnings()
@@ -106,7 +106,12 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify: bool, headers: dict):
+    def __init__(self, base_url, verify: bool, token:str, apikey:str):
+        headers = {
+            'Authorization': BEARER + token,
+            'apikey': apikey,
+            'Accept': ACCEPT_VAL
+        }
         super().__init__(base_url=base_url, verify=verify, headers=headers)
 
     def send_get_request(self, url_suffix, params) -> Any:
@@ -259,6 +264,7 @@ def get_whois_contacts_fields_for_search_domains_command(whois_contacts, field_n
 ''' COMMAND FUNCTIONS '''
 
 
+@pytest.mark.skip
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
@@ -422,11 +428,6 @@ def main() -> None:
         verify = not params.get('insecure', False)
         token = params.get('token', {}).get('password')
         apikey = params.get('credentials', {}).get('password')
-        headers = {
-            'Authorization': BEARER + token,
-            'apikey': apikey,
-            'Accept': ACCEPT_VAL
-        }
 
         # TODO to check
         reliability = params.get('integrationReliability')
@@ -440,7 +441,8 @@ def main() -> None:
         client = Client(
             base_url=base_url,
             verify=verify,
-            headers=headers,
+            token=token,
+            apikey=apikey
         )
 
         if demisto.command() == 'test-module':

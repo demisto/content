@@ -35,7 +35,8 @@ def create_mock_client():
     return Client(
         base_url=EXAMPLE_BASE_URL,
         verify=VERIFY,
-        headers={'test': 'test'}
+        apikey='test',
+        token='test'
     )
 
 
@@ -108,6 +109,7 @@ def test_csc_domains_configuration_list(mocker):
     assert result_output.get('configurations')[0].get('domain') == 'test.com'
     assert result_output.get('configurations')[0].get('domainLabel') == 'test'
 
+
 def test_domain(mocker):
     client = create_mock_client()
     args = {
@@ -117,7 +119,8 @@ def test_domain(mocker):
     reliability = DBotScoreReliability.A
     result = domain(client, args, reliability)
     result_output = result.to_context().get('Contents')
-    dbot_score = result_output.get('DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)')
+    dbot_score = result_output.get(
+        'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)')
     assert len(dbot_score) == 5
     assert dbot_score.get('Indicator') == 'example.com'
     assert dbot_score.get('Type') == 'domain'
@@ -127,4 +130,4 @@ def test_domain(mocker):
     assert common_domain.get('Name') == 'example'
     assert common_domain.get('CreationDate') == '09-Dec-2011 UTC'
     assert common_domain.get('ExpirationDate') == '09-Dec-2030 UTC'
-
+    assert common_domain.get('Registrant').get('Name') == ['John Lee']

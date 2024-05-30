@@ -194,7 +194,9 @@ script:
   - arguments:
     - description: "Will contain domains values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com"
       name: domain
+      isArray: true
       required: true
+      default: true
     description: 
     name: domain
     outputs:
@@ -214,55 +216,55 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: Domain.CreationDate
-      description: 
+      description: Creation dare
       type: String
     - contextPath: Domain.DomainIDNName
-      description: 
+      description: Domain ID name
       type: String
     - contextPath: Domain.ExpirationDate
-      description: 
+      description: Expiration date
       type: String
     - contextPath: DomainUpdatedDate
-      description: 
+      description: Updated date
       type: String
     - contextPath: Domain.NameServers
-      description: 
+      description: Servers Name
       type: String
     - contextPath: Domain.Registrant.Name
-      description: 
+      description: Registrant name
       type: String
     - contextPath: Domain.Registrant.Email
-      description: 
+      description: Registrant email
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: 
+      description: Registrant phone
       type: String
     - contextPath: Domain.Registrant.Country
-      description: 
+      description: Registrant country
       type: String
     - contextPath: Domain.Admin.Name
-      description: 
+      description: Admin name
       type: String
     - contextPath: Domain.Admin.Email
-      description: 
+      description: Admin email
       type: String
     - contextPath: Domain.Admin.Phone
-      description: 
+      description: Admin phone
       type: String
-    - contextPath: DDomain.Admin.Country
-      description: 
+    - contextPath: Domain.Admin.Country
+      description: Admin country
       type: String
     - contextPath: Domain.Tech.Country
-      description: 
+      description: Tech country
       type: String
     - contextPath: Domain.Tech.Name
-      description: 
+      description: Tech name
       type: String
     - contextPath: Domain.Tech.Organization
-      description: 
+      description: Tech organization
       type: String
     - contextPath: Domain.Tech.Email
-      description: 
+      description: Tech email
       type: String
   
   runonce: false
