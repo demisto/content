@@ -1971,3 +1971,4 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" alt="image" width="755" height="188"></a></p>
+<details><summary>Toggle</summary> This is the content inside the toggle. </details>
