@@ -1,6 +1,8 @@
 Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 This integration was integrated and tested with version v1 of Microsoft Graph.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure O365 Outlook Mail (Using Graph API) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

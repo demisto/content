@@ -20,6 +20,7 @@ class Scopes:
 class Resources:
     graph = 'https://graph.microsoft.com/'
     security_center = 'https://api.securitycenter.microsoft.com/'
+    security = 'https://api.security.microsoft.com/'
     management_azure = 'https://management.azure.com/'  # resource_manager
     manage_office = 'https://manage.office.com/'
 
@@ -99,7 +100,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
     'geo-us': 'https://login.microsoftonline.com',
     'geo-eu': 'https://login.microsoftonline.com',
     'geo-uk': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
 }
@@ -1496,7 +1497,7 @@ def generate_login_url(client: MicrosoftClient,
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
                                    f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
-                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}&prompt=consent')
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
