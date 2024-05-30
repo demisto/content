@@ -64,6 +64,7 @@ script:
     - name: ip
       required: true
       description: IPv4 address to look up in the SlashNext Threat Intelligence database.
+      default: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.

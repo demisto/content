@@ -9468,7 +9468,7 @@ script:
       name: rule_name
       required: true
     - auto: PREDEFINED
-      description: The rule type. 
+      description: The rule type.
       name: rule_type
       required: true
       predefined:
@@ -9495,7 +9495,7 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.89330
+  dockerimage: demisto/pan-os-python:1.0.0.95792
   isfetch: true
   runonce: false
   script: ''

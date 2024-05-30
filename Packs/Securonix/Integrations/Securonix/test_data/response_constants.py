@@ -128,7 +128,7 @@ RESPONSE_LIST_INCIDENT = {
                     "watchlisted": False,
                     "policystarttime": 1692950376801,
                     "policyendtime": 1695613655539,
-                    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+                    "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
                 }
             ]
         }
@@ -162,7 +162,7 @@ RESPONSE_GET_INCIDENT = {
                     "watchlisted": False,
                     "policystarttime": 1692950376801,
                     "policyendtime": 1695613655539,
-                    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+                    "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
                 }
             ]
         }
@@ -330,7 +330,7 @@ RESPONSE_FETCH_INCIDENT_ITEM = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 
 RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
@@ -366,7 +366,7 @@ RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 
 RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
@@ -400,7 +400,7 @@ RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "assignedGroup": "SECURITYOPERATIONS",
@@ -438,7 +438,7 @@ RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 RESPONSE_FETCH_INCIDENTS = {
     "totalIncidents": 1.0,
@@ -466,7 +466,7 @@ RESPONSE_FETCH_INCIDENTS = {
             "watchlisted": False,
             "policystarttime": 1692950376801,
             "policyendtime": 1695613655539,
-            "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+            "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
         }
     ]
 }
@@ -635,11 +635,95 @@ RESPONSE_LIST_VIOLATION_6_4 = {
     "inputParams": {
         "generationtime_from": "01/17/2022 00:00:00",
         "max": "50",
-        "query": "index = violation",
+        "query": f"index = violation and policy=\"Response-Account-\\\\\\{chr(92)}?{chr(92)}*AutoPlay\"",
         "generationtime_to": "01/17/2023 00:00:20"
     },
     "index": "violation",
     "nextCursorMarker": "test-cursor-marker"
+}
+
+RESPONSE_LIST_ACTIVITY = {
+    "totalDocuments": 4,
+    "events": [
+        {
+            "accountname": "ACCOUNT_001",
+            "accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-1",
+            "agentfilename": "test.txt",
+            "categorybehavior": "Account Create",
+            "categoryobject": "Account Management",
+            "categoryseverity": "0",
+            "collectionmethod": "file",
+            "collectiontimestamp": "1690803374000",
+            "destinationusername": "TEST134044",
+            "devicehostname": "HOST.com",
+            "eventid": "00000000-0000-0000-0000-000000000001",
+            "eventoutcome": "Success",
+            "filepath": "N/A",
+            "ingestionnodeid": "CONSOLE",
+            "jobstarttime": "1690803374000",
+            "message": "A user account was created.",
+            "publishedtime": "1690803374572",
+            "receivedtime": "1690803420706",
+            "resourcename": "HOST.com",
+            "sourceusername": "USER",
+            "tenantid": "2",
+            "tenantname": "Response-Automation",
+            "timeline": "1670911200000"
+        },
+        {
+            "accountname": "ACCOUNT_002",
+            "accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-2",
+            "agentfilename": "test.txt",
+            "categorybehavior": "Account Create",
+            "categoryobject": "Account Management",
+            "categoryseverity": "0",
+            "collectionmethod": "file",
+            "collectiontimestamp": "1690803374000",
+            "destinationusername": "TEST134044",
+            "devicehostname": "HOST.com",
+            "eventid": "00000000-0000-0000-0000-000000000002",
+            "eventoutcome": "Success",
+            "filepath": "N/A",
+            "ingestionnodeid": "CONSOLE",
+            "jobstarttime": "1690803374000",
+            "message": "A user account was created.",
+            "publishedtime": "1690803374572",
+            "receivedtime": "1690803420500",
+            "resourcename": "HOST.com",
+            "sourceusername": "USER",
+            "tenantid": "2",
+            "tenantname": "Response-Automation",
+            "timeline": "1670911200000"
+        }
+    ],
+    "error": False,
+    "available": False,
+    "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+    "applicationTz": "WEB",
+    "inputParams": {
+        "eventtime_from": "01/12/2024 10:00:00",
+        "query": f"index = activity and hostname = \"HOST\\\\{chr(92)}?{chr(92)}*.com\"",
+        "eventtime_to": "01/15/2024 12:01:00",
+    },
+    "index": "activity",
+    "nextCursorMarker": "00000000-0000-0000-0000-000000000001="
+}
+
+RESPONSE_LIST_ACTIVITY_NO_DATA = {
+    "totalDocuments": 4,
+    "events": [],
+    "error": False,
+    "available": False,
+    "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+    "applicationTz": "WEB",
+    "inputParams": {
+        "eventtime_from": "01/12/2024 10:00:00",
+        "query": "index = activity",
+        "eventtime_to": "01/15/2024 12:01:00",
+    },
+    "index": "activity",
+    "message": "All records have been retrieved. No more results to be fetched.",
+    "nextCursorMarker": "00000000-0000-0000-0000-000000000001="
 }
 
 RESPONSE_LIST_WHITELISTS_ENTRY = {

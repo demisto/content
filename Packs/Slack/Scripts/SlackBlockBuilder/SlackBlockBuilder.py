@@ -304,15 +304,19 @@ def slack_block_builder_command(args: dict[str, Any]):
     notification = SendNotification(blocks_carrier=block_carrier, slack_instance=slack_instance, to=to,
                                     channel_id=channel_id, channel=channel, threadID=thread_id)
     notification.send()
-    human_readable = notification.send_response[0]['HumanReadable']
+    send_response = notification.send_response[0]
+    human_readable = send_response['HumanReadable']
+    if isinstance(send_response.get('Contents'), str):
+        raise DemistoException(f"{send_response.get('Contents')}")
+
     # Dict object returned from sending the message; contains Slack metadata
     context_output = {
-        'ThreadID': notification.send_response[0].get('Contents', {}).get('ts'),
-        'Channel': notification.send_response[0].get('Contents', {}).get('channel'),
-        'Text': notification.send_response[0].get('Contents', {}).get('message', {}).get('text'),
-        'BotID': notification.send_response[0].get('Contents', {}).get('message', {}).get('bot_id'),
-        'Username': notification.send_response[0].get('Contents', {}).get('message', {}).get('username'),
-        'AppID': notification.send_response[0].get('Contents', {}).get('message', {}).get('app_id')
+        'ThreadID': send_response.get('Contents', {}).get('ts'),
+        'Channel': send_response.get('Contents', {}).get('channel'),
+        'Text': send_response.get('Contents', {}).get('message', {}).get('text'),
+        'BotID': send_response.get('Contents', {}).get('message', {}).get('bot_id'),
+        'Username': send_response.get('Contents', {}).get('message', {}).get('username'),
+        'AppID': send_response.get('Contents', {}).get('message', {}).get('app_id')
     }
     return CommandResults(
         readable_output=human_readable,
