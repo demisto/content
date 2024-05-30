@@ -814,7 +814,7 @@ script:
       required: true
       description: Case Comment
     - name: riskAcceptDate
-      description: "Risk Accept Date in \u2018yyyy-MM-dd\u2019 format. (applicable only in case of closing a case as Risk Managed)"
+      description: Risk Accept Date in ‘yyyy-MM-dd’ format. (applicable only in case of closing a case as Risk Managed)
     outputs:
     - contextPath: Gra.Case.Action.Message
       description: Message
