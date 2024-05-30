@@ -3,7 +3,6 @@ import SplunkShowDrilldown
 from pytest import raises
 
 
-
 def test_incident_with_empty_custom_fields(mocker):
     """
     Given:
@@ -130,9 +129,9 @@ def test_incident_multiple_drilldown_search_results(mocker):
         Verifies that the output returned is correct
     """
     drilldown = {
-                    "query_name1": {
-                        "query_search": "query_search1",
-                        "query_results": [
+        "query_name1": {
+            "query_search": "query_search1",
+            "query_results": [
                             {
                                 "_bkt": "main~Test1",
                                 "_cd": "524:1111111",
@@ -146,7 +145,7 @@ def test_incident_multiple_drilldown_search_results(mocker):
                                 "dest": "Test_dest1",
                                 "signature": "test_signature1",
                             },
-                            {
+                {
                                 "_bkt": "main~Test2",
                                 "_cd": "524:2222222",
                                 "_indextime": "1715859867",
@@ -159,11 +158,11 @@ def test_incident_multiple_drilldown_search_results(mocker):
                                 "dest": "Test_dest2",
                                 "signature": "test_signature2",
                             },
-                        ],
-                    },
-                    "query_name2": {
-                        "query_search": "query_search2",
-                        "query_results": [
+            ],
+        },
+        "query_name2": {
+            "query_search": "query_search2",
+            "query_results": [
                             {
                                 "_bkt": "main~Test3",
                                 "_cd": "524:1111111",
@@ -177,7 +176,7 @@ def test_incident_multiple_drilldown_search_results(mocker):
                                 "dest": "Test_dest1",
                                 "signature": "test_signature3",
                             },
-                            {
+                {
                                 "_bkt": "main~Test4",
                                 "_cd": "524:2222222",
                                 "_indextime": "1715859867",
@@ -190,9 +189,9 @@ def test_incident_multiple_drilldown_search_results(mocker):
                                 "dest": "Test_dest2",
                                 "signature": "test_signature4",
                             },
-                        ],
-                    },
-                }
+            ],
+        },
+    }
     str_drilldown = json.dumps(drilldown)
     incident = {
         "labels": [
@@ -210,7 +209,8 @@ def test_incident_multiple_drilldown_search_results(mocker):
     assert ("query_name1" and "query_search1" and "query_name2" and "query_search2") in contents
     assert ("main~Test3" and "test_signature3" and "main~Test4" and "test_signature4") in contents
     assert ("Drilldown Searches Results") in contents
-    
+
+
 def test_incident_multiple_drilldown_search_no_results(mocker):
     """
     Given:
@@ -221,9 +221,9 @@ def test_incident_multiple_drilldown_search_no_results(mocker):
         Verifies that the output returned is correct
     """
     drilldown = {
-                    "query_name1": {
-                        "query_search": "query_search1",
-                        "query_results": [
+        "query_name1": {
+            "query_search": "query_search1",
+            "query_results": [
                             {
                                 "_bkt": "main~Test1",
                                 "_cd": "524:1111111",
@@ -237,7 +237,7 @@ def test_incident_multiple_drilldown_search_no_results(mocker):
                                 "dest": "Test_dest1",
                                 "signature": "test_signature1",
                             },
-                            {
+                {
                                 "_bkt": "main~Test2",
                                 "_cd": "524:2222222",
                                 "_indextime": "1715859867",
@@ -250,14 +250,14 @@ def test_incident_multiple_drilldown_search_no_results(mocker):
                                 "dest": "Test_dest2",
                                 "signature": "test_signature2",
                             },
-                        ],
-                    },
-                    "query_name2": {
-                        "query_search": "query_search2",
-                        "query_results": [
-                        ],
-                    },
-                }
+            ],
+        },
+        "query_name2": {
+            "query_search": "query_search2",
+            "query_results": [
+            ],
+        },
+    }
     str_drilldown = json.dumps(drilldown)
     incident = {
         "labels": [
