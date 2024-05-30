@@ -245,24 +245,6 @@ repos:
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
 
-  - id: is-circle-changed
-    name: is-circle-changed
-    description: Checks if circle files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
-    language: script
-    skip:nightly: true
-    pass_filenames: false
-    skip:commit: true
-
-  - id: is-gitlab-changed
-    name: is-gitlab-changed
-    description: Checks if gitlab files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
-    language: script
-    pass_filenames: false
-    skip:commit: true
-    skip:nightly: true
-
   - id: validate
     name: validate
     description: validate content
@@ -334,6 +316,7 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
