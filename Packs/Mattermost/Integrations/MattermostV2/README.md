@@ -112,7 +112,7 @@ Lists channels.
 
 #### Required Permissions
 
-- manage_system
+manage_system
 
 #### Base Command
 
@@ -122,7 +122,7 @@ Lists channels.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team | The name of the team to list channels from. Default is the Team Name in the integration configuration. | Optional | 
+| team | The name of the team to list channels from. Default is the team name from the integration configuration. | Optional | 
 | include_private_channels | Whether to include private channels. Default is false. Possible values are: true, false. | Optional | 
 | page | The page number to retrieve. Default value is 0. | Optional | 
 | page_size | The size of the page to retrieve. Default value is 50. | Optional | 
@@ -220,7 +220,7 @@ Creates a channel.
 
 #### Required Permissions
 
-- If creating a public channel, create_public_channel permission is required. If creating a private channel, create_private_channel permission is required.
+If creating a public channel, create_public_channel permission is required. If creating a private channel, create_private_channel permission is required.
 
 #### Base Command
 
@@ -232,10 +232,10 @@ Creates a channel.
 | --- | --- | --- |
 | display_name | The display name of the channel to create. | Required | 
 | name | The name of the channel to create. | Required | 
-| type | The type of the channel to create. Default value is public. Possible values are: public, private. Default is public. | Optional | 
+| type | The type of the channel to create. Possible values are: public, private. Default is public. | Optional | 
 | purpose | The purpose of the channel to create. | Optional | 
 | header | The header of the channel to create. | Optional | 
-| team | The team name of the channel to create. Default is the Team Name in the configuration. | Optional | 
+| team | The team name of the channel to create. Default is the team name from the integration configuration. | Optional | 
 
 #### Context Output
 
@@ -310,8 +310,8 @@ No permissions required.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team | The team name of the channel to add the user to. Default is the Team Name in the configuration. | Optional | 
-| channel | The channel name of the channel to add the user to. | Required | 
+| team | The team name of the channel to add the user to. Default is the team name from the integration configuration. | Optional | 
+| channel | The name of the channel to add the user to. | Required | 
 | user_id | The ID of the user to add. Use the command 'mattermost-list-users' to fetch the user ID. | Required | 
 
 #### Context Output
@@ -324,7 +324,7 @@ Removes a channel member.
 
 #### Required Permissions
 
-- manage_public_channel_members permission if the channel is public. manage_private_channel_members permission if the channel is private
+manage_public_channel_members permission if the channel is public. manage_private_channel_members permission if the channel is private.
 
 #### Base Command
 
@@ -334,7 +334,7 @@ Removes a channel member.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team | The team name of the channel to add the user to. Default is the Team Name in the configuration. | Optional | 
+| team | The team name of the channel to add the user to. Default is the team name from the integration configuration. | Optional | 
 | channel | The channel name of the channel to remove the user from. | Required | 
 | user_id | The ID of the user to remove. Use the command 'mattermost-list-users' to fetch the user ID. | Required | 
 
@@ -348,7 +348,7 @@ Lists users.
 
 #### Required Permissions
 
-- Requires an active session and (if specified) membership to the channel or team being selected from.
+Requires an active session and (if specified) membership to the channel or team being selected from.
 
 #### Base Command
 
@@ -456,7 +456,7 @@ Sends a file.
 
 #### Required Permissions
 
-- Must have upload_file permission.
+Must have upload_file permission.
 
 #### Base Command
 
@@ -469,10 +469,10 @@ Sends a file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_name | The team name of the channel to send the file to. Default is the Team Name in the integration configuration. | Optional | 
+| team_name | The team name of the channel to send the file to. Default is the team name from the integration configuration. | Optional | 
 | channel | The channel name of the channel to send the file to. Cannot be combined with the to argument. | Optional | 
 | message | The message to send to the channel along with the file. | Required | 
-| entry_id | The entry_id of the file. | Required | 
+| entry_id | The entry ID of the file. | Required | 
 | to | The username or email of the user to send the file to. | Optional | 
 
 #### Context Output
@@ -490,7 +490,7 @@ Send a message using a chatbot app.
 
 #### Required Permissions
 
-- Must have create_post permission for the channel the post is being created in.
+Must have create_post permission for the channel the post is being created in.
 
 #### Base Command
 
@@ -504,7 +504,7 @@ Send a message using a chatbot app.
 | channel | The channel name to send the notification to. Default value is the channel configuration parameter. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
 | to | The username or email of the user to send the file to. | Optional | 
-| ignoreAddURL | Adds the war room link to the message. Possible values are: true, false. | Optional | 
+| ignoreAddURL | Adds the War Room link to the message. Possible values are: true, false. | Optional | 
 | mattermost_ask | The message as a JSON for asking questions to the user. Default value is false. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -517,7 +517,7 @@ Closes a channel.
 
 #### Required Permissions
 
-- delete_public_channel permission if the channel is public, delete_private_channel permission if the channel is private, or have manage_system permission.
+delete_public_channel permission if the channel is public. delete_private_channel permission if the channel is private, or has manage_system permission.
 
 #### Base Command
 
@@ -527,7 +527,7 @@ Closes a channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_name | The team name of the channel to close. Default value is the team in the integration configuration. | Optional | 
+| team_name | The team name of the channel to close. Default value is the team name from the integration configuration. | Optional | 
 | channel | The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
 
 #### Context Output
@@ -540,7 +540,7 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 
 #### Required Permissions
 
-- delete_public_channel permission if the channel is public, delete_private_channel permission if the channel is private, or have manage_system permission.
+delete_public_channel permission if the channel is public. delete_private_channel permission if the channel is private, or has manage_system permission.
 
 #### Base Command
 
@@ -550,7 +550,7 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_name | The team name of the channel to delete. Default value is the team in the integration configuration. | Optional | 
+| team_name | The team name of the channel to delete. Default value is the team name from the integration configuration. | Optional | 
 | channel | The channel name of the channel to close. | Optional | 
 
 #### Context Output
@@ -559,11 +559,11 @@ There is no context output for this command.
 ### mirror-investigation
 
 ***
-Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
 
 #### Required Permissions
 
-- no permissions required.
+No permissions required.
 
 #### Base Command
 
@@ -587,7 +587,7 @@ There is no context output for this command.
 ### close-channel
 
 ***
-Closes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
+Closes a mirrored Mattermost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
 
 #### Base Command
 
@@ -597,7 +597,7 @@ Closes a mirrored MatterMost channel. If not provided, the mirrored investigatio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_name | The team name of the channel to delete. Default value is the team in the integration configuration. | Optional | 
+| team_name | The team name of the channel to delete. Default value is the team name from the integration configuration. | Optional | 
 | channel_name | The channel name of the channel to delete. | Optional | 
 
 #### Context Output
@@ -606,11 +606,11 @@ There is no context output for this command.
 ### mattermost-mirror-investigation
 
 ***
-Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
 
 #### Required Permissions
 
-- no permissions channel
+No permissions channel.
 
 #### Base Command
 
@@ -625,7 +625,7 @@ Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
 | direction | The mirroring direction. Possible values are: Both, FromDemisto, ToDemisto. Default is Both. | Optional | 
 | channel | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
 | kickAdmin | Whether to remove the admin from the newly created channel. Default value is false. Possible values are: true, false. Default is false. | Optional | 
-| mirrorTo | Mirrors the investigation to a group (private channel) or a public channel. Default is group. Possible values are: group, channel. Default is group. | Optional | 
+| mirrorTo | Mirrors the investigation to a group (private channel) or a public channel. Possible values are: group, channel. Default is group. | Optional | 
 
 #### Context Output
 
@@ -633,4 +633,4 @@ There is no context output for this command.
 
 ## Breaking changes from the previous version of this integration - Mattermost v2
 
-- New required configuration parameters were added: Bot Access Token
+A new required configuration parameters was added: *Bot Access Token*.
