@@ -82,6 +82,13 @@ script:
       - low
       - medium
       - high
+    - description: The method used to order the retrieved results.
+      name: order_by
+      defaultValue: 'riskLastUpdatedDateTime desc'
+      auto: PREDEFINED
+      predefined:
+        - 'riskLastUpdatedDateTime desc'
+        - 'riskLastUpdatedDateTime asc'
     description: Returns a list of all risky users and their properties.
     name: azure-risky-users-list
     outputs:

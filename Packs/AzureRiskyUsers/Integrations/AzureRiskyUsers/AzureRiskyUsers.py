@@ -98,7 +98,8 @@ class Client:
 
     def risky_users_list_request(self, limit: int = None, risk_state: str | None = None,
                                  risk_level: str | None = None,
-                                 skip_token: str | None = None) -> dict:
+                                 skip_token: str | None = None,
+                                 order_by: str | None = None) -> dict:
         """
         List risky users.
 
@@ -106,6 +107,7 @@ class Client:
             risk_state (str): Risk State to retrieve.
             risk_level (str): Specify to get only results with the same Risk Level.
             limit (int): Limit of results to retrieve.
+            order_by (str): Order results by this attribute.
             skip_token (str): Skip token.
 
         Returns:
@@ -115,6 +117,7 @@ class Client:
             return self.ms_client.http_request(method='GET', full_url=skip_token)
 
         params = remove_empty_elements({'$top': limit,
+                                        '$orderby': order_by,
                                         '$filter': build_query_filter(risk_state, risk_level)})
         return self.ms_client.http_request(method='GET',
                                            url_suffix="identityProtection/riskyUsers",
@@ -280,19 +283,21 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    order_by = args.get('order_by', 'riskLastUpdatedDateTime desc')
     page_size = arg_to_number(args.get('page_size'))
     if page_size and (page_size < 1 or page_size > 500):
         raise DemistoException("Page size must be between 1 and 500.")
 
     if next_token:
         # the page_size already defined the in the token.
-        raw_response = client.risky_users_list_request(skip_token=next_token)
+        raw_response = client.risky_users_list_request(skip_token=next_token, order_by=order_by)
     elif page_size:
-        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size)
+        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size,
+                                                       order_by=order_by)
     else:  # there is only a limit
         top = MAX_ITEMS_PER_REQUEST if limit >= MAX_ITEMS_PER_REQUEST else limit
         raw_response = client.risky_users_list_request(risk_state=risk_state,
-                                                       risk_level=risk_level, limit=top)
+                                                       risk_level=risk_level, limit=top, order_by=order_by)
         raw_response = do_pagination(client, raw_response, limit)
 
     list_users = raw_response.get('value') or []
