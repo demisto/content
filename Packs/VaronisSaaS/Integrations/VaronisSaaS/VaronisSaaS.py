@@ -150,9 +150,7 @@ INCIDENT_FIELDS = [
 ]
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
-    "Incoming": "In",
     "Outgoing": "Out",
-    "Incoming And Outgoing": "Both",
 }
 
 
