@@ -1,4 +1,4 @@
-Varonis alert post processing script to set the alert status to closed when an incident is closed.
+Varonis alert post processing script to set the alert status in XSOAR to closed when an incident is closed.
 ## Script Data
 ---
 
