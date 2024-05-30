@@ -1245,26 +1245,27 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     task_status = False
 
     if not notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
-        demisto.debug(f"Trying to handle open enrichment {notable.id}")
+        demisto.debug(f"Trying to handle open enrichment for notable {notable.id}")
         for enrichment in notable.enrichments:
             if enrichment.status == Enrichment.IN_PROGRESS:
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
-                        demisto.debug(f'Handling {enrichment.type=} for notable {notable.id}')
+                        demisto.debug(f'Handling {enrichment.id=} {enrichment.type=} for notable {notable.id}')
                         for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
                             if handle_message(item):
                                 continue
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
-                        demisto.debug(f'{notable.id} {enrichment.type} status is successful. {len(enrichment.data)=}')
-                    else:  # TODO: improve the logs here if possible - it could be confusing for multiple drilldown enrichments
-                        demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
+                        demisto.debug(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} status is successful '
+                                      f'{len(enrichment.data)=}')
+                    else:
+                        demisto.debug(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} is still not done')
                 except Exception as e:
 
                     demisto.error(
-                        f"Caught an exception while retrieving {enrichment.type}\
-                        enrichment results for notable {notable.id}: {str(e)}"
+                        f"Caught an exception while retrieving {enrichment.id=} of {enrichment.type=}\
+                        results for notable {notable.id}: {str(e)}"
                     )
                     enrichment.status = Enrichment.FAILED
 
@@ -1277,7 +1278,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     else:
         task_status = True
         demisto.debug(
-            f"Open enrichment {notable.id} has exceeded the enrichment timeout of {enrichment_timeout}.\
+            f"Open enrichment for notable {notable.id} has exceeded the enrichment timeout of {enrichment_timeout}.\
             Submitting the notable without the enrichment."
         )
 
