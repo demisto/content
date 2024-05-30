@@ -41,7 +41,7 @@ SESSION_STATE = 'session_state'
 # Deprecated, prefer using AZURE_CLOUDS
 TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
