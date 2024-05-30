@@ -39,7 +39,6 @@ HR_HEADERS_FOR_DOMAINS_SEARCH = ['Qualified Domain Name',
                                  'Paid Through Date',
                                  'Name Servers',
                                  'Dns Type',
-                                 #  'WhoisContacts'
                                  'Whois Contact first Name',
                                  'Whois Contact last Name',
                                  'Whois Contact email'
@@ -160,11 +159,11 @@ def extract_required_fields_for_domains_search_hr(domains_list) -> list:
             'Name Servers': domain.get('nameServers'),
             'Dns Type': domain.get('dnsType'),
             'Whois Contact first Name': get_whois_contacts_fields_for_search_domains_command
-                                         (domain.get('whoisContacts'), 'firstName'),
+            (domain.get('whoisContacts'), 'firstName'),
             'Whois Contact last Name': get_whois_contacts_fields_for_search_domains_command
-                                        (domain.get('whoisContacts'), 'lastName'),
+            (domain.get('whoisContacts'), 'lastName'),
             'Whois Contact email': get_whois_contacts_fields_for_search_domains_command
-                                    (domain.get('whoisContacts'), 'email')
+            (domain.get('whoisContacts'), 'email')
         }
 
         filtered_domains.append(filtered_domain)
@@ -192,22 +191,24 @@ def extract_required_fields_for_domains_configurations_list_hr(configurations) -
 
     return filtered_configurations
 
+
 def extract_required_fields_for_domains_availability_check_hr(available_domains):
     filtered_available_domains = []
 
     for domain in available_domains:
         filtered = {
-        'Qualified Domain Name': domain.get('qualifiedDomainName'),
-        'Code': domain.get('result').get('code'),
-        'Message': domain.get('result').get('message'),
-        'Price': domain.get('basePrice').get('price'),
-        'Currency': domain.get('basePrice').get('currency'),
-        'List of the terms (months) available for registration': domain.get('availableTerms')
+            'Qualified Domain Name': domain.get('qualifiedDomainName'),
+            'Code': domain.get('result').get('code'),
+            'Message': domain.get('result').get('message'),
+            'Price': domain.get('basePrice').get('price'),
+            'Currency': domain.get('basePrice').get('currency'),
+            'List of the terms (months) available for registration': domain.get('availableTerms')
         }
 
         filtered_available_domains.append(filtered)
 
     return filtered_available_domains
+
 
 def extract_required_fields_for_domain_hr(domain) -> dict:
     filtered = {'Qualified Domain Name': domain.get('qualifiedDomainName'),
@@ -297,7 +298,7 @@ def csc_domains_search_command(client: Client, args) -> Any:
         params_results = create_params_string(args)
         domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
         domains_list = domains_results.get('domains', [])
-        
+
     domains_with_required_fields = extract_required_fields_for_domains_search_hr(domains_list)
 
     results = CommandResults(
@@ -305,7 +306,7 @@ def csc_domains_search_command(client: Client, args) -> Any:
                                         headers=HR_HEADERS_FOR_DOMAINS_SEARCH),
         outputs_prefix='CSCDomainManager.Domain',
         outputs_key_field='QualifiedDomainName',
-        outputs=domains_with_required_fields
+        outputs=domains_list
     )
     return results
 
@@ -345,7 +346,7 @@ def csc_domains_configuration_list_command(client: Client, args) -> Any:
                                         headers=HR_HEADERS_FOR_DOMAIN_CONFI_LIST),
         outputs_prefix='CSCDomainManager.Domain.Configuration',
         outputs_key_field='CSCDomainManager.Domain.Configuration.Domain',
-        outputs=configurations_with_required_fields
+        outputs=configurations_results
     )
     return results
 

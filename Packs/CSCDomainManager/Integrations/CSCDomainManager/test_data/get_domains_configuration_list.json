@@ -1,0 +1,86 @@
+{
+    "meta": {
+      "numResults": 20,
+      "pages": 20
+    },
+    "configurations": [
+      {
+        "domain": "test.com",
+        "domainLabel": "test",
+        "domainStatusCode": "ACT",
+        "dnsHostingType": "MANAGED_BASIC",
+        "extension": "de",
+        "tld": "de",
+        "country": "GERMANY",
+        "adminEmail": "adminEmail@test.com",
+        "adminName": "Admin Name",
+        "adminOrg": "Admin Organization",
+        "regEmail": "regEmail@test.com",
+        "regName": "Reg Name",
+        "regOrg": "Reg Organization",
+        "techEmail": "techEmail@test.com",
+        "techName": "Tech Name",
+        "techOrg": "Tech Organization",
+        "accounts": {
+          "accountNumber": "",
+          "accountName": ""
+        },
+        "businessUnit": "Business Unit One",
+        "dnsData": [
+          {
+            "dnsData": "dnsData",
+            "dnsName": "CSC DNS"
+          }
+        ],
+        "dnsTraffic12moAve": 1234,
+        "hasCscUrlf": false,
+        "hasDkim": false,
+        "hasDmarc": false,
+        "hasDnssecDs": false,
+        "hasSpf": false,
+        "hasWww": true,
+        "isGtld": false,
+        "isLive": true,
+        "isLiveType": "Unauthorized",
+        "isMultilockEligible": false,
+        "isVital": false,
+        "multiLocked": false,
+        "numLiveMx": 0,
+        "numRootA": 1,
+        "numRootTxt": 0,
+        "numSslNetcraft": 0,
+        "numWwwA": 0,
+        "numWwwCname": 1,
+        "registryExpiryDate": {},
+        "rootHttpCode": 301,
+        "rootHttpUrl": "test.com",
+        "rootIsUrlf": null,
+        "serverDeleteProhibited": false,
+        "serverTransferProhibited": true,
+        "serverUpdateProhibited": true,
+        "urlfTraffic12moAve": 1,
+        "valueRootA": [
+          "123.123.123.123"
+        ],
+        "valueRootMx": [
+          "custmx.cscdns.net"
+        ],
+        "valueRootTxt": [
+          ""
+        ],
+        "valueWwwA": [
+          "123.123.123.123"
+        ],
+        "valueWwwCname": [
+          ""
+        ],
+        "wwwHttpeCode": 301,
+        "wwwHttpUrl": "test.com",
+        "wwwIsUrlf": null
+      }
+    ],
+    "links": {
+      "self": "/domains/configuration?size=1&page=1",
+      "next": "/domains/configuration?size=1&page=2"
+    }
+  }
