@@ -1554,7 +1554,11 @@ class GraphMailUtils:
         return {'flagStatus': flag}
 
     @staticmethod
-    def build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments, inline_attachments_from_layout=[]):
+    def build_file_attachments_input(attach_ids,
+                                     attach_names,
+                                     attach_cids,
+                                     manual_attachments,
+                                     inline_attachments_from_layout=[]):
         """
         Builds both inline and regular attachments.
 

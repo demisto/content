@@ -1551,11 +1551,12 @@ def get_attachments(user_id, _id, identifiers_filter=""):
         'messageId': _id,
     }
     files = []
-    for attachment in result['Attachments']:
+    for attachment in result.get('Attachments', []):
         identifiers_filter_array = argToList(identifiers_filter)
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        if not identifiers_filter_array or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array):
+        if (not identifiers_filter_array
+            or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
     return files

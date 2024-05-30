@@ -1,6 +1,7 @@
 import json
 import pytest
 from pytest_mock import MockerFixture
+from requests import patch
 import demistomock as demisto
 
 from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
@@ -432,8 +433,11 @@ def test_handle_html(mocker):
     Then:
         - Ensure attachments list contains 2 items with correct data, name and cid fields.
     """
+    import GmailSingleUser
     client = Client()
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(GmailSingleUser, "random_word_generator", return_value="111111111")
     htmlBody = """<html>
                         <body>
                             <img src="data:image/png;base64,Aa=="/>
@@ -442,32 +446,39 @@ def test_handle_html(mocker):
                       </html>"""
 
     expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        },
-        {
-            "maintype": "image",
-            "subtype": "jpeg",
-            "data": base64.b64decode("Bb=="),
-            "name": "image1.jpeg",
-            "cid": "image1.jpeg",
-        },
+        {'maintype': 'image',
+         'subtype': 'png',
+         'data': b'\x01',
+         'name': 'image0.png@111111111_111111111-imageName:image0.png',
+         'cid': 'image0.png@111111111_111111111'
+         },
+        {'maintype': 'image',
+         'subtype': 'jpeg',
+         'data': b'\x05',
+         'name': 'image1.jpeg@111111111_111111111-imageName:image1.jpeg',
+         'cid': 'image1.jpeg@111111111_111111111'
+         }
     ]
-    expected_cleanBody = """<html>
-                        <body>
-                            <img src="cid:image0.png"/>
-                            <img src="cid:image1.jpeg"/>
-                        </body>
-                      </html>"""
-
-    cleanBody, attachments = client.handle_html(htmlBody)
+    expected_cleanBody = """<html>\n                        <body>\n                            <img src="cid:image0.png@111111111_111111111"/>\n                            <img src="cid:image1.jpeg@111111111_111111111"/>\n                        </body>\n                      </html>"""
+    expected_file_results = [
+        {'Contents': '',
+         'ContentsFormat': 'text',
+         'Type': 3,
+         'File': 'image0.png@111111111_111111111-imageName:image0.png',
+         'FileID': '1234567'
+         },
+        {'Contents': '',
+         'ContentsFormat': 'text',
+         'Type': 3,
+         'File': 'image1.jpeg@111111111_111111111-imageName:image1.jpeg',
+         'FileID': '1234567'
+         }
+    ]
+    cleanBody, attachments, file_results = client.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+    assert expected_file_results == file_results
 
 
 def test_handle_html_image_with_new_line(mocker):
@@ -479,8 +490,11 @@ def test_handle_html_image_with_new_line(mocker):
     Then:
         - Ensure attachments list contains correct data, name and cid fields.
     """
+    import GmailSingleUser
     client = Client()
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(GmailSingleUser, "random_word_generator", return_value="111111111")
     htmlBody = """
 <html>
     <body>
@@ -489,26 +503,24 @@ def test_handle_html_image_with_new_line(mocker):
 </html>"""
 
     expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        }
+        {'maintype': 'image',
+         'subtype': 'png',
+         'data': b'\x01',
+         'name': 'image0.png@111111111_111111111-imageName:image0.png',
+         'cid': 'image0.png@111111111_111111111'}
     ]
-    expected_cleanBody = """
-<html>
-    <body>
-        <img
-\t\t\t\t\t  src="cid:image0.png"/>
-    </body>
-</html>"""
+    expected_file_results = [{'Contents': '',
+                              'ContentsFormat': 'text',
+                              'Type': 3,
+                              'File': 'image0.png@111111111_111111111-imageName:image0.png',
+                              'FileID': '1234567'}]
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@111111111_111111111"/>\n    </body>\n</html>"""
 
-    cleanBody, attachments = client.handle_html(htmlBody)
+    cleanBody, attachments, file_results = client.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+    assert expected_file_results == file_results
 
 
 part_test1 = [{

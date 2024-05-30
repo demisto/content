@@ -514,7 +514,8 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
         assert send_new_email_args.args == (1, '<69433507> Test Email 2', False, 'end_user@company.com',
                                             'Resending email.', 'soc_sender@company.com', '', '',
                                             '<html><body>Resending email.</body></html>', 'html', ['5', '10'],
-                                            '69433507', 'soc_sender@company.com', '', '<html><body>Resending email.</body></html>')
+                                            '69433507', 'soc_sender@company.com', '',
+                                            '<html><body>Resending email.</body></html>')
     if expected_result == 'fail':
         assert return_error_args.args[0] == ('The selected Thread Number to respond to (42) does not exist.  '
                                              'Please choose a valid Thread Number and re-try.')
@@ -1033,5 +1034,5 @@ def test_format_body(mocker):
     mocker.patch('builtins.open', open_mock)
     result = format_body(html_body)
     expected_result = ('<p><img alt="image" src="/markdown/image/aljhgfghdjakldvygi" width="400" height="400" /></p>',
-                       '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" width="300" height="300" width="400" height="400" /></p>')
+                       '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" width="300" height="300" /></p>')
     assert result == expected_result

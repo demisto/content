@@ -2203,7 +2203,8 @@ def parse_incident_from_item(item):  # pragma: no cover
 
                         # save the attachment
                         file_name = get_attachment_name(attachment_name=attachment.name,
-                                                        content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)
+                                                        content_id=attachment.content_id,
+                                                        attachment_id=attachment.attachment_id.id)
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
@@ -2217,7 +2218,9 @@ def parse_incident_from_item(item):  # pragma: no cover
                         incident["attachment"].append(
                             {
                                 "path": file_result["FileID"],
-                                "name": get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+                                "name": get_attachment_name(attachment_name=attachment.name,
+                                                            content_id=attachment.content_id,
+                                                            attachment_id=attachment.attachment_id.id),
                             }
                         )
                 except TypeError as e:
@@ -2290,14 +2293,19 @@ def parse_incident_from_item(item):  # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment_name=attachment.name, eml_extension=True, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+                            "name": get_attachment_name(attachment_name=attachment.name,
+                                                        eml_extension=True,
+                                                        content_id=attachment.content_id,
+                                                        attachment_id=attachment.attachment_id.id),
                         }
                     )
 
             labels.append(
                 {
                     "type": label_attachment_type,
-                    "value": get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id),
+                    "value": get_attachment_name(attachment_name=attachment.name,
+                                                 content_id=attachment.content_id,
+                                                 attachment_id=attachment.attachment_id.id),
                 }
             )
             labels.append(

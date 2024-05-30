@@ -342,16 +342,15 @@ class Client:
             'messageId': _id,
         }
         files = []
-        demisto.debug(f"{result=}")
-        if 'Attachments' in result:
-            for attachment in result['Attachments']:
-                identifiers_filter_array = argToList(identifiers_filter)
-                command_args['id'] = attachment['ID']
-                result = execute_gmail_action(service, "get_attachments", command_args)
-                if not identifiers_filter_array or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array):
-                    file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-                    files.append((attachment['Name'], file_data))
-
+        for attachment in result.get('Attachments', []):
+            identifiers_filter_array = argToList(identifiers_filter)
+            command_args['id'] = attachment['ID']
+            result = execute_gmail_action(service, "get_attachments", command_args)
+            if (not identifiers_filter_array
+                or ('-imageName:' in attachment['Name']
+                    and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
+                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+                files.append((attachment['Name'], file_data))
         return files
 
     @staticmethod
@@ -987,6 +986,7 @@ class Client:
         if references:
             message['References'] = self.header(' '.join(references))
 
+        file_results = []
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
             htmlAttachments = []  # type: list

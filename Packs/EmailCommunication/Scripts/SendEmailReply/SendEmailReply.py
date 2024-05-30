@@ -685,7 +685,7 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    context_html_body = markdown(new_email_body,
+    body_to_html = markdown(new_email_body,
                                  extensions=[
                                      'tables',
                                      'fenced_code',
@@ -694,8 +694,9 @@ def format_body(new_email_body):
                                      'nl2br',
                                      DemistoExtension(),
                                  ])
-    context_html_body = re.sub(r'(<img[^>]+src="/markdown[^"]*")', r'\1 width="400" height="400"', context_html_body)
-    html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    # Separated the context so it will be shown properly in xsoar
+    context_html_body = re.sub(r'(<img[^>]+src="/markdown[^"]*")', r'\1 width="400" height="400"', body_to_html)
+    html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, body_to_html)
     return context_html_body, html_body
 
 
