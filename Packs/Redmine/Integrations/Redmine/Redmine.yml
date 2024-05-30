@@ -66,7 +66,7 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue.
     - name: custom_fields
-      description: "The custom field to update. The format is `{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}` - use array if the field is of multiselect type"
+      description: "The custom field to update. The format is `{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}` - use array if the field is of multiselect type."
       isArray: true
     - name: watcher_user_ids
       description: An array with watcher user IDs for this issue -> 1,2,3.
@@ -202,7 +202,7 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue, if applicable.
     - name: custom_fields
-      description: "The custom field to update. The format is `{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}` - use array if the field is of multiselect type"
+      description: "The custom field to update. The format is `{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}` - use array if the field is of multiselect type."
       isArray: true
     - name: watcher_user_ids
       description: A comma-separated list of watcher IDs. -> 1,2,3.
