@@ -23,9 +23,9 @@ class Client(BaseClient):
     def __init__(self, base_url, client_id, secret_key, verify, proxy):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.credentials = f'{client_id}:{secret_key}'
-        self.check_token_validity()
+        self.reuse_token_or_refresh()
 
-    def check_token_validity(self):
+    def reuse_token_or_refresh(self):
         """
         In this method, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
         Refreshes the token as needed.

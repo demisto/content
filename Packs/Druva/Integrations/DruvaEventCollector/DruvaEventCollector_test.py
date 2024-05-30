@@ -90,7 +90,7 @@ INVALID_RESPONSE = {
 
 @pytest.fixture()
 def mock_client(mocker) -> Client:
-    mocker.patch.object(Client, "check_token_validity", return_value='DUMMY_TOKEN')
+    mocker.patch.object(Client, "reuse_token_or_refresh", return_value='DUMMY_TOKEN')
     client = Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
     client.set_headers('DUMMY_TOKEN')
     return client
@@ -262,13 +262,13 @@ def test_fetch_events_command(mocker, mock_client):
 @pytest.mark.parametrize("integration_context", [({}),
                          ({'Token': 'DUMMY TOKEN',
                            'expiration_time': datetime(2022, 2, 28, 10, 50).strftime(DATE_FORMAT_FOR_TOKEN)})])
-def test_check_token_validity_invalid_token(mocker, integration_context):
+def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     """
     Given:
     - An IntegrationContext without a Token or one that has expired
 
     When:
-    - Running check_token_validity function
+    - Build a client (for checking reuse_token_or_refresh)
 
     Then:
     - Ensure a new token is generated
@@ -281,13 +281,13 @@ def test_check_token_validity_invalid_token(mocker, integration_context):
 
 
 @freeze_time("2022-02-28 11:00:00")
-def test_check_token_validity_valid_token(mocker):
+def test_reuse_token_or_refresh_valid_token(mocker):
     """
     Given:
     - An IntegrationContext with valid Access Token
 
     When:
-    - Running check_token_validity function
+    - Build a client (for checking reuse_token_or_refresh)
 
     Then:
     - Ensure a new token is not generated
