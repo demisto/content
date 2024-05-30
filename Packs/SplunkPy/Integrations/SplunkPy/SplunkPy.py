@@ -709,7 +709,7 @@ class Notable:
         notable_enrichment_types = {e.type for e in self.enrichments}
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
             notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
-        
+
         # Explanation of the conditions:
         # 1. First condition - if any of the notable's enrichments is 'in progress', it means that it was submitted to splunk.
         # 2. Second condition - The ENABLED_ENRICHMENTS list contains the enrichment types that the user wants to enrich.
@@ -1251,7 +1251,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
-                        demisto.debug(f'Handling {enrichment.id=} {enrichment.type=} for notable {notable.id}')
+                        demisto.debug(f'Handling {enrichment.id=} of {enrichment.type=} for notable {notable.id}')
                         for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
                             if handle_message(item):
                                 continue
