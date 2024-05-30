@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -82,7 +82,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ebfc108a-3338-4f20-8af5-9e76f81a95f3
+    taskid: b4ca1ef8-0e34-467f-8b7e-164316b28f71
     type: regular
     task:
-      id: ebfc108a-3338-4f20-8af5-9e76f81a95f3
+      id: b4ca1ef8-0e34-467f-8b7e-164316b28f71
       version: -1
       name: send-mail
       description: Sends an email using EWS.
@@ -126,8 +126,10 @@ tasks:
     scriptarguments:
       attachIDs:
         simple: ${File.EntryID}
+      body:
+        simple: EWSv2_empty_attachment_test, triggered in ${incident.incidentlink}
       subject:
-        simple: EWSv2_empty_attachment_test_${incident.created}
+        simple: EWSv2_empty_attachment_test_${ServerURL.Host}_${incident.created}
       to:
         simple: ${inputs.target_mail}
     separatecontext: false
@@ -136,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -202,7 +204,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -237,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -272,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -284,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 21c89942-5847-4922-8133-ea17f19d80ce
+    taskid: 9f31b387-bcdb-4264-8f93-e7620cd894dd
     type: regular
     task:
-      id: 21c89942-5847-4922-8133-ea17f19d80ce
+      id: 9f31b387-bcdb-4264-8f93-e7620cd894dd
       version: -1
       name: Search The Email
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
@@ -300,14 +302,46 @@ tasks:
       - "1"
     scriptarguments:
       query:
-        simple: Subject:EWSv2_empty_attachment_test_${incident.created}
+        simple: EWSv2_empty_attachment_test_${ServerURL.Host}_${incident.created}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7fd3e961-5568-49a8-8a98-efd105fd52ec
+    type: regular
+    task:
+      id: 7fd3e961-5568-49a8-8a98-efd105fd52ec
+      version: -1
+      name: GetServerURL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -322,7 +356,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50
