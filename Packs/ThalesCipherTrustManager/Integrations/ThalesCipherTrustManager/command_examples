@@ -16,3 +16,4 @@
 !ciphertrust-local-ca-update local_ca_id="test_local_ca" allow_client_authentication=true allow_user_authentication=true
 !ciphertrust-local-ca-delete local_ca_id="local_ca_to_delete"
 !ciphertrust-local-ca-self-sign local_ca_id="local_ca_to_self_sign" not_after="in three years" not_before="29.5.24"
+#todo: !ciphertrust-local-ca-install cert_entry_id= local_ca_id= parent_id=

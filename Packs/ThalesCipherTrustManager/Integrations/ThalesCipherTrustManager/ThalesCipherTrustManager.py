@@ -112,9 +112,10 @@ class CommandArguments:
     DURATION = 'duration'
     NOT_AFTER = 'not_after'
     NOT_BEFORE = 'not_before'
-    PARENT_ID = 'partent_id'
+    PARENT_ID = 'parent_id'
     CA_ID = 'ca_id'
     CSR = 'csr'
+    CSR_ENTRY_ID = 'csr_entry_id'
     PURPOSE = 'purpose'
     ID = 'id'
     CERT_ID = 'cert_id'
@@ -187,7 +188,7 @@ LOCAL_CA_UPDATE_DESCRIPTION = "Update a local CA."
 LOCAL_CA_DELETE_DESCRIPTION = "Deletes a local CA certificate."
 LOCAL_CA_SELF_SIGN_DESCRIPTION = "Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration."
 LOCAL_CA_INSTALL_DESCRIPTION = 'Installs a certificate signed by other CA to act as a local CA. Issuer can be both local or external CA. Typically used for intermediate CAs. The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.'
-CERTIFICATE_ISSUE_DESCRIPTION = 'Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates.'
+CERTIFICATE_ISSUE_DESCRIPTION = "Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or notAfter date must be specified. If both notAfter date and duration are given, then notAfter takes precedence over duration. If duration is given without notBefore date, ceritificate is issued starting from server's current time for the specified duration."
 CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.'
 CERTIFICATE_DELETE_DESCRIPTION = 'Deletes a local certificate.'
 CERTIFICATE_REVOKE_DESCRIPTION = 'Revoke certificate with a given specific reason.'
@@ -433,24 +434,30 @@ LOCAL_CA_UPDATE_INPUTS = [
 ]
 LOCAL_CA_DELETE_INPUTS = [
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True,
-                  description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
+                  description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, '
+                              'or the slug (which is the last component of the URI).'),
 ]
 
 LOCAL_CA_SELF_SIGN_INPUTS = [
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the resource. This can be '
-                                                                                'either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
+                                                                                'either the ID (a UUIDv4),the Name, the URI, '
+                                                                                'or the slug (which is the last component of '
+                                                                                'the URI).'),
     InputArgument(name=CommandArguments.DURATION,
-                  description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides '
+                  description='End date of certificate. Either not_after date or duration must be specified. not_after overrides '
                               'duration if both are given.'),
     InputArgument(name=CommandArguments.NOT_AFTER,
-                  description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.'),
+                  description='End date of certificate. Either not_after date or duration must be specified. not_after '
+                              'overrides duration if both are given.'),
     InputArgument(name=CommandArguments.NOT_BEFORE, description='Start date of certificate.'),
 
 ]
 
 LOCAL_CA_INSTALL_INPUTS = [
     InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the resource. This can be '
-                                                                                'either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
+                                                                                'either the ID (a UUIDv4),the Name, the URI, '
+                                                                                'or the slug (which is the last component of '
+                                                                                'the URI).'),
     InputArgument(name=CommandArguments.CERT_ENTRY_ID, required=True,
                   description='The entry ID of the file to upload that contains the signed certificate in PEM format to install '
                               'as a local CA'),
@@ -458,18 +465,23 @@ LOCAL_CA_INSTALL_INPUTS = [
                   description='An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.')]
 
 CERTIFICATE_ISSUE_INPUTS = [
-    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
-    InputArgument(name=CommandArguments.CSR, required=True, description='CSR in PEM format'),
+    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource. This can be '
+                                                                                'either the ID (a UUIDv4),the Name, the URI, '
+                                                                          'or the slug (which is the last component of '
+                                                                          'the URI).'),
+    InputArgument(name=CommandArguments.CSR_ENTRY_ID, required=True, description='The entry ID of the file to upload that '
+                                                                                 'contains CSR in PEM format'),
     InputArgument(name=CommandArguments.PURPOSE, required=True, input_type=CACertificatePurpose,
                   description='Purpose of the certificate. Possible values: server, client or ca'),
     InputArgument(name=CommandArguments.DURATION,
-                  description='Duration in days of certificate. Either duration or notAfter date must be specified.'),
+                  description='Duration in days of certificate. Either duration or not_after date must be specified.'),
     InputArgument(name=CommandArguments.NAME,
                   description='A unique name of Certificate, if not provided, will be set to cert-<id>.'),
     InputArgument(name=CommandArguments.NOT_AFTER,
-                  description='End date of certificate. Either notAfter date or duration must be specified. notAfter overrides duration if both are given.'),
+                  description='End date of certificate. Either not_after date or duration must be specified. notAfter overrides '
+                              'duration if both are given.'),
     InputArgument(name=CommandArguments.NOT_BEFORE,
-                  description='Start date of certificate. ISO 8601 format for notBefore date. Either duration or notAfter date must be specified. If duration is given without notBefore date, certificate is issued starting from server\'s current time for the specified duration.'),
+                  description='Start date of certificate.'),
 ]
 
 CERTIFICATE_LIST_INPUTS = [InputArgument(name=CommandArguments.CA_ID, required=True,
@@ -498,11 +510,13 @@ CERTIFICATE_RESUME_INPUTS = [
 ]
 
 EXTERNAL_CERTIFICATE_UPLOAD_INPUTS = [
-    InputArgument(name=CommandArguments.CERT, required=True, description='External CA certificate in PEM format'),
+    InputArgument(name=CommandArguments.CERT_ENTRY_ID, required=True, description='The entry ID of the file to upload that '
+                                                                                  'contains the external CA certificate in PEM format'),
     InputArgument(name=CommandArguments.NAME,
                   description='A unique name of CA, if not provided, will be set to externalca-<id>.'),
     InputArgument(name=CommandArguments.PARENT,
-                  description='URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.'),
+                  description='URI reference to a parent external CA certificate. This information can be used to build a '
+                              'certificate hierarchy.'),
 ]
 
 EXTERNAL_CERTIFICATE_DELETE_INPUTS = [
@@ -1496,8 +1510,11 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
 @metadata_collector.command(command_name='ciphertrust-certificate-issue', inputs_list=CERTIFICATE_ISSUE_INPUTS,
                             outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX, description=CERTIFICATE_ISSUE_DESCRIPTION)
 def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+    if args.get(CommandArguments.NOT_AFTER) is None and args.get(CommandArguments.DURATION) is None:
+        raise ValueError('Either the "not_after" or "duration" argument must be provided.')
+    csr = load_content_from_file(args.get(CommandArguments.CSR_ENTRY_ID))
     request_data = assign_params(
-        csr=args.get(CommandArguments.CSR),
+        csr=csr,
         purpose=args.get(CommandArguments.PURPOSE),
         duration=arg_to_number(args.get(CommandArguments.DURATION)),
         name=args.get(CommandArguments.NAME),
@@ -1572,8 +1589,9 @@ def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) 
                             inputs_list=EXTERNAL_CERTIFICATE_UPLOAD_INPUTS, description=EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION,
                             outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
 def external_certificate_upload_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+    cert = load_content_from_file(args.get(CommandArguments.CERT_ENTRY_ID))
     request_data = assign_params(
-        cert=args.get(CommandArguments.CERT),
+        cert=cert,
         name=args.get(CommandArguments.NAME),
         parent=args.get(CommandArguments.PARENT),
     )
@@ -1650,6 +1668,7 @@ def main():
 
     server_url = params.get('server_url')
 
+    #todo: pass credentials to the client without opening them up
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
