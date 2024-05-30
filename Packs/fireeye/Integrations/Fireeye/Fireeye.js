@@ -341,7 +341,15 @@ switch (command) {
           result = JSON.parse(response.Body);
         }
         if (contentType && contentType.indexOf('application/xml') !== -1) {
-          result = JSON.parse(x2j(response.Body));
+          parsed_response_body = x2j(response.Body)
+          logDebug("DEBUG: The result after parsing: " + parsed_response_body)
+          try {
+            result = JSON.parse(parsed_response_body)
+          } catch(e) {
+            logDebug("DEBUG: We got an error: " + e)
+            result = {}
+          }
+          result = JSON.parse(parsed_response_body);
         }
 }
 logDebug("DEBUG: logging out: ")
