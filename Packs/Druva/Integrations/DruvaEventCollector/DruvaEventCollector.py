@@ -20,11 +20,37 @@ PRODUCT = 'Druva'
 
 class Client(BaseClient):
 
-    def refresh_access_token(self, credentials: str) -> str:
+    def __init__(self, base_url, client_id, secret_key, verify, proxy):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.credentials = f'{client_id}:{secret_key}'
+        self.check_token_validity()
+
+    def check_token_validity(self):
+        """
+        In this method, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
+        Refreshes the token as needed.
+        """
+        cache = get_integration_context()
+        now = datetime.utcnow()
+
+        if cache:
+            token = cache.get('Token')
+            expiration_time = datetime.strptime(cache.get('expiration_time'), DATE_FORMAT_FOR_TOKEN)
+
+            # check if token is still valid, and use the old one. otherwise regenerate a new one
+            if (expiration_time - now).total_seconds() > 0:
+                self.set_headers(token)
+                return
+
+        token = self.refresh_access_token()
+        set_integration_context(
+            {'Token': token, 'expiration_time': (now + timedelta(minutes=25)).strftime(DATE_FORMAT_FOR_TOKEN)})
+
+    def refresh_access_token(self) -> str:
         """
         Since the validity of the Access Token is 30 minutes, this method refreshes it.
         """
-        encoded_credentials = base64.b64encode(credentials.encode())
+        encoded_credentials = base64.b64encode(self.credentials.encode())
         decoded_credentials = encoded_credentials.decode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", 'Authorization': f'Basic {decoded_credentials}'}
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
@@ -79,7 +105,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    client.search_events()
+    get_events(client=client)
     return 'ok'
 
 
@@ -120,27 +146,6 @@ def fetch_events(client: Client, last_run: dict[str, str]) -> tuple[list[dict], 
     return events, next_run
 
 
-def check_token_validity(client: Client, credentials: str) -> None:
-    """
-    In this function, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
-    Refreshes the token as needed.
-    """
-    cache = get_integration_context()
-    now = datetime.utcnow()
-
-    if cache:
-        token = cache.get('Token')
-        expiration_time = datetime.strptime(cache.get('expiration_time'), DATE_FORMAT_FOR_TOKEN)
-
-        # check if token is still valid, and use the old one. otherwise regenerate a new one
-        if (expiration_time - now).total_seconds() > 0:
-            client.set_headers(token)
-            return
-
-    token = client.refresh_access_token(credentials)
-    set_integration_context({'Token': token,  'expiration_time': (now + timedelta(minutes=25)).strftime(DATE_FORMAT_FOR_TOKEN)})
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -169,19 +174,15 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
 
-    druva_client_id = params["credentials"]["identifier"]
-    druva_secret_key = params["credentials"]["password"]
-    credentials = f'{druva_client_id}:{druva_secret_key}'
-
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             base_url=params['url'],
+            client_id=params["credentials"]["identifier"],
+            secret_key=params["credentials"]["password"],
             verify=verify_certificate,
             proxy=proxy
         )
-
-        check_token_validity(client, credentials)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

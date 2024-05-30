@@ -1,5 +1,5 @@
 from CommonServerPython import DemistoException
-from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events, check_token_validity
+from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events, DATE_FORMAT_FOR_TOKEN
 import pytest
 import demistomock as demisto
 import requests
@@ -89,8 +89,11 @@ INVALID_RESPONSE = {
 
 
 @pytest.fixture()
-def mock_client() -> Client:
-    return Client(base_url="test", verify=False, proxy=False, headers={'Authorization': 'Bearer DUMMY_TOKEN'})
+def mock_client(mocker) -> Client:
+    mocker.patch.object(Client, "check_token_validity", return_value='DUMMY_TOKEN')
+    client = Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
+    client.set_headers('DUMMY_TOKEN')
+    return client
 
 
 def test_test_module_command(mocker, mock_client):
@@ -105,7 +108,7 @@ def test_test_module_command(mocker, mock_client):
     Then:
     - Test module passed
     """
-    mocker.patch.object(mock_client, "search_events", return_value={})
+    mocker.patch.object(mock_client, "search_events", return_value={'events': [], 'tracker': 'DUMMY_TRACKER'})
     result = run_test_module(client=mock_client)
     assert result == "ok"
 
@@ -181,7 +184,7 @@ def test_refresh_access_token(mocker, mock_client):
     error_message = "Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
 
     with pytest.raises(DemistoException, match=error_message):
-        mock_client.refresh_access_token(credentials="test")
+        mock_client.refresh_access_token()
 
 
 def test_search_events_called_with(mocker, mock_client):
@@ -256,8 +259,10 @@ def test_fetch_events_command(mocker, mock_client):
 
 
 @freeze_time("2022-02-28 11:00:00")
-@pytest.mark.parametrize("integration_context", [({}), ({'Token': datetime(2022, 2, 28, 10, 50)})])
-def test_check_token_validity_invalid_token(mocker, mock_client, integration_context):
+@pytest.mark.parametrize("integration_context", [({}),
+                         ({'Token': 'DUMMY TOKEN',
+                           'expiration_time': datetime(2022, 2, 28, 10, 50).strftime(DATE_FORMAT_FOR_TOKEN)})])
+def test_check_token_validity_invalid_token(mocker, integration_context):
     """
     Given:
     - An IntegrationContext without a Token or one that has expired
@@ -269,13 +274,14 @@ def test_check_token_validity_invalid_token(mocker, mock_client, integration_con
     - Ensure a new token is generated
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
-    mock_refresh_access_token = mocker.patch.object(mock_client, "refresh_access_token")
-    check_token_validity(mock_client, "credentials")
-    mock_refresh_access_token.assert_called_once_with("credentials")
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mock_refresh_access_token = mocker.patch.object(Client, "refresh_access_token", return_value='DUMMY_TOKEN')
+    Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
+    mock_refresh_access_token.assert_called_once_with()
 
 
 @freeze_time("2022-02-28 11:00:00")
-def test_check_token_validity_valid_token(mocker, mock_client):
+def test_check_token_validity_valid_token(mocker):
     """
     Given:
     - An IntegrationContext with valid Access Token
@@ -286,8 +292,10 @@ def test_check_token_validity_valid_token(mocker, mock_client):
     Then:
     - Ensure a new token is not generated
     """
-    datetime(2022, 2, 28, 10, 50)
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'Token': datetime(2022, 2, 28, 11, 10)})
-    mock_refresh_access_token = mocker.patch.object(mock_client, "refresh_access_token")
-    check_token_validity(mock_client, "credentials")
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'Token': 'DUMMY TOKEN',
+                                      'expiration_time': datetime(2022, 2, 28, 11, 10).strftime(DATE_FORMAT_FOR_TOKEN)})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mock_refresh_access_token = mocker.patch.object(Client, "refresh_access_token", return_value='DUMMY_TOKEN')
+    Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
     assert not mock_refresh_access_token.called
