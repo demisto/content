@@ -208,3 +208,14 @@ def test_list_to_headers_and_lines(list_data, expected_headers, expected_lines):
     headers, lines = list_to_headers_and_lines(list_data, ",")
     assert expected_headers == headers
     assert expected_lines == lines
+
+
+def test_parse_list2(mocker):
+    from GetListRow import parse_list
+    with open('test_list.csv') as f:
+        a = f.read()
+        mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": a}])
+    res = parse_list(parse_all='false', header="attack_object_id", value="T1552", list_name='test_list', list_separator=',')
+    assert res
+    
+    

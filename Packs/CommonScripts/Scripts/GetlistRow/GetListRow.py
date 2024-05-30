@@ -17,7 +17,8 @@ def validate_header_exists(headers, header):
         return_error("Error: The supplied header name was not found.")
 
 
-def list_to_headers_and_lines(list_data, list_separator: str):
+def list_to_headers_and_lines(list_data:str, list_separator: str):
+    list_data = list_data.strip()
     lines_and_headers = [(line.replace("\r", "") if line.endswith("\r") else line).split(list_separator)
                          for line in list_data.split('\n')]
     headers = lines_and_headers[0]
