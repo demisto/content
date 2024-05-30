@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Graph Mail Single User dev
+  id: Microsoft Graph Mail Single User
   version: -1
 configuration:
 - name: creds_auth_id
@@ -185,8 +185,8 @@ configuration:
   advanced: true
   required: false
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
-display: Microsoft Graph Mail Single User dev
-name: Microsoft Graph Mail Single User dev
+display: Microsoft Graph Mail Single User
+name: Microsoft Graph Mail Single User
 script:
   commands:
   - arguments:
