@@ -27,22 +27,24 @@ def main():
     args = demisto.args()
     lifetime = args.get('lifetime', '1 day')
     try:
-        parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
+        
+        parsed_date = arg_to_datetime('in ' + lifetime, arg_name=lifetime)
         assert parsed_date is not None, f'Could not parse in {lifetime}'
-        expiry = datetime.strftime(parsed_date,
-                                   DATE_FORMAT)
+        expiry = datetime.strftime(parsed_date, DATE_FORMAT)
     except Exception:
-        parsed_date = dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'})
+        demisto.debug(f'Could not parse the argument "lifetime" , got {lifetime}. will use "in 1 day" instead')
+        parsed_date = arg_to_datetime('in 1 day')
         assert parsed_date is not None
         expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
     default_response = args.get('defaultResponse')
     reply = args.get('reply')
 
-    if demisto.get(demisto.args(), 'task'):
-        entitlementString += '|' + demisto.get(demisto.args(), 'task')
+    if task := demisto.get(args, 'task'):
+        entitlementString += '|' + task
 
-    message = '**{}** - Please reply to this thread with `{}` or `{}`'.format(args['message'], option1, option2)
+    message = f'**{args.get("message")}** - Please reply to this thread with `{option1}` or `{option2}`.'
+    
     message_dict = json.dumps({
         'message': message,
         'entitlement': entitlementString,
@@ -51,7 +53,7 @@ def main():
         'default_response': default_response
     })
 
-    demisto.results(demisto.executeCommand('send-notification', {
+    return_results(demisto.executeCommand('send-notification', {
         'to': demisto.get(demisto.args(), 'user'),
         'message': message_dict,
         'ignoreAddURL': 'true',
