@@ -238,24 +238,24 @@ def test_fetch_events_command(mocker, mock_client):
     # First fetch
     mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
     first_run = {}
-    events, second_run = fetch_events(
+    events, tracker_for_second_run = fetch_events(
         client=mock_client,
         last_run=first_run
     )
 
     assert len(events) == 1
-    assert second_run['tracker'] == "xxxx"
+    assert tracker_for_second_run['tracker'] == "xxxx"
     assert events[0]['eventID'] == 0
 
     # Second fetch
     mock_search_events = mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2)
-    events, third_run = fetch_events(
+    events, tracker_for_third_run = fetch_events(
         client=mock_client,
-        last_run=second_run
+        last_run=tracker_for_second_run
     )
-    mock_search_events.assert_called_with(second_run.get('tracker'))
+    mock_search_events.assert_called_with(tracker_for_second_run.get('tracker'))
     assert len(events) == 1
-    assert third_run['tracker'] == "yyyy"
+    assert tracker_for_third_run['tracker'] == "yyyy"
     assert events[0]['eventID'] == 1
 
 
