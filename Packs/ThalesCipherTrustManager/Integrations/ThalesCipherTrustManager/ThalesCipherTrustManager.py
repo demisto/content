@@ -9,6 +9,7 @@ import datetime
 
 from typing import Dict, Any
 
+''''''' YML IGNORE START '''''''
 metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
                                           description="Manage Secrets and Protect Sensitive Data through HashiCorp Vault.",
                                           display="Thales CipherTrust Manager",
@@ -27,6 +28,8 @@ metadata_collector = YMLMetadataCollector(integration_name="CipherTrust",
                                                 ConfKey(name="credentials",
                                                         key_type=ParameterTypes.AUTH,
                                                         required=True)], )
+
+''''''' YML IGNORE END '''''''
 
 ''' IMPORTS '''
 
@@ -119,7 +122,7 @@ class CommandArguments:
     SERIAL_NUMBER = 'serial_number'
 
 
-''' YML CONSTANTS '''
+''' YML CONSTANTS START '''
 
 
 class BooleanStr(enum.Enum):
@@ -163,6 +166,7 @@ class CertificateRevokeReason(enum.Enum):
     PRIVILEGE_WITHDRAWN = 'privilegeWithdrawn'
     AA_COMPROMISE = 'aACompromise'
 
+
 ''' DESCRIPTIONS '''
 GROUP_LIST_DESCRIPTION = 'Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.'
 GROUP_CREATE_DESCRIPTION = 'Create a new group. The group name is required.'
@@ -191,7 +195,8 @@ EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION = 'Deletes an external CA certificate.'
 EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION = 'Update an external CA.'
 EXTERNAL_CERTIFICATE_LIST_DESCRIPTION = 'Returns a list of external CA certificates. The results can be filtered, using the query parameters.'
 
-''' YML METADATA '''
+''' CONSTANTS END'''
+''' YML METADATA START'''
 PAGINATION_INPUTS = [InputArgument(name=CommandArguments.PAGE, description='Page to return.'),
                      InputArgument(name=CommandArguments.PAGE_SIZE,
                                    description=f'Number of entries per page. Defaults to {MAX_PAGE_SIZE} (in case only page was '
@@ -369,7 +374,7 @@ UPDATE_USER_INPUTS = [InputArgument(name=CommandArguments.NAME, description="The
                       ]
 USER_DELETE_INPUTS = [InputArgument(name=CommandArguments.USER_ID, required=True, description='The user_id of the user'), ]
 
-USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True , description='The new password.'),
+USER_PASSWORD_CHANGE_INPUTS = [InputArgument(name=CommandArguments.NEW_PASSWORD, required=True, description='The new password.'),
                                InputArgument(name=CommandArguments.PASSWORD, required=True, description="The own user's current "
                                                                                                         "password."),
                                InputArgument(name=CommandArguments.USERNAME, required=True,
@@ -386,8 +391,10 @@ LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True,
                                         description='ID of any Local CA. If given, the csr properties are copied from the given CA.'),
                           InputArgument(name=CommandArguments.DNS_NAMES, is_array=True,
                                         description='Subject Alternative Names (SAN) values (comma seperated string)'),
-                          InputArgument(name=CommandArguments.EMAIL, is_array=True, description='E-mail addresses (comma seperated string)'),
-                          InputArgument(name=CommandArguments.IP, is_array=True, description='IP addresses (comma seperated string)'),
+                          InputArgument(name=CommandArguments.EMAIL, is_array=True,
+                                        description='E-mail addresses (comma seperated string)'),
+                          InputArgument(name=CommandArguments.IP, is_array=True,
+                                        description='IP addresses (comma seperated string)'),
                           InputArgument(name=CommandArguments.NAME,
                                         description='A unique name of CA, if not provided, will be set to localca-<id>.'),
                           InputArgument(name=CommandArguments.NAME_FIELDS_RAW_JSON, is_array=True,
@@ -398,18 +405,20 @@ LOCAL_CA_CREATE_INPUTS = [InputArgument(name=CommandArguments.CN, required=True,
                                         description='Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'), ]
 
 LOCAL_CA_LIST_INPUTS = [InputArgument(name=CommandArguments.SUBJECT, description='Filter by subject'),
-                 InputArgument(name=CommandArguments.LOCAL_CA_ID, description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
-                 InputArgument(name=CommandArguments.CHAINED,
-                               input_type=BooleanStr,
-                               description='When set to ‘true’ the full CA chain is returned with the certificate.Must be used '
-                                           'with the local CA ID.'),
-                 InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
-                 InputArgument(name=CommandArguments.STATE, input_type=LocalCAState, description='Filter by state'),
-                 InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
-                 ] + PAGINATION_INPUTS
+                        InputArgument(name=CommandArguments.LOCAL_CA_ID,
+                                      description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
+                        InputArgument(name=CommandArguments.CHAINED,
+                                      input_type=BooleanStr,
+                                      description='When set to ‘true’ the full CA chain is returned with the certificate.Must be used '
+                                                  'with the local CA ID.'),
+                        InputArgument(name=CommandArguments.ISSUER, description='Filter by issuer'),
+                        InputArgument(name=CommandArguments.STATE, input_type=LocalCAState, description='Filter by state'),
+                        InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
+                        ] + PAGINATION_INPUTS
 
 LOCAL_CA_UPDATE_INPUTS = [
-    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True,
+                  description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
     InputArgument(name=CommandArguments.ALLOW_CLIENT_AUTHENTICATION,
                   input_type=BooleanStr,
                   description='If set to true, the certificates signed by the specified CA can be used '
@@ -420,7 +429,8 @@ LOCAL_CA_UPDATE_INPUTS = [
                               'for user authentication.'),
 ]
 LOCAL_CA_DELETE_INPUTS = [
-    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='local CA ID'),
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True,
+                  description='An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).'),
 ]
 
 LOCAL_CA_SELF_SIGN_INPUTS = [
@@ -508,8 +518,6 @@ EXTERNAL_CERTIFICATE_LIST_INPUTS = [
                                        InputArgument(name=CommandArguments.CERT, description='Filter by cert'),
                                    ] + PAGINATION_INPUTS
 
-
-
 ''' OUTPUTS '''
 
 GROUP_LIST_OUTPUT = [
@@ -591,7 +599,7 @@ USERS_LIST_OUTPUT = [
     OutputArgument(name="resources.userid", output_type=str, description="A unique identifier for API call usage."),
     OutputArgument(name="resources.username", output_type=str,
                    description="The login name of the user. This is the identifier used to login. This attribute is required to "
-                   "create a user, but is omitted when getting or listing user resources. It cannot be updated."),
+                               "create a user, but is omitted when getting or listing user resources. It cannot be updated."),
     OutputArgument(name="resources.connection", output_type=str,
                    description="This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'."),
     OutputArgument(name="resources.email", output_type=str, description="E-mail of the user"),
@@ -737,8 +745,10 @@ LOCAL_CA_CREATE_OUTPUT = [
     OutputArgument(name="state", output_type=str, description="State of the CA."),
     OutputArgument(name="csr", output_type=str, description="Certificate Signing Request (CSR) for the CA."),
     OutputArgument(name="subject", output_type=str, description="Distinguished Name (DN) of the CA subject."),
-    OutputArgument(name="notBefore", output_type=datetime.datetime, description="Timestamp before which the certificate is not valid."),
-    OutputArgument(name="notAfter", output_type=datetime.datetime, description="Timestamp after which the certificate is not valid."),
+    OutputArgument(name="notBefore", output_type=datetime.datetime,
+                   description="Timestamp before which the certificate is not valid."),
+    OutputArgument(name="notAfter", output_type=datetime.datetime,
+                   description="Timestamp after which the certificate is not valid."),
     OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA-1 fingerprint of the CA certificate."),
     OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA-256 fingerprint of the CA certificate."),
     OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA-512 fingerprint of the CA certificate."),
@@ -757,20 +767,27 @@ LOCAL_CA_LIST_OUTPUT = [
     OutputArgument(name="resources.account", output_type=str, description="Account associated with the CA."),
     OutputArgument(name="resources.name", output_type=str, description="Name of the CA."),
     OutputArgument(name="resources.state", output_type=str, description="Current state of the CA (e.g., pending, active)."),
-    OutputArgument(name="resources.createdAt", output_type=datetime.datetime, description="Timestamp of when the CA was created."),
+    OutputArgument(name="resources.createdAt", output_type=datetime.datetime,
+                   description="Timestamp of when the CA was created."),
     OutputArgument(name="resources.updatedAt", output_type=datetime.datetime, description="Timestamp of last update of the CA."),
     OutputArgument(name="resources.csr", output_type=str, description="Certificate Signing Request for the CA."),
     OutputArgument(name="resources.cert", output_type=str, description="Certificate associated with the CA."),
     OutputArgument(name="resources.serialNumber", output_type=str, description="Serial number of the CA's certificate."),
     OutputArgument(name="resources.subject", output_type=str, description="Subject of the CA's certificate."),
     OutputArgument(name="resources.issuer", output_type=str, description="Issuer of the CA's certificate."),
-    OutputArgument(name="resources.notBefore", output_type=datetime.datetime, description="Start date of the CA's certificate validity."),
-    OutputArgument(name="resources.notAfter", output_type=datetime.datetime, description="End date of the CA's certificate validity."),
+    OutputArgument(name="resources.notBefore", output_type=datetime.datetime,
+                   description="Start date of the CA's certificate validity."),
+    OutputArgument(name="resources.notAfter", output_type=datetime.datetime,
+                   description="End date of the CA's certificate validity."),
     OutputArgument(name="resources.sha1Fingerprint", output_type=str, description="SHA1 fingerprint of the CA's certificate."),
-    OutputArgument(name="resources.sha256Fingerprint", output_type=str, description="SHA256 fingerprint of the CA's certificate."),
-    OutputArgument(name="resources.sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
-    OutputArgument(name="resources.purpose.client_authentication", output_type=str, description="Indicates if client authentication is enabled for the CA."),
-    OutputArgument(name="resources.purpose.user_authentication", output_type=str, description="Indicates if user authentication is enabled for the CA.")
+    OutputArgument(name="resources.sha256Fingerprint", output_type=str,
+                   description="SHA256 fingerprint of the CA's certificate."),
+    OutputArgument(name="resources.sha512Fingerprint", output_type=str,
+                   description="SHA512 fingerprint of the CA's certificate."),
+    OutputArgument(name="resources.purpose.client_authentication", output_type=str,
+                   description="Indicates if client authentication is enabled for the CA."),
+    OutputArgument(name="resources.purpose.user_authentication", output_type=str,
+                   description="Indicates if user authentication is enabled for the CA.")
 ]
 
 LOCAL_CA_UPDATE_OUTPUTS = [
@@ -791,11 +808,13 @@ LOCAL_CA_UPDATE_OUTPUTS = [
     OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA1 fingerprint of the CA's certificate."),
     OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA256 fingerprint of the CA's certificate."),
     OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
-    OutputArgument(name="purpose.client_authentication", output_type=str, description="Indicates if client authentication is enabled for the CA."),
-    OutputArgument(name="purpose.user_authentication", output_type=str, description="Indicates if user authentication is enabled for the CA.")
+    OutputArgument(name="purpose.client_authentication", output_type=str,
+                   description="Indicates if client authentication is enabled for the CA."),
+    OutputArgument(name="purpose.user_authentication", output_type=str,
+                   description="Indicates if user authentication is enabled for the CA.")
 ]
 
-
+'''' YML METADATA END  '''
 
 '''CLIENT CLASS'''
 
@@ -809,7 +828,7 @@ class CipherTrustClient(BaseClient):
         res = self.create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
 
-    def create_auth_token(self, username, password):
+    def create_auth_token(self, username: str, password: str):
         return self._http_request(
             method='POST',
             url_suffix=AUTHENTICATION_URL_SUFFIX,
@@ -820,21 +839,21 @@ class CipherTrustClient(BaseClient):
             },
         )
 
-    def get_group_list(self, params: dict):
+    def get_group_list(self, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=USER_MANAGEMENT_GROUPS_URL_SUFFIX,
             params=params,
         )
 
-    def create_group(self, request_data: dict):
+    def create_group(self, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=USER_MANAGEMENT_GROUPS_URL_SUFFIX,
             json_data=request_data,
         )
 
-    def delete_group(self, group_name: str, request_data: dict):
+    def delete_group(self, group_name: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name)),
@@ -842,61 +861,61 @@ class CipherTrustClient(BaseClient):
             return_empty_response=True,
         )
 
-    def update_group(self, group_name: str, request_data: dict):
+    def update_group(self, group_name: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name)),
             json_data=request_data,
         )
 
-    def add_user_to_group(self, group_name: str, user_id: str):
+    def add_user_to_group(self, group_name: str, user_id: str) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name))}/users/{user_id}',
         )
 
-    def remove_user_from_group(self, group_name: str, user_id: str):
+    def remove_user_from_group(self, group_name: str, user_id: str) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=f'{urljoin(USER_MANAGEMENT_GROUPS_URL_SUFFIX, quote(group_name))}/users/{user_id}',
             return_empty_response=True,
         )
 
-    def get_users_list(self, params: dict):
+    def get_users_list(self, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=USER_MANAGEMENT_USERS_URL_SUFFIX,
             params=params,
         )
 
-    def get_user(self, user_id: str):
+    def get_user(self, user_id: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=urljoin(USER_MANAGEMENT_USERS_URL_SUFFIX, user_id),
         )
 
-    def create_user(self, request_data: dict):
+    def create_user(self, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=USER_MANAGEMENT_USERS_URL_SUFFIX,
             json_data=request_data,
         )
 
-    def update_user(self, user_id: str, request_data: dict):
+    def update_user(self, user_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(USER_MANAGEMENT_USERS_URL_SUFFIX, user_id),
             json_data=request_data,
         )
 
-    def delete_user(self, user_id: str):
+    def delete_user(self, user_id: str) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(USER_MANAGEMENT_USERS_URL_SUFFIX, user_id),
             return_empty_response=True,
         )
 
-    def change_current_user_password(self, request_data: dict):
+    def change_current_user_password(self, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=CHANGE_PASSWORD_URL_SUFFIX,
@@ -904,77 +923,77 @@ class CipherTrustClient(BaseClient):
             return_empty_response=True,
         )
 
-    def create_local_ca(self, request_data: dict):
+    def create_local_ca(self, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=LOCAL_CAS_URL_SUFFIX,
             json_data=request_data,
         )
 
-    def get_local_ca_list(self, params: dict):
+    def get_local_ca_list(self, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=LOCAL_CAS_URL_SUFFIX,
             params=params,
         )
 
-    def get_local_ca(self, local_ca_id: str, params: dict):
+    def get_local_ca(self, local_ca_id: str, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
             params=params,
         )
 
-    def update_local_ca(self, local_ca_id: str, params: dict):
+    def update_local_ca(self, local_ca_id: str, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
             params=params,
         )
 
-    def delete_local_ca(self, local_ca_id: str):
+    def delete_local_ca(self, local_ca_id: str) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id),
             return_empty_response=True,
         )
 
-    def self_sign_local_ca(self, local_ca_id: str, request_data: dict):
+    def self_sign_local_ca(self, local_ca_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id)}/self-sign',
             json_data=request_data,
         )
 
-    def install_local_ca(self, local_ca_id: str, request_data: dict):
+    def install_local_ca(self, local_ca_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, local_ca_id)}/install',
             json_data=request_data,
         )
 
-    def issue_certificate(self, ca_id: str, request_data: dict):
+    def issue_certificate(self, ca_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs',
             json_data=request_data,
         )
 
-    def get_certificates_list(self, ca_id: str, params: dict):
+    def get_certificates_list(self, ca_id: str, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs',
             params=params,
         )
 
-    def delete_certificate(self, ca_id: str, local_ca_id: str):
+    def delete_certificate(self, ca_id: str, local_ca_id: str) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{local_ca_id}',
             return_empty_response=True,
         )
 
-    def revoke_certificate(self, ca_id: str, cert_id: str, request_data: dict):
+    def revoke_certificate(self, ca_id: str, cert_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/revoke',
@@ -983,7 +1002,7 @@ class CipherTrustClient(BaseClient):
             empty_valid_codes=[200],
         )
 
-    def resume_certificate(self, ca_id: str, cert_id: str):
+    def resume_certificate(self, ca_id: str, cert_id: str) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/resume',
@@ -991,28 +1010,28 @@ class CipherTrustClient(BaseClient):
             empty_valid_codes=[200],
         )
 
-    def upload_external_certificate(self, request_data: dict):
+    def upload_external_certificate(self, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=EXTERNAL_CAS_URL_SUFFIX,
             json_data=request_data,
         )
 
-    def delete_external_certificate(self, external_ca_id: str):
+    def delete_external_certificate(self, external_ca_id: str) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
             return_empty_response=True,
         )
 
-    def update_external_certificate(self, external_ca_id: str, request_data: dict):
+    def update_external_certificate(self, external_ca_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
             json_data=request_data,
         )
 
-    def get_external_certificates_list(self, params: dict):
+    def get_external_certificates_list(self, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=EXTERNAL_CAS_URL_SUFFIX,
@@ -1023,7 +1042,7 @@ class CipherTrustClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def derive_skip_and_limit_for_pagination(limit, page, page_size):
+def derive_skip_and_limit_for_pagination(limit: str, page: str | None, page_size: str | None):
     if page:
         page_size = arg_to_number(page_size) or DEFAULT_PAGE_SIZE
         if page_size > MAX_PAGE_SIZE:
@@ -1032,33 +1051,33 @@ def derive_skip_and_limit_for_pagination(limit, page, page_size):
     return 0, arg_to_number(limit)
 
 
-def optional_arg_to_bool(arg):
+def optional_arg_to_bool(arg: str | None):
     return argToBoolean(arg) if arg is not None else arg
 
 
-def optional_arg_to_datetime_string(arg, date_format=DATE_FORMAT):
+def optional_arg_to_datetime_string(arg: str | None, date_format: str = DATE_FORMAT):
     datetime_object = arg_to_datetime(arg)
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
-def add_empty_date_param(request_data: dict, argument_value: str, param_name: str, empty_arg_value: str = "empty"):
+def add_empty_date_param(request_data: dict, argument_value: str | None, param_name: str, empty_arg_value: str = "empty"):
     if argument_value is not None:
         request_data[param_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
 
 
-def add_empty_list_param(request_data: dict, argument_value: str, param_name: str, empty_arg_value: str = "empty"):
+def add_empty_list_param(request_data: dict, argument_value: str | None, param_name: str, empty_arg_value: str = "empty"):
     if argument_value is not None:
         request_data[param_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
 
 
-def add_login_flags(request_data: dict, argument_value: str, flag_name: str):
+def add_login_flags(request_data: dict, argument_value: str | None, flag_name: str):
     if argument_value is not None:
         if 'login_flags' not in request_data:
             request_data['login_flags'] = {}
         request_data['login_flags'][flag_name] = argument_value
 
 
-def optional_safe_load_json(raw_json_string, json_entry_id):
+def optional_safe_load_json(raw_json_string: str | None, json_entry_id: str | None):
     json_object = json_entry_id if json_entry_id else raw_json_string
     if json_object:
         return safe_load_json(json_object)
@@ -1069,7 +1088,7 @@ def optional_safe_load_json(raw_json_string, json_entry_id):
 
 
 @metadata_collector.command(command_name='test_module')
-def test_module(client: CipherTrustClient):
+def test_module(client: CipherTrustClient) -> str:
     """Tests API connectivity and authentication
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1088,7 +1107,7 @@ def test_module(client: CipherTrustClient):
 
 @metadata_collector.command(command_name='ciphertrust-group-list', outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
                             inputs_list=GROUP_LIST_INPUTS, outputs_list=GROUP_LIST_OUTPUT, description=GROUP_LIST_DESCRIPTION)
-def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
+def group_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
@@ -1112,7 +1131,7 @@ def group_list_command(client: CipherTrustClient, args: dict) -> CommandResults:
 @metadata_collector.command(command_name='ciphertrust-group-create', inputs_list=GROUP_CREATE_INPUTS,
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_CREATE_OUTPUT,
                             description=GROUP_CREATE_DESCRIPTION)
-def group_create_command(client: CipherTrustClient, args: Dict[str, Any]):
+def group_create_command(client: CipherTrustClient, args: Dict[str, Any]) -> CommandResults:
     request_data = assign_params(name=args.get(CommandArguments.NAME),
                                  description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.create_group(request_data=request_data)
@@ -1125,7 +1144,7 @@ def group_create_command(client: CipherTrustClient, args: Dict[str, Any]):
 
 @metadata_collector.command(command_name='ciphertrust-group-delete', inputs_list=GROUP_DELETE_INPUTS,
                             description=GROUP_DELETE_DESCRIPTION)
-def group_delete_command(client: CipherTrustClient, args: dict):
+def group_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(force=args.get(CommandArguments.FORCE))
     client.delete_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)
     return CommandResults(
@@ -1136,7 +1155,7 @@ def group_delete_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-group-update', inputs_list=GROUP_UPDATE_INPUTS,
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=GROUP_UPDATE_OUTPUT,
                             description=GROUP_UPDATE_DESCRIPTION)
-def group_update_command(client: CipherTrustClient, args: dict):
+def group_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION))
     raw_response = client.update_group(group_name=args.get(CommandArguments.GROUP_NAME), request_data=request_data)
     return CommandResults(
@@ -1149,7 +1168,7 @@ def group_update_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-user-to-group-add', inputs_list=USER_TO_GROUP_ADD_INPUTS,
                             outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX, outputs_list=USER_TO_GROUP_ADD_OUTPUT,
                             description=USER_TO_GROUP_ADD_DESCRIPTION)
-def user_to_group_add_command(client: CipherTrustClient, args: dict):
+def user_to_group_add_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     raw_response = client.add_user_to_group(group_name=args.get(CommandArguments.GROUP_NAME),
                                             user_id=args.get(CommandArguments.USER_ID))
     return CommandResults(
@@ -1161,7 +1180,7 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-user-to-group-remove', inputs_list=USER_TO_GROUP_REMOVE_INPUTS,
                             description=USER_TO_GROUP_REMOVE_DESCRIPTION)
-def user_to_group_remove_command(client: CipherTrustClient, args: dict):
+def user_to_group_remove_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.remove_user_from_group(group_name=args.get(CommandArguments.GROUP_NAME), user_id=args.get(CommandArguments.USER_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.USER_ID)} has been deleted successfully from {args.get(CommandArguments.GROUP_NAME)}'
@@ -1171,7 +1190,7 @@ def user_to_group_remove_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-users-list', inputs_list=USERS_LIST_INPUTS,
                             outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX, outputs_list=USERS_LIST_OUTPUT,
                             description=USERS_LIST_DESCRIPTION)
-def users_list_command(client: CipherTrustClient, args: dict):
+def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if user_id := args.get(CommandArguments.USER_ID):
         raw_response = client.get_user(user_id=user_id)
         outputs = {'resources': [raw_response]}
@@ -1210,7 +1229,7 @@ def users_list_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-user-create', description=USER_CREATE_DESCRIPTION,
                             inputs_list=USER_CREATE_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
                             outputs_list=USER_CREATE_OUTPUT)
-def user_create_command(client: CipherTrustClient, args: dict):
+def user_create_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         connection=args.get(CommandArguments.CONNECTION),
@@ -1238,7 +1257,7 @@ def user_create_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-user-update', description=USER_UPDATE_DESCRIPTION,
                             inputs_list=UPDATE_USER_INPUTS, outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
                             outputs_list=USER_UPDATE_OUTPUT)
-def user_update_command(client: CipherTrustClient, args: dict):
+def user_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         certificate_subject_dn=args.get(CommandArguments.CERTIFICATE_SUBJECT_DN),
         email=args.get(CommandArguments.EMAIL),
@@ -1263,7 +1282,7 @@ def user_update_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-user-delete', description=USER_DELETE_DESCRIPTION,
                             inputs_list=USER_DELETE_INPUTS)
-def user_delete_command(client: CipherTrustClient, args: dict):
+def user_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.delete_user(args.get(CommandArguments.USER_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.USER_ID)} has been deleted successfully!'
@@ -1272,7 +1291,7 @@ def user_delete_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-user-password-change', description=USER_PASSWORD_CHANGE_DESCRIPTION,
                             inputs_list=USER_PASSWORD_CHANGE_INPUTS)
-def user_password_change_command(client: CipherTrustClient, args: dict):
+def user_password_change_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         new_password=args.get(CommandArguments.NEW_PASSWORD),
         password=args.get(CommandArguments.PASSWORD),
@@ -1286,8 +1305,9 @@ def user_password_change_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-create', description=LOCAL_CA_CREATE_DESCRIPTION,
-                            inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, outputs_list=LOCAL_CA_CREATE_OUTPUT)
-def local_ca_create_command(client: CipherTrustClient, args: dict):
+                            inputs_list=LOCAL_CA_CREATE_INPUTS, outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+                            outputs_list=LOCAL_CA_CREATE_OUTPUT)
+def local_ca_create_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         cn=args.get(CommandArguments.CN),
         algorithm=args.get(CommandArguments.ALGORITHM),
@@ -1309,8 +1329,9 @@ def local_ca_create_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-list', inputs_list=LOCAL_CA_LIST_INPUTS,
-                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_LIST_DESCRIPTION, outputs_list=LOCAL_CA_LIST_OUTPUT)
-def local_ca_list_command(client: CipherTrustClient, args: dict):
+                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_LIST_DESCRIPTION,
+                            outputs_list=LOCAL_CA_LIST_OUTPUT)
+def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if args.get(CommandArguments.CHAINED) is not None and args.get(CommandArguments.LOCAL_CA_ID) is None:
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
     if local_ca_id := args.get(CommandArguments.LOCAL_CA_ID):
@@ -1344,8 +1365,9 @@ def local_ca_list_command(client: CipherTrustClient, args: dict):
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-update', inputs_list=LOCAL_CA_UPDATE_INPUTS,
-                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_UPDATE_DESCRIPTION, outputs_list=LOCAL_CA_UPDATE_OUTPUTS)
-def local_ca_update_command(client: CipherTrustClient, args: dict):
+                            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX, description=LOCAL_CA_UPDATE_DESCRIPTION,
+                            outputs_list=LOCAL_CA_UPDATE_OUTPUTS)
+def local_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     params = assign_params(
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
         allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
@@ -1360,7 +1382,7 @@ def local_ca_update_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-delete', inputs_list=LOCAL_CA_DELETE_INPUTS,
                             description=LOCAL_CA_DELETE_DESCRIPTION)
-def local_ca_delete_command(client: CipherTrustClient, args: dict):
+def local_ca_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.delete_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.LOCAL_CA_ID)} has been deleted successfully!'
@@ -1369,7 +1391,7 @@ def local_ca_delete_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-self-sign', inputs_list=LOCAL_CA_SELF_SIGN_INPUTS,
                             description=LOCAL_CA_SELF_SIGN_DESCRIPTION, outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX)
-def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
+def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         duration=arg_to_number(args.get(CommandArguments.DURATION)),
         notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
@@ -1385,7 +1407,7 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-install', inputs_list=LOCAL_CA_INSTALL_INPUTS,
                             description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX)
-def local_ca_install_command(client: CipherTrustClient, args: dict):
+def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         cert=args.get(CommandArguments.CERT),
         parent_id=args.get(CommandArguments.PARENT_ID),
@@ -1400,7 +1422,7 @@ def local_ca_install_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-certificate-issue', inputs_list=CERTIFICATE_ISSUE_INPUTS,
                             outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX, description=CERTIFICATE_ISSUE_DESCRIPTION)
-def certificate_issue_command(client: CipherTrustClient, args: dict):
+def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         csr=args.get(CommandArguments.CSR),
         purpose=args.get(CommandArguments.PURPOSE),
@@ -1419,7 +1441,7 @@ def certificate_issue_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-certificate-list', inputs_list=CERTIFICATE_LIST_INPUTS,
                             description=CERTIFICATE_LIST_DESCRIPTION, outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
-def certificate_list_command(client: CipherTrustClient, args: dict):
+def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))
@@ -1444,7 +1466,7 @@ def certificate_list_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-local-certificate-delete', inputs_list=LOCAL_CERTIFICATE_DELETE_INPUTS,
                             description=CERTIFICATE_DELETE_DESCRIPTION)
-def local_certificate_delete_command(client: CipherTrustClient, args: dict):
+def local_certificate_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.delete_certificate(ca_id=args.get(CommandArguments.CA_ID), local_ca_id=args.get(CommandArguments.LOCAL_CA_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.LOCAL_CA_ID)} has been deleted successfully!'
@@ -1453,7 +1475,7 @@ def local_certificate_delete_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-certificate-revoke', inputs_list=CERTIFICATE_REVOKE_INPUTS,
                             description=CERTIFICATE_REVOKE_DESCRIPTION)
-def certificate_revoke_command(client: CipherTrustClient, args: dict):
+def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         reason=args.get(CommandArguments.REASON),
     )
@@ -1466,7 +1488,7 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-certificate-resume', inputs_list=CERTIFICATE_RESUME_INPUTS,
                             description=CERTIFICATE_RESUME_DESCRIPTION)
-def certificate_resume_command(client: CipherTrustClient, args: dict):
+def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.resume_certificate(ca_id=args.get(CommandArguments.CA_ID), cert_id=args.get(CommandArguments.CERT_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.CERT_ID)} has been resumed'
@@ -1476,7 +1498,7 @@ def certificate_resume_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-external-certificate-upload',
                             inputs_list=EXTERNAL_CERTIFICATE_UPLOAD_INPUTS, description=EXTERNAL_CERTIFICATE_UPLOAD_DESCRIPTION,
                             outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
-def external_certificate_upload_command(client: CipherTrustClient, args: dict):
+def external_certificate_upload_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         cert=args.get(CommandArguments.CERT),
         name=args.get(CommandArguments.NAME),
@@ -1492,7 +1514,7 @@ def external_certificate_upload_command(client: CipherTrustClient, args: dict):
 
 @metadata_collector.command(command_name='ciphertrust-external-certificate-delete',
                             inputs_list=EXTERNAL_CERTIFICATE_DELETE_INPUTS, description=EXTERNAL_CERTIFICATE_DELETE_DESCRIPTION)
-def external_certificate_delete_command(client: CipherTrustClient, args: dict):
+def external_certificate_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.delete_external_certificate(external_ca_id=args.get(CommandArguments.EXTERNAL_CA_ID))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.EXTERNAL_CA_ID)} has been deleted successfully!'
@@ -1502,7 +1524,7 @@ def external_certificate_delete_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-external-certificate-update',
                             inputs_list=EXTERNAL_CERTIFICATE_UPDATE_INPUTS, description=EXTERNAL_CERTIFICATE_UPDATE_DESCRIPTION,
                             outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
-def external_certificate_update_command(client: CipherTrustClient, args: dict):
+def external_certificate_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
         allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
@@ -1519,7 +1541,7 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict):
 @metadata_collector.command(command_name='ciphertrust-external-certificate-list', inputs_list=EXTERNAL_CERTIFICATE_LIST_INPUTS,
                             description=EXTERNAL_CERTIFICATE_LIST_DESCRIPTION,
                             outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX)
-def external_certificate_list_command(client: CipherTrustClient, args: dict):
+def external_certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                        args.get(CommandArguments.PAGE),
                                                        args.get(CommandArguments.PAGE_SIZE))

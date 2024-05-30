@@ -305,7 +305,7 @@ FAKE_SUBJECT = "/C=FA/ST=Fk/L=FakeCity/O=FakeOrg/OU=FakeUnit/OU=FakeGroup/CN=fak
 
 LOCAL_CA_LIST_TEST_ARGS = [
     {},
-    {"subject": FAKE_SUBJECT, "limit": 10, "page": 1,  "state": "active", "cert": FAKE_CERT,"issuer": FAKE_SUBJECT},
+    {"subject": FAKE_SUBJECT, "limit": 10, "page": 1, "state": "active", "cert": FAKE_CERT, "issuer": FAKE_SUBJECT},
 
 ]
 LOCAL_CA_UPDATE_TEST_ARGS = [
@@ -316,7 +316,9 @@ LOCAL_CA_UPDATE_TEST_ARGS = [
         CommandArguments.ALLOW_USER_AUTHENTICATION: "true"
     },
 ]
-LOCAL_CA_DELETE_TEST_ARGS = []
+LOCAL_CA_DELETE_TEST_ARGS = [
+    {CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000"},
+]
 LOCAL_CA_SELF_SIGN_TEST_ARGS = []
 LOCAL_CA_INSTALL_TEST_ARGS = []
 CERTIFICATE_ISSUE_TEST_ARGS = []
@@ -696,7 +698,7 @@ def test_local_ca_update_command(mock_update_local_ca, args):
 @patch(MOCKER_HTTP_METHOD)
 def test_local_ca_delete_command(mock_delete_local_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_delete_command
-    mock_delete_local_ca.return_value = util_load_json('test_data/mock_local_ca_delete_response.json')
+    mock_delete_local_ca.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)

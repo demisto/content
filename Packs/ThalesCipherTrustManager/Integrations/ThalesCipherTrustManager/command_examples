@@ -14,3 +14,4 @@
 !ciphertrust-local-ca-list state=pending subject="/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc."
 !ciphertrust-local-ca-list local_ca_id="test_local_ca" chained=true
 !ciphertrust-local-ca-update local_ca_id="test_local_ca" allow_client_authentication=true allow_user_authentication=true
+!ciphertrust-local-ca-delete local_ca_id="local_ca_to_delete"
