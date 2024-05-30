@@ -5,7 +5,8 @@ name: ConflueraDetectionsSummaryWarroom
 script: '-'
 type: python
 tags: []
-comment: Logs detections data ( categories of detections )
+comment: |-
+  Logs detections data ( categories of detections ).
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -14,7 +15,7 @@ dependson:
   - Confluera|||confluera-fetch-detections
   should:
   - Confluera|||confluera-fetch-detections
-dockerimage: demisto/python3:3.10.14.92207
+dockerimage: demisto/python3:3.10.14.95956
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

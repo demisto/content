@@ -13,12 +13,12 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: 'false'
+  defaultvalue: "false"
   type: 8
   required: false
 - display: API Token to access Frontline VM
   name: apiToken
-  defaultvalue: ''
+  defaultvalue: ""
   type: 4
   required: true
 - display: Fetch incidents
@@ -164,7 +164,7 @@ script:
     - contextPath: FrontlineVM.Scan.IP
       description: The IP address of the scan (can be a single IP address or a range of IP addresses).
     description: Performs a scan on the specified asset.
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.10.14.95956
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

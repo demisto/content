@@ -13,7 +13,7 @@ configuration:
   required: false
 - display: ReversingLabs TitaniumCloud URL
   name: host
-  defaultvalue: https://data.reversinglabs.com
+  defaultvalue: "https://data.reversinglabs.com"
   type: 0
   required: true
 - display: Credentials
@@ -42,7 +42,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: ''
+- display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
@@ -52,9 +52,9 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
-- display: ''
+- display: ""
   name: feedExpirationInterval
-  defaultvalue: '20160'
+  defaultvalue: "20160"
   type: 1
   required: false
 - display: Feed Fetch Interval
@@ -116,13 +116,13 @@ script:
       defaultValue: 50
       description: The maximum number of indicators to return. The default value is 50.
     - name: indicator_types
-      defaultValue: ipv4,domain,hash,uri
+      defaultValue: 'ipv4,domain,hash,uri'
       description: Which indicator types should be fetched from the feed. Possible values are 'ipv4', 'domain', 'hash', 'uri'.
     - name: hours_back
       defaultValue: 1
       description: Defines how many hours back in time should the indicators be fetched from. Value should be between 1 and 4. Recommended value is 1.
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.10.14.95956
   feed: true
   subtype: python3
 fromversion: 6.0.0
