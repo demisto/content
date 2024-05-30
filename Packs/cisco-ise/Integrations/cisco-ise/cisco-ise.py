@@ -442,9 +442,9 @@ def update_endpoint_group_command():
     if endpoint_group_name and not endpoint_group_id:
         endpoint_group_data = get_endpoint_id(endpoint_group_name).get('SearchResult', {})
         if endpoint_group_data.get('total', 0) < 1:
-            demisto.results('No endpoints were found. Please make sure you entered the correct group name')
-
-        endpoint_group_id = endpoint_group_data.get('resources')[0].get('id')
+            return_error('No endpoints were found. Please make sure you entered the correct group name')
+        else:
+            endpoint_group_id = endpoint_group_data.get('resources')[0].get('id')
 
     endpoint_id = demisto.args().get('id')
     endpoint_mac_address = demisto.args().get('macAddress')
