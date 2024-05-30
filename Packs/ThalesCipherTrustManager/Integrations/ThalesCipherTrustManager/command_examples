@@ -13,3 +13,4 @@
 !ciphertrust-local-ca-create cn="test.com" name="test_local_ca" algorithm="RSA" name_fields_raw_json="[ {\"O\" : \"FakeCompany\", \"OU\": \"RnD\", \"C\": \"US\", \"ST\": \"CA\", \"L\": \"FakeCity\"}, {\"OU\": \"Fake Group Inc.\"}]" email="fakeemail@fakecompany.com,fakeemail1@fakecompany.com" ip="10.10.10.10,20.20.20.20" dns_names="*.fakecompany.com,*.fakecompany.net"
 !ciphertrust-local-ca-list state=pending subject="/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc."
 !ciphertrust-local-ca-list local_ca_id="test_local_ca" chained=true
+!ciphertrust-local-ca-update local_ca_id="test_local_ca" allow_client_authentication=true allow_user_authentication=true
