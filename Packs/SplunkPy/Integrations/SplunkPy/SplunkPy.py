@@ -708,22 +708,25 @@ class Notable:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         notable_enrichment_types = {e.type for e in self.enrichments}
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
-            self.enrichments) >= len(ENABLED_ENRICHMENTS) and len(notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
+            notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
+        
         # Explanation of the conditions:
-        # 1. First condition - if any of the notable's enrichments is in progress, it means it was submitted to splunk.
-        # 2. Second condition - The number of notable enrichments could be larger than the ENABLED_ENRICHMENTS because there could
-        # be multiple drilldown searches to enrich. I addition, it should never be smaller than the ENABLED_ENRICHMENTS.
-        # That is because if the user has asked for a certain enrichment type we will create an enrichment object of this type in
-        # the notable.enrichments list, regardless the existence of the enrichment type in the notable fetched data.
-        # (Meaning, if the notable doesn't include an enrichment in it's fetched data we will create the enrichment object in the
-        # notable.enrichments list with status failed from the beginning.)
+        # 1. First condition - if any of the notable's enrichments is 'in progress', it means that it was submitted to splunk.
+        # 2. Second condition - The ENABLED_ENRICHMENTS list contains the enrichment types that the user wants to enrich.
+        # According to the logic off the submit_notable() function, in a normal situation (where the code wasn't interrupted)
+        # the notable.enrichments list always includes an enrichment object for each enrichment type that exist in the
+        # ENABLED_ENRICHMENTS list. That is because in the submit_notable() function we always add Enrichments objects to the
+        # notable.enrichments list regardless their statuses (failed\success). So if the function had finished it's run without
+        # any interruption we will have at least one enrichment object for each enrichment type (for drilldown enrichment we could
+        # have more than one enrichment object - in a case of multiple drilldown searches enrichment).
 
-        # TODO: consult with Yuval regarding the delicate change in the second condition here.
+        # TODO: consult with Yuval regarding the delicate change in the condition here.
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
+        notable_enrichment_types = {e.type for e in self.enrichments}
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and len(
-            self.enrichments) >= len(ENABLED_ENRICHMENTS)
+            notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
@@ -1122,7 +1125,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 jobs_and_queries.append((None, None, None))
     else:
         demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
-        jobs_and_queries.append((None, None, None))  # TODO: Consult about it
+        jobs_and_queries.append((None, None, None))
 
     return jobs_and_queries
 
