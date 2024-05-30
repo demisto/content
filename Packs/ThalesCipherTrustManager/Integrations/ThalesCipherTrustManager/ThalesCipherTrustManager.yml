@@ -584,7 +584,7 @@ script:
       description: SHA-512 fingerprint of the CA certificate.
       type: String
   - deprecated: false
-    description: Deletes a local CA given the local CA's ID.
+    description: Deletes a local CA certificate.
     name: ciphertrust-local-ca-delete
     arguments:
     - name: local_ca_id
