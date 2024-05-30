@@ -42,7 +42,7 @@ configuration:
     section: Connect
     required: false
   - display: Trust any certificate (not secure)
-    name: unverify
+    name: insecure
     type: 8
     section: Connect
     required: false
