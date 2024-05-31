@@ -33,7 +33,7 @@
 						]
 					}
 				},
-				"DarktraceASM Asset ID ": {
+				"DarktraceASM Asset ID": {
 					"complex": {
 						"accessor": "id",
 						"filters": [],
@@ -41,7 +41,7 @@
 						"transformers": []
 					}
 				},
-				"DarktraceASM Asset Security Rating ": {
+				"DarktraceASM Asset Security Rating": {
 					"complex": {
 						"accessor": "securityrating",
 						"filters": [],
@@ -121,7 +121,7 @@
 						"transformers": []
 					}
 				},
-				"DarktraceASM Risk Proposed Action ": {
+				"DarktraceASM Risk Proposed Action": {
 					"complex": {
 						"filters": [],
 						"root": "proposedAction",
