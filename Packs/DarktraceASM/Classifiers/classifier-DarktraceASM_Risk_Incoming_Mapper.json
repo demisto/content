@@ -7,7 +7,7 @@
 		"Darktrace ASM Risk": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"Darktrace ASM Asset Brand": {
+				"DarktraceASM Asset Brand": {
 					"complex": {
 						"accessor": "brand",
 						"filters": [],
@@ -15,7 +15,7 @@
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Asset Creation Time": {
+				"DarktraceASM Asset Creation Time": {
 					"complex": {
 						"filters": [],
 						"root": "asset.createdAt",
