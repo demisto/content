@@ -1734,8 +1734,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             "Duplicate of": "Original of",
             "Resolved": "Resolved by",
         }
-        association_type01 = association_types.get(association_type01) or 
-            [k for k, v in association_types.items() if v == association_type01][0]
+        association_type01 = association_types.get(association_type01) or [k for k, v in association_types.items() if v == association_type01][0]
 
         res = client.ticket_create_relationship_request(
             request_type01=request_type01,
