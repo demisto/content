@@ -37,7 +37,7 @@ Fetch the indicators based on the taxii service
 
 #### Input
 
-| __Argument Name__ | __Description__                                                                                         | __Required__ |
+| **Argument Name** | **Description**                                                                                         | **Required** |
 |-----------------|-------------------------------------------------------------------------------------------------------|------------|
 | limit           | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional   | 
 | begin           | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   | 
@@ -46,8 +46,8 @@ Fetch the indicators based on the taxii service
 
 #### Context Output
 
-| __Path__                  | __Type__ | __Description__                                         |
-|-------------------------|--------|---------------------------------------------------------|
+| **Path**                  | **Type** | **Description**                                         |
+|-------------------------|--------|-------------------------------------------------------|
 | CybleIntel.Threat.details | String | Returns the Threat Intel details from the Taxii service | 
 
 ### cyble-vision-get-collection-names
@@ -61,6 +61,6 @@ Fetch the available collection name for the taxii service
 
 #### Context Output
 
-| __Path__                    | __Type__ | __Description__                                 |
+| **Path**                    | **Type** | **Description**                                 |
 |---------------------------|--------|-----------------------------------------------|
 | CybleIntel.collection.names | String | Available collection names for the feed service | 
