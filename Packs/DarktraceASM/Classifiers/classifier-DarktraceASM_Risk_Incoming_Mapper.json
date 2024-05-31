@@ -3,7 +3,6 @@
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"locked": false,
 	"mapping": {
 		"Darktrace ASM Risk": {
 			"dontMapEventToLabels": true,
