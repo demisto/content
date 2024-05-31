@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 # mypy: ignore-errors
 from copy import deepcopy
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 from datetime import datetime
 
@@ -159,6 +159,15 @@ TICKET_TYPE_TO_LIST_FORM = {
 }
 
 TICKET_TYPE_TO_DELETE_FORM = {
+    CHANGE_REQUEST: "CHG:Infrastructure Change",
+    INCIDENT: "HPD:Help Desk",
+    TASK: "TMS:Task",
+    PROBLEM_INVESTIGATION: "PBM:Problem Investigation",
+    KNOWN_ERROR: "PBM:Known Error",
+    WORK_ORDER: "WOI:WorkOrderInterface",
+}
+
+TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM = {
     CHANGE_REQUEST: "CHG:Infrastructure Change",
     INCIDENT: "HPD:Help Desk",
     TASK: "TMS:Task",
@@ -351,9 +360,8 @@ class Client(BaseClient):
         """
         integration_context = get_integration_context()
         now = int(datetime.now().timestamp())
-        if integration_context.get("token") and integration_context.get("expires_in"):
-            if now < integration_context["expires_in"]:
-                return integration_context["token"]
+        if integration_context.get("token") and integration_context.get("expires_in") and now < integration_context["expires_in"]:
+            return integration_context["token"]
 
         try:
             token = self._http_request(
@@ -409,6 +417,46 @@ class Client(BaseClient):
                                       f"arsys/v1/entry/{ticket_form}/{ticket_id}",
                                       resp_type="text")
         return response
+
+    def ticket_create_relationship_request(self, 
+            request_type01: str,
+            request_description01: str,
+            association_type01: str,
+            form_name01: str,
+            request_id01: str,
+            form_name02: str,
+            request_id02: str, 
+        ) -> str:
+        """
+        BmcITSM ticket relationship request.
+
+        Args:
+            ticket_form (str): The ticket form to delete by.
+            ticket_id (str): The ID of the ticket to delete.
+
+        Returns:
+            str: API respnse from BmcITSM.
+        """
+
+
+		data = {
+		  "values":{
+			"Request Type01" : request_type01,
+			"Request Description01": request_description01,
+			"Association Type01" : association_type01,
+			"Form Name01" : form_name01,
+			"Request ID01" : request_id01,
+			"Form Name02" : form_name02,
+			"Request ID02" : request_id02
+		  }
+		}
+        response = self._http_request("POST",
+                                      f"arsys/v1/entry/HPD:Associations",
+                                      json_data=data,
+                                      resp_type="text")
+
+
+        return f"Relationship between {request_id01} and {request_id02} is created"
 
     def create_service_request_request(
         self,
@@ -1349,7 +1397,7 @@ class Client(BaseClient):
             status (str): Ticket status.
             priority (str): Ticket priority.
             work_order_type (str): Work order type.
-            location_company (str): Company assoiciated with work order process.
+            location_company (str): Company associated with work order process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
 
@@ -1644,6 +1692,57 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
             error_results = CommandResults(readable_output=f"**{str(error)}**")
             commands_results.append(error_results)
     return commands_results
+
+
+def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """BmcITSM ticket delete command.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+
+    request_type01 = args.get("request_type01")
+    request_description01 = args.get("request_description01")
+    association_type01 = args.get("association_type01")
+    form_name01 = args.get("form_name01")
+    request_id01 = args.get("request_id01")
+    form_name02 = args.get("form_name02")
+    request_id02 = args.get("request_id02")
+    bidirectional = args.get("bidirectional")
+    res = client.ticket_create_relationship_request(
+        request_type01=request_type01,
+        request_description01=request_description01,
+        association_type01=association_type01,
+        form_name01=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name01],
+        request_id01=request_id01,
+        form_name02=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name02],
+        request_id02=request_id02,
+    )
+
+    if argToBoolean(bidirectional):
+        association_types = {
+            "Caused": "Caused by",
+            "Duplicate of": "Original of",
+            "Resolved": "Resolved by",
+        }
+        association_type01 = association_types.get(association_type01) or [k for k, v in association_types.items() if v == association_type01][0]
+
+                    
+        res = client.ticket_create_relationship_request(
+            request_type01=request_type01,
+            request_description01=request_description01,
+            association_type01=association_type01,
+            form_name01=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name02],
+            request_id01=request_id02,
+            form_name02=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name01],
+            request_id02=request_id01,
+        )
+        
+    return res
 
 
 def service_request_definition_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2914,7 +3013,7 @@ def get_paginated_records_with_hr(
     limit: Optional[int],
     page: int = None,
     page_size: int = None,
-) -> Tuple[list, str]:
+) -> tuple[list, str]:
     """
     Retrieve the required page either with Automatic or Manual pagination,
     and the matching readable output header.
@@ -2995,7 +3094,7 @@ def validate_related_arguments_provided(**related_args):
 
 
 def extract_args_from_additional_fields_arg(additional_fields: str,
-                                            field_name: str) -> Tuple[Any, List[str]]:
+                                            field_name: str) -> tuple[Any, List[str]]:
     """
     Extract dictionary structure from additional field argument.
 
@@ -3298,7 +3397,7 @@ def fetch_relevant_tickets(
     impact_filter: List[str],
     urgency_filter: List[str],
     custom_query: str,
-) -> Tuple[list, dict]:
+) -> tuple[list, dict]:
     """
     Fetch the relevant tickets according to the provided filter arguments.
     The Tickets are fetched Iteratively, by their ticket type until the capacity
@@ -3425,10 +3524,7 @@ def all_keys_empty(dict_obj: Dict[str, Any]) -> bool:
     Returns:
         bool: Wheter or not all keys have None value.
     """
-    for value in dict_obj.values():
-        if value:
-            return False
-    return True
+    return all(not value for value in dict_obj.values())
 
 
 def gen_multi_filters_statement(filter_mapper: Dict[str, Any], oper_in_filter: str,
@@ -3915,6 +4011,7 @@ def main() -> None:
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
             "bmc-itsm-ticket-delete": ticket_delete_command,
+            "bmc-itsm-ticket-create-relationship": ticket_create_relationship_command,
             "bmc-itsm-user-list": user_list_command,
             "bmc-itsm-company-list": company_list_command,
             "bmc-itsm-service-request-create": service_request_create_command,

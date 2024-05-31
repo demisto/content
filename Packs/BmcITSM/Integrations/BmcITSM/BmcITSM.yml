@@ -1,8 +1,8 @@
 commonfields:
-  id: BmcITSM
+  id: BmcITSM_dev
   version: -1
-name: BmcITSM
-display: BMC Helix ITSM
+name: BmcITSM_dev
+display: BMC Helix ITSM_dev
 category: Utilities
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
@@ -169,7 +169,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.92207
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
@@ -700,7 +700,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
       defaultValue: ""
-    - name: assigned_group
+    - name: assigned_support_group_name
       description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
       defaultValue: ""
     - name: assignee
@@ -767,6 +767,67 @@ script:
       - problem investigation
       - known error
       - work order
+    outputs: []
+  - name: bmc-itsm-ticket-create-relationship
+    description: Creates a relationship between two tickets.
+    arguments:
+    - name: request_type01
+      description: Request Type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Incident
+      - Asset
+      - Work order
+    - name: request_description01
+      description: Request Description
+      required: true
+    - name: association_type01
+      description: Association Type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Caused
+      - Caused by
+      - Duplicate of
+      - Original of
+      - Resolved
+      - Resolved by
+    - name: form_name01
+      description: Form Name
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+    - name: request_id01
+      description: Request ID
+      required: true
+    - name: form_name02
+      description: Form Name
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+    - name: request_id02
+      description: Request ID
+      required: true
+    - name: bidirectional
+      description: Request ID
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
     outputs: []
   - name: bmc-itsm-incident-create
     description: "Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service."
@@ -861,7 +922,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
       defaultValue: ""
-    - name: assigned_group
+    - name: assigned_support_group_name
       description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
       defaultValue: ""
     - name: assignee
@@ -1233,10 +1294,10 @@ script:
       description: The technical support team associated with the company.
       defaultValue: ""
     - name: assigned_support_organization
-      description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+      description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue:
-    - name: assigned_support_group
-      description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: assigned_support_group_name
+      description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue: ""
     - name: impact
       description: The task ticket impact.
@@ -1337,10 +1398,10 @@ script:
       description: The full name of the employee the ticket is assigned to. It can be retrieved by using the bmc-itsm-user-list command.
       defaultValue: ""
     - name: assigned_support_organization
-      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
+      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and assigned_support_company should be provided together.
       defaultValue:
-    - name: assigned_group
-      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: assigned_support_group_name
+      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue: ""
     - name: task_type
       description: "The task ticket type."
@@ -1456,13 +1517,13 @@ script:
       description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
       defaultValue: ""
     - name: assigned_support_company
-      description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together."
+      description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and assigned_support_company should be provided together."
       defaultValue: ""
     - name: assigned_support_organization
-      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
+      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and assigned_support_company should be provided together.
       defaultValue:
-    - name: assigned_group
-      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: assigned_support_group_name
+      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue: ""
     - name: investigation_justification
       description: The justification for the ticket creation.
@@ -1569,13 +1630,13 @@ script:
       description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
       defaultValue: ""
     - name: assigned_support_company
-      description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together."
+      description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and assigned_support_company should be provided together."
       defaultValue: ""
     - name: assigned_support_organization
-      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
+      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and assigned_support_company should be provided together.
       defaultValue:
-    - name: assigned_group
-      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: assigned_support_group_name
+      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_support_group_name, and support_company should be provided together.
       defaultValue: ""
     - name: investigation_justification
       description: The justification for the ticket creation.
@@ -1673,7 +1734,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure.
       defaultValue:
-    - name: assigned_group
+    - name: assigned_support_group_name
       description: The group for the problem assignee’s support organization. It makes up the third tier of the problem assignee’s support organization data structure.
       defaultValue: ""
     - name: investigation_justification
@@ -1775,7 +1836,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure.
       defaultValue:
-    - name: assigned_group
+    - name: assigned_support_group_name
       description: The group for the problem assignee’s support organization. It makes up the third tier of the problem assignee’s support organization data structure.
       defaultValue: ""
     - name: temporary_workaround
