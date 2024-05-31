@@ -3496,8 +3496,8 @@ Retrieves a list of log sources types.
 | QRadar.LogSourceTypesList.uuid | String | A UUID string of the log source type. | 
 | QRadar.LogSourceTypesList.version | String | The log source type plugin version. | 
 </details>
-<details><summary><h3 style="display: inline;">qradar-log-source-groups-list</h3></summary> 
 
+<details><summary><h3 style="display: inline;">qradar-log-source-groups-list</h3></summary> 
 ***
 Retrieves a list of log source languages.
 
@@ -3553,7 +3553,7 @@ Retrieves a list of event collectors.
 | QRadar.EventCollector.HostID | Number | The ID of the host on which this event collector process runs. | 
 | QRadar.EventCollector.ComponentName | String | The name of the component backing this event collector process. Also contained in the "name" field. | 
 | QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 
-
+ </details>
 
 
 
