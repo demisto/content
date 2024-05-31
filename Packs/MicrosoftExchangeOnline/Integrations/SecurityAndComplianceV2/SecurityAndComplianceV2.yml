@@ -1151,7 +1151,7 @@ script:
       - 'false'
   - arguments:
     - description: Identity of the policy to update.
-      name: Identity
+      name: identity
       required: true
     - description: Exchange locations to add to the policy.
       isArray: true
