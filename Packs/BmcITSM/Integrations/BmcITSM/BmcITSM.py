@@ -395,7 +395,7 @@ class Client(BaseClient):
             query (str): Query qualification.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         params = remove_empty_elements({"q": query})
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
@@ -410,7 +410,7 @@ class Client(BaseClient):
             ticket_id (str): The ID of the ticket to delete.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         response = self._http_request("DELETE",
@@ -431,11 +431,16 @@ class Client(BaseClient):
         BmcITSM ticket relationship request.
 
         Args:
-            ticket_form (str): The ticket form to delete by.
-            ticket_id (str): The ID of the ticket to delete.
+            request_type01 (str): The ticket type to create relationship.
+            request_description01 (str): The description of the relationship.
+            association_type01: The association type of the relationship. 
+            form_name01: The form name of the incident.
+            request_id01: The ID of the incident to create relationship.
+            form_name02: The form name of the incident.
+            request_id02: The ID of the incident to create relationship.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
 
@@ -484,7 +489,7 @@ class Client(BaseClient):
             status (str): Request status.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -550,7 +555,7 @@ class Client(BaseClient):
             status_reason (str): Reasin for status change.
 
             Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
 
         """
 
@@ -620,7 +625,7 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "First_Name": first_name,
@@ -707,7 +712,7 @@ class Client(BaseClient):
             status_reason (str): Reason for changing the status.
             resolution (str): Ticket resolution.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -780,7 +785,7 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "First Name": first_name,
@@ -864,7 +869,7 @@ class Client(BaseClient):
             region (str): Region.
             company (str): Company.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
 
 
         """
@@ -957,7 +962,7 @@ class Client(BaseClient):
             scedulded_end_date (str):  Schedulded end date.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1038,7 +1043,7 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1131,7 +1136,7 @@ class Client(BaseClient):
             first_name (str, optional): Requester first name. Defaults to None.
             last_name (str, optional): Request last name. Defaults to None.
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         action = "PROBLEM" if problem_type == PROBLEM_INVESTIGATION else "KNOWNERROR"
@@ -1239,7 +1244,7 @@ class Client(BaseClient):
             investigation_driver (str): Problem Investigation driver.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "First Name": first_name,
@@ -1328,7 +1333,7 @@ class Client(BaseClient):
             resolution (str): Resolution.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "Detailed Decription": details,
@@ -1402,7 +1407,7 @@ class Client(BaseClient):
             scedulded_end_date (str):  Schedulded end date.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1469,7 +1474,7 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1712,7 +1717,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
     request_id01 = args.get("request_id01")
     form_name02 = args.get("form_name02")
     request_id02 = args.get("request_id02")
-    bidirectional = args.get("bidirectional")
+    bidirectional = argToBoolean(args.get("bidirectional"))
     res = client.ticket_create_relationship_request(
         request_type01=request_type01,
         request_description01=request_description01,
@@ -1723,7 +1728,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
         request_id02=request_id02,
     )
 
-    if argToBoolean(bidirectional):
+    if bidirectional:
         association_types = {
             "Caused": "Caused by",
             "Duplicate of": "Original of",
@@ -1731,7 +1736,6 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
         }
         association_type01 = association_types.get(association_type01) or [k for k, v in association_types.items() if v == association_type01][0]
 
-                    
         res = client.ticket_create_relationship_request(
             request_type01=request_type01,
             request_description01=request_description01,
