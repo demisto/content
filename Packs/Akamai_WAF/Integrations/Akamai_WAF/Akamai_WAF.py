@@ -2942,7 +2942,8 @@ def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
     Returns:
         List of site shield maps
     """
-
+    entry_context = []
+    human_readable = []
     if raw_response:
         entry_context = raw_response.get('siteShieldMaps', [])
         human_readable = raw_response.get('siteShieldMaps', [])
@@ -5637,6 +5638,7 @@ def get_cps_enrollment_deployment_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')                                              
     return human_readable, context_entry, raw_response
 
 
@@ -5679,6 +5681,7 @@ def list_cidr_blocks_command(client: Client,
         t=raw_response,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')                                 
     return human_readable, context_entry, raw_response
 
 
@@ -5794,6 +5797,7 @@ def update_cps_enrollment_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')                                      
     return human_readable, context_entry, raw_response
 
 
@@ -5860,6 +5864,7 @@ def update_cps_enrollment_schedule_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')                                               
     return human_readable, context_entry, raw_response
 
 # Created by D.S.
@@ -5904,6 +5909,7 @@ def get_cps_change_status_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')                                      
     return human_readable, context_entry, raw_response
 
 
