@@ -1,6 +1,8 @@
 Collects alerts, devices and activities from Armis resources.
 This integration was integrated and tested with API V.1.8 of Armis API.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Armis Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
