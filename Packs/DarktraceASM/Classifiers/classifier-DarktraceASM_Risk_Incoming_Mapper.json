@@ -178,6 +178,5 @@
     "id": "Darktrace ASM Risk Mapper",
     "type": "mapping-incoming",
     "fromVersion": "6.6.0",
-	"transformer": {},
 	"version": -1
 }
