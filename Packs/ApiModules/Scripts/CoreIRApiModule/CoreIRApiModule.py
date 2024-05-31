@@ -213,7 +213,6 @@ class CoreClient(BaseClient):
                                             error_handler=error_handler,
                                             with_metrics=with_metrics,
                                             resp_type=resp_type)
-        address = urljoin(self._base_url, url_suffix)
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
@@ -221,9 +220,9 @@ class CoreClient(BaseClient):
             method=method,
             path=address,
             data=data,
-            headers=self._headers,
+            headers=headers,
             timeout=timeout
-        )  # type: ignore
+        )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         return json.loads(response['data'])
