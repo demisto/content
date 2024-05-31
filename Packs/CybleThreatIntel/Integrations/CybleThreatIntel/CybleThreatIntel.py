@@ -13,6 +13,7 @@ from datetime import datetime
 from dateutil import parser
 from typing import *
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -92,26 +93,29 @@ class Client(object):
                     break
             multi_data = True
             try:
-                data = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
-                if not data:
-                    data = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
+                data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
+                if not data_r:
+                    data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
             except Exception:
                 try:
-                    data = self.get_recursively(eachres['observables']['observables'][0], 'value')
+                    data_r = self.get_recursively(eachres['observables']['observables'][0], 'value')
                 except Exception:
                     demisto.debug(f'Found indicator without observable field: {eachres}')
                     continue
 
+            if not data_r:
+                continue
+
             if multi_data:
                 ind_val = {}
-                for eachindicator in data:
+                for eachindicator in data_r:
                     typeval = auto_detect_indicator_type(eachindicator)
                     indicator_obj['type'] = typeval
                     if typeval:
                         ind_val[typeval] = eachindicator
 
-                if len(data) == 1:
-                    indicator_obj['value'] = str(data[0])
+                if len(data_r) == 1:
+                    indicator_obj['value'] = str(data_r[0])
                 elif indicator_obj['type'] in list(ind_val.keys()):
                     indicator_obj['value'] = str(ind_val[indicator_obj['type']])
                 elif len(ind_val) != 0:
@@ -164,7 +168,8 @@ class Client(object):
                 elif response.get('ttps') or False:
                     content = response.get('ttps').get('ttps')
                 else:
-                    raise ValueError("Last fetch time retrieval failed.")
+                    continue
+                    # raise ValueError("Last fetch time retrieval failed.")
 
                 for eachone in content:
                     if eachone.get('confidence'):
