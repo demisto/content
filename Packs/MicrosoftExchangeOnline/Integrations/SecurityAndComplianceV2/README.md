@@ -1383,7 +1383,7 @@ Update inputs for case hold policies
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Identity | Identity of the policy to update. | Required | 
+| identity | Identity of the policy to update. | Required | 
 | add_exchange_locations | Exchange locations to add to the policy. | Optional | 
 | add_sharepoint_locations | Sharepoint locations to add to the policy. | Optional | 
 | add_public_locations | Public locations to add to the policy. | Optional | 
