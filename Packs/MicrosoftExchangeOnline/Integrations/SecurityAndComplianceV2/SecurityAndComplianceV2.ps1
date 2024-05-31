@@ -1875,7 +1875,7 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     $remove_sharepoint_locations = ArgToList $kwargs.remove_sharepoint_locations
     $remove_public_locations = ArgToList $kwargs.remove_public_locations
 
-    $client.CaseHoldPolicySet($kwargs.Identity, $enabled, $add_exchange_locations,
+    $client.CaseHoldPolicySet($kwargs.identity, $enabled, $add_exchange_locations,
                                 $add_sharepoint_locations, $add_public_locations, $remove_exchange_locations,
                                 $remove_sharepoint_locations, $remove_public_locations, $kwargs.comment)
 
