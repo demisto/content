@@ -223,7 +223,7 @@ class CoreClient(BaseClient):
             data=data,
             headers=self._headers,
             timeout=timeout
-        )
+        )  # type: ignore
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         return json.loads(response['data'])
