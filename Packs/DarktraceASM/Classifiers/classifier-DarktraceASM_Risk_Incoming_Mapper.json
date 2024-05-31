@@ -34,7 +34,7 @@
 						]
 					}
 				},
-				"Darktrace ASM Asset ID ": {
+				"DarktraceASM Asset ID ": {
 					"complex": {
 						"accessor": "id",
 						"filters": [],
@@ -42,7 +42,7 @@
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Asset Security Rating ": {
+				"DarktraceASM Asset Security Rating ": {
 					"complex": {
 						"accessor": "securityrating",
 						"filters": [],
@@ -50,7 +50,7 @@
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Asset State": {
+				"DarktraceASM Asset State": {
 					"complex": {
 						"accessor": "state",
 						"filters": [],
@@ -58,7 +58,7 @@
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Asset Updated Time": {
+				"DarktraceASM Asset Updated Time": {
 					"complex": {
 						"filters": [],
 						"root": "asset.updatedAt",
@@ -76,21 +76,21 @@
 						]
 					}
 				},
-				"Darktrace ASM Asset is Malicious": {
+				"DarktraceASM Asset is Malicious": {
 					"complex": {
 						"filters": [],
 						"root": "asset.isMalicious",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk Description": {
+				"DarktraceASM Risk Description": {
 					"complex": {
 						"filters": [],
 						"root": "description",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk End Time": {
+				"DarktraceASM Risk End Time": {
 					"complex": {
 						"filters": [],
 						"root": "endedAt",
@@ -108,35 +108,35 @@
 						]
 					}
 				},
-				"Darktrace ASM Risk Evidence": {
+				"DarktraceASM Risk Evidence": {
 					"complex": {
 						"filters": [],
 						"root": "evidence",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk ID": {
+				"DarktraceASM Risk ID": {
 					"complex": {
 						"filters": [],
 						"root": "id",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk Proposed Action ": {
+				"DarktraceASM Risk Proposed Action ": {
 					"complex": {
 						"filters": [],
 						"root": "proposedAction",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk Security Rating": {
+				"DarktraceASM Risk Security Rating": {
 					"complex": {
 						"filters": [],
 						"root": "securityRating",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk Start Time": {
+				"DarktraceASM Risk Start Time": {
 					"complex": {
 						"filters": [],
 						"root": "startedAt",
@@ -154,14 +154,14 @@
 						]
 					}
 				},
-				"Darktrace ASM Risk Title": {
+				"DarktraceASM Risk Title": {
 					"complex": {
 						"filters": [],
 						"root": "title",
 						"transformers": []
 					}
 				},
-				"Darktrace ASM Risk Type": {
+				"DarktraceASM Risk Type": {
 					"complex": {
 						"filters": [],
 						"root": "type",
