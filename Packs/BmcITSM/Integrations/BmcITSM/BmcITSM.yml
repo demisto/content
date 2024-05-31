@@ -1,8 +1,8 @@
 commonfields:
-  id: BmcITSM_dev
+  id: BmcITSM
   version: -1
-name: BmcITSM_dev
-display: BMC Helix ITSM_dev
+name: BmcITSM
+display: BMC Helix ITSM
 category: Utilities
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:

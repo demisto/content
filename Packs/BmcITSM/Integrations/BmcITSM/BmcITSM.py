@@ -425,7 +425,7 @@ class Client(BaseClient):
             form_name01: str,
             request_id01: str,
             form_name02: str,
-            request_id02: str, 
+            request_id02: str,
         ) -> str:
         """
         BmcITSM ticket relationship request.
@@ -433,7 +433,7 @@ class Client(BaseClient):
         Args:
             request_type01 (str): The ticket type to create relationship.
             request_description01 (str): The description of the relationship.
-            association_type01: The association type of the relationship. 
+            association_type01: The association type of the relationship.
             form_name01: The form name of the incident.
             request_id01: The ID of the incident to create relationship.
             form_name02: The form name of the incident.
@@ -444,17 +444,17 @@ class Client(BaseClient):
         """
 
 
-		data = {
-		  "values":{
-			"Request Type01" : request_type01,
-			"Request Description01": request_description01,
-			"Association Type01" : association_type01,
-			"Form Name01" : form_name01,
-			"Request ID01" : request_id01,
-			"Form Name02" : form_name02,
-			"Request ID02" : request_id02
-		  }
-		}
+        data = {
+          "values":{
+            "Request Type01" : request_type01,
+            "Request Description01": request_description01,
+            "Association Type01" : association_type01,
+            "Form Name01" : form_name01,
+            "Request ID01" : request_id01,
+            "Form Name02" : form_name02,
+            "Request ID02" : request_id02
+          }
+        }
         response = self._http_request("POST",
                                       f"arsys/v1/entry/HPD:Associations",
                                       json_data=data,
@@ -1734,7 +1734,8 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             "Duplicate of": "Original of",
             "Resolved": "Resolved by",
         }
-        association_type01 = association_types.get(association_type01) or [k for k, v in association_types.items() if v == association_type01][0]
+        association_type01 = association_types.get(association_type01) or 
+            [k for k, v in association_types.items() if v == association_type01][0]
 
         res = client.ticket_create_relationship_request(
             request_type01=request_type01,
