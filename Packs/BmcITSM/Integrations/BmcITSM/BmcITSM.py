@@ -418,15 +418,15 @@ class Client(BaseClient):
                                       resp_type="text")
         return response
 
-    def ticket_create_relationship_request(self, 
-            request_type01: str,
-            request_description01: str,
-            association_type01: str,
-            form_name01: str,
-            request_id01: str,
-            form_name02: str,
-            request_id02: str,
-        ) -> str:
+    def ticket_create_relationship_request(self,
+                                           request_type01: str,
+                                           request_description01: str,
+                                           association_type01: str,
+                                           form_name01: str,
+                                           request_id01: str,
+                                           form_name02: str,
+                                           request_id02: str,
+                                           ) -> str:
         """
         BmcITSM ticket relationship request.
 
@@ -443,23 +443,21 @@ class Client(BaseClient):
             str: API response from BmcITSM.
         """
 
-
         data = {
-          "values":{
-            "Request Type01" : request_type01,
-            "Request Description01": request_description01,
-            "Association Type01" : association_type01,
-            "Form Name01" : form_name01,
-            "Request ID01" : request_id01,
-            "Form Name02" : form_name02,
-            "Request ID02" : request_id02
-          }
+            "values": {
+                "Request Type01": request_type01,
+                "Request Description01": request_description01,
+                "Association Type01": association_type01,
+                "Form Name01": form_name01,
+                "Request ID01": request_id01,
+                "Form Name02": form_name02,
+                "Request ID02": request_id02
+            }
         }
-        response = self._http_request("POST",
-                                      f"arsys/v1/entry/HPD:Associations",
-                                      json_data=data,
-                                      resp_type="text")
-
+        self._http_request("POST",
+                           "arsys/v1/entry/HPD:Associations",
+                           json_data=data,
+                           resp_type="text")
 
         return f"Relationship between {request_id01} and {request_id02} is created"
 
@@ -1734,7 +1732,8 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             "Duplicate of": "Original of",
             "Resolved": "Resolved by",
         }
-        association_type01 = association_types.get(association_type01) or [k for k, v in association_types.items() if v == association_type01][0]
+        association_type01 = association_types.get(association_type01) or [
+            k for k, v in association_types.items() if v == association_type01][0]
 
         res = client.ticket_create_relationship_request(
             request_type01=request_type01,
@@ -1745,7 +1744,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             form_name02=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name01],
             request_id02=request_id01,
         )
-        
+
     return res
 
 
