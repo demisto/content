@@ -1,0 +1,145 @@
+category: Utilities
+commonfields:
+  id: FTP
+  version: -1
+configuration:
+- display: ""
+  name: host
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  name: user
+  required: false
+  section: Collect
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: passwd
+  required: true
+  section: Connect
+  type: 4
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: 'FTP integration to download or upload file to remote ftp server. Please be noted that FTP transfer is insecure. Please use it with care. '
+detaileddescription: "### Community Contributed Integration\n#### Integration Author: Jie Liau\nNo support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).\n\nPlease be noted that FTP transfer is insecure. Please use it with care. "
+display: FTP
+image: 
+  data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABLCAYAAACoXQMlAAAKtWlDQ1BJQ0MgUHJvZmlsZQAASImVlwdUk9kSgO//p4eEAAmhQ+hNkE4AKaEHUJAOohKSAKGEGAgqWJHFFVhRRKSpC7oKouBaAFkrolhRbNg3yCKgrosFLKi8HzgEd9957503/7nnfv/8c2fm3nMnZwIAmcYRidJgBQDShVniUD9PRnRMLAM3BDBAB5CBITDlcDNFrJCQIIDIzPx3GbsHoMn5tsWkr3///l9FkcfP5AIAhSCcwMvkpiN8DBmvuSJxFgCovYhef3mWaJIvIUwTIwki/HiSk6Z5ZJITphiNnrIJD/VCWBUAPInDEScBQDJA9IxsbhLih+SNsJWQJxAijLwDt/T0DB7CSFxggtiIEJ70z0z4zk/S33wmyHxyOEkynt7LlOC9BZmiNM7K//M4/rekp0lmYhghg5Qs9g9FZjpyZvdTMwJlLExYEDzDAt6U/RQnS/wjZpib6RU7wzyOd6BsbdqCoBlOFPiyZX6y2OEzzM/0CZthcUaoLFai2Is1wxzxbFxJaoRMn8xny/znJIdHzXC2IHLBDGemhgXO2njJ9GJJqCx/vtDPczaur2zv6Znf7VfAlq3NSg73l+2dM5s/X8ia9ZkZLcuNx/f2mbWJkNmLsjxlsURpITJ7fpqfTJ+ZHSZbm4VcyNm1IbIzTOEEhMww8AY+IAh5GCAE2AI7YAOsAXIyWfwVk3cUeGWIVooFSclZDBZSZXwGW8i1nMOwsbKxA2CyZqevxLvQqVqE6KdndRlIDTHHkDrZOqtLKAOgtQAA1YezOoNdAFDyAWjp4ErE2dO6yXJCfguIgAJoQA1oA31gAiyQ3ByAC/BAMg4AwSAcxIAlgAuSQToQg+VgFVgPCkAR2AK2gyqwG+wB9eAQOAJawUlwDlwEV8FNcBc8AlIwAF6CETAGxiEIwkFkiAqpQTqQIWQO2UBMyA3ygYKgUCgGioeSICEkgVZBG6AiqBSqgmqhBuhX6AR0DroM9UAPoD5oGHoLfYZRMAmmwVqwETwXZsIsOBAOhxfDSfAyOAfOhzfDFXAdfBBugc/BV+G7sBR+CY+iAEoORUfpoixQTJQXKhgVi0pEiVFrUIWoclQdqgnVjupC3UZJUa9Qn9BYNBXNQFugXdD+6Ag0F70MvQZdjK5C16Nb0J3o2+g+9Aj6G4aM0cSYY5wxbEw0JgmzHFOAKcfswxzHXMDcxQxgxrBYLB1rjHXE+mNjsCnYXGwxdie2GXsW24Ptx47icDg1nDnOFReM4+CycAW4StxB3BncLdwA7iNeDq+Dt8H74mPxQnwevhx/AH8afws/iB8nKBAMCc6EYAKPsJJQQthLaCfcIAwQxomKRGOiKzGcmEJcT6wgNhEvEB8T38nJyenJOcktlBPIrZOrkDssd0muT+4TSYlkRvIixZEkpM2k/aSzpAekd2Qy2YjsQY4lZ5E3kxvI58lPyR/lqfKW8mx5nvxa+Wr5Fvlb8q8pBIohhUVZQsmhlFOOUm5QXikQFIwUvBQ4CmsUqhVOKPQqjCpSFa0VgxXTFYsVDyheVhxSwikZKfko8ZTylfYonVfqp6Ko+lQvKpe6gbqXeoE6QMPSjGlsWgqtiHaI1k0bUVZStlOOVF6hXK18SllKR9GN6Gx6Gr2EfoR+j/5ZRUuFpcJX2aTSpHJL5YOqhqqHKl+1ULVZ9a7qZzWGmo9aqtpWtVa1J+podTP1herL1XepX1B/pUHTcNHgahRqHNF4qAlrmmmGauZq7tG8pjmqpa3lpyXSqtQ6r/VKm67toZ2iXaZ9WntYh6rjpiPQKdM5o/OCocxgMdIYFYxOxoiupq6/rkS3Vrdbd1zPWC9CL0+vWe+JPlGfqZ+oX6bfoT9ioGMw32CVQaPBQ0OCIdMw2XCHYZfhByNjoyijjUatRkPGqsZs4xzjRuPHJmQTd5NlJnUmd0yxpkzTVNOdpjfNYDN7s2SzarMb5rC5g7nAfKd5zxzMHKc5wjl1c3otSBYsi2yLRos+S7plkGWeZavl67kGc2Pnbp3bNfeblb1VmtVeq0fWStYB1nnW7dZvbcxsuDbVNndsyba+tmtt22zf2Jnb8e122d23p9rPt99o32H/1cHRQezQ5DDsaOAY71jj2MukMUOYxcxLThgnT6e1TiedPjk7OGc5H3H+y8XCJdXlgMvQPON5/Hl75/W76rlyXGtdpW4Mt3i3n92k7rruHPc692ce+h48j30egyxTVgrrIOu1p5Wn2PO45wcvZ6/VXme9Ud5+3oXe3T5KPhE+VT5PffV8k3wbfUf87P1y/c76Y/wD/bf697K12Fx2A3skwDFgdUBnICkwLLAq8FmQWZA4qH0+PD9g/rb5jxcYLhAuaA0GwezgbcFPQoxDloX8thC7MGRh9cLnodahq0K7wqhhS8MOhI2Fe4aXhD+KMImQRHREUiLjIhsiP0R5R5VGSaPnRq+OvhqjHiOIaYvFxUbG7osdXeSzaPuigTj7uIK4e4uNF69YfHmJ+pK0JaeWUpZylh6Nx8RHxR+I/8IJ5tRxRhPYCTUJI1wv7g7uS54Hr4w3zHfll/IHE10TSxOHklyTtiUNJ7snlye/EngJqgRvUvxTdqd8SA1O3Z86kRaV1pyOT49PPyFUEqYKOzO0M1Zk9IjMRQUi6TLnZduXjYgDxfsyoczFmW1ZNKQ5uiYxkfwg6ct2y67O/rg8cvnRFYorhCuurTRbuWnlYI5vzi+56Fxubscq3VXrV/WtZq2uXQOtSVjTsVZ/bf7agXV+6+rXE9enrr+eZ5VXmvd+Q9SG9nyt/HX5/T/4/dBYIF8gLujd6LJx94/oHwU/dm+y3VS56Vshr/BKkVVRedGXYm7xlZ+sf6r4aWJz4ubuEoeSXVuwW4Rb7m1131pfqliaU9q/bf62ljJGWWHZ++1Lt18utyvfvYO4Q7JDWhFU0VZpULml8ktVctXdas/q5hrNmk01H3bydt7a5bGrabfW7qLdn38W/Hy/1q+2pc6ornwPdk/2nud7I/d2/cL8pWGf+r6ifV/3C/dL60PrOxscGxoOaB4oaYQbJY3DB+MO3jzkfaityaKptpneXHQYHJYcfvFr/K/3jgQe6TjKPNp0zPBYzXHq8cIWqGVly0hrcqu0Laat50TAiY52l/bjv1n+tv+k7snqU8qnSk4TT+efnjiTc2b0rOjsq3NJ5/o7lnY8Oh99/k7nws7uC4EXLl30vXi+i9V15pLrpZOXnS+fuMK80nrV4WrLNftrx6/bXz/e7dDdcsPxRttNp5vtPfN6Tt9yv3Xutvfti3fYd67eXXC3517Evfu9cb3S+7z7Qw/SHrx5mP1w/NG6x5jHhU8UnpQ/1Xxa97vp781SB+mpPu++a8/Cnj3q5/a//CPzjy8D+c/Jz8sHdQYbhmyGTg77Dt98sejFwEvRy/FXBX8q/lnz2uT1sb88/ro2Ej0y8Eb8ZuJt8Tu1d/vf273vGA0ZfTqWPjb+ofCj2sf6T8xPXZ+jPg+OL/+C+1Lx1fRr+7fAb48n0icmRBwxZ6oVQCEDTkwE4O1+AMgxAFBvAkBcNN1TTwk0/T9gisB/4um+e0ocANjTC0B4LgBB1wGorEJaWsQ/JQ6AEAqidwGwra1szPS/U736pCgcBKC23prJCnrK/fgE/EOm+/jv8v7nDCa92oF/zv8CCEgJzxETE8oAAABWZVhJZk1NACoAAAAIAAGHaQAEAAAAAQAAABoAAAAAAAOShgAHAAAAEgAAAESgAgAEAAAAAQAAAHCgAwAEAAAAAQAAAEsAAAAAQVNDSUkAAABTY3JlZW5zaG90PoEqfQAAAdVpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDYuMC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NzU8L2V4aWY6UGl4ZWxZRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MTEyPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6VXNlckNvbW1lbnQ+U2NyZWVuc2hvdDwvZXhpZjpVc2VyQ29tbWVudD4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CkwWf2gAAAQvSURBVHgB7Zy7SiRBFIbPrAveLwyIF/CCiCCiMCCiiBgaaGJgZGCgbyAIvoSpoIGmPoOBaDBoIBgohgZqIJgYKN7dOb269Cw1TnfV6aou+QsaZ6rr/OfU/03PVF8w81FohOatA7+8rRyFBw4AoOcfBAAEQM8d8Lx8HIEA6LkDnpePIxAAPXfA8/JxBAKg5w54Xj6OQAD03AHPy/+dRP2bm5u0v78vJj0+Pk59fX20tbUlpllKaGhoiFZWVoLdceeRyWSosrIy2Kqqqoi3lpYW6uzspK6uLurv7w/6SuXW6U8EIN/geH9/16lHGcN60prKRIXOcN06OR8eHoi3r3ZxcUGHh4fBWwY6MTFBMzMz1Nzc/DXE6C9+A43sixf8+PhIu7u7tLq6SsfHx/GCS4wGwBLGJNnNR+ja2hqdn58bpwFAYwv1BPjreX19nV5eXvQEPqMA0Mg+s+Db21s6OTkxEgFAI/vMg4+OjoxEANDIvuLgmpoaqqioKO4s8+76+rrMiO93J3Ia8X3Kn7t3cXGRRkdH6erqira3tyMtUm5ubowMSQXAubk5GhwcLDmR+vp6qq6upu7ubuWYs7Mz2tnZUe5TdeZyOZqdnVXtotraWmV/1E4+me/o6KClpSVaXl4uG8anFk9PT8HJf9nBigGpANja2kq9vb2K8oq7Ghoaijs+3/FiIE5jnSj54mj+P7atrS2AwnDKNV6J8hUcnYbfQB3XIsY0NjZGGvn8/BxpnGoQAKpcEeqLuqB5fX3VzgiA2tbJBb69vWmLAaC2dekIBMAEOYTvbCSVBgCTcrage39/n6D6X+lUnEbwUjt8Dy08a14I6C6xwzq2X/OcogI0mV8qAG5sbBBvqsYn+Hz/zLeWz+eDm9BR6uZLcLotFQB1i09b3OnpKd3d3dHl5SUdHBxEKu/rMYxIgxWDAFBhim7X3t5e7FC+dMcQdRsWMbrOCcWZXtIDQCEQujIDAwO6oUEcABrZZxbMT6mNjIwYiQCgkX1mwQsLC8aPF2IRY8ZAK7quro7m5+dpcnJSKz4clAqAPT09lM1mw3X9e81PNP+ExitNngvfTJ6amqJS9zbjzjUVAKenp2lsbCxu7akbz3Pgx+i5MTA+QeenCXhrb2+npqYm8ZpTAVB8Vo4Eh4eHrX8QsYhxBFsqLQBKOelIBwAdGS+VFgClnHSkA4COjJdKC4BSTjrSAUBHxkulBUApJx3pAKAj46XSAqCUk450ANCR8VJpAVDKSUc6AOjIeKm0ACjlpCMdAHRkvFRaAJRy0pEOADoyXiptpvAfgz6kxKBj3wEcgfY9F80IgKJ22hcDQPuei2YEQFE77YsBoH3PRTMCoKid9sUA0L7nohkBUNRO+2IAaN9z0YwAKGqnfTEAtO+5aEYAFLXTvhgA2vdcNCMAitppXwwA7XsumvEP+rnEgclxftAAAAAASUVORK5CYII=
+name: FTP
+script:
+  commands:
+  - arguments:
+    - description: The path to list.
+      name: path
+    description: List all the files under current folder.
+    name: ftp-ls
+  - arguments:
+    - name: entry_id
+      required: true
+    - name: target
+      required: true
+    description: Upload file to ftp server.
+    name: ftp-put
+  - arguments:
+    - name: file_path
+      required: true
+    - name: file_name
+      required: true
+    description: Download file from ftp server.
+    name: ftp-get
+  dockerimage: demisto/python3:3.10.14.96411
+  runonce: false
+  script: |-
+    """ IMPORT """
+
+    from ftplib import FTP
+
+    """ MAIN """
+
+    def main():
+        HOST = demisto.params().get('host')
+        USER =  demisto.params().get('user')
+        PASSWD = demisto.params().get('passwd')
+
+        if demisto.command() == "test-module":
+            try:
+                with FTP(HOST) as ftp:
+                    ftp.login(user=USER, passwd=PASSWD)
+                    ftp.voidcmd('NOOP')
+
+                demisto.results("ok")
+            except Exception as excp:
+                demisto.error(traceback.format_exc())
+                return_error(f"Error occurred - Error: {str(excp)}")
+
+        if demisto.command() == "ftp-ls":
+            path = demisto.args().get('path')
+            list_path = path if path else '~/'
+            try:
+                with FTP(HOST) as ftp:
+                    ftp.login(user=USER, passwd=PASSWD)
+                    demisto.results({
+                        'ContentsFormat': formats["markdown"],
+                        'Type': entryTypes["note"],
+                        'ReadableContentsFormat': formats['markdown'],
+                        'Contents': ftp.nlst(f"{list_path}"),
+                        'HumanReadable': tableToMarkdown("Files and Folders", {'Files and Folders': ftp.nlst(f'{list_path}')})
+                    })
+
+            except Exception as excp:
+                demisto.error(traceback.format_exc())
+                return_error(f"Error occurred - Error: {str(excp)}")
+
+        if demisto.command() == "ftp-put":
+            entry_id = demisto.args().get('entry_id')
+            target = demisto.args().get('target')
+
+            try:
+                with FTP(HOST) as ftp:
+                    ftp.login(user=USER, passwd=PASSWD)
+                    fileObject = demisto.getFilePath(entry_id)
+                    with open(fileObject['path'], 'rb') as file:
+                        ftp.storbinary(f'STOR {target}/{fileObject["name"]}', file)
+
+                demisto.results(f'File uploaded to {target}/{fileObject["name"]} successfully')
+
+            except Exception as excp:
+                demisto.error(traceback.format_exc())
+                return_error(f"Error occurred - Error: {str(excp)}")
+
+        if demisto.command() == "ftp-get":
+            file_path = demisto.args().get('file_path')
+            file_name = demisto.args().get('file_name')
+
+            try:
+                with FTP(HOST) as ftp:
+                    ftp.login(user=USER, passwd=PASSWD)
+                    with open(f'/tmp/{file_name}', 'wb') as file:
+                        ftp.retrbinary(f'RETR {file_path}/{file_name}', file.write)
+
+                    with open(f"/tmp/{file_name}", "r") as f:
+                        data = f.read()
+                        demisto.results(
+                            fileResult(filename = file_name, data = data)
+                        )
+
+            except Exception as excp:
+                demisto.error(traceback.format_exc())
+                return_error(f"Error occurred - Error: {str(excp)}")
+
+
+
+
+    if __name__ in ("__main__", "__builtin__", "builtins"):
+        main()
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
