@@ -20,7 +20,6 @@ def creating_info_jason(file_path: str, image_link: str, folder_path, pack):
     image_details = {
         'file_path': file_path,
         'image_link': image_link,
-        'image_type': 'README' if 'README' in file_path else 'DESCRIPTION'
     }
     json_path = file_path[file_path.rfind(pack) + len(pack)+1:-3]
     with open(f'{folder_path}/{json_path}.json', "a") as json_file:
@@ -33,10 +32,8 @@ def extract_image_link(lines, final_dst_image_path, original_file_path):
     for i, line in enumerate(lines):
         if res := re.search(URL_IMAGE_LINK_REGEX, line):
             url = res.group(0)
-            parse_url = urlparse(url)
-            url_path = Path(parse_url.path)
-            image_name = url_path.name
-            new_url = os.path.join(final_dst_image_path, image_name)
+            # parse_url = urlparse(url)
+            # url_path = Path(parse_url.path)
             urls_list.append(url)
     return urls_list
 
@@ -70,6 +67,7 @@ def search_image_links(file_path):
         Then, it creates a folder to save the images and downloads each image to the folder.
         The folder name is derived from the file name by removing the extension and appending it to the specified path 'SAVING_IMAGES_AT'.
     '''
+    images_counter = 0
     with open(file_path, encoding='utf-8') as file:
         file_lines = file.readlines()
         pack_name = re.search(r'/Packs/([^/]+)/', file_path).group(1)
@@ -80,26 +78,36 @@ def search_image_links(file_path):
                 for image_link in image_links:
                     creating_info_jason(file_path, image_link, folder_path, pack_name)
                     download_image_to_folder(folder_path, image_link)
+                    images_counter += 1
+                return images_counter
             except OSError as error:
                 print(error)
 
 
-
-
-
 def search_files(root_path):
     readme_paths_links = list(Path(root_path).rglob("README.md"))
-    description_paths_links = list(Path(root_path).rglob("description.md"))
-
+    description_paths_links = list(Path(root_path).rglob("*description.md"))
+    images_readme_information = {}
+    images_description_information = {}
     for link in readme_paths_links:
-        search_image_links(str(link))
+        counter_images_readme = search_image_links(str(link))
+        if counter_images_readme:
+            images_readme_information[link] = counter_images_readme
 
     for link in description_paths_links:
-        search_image_links(str(link))
+        counter_description_readme = search_image_links(str(link))
+        if counter_description_readme:
+            images_description_information[link] = counter_description_readme
+
+    with open('/Users/mmorag/dev/demisto/content/Packs/doc_files/readme_images_info.json', "a") as json_file:
+        json_file.write(json.dumps(images_readme_information))
+
+    with open('/Users/mmorag/dev/demisto/content/Packs/doc_files/description_images_info.json', "a") as json_file:
+        json_file.write(json.dumps(images_description_information))
 
 
 def main():
-    path = '/Users/mmorag/dev/demisto/content/Packs/Campaign'
+    path = '/Users/mmorag/dev/demisto/content/Packs/CortexAttackSurfaceManagement'
     search_files(path)
 
 
