@@ -834,6 +834,7 @@ def get_message_for_body_type(body, body_type, html_body):
         return HTMLBody(html_body), attachments, file_results
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments, file_results
 
+
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=None, from_mailbox=None):  # pragma: no cover
     if attachments is None:
