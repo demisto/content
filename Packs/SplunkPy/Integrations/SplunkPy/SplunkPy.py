@@ -1084,7 +1084,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
 
             try:
-                parsed_query_name = build_drilldown_search(notable_data, query_name, raw_dict)
+                parsed_query_name = build_drilldown_search(notable_data, query_name, raw_dict, True)
                 if not parsed_query_name:  # if parsing failed - keep original unparsed name
                     demisto.debug(
                         f'Failed parsing drilldown search query name, using the original '
