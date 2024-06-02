@@ -1,0 +1,198 @@
+id: CSCDomainManager_Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CSCDomainManager_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd9e757a-7772-4460-83ed-aa77156bdae0
+    type: start
+    task:
+      id: fd9e757a-7772-4460-83ed-aa77156bdae0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0a19db37-a259-47db-8142-8effb8ff9795
+    type: regular
+    task:
+      id: 0a19db37-a259-47db-8142-8effb8ff9795
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 24679e17-4d23-41f0-8684-3020402e4ca6
+    type: regular
+    task:
+      id: 24679e17-4d23-41f0-8684-3020402e4ca6
+      version: -1
+      name: csc-domains-search
+      description: Gets the domains by the applied filters
+      script: CSCDomainManager|||csc-domains-search
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain_name:
+        simple: csc-panw.biz
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e60c0120-409a-4adb-8646-dc9a4c35b1ee
+    type: condition
+    task:
+      id: e60c0120-409a-4adb-8646-dc9a4c35b1ee
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CSCDomainManager.Domain.QualifiedDomainName
+            iscontext: true
+          right:
+            value:
+              simple: csc-panw.biz
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 253ece94-5c08-466f-8e55-7b8ff6c4c160
+    type: regular
+    task:
+      id: 253ece94-5c08-466f-8e55-7b8ff6c4c160
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 480,
+        "y": -20
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true

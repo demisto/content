@@ -43,7 +43,7 @@ configuration:
   type: 8
   required: false
 description: CSCDomainManager
-display: CSCDomainManager 
+display: CSCDomainManager
 name: CSCDomainManager
 script:
   commands:
@@ -51,7 +51,7 @@ script:
     - description: domain name to filter by, can start with like=, in=
       name: domain_name
       required: false
-    - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024 
+    - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024
       name: registration_date
       required: false
     - description: email to filter by, can start with like=, in=
@@ -60,19 +60,19 @@ script:
     - description: organization to filter by, can start with like=, in=
       name: organization
       required: false
-    - description: registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024 
+    - description: registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024
       name: registry_expiry_date
       required: false
-    - description: can write your own filter according to ? #TODO
+    - description: can write your own filter according to ?
       name: filter
       required: false
-    - description: sorting the output by ? #TODO
+    - description: sorting the output by ?
       name: sort
       required: false
-    - description: first page to show ? #TODO
+    - description: first page to show ?
       name: page
       required: false
-    - description: the size of rows in a page 
+    - description: the size of rows in a page
       name: page_size
       required: false
     - description: the limit of rows
@@ -81,91 +81,378 @@ script:
     description: Gets the domains by the applied filters
     name: csc-domains-search
     outputs:
-
+    - contextPath: CSCDomainManager.Domain.qualifiedDomainName
+      description: the qualified domain name
+      type: String
+    - contextPath: CSCDomainManager.Domain.domain
+      description: the domain
+      type: String
+    - contextPath: CSCDomainManager.Domain.managedStatus
+      description: the managed status
+      type: String
+    - contextPath: CSCDomainManager.Domain.registrationDate
+      description: the registration date
+      type: String
+    - contextPath: CSCDomainManager.Domain.registryExpiryDate
+      description: the registry expiry date
+      type: String
+    - contextPath: CSCDomainManager.Domain.paidThroughDate
+      description: paid through date
+      type: String
+    - contextPath: CSCDomainManager.Domain.nameServers
+      description: servers names
+      type: String
+    - contextPath: CSCDomainManager.Domain.dnsType
+      description: dns type
+      type: String
+    - contextPath: CSCDomainManager.Domain.account.accountName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.account.accountNumber
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.brandName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.businessUnit
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.countryCode
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.criticalDomain
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.customFields.name
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.customFields.value
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.dnssecActivated
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.extension
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.idn
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.idnReferenceName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.lastModifiedDate
+      description: ''
+      type: Date
+    - contextPath: CSCDomainManager.Domain.lastModifiedDescription
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.lastModifiedReason
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.localAgent
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.newGtld
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.serverDeleteProhibited
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.serverTransferProhibited
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.serverUpdateProhibited
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.urlf.redirectType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.urlf.urlForwarding
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.whoisContacts.city
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.contactType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.country
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.email
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.fax
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.firstName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.lastName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.organization
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.phone
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.phoneExtn
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.postalCode
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.stateProvince
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.street1
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.street2
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisPrivacy
+      description: ''
+      type: Boolean
   - arguments:
     - description: the domain name
       name: domain_name
       required: true
-    description: 
+    description:
     name: csc-domains-availability-check
     outputs:
-    - contextPath: CSCDomainManager.Domain.Availability.QualifiedDomainName
-      description: 
+    - contextPath: CSCDomainManager.Domain.Availability.qualifiedDomainName
+      description: ''
       type: String
-    - contextPath: CSCDomainManager.Domain.Availability.Code
-      description: 
+    - contextPath: CSCDomainManager.Domain.Availability.result.code
+      description: ''
       type: String
-    - contextPath: CSCDomainManager.Domain.Availability.Message
-      description: 
+    - contextPath: CSCDomainManager.Domain.Availability.result.message
+      description: ''
       type: String
-    - contextPath: CSCDomainManager.Domain.Availability.Price
-      description: 
+    - contextPath: CSCDomainManager.Domain.Availability.basePrice.price
+      description: ''
       type: String
-    - contextPath: CSCDomainManager.Domain.Availability.Currency
-      description: 
+    - contextPath: CSCDomainManager.Domain.Availability.basePrice.currency
+      description: ''
       type: String
-    - contextPath: CSCDomainManager.Domain.Availability.ListOfTheTerms
-      description: 
+    - contextPath: CSCDomainManager.Domain.Availability.listOfTheTerms
+      description: ''
       type: String
+    - contextPath: CSCDomainManager.Domain.Availability.availableTerms
+      description: ''
+      type: Unknown
   - arguments:
     - description: domain name to filter by, can start with like=, in=
       name: domain_name
       required: false
-    - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024 
+    - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024
       name: registration_date
       required: false
     - description: email to filter by, can start with like=, in=
       name: domain_email
       required: false
-    - description: can write your own filter according to ? #TODO
+    - description: can write your own filter according to ?
       name: filter
       required: false
-    - description: first page to show ? #TODO
+    - description: first page to show ?
       name: page
       required: false
-    - description: the size of rows in a page 
+    - description: the size of rows in a page
       name: page_size
       required: false
     - description: to fill
       name: limit
       required: false
-    description: 
+    description:
     name: csc-domains-configuration-list
     outputs:
-    - contextPath: CSCDomainManager.Domain.Configuration.Domain
+    - contextPath: CSCDomainManager.Domain.Configuration.domain
       description: the domain
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.DomainLabel
+    - contextPath: CSCDomainManager.Domain.Configuration.domainLabel
       description: the domain label
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.DomainStatusCode
+    - contextPath: CSCDomainManager.Domain.Configuration.domainStatusCode
       description: the domain status code
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.DomainExtension
+    - contextPath: CSCDomainManager.Domain.Configuration.domainExtension
       description: extension
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.Country
+    - contextPath: CSCDomainManager.Domain.Configuration.country
       description: country
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.AdminEmail
+    - contextPath: CSCDomainManager.Domain.Configuration.adminEmail
       description: domain email
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.AdminName
+    - contextPath: CSCDomainManager.Domain.Configuration.adminName
       description: admin name
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.AccountNumber
+    - contextPath: CSCDomainManager.Domain.Configuration.accountNumber
       description: the account number
       type: String
-    - contextPath: CSCDomainManager.Domain.Configuration.AccountName
+    - contextPath: CSCDomainManager.Domain.Configuration.accountName
       description: the account name
       type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.account.accountName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.account.accountNumber
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.adminOrg
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.businessUnit
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.dnsData.dnsDomain
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.dnsData.dnsProvider
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.dnsHostingType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.dnsTraffic12moAve
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.extension
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.hasCscUrlf
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.hasDkim
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.hasDmarc
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.hasDnssecDs
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.hasSpf
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.hasWww
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.isGtld
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.isLive
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.isLiveType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.isMultilockEligible
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.isVital
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.multiLocked
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.numLiveMx
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.numRootA
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.numRootTxt
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.numSslNetcraft
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.numWwwA
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.numWwwCname
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.regEmail
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.regName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.regOrg
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.registryExpiryDate
+      description: ''
+      type: Date
+    - contextPath: CSCDomainManager.Domain.Configuration.rootHttpCode
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.rootHttpUrl
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.rootIsUrlf
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.Configuration.serverDeleteProhibited
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.serverTransferProhibited
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.serverUpdateProhibited
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.techEmail
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.techName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.techOrg
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.tld
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.Configuration.urlfTraffic12moAve
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.valueRootA
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.valueRootMx
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.valueRootTxt
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.valueWwwA
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.valueWwwCname
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.wwwHttpCode
+      description: ''
+      type: Number
+    - contextPath: CSCDomainManager.Domain.Configuration.wwwHttpUrl
+      description: ''
+      type: Unknown
+    - contextPath: CSCDomainManager.Domain.Configuration.wwwIsUrlf
+      description: ''
+      type: Boolean
   - arguments:
-    - description: "Will contain domains values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com"
+    - description: 'Will contain domains values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com'
       name: domain
       isArray: true
       required: true
       default: true
-    description: 
+    description:
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -234,7 +521,6 @@ script:
     - contextPath: Domain.Tech.Email
       description: Tech email
       type: String
-  
   runonce: false
   script: '-'
   type: python

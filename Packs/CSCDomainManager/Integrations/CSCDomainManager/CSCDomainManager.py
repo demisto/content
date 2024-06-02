@@ -1,23 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerUserPython import *  # noqa
-import pytest
 
 # Disable insecure warnings
 # urllib3.disable_warnings()
@@ -106,7 +89,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify: bool, token: str, apikey: str):
+    def __init__(self, base_url, verify: bool, token:str, apikey:str):
         headers = {
             'Authorization': BEARER + token,
             'apikey': apikey,
@@ -188,8 +171,8 @@ def extract_required_fields_for_domains_configurations_list_hr(configurations) -
             'Country': config.get('country'),
             'Admin Email': config.get('adminEmail'),
             'Admin Name': config.get('regEmail'),
-            'Account Number': config.get('accounts').get('accountNumber'),
-            'Account Name': config.get('accounts').get('accountName')
+            'Account Number': config.get('account').get('accountNumber'),
+            'Account Name': config.get('account').get('accountName')
         }
 
         filtered_configurations.append(filtered)
@@ -227,7 +210,7 @@ def extract_required_fields_for_domain_hr(domain) -> dict:
                 'Country Code': domain.get('countryCode'),
                 'Server Delete Prohibited': domain.get('countryCode'),
                 'Server Transfer Prohibited': domain.get('serverDeleteProhibited'),
-                'Server Update Prohibited': domain.get('serverTransferProhibited'),
+                'Server Update Prohibite d': domain.get('serverTransferProhibited'),
                 'Name Servers': domain.get('nameServers'),
                 'Dns Type': domain.get('dnsType'),
                 'Whois Contact first Name': domain.get('whoisContacts')[0].get('firstName'),
@@ -264,7 +247,6 @@ def get_whois_contacts_fields_for_search_domains_command(whois_contacts, field_n
 ''' COMMAND FUNCTIONS '''
 
 
-@pytest.mark.skip
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
@@ -352,7 +334,7 @@ def csc_domains_configuration_list_command(client: Client, args) -> Any:
                                         headers=HR_HEADERS_FOR_DOMAIN_CONFI_LIST),
         outputs_prefix='CSCDomainManager.Domain.Configuration',
         outputs_key_field='CSCDomainManager.Domain.Configuration.Domain',
-        outputs=configurations_results
+        outputs=configurations_list
     )
     return results
 
