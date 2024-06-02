@@ -282,18 +282,18 @@ def extract_text_indicators(content: dict[str, str], params):
     file_path = list(content.keys())[0]
     text_content = text_content.replace("[.]", ".").replace("[@]", "@")  # Refang indicator prior to checking
     indicators = []
-    for regex, type in regex_indicators:
-        matches = re.finditer(regex, text_content)
+    for regex, type_ in regex_indicators:
+        matches = re.finditer(regex, text_content) # type: ignore
         if matches:
-            indicators += [{"value": match.group(0), "type": type} for match in matches]
-    for regex, type, group_name in regex_with_groups:
-        matches = re.finditer(regex, text_content)
+            indicators += [{"value": match.group(0), "type": type_} for match in matches]
+    for regex, type_, group_name in regex_with_groups:
+        matches = re.finditer(regex, text_content) # type: ignore
         if matches:
             for match in matches:
                 if regex in (ipv4Regex, urlRegex):
-                    indicators.append({"value": match.group(group_name), "type": type})
+                    indicators.append({"value": match.group(group_name), "type": type_})
                 elif regex == domainRegex:
-                    regex_type = type(match.group(group_name))
+                    regex_type = type_(match.group(group_name))
                     if regex_type:
                         indicators.append({"value": match.group(group_name), "type": regex_type})
     indicators_to_xsoar = arrange_iocs_indicator_to_xsoar(file_path, indicators, params)
@@ -490,7 +490,7 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
         Outputs.
     """
     limit = arg_to_number(args.get("limit"))
-    indicators = []
+    indicators:list = []
     try:
         if limit and limit <= 0:
             raise ValueError("Limit must be a positive number.")
