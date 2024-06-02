@@ -1265,16 +1265,16 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@mark.parametrize('data,data_expected,filename,inv_id', [
-    ("this is a test", b"this is a test", "test.txt", "1"),
-    ("this is a test", b"this is a test", "../../../test.txt", "2"),
+@mark.parametrize('data,data_expected,filename', [
+    ("this is a test", b"this is a test", "test.txt"),
+    ("this is a test", b"this is a test", "../../../test.txt"),
     (u"עברית", u"עברית".encode('utf-8'), "test.txt", "3"),
-    (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt", "4"),
+    (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
-def test_fileResult_func(mocker, request, data, data_expected, filename, inv_id):
-    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
-    mocker.patch.object(demisto, 'investigation', return_value={'id': inv_id})
-    file_name = "{}_test_file_result".format(inv_id)
+def test_fileResult(mocker, request, data, data_expected, filename):
+    mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
+    file_name = "1_fileresult"
 
     def cleanup():
         try:
