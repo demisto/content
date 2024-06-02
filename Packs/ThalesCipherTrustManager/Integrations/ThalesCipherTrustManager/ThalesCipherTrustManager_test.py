@@ -1,7 +1,10 @@
+from CommonServerPython import CommandResults
+from unittest.mock import patch
+import pytest
 import json
 
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
-MOCKER_CREATE_AUTH_TOKEN = f"ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
+MOCKER_CREATE_AUTH_TOKEN = "ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
 MOCKER_LOAD_CONTENT_FROM_FILE = 'ThalesCipherTrustManager.load_content_from_file'
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
@@ -12,10 +15,6 @@ def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
-
-import pytest
-from unittest.mock import patch
-from CommonServerPython import CommandResults, tableToMarkdown
 
 ''' CONSTANTS '''
 
@@ -93,7 +92,7 @@ class CommandArguments:
 
 
 '''
-Mock Data 
+Mock Data
 '''
 
 GROUPS_LIST_TEST_ARGS = [
@@ -255,8 +254,7 @@ USER_UPDATE_TEST_ARGS = [
         CommandArguments.FAILED_LOGINS_COUNT: 0,
         CommandArguments.PREVENT_UI_LOGIN: "true",
         CommandArguments.PASSWORD_POLICY: "complex"
-    }
-    ,
+    },
     {
         CommandArguments.USER_ID: "local|f4k3-u51d-1234",
     },
@@ -298,12 +296,16 @@ LOCAL_CA_CREATE_TEST_ARGS = [
         CommandArguments.EMAIL: "admin@example.com,contact@example.org",
         CommandArguments.IP: "192.168.1.1,10.0.0.1",
         CommandArguments.NAME: "example-localca",
-        CommandArguments.NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, {"OU": "ExampleOrg Inc."}]',
+        CommandArguments.NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, '
+                                               '{"OU": "ExampleOrg Inc."}]',
         CommandArguments.SIZE: "2048"
     },
 ]
 
-FAKE_CERT = "-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa\nfeakfafeefaafakfafeakffakeeafffkafeafeekaffakeefaakfefaefaefakfaffka\nfaeffakeeffeakafakefeaefeffaafkekaeffkaeffafakfaefffaeefffaeffakekafa\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n-----END CERTIFICATE REQUEST-----\n",
+FAKE_CERT = ("-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa"
+             "\nfeakfafeefaafakfafeakffakeeafffkafeafeekaffakeefaakfefaefaefakfaffka"
+             "\nfaeffakeeffeakafakefeaefeffaafkekaeffkaeffafakfaefffaeefffaeffakekafa"
+             "\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n-----END CERTIFICATE REQUEST-----\n"),
 FAKE_SUBJECT = "/C=FA/ST=Fk/L=FakeCity/O=FakeOrg/OU=FakeUnit/OU=FakeGroup/CN=fake.example.com"
 
 LOCAL_CA_LIST_TEST_ARGS = [
@@ -327,12 +329,14 @@ LOCAL_CA_SELF_SIGN_TEST_ARGS = [
 
     ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
 
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration': '365'}),
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration':
+        '365'}),
 
     ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
       'not_after': '2024-01-01T00:00:00Z'}),
 
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00:00Z',
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00'
+                                                                                                             ':00Z',
       'not_after': 'two weeks'})
 ]
 
@@ -351,8 +355,8 @@ CERTIFICATE_ISSUE_TEST_ARGS = []
 CERTIFICATE_LIST_TEST_ARGS = []
 LOCAL_CERTIFICATE_DELETE_TEST_ARGS = [
     {
-        CommandArguments.CA_ID : "",
-        CommandArguments.LOCAL_CA_ID : ""
+        CommandArguments.CA_ID: "",
+        CommandArguments.LOCAL_CA_ID: ""
     }
 ]
 CERTIFICATE_REVOKE_TEST_ARGS = []
@@ -374,7 +378,7 @@ def test_derive_skip_and_limit_for_pagination(limit, page, page_size, expected_s
 
 
 @pytest.mark.parametrize('limit, page, page_size',
-                         [(None, '1', '101'), (None, 'invalid', '30'), ('invalid', None, None)])
+                         [(None, '1', '2001'), (None, 'invalid', '30'), ('invalid', None, None)])
 def test_derive_skip_and_limit_for_pagination_invalid_input(limit, page, page_size):
     from ThalesCipherTrustManager import derive_skip_and_limit_for_pagination
     with pytest.raises(ValueError):
@@ -434,7 +438,7 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
     assert request_data.get('login_flags') == expected_login_flags
 
 
-#todo: test file loads?
+# todo: test file loads?
 
 ''' COMMAND FUNCTIONS TESTS '''
 
@@ -548,7 +552,8 @@ def test_user_to_group_remove_command(mock_remove_user_from_group, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_remove_user_from_group.return_value
     assert result.raw_response == mock_remove_user_from_group.return_value
-    assert result.readable_output == f'{args[CommandArguments.USER_ID]} has been deleted successfully from {args[CommandArguments.GROUP_NAME]}'
+    assert result.readable_output == (f'{args[CommandArguments.USER_ID]} has been deleted successfully from'
+                                      f' {args[CommandArguments.GROUP_NAME]}')
 
 
 @pytest.mark.parametrize('args', USERS_LIST_TEST_ARGS)
@@ -772,7 +777,7 @@ def test_local_ca_self_sign_command_missing_arguments(mock_self_sign_local_ca, a
                                proxy=False)
 
     with pytest.raises(ValueError):
-        result = local_ca_self_sign_command(client, args)
+        local_ca_self_sign_command(client, args)
 
 
 @pytest.mark.parametrize('args', LOCAL_CA_INSTALL_TEST_ARGS)

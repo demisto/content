@@ -6,11 +6,11 @@ commonfields:
 name: CipherTrust
 display: Thales CipherTrust Manager
 configuration:
-- display: server_url
+- display: Server URL
   name: server_url
   type: 0
   required: true
-- display: credentials
+- display: Credentials
   name: credentials
   type: 9
   required: true
@@ -1018,11 +1018,6 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: Tests API connectivity and authentication
-    name: test_module
-    arguments: []
-    outputs: []
-  - deprecated: false
     description: "Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
     name: ciphertrust-user-create
     arguments:
@@ -1708,9 +1703,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.96411
   feed: false
-  isfetch: true
+  isfetch: false
   runonce: false
   longRunning: false
   longRunningPort: false
