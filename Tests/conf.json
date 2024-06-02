@@ -1195,7 +1195,8 @@
         },
         {
             "integrations": "MimecastV2",
-            "playbookID": "Mimecast test"
+            "playbookID": "Mimecast test",
+            "instance_names": "oauth 2.0"
         },
         {
             "integrations": "MimecastV2",
