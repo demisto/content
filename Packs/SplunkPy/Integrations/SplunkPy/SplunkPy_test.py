@@ -2176,3 +2176,10 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     Tests that passing a results.Message object returns True
     """
     assert splunk.handle_message(item) is expected
+
+
+def test_fetch_notable_event_command():
+    """
+
+    """
+    assert False
