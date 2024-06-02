@@ -171,8 +171,9 @@ def test_create_issue_command_invalid_custom_fields(redmine_client):
             'tracker': 'bug', 'watcher_user_ids': '[1]', 'priority': 'high'}
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
-    assert e.value.message == ('Custom fields not in format, please follow this format: `{"customFieldID1": ["value1","value2"],'
-                               ' "customFieldID2": "value3"}`. with error: Expecting \':\' delimiter: line 1 column 28 (char 27)')
+    assert e.value.message == ('Custom fields not in format, please follow this format: `{"customFieldID2": "value3", '
+                               '"customFieldID1": ["value1","value2"]}` - Please use an array if the field is of multiselect type'
+                               '. with error: Expecting \':\' delimiter: line 1 column 28 (char 27)')
 
 
 def test_create_issue_command_no_token_created_for_file(mocker, redmine_client):
@@ -369,8 +370,9 @@ def test_update_issue_command_invalid_custom_fields(redmine_client):
             'status_id': '1', 'priority_id': 'high'}
     with pytest.raises(DemistoException) as e:
         update_issue_command(redmine_client, args)
-    assert e.value.message == ('Custom fields not in format, please follow this format: `{"customFieldID1": ["value1","value2"],'
-                               ' "customFieldID2": "value3"}`. with error: Expecting value: line 1 column 1 (char 0)')
+    assert e.value.message == ('Custom fields not in format, please follow this format: `{"customFieldID2": "value3", '
+                               '"customFieldID1": ["value1","value2"]}` - Please use an array if the field is of multiselect type'
+                               '. with error: Expecting value: line 1 column 1 (char 0)')
 
 
 def test_update_issue_command_no_token_created_for_file(mocker, redmine_client):

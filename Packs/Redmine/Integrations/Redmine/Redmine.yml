@@ -69,7 +69,7 @@ script:
       description: |-
         - The custom field to update.
         - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
-        - Use an array if the field is of multiselect type.
+        - Please use an array if the field is of multiselect type.
         - Instruction for each custom field type:
           - Boolean: use "0" for False and "1" for True.
           - Date: the format is "yyyy-mm-dd".
@@ -214,7 +214,7 @@ script:
       description: |-
         - The custom field to update.
         - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
-        - Use an array if the field is of multiselect type.
+        - Please use an array if the field is of multiselect type.
         - Instruction for each custom field type:
           - Boolean: use "0" for False and "1" for True.
           - Date: the format is "yyyy-mm-dd".
