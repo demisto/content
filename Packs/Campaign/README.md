@@ -20,7 +20,7 @@ This allows the user to take additional steps on the campaign findings, like blo
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/phishing-campaign)._
 
-![image](https://raw.githubusercontent.com/demistxo/content/master/Images/campaign-overview.png)
+![image](https://raw.githubusercontent.com/demisto/content/master/Images/campaign-overview.png)
 
 ![image](https://raw.githubusercontent.com/demisto/content/master/Images/campaign-canvas.png)
 
