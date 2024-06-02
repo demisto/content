@@ -325,7 +325,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-        tuple[int, int]:
+    tuple[int, int]:
     if page_str is not None:
         page_from_arg = arg_to_number(page_str)
         if page_from_arg is None:
@@ -756,18 +756,25 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
     request_data = assign_params(
         reason=args.get(CommandArguments.REASON),
     )
-    client.revoke_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
-                              cert_id=verify_required_arg(CommandArguments.CERT_ID, args.get(CommandArguments.CERT_ID)),
-                              request_data=request_data)
+    raw_response = client.revoke_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
+                                             cert_id=verify_required_arg(CommandArguments.CERT_ID,
+                                                                         args.get(CommandArguments.CERT_ID)),
+                                             request_data=request_data)
     return CommandResults(
+        outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response,
         readable_output=f'{args.get(CommandArguments.CERT_ID)} has been revoked'
     )
 
 
 def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.resume_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
+    raw_response = client.resume_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
                               cert_id=verify_required_arg(CommandArguments.CERT_ID, args.get(CommandArguments.CERT_ID)))
     return CommandResults(
+        outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs=raw_response,
+        raw_response=raw_response,
         readable_output=f'{args.get(CommandArguments.CERT_ID)} has been resumed'
     )
 
@@ -801,7 +808,8 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict[st
         allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
     )
     raw_response = client.update_external_certificate(external_ca_id=verify_required_arg(CommandArguments.EXTERNAL_CA_ID,
-                                                                                         args.get(CommandArguments.EXTERNAL_CA_ID)),
+                                                                                         args.get(
+                                                                                             CommandArguments.EXTERNAL_CA_ID)),
                                                       request_data=request_data)
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,

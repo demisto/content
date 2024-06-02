@@ -249,35 +249,95 @@ script:
         description: Timestamp of when the certificate is valid until.
         type: Date
   - deprecated: false
-    description: Certificate can be resumed only if it is revoked with reason certificatehold.
+    description: Certificate can be resumed only if it is revoked with reason certificateHold.
     name: ciphertrust-certificate-resume
     arguments:
-    - name: ca_id
-      isArray: false
-      description: An identifier of the issuer CA resource
-      required: true
-      secret: false
-      default: false
-    - name: cert_id
-      isArray: false
-      description: The identifier of the certificate resource
-      required: true
-      secret: false
-      default: false
-    outputs: []
+      - name: ca_id
+        isArray: false
+        description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+        required: true
+        secret: false
+        default: false
+      - name: cert_id
+        isArray: false
+        description: An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
+        required: true
+        secret: false
+        default: false
+    outputs:
+      - contextPath: CipherTrust.CACertificate.name
+        description: The name of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.id
+        description: A unique identifier for the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.uri
+        description: Uniform Resource Identifier associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.account
+        description: Account associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.application
+        description: Application associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.devAccount
+        description: Developer account associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.createdAt
+        description: Timestamp of when the certificate was created.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.updatedAt
+        description: Timestamp of the last update of the certificate.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.cert
+        description: Certificate content.
+        type: String
+      - contextPath: CipherTrust.CACertificate.ca
+        description: Certificate authority.
+        type: String
+      - contextPath: CipherTrust.CACertificate.revoked_at
+        description: Revocation timestamp.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.state
+        description: Current state of the certificate (e.g., active, revoked).
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+        description: SHA-1 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+        description: SHA-256 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+        description: SHA-512 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.serialNumber
+        description: Serial number of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.subject
+        description: Subject of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.issuer
+        description: Issuer of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.notBefore
+        description: Timestamp of when the certificate is valid from.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.notAfter
+        description: Timestamp of when the certificate is valid until.
+        type: Date
   - deprecated: false
     description: Revoke certificate with a given specific reason.
     name: ciphertrust-certificate-revoke
     arguments:
     - name: ca_id
       isArray: false
-      description: An identifier of the issuer CA resource
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
     - name: cert_id
       isArray: false
-      description: The identifier of the certificate resource
+      description: An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
@@ -299,7 +359,70 @@ script:
       - privilegeWithdrawn
       - aACompromise
       auto: PREDEFINED
-    outputs: []
+    outputs:
+      - contextPath: CipherTrust.CACertificate.name
+        description: The name of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.id
+        description: A unique identifier for the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.uri
+        description: Uniform Resource Identifier associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.account
+        description: Account associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.application
+        description: Application associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.devAccount
+        description: Developer account associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.createdAt
+        description: Timestamp of when the certificate was created.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.updatedAt
+        description: Timestamp of the last update of the certificate.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.cert
+        description: Certificate content.
+        type: String
+      - contextPath: CipherTrust.CACertificate.ca
+        description: Certificate authority.
+        type: String
+      - contextPath: CipherTrust.CACertificate.revoked_at
+        description: Revocation timestamp.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.revoked_reason
+        description: Reason for revocation.
+        type: String
+      - contextPath: CipherTrust.CACertificate.state
+        description: Current state of the certificate (e.g., active, revoked).
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+        description: SHA-1 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+        description: SHA-256 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+        description: SHA-512 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.serialNumber
+        description: Serial number of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.subject
+        description: Subject of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.issuer
+        description: Issuer of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.notBefore
+        description: Timestamp of when the certificate is valid from.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.notAfter
+        description: Timestamp of when the certificate is valid until.
+        type: Date
   - deprecated: false
     description: Deletes an external CA certificate.
     name: ciphertrust-external-certificate-delete

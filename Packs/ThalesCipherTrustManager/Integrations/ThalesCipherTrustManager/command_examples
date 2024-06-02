@@ -20,6 +20,8 @@
 !ciphertrust-certificate-issue ca_id="ca_to_issue" csr_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629 purpose=server duration=365
 !ciphertrust-certificate-list ca_id="test_ca"
 !ciphertrust-local-certificate-delete ca_id="local_ca_test" local_ca_id="id_of_certificate_issued_by_local_ca_test"
+!ciphertrust-certificate-revoke ca_id="local_ca_test" cert_id="id_of_certificate_to_revoke_issued_by_local_ca_test" reason="certificateHold"
+!ciphertrust-certificate-resume ca_id="local_ca_test" cert_id="id_of_certificate_to_revoke_issued_by_local_ca_test"
 
 
 

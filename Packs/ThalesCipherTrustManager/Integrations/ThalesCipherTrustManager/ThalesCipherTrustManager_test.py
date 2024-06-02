@@ -319,25 +319,25 @@ LOCAL_CA_LIST_TEST_ARGS = [
 
 ]
 LOCAL_CA_UPDATE_TEST_ARGS = [
-    {CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000"},
+    {CommandArguments.LOCAL_CA_ID: "1localca-23e4567-e89b-12d3-a456-426614174000"},
     {
-        CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+        CommandArguments.LOCAL_CA_ID: "localca-123e4567-e89b-12d3-a456-426614174000",
         CommandArguments.ALLOW_CLIENT_AUTHENTICATION: "true",
         CommandArguments.ALLOW_USER_AUTHENTICATION: "true"
     },
 ]
 LOCAL_CA_DELETE_TEST_ARGS = [
-    {CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000"},
+    {CommandArguments.LOCAL_CA_ID: "localca-123e4567-e89b-12d3-a456-426614174000"},
 ]
 LOCAL_CA_SELF_SIGN_TEST_ARGS = [
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
 
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
 
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration':
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration':
         '365'}),
 
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
       'not_after': '2024-01-01T00:00:00Z'}),
 
     ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00'
@@ -346,12 +346,12 @@ LOCAL_CA_SELF_SIGN_TEST_ARGS = [
 ]
 
 LOCAL_CA_SELF_SIGN_TEST_MISSING_ARGS = [
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000'}),
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000'}),
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
 ]
 LOCAL_CA_INSTALL_TEST_ARGS = [
     {
-        CommandArguments.LOCAL_CA_ID: "123e4567-e89-b12d3-a456-426614174000",
+        CommandArguments.LOCAL_CA_ID: "localca-123e4567-e89-b12d3-a456-426614174000",
         CommandArguments.CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
         CommandArguments.PARENT_ID: "123e4567-e89-b12d3-a456-426614174000",
     }
@@ -359,7 +359,7 @@ LOCAL_CA_INSTALL_TEST_ARGS = [
 CERTIFICATE_ISSUE_TEST_ARGS = [
     {
         # Test Case 1: All arguments provided, including both NOT_BEFORE and NOT_AFTER
-        CommandArguments.CA_ID: "ca12345",
+        CommandArguments.CA_ID: "localca-ca12345",
         CommandArguments.CSR_ENTRY_ID: "csr12345",
         CommandArguments.PURPOSE: "test",
         CommandArguments.DURATION: 365,
@@ -369,7 +369,7 @@ CERTIFICATE_ISSUE_TEST_ARGS = [
     },
     {
         # Test Case 2: NOT_BEFORE provided, but NOT_AFTER is missing
-        CommandArguments.CA_ID: "ca67890",
+        CommandArguments.CA_ID: "localca-ca67890",
         CommandArguments.CSR_ENTRY_ID: "csr67890",
         CommandArguments.PURPOSE: "test",
         CommandArguments.DURATION: 180,
@@ -378,7 +378,7 @@ CERTIFICATE_ISSUE_TEST_ARGS = [
     },
     {
         # Test Case 3: Only DURATION is provided, neither NOT_BEFORE nor NOT_AFTER
-        CommandArguments.CA_ID: "ca54321",
+        CommandArguments.CA_ID: "localca-ca54321",
         CommandArguments.CSR_ENTRY_ID: "csr54321",
         CommandArguments.PURPOSE: "production",
         CommandArguments.DURATION: 90,
@@ -386,7 +386,7 @@ CERTIFICATE_ISSUE_TEST_ARGS = [
     },
     {
         # Test Case 4: NOT_AFTER provided, but NOT_BEFORE is missing
-        CommandArguments.CA_ID: "ca09876",
+        CommandArguments.CA_ID: "localca-ca09876",
         CommandArguments.CSR_ENTRY_ID: "csr09876",
         CommandArguments.PURPOSE: "development",
         CommandArguments.NAME: "Test Certificate 4",
@@ -395,8 +395,8 @@ CERTIFICATE_ISSUE_TEST_ARGS = [
 ]
 
 CERTIFICATE_LIST_TEST_ARGS = [
-    {CommandArguments.CA_ID: "123e456-12d3-a456-426614174000"},
-    {CommandArguments.CA_ID: "123e456-12d3-a456-426614174000",
+    {CommandArguments.CA_ID: "localca-123e456-12d3-a456-426614174000"},
+    {CommandArguments.CA_ID: "localca-123e456-12d3-a456-426614174000",
      CommandArguments.SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
      CommandArguments.ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
      CommandArguments.CERT: FAKE_CERT,
@@ -407,12 +407,19 @@ CERTIFICATE_LIST_TEST_ARGS = [
 ]
 LOCAL_CERTIFICATE_DELETE_TEST_ARGS = [
     {
-        CommandArguments.CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+        CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
         CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
     }
 ]
-CERTIFICATE_REVOKE_TEST_ARGS = []
-CERTIFICATE_RESUME_TEST_ARGS = []
+CERTIFICATE_REVOKE_TEST_ARGS = [
+    {CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
+     CommandArguments.CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
+     CommandArguments.REASON: "certificateHold"}
+]
+CERTIFICATE_RESUME_TEST_ARGS = [{
+    CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
+    CommandArguments.CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
+}]
 EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = []
@@ -930,7 +937,7 @@ def test_certificate_revoke_command(mock_revoke_certificate, args):
     result = certificate_revoke_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix is None
+    assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_revoke_certificate.return_value
     assert result.raw_response == mock_revoke_certificate.return_value
     assert result.readable_output == f'{args[CommandArguments.CERT_ID]} has been revoked'
@@ -948,7 +955,7 @@ def test_certificate_resume_command(mock_resume_certificate, args):
     result = certificate_resume_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix is None
+    assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_resume_certificate.return_value
     assert result.raw_response == mock_resume_certificate.return_value
     assert result.readable_output == f'{args[CommandArguments.CERT_ID]} has been resumed'
