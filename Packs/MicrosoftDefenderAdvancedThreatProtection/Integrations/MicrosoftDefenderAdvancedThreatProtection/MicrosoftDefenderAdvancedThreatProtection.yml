@@ -335,7 +335,6 @@ script:
       deprecated: true
     description: Tests connectivity to Microsoft Defender for Endpoint.
     name: microsoft-atp-test
-    polling: true
   - arguments:
     - description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -394,7 +393,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
     execution: true
   - arguments:
     - description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -446,7 +444,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: A comma-separated list of computer DNS name.
       isArray: true
@@ -535,7 +532,6 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
       type: String
-    polling: true
   - arguments:
     - description: A comma-separated list of file SHA1 hashes to get the related machines.
       isArray: true
@@ -604,7 +600,6 @@ script:
     - contextPath: MicrosoftATP.FileMachine.File
       description: The machine related file hash.
       type: String
-    polling: true
   - arguments:
     - description: A comma-separated list of machine IDs used to get the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -683,7 +678,6 @@ script:
     - contextPath: MicrosoftATP.Machine.NetworkInterfaces.Status
       description: Status for the network interface (e.g. Up, Down).
       type: String
-    polling: true
   - arguments:
     - description: A comma-separated list of machine IDs to run the scan on.
       name: machine_id
@@ -741,7 +735,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: Alert severity.
       name: severity
@@ -864,7 +857,6 @@ script:
     - contextPath: MicrosoftATP.Alert.RBACGroupName
       description: The device RBAC group name.
       type: String
-    polling: true
   - arguments:
     - description: Alert ID to update.
       name: alert_id
@@ -986,7 +978,6 @@ script:
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
-    polling: true
   - arguments:
     - description: The query to run. Must be passed if query_batch argument is not provided.
       name: query
@@ -1026,7 +1017,6 @@ script:
     - contextPath: MicrosoftATP.Hunt.Result
       description: The query results.
       type: String
-    polling: true
   - arguments:
     - description: ID of the machine on which the event was identified.
       name: machine_id
@@ -1172,7 +1162,6 @@ script:
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
-    polling: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1222,7 +1211,6 @@ script:
     - contextPath: MicrosoftATP.AlertUser.AlertID
       description: The alert ID.
       type: String
-    polling: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1290,7 +1278,6 @@ script:
     - contextPath: MicrosoftATP.AlertFile.Files.Md5
       description: The MD5 hash of the file.
       type: String
-    polling: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1313,7 +1300,6 @@ script:
     - contextPath: MicrosoftATP.AlertIP.AlertID
       description: The alert ID.
       type: String
-    polling: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1337,7 +1323,6 @@ script:
     - contextPath: MicrosoftATP.AlertDomain.AlertID
       description: The alert ID.
       type: Unknown
-    polling: true
   - arguments:
     - description: ID of the action.
       name: id
@@ -1417,7 +1402,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: The machine ID.
       name: machine_id
@@ -1467,7 +1451,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: machine action ID.
       name: action_id
@@ -1481,7 +1464,6 @@ script:
     - contextPath: MicrosoftATP.InvestigationURI.Link
       description: The investigation package URI.
       type: String
-    polling: true
   - arguments:
     - description: The machine ID.
       name: machine_id
@@ -1530,7 +1512,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: The machine ID.
       name: machine_id
@@ -1581,7 +1562,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: The machine ID. When providing multiple values, each value is checked for the same hash.
       name: machine_id
@@ -1638,7 +1618,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
-    polling: true
   - arguments:
     - description: ID can be the investigation ID or the investigation triggering alert ID.
       name: id
@@ -1683,7 +1662,6 @@ script:
     - contextPath: MicrosoftATP.Investigation.TriggeringAlertID
       description: The alert ID that triggered the investigation.
       type: String
-    polling: true
   - arguments:
     - description: The machine's ID.
       name: machine_id
@@ -1727,7 +1705,6 @@ script:
     - contextPath: MicrosoftATP.Investigation.TriggeringAlertID
       description: The alert ID that triggered the investigation.
       type: String
-    polling: true
   - arguments:
     - description: The domain address.
       name: domain
@@ -1750,7 +1727,6 @@ script:
     - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen
       description: The last date and time the domain was in the organization.
       type: Date
-    polling: true
   - arguments:
     - description: The domain address.
       name: domain
@@ -1839,7 +1815,6 @@ script:
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
-    polling: true
   - arguments:
     - description: The domain address.
       name: domain
@@ -1907,7 +1882,6 @@ script:
     - contextPath: MicrosoftATP.DomainMachine.Machines.MachineTags
       description: Set of machine tags.
       type: String
-    polling: true
   - arguments:
     - description: File SHA1 hash to get statistics on.
       name: file_hash
@@ -1942,7 +1916,6 @@ script:
     - contextPath: MicrosoftATP.FileStatistics.Statistics.TopFileNames
       description: The file's top names.
       type: String
-    polling: true
   - arguments:
     - description: File SHA1 hash to get statistics on.
       name: file_hash
@@ -2031,7 +2004,6 @@ script:
     - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
-    polling: true
   - arguments:
     - description: The IP address.
       name: ip
@@ -2054,7 +2026,6 @@ script:
     - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgLastSeen
       description: The last date and time the IP was in the organization.
       type: Date
-    polling: true
   - arguments:
     - description: |-
         The IP address.
@@ -2144,7 +2115,6 @@ script:
     - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
-    polling: true
   - arguments:
     - description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
@@ -2235,7 +2205,6 @@ script:
     - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
-    polling: true
   - arguments:
     - description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
@@ -2305,7 +2274,6 @@ script:
     - contextPath: MicrosoftATP.UserMachine.Machines.MachineTags
       description: Set of machine tags.
       type: String
-    polling: true
   - arguments:
     - description: The machine ID.
       name: machine_id
@@ -2380,7 +2348,6 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
       type: String
-    polling: true
   - arguments:
     - description: The maximum number of indicators to return.
       name: limit
@@ -2569,7 +2536,6 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
-    polling: true
   - arguments:
     - description: The ID of the indicator to get.
       name: indicator_id
@@ -2756,7 +2722,6 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
-    polling: true
   - arguments:
     - auto: PREDEFINED
       description: The action to apply if the indicator is matched from within the targetProduct security tool.
@@ -3012,7 +2977,6 @@ script:
     - contextPath: File.Path
       description: The path where the file is located.
       type: String
-    polling: true
   - arguments:
     - description: The action to apply if the indicator is matched from within the targetProduct security tool.
       name: action
@@ -3263,7 +3227,6 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
-    polling: true
   - arguments:
     - description: The ID of the indicator to update.
       name: indicator_id
@@ -3289,7 +3252,6 @@ script:
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
     name: microsoft-atp-indicator-update
-    polling: true
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
@@ -3474,7 +3436,6 @@ script:
       deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
     name: microsoft-atp-indicator-delete
-    polling: true
     deprecated: true
   - arguments:
     - description: The value of the indicator to update.
@@ -3626,7 +3587,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    polling: true
   - arguments:
     - description: The value of the indicator to update.
       name: indicator_value
@@ -3683,7 +3643,6 @@ script:
       name: generate_alert
     description: Creates a new indicator.
     name: microsoft-atp-sc-indicator-create
-    polling: true
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
@@ -3787,7 +3746,6 @@ script:
       deprecated: true
     description: Deletes the specified indicator.
     name: microsoft-atp-sc-indicator-delete
-    polling: true
   - arguments:
     - description: The maximum number of indicators to return.
       name: limit
@@ -3908,7 +3866,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    polling: true
   - arguments:
     - description: The ID of the indicator to get. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
       name: indicator_id
@@ -4013,7 +3970,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    polling: true
   - arguments:
     - description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       name: id
@@ -4330,7 +4286,6 @@ script:
     - contextPath: MicrosoftATP.CveMachine.CVE
       description: The given CVE IDs related to this machine.
       type: Unknown
-    polling: true
   - arguments:
     - description: A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information.
       isArray: true
@@ -4406,7 +4361,6 @@ script:
     - contextPath: File.Size
       description: The file size.
       type: Number
-    polling: true
   - name: endpoint
     description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
     arguments:
@@ -4517,7 +4471,6 @@ script:
     - contextPath: MicrosoftATP.Machine.AgentVersion
       description: The machine Agent version.
       type: String
-    polling: true
   - name: microsoft-atp-indicator-batch-update
     description: Updates a batch of indicators. If an indicator does not exist, a new indicator is created.
     arguments:
@@ -4540,7 +4493,6 @@ script:
     - contextPath: MicrosoftATP.Indicators.IsFailed
       description: Whether the update failed.
       type: Boolean
-    polling: true
   - name: microsoft-atp-get-alert-by-id
     description: 'Retrieves a specific alert by the given alert ID.'
     arguments:
@@ -4645,7 +4597,6 @@ script:
     - contextPath: MicrosoftATP.Alert.RBACGroupName
       description: The device RBAC group name.
       type: String
-    polling: true
   - name: microsoft-atp-live-response-get-file
     description: 'Collects a file from a device. Note: Backslashes in the path must be escaped.'
     arguments:
@@ -5006,7 +4957,6 @@ script:
     - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
       description: The query results for management_connection query_purpose.
       type: String
-    polling: true
   - arguments:
     - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also the process_cmd argument to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created (on the local machine)? "new_group" - Was a new group created? "group_user_change" - Was a user added to a group (on the local machine)? "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Whether there was a change to the hosts file or not.
       name: query_purpose
@@ -5105,7 +5055,6 @@ script:
     - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
       description: The query results for host_file_change query_purpose.
       type: String
-    polling: true
   - arguments:
     - description: Device name to look for.
       name: device_name
@@ -5150,7 +5099,6 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Indicates how the file got on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
-    polling: true
     name: microsoft-atp-advanced-hunting-file-origin
     outputs:
     - contextPath: MicrosoftATP.HuntFileOrigin.Result
@@ -5232,7 +5180,6 @@ script:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
       description: The query results for process_excecution_powershell query_purpose.
       type: String
-    polling: true
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     arguments:
@@ -5297,7 +5244,6 @@ script:
     - contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
       description: The query results for encoded_commands query_purpose.
       type: String
-    polling: true
   - name: microsoft-atp-advanced-hunting-privilege-escalation
     description: Detects evidence of privilege escalation.
     arguments:
@@ -5372,7 +5318,6 @@ script:
     - contextPath: MicrosoftATP.HuntTampering.Result
       description: The query results.
       type: String
-    polling: true
   - arguments:
     - description: When you select a “query_purpose” argument, a designated query template is used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and its activities. Requires only username argument. "connected_devices" - All connected devices by compromised user. Requires only username argument. "action_types" - All action types created by a user on each machine. Requires only username argument. "common_files" - Most common files associated with a user. Requires only username argument.
       name: query_purpose
@@ -5452,7 +5397,6 @@ script:
     - contextPath: MicrosoftATP.HuntCoverUp.Result.common_files
       description: The query results for common_files query_purpose.
       type: String
-    polling: true
   - arguments:
     - default: true
       description: A machine ID used for getting logged on users.
@@ -5491,7 +5435,6 @@ script:
     - contextPath: MicrosoftATP.MachineUser.MachineID
       description: The machine ID.
       type: String
-    polling: true
   - arguments:
     - description: A machine ID used for getting machine related alerts.
       name: machine_id
@@ -5501,7 +5444,6 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Retrieves a collection of alerts related to a specific device.
-    polling: true
     name: microsoft-atp-get-machine-alerts
     outputs:
     - contextPath: MicrosoftATP.MachineAlerts.ID
@@ -5563,7 +5505,6 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
-    polling: true
   - description: Offboard a machine from defender.
     name: microsoft-atp-offboard-machine
     arguments:
@@ -5619,7 +5560,6 @@ script:
     - contextPath: MicrosoftATP.OffboardMachine.troubleshootInfo
       description: Troubleshooting information.
       type: String
-    polling: true
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-atp-generate-login-url
     arguments: []
