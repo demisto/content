@@ -175,7 +175,8 @@ def format_custom_field_to_request(args: Dict[str, Any]):
         except Exception as e:
             raise DemistoException(
                 f"Custom fields not in format, please follow this format:"
-                f" `{{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}}`. with error: {e}")
+                f" `{{\"customFieldID2\": \"value3\", \"customFieldID1\": [\"value1\",\"value2\"]}}` - Please use an array if "
+                f"the field is of multiselect type. with error: {e}")
 
 
 def get_file_content(entry_id: str) -> bytes:

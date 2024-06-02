@@ -68,7 +68,7 @@ script:
     - name: custom_fields
       description: |-
         - The custom field to update.
-        - "The format is `{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}`."
+        - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
         - Use an array if the field is of multiselect type.
         - Instruction for each custom field type:
           - Boolean: use "0" for False and "1" for True.
@@ -213,7 +213,7 @@ script:
     - name: custom_fields
       description: |-
         - The custom field to update.
-        - "The format is `{\"customFieldID1\": [\"value1\",\"value2\"], \"customFieldID2\": \"value3\"}`."
+        - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
         - Use an array if the field is of multiselect type.
         - Instruction for each custom field type:
           - Boolean: use "0" for False and "1" for True.
