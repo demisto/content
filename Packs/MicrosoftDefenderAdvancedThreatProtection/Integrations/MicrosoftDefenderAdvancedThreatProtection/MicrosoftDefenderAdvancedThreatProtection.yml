@@ -3249,7 +3249,6 @@ script:
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
     name: microsoft-atp-indicator-update
-    polling: true
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
@@ -3641,7 +3640,6 @@ script:
       name: generate_alert
     description: Creates a new indicator.
     name: microsoft-atp-sc-indicator-create
-    polling: true
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
@@ -4285,7 +4283,6 @@ script:
     - contextPath: MicrosoftATP.CveMachine.CVE
       description: The given CVE IDs related to this machine.
       type: Unknown
-    polling: true
   - arguments:
     - description: A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information.
       isArray: true
@@ -5099,7 +5096,6 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Indicates how the file got on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
-    polling: true
     name: microsoft-atp-advanced-hunting-file-origin
     outputs:
     - contextPath: MicrosoftATP.HuntFileOrigin.Result
@@ -5445,7 +5441,6 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Retrieves a collection of alerts related to a specific device.
-    polling: true
     name: microsoft-atp-get-machine-alerts
     outputs:
     - contextPath: MicrosoftATP.MachineAlerts.ID
