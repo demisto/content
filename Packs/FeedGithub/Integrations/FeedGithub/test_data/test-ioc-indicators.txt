@@ -1,62 +1,62 @@
-2023-07-12 (Wednesday): Gozi/ISFB Infection with Cobalt Strike
+2023-07-12 (Wednesday): Lorum Ipsum Infection with Dolor Sit Amet
 
 Reference:
-- https://twitter.com/Unit42_Intel/status/1679500766858432512
+- https://twitter.com/LoremIpsum/status/1234567890123456789
 
 Associated Malware:
 1. File 1:
-   - SHA256 Hash: 620bc1e016887d7761907a85d49870a832b70e0340f599b472bec0a11b7b663a
-   - File Size: 613,888 bytes
+   - SHA256 Hash: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+   - File Size: 123,456 bytes
    - File Type: PE32 executable (DLL) (GUI) Intel 80386 (stripped to external PDB), for MS Windows
-   - Description: 32-bit Windows DLL for Gozi/ISFB, Botnet 2100, build 250259
+   - Description: 32-bit Windows DLL for Lorem Ipsum, Botnet 1234, build 567890
    - Run Method: regsvr32.exe [filename]
 
 2. File 2:
-   - SHA256 Hash: 540dfbef1bc65462cac88ad24a6d5cea867d9b392e9f8ae66c20ee49f4002793
-   - File Size: 1,578,496 bytes
+   - SHA256 Hash: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+   - File Size: 789,012 bytes
    - File Type: PE32+ executable (DLL) (GUI) x86-64 (stripped to external PDB), for MS Windows
-   - File Location: hxxps://softwaredw[.]com/64HTTPS.dll
-   - Saved Location: C:\\Windows\\Tasks\\x11ogwin.dll
-   - Description: 64-bit Windows DLL for Cobalt Strike stager
-   - Run Method: start-process rundll32.exe -ArgumentList '/s c:\\windows\\tasks\\x11ogwin.dll,recurring'
+   - File Location: hxxps://example[.]com/64HTTPS.dll
+   - Saved Location: C:\\Windows\\Tasks\\dolorsit.dll
+   - Description: 64-bit Windows DLL for Dolor Sit stager
+   - Run Method: start-process rundll32.exe -ArgumentList '/s c:\\windows\\tasks\\dolorsit.dll,recurring'
 
 Traffic from Infected Windows Host:
 
-Gozi/ISFB C2 Traffic:
-- 151.248.117[.]244 port 80 - diwdjndsfnj[.]ru - GET /uploaded/[long base64 string with backslashes and underscores].pct
-- 151.248.117[.]244 port 80 - diwdjndsfnj[.]ru - POST /uploaded/[long base64 string with backslashes and underscores].dib
-- 151.248.117[.]244 port 80 - diwdjndsfnj[.]ru - GET /uploaded/[long base64 string with backslashes and underscores].pmg
-- 151.248.117[.]244 port 80 - iwqdndomdn[.]su - GET /uploaded/[long base64 string with backslashes and underscores].pmg
-- 151.248.117[.]244 port 80 - iwqdndomdn[.]su - POST /uploaded/[long base64 string with backslashes and underscores].dib
+Lorem Ipsum C2 Traffic:
+- 123.456.789[.]101 port 80 - example[.]ru - GET /uploaded/[long base64 string with backslashes and underscores].pct
+- 123.456.789[.]101 port 80 - example[.]ru - POST /uploaded/[long base64 string with backslashes and underscores].dib
+- 123.456.789[.]101 port 80 - example[.]ru - GET /uploaded/[long base64 string with backslashes and underscores].pmg
+- 123.456.789[.]101 port 80 - example[.]su - GET /uploaded/[long base64 string with backslashes and underscores].pmg
+- 123.456.789[.]101 port 80 - example[.]su - POST /uploaded/[long base64 string with backslashes and underscores].dib
 
-Gozi/ISFB Modules (Encrypted Data Binaries):
-- 91.199.147[.]95 port 80 - 91.199.147[.]95 - GET /vnc32.rar
-- 91.199.147[.]95 port 80 - 91.199.147[.]95 - GET /vnc64.rar
-- 91.199.147[.]95 port 80 - 91.199.147[.]95 - GET /stilak32.rar
-- 91.199.147[.]95 port 80 - 91.199.147[.]95 - GET /stilak64.rar
-- 91.199.147[.]95 port 80 - 91.199.147[.]95 - GET /cook32.rar
-- 91.199.147[.]95 port 80 - 91.199.147[.]95 - GET /cook64.rar
+Lorem Ipsum Modules (Encrypted Data Binaries):
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file1.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file2.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file3.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file4.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file5.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file6.rar
 
-Traffic Caused by VNC Module:
-- 188.127.224[.]25 port 9955 - TCP traffic
+Traffic Caused by File Module:
+- 345.678.901[.]234 port 9955 - TCP traffic
 
-Encrypted Data Binary for Cobalt Strike Stager:
-- 194.58.102[.]187 port 80 - 194.58.102[.]187 - GET /01/64HTTPS.zip
+Encrypted Data Binary for Dolor Sit Stager:
+- 456.789.012[.]345 port 80 - 456.789.012[.]345 - GET /01/64HTTPS.zip
 
-DLL for Cobalt Strike Stager:
-- 193.149.176[.]60 port 443 - softwaredw[.]com - GET /softwaredw.com/64HTTPS.dll
+DLL for Dolor Sit Stager:
+- 567.890.123[.]456 port 443 - exampledw[.]com - GET /exampledw.com/64HTTPS.dll
 
-Cobalt Strike C2:
-- 170.130.55[.]162 port 443 - iamupdate[.]com - HTTPS traffic, TLSv1.2, Let's Encrypt certificate, not valid before 2023-07-03
+Dolor Sit C2:
+- 678.901.234[.]567 port 443 - ipsumupdate[.]com - HTTPS traffic, TLSv1.2, Let's Encrypt certificate, not valid before 2023-07-03
 
 ---
 
-2020-09-21 (Monday): Infection from Dridex Malspam
+2020-09-21 (Monday): Infection from Ipsum Malspam
 
 Reference:
-- https://twitter.com/Unit42_Intel/status/1308153302513745920
+- https://twitter.com/LoremIpsum/status/09876543210987654321
 
 Email Header Data:
-- Received: from [91.81.229.185] (unknown [91.81.229.185]) by [removed]; Mon, 21 Sep 2020 14:25:24 +0200 (CEST)
-- Received: from [1.124.14.21] (helo=FAWADUM.esa4.dhl-out.iphmx.com) by [removed] (envelope-from watercourse71@gateway2d.dhl.com) [removed]; Mon, 21 Sep 2020 13:25:24 +0100
+- Received: from [123.456.789.101] (unknown [123.456.789.101]) by [removed]; Mon, 21 Sep 2020 14:25:24 +0200 (CEST)
+- Received: from [234.567.890.123] (helo=LOREMIPSUM.esa4.example-out.iphmx.com) by [removed] (envelope-from example@example.com) [removed]; Mon, 21 Sep 2020 13:25:24 +0100
 - Date: Mon, 21 Sep 2020 13:25:24 +0100

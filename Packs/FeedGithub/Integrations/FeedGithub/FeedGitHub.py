@@ -27,13 +27,13 @@ class Client(BaseClient):
         parsed_since = dateparser.parse(since)
         parsed_until = dateparser.parse(until)
         if not (parsed_since and parsed_until):
-            demisto.debug(f"Unable to parse date string: since:{since} until:{until}")
-            raise ValueError(f"Unable to parse date string: since:{since} until:{until}")
-        params = {
-            "since": parsed_since.isoformat(),
-            "until": parsed_until.isoformat(),
-        }
-        response = self._http_request("GET", full_url=f"{self._base_url}/commits", params=params, resp_type="response")
+            response = self._http_request("GET", full_url=f"{self._base_url}/commits", resp_type="response")
+        else:
+            params = {
+                "since": parsed_since.isoformat(),
+                "until": parsed_until.isoformat(),
+            }
+            response = self._http_request("GET", full_url=f"{self._base_url}/commits", params=params, resp_type="response")
         demisto.debug(f"The base get_base_head_commits_sha() raw response: {response}")
         return [commit.get("sha") for commit in self._extract_commits(response)]
 
@@ -45,7 +45,7 @@ class Client(BaseClient):
             data = response.json()
             all_commits.extend(data)
             response = self._http_request("GET", full_url=response.links["next"]["url"], resp_type="response")
-        demisto.debug(f"list of all commits in the given time frame{all_commits}")
+            demisto.debug(f"There are many comites currently bringing them all...,  currently exist:{response}")
         return all_commits
 
     def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list[dict[str,str]], str]:
@@ -200,7 +200,7 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
 
 def make_grid_layout(list_dict):
     return [
-        {"index": d.get("name"), "string": d.get("value"), "type": d.get("type"), "modifiers": d.get("modifiers", "")}
+        {"index": d.get("name"), "string": d.get("value"), "type": d.get("type"), "modifiers": d.get("modifiers")}
         for d in list_dict
     ]
 
