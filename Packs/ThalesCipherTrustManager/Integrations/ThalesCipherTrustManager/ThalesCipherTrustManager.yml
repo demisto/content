@@ -427,38 +427,38 @@ script:
     description: Deletes an external CA certificate.
     name: ciphertrust-external-certificate-delete
     arguments:
-    - name: external_ca_id
+    - name: external_cert_id
       isArray: false
-      description: The identifier of the certificate resource
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
     outputs: []
   - deprecated: false
-    description: Returns a list of external CA certificates. The results can be filtered, using the query parameters.
+    description: Returns a list of external CA certificates. The results can be filtered, using the command arguments.
     name: ciphertrust-external-certificate-list
     arguments:
     - name: subject
       isArray: false
-      description: Filter by subject
+      description: Filter by the subject
       required: false
       secret: false
       default: false
     - name: issuer
       isArray: false
-      description: Filter by issuer
+      description: Filter by the issuer
       required: false
       secret: false
       default: false
     - name: serial_number
       isArray: false
-      description: Filter by serial number
+      description: Filter by the serial number
       required: false
       secret: false
       default: false
     - name: cert
       isArray: false
-      description: Filter by cert
+      description: Filter by the cert
       required: false
       secret: false
       default: false
@@ -481,14 +481,80 @@ script:
       secret: false
       default: false
       defaultValue: 50
-    outputs: []
+    outputs:
+      - contextPath: CipherTrust.ExternalCertificate.skip
+        description: The number of records to skip in the query.
+        type: Integer
+      - contextPath: CipherTrust.ExternalCertificate.limit
+        description: The maximum number of records to return in the query.
+        type: Integer
+      - contextPath: CipherTrust.ExternalCertificate.total
+        description: The total number of records found.
+        type: Integer
+      - contextPath: CipherTrust.ExternalCertificate.resources.id
+        description: A unique identifier for the certificate authority (CA) certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.uri
+        description: Uniform Resource Identifier associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.account
+        description: Account associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.devAccount
+        description: Developer account associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.application
+        description: Application associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.createdAt
+        description: Timestamp of when the CA certificate was created.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.resources.updatedAt
+        description: Timestamp of the last update of the CA certificate.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.resources.name
+        description: Name of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.cert
+        description: Certificate content.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.purpose.client_authentication
+        description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.purpose.user_authentication
+        description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.serialNumber
+        description: Serial number of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.subject
+        description: Subject of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.issuer
+        description: Issuer of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.notBefore
+        description: Timestamp of when the CA certificate is valid from.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.resources.notAfter
+        description: Timestamp of when the CA certificate is valid until.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.resources.sha1Fingerprint
+        description: SHA-1 fingerprint of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.sha256Fingerprint
+        description: SHA-256 fingerprint of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.resources.sha512Fingerprint
+        description: SHA-512 fingerprint of the CA certificate.
+        type: String
   - deprecated: false
     description: Update an external CA.
     name: ciphertrust-external-certificate-update
     arguments:
     - name: external_ca_id
       isArray: false
-      description: The identifier of the certificate resource
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
@@ -512,7 +578,64 @@ script:
       - 'true'
       - 'false'
       auto: PREDEFINED
-    outputs: []
+    outputs:
+      - contextPath: CipherTrust.ExternalCertificate.id
+        description: A unique identifier for the certificate authority (CA) certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.uri
+        description: Uniform Resource Identifier associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.account
+        description: Account associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.devAccount
+        description: Developer account associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.application
+        description: Application associated with the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.createdAt
+        description: Timestamp of when the CA certificate was created.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.updatedAt
+        description: Timestamp of the last update of the CA certificate.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.name
+        description: Name of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.cert
+        description: Certificate content.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.purpose.client_authentication
+        description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.purpose.user_authentication
+        description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.serialNumber
+        description: Serial number of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.subject
+        description: Subject of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.issuer
+        description: Issuer of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.notBefore
+        description: Timestamp of when the CA certificate is valid from.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.notAfter
+        description: Timestamp of when the CA certificate is valid until.
+        type: Date
+      - contextPath: CipherTrust.ExternalCertificate.sha1Fingerprint
+        description: SHA-1 fingerprint of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.sha256Fingerprint
+        description: SHA-256 fingerprint of the CA certificate.
+        type: String
+      - contextPath: CipherTrust.ExternalCertificate.sha512Fingerprint
+        description: SHA-512 fingerprint of the CA certificate.
+        type: String
   - deprecated: false
     description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
     name: ciphertrust-external-certificate-upload

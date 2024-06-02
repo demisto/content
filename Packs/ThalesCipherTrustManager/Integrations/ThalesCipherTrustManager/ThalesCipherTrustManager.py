@@ -96,6 +96,7 @@ class CommandArguments:
     PARENT = 'parent'
     EXTERNAL_CA_ID = 'external_ca_id'
     SERIAL_NUMBER = 'serial_number'
+    EXTERNAL_CERT_ID = 'external_cert_id'
 
 
 '''CLIENT CLASS'''
@@ -299,10 +300,10 @@ class CipherTrustClient(BaseClient):
             json_data=request_data,
         )
 
-    def delete_external_certificate(self, external_ca_id: str) -> dict[str, Any]:
+    def delete_external_certificate(self, external_cert_id: str) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
-            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
+            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_cert_id),
             return_empty_response=True,
         )
 
@@ -770,7 +771,8 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
 
 def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     raw_response = client.resume_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
-                                             cert_id=verify_required_arg(CommandArguments.CERT_ID, args.get(CommandArguments.CERT_ID)))
+                                             cert_id=verify_required_arg(CommandArguments.CERT_ID,
+                                                                         args.get(CommandArguments.CERT_ID)))
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
@@ -795,10 +797,10 @@ def external_certificate_upload_command(client: CipherTrustClient, args: dict[st
 
 
 def external_certificate_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.delete_external_certificate(external_ca_id=verify_required_arg(CommandArguments.EXTERNAL_CA_ID,
-                                                                          args.get(CommandArguments.EXTERNAL_CA_ID)))
+    client.delete_external_certificate(external_cert_id=verify_required_arg(CommandArguments.EXTERNAL_CERT_ID,
+                                                                            args.get(CommandArguments.EXTERNAL_CERT_ID)))
     return CommandResults(
-        readable_output=f'{args.get(CommandArguments.EXTERNAL_CA_ID)} has been deleted successfully!'
+        readable_output=f'{args.get(CommandArguments.EXTERNAL_CERT_ID)} has been deleted successfully!'
     )
 
 

@@ -90,6 +90,7 @@ class CommandArguments:
     CERT_ENTRY_ID = 'cert_entry_id'
     NEW_GROUP_NAME = 'new_group_name'
     CSR_ENTRY_ID = 'csr_entry_id'
+    EXTERNAL_CERT_ID = 'external_cert_id'
 
 
 '''
@@ -429,9 +430,24 @@ EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = [
 
     }
 ]
-EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = []
-EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = []
-EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = []
+EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = [
+    {CommandArguments.EXTERNAL_CERT_ID: "123e456"}
+]
+EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = [
+    {CommandArguments.EXTERNAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+     CommandArguments.ALLOW_CLIENT_AUTHENTICATION: "false",
+     CommandArguments.ALLOW_USER_AUTHENTICATION: "true"}
+]
+EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = [
+    {},
+    {CommandArguments.SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     CommandArguments.ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     CommandArguments.SERIAL_NUMBER: "0",
+     CommandArguments.CERT: FAKE_CERT,
+     CommandArguments.PAGE: 0,
+     CommandArguments.PAGE_SIZE: 10,
+     CommandArguments.LIMIT: 10},
+]
 
 ''' HELPER FUNCTIONS TESTS'''
 
@@ -992,7 +1008,7 @@ def test_external_certificate_upload_command(mock_load_content_from_file, mock_u
 @patch(MOCKER_HTTP_METHOD)
 def test_external_certificate_delete_command(mock_delete_external_certificate, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_certificate_delete_command
-    mock_delete_external_certificate.return_value = util_load_json('test_data/mock_external_certificate_delete_response.json')
+    mock_delete_external_certificate.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -1003,7 +1019,7 @@ def test_external_certificate_delete_command(mock_delete_external_certificate, a
     assert result.outputs_prefix is None
     assert result.outputs == mock_delete_external_certificate.return_value
     assert result.raw_response == mock_delete_external_certificate.return_value
-    assert result.readable_output == f'{args[CommandArguments.EXTERNAL_CA_ID]} has been deleted successfully!'
+    assert result.readable_output == f'{args[CommandArguments.EXTERNAL_CERT_ID]} has been deleted successfully!'
 
 
 @pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS)
@@ -1028,7 +1044,7 @@ def test_external_certificate_update_command(mock_update_external_certificate, a
 def test_external_certificate_list_command(mock_get_external_certificates_list, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_certificate_list_command
     mock_get_external_certificates_list.return_value = util_load_json(
-        'test_data/mock_external_certificate_list_response.json.json')
+        'test_data/mock_external_certificate_list_response.json')
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
