@@ -966,8 +966,6 @@ def get_policy_command(args):
     contents = []
     policy_id = args.get('policyID')
     policy_type = args.get('policyType', 'blockedsenders')
-    title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
-
     title = f'Mimecast Get {policy_type} Policy'
 
     policies_list = get_policy_request(policy_type, policy_id)
