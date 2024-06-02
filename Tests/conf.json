@@ -1611,7 +1611,7 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 400,
+            "timeout": 600,
             "memory_threshold": 150
         },
         {
