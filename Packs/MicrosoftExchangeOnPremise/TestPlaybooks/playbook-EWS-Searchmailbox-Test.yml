@@ -176,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e7c554cd-2ffe-47a6-892b-e7a654bcbeed
+    taskid: fa38c987-bb3f-4c18-8e53-925deff10b1c
     type: regular
     task:
-      id: e7c554cd-2ffe-47a6-892b-e7a654bcbeed
+      id: fa38c987-bb3f-4c18-8e53-925deff10b1c
       version: -1
       name: Search Item In Inbox/test
       script: 'EWS v2|||ews-search-mailbox'
@@ -196,7 +196,7 @@ tasks:
       query:
         simple: body:384868fafe3ef9190a8a5e59c5c195c
       folder-path:
-        simple: Inbox/TEST
+        simple: Inbox/Test
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -215,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 6bae0381-b6f6-4578-87bf-9a14f0b3d06b
+    taskid: 34afebc3-ef52-488d-8087-70e5b09ba012
     type: regular
     task:
-      id: 6bae0381-b6f6-4578-87bf-9a14f0b3d06b
+      id: 34afebc3-ef52-488d-8087-70e5b09ba012
       version: -1
       name: Wait
       scriptName: Sleep
@@ -230,7 +230,7 @@ tasks:
       - "19"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "90"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -289,12 +289,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 085edb94-c91d-4d4b-8296-d5b9d41641d5
+    taskid: ebea068d-29f8-4775-89b4-33ae345f7b40
     type: regular
     task:
-      id: 085edb94-c91d-4d4b-8296-d5b9d41641d5
+      id: ebea068d-29f8-4775-89b4-33ae345f7b40
       version: -1
-      name: Search Item In Mailbox (o365)
+      name: Search Item In "Sent Items" (o365)
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: EWSO365|||ews-search-mailbox
       type: regular
@@ -596,12 +596,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5c02020f-ab1d-43d2-81a5-d3c457e728d9
+    taskid: a58ab584-2b32-43cd-88fc-1d263b2dcd21
     type: regular
     task:
-      id: 5c02020f-ab1d-43d2-81a5-d3c457e728d9
+      id: a58ab584-2b32-43cd-88fc-1d263b2dcd21
       version: -1
-      name: Search Item In Mailbox (ews v2)
+      name: Search Item In Inbox (ews v2)
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: EWS v2|||ews-search-mailbox
       type: regular
@@ -670,12 +670,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 6ec853be-f3ba-4eb4-8fdd-c2cee6b63941
+    taskid: 40d5f1ef-6530-458f-8d28-4815f82c481f
     type: regular
     task:
-      id: 6ec853be-f3ba-4eb4-8fdd-c2cee6b63941
+      id: 40d5f1ef-6530-458f-8d28-4815f82c481f
       version: -1
-      name: Wait
+      name: Wait 90 seconds
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -685,7 +685,7 @@ tasks:
       - "28"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "90"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -781,12 +781,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: a7f98f83-63d0-456a-885c-75c73bc7f51f
+    taskid: c64fbfeb-5174-4e7c-8036-e26fc6a5dc69
     type: regular
     task:
-      id: a7f98f83-63d0-456a-885c-75c73bc7f51f
+      id: c64fbfeb-5174-4e7c-8036-e26fc6a5dc69
       version: -1
-      name: Search Item In inbox
+      name: Search Item In for_test_playbook-do not delete
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: EWSO365|||ews-search-mailbox
       type: regular
