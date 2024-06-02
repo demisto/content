@@ -1,16 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict
 
 
 def main():
 
     try:
-        args: Dict = demisto.args()
+        args: dict = demisto.args()
         root = args.get('key', [])
 
         for i in root:
-            if isinstance(root[i], str) or isinstance(root[i], int):
+            if isinstance(root[i], int | str):
                 root[i] = [root[i]]
 
         max_len = max([len(root[i]) for i in root])

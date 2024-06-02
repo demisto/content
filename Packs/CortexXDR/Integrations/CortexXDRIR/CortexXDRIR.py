@@ -1267,7 +1267,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts = argToBoolean(params.get('exclude_fields'))
+    exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
 
     try:
         timeout = int(params.get('timeout', 120))
