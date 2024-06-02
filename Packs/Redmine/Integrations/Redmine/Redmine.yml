@@ -76,6 +76,8 @@ script:
           - Float: A number with two digits after the decimal point.
           - Integer: A number.
           - Key/Value list: Use the Key (ID) of the value.
+          - User: Use the user ID.
+          - Version- use the version ID.
       isArray: true
     - name: watcher_user_ids
       description: An array with watcher user IDs for this issue -> 1,2,3.
@@ -221,6 +223,8 @@ script:
           - Float: A number with two digits after the decimal point.
           - Integer: A number.
           - Key/Value list: Use the Key (ID) of the value.
+          - User: Use the user ID.
+          - Version- use the version ID.
       isArray: true
     - name: watcher_user_ids
       description: A comma-separated list of watcher IDs. -> 1,2,3.
