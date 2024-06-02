@@ -10,10 +10,19 @@ configuration:
   name: server_url
   type: 0
   required: true
-- display: Credentials
+- display: Username
   name: credentials
   type: 9
   required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 script:
   commands:
   - deprecated: false
@@ -1470,7 +1479,7 @@ script:
       default: false
     - name: password
       isArray: false
-      description: The password used to secure the users account. Allowed passwords are defined by the password policy.Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods.In all other cases, password is required. It is not included in user resource responses.
+      description: 'The password used to secure the users account. Allowed passwords are defined by the password policy. Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods. In all other cases, password is required. It is not included in user resource responses. Default password complexity requirement: minimum characters = 8, maximum characters = 30, lower-case letters = 1, upper-case letters = 1, decimal digits = 1, special characters = 1'
       required: false
       secret: false
       default: false
