@@ -219,6 +219,11 @@ class PychromeEventHandler:
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
+    def page_frame_stopped_loading(self, frameId):
+        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {frameId=}')
+        if self.start_frame == frameId:
+            self.tab_ready_event.set()
+
 # endregion
 
 
@@ -421,6 +426,7 @@ def setup_tab_event(browser, tab):
     tab.Network.dataReceived = tab_event_handler.network_data_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
+    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
 
     return tab_event_handler, tab_ready_event
 
@@ -441,7 +447,14 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         else:
             tab.Page.navigate(url=path)
 
-        time.sleep(max(float(wait_time), 0.3))  # pylint: disable=E9003
+        success_flag = tab_ready_event.wait(navigation_timeout)
+
+        if not success_flag:
+            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
+            demisto.error(message)
+            return_error(message)
+
+        time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
