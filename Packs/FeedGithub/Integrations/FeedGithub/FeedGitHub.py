@@ -293,7 +293,7 @@ def extract_text_indicators(content: dict[str, str], params):
                 if regex in (ipv4Regex, urlRegex):
                     indicators.append({"value": match.group(group_name), "type": type_})
                 elif regex == domainRegex:
-                    regex_type = type_(match.group(group_name))
+                    regex_type = type(match.group(group_name))
                     if regex_type:
                         indicators.append({"value": match.group(group_name), "type": regex_type})
     indicators_to_xsoar = arrange_iocs_indicator_to_xsoar(file_path, indicators, params)
