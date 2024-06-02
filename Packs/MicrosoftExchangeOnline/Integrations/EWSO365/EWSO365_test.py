@@ -410,10 +410,16 @@ def test_handle_transient_files(transient_files, transient_files_contents, trans
 
 
 HTML_PACKAGE = [
-    ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [])),
+    ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [], [])),
     ('<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>',
-     ('<html><body>some text <img src="cid:image0@abcd1234.abcd1234"></body></html>',
-      [{'data': base64.b64decode('abcd'), 'name': 'image0', 'cid': 'image0@abcd1234.abcd1234'}]
+     ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
+      [{'data': b'i\xb7\x1d', 'name': 'image0@abcd1234_abcd1234-imageName:image0', 'cid': 'image0@abcd1234_abcd1234'}],
+      [{
+          'Contents': '',
+          'ContentsFormat': 'text',
+          'Type': 3,
+          'File': 'image0@abcd1234_abcd1234-imageName:image0',
+          'FileID': '12345678'}]
       )
      )
 ]
@@ -433,6 +439,7 @@ def test_handle_html(mocker, html_input, expected_output):
     """
     import EWSO365 as ewso365
     mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
+    mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
     assert handle_html(html_input) == expected_output
 
 
