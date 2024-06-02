@@ -87,10 +87,6 @@ class Client(object):
             indicator_obj = {
                 "service": "Cyble Feed"
             }
-            for eachtype in FeedIndicatorType.list_all_supported_indicators():
-                if eachtype.lower() in args.get('collection').lower():      # type: ignore
-                    indicator_obj['type'] = eachtype
-                    break
             multi_data = True
             try:
                 data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
@@ -121,15 +117,15 @@ class Client(object):
                 elif len(ind_val) != 0:
                     indicator_obj['type'] = list(ind_val.keys())[0]
                     indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
-            #
+
             if eachres.get('indicators'):
-                for eachindicator in eachres.get('indicators'):
-                    indicator_obj['title'] = eachindicator.get('title')
-                    indicator_obj['time'] = eachindicator.get('timestamp')
+                ind_content = eachres.get('indicators')
             else:
-                for eachindicator in eachres.get('ttps').get('ttps'):
-                    indicator_obj['title'] = eachindicator.get('title')
-                    indicator_obj['time'] = eachindicator.get('timestamp')
+                ind_content = eachres.get('ttps').get('ttps')
+
+            for eachindicator in ind_content:
+                indicator_obj['title'] = eachindicator.get('title')
+                indicator_obj['time'] = eachindicator.get('timestamp')
 
             indicator_obj['rawJSON'] = eachres
             indicators.append(indicator_obj)
@@ -159,6 +155,10 @@ class Client(object):
         count = 0
 
         try:
+
+            if 'begin' not in args or 'end' not in args:
+                raise ValueError("Last fetch time retrieval failed.")
+
             for data in self.fetch(args.get('begin'), args.get('end'), args.get('collection')):
                 skip = False
                 response = self.parse_to_json(data)
@@ -169,7 +169,6 @@ class Client(object):
                     content = response.get('ttps').get('ttps')
                 else:
                     continue
-                    # raise ValueError("Last fetch time retrieval failed.")
 
                 for eachone in content:
                     if eachone.get('confidence'):
@@ -291,7 +290,6 @@ def fetch_indicators(client: Client):
     '''
     args = {}
     last_run = demisto.getLastRun()
-    is_first_fetch = None
     if isinstance(last_run, dict):
         last_fetch_time = last_run.get('lastRun_{}'.format(client.collection_name), None)
 
