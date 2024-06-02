@@ -23,7 +23,7 @@ SAVED_SEARCH_HEADERS = [
 ]
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
-AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
+AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation' # TODO: Update
 
 
 class Client:
@@ -47,7 +47,7 @@ class Client:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope='' if client_credentials else AUTH_CODE_SCOPE,
+            scope='' if client_credentials else AUTH_CODE_SCOPE, #TODO: update 
             tenant_id=tenant_id,
             auth_code=auth_code,
             ok_codes=(200, 202, 204, 400, 401, 403, 404, 409),

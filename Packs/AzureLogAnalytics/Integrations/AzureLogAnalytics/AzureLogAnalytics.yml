@@ -3,6 +3,22 @@ commonfields:
   id: Azure Log Analytics
   version: -1
 configuration:
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
 - additionalinfo: Received from the authorization process or from the self-deployed configuration process (find the tenant ID in your app overview page in the Azure portal)
   display: Token / Tenant ID
   name: refresh_token
