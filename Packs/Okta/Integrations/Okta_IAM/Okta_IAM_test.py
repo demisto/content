@@ -478,16 +478,21 @@ def test_fetch_incidents__last_run(mocker):
     assert isinstance(last_run_time, datetime)
 
 
+LOGS = [
+    {'mock_log1': 'mock_value1'},
+    {'mock_log2': 'mock_value2'},
+    {'mock_log3': 'mock_value3'}
+]
+
+
 def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
-    first_batch = [{'mock_log1': 'mock_value1'}, {'mock_log2': 'mock_value2'}]
-    second_batch = [{'mock_log3': 'mock_value3'}]
     if url_suffix:
         # first iteration
-        return first_batch, 'mock_next_page'
+        return LOGS[:2], 'mock_next_page'
 
     elif full_url:
         # second iteration
-        return second_batch, None
+        return LOGS[2:], None
 
     # third iteration - nothing is returned
     return None, None
@@ -513,3 +518,31 @@ SHOULD_DROP_EVENT_ARGS = [
 def test_should_drop_event(log_entry, email_to_user_profile, expected):
     from Okta_IAM import should_drop_event
     assert should_drop_event(log_entry, email_to_user_profile) == expected
+
+
+LOGS_WITH_LIMIT = [
+    (None, 3),
+    (1, 1),
+    (3, 3),
+    (1001, 3)
+]
+
+
+@pytest.mark.parametrize('limit, logs_amount', LOGS_WITH_LIMIT)
+def test_get_logs_command(mocker, requests_mock, limit, logs_amount):
+    """
+    Given:
+        - An Okta IAM client object.
+    When:
+        - Calling function okta-get-logs
+        - Events should come in two batches of two events in the first batch, and one event in the second batch.
+    Then:
+        - Ensure three events are returned in incident the correct format.
+    """
+    from Okta_IAM import get_logs_command
+
+    mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
+    requests_mock.get(f"{BASE_URL}/logs?limit={limit}", json=LOGS[:limit])
+    args = {'limit': limit}
+    results = get_logs_command(client=mock_client(), args=args)
+    assert len(results.outputs) == logs_amount
