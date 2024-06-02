@@ -12,7 +12,7 @@ configuration:
   display: Base URL
   name: url
   type: 0
-  additionalinfo: The URL to the github api
+  additionalinfo: The URL to the GitHub API.
   section: Connect
   required: true
 - displaypassword: API Token
@@ -36,7 +36,7 @@ configuration:
   display: Repository / Path to fetch
   name: repo
   type: 0
-  additionalinfo: The name of the repository
+  additionalinfo: The name of the repository.
   section: Connect
   required: true
 - defaultvalue: ""
@@ -59,7 +59,7 @@ configuration:
   type: 0
   required: true
   defaultvalue: main
-  additionalinfo: 'The name of the main branch to which you would like to compare'
+  additionalinfo: The name of the main branch to which to compare.
   section: Collect
   advanced: true
 - display: Files extensions to fetch
@@ -71,10 +71,10 @@ configuration:
   - txt
   - yar
   - json
-  additionalinfo: 'Choosing an extension for the file names you want to target'
+  additionalinfo: The extension of the file names to target.
   section: Collect
   advanced: true
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
@@ -87,7 +87,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -98,7 +98,7 @@ configuration:
   required: false
   type: 15
 - display: First fetch time
-  additionalinfo: First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago"
+  additionalinfo: First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago".
   name: fetch_since
   type: 0
   defaultvalue: '90 days ago'
@@ -131,7 +131,7 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- additionalinfo: Insert as a comma-separated list
+- additionalinfo: Insert as a comma-separated list.
   display: Tags
   name: feedTags
   required: false

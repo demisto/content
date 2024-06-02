@@ -2,7 +2,7 @@
 
 The integration supports the following workflow:
 
-- Publication of indicators from a specific repo
+- Publication of indicators from a specific repo.
 
  To access the requested repository, you need to provide
  the owner(username), repo(repository) name, and API key as parameters for the

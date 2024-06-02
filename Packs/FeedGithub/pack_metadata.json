@@ -1,6 +1,6 @@
 {
     "name": "GitHub Feed",
-    "description": " ",
+    "description": " A github feed is run on a github repository to scan and publish indicators for XSOAR",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,9 +9,15 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Free Feed",
+        "Plug & Fetch",
+        "Generic Feed"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "YARA"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
