@@ -466,7 +466,7 @@ LOCAL_CA_INSTALL_INPUTS = [
 
 CERTIFICATE_ISSUE_INPUTS = [
     InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource. This can be '
-                                                                                'either the ID (a UUIDv4),the Name, the URI, '
+                                                                          'either the ID (a UUIDv4),the Name, the URI, '
                                                                           'or the slug (which is the last component of '
                                                                           'the URI).'),
     InputArgument(name=CommandArguments.CSR_ENTRY_ID, required=True, description='The entry ID of the file to upload that '
@@ -493,8 +493,14 @@ CERTIFICATE_LIST_INPUTS = [InputArgument(name=CommandArguments.CA_ID, required=T
                            ] + PAGINATION_INPUTS
 
 LOCAL_CERTIFICATE_DELETE_INPUTS = [
-    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource'),
-    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='The identifier of the certificate resource'),
+    InputArgument(name=CommandArguments.CA_ID, required=True, description='An identifier of the issuer CA resource. This can be '
+                                                                          'either the ID (a UUIDv4),the Name, the URI, '
+                                                                          'or the slug (which is the last component of '
+                                                                          'the URI).'),
+    InputArgument(name=CommandArguments.LOCAL_CA_ID, required=True, description='An identifier of the certificate resource.This can be '
+                                                                          'either the ID (a UUIDv4), the URI, '
+                                                                          'or the slug (which is the last component of '
+                                                                          'the URI).'),
 ]
 
 CERTIFICATE_REVOKE_INPUTS = [
@@ -881,10 +887,11 @@ LOCAL_CA_INSTALL_OUTPUT = [
     OutputArgument(name="sha1Fingerprint", output_type=str, description="SHA1 fingerprint of the CA's certificate."),
     OutputArgument(name="sha256Fingerprint", output_type=str, description="SHA256 fingerprint of the CA's certificate."),
     OutputArgument(name="sha512Fingerprint", output_type=str, description="SHA512 fingerprint of the CA's certificate."),
-    OutputArgument(name="purpose.client_authentication", output_type=str, description="Indicates if client authentication is enabled for the CA."),
-    OutputArgument(name="purpose.user_authentication", output_type=str, description="Indicates if user authentication is enabled for the CA.")
+    OutputArgument(name="purpose.client_authentication", output_type=str,
+                   description="Indicates if client authentication is enabled for the CA."),
+    OutputArgument(name="purpose.user_authentication", output_type=str,
+                   description="Indicates if user authentication is enabled for the CA.")
 ]
-
 
 '''' YML METADATA END  '''
 
@@ -1163,7 +1170,6 @@ def load_content_from_file(entry_id: str) -> str:
             return file.read()
     except Exception as e:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
-
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1492,7 +1498,8 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
 
 
 @metadata_collector.command(command_name='ciphertrust-local-ca-install', inputs_list=LOCAL_CA_INSTALL_INPUTS,
-                            description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX, outputs_list=LOCAL_CA_INSTALL_OUTPUT)
+                            description=LOCAL_CA_INSTALL_DESCRIPTION, outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
+                            outputs_list=LOCAL_CA_INSTALL_OUTPUT)
 def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     cert = load_content_from_file(args.get(CommandArguments.CERT_ENTRY_ID))
     request_data = assign_params(

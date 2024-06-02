@@ -323,22 +323,22 @@ LOCAL_CA_DELETE_TEST_ARGS = [
     {CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000"},
 ]
 LOCAL_CA_SELF_SIGN_TEST_ARGS = [
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
 
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
 
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration': '365'}),
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration': '365'}),
 
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
       'not_after': '2024-01-01T00:00:00Z'}),
 
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00:00Z',
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00:00Z',
       'not_after': 'two weeks'})
 ]
 
 LOCAL_CA_SELF_SIGN_TEST_MISSING_ARGS = [
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000'}),
-    ({'local_ca_id': '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000'}),
+    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
 ]
 LOCAL_CA_INSTALL_TEST_ARGS = [
     {
@@ -349,7 +349,12 @@ LOCAL_CA_INSTALL_TEST_ARGS = [
 ]
 CERTIFICATE_ISSUE_TEST_ARGS = []
 CERTIFICATE_LIST_TEST_ARGS = []
-LOCAL_CERTIFICATE_DELETE_TEST_ARGS = []
+LOCAL_CERTIFICATE_DELETE_TEST_ARGS = [
+    {
+        CommandArguments.CA_ID : "",
+        CommandArguments.LOCAL_CA_ID : ""
+    }
+]
 CERTIFICATE_REVOKE_TEST_ARGS = []
 CERTIFICATE_RESUME_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = []
@@ -827,7 +832,7 @@ def test_certificate_list_command(mock_get_certificates_list, args):
 @patch(MOCKER_HTTP_METHOD)
 def test_local_certificate_delete_command(mock_delete_certificate, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_certificate_delete_command
-    mock_delete_certificate.return_value = util_load_json('test_data/mock_local_certificate_delete_response.json')
+    mock_delete_certificate.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
