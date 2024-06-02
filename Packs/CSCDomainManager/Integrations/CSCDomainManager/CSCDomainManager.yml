@@ -81,39 +81,7 @@ script:
     description: Gets the domains by the applied filters
     name: csc-domains-search
     outputs:
-    - contextPath: CSCDomainManager.Domain.QualifiedDomainName
-      description: the qualified domain name
-      type: String
-    - contextPath: CSCDomainManager.Domain.Domain
-      description: the domain
-      type: String
-    - contextPath: CSCDomainManager.Domain.ManagedStatus
-      description: the managed status
-      type: String
-    - contextPath: CSCDomainManager.Domain.RegistrationDate
-      description: the registration date
-      type: String
-    - contextPath: CSCDomainManager.Domain.RegistryExpiryDate 
-      description: the registry expiry date
-      type: String
-    - contextPath: CSCDomainManager.Domain.PaidThroughDate
-      description: paid through date
-      type: String
-    - contextPath: CSCDomainManager.Domain.NameServers
-      description: servers names
-      type: String
-    - contextPath: CSCDomainManager.Domain.DnsType
-      description: dns type
-      type: String
-    - contextPath: CSCDomainManager.Domain.WhoisContactFirstName
-      description: first name from whoisContacts
-      type: String
-    - contextPath: CSCDomainManager.Domain.WhoisContactLastName
-      description: last name from whoisContacts
-      type: String
-    - contextPath: CSCDomainManager.Domain.WhoisContactEmail
-      description: whoisContact email
-      type: String
+
   - arguments:
     - description: the domain name
       name: domain_name
