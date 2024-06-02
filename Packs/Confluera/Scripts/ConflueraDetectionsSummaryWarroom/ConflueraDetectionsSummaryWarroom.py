@@ -27,7 +27,7 @@ colors = cycle([
     '#cdb8a8',
     '#3cc861'])
 
-for idx, ioc in enumerate(detections):
+for _idx, ioc in enumerate(detections):
     element = [item for item in data if item['name'] == ioc['iocTactic']]
 
     if element and len(element) != 0:
