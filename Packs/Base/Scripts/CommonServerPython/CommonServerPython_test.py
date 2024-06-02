@@ -1268,7 +1268,7 @@ def test_get_error_need_raise_error_on_non_error_input():
 @mark.parametrize('data,data_expected,filename', [
     ("this is a test", b"this is a test", "test.txt"),
     ("this is a test", b"this is a test", "../../../test.txt"),
-    (u"עברית", u"עברית".encode('utf-8'), "test.txt", "3"),
+    (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
     (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected, filename):
