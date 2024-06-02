@@ -5119,7 +5119,7 @@ def handle_machines(machines_response):
 
 
 def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
-    """Retrieves machines that comunicated with the requested internal IP in the time range of 15 minutes prior and after a given
+    """Retrieves machines that comunicated with the requested internal ip in the time range of 15 minutes prior and after a given
     timestamp.
 
     Returns:
