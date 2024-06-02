@@ -1,6 +1,7 @@
 # FireEye HX
 This pack includes Cortex XSIAM content.
 
+<~XSIAM>
 ## Configuration on Server Side
 ### Raw syslog audit messages
 In order to configure FireEye HX to send syslog audit logs, refer to FireEye HX [Endpoint Security Server System Administration Guide](https://docs.trellix.com/bundle/hx_sag_5-3-0_pdf/resource/HX_SAG_5.3.0_pdf.pdf) (**Configuring a Syslog Server Using the CLI**).
@@ -28,4 +29,5 @@ You can configure the specific vendor and product for this instance.
    - product as hx_audit
    - format as Auto-Detect
    - protocol as UDP
- 
+   
+ </~XSIAM>
