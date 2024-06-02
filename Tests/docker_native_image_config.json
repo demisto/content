@@ -177,9 +177,17 @@
             ]
         },
         {
-            "id":"Github Feed",
-            "reason":"update docker image",
-            "ignored_native_images":[
+            "id": "Github Feed",
+            "reason": "update docker image",
+            "ignored_native_images": [
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
+        {
+            "id": "ZipFile",
+            "reason": "see CIAC-10361",
+            "ignored_native_images": [
                 "native:8.6",
                 "native:candidate"
             ]
