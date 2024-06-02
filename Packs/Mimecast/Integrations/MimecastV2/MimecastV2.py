@@ -1012,7 +1012,7 @@ def get_policy_command(args):
         })
 
     output_type = {
-        'blockedsenders': 'BlockedSendersPolicy',
+        'blockedsenders': 'Policy',
         'antispoofing-bypass': 'AntispoofingBypassPolicy',
         'address-alteration': 'AddressAlterationPolicy',
     }
@@ -1442,29 +1442,29 @@ def create_or_update_policy_request(policy, option, policy_id=None, policy_type=
     return response.get('data')[0]
 
 
-def delete_policy():
-    contents = []  # type: List[Any]
-    context = {}
-    policy_id = demisto.args().get('policyID')
-    policy_type = demisto.args().get('policyType')
+def delete_policy(args):
+    policy_id = args.get('policyID')
+    policy_type = args.get('policyType')
 
     delete_policy_request(policy_type, policy_id)
 
-    context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = {
+    context = {
         'ID': policy_id,
         'Deleted': True
     }
 
-    results = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Mimecast Policy {policy_id} deleted successfully!',
-        'EntryContext': context
+    output_type = {
+        'blockedsenders': 'Policy',
+        'antispoofing-bypass': 'AntispoofingBypassPolicy',
+        'address-alteration': 'AddressAlterationPolicy',
     }
 
-    return results
+    return CommandResults(
+        outputs_prefix=f'Mimecast.{output_type[policy_type]}',
+        outputs=context,
+        readable_output=f'Mimecast Policy {policy_id} deleted successfully!',
+        outputs_key_field='ID'
+    )
 
 
 def delete_policy_request(policy_type, policy_id=None):
@@ -1472,6 +1472,7 @@ def delete_policy_request(policy_type, policy_id=None):
     api_endpoints = {
         'antispoofing-bypass': 'antispoofing-bypass/delete-policy',
         'address-alteration': 'address-alteration/delete-policy',
+        'blockedsenders': 'blockedsenders/delete-policy'
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     id = 'id'
@@ -3618,7 +3619,7 @@ def main():
         elif command == 'mimecast-update-block-sender-policy':
             return_results(update_block_sender_policy_command(args))
         elif command == 'mimecast-delete-policy':
-            demisto.results(delete_policy())
+            return_results(delete_policy(args))
         elif command == 'mimecast-manage-sender':
             demisto.results(manage_sender())
         elif command == 'mimecast-list-managed-url':

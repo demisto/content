@@ -300,34 +300,34 @@ script:
     description: Get a policy by ID.
     name: mimecast-get-policy
     outputs:
-    - contextPath: Mimecast.BlockedSendersPolicy.ID
+    - contextPath: Mimecast.Policy.ID
       description: Policy ID.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Address
+    - contextPath: Mimecast.Policy.Sender.Address
       description: Block Sender by email address.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Domain
+    - contextPath: Mimecast.Policy.Sender.Domain
       description: Block Sender by domain.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Group
+    - contextPath: Mimecast.Policy.Sender.Group
       description: Block Sender by group.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Bidirectional
+    - contextPath: Mimecast.Policy.Bidirectional
       description: Blocked policy is bidirectional or not.
       type: boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Address
+    - contextPath: Mimecast.Policy.Receiver.Address
       description: Block emails to receiver type address.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Domain
+    - contextPath: Mimecast.Policy.Receiver.Domain
       description: Block emails to receiver type domain.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Group
+    - contextPath: Mimecast.Policy.Receiver.Group
       description: Block emails to receiver type group.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Fromdate
+    - contextPath: Mimecast.Policy.Fromdate
       description: Policy validation start date.
       type: date
-    - contextPath: Mimecast.BlockedSendersPolicy.Todate
+    - contextPath: Mimecast.Policy.Todate
       description: Policy expiration date.
       type: date
     - contextPath: Mimecast.AntispoofingBypassPolicy.ID
@@ -489,10 +489,17 @@ script:
       predefined:
       - antispoofing-bypass
       - address-alteration
+      - blockedsenders
     description: Delete a Blocked Sender Policy.
     name: mimecast-delete-policy
     outputs:
     - contextPath: Mimecast.Policy.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.AntispoofingBypassPolicy.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.AddressAlterationPolicy.ID
       description: Policy ID.
       type: string
   - arguments:

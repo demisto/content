@@ -646,12 +646,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 81d0df67-2231-48d3-87aa-95eb5c539e1f
+    taskid: 5f1bee5b-935f-4477-871a-bb4e8c652da3
     type: condition
     task:
-      id: 81d0df67-2231-48d3-87aa-95eb5c539e1f
+      id: 5f1bee5b-935f-4477-871a-bb4e8c652da3
       version: -1
-      name: check the archive-search not empty
+      name: Check if the archive-search is not empty
       type: condition
       iscommand: false
       brand: ""
@@ -741,8 +741,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1300,
-          "y": 1255
+          "x": -870,
+          "y": 1260
         }
       }
     note: false
@@ -777,6 +777,8 @@ tasks:
       - "3"
       - "4"
       - "5"
+      - "7"
+      - "11"
     scriptarguments:
       all:
         simple: "yes"
@@ -798,12 +800,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 1f9bf9b2-909e-405d-84ac-28584f25a477
+    taskid: 22ece1a5-a2c7-40aa-8b5c-e860d41f3216
     type: condition
     task:
-      id: 1f9bf9b2-909e-405d-84ac-28584f25a477
+      id: 22ece1a5-a2c7-40aa-8b5c-e860d41f3216
       version: -1
-      name: Untitled Task
+      name: ' Check if the view-logs is not empty'
       type: condition
       iscommand: false
       brand: ""
@@ -838,12 +840,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: a8a89fda-96c3-4bd3-8a35-6a2e9169909e
+    taskid: 774fbf62-f766-4c90-8f75-451a24a20860
     type: condition
     task:
-      id: a8a89fda-96c3-4bd3-8a35-6a2e9169909e
+      id: 774fbf62-f766-4c90-8f75-451a24a20860
       version: -1
-      name: Untitled Task
+      name: Check if the list-account is not empty
       type: condition
       iscommand: false
       brand: ""
@@ -943,86 +945,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 59df7946-b1cc-474c-8764-2f7a3ba2a186
-    type: regular
-    task:
-      id: 59df7946-b1cc-474c-8764-2f7a3ba2a186
-      version: -1
-      name: DeleteContext
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 25
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: cba134f1-0e25-4f29-84b6-cd494fe1e96f
-    type: regular
-    task:
-      id: cba134f1-0e25-4f29-84b6-cd494fe1e96f
-      version: -1
-      name: DeleteContext
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1300,
-          "y": 25
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: 21f985f8-5df3-43d2-8db0-b87e41bcc7a5
@@ -1039,7 +961,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "21"
     scriptarguments:
       policyID:
         simple: ${Mimecast.AntispoofingBypassPolicy.id}
@@ -1115,7 +1037,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "30"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1133,7 +1055,7 @@ tasks:
       {
         "position": {
           "x": -430,
-          "y": 820
+          "y": 830
         }
       }
     note: false
@@ -1189,7 +1111,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1560,
+        "height": 1565,
         "width": 3030,
         "x": -1300,
         "y": -240
