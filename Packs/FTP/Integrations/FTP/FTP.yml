@@ -39,15 +39,19 @@ script:
   - arguments:
     - name: entry_id
       required: true
+      description: The Entry ID of the file to upload.
     - name: target
       required: true
+      description: The target FTP server to upload the file to.
     description: Upload file to ftp server.
     name: ftp-put
   - arguments:
     - name: file_path
       required: true
+      description: The path to the file to download from the FTP server.
     - name: file_name
       required: true
+      description: The file name to download from the FTP server.
     description: Download file from ftp server.
     name: ftp-get
   dockerimage: demisto/python3:3.10.14.96411
