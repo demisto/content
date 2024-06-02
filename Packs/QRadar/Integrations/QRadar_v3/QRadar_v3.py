@@ -5268,6 +5268,7 @@ def main() -> None:  # pragma: no cover
             client._return_execution_metrics_results()
             client.execution_metrics.metrics = None
 
+
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
