@@ -22,7 +22,7 @@ class Client(BaseClient):
                                      "indicatorTypes={indicator_types}&tagFormat=dict"
 
     def __init__(self, base_url, auth, headers, verify):
-        super(Client, self).__init__(base_url=base_url, auth=auth, headers=headers, verify=verify)
+        super().__init__(base_url=base_url, auth=auth, headers=headers, verify=verify)
 
     def query_indicators(self, hours, indicator_types, timeout, retries):
         endpoint = self.RANSOMWARE_INDICATORS_ENDPOINT.format(
