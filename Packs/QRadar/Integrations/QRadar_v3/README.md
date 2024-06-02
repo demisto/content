@@ -3561,4 +3561,19 @@ Retrieves a list of event collectors.
 | QRadar.EventCollector.HostID | Number | The ID of the host on which this event collector process runs. | 
 | QRadar.EventCollector.ComponentName | String | The name of the component backing this event collector process. Also contained in the "name" field. | 
 | QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 
-<details><summary>Toggle</summary> This is the content inside the toggle. </details>
+
+<details><summary><h3 style="display: inline;"> PAT (API Key) Authentication</h3></summary> 
+
+#### Use the API Token Instead of Username and Password
+ - In the **Username / API Key** field, type **_api_token_key**.  
+ - In the **Password** field, type your API token.
+
+</details>
+
+<details><summary><h3 style="display: inline;"> View Your QRadar Version</h3> </summary> 
+
+1. Enter QRadar service.
+2. Click the **Menu** toolbar. A scrolling toolbar will appear.
+3. Click **About**. A new window will appear with the details of your QRadar version.  
+If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version. 
+</details>
