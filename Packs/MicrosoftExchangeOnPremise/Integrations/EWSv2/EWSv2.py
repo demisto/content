@@ -213,6 +213,8 @@ def prepare_context(credentials):  # pragma: no cover
 def prepare():  # pragma: no cover
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+    else:
+        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
@@ -1659,7 +1661,8 @@ def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     try:
         readable_output = root.tree()   # pylint: disable=E1101
 
-    except ErrorAccessDenied:   # This is temporarily until the exchangelib version will be bumped
+    except Exception as e:   # This is temporarily until the exchangelib version will be bumped
+        demisto.debug(f'error was caught in tree {e}')
         readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
 
     return {
