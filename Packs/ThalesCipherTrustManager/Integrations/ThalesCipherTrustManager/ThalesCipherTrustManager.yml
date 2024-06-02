@@ -17,7 +17,7 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or notAfter date must be specified. If both notAfter date and duration are given, then notAfter takes precedence over duration. If duration is given without notBefore date, ceritificate is issued starting from server's current time for the specified duration.
+    description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
     name: ciphertrust-certificate-issue
     arguments:
     - name: ca_id
@@ -67,7 +67,67 @@ script:
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+      - contextPath: CipherTrust.CACertificate.id
+        description: A unique identifier for the certificate authority (CA).
+        type: String
+      - contextPath: CipherTrust.CACertificate.uri
+        description: Uniform Resource Identifier associated with the CA.
+        type: String
+      - contextPath: CipherTrust.CACertificate.account
+        description: Account associated with the CA.
+        type: String
+      - contextPath: CipherTrust.CACertificate.application
+        description: Application associated with the CA.
+        type: String
+      - contextPath: CipherTrust.CACertificate.devAccount
+        description: Developer account associated with the CA.
+        type: String
+      - contextPath: CipherTrust.CACertificate.name
+        description: Name of the CA.
+        type: String
+      - contextPath: CipherTrust.CACertificate.state
+        description: Current state of the CA (e.g., active, pending).
+        type: String
+      - contextPath: CipherTrust.CACertificate.createdAt
+        description: Timestamp of when the CA was created.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.updatedAt
+        description: Timestamp of the last update of the CA.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.cert
+        description: Certificate associated with the CA.
+        type: String
+      - contextPath: CipherTrust.CACertificate.serialNumber
+        description: Serial number of the CA's certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.subject
+        description: Subject of the CA's certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.issuer
+        description: Issuer of the CA's certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.ca
+        description: Certificate authority.
+        type: String
+      - contextPath: CipherTrust.CACertificate.revoked_at
+        description: Revocation timestamp.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+        description: SHA-1 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+        description: SHA-256 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+        description: SHA-512 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.notBefore
+        description: Timestamp of when the certificate is valid from.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.notAfter
+        description: Timestamp of when the certificate is valid until.
+        type: Date
   - deprecated: false
     description: Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.
     name: ciphertrust-certificate-list

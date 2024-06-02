@@ -89,6 +89,7 @@ class CommandArguments:
     SERIAL_NUMBER = 'serial_number'
     CERT_ENTRY_ID = 'cert_entry_id'
     NEW_GROUP_NAME = 'new_group_name'
+    CSR_ENTRY_ID = 'csr_entry_id'
 
 
 '''
@@ -301,11 +302,15 @@ LOCAL_CA_CREATE_TEST_ARGS = [
         CommandArguments.SIZE: "2048"
     },
 ]
-
-FAKE_CERT = ("-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa"
+FAKE_CERT = ("-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa"
              "\nfeakfafeefaafakfafeakffakeeafffkafeafeekaffakeefaakfefaefaefakfaffka"
              "\nfaeffakeeffeakafakefeaefeffaafkekaeffkaeffafakfaefffaeefffaeffakekafa"
-             "\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n-----END CERTIFICATE REQUEST-----\n"),
+             "\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n------END CERTIFICATE-----\n")
+
+FAKE_CSR = ("-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa"
+            "\nfeakfafeefaafakfafeakffakeeafffkafeafeekaffakeefaakfefaefaefakfaffka"
+            "\nfaeffakeeffeakafakefeaefeffaafkekaeffkaeffafakfaefffaeefffaeffakekafa"
+            "\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n-----END CERTIFICATE REQUEST-----\n"),
 FAKE_SUBJECT = "/C=FA/ST=Fk/L=FakeCity/O=FakeOrg/OU=FakeUnit/OU=FakeGroup/CN=fake.example.com"
 
 LOCAL_CA_LIST_TEST_ARGS = [
@@ -351,12 +356,49 @@ LOCAL_CA_INSTALL_TEST_ARGS = [
         CommandArguments.PARENT_ID: "123e4567-e89-b12d3-a456-426614174000",
     }
 ]
-CERTIFICATE_ISSUE_TEST_ARGS = []
+CERTIFICATE_ISSUE_TEST_ARGS = [
+    {
+        # Test Case 1: All arguments provided, including both NOT_BEFORE and NOT_AFTER
+        CommandArguments.CA_ID: "ca12345",
+        CommandArguments.CSR_ENTRY_ID: "csr12345",
+        CommandArguments.PURPOSE: "test",
+        CommandArguments.DURATION: 365,
+        CommandArguments.NAME: "Test Certificate 1",
+        CommandArguments.NOT_BEFORE: "2024-06-01T12:34:56Z",
+        CommandArguments.NOT_AFTER: "2025-06-02T12:34:56Z"
+    },
+    {
+        # Test Case 2: NOT_BEFORE provided, but NOT_AFTER is missing
+        CommandArguments.CA_ID: "ca67890",
+        CommandArguments.CSR_ENTRY_ID: "csr67890",
+        CommandArguments.PURPOSE: "test",
+        CommandArguments.DURATION: 180,
+        CommandArguments.NAME: "Test Certificate 2",
+        CommandArguments.NOT_BEFORE: "2024-06-01T12:34:56Z"
+    },
+    {
+        # Test Case 3: Only DURATION is provided, neither NOT_BEFORE nor NOT_AFTER
+        CommandArguments.CA_ID: "ca54321",
+        CommandArguments.CSR_ENTRY_ID: "csr54321",
+        CommandArguments.PURPOSE: "production",
+        CommandArguments.DURATION: 90,
+        CommandArguments.NAME: "Test Certificate 3"
+    },
+    {
+        # Test Case 4: NOT_AFTER provided, but NOT_BEFORE is missing
+        CommandArguments.CA_ID: "ca09876",
+        CommandArguments.CSR_ENTRY_ID: "csr09876",
+        CommandArguments.PURPOSE: "development",
+        CommandArguments.NAME: "Test Certificate 4",
+        CommandArguments.NOT_AFTER: "2025-06-02T12:34:56Z"
+    }
+]
+
 CERTIFICATE_LIST_TEST_ARGS = []
 LOCAL_CERTIFICATE_DELETE_TEST_ARGS = [
     {
-        CommandArguments.CA_ID: "",
-        CommandArguments.LOCAL_CA_ID: ""
+        CommandArguments.CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+        CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
     }
 ]
 CERTIFICATE_REVOKE_TEST_ARGS = []
@@ -801,9 +843,11 @@ def test_local_ca_install_command(mock_install_local_ca, mock_load_content_from_
 
 @pytest.mark.parametrize('args', CERTIFICATE_ISSUE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
-def test_certificate_issue_command(mock_issue_certificate, args):
+@patch(MOCKER_LOAD_CONTENT_FROM_FILE)
+def test_certificate_issue_command(mock_load_content_from_file, mock_issue_certificate, args):
     from ThalesCipherTrustManager import CipherTrustClient, certificate_issue_command
     mock_issue_certificate.return_value = util_load_json('test_data/mock_certificate_issue_response.json')
+    mock_load_content_from_file.return_value = FAKE_CSR
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -814,6 +858,19 @@ def test_certificate_issue_command(mock_issue_certificate, args):
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_issue_certificate.return_value
     assert result.raw_response == mock_issue_certificate.return_value
+
+
+@patch(MOCKER_HTTP_METHOD)
+@patch(MOCKER_LOAD_CONTENT_FROM_FILE)
+def test_certificate_issue_command_missing_args(mock_load_content_from_file, mock_issue_certificate):
+    from ThalesCipherTrustManager import CipherTrustClient, certificate_issue_command
+    mock_issue_certificate.return_value = util_load_json('test_data/mock_certificate_issue_response.json')
+    mock_load_content_from_file.return_value = FAKE_CSR
+    client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
+                               proxy=False)
+    args = {CommandArguments.CA_ID: "ca12345", CommandArguments.CSR_ENTRY_ID: "csr12345", CommandArguments.PURPOSE: "test"}
+    with pytest.raises(ValueError):
+        certificate_issue_command(client, args)
 
 
 @pytest.mark.parametrize('args', CERTIFICATE_LIST_TEST_ARGS)
