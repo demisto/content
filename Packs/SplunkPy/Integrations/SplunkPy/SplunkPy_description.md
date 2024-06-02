@@ -79,7 +79,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch notable events ES query*: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
+5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. (default to 20).
 
 #### Troubleshooting enrichment status
 Each enriched incident contains the following fields in the incident context:

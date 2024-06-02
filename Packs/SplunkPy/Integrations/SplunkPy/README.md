@@ -50,7 +50,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
     | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
     | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
     | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
-    | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). To retrieve all events, enter "0" \(not recommended\). | False |
+    | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
     | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
     | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
     | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
@@ -92,7 +92,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
+5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. (default to 20).
 
 #### Configure User Mapping between Splunk and Cortex XSOAR  
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  

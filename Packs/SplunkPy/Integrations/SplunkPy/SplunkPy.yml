@@ -223,7 +223,7 @@ configuration:
   additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
   defaultvalue: '5'
   required: false
-- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
+- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" (not recommended).
   display: 'Number of Events Per Enrichment Type'
   name: num_enrichment_events
   type: 0
