@@ -40,8 +40,9 @@ def extract_hyperlinks_from_docx(file_path: str) -> Set:
         rel = rels[rel]
         if rel.reltype == RT.HYPERLINK and rel.is_external:
             links.add(rel._target)
-            
+
     return links
+
 
 def extract_hyperlinks_from_pptx(file_path: str) -> Set:
     prs = Presentation(file_path)
