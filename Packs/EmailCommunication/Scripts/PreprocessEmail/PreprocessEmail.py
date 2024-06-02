@@ -270,7 +270,7 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
             attachment_name = attachment.get('name', '')
             if (attachment_name not in previous_file_names
                 and '-imageName:' in attachment_name
-                and attachment_name.split('-imageName:', 1)[1] not in previous_file_names_for_reply):
+                    and attachment_name.split('-imageName:', 1)[1] not in previous_file_names_for_reply):
                 if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
                     new_attachment_identifiers_list = []
                 identifier_id = attachment.get('name', '').split('-imageName:', 1)[0]
@@ -469,9 +469,9 @@ def main():
 
         # Get attachments IDs for new attacments
         attachment_identifiers_array, attachments = find_attachments_to_download(attachments,
-                                                                                email_html,
-                                                                                email_related_incident,
-                                                                                incident.get('labels'))
+                                                                                 email_html,
+                                                                                 email_related_incident,
+                                                                                 incident.get('labels'))
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.

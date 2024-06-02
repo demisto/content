@@ -1556,7 +1556,7 @@ def get_attachments(user_id, _id, identifiers_filter=""):
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
         if (not identifiers_filter_array
-            or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
+                or ('-imageName:' in attachment['Name'] and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
     return files
@@ -2236,8 +2236,8 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     body_type = args.get('bodyType', 'Text').lower()
 
     result, file_results = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
-                       attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
-                       additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
+                                     attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
+                                     additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
     demisto.debug(f"i_have_file_results {file_results=}")
     rendering_body = html_body if body_type == "html" else body
 

@@ -1,12 +1,10 @@
 import json
 import pytest
 from pytest_mock import MockerFixture
-from requests import patch
 import demistomock as demisto
 
 from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
 from email.utils import parsedate_to_datetime
-import base64
 
 
 @pytest.fixture

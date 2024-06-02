@@ -727,7 +727,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
         start_chunk_index = 0
         # The if is for adding functionality of inline attachment sending from layout
-        end_chunk_index = attachment_size -1 if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
+        end_chunk_index = attachment_size - 1 if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
 
         chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 

@@ -459,13 +459,15 @@ def test_send_mail(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value = ('', [
+        {'Contents': '', 'ContentsFormat': 'text', 'Type': 'html', 'File': 'image0.png', 'FileID': '123456'}]))
     results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
+    assert results[1].get('FileID') == '123456'
 
 
 def test_send_mail_with_from_arg(mocker):
@@ -482,7 +484,8 @@ def test_send_mail_with_from_arg(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('',[
+        {'Contents': '', 'ContentsFormat': 'text', 'Type': 'png', 'File': 'image.png', 'FileID': '12345'}]))
     results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
@@ -504,7 +507,8 @@ def test_send_mail_with_trailing_comma(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('',[
+        {'Contents': '', 'ContentsFormat': 'text', 'Type': 'png', 'File': 'image.png', 'FileID': '12345'}]))
     results = send_email({'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
@@ -775,45 +779,57 @@ def test_get_message_for_body_type_no_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type(body, None, html_body)
-    assert isinstance(result, HTMLBody)
-    assert result == HTMLBody(html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert result[0] == HTMLBody(html_body)
+
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker):
+    from exchangelib import FileAttachment
+    import EWSv2
+    mocker.patch.object(EWSv2 ,'random_word_generator' , return_value = '123456')
+    body = "This is a plain text body"
+    html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+    result = get_message_for_body_type(body, None, html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert isinstance (result[1][0], FileAttachment)
+    assert 'FileID' in result[2][0]
+    assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>')
 
 
 def test_get_message_for_body_type_no_body_type_with_no_html_body():
     body = "This is a plain text body"
     result = get_message_for_body_type(body, None, None)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_html_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type(body, 'html', html_body)
-    assert isinstance(result, HTMLBody)
-    assert result == HTMLBody(html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert result[0] == HTMLBody(html_body)
 
 
 def test_get_message_for_body_type_text_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type(body, 'text', html_body)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_html_body_type_with_no_html_body():
     body = "This is a plain text body"
     result = get_message_for_body_type(body, 'html', None)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_text_body_type_with_no_html_body():
     body = "This is a plain text body"
     result = get_message_for_body_type(body, 'text', None)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
@@ -824,8 +840,8 @@ def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
     """
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type('', 'text', html_body)
-    assert isinstance(result, HTMLBody)
-    assert result == HTMLBody(html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert result[0] == HTMLBody(html_body)
 
 
 def test_parse_physical_address():

@@ -824,14 +824,15 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
+    attachments = []
+    file_results = []
     if html_body:
         html_body, attachments, file_results = handle_html(html_body)
     if body_type is None:  # When called from a data collection task.
         return (HTMLBody(html_body) if html_body else Body(body)), attachments, file_results
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body), attachments, file_results
-    return (HTMLBody(html_body) if html_body else Body(body)), attachments, file_results
-
+    return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments, file_results
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=None, from_mailbox=None):  # pragma: no cover
