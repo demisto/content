@@ -1269,7 +1269,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     )
                     demisto.info(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} was failed due to an error:\
                                  {str(e)}')
-                    
+
                     enrichment.status = Enrichment.FAILED
 
         if notable.handled():
