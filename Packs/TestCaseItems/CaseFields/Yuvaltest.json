@@ -14,7 +14,7 @@
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 5,
     "hidden": false,
     "openEnded": false,
