@@ -83,7 +83,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 
 #### Troubleshooting enrichment status
 Each enriched incident contains the following fields in the incident context:
-- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful (in a case off a multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful).
+- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful. In a case of multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful.
 - **successful_asset_enrichment**: whether the asset enrichment was successful.
 - **successful_identity_enrichment**: whether the identity enrichment was successful.
 
