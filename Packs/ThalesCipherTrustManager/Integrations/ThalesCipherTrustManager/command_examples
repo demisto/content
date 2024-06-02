@@ -19,6 +19,8 @@
 !ciphertrust-local-ca-install local_ca_id="local_ca_to_install" cert_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629  parent_id=59428dfa-cde9-4f68-907b-e7c0b61bfa4c
 !ciphertrust-certificate-issue ca_id="ca_to_issue" csr_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629 purpose=server duration=365
 !ciphertrust-certificate-list ca_id="test_ca"
+!ciphertrust-local-certificate-delete ca_id="local_ca_test" local_ca_id="id_of_certificate_issued_by_local_ca_test"
+
 
 
 

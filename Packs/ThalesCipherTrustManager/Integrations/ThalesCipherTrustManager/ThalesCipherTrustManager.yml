@@ -176,7 +176,7 @@ script:
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return. Defaults to 50
+      description: The max number of entries to return.
       required: false
       secret: false
       default: false
@@ -353,7 +353,7 @@ script:
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return. Defaults to 50
+      description: The max number of entries to return.
       required: false
       secret: false
       default: false
@@ -513,7 +513,7 @@ script:
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return. Defaults to 50
+      description: The max number of entries to return.
       required: false
       secret: false
       default: false
@@ -871,7 +871,7 @@ script:
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return. Defaults to 50
+      description: The max number of entries to return.
       required: false
       secret: false
       default: false
@@ -1721,7 +1721,7 @@ script:
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return. Defaults to 50
+      description: The max number of entries to return.
       required: false
       secret: false
       default: false
