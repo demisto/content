@@ -1267,10 +1267,10 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                         f"Caught an exception while retrieving {enrichment.id=} of {enrichment.type=}\
                         results for notable {notable.id}: {str(e)}"
                     )
-                    demisto.info(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} was failed due to an error:\
-                                 {str(e)}')
 
                     enrichment.status = Enrichment.FAILED
+                    demisto.error(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} was failed due to an error:\
+                                 {str(e)}')
 
         if notable.handled():
             task_status = True
