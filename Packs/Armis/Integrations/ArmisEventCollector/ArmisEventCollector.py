@@ -33,6 +33,8 @@ VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 5000
+DEFAULT_LOOK_BACK = 10
+DEFAULT_INTERVAL = 1
 DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
     'Alerts': EVENT_TYPE(unique_id_key='alertId', aql_query=f'in:{EVENT_TYPE_ALERTS}', type=EVENT_TYPE_ALERTS, order_by='time',
@@ -200,7 +202,8 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_start_time: datetime | None):
+def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_start_time: datetime | None,
+                               look_back: int = 1) -> datetime:
     """ Calculates the fetch start time.
         There are three cases for fetch start time calculation:
         - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
@@ -212,6 +215,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
     Args:
         last_fetch_time (datetime | str | None): Last fetch time (from last run).
         fetch_start_time (datetime | None): Fetch start time.
+        look_back (int): Number of minutes to look back when fetching events.
 
     Raises:
         DemistoException: If the transformation to to datetime object failed.
@@ -234,7 +238,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
         return fetch_start_time
     # case 3
     else:
-        return datetime.now() - timedelta(minutes=1)
+        return datetime.now() - timedelta(minutes=look_back)
 
 
 def are_two_datetime_equal_by_second(x: datetime, y: datetime):
@@ -254,71 +258,37 @@ def are_two_datetime_equal_by_second(x: datetime, y: datetime):
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
 
-def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str, event_order_by: str):
+def dedup_events(events: list[dict], events_last_fetch_ids: list[list[str]], unique_id_key: str,
+                 number_of_intervals_to_keep: int):
     """ Dedup events response.
-    Armis API V.1.8 supports time filtering in requests only up to level of seconds (and not milliseconds).
-    Therefore, if there are more events with the same timestamp than in the current fetch cycle,
-    additional handling is necessary.
-
-    Cases:
-    1.  Empty event list (no new events received from API response).
-        Meaning: Usually means there are not any more events to fetch at the moment.
-        Handle: Return empty list of events and the unchanged list of 'events_last_fetch_ids' for next run.
-
-    2.  All events from the current fetch cycle have the same timestamp.
-        Meaning: There are potentially more events with the same timestamp in the next fetch.
-        Handle: Add the list of fetched events IDs to current 'events_last_fetch_ids' from last run,
-                return list of new events and updated list of 'events_last_fetch_ids' for next run.
-
-    3.  Most recent event has later timestamp then other events in the response.
-        Meaning: This is the normal case where events in the response have different timestamps.
-        Handle: Return list of new events and a list of 'new_ids' containing only IDs of
-                events with identical latest time (up to second) for next run.
+    Construct a list containing all ids from the 'number_of_intervals_to_keep' last runs,
+    and filter the ids appearing in the extended list from the list of obtained events.
+    Also update the events_last_fetch_ids list to include only the 'number_of_intervals_to_keep' latest ids_lists.
 
     Args:
         events (list[dict]): List of events from the current fetch response.
-        events_last_fetch_ids (list[str]): List of IDs of events from last fetch cycle.
+        events_last_fetch_ids (list[list[str]]): List of IDs of events from last fetch cycle.
         unique_id_key (str): Unique event ID key of specific event type (Alert, Threat Activity etc.)
+        number_of_intervals_to_keep (int): The number of intervals to keep the data for in the last_run object.
 
     Returns:
-        tuple[list[dict], list[str]: The list of dedup events and ID list of events of current fetch.
+        tuple[list[dict], list[list[str]]: The list of dedup events,
+        and ID list of events of the 'number_of_intervals_to_keep' fetches.
     """
-    # case 1
-    if not events:
-        demisto.debug('debug-log: Dedup case 1 - Empty event list (no new events received from API response).')
-        return [], events_last_fetch_ids
+    all_last_fetch_ids = []
+    for last_fetch_ids in events_last_fetch_ids:
+        all_last_fetch_ids.extend(last_fetch_ids)
+    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in all_last_fetch_ids]
+    new_ids: list[list[str]] = [[event.get(unique_id_key, '') for event in new_events]]
+    new_ids.extend(events_last_fetch_ids)
+    events_last_fetch_ids = new_ids[:number_of_intervals_to_keep]
 
-    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
-
-    earliest_event_datetime = arg_to_datetime(events[0].get(event_order_by))
-    latest_event_datetime = arg_to_datetime(events[-1].get(event_order_by))
-
-    # case 2
-    if earliest_event_datetime and latest_event_datetime and\
-            are_two_datetime_equal_by_second(latest_event_datetime, earliest_event_datetime):
-        demisto.debug('debug-log: Dedup case 2 - All events from the current fetch cycle have the same timestamp.')
-        new_ids = [event.get(unique_id_key, '') for event in new_events]
-        events_last_fetch_ids.extend(new_ids)
-        return new_events, events_last_fetch_ids
-
-    # case 3
-    else:
-        # Note that the following timestamps comparison are made between strings and assume
-        # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
-        demisto.debug('debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.')
-
-        latest_event_timestamp = events[-1].get(event_order_by, '')[:19]
-        # itertools.takewhile is used to iterate over the list of events (from latest time to earliest)
-        # and take only the events with identical latest time
-        events_with_identical_latest_time = list(
-            itertools.takewhile(lambda x: x.get(event_order_by, '')[:19] == latest_event_timestamp, reversed(events)))
-        new_ids = [event.get(unique_id_key, '') for event in events_with_identical_latest_time]
-
-        return new_events, new_ids
+    return new_events, events_last_fetch_ids
 
 
 def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, max_fetch: int, last_run: dict,
-                        next_run: dict, fetch_start_time: datetime | None):
+                        next_run: dict, fetch_start_time: datetime | None, look_back: int = 0,
+                        number_of_intervals_to_keep: int = 1):
     """ Fetch events by specific event type.
 
     Args:
@@ -329,8 +299,10 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         last_run (dict): Last run dictionary.
         next_run (dict): Last run dictionary for next fetch cycle.
         fetch_start_time (datetime | None): Fetch start time.
+        look_back (int): Number of minutes to look back when fetching events.
+        number_of_intervals_to_keep (int): The number of intervals to keep the data for in the last_run object.
     """
-    last_fetch_ids = f'{event_type.type}_last_fetch_ids'
+    last_fetch_ids_field = f'{event_type.type}_last_fetch_ids'
     last_fetch_time_field = f'{event_type.type}_last_fetch_time'
     last_fetch_next_field = f'{event_type.type}_last_fetch_next_field'
 
@@ -339,7 +311,7 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         demisto.debug(f'debug-log: last run of type: {event_type.type} time is: {last_fetch_time}')
     last_fetch_next = last_run.get(last_fetch_next_field, 0)
     demisto.debug(f'debug-log: last run of type: {event_type.type} next is: {last_fetch_next}')
-    event_type_fetch_start_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time)
+    event_type_fetch_start_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time, look_back)
     response, next = client.fetch_by_aql_query(
         aql_query=event_type.aql_query,
         max_fetch=max_fetch,
@@ -349,15 +321,22 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
     )
 
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
+    if (last_fetch_ids := last_run.get(last_fetch_ids_field, [])) and not isinstance(last_fetch_ids[0], list):
+        last_fetch_ids = [last_fetch_ids]
     if response:
-        new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
+        new_events, next_run[last_fetch_ids_field] = dedup_events(
+            response, last_fetch_ids, event_type.unique_id_key, number_of_intervals_to_keep)
         events.setdefault(event_type.dataset_name, []).extend(new_events)
         demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
         demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
 
-    if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
+    if not next:  # We wish to update the time only in case 'next' field is 0 because the 'next' field is relative to the time.
         event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
+        if isinstance(event_type_fetch_start_time, str):
+            event_type_fetch_start_time = arg_to_datetime(event_type_fetch_start_time)
+        if event_type_fetch_start_time:
+            event_type_fetch_start_time = event_type_fetch_start_time - timedelta(minutes=look_back)
+        
         #  can empty the list.
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
@@ -397,7 +376,9 @@ def fetch_events(client: Client,
                  last_run: dict,
                  fetch_start_time: datetime | None,
                  event_types_to_fetch: list[str],
-                 device_fetch_interval: timedelta | None):
+                 device_fetch_interval: timedelta | None,
+                 look_back: int = 0,
+                 number_of_intervals_to_keep: int = 1):
     """ Fetch events from Armis API.
 
     Args:
@@ -408,6 +389,8 @@ def fetch_events(client: Client,
         fetch_start_time (datetime | None): Fetch start time.
         event_types_to_fetch (list[str]): List of event types to fetch.
         device_fetch_interval (timedelta | None): Time interval to fetch devices.
+        look_back (int): Number of minutes to look back when fetching events.
+        number_of_intervals_to_keep (int): The number of intervals to keep the data for in the last_run object.
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
@@ -421,7 +404,7 @@ def fetch_events(client: Client,
     if 'Alerts' in event_types_to_fetch:
         # begin Alerts fetch flow: fetch Alerts extract and fetch activities and devices from alert response.
         fetch_by_event_type(client, EVENT_TYPES['Alerts'], events, max_fetch, last_run,
-                            next_run, fetch_start_time,)
+                            next_run, fetch_start_time, look_back, number_of_intervals_to_keep)
         if events and events.get(EVENT_TYPE_ALERTS):
             for alert in events[EVENT_TYPE_ALERTS]:
                 alert_id = alert.get('alertId')
@@ -431,7 +414,7 @@ def fetch_events(client: Client,
     for event_type in event_types_to_fetch:
         event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
         fetch_by_event_type(client, EVENT_TYPES[event_type], events, event_max_fetch, last_run,
-                            next_run, fetch_start_time,)
+                            next_run, fetch_start_time, look_back, number_of_intervals_to_keep)
 
     next_run['access_token'] = client._access_token
 
@@ -569,6 +552,7 @@ def main():  # pragma: no cover
     base_url = urljoin(params.get('server_url'), API_V1_ENDPOINT)
     verify_certificate = not params.get('insecure', True)
     max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
+    look_back = arg_to_number(params.get('look_back')) or DEFAULT_LOOK_BACK
     devices_max_fetch = arg_to_number(params.get('devices_max_fetch')) or DEVICES_DEFAULT_MAX_FETCH
     proxy = params.get('proxy', False)
     event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
@@ -578,6 +562,8 @@ def main():  # pragma: no cover
     fetch_start_time = handle_from_date_argument(from_date) if from_date else None
     parsed_interval = dateparser.parse(params.get('deviceFetchInterval', '24 hours')) or dateparser.parse('24 hours')
     device_fetch_interval: timedelta = (datetime.now() - parsed_interval)  # type: ignore[operator]
+    look_back = arg_to_number(params.get('eventFetchInterval')) or DEFAULT_INTERVAL
+    number_of_intervals_to_keep: int = -(- look_back // look_back)
 
     demisto.debug(f'Command being called is {command}')
 
@@ -607,6 +593,7 @@ def main():  # pragma: no cover
                 last_run = {}
                 should_return_results = True
                 event_types_to_fetch = [event_type_name]
+                look_back = 0
 
             should_push_events = (command == 'fetch-events' or should_push_events)
 
@@ -617,7 +604,9 @@ def main():  # pragma: no cover
                 last_run=last_run,
                 fetch_start_time=fetch_start_time,
                 event_types_to_fetch=event_types_to_fetch,
-                device_fetch_interval=device_fetch_interval
+                device_fetch_interval=device_fetch_interval,
+                look_back=look_back,
+                number_of_intervals_to_keep=number_of_intervals_to_keep
             )
             for key, value in events.items():
                 demisto.debug(f'debug-log: {len(value)} events of type: {key} fetched from armis api')
