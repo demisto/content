@@ -129,36 +129,36 @@ script:
         description: Timestamp of when the certificate is valid until.
         type: Date
   - deprecated: false
-    description: Returns a list of certificates issued by the specified CA. The results can be filtered, using the query parameters.
+    description: Returns a list of certificates issued by the specified CA. The results can be filtered, using the command arguments.
     name: ciphertrust-certificate-list
     arguments:
     - name: ca_id
       isArray: false
-      description: An identifier of the issuer CA resource
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
     - name: subject
       isArray: false
-      description: Filter by subject
+      description: Filter by the subject
       required: false
       secret: false
       default: false
     - name: issuer
       isArray: false
-      description: Filter by issuer
+      description: Filter by the issuer
       required: false
       secret: false
       default: false
     - name: cert
       isArray: false
-      description: Filter by cert
+      description: Filter by the cert
       required: false
       secret: false
       default: false
     - name: id
       isArray: false
-      description: Filter by id or URI
+      description: Filter by ID or URI
       required: false
       secret: false
       default: false
@@ -181,7 +181,73 @@ script:
       secret: false
       default: false
       defaultValue: 50
-    outputs: []
+    outputs:
+      - contextPath: CipherTrust.CACertificate.skip
+        description: The number of records to skip in the query.
+        type: Integer
+      - contextPath: CipherTrust.CACertificate.limit
+        description: The maximum number of records to return in the query.
+        type: Integer
+      - contextPath: CipherTrust.CACertificate.total
+        description: The total number of records found.
+        type: Integer
+      - contextPath: CipherTrust.CACertificate.resources.name
+        description: The name of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.id
+        description: A unique identifier for the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.uri
+        description: Uniform Resource Identifier associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.account
+        description: Account associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.application
+        description: Application associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.devAccount
+        description: Developer account associated with the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.createdAt
+        description: Timestamp of when the certificate was created.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.resources.updatedAt
+        description: Timestamp of the last update of the certificate.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.resources.cert
+        description: Certificate content.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.ca
+        description: Certificate authority.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.revoked_at
+        description: Revocation timestamp.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.sha1Fingerprint
+        description: SHA-1 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.sha256Fingerprint
+        description: SHA-256 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.sha512Fingerprint
+        description: SHA-512 fingerprint of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.serialNumber
+        description: Serial number of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.subject
+        description: Subject of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.issuer
+        description: Issuer of the certificate.
+        type: String
+      - contextPath: CipherTrust.CACertificate.resources.notBefore
+        description: Timestamp of when the certificate is valid from.
+        type: Date
+      - contextPath: CipherTrust.CACertificate.resources.notAfter
+        description: Timestamp of when the certificate is valid until.
+        type: Date
   - deprecated: false
     description: Certificate can be resumed only if it is revoked with reason certificatehold.
     name: ciphertrust-certificate-resume

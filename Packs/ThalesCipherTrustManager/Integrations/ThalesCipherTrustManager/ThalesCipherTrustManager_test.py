@@ -390,11 +390,21 @@ CERTIFICATE_ISSUE_TEST_ARGS = [
         CommandArguments.CSR_ENTRY_ID: "csr09876",
         CommandArguments.PURPOSE: "development",
         CommandArguments.NAME: "Test Certificate 4",
-        CommandArguments.NOT_AFTER: "2025-06-02T12:34:56Z"
+        CommandArguments.NOT_AFTER: "2025-06-02T12:34:56Z",
     }
 ]
 
-CERTIFICATE_LIST_TEST_ARGS = []
+CERTIFICATE_LIST_TEST_ARGS = [
+    {CommandArguments.CA_ID: "123e456-12d3-a456-426614174000"},
+    {CommandArguments.CA_ID: "123e456-12d3-a456-426614174000",
+     CommandArguments.SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     CommandArguments.ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     CommandArguments.CERT: FAKE_CERT,
+     CommandArguments.ID: "123e456-12d3-a456-426614174000",
+     CommandArguments.PAGE: 0,
+     CommandArguments.PAGE_SIZE: 10,
+     CommandArguments.LIMIT: 10},
+]
 LOCAL_CERTIFICATE_DELETE_TEST_ARGS = [
     {
         CommandArguments.CA_ID: "123e4567-e89b-12d3-a456-426614174000",
