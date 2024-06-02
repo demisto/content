@@ -1038,7 +1038,7 @@ def test_url_decode(requests_mock):
     from ProofpointTAP_v2 import Client, url_decode_command
     mock_response = json.loads(load_mock_response('url_decode.json'))
     requests_mock.post(f'{MOCK_URL}/v2/url/decode', json=mock_response)
-    client = (
+    client = Client(
         proofpoint_url=MOCK_URL,
         api_version="v2",
         service_principal="user1",
