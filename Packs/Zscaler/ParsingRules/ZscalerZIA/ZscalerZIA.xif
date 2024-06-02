@@ -10,7 +10,7 @@
    If an event record lacks both an epoch value and a valid timezone / formatted datetime
    string, then the log would be ingested, but without an explicit assignment to _time. 
 ----------------------------------------------------------------------------------------*/
-[INGEST:vendor="zscaler", product="nss", target_dataset="zscaler_nss_raw", no_hit=keep]
+[INGEST:vendor="zscaler", product="cloudnss", target_dataset="zscaler_cloudnss_raw", no_hit=keep]
 // use case 1: JSON Array Notation enabled, with a valid epoch / timestamp & timezone.  
 filter _raw_log -> [] != null
 | call ZSCALER_NSS_FLATTEN_ARRAY_RECORDS

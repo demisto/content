@@ -60,7 +60,7 @@ alter cs5=uppercase(cs5)
 /* ---------------------------------
    Cloud NSS Modeling (JSON Records)
    --------------------------------*/
-[MODEL: dataset="zscaler_nss_raw"]
+[MODEL: dataset="zscaler_cloudnss_raw"]
 /* --------------------------------------------------------------------------------
    Cloud NSS DNS Logs (https://help.zscaler.com/zia/nss-feed-output-format-dns-logs)
    -------------------------------------------------------------------------------*/
