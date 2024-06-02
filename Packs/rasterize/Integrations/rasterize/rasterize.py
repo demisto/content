@@ -1,5 +1,4 @@
 import csv
-import ast
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
@@ -17,7 +16,6 @@ import websocket
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from threading import Event
-
 from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
@@ -300,9 +298,25 @@ def write_info_file(filename, contents):
 def write_into_tsv_file(filepath, contents, overwrite=False):
     demisto.info(f"Saving File '{filepath}' with {contents}.")
     mode = 'w' if overwrite else 'a'
-    with open(filepath, mode) as file:
-        tsv_writer = csv.writer(file, delimiter='\t')
-        tsv_writer.writerow(contents.split('\t'))
+    with open(filepath, mode, encoding='utf-8') as file:
+        if overwrite:
+            file.write(contents)
+        else:
+            file.write(f"\n{contents}")
+
+
+def read_from_tsv_file(filepath):
+    try:
+        with open(filepath, 'r', newline='') as file:
+            reader = csv.reader(file, delimiter='\t', quoting=csv.QUOTE_NONE, escapechar='\\')
+            lines = []
+            for row in reader:
+                lines.append(row)
+            demisto.info(f"File '{filepath}' contents: {lines}.")
+            return lines
+    except FileNotFoundError:
+        demisto.info(f"File '{filepath}' does not exist")
+        return None
 
 
 def opt_name(opt):
@@ -361,8 +375,8 @@ def start_chrome_headless(chrome_port, instance_name, chrome_options, chrome_bin
                 # TODO: remove the log below
                 demisto.log(f"Created new browser at port {chrome_port}")
                 browser_to_chrome_process[browser] = process
-                chrome_options = '"""' + chrome_options.replace('"', '\\"') + '"""'
                 new_row = f"{chrome_port}\t{instance_name}\t{chrome_options}"
+                demisto.log(f"write_into_tsv_file {chrome_options}")
                 write_into_tsv_file(CHROME_INSTANCES_FILE_PATH, new_row)
             else:
                 process.kill()
@@ -428,9 +442,11 @@ def get_chrome_instances_info_dictionaries(info):
     instance_name_to_port = {}
 
     if info:
-        lines = info.splitlines()
+        info_without_new_lines = info.strip()
+        lines = info_without_new_lines.splitlines()
         for line in lines:
             column = line.strip().split('\t')
+            # demisto.log(f"{column=}")
             port, instance_name, chrome_options = column
             port_to_instance_name[port] = instance_name
             instance_name_to_chrome_options[instance_name] = chrome_options
@@ -450,21 +466,19 @@ def generate_new_chrome_instance(instance_name, chrome_options):
 
 
 def chrome_manager():
-    demisto.log("in chrome_manager")
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
+    # demisto.log(f"in chrome_manager {chrome_options=}, {instance_name=}")
 
     # TODO: should remove it?
-    if chrome_options:
-        chrome_options = ast.literal_eval(chrome_options)
-    else:
+    if not chrome_options:
         chrome_options = 'None'
-
 
     if instance_name:
         instance_name = instance_name[:-36]  # remove the guid from the instance_name
 
     info = read_info_file(CHROME_INSTANCES_FILE_PATH)
+    # demisto.log(f"{info=}")
 
     port_to_instance_name, instance_name_to_chrome_options, chrome_options_to_port, instance_name_to_port = \
         get_chrome_instances_info_dictionaries(info)
@@ -472,7 +486,8 @@ def chrome_manager():
     if info:
         demisto.log("in if info - there is an info")
         try:
-            splitted_info = info.splitlines()
+            info_without_new_lines = info.strip()
+            splitted_info = info_without_new_lines.splitlines()
         except:
             splitted_info = [info]
         edited_info = [line.replace('\\t', '\t') for line in splitted_info]
@@ -485,7 +500,7 @@ def chrome_manager():
             chromes_options.append('None')
 
         # TODO: remove the log below
-        demisto.log(f"{chromes_options=}, {type(chromes_options[0])}, {instances_name=}")
+        demisto.log(f"{chromes_options=}, {instances_name=}")
 
     if not info or (((chrome_options in chromes_options) or (
         str(chrome_options) in chromes_options)) and instance_name not in instances_name) or (
