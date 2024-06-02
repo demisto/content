@@ -535,7 +535,64 @@ script:
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: CipherTrust.ExternalCertificate.id
+      description: A unique identifier for the certificate authority (CA) certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.uri
+      description: Uniform Resource Identifier associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.account
+      description: Account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.devAccount
+      description: Developer account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.application
+      description: Application associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.createdAt
+      description: Timestamp of when the CA certificate was created.
+      type: Date
+    - contextPath: CipherTrust.ExternalCertificate.updatedAt
+      description: Timestamp of the last update of the CA certificate.
+      type: Date
+    - contextPath: CipherTrust.ExternalCertificate.name
+      description: Name of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.cert
+      description: Certificate content.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.purpose.client_authentication
+      description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.purpose.user_authentication
+      description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.serialNumber
+      description: Serial number of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.subject
+      description: Subject of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.issuer
+      description: Issuer of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.notBefore
+      description: Timestamp of when the CA certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.ExternalCertificate.notAfter
+      description: Timestamp of when the CA certificate is valid until.
+      type: Date
+    - contextPath: CipherTrust.ExternalCertificate.sha1Fingerprint
+      description: SHA-1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.sha256Fingerprint
+      description: SHA-256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCertificate.sha512Fingerprint
+      description: SHA-512 fingerprint of the CA certificate.
+      type: String
   - deprecated: false
     description: Create a new group. The group name is required.
     name: ciphertrust-group-create

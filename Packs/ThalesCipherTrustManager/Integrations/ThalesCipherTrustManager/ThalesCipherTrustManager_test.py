@@ -334,8 +334,9 @@ LOCAL_CA_SELF_SIGN_TEST_ARGS = [
 
     ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
 
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z', 'duration':
-        '365'}),
+    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z',
+      'duration':
+          '365'}),
 
     ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
       'not_after': '2024-01-01T00:00:00Z'}),
@@ -420,7 +421,14 @@ CERTIFICATE_RESUME_TEST_ARGS = [{
     CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
     CommandArguments.CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
 }]
-EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = []
+EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = [
+    {
+        CommandArguments.CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
+        CommandArguments.NAME : "Test Certificate",
+        CommandArguments.PARENT: "URI-REFERENCE",
+
+    }
+]
 EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = []
 EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = []
@@ -963,9 +971,11 @@ def test_certificate_resume_command(mock_resume_certificate, args):
 
 @pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
-def test_external_certificate_upload_command(mock_upload_external_certificate, args):
+@patch(MOCKER_LOAD_CONTENT_FROM_FILE)
+def test_external_certificate_upload_command(mock_load_content_from_file, mock_upload_external_certificate, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_certificate_upload_command
     mock_upload_external_certificate.return_value = util_load_json('test_data/mock_external_certificate_upload_response.json')
+    mock_load_content_from_file.return_value = FAKE_CERT
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
