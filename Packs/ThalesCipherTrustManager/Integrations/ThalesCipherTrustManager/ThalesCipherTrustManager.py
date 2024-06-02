@@ -325,7 +325,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-    tuple[int, int]:
+        tuple[int, int]:
     if page_str is not None:
         page_from_arg = arg_to_number(page_str)
         if page_from_arg is None:
@@ -770,7 +770,7 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
 
 def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     raw_response = client.resume_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
-                              cert_id=verify_required_arg(CommandArguments.CERT_ID, args.get(CommandArguments.CERT_ID)))
+                                             cert_id=verify_required_arg(CommandArguments.CERT_ID, args.get(CommandArguments.CERT_ID)))
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,

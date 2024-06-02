@@ -424,7 +424,7 @@ CERTIFICATE_RESUME_TEST_ARGS = [{
 EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = [
     {
         CommandArguments.CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
-        CommandArguments.NAME : "Test Certificate",
+        CommandArguments.NAME: "Test Certificate",
         CommandArguments.PARENT: "URI-REFERENCE",
 
     }
