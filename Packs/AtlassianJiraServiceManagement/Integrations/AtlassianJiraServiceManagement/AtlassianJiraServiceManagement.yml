@@ -528,6 +528,114 @@ script:
         type: Boolean
       - contextPath: JiraAsset.Comment.CanDelete
         description: Whether the comment can be deleted.
+  - arguments:
+      - description: Id of the object that the file will be attached to.
+        name: object_id
+        required: true
+      - description: Id of the file to upload.
+        name: entry_id
+        required: true
+    name: jira-asset-attachment-add
+    outputs:
+      - contextPath: JiraAsset.Attachment.ID
+        description: Id of the attachment.
+        type: Number
+      - contextPath: JiraAsset.Attachment.Author
+        description: Author of the attachment.
+        type: String
+      - contextPath: JiraAsset.Attachment.MimeType
+        description: The file's MIME type.
+        type: String
+      - contextPath: JiraAsset.Attachment.Filename
+        description: The file's name.
+        type: String
+      - contextPath: JiraAsset.Attachment.Filesize
+        description: The size of the file.
+        type: String
+      - contextPath: JiraAsset.Attachment.Created
+        description: The date in which this attachment was created.
+        type: Date
+      - contextPath: JiraAsset.Attachment.Comment
+        description: The comment attached to the attachment, if there is one.
+        type: String
+      - contextPath: JiraAsset.Attachment.CommentOutput
+        description: The comment output of the attachment, if there is one.
+        type: String
+      - contextPath: JiraAsset.Attachment.Url
+        description: Url to the attachment.
+        type: String
+  - arguments:
+      - description: Id of the object that attachments will be fetched for.
+        name: object_id
+        required: true
+      - description: Whether to download the attachments for this object.
+        name: download_file
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+    name: jira-asset-attachment-list
+    outputs:
+      - contextPath: JiraAsset.Attachment.ID
+        description: Id of the attachment.
+        type: Number
+      - contextPath: JiraAsset.Attachment.Author
+        description: Author of the attachment.
+        type: String
+      - contextPath: JiraAsset.Attachment.MimeType
+        description: The file's MIME type.
+        type: String
+      - contextPath: JiraAsset.Attachment.Filename
+        description: The file's name.
+        type: String
+      - contextPath: JiraAsset.Attachment.Filesize
+        description: The size of the file.
+        type: String
+      - contextPath: JiraAsset.Attachment.Created
+        description: The date in which this attachment was created.
+        type: Date
+      - contextPath: JiraAsset.Attachment.Comment
+        description: 'The comment attached to the attachment, if there is one. '
+        type: String
+      - contextPath: JiraAsset.Attachment.CommentOutput
+        description: The comment output of the attachment, if there is one.
+        type: String
+      - contextPath: JiraAsset.Attachment.Url
+        description: Url to the attachment.
+        type: String
+  - arguments:
+      - description: Id of the attachment that will be deleted.
+        name: id
+        required: true
+    name: jira-asset-attachment-remove
+    outputs:
+      - contextPath: JiraAsset.Attachment.ID
+        description: Id of the attachment that was deleted.
+        type: Number
+      - contextPath: JiraAsset.Attachment.Author
+        description: Author of the attachment.
+        type: String
+      - contextPath: JiraAsset.Attachment.MimeType
+        description: The file's MIME type.
+        type: String
+      - contextPath: JiraAsset.Attachment.Filename
+        description: The file's name.
+        type: String
+      - contextPath: JiraAsset.Attachment.Filesize
+        description: The size of the file.
+        type: String
+      - contextPath: JiraAsset.Attachment.Created
+        description: The date in which this attachment was created.
+        type: Date
+      - contextPath: JiraAsset.Attachment.Comment
+        description: The comment attached to the attachment, if there is one.
+        type: String
+      - contextPath: JiraAsset.Attachment.CommentOutput
+        description: The comment output of the attachment, if there is one.
+        type: String
+      - contextPath: JiraAsset.Attachment.Url
+        description: Url to the attachment.
+        type: String
   runonce: false
   script: '-'
   type: python

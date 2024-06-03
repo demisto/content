@@ -2,25 +2,7 @@ import json
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerUserPython import *  # noqa
-
 import urllib3
 from typing import Any
 
@@ -33,17 +15,12 @@ CLOUD_URL_STRUCTURE = 'https://api.atlassian.com/jsm/assets/workspace/'
 ON_PREM_URL_STRUCTURE = '{}/rest/assets/1.0/'
 GETֹֹֹֹ_WORKSPACE_URL_STRUCTURE = 'https://{}.atlassian.net/rest/servicedeskapi/assets/workspace'
 INTEGRATION_OUTPUTS_BASE_PATH = 'JiraAsset'
+
+
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    """
 
     def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Bearer {api_key}', 'Accept': 'application/json'}
@@ -70,7 +47,6 @@ class Client(BaseClient):
             json_data=json_data
         )
 
-
     def send_file(self, object_id, file_path):
         return self._http_request(
             method='POST',
@@ -89,6 +65,12 @@ class Client(BaseClient):
         return self._http_request(
             method='DELETE',
             url_suffix=f'/object/{object_id}'
+        )
+
+    def http_delete(self, url_suffix):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=url_suffix
         )
 
     def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
@@ -483,6 +465,7 @@ def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> Com
         readable_output=tableToMarkdown('Comments', outputs, headers=hr_headers)
     )
 
+
 def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
     res = client.http_get(f'/objectconnectedtickets/{object_id}/tickets')
@@ -501,9 +484,54 @@ def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any
 def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
     entry_id = args.get('entry_id')
-    file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
-    res = client.send_file(object_id=object_id, file_path=file_path)
-    print(res)
+    file_path = demisto.getFilePath(entry_id)
+    demisto.debug(f'File path: {file_path}')
+    res = client.send_file(object_id=object_id, file_path=file_path.get('path'))
+    demisto.debug(f'Response: {res}')
+    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=f'Attachment was added successfully to object with id: {object_id}'
+    )
+
+
+def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_id = args.get('object_id')
+    download_file = args.get('download_file', False)
+    res = list(client.http_get(f'/attachments/object/{object_id}'))
+    if download_file:
+        for attachment in res:
+            attachment_url = attachment.get('url')
+    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    hr_header = ['ID', 'Filename', 'Filesize', 'Comment']
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Attachments', outputs, headers=hr_header)
+    )
+
+
+def jira_asset_attachment_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    attachment_id = args.get('id')
+
+    try:
+        res = client.http_delete(f'/attachments/{attachment_id}')
+    except DemistoException as e:
+        if e.res.status_code == 404:
+            return CommandResults(readable_output=f'Attachment with id: {attachment_id} does not exist')
+        else:
+            raise e
+
+    outputs = convert_keys_to_pascal([res], key_mapping={'id': 'ID'})
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=f'Attachment with id {res.get("id")} was successfully deleted'
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -590,6 +618,14 @@ def main() -> None:
 
         elif command == 'jira-asset-attachment-add':
             result = jira_asset_attachment_add_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-attachment-list':
+            result = jira_asset_attachment_list_command(client, args)
+            return_results(result)
+
+        elif command == 'jira-asset-attachment-remove':
+            result = jira_asset_attachment_remove_command(client, args)
             return_results(result)
 
         else:
