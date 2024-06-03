@@ -1,3 +1,15 @@
 !jira-asset-object-schema-list
 !jira-asset-object-type-list
 !jira-asset-object-type-attribute-list
+!jira-asset-object-create
+!jira-asset-object-update
+!jira-asset-object-delete
+!jira-asset-object-get
+!jira-asset-object-search
+!jira-asset-attribute-json-create
+!jira-asset-comment-create
+!jira-asset-comment-list
+!jira-asset-connected-ticket-list object_id=2
+!jira-asset-attachment-add
+!jira-asset-attachment-remove
+!jira-asset-attachment-list

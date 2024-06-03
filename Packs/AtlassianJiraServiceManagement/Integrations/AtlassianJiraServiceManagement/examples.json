@@ -1,1 +1,26 @@
-[{"ID": 1, "Author": "JIRAUSER54948", "MimeType": "text/plain", "Filename": "test.txt", "Filesize": "4 B", "Created": "2024-05-29T12:08:24.000Z", "Comment": "", "CommentOutput": "", "Url": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/attachments/1/test.txt"}]
+{
+    "Tickets": [
+        {
+            "Key": "PROJ-1",
+            "ID": 10000,
+            "Reporter": "admin",
+            "Created": "2019-11-27T08:16:52.337Z",
+            "Updated": "2019-11-27T08:16:52.337Z",
+            "Title": "This is the Jira Summary of a Task in todo",
+            "Status": {
+                "Name": "To Do",
+                "Colorname": "blue-gray"
+            },
+            "Type": {
+                "Name": "Task",
+                "Description": "A task that needs to be done.",
+                "Iconurl": "http://jira/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype"
+            },
+            "Priority": {
+                "Name": "Medium",
+                "Iconurl": "http://jira/images/icons/priorities/medium.svg"
+            }
+        }
+    ],
+    "Allticketsquery": "cf[10000] = TEST-1"
+}

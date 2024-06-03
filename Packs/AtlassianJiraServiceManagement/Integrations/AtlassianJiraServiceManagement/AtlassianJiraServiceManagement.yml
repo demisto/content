@@ -497,6 +497,54 @@ script:
         description: Whether the comment can be deleted.
         type: Boolean
   - arguments:
+    - description: Id of the object for which connected tickets will be fetched.
+      name: object_id
+      required: true
+    name: jira-asset-connected-ticket-list
+    outputs:
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Key
+        description: Key for the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.ID
+        description: The id of the connected ticket.
+        type: Number
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Reporter
+        description: The user who reported the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Created
+        description: The date in which this connected ticket was created.
+        type: Date
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Updated
+        description: The date in which this connected ticket was last updated.
+        type: Date
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Title
+        description: Title of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Status.Name
+        description: The name of the status of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Status.Colorname
+        description: The color of the connected tikcet.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Type.Name
+        description: The type of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Type.Description
+        description: The description of the type of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Type.Iconurl
+        description: The url to the icon representing the type of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Priority.Name
+        description: Priority of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Tickets.Priority.Iconurl
+        description: The url to the icon representing the priority of the connected ticket.
+        type: String
+      - contextPath: JiraAsset.ConnectedTicket.Allticketsquery
+        description: The query used to fetch the connected tickets.
+        type: String
+  - arguments:
     - description: Id of the object that comments will be retrieved for. You could use the  jira-asset-object-search to find objects.
       name: object_id
       required: true

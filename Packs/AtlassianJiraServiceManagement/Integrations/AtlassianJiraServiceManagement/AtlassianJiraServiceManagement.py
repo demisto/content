@@ -1,8 +1,12 @@
 import json
+import os
+import io
+import zipfile
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
+
 import urllib3
 from typing import Any
 
@@ -13,9 +17,9 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 CLOUD_URL_STRUCTURE = 'https://api.atlassian.com/jsm/assets/workspace/'
 ON_PREM_URL_STRUCTURE = '{}/rest/assets/1.0/'
+ON_PREM_FILE_URL_PREFIX = 'https://{}.atlassian.net/rest/servicedeskapi/attachments/'
 GETֹֹֹֹ_WORKSPACE_URL_STRUCTURE = 'https://{}.atlassian.net/rest/servicedeskapi/assets/workspace'
 INTEGRATION_OUTPUTS_BASE_PATH = 'JiraAsset'
-
 
 ''' CLIENT CLASS '''
 
@@ -31,6 +35,13 @@ class Client(BaseClient):
             method='GET',
             url_suffix=url_suffix,
             params=params
+        )
+
+    def get_file(self, file_url):
+        return self._http_request(
+            method='GET',
+            full_url=file_url,
+            resp_type='response'
         )
 
     def create_object(self, json_data):
@@ -497,21 +508,45 @@ def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
-def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> List[CommandResults | dict] | CommandResults:
     object_id = args.get('object_id')
     download_file = args.get('download_file', False)
     res = list(client.http_get(f'/attachments/object/{object_id}'))
-    if download_file:
-        for attachment in res:
-            attachment_url = attachment.get('url')
     outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     hr_header = ['ID', 'Filename', 'Filesize', 'Comment']
-    return CommandResults(
+
+    command_results = CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
         outputs_key_field='ID',
         outputs=outputs,
         readable_output=tableToMarkdown('Attachments', outputs, headers=hr_header)
     )
+
+    if not download_file:
+        return command_results
+
+    files = []
+    for attachment in res:
+        attachment_url = attachment.get('url')
+        file_response = client.get_file(attachment_url)
+        file_name = attachment_url.split('/')[-1]
+        i = 1
+        while file_name in files:
+            name, ext = file_name.split('.')
+            file_name = f"{name}_{i}.{ext}"
+            i += 1
+        with open(file_name, 'wb') as file:
+            file.write(file_response.content)
+            files.append(file.name)
+    zip_data_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_data_buffer, 'w') as zipf:
+        for file in files:
+            zipf.write(file)
+            os.remove(file)
+
+    data = zip_data_buffer.getvalue()
+    file_result = fileResult('ObjectAttachments.zip', data, EntryType.ENTRY_INFO_FILE)
+    return [file_result, command_results]
 
 
 def jira_asset_attachment_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
