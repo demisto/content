@@ -114,20 +114,19 @@ def main():
 
         # argToList returns the argument as is if it's already a list so no need to check here
         the_input = argToList(the_input)
-        entries_list = []
+        fqdns = []
+        domains = []
         # Otherwise assumes it's already an array
         for item in the_input:
-            input_entry = {
+            fqdns.append(extract_fqdn(item))
+            domains.append(item)
+        if fqdns or domains:
+            demisto.results({
                 "Type": entryTypes["note"],
                 "ContentsFormat": formats["json"],
-                "Contents": [extract_fqdn(item)],
-                "EntryContext": {"Domain": item}
-            }
-            if input_entry.get("Contents") == ['']:
-                input_entry['Contents'] = []
-            entries_list.append(input_entry)
-        if entries_list:
-            demisto.results(entries_list)
+                "Contents": fqdns,
+                "EntryContext": {"Domains": domains}
+            })
         else:
             # Return empty string so it wouldn't create an empty domain indicator.
             demisto.results('')
