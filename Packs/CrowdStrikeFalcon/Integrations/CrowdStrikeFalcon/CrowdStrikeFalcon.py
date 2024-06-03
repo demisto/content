@@ -2207,6 +2207,10 @@ def get_remote_data_command(args: dict[str, Any]):
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
+    reopen_statuses_list = argToList(demisto.params().get('reopen_statuses', ''))
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
+        if reopen_statuses_list else (set(DETECTION_STATUS) - {'closed'})
+    demisto.debug(f'{reopen_statuses_list=} {reopen_statuses_set=}')
 
     mirrored_data = {}
     entries: list = []
@@ -2224,7 +2228,7 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_set)  # sets in place
 
         elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
             mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
@@ -2333,12 +2337,15 @@ def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, re
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
-def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str):
+def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str, reopen_statuses: set):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
-        elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
+        elif updated_object.get('status') in reopen_statuses:
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
+        else:
+            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening since {updated_object.get('status')=}  "
+                          f"and {reopen_statuses=}.")
 
 
 def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list,

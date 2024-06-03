@@ -163,6 +163,21 @@ configuration:
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
+- defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
+  display: Reopen statuses
+  name: reopen_statuses
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: The Crowdsrike Falcon statuses that should reopen an incident in XSOAR if it is closed.
+  options:
+  - New
+  - In progress
+  - True positive
+  - False positive
+  - Reopened
+  - Ignored
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
