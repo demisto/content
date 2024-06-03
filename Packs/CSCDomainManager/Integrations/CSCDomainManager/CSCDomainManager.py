@@ -287,7 +287,7 @@ def get_whois_contacts_fields_for_search_domains(whois_contacts, field_name: str
 
 
 def get_whois_contacts_fields_for_domain(whois_contact, field_names: str | List[str],
-                                                 contact_type_condition: str) -> list:
+                                         contact_type_condition: str) -> list:
     """
     Create a list of contact.field_name for each contact in whois_contacts. Specific arrangement for the domain command
 
@@ -329,7 +329,7 @@ def test_module(client: Client) -> str:
         client.send_get_request("/domains", "")
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -347,7 +347,7 @@ def csc_domains_search_command(client: Client, args) -> Any:
     Returns:
         A list of domains with the applied filters
     """
-    
+
     domains_results = {}
     qualified_domain_name = args.get('domain_name')
     if qualified_domain_name and '.' in qualified_domain_name:
@@ -455,37 +455,39 @@ def domain(client, args, reliability) -> Any:
         expiration_date=domain_json.get('registryExpiryDate'),
         name_servers=domain_json.get('nameServers'),
         registrant_name=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                                     ['firstName', 'lastName'], 'REGISTRANT'),
+                                                             ['firstName', 'lastName'], 'REGISTRANT'),
         registrant_email=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                                      'email', 'REGISTRANT'),
+                                                              'email', 'REGISTRANT'),
         registrant_phone=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                                      'phone', 'REGISTRANT'),
+                                                              'phone', 'REGISTRANT'),
         registrant_country=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                                        'country', 'REGISTRANT'),
+                                                                'country', 'REGISTRANT'),
         admin_name=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                                ['firstName', 'lastName'], 'ADMINISTRATIVE'),
+                                                        ['firstName', 'lastName'], 'ADMINISTRATIVE'),
         admin_email=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'email', 'ADMINISTRATIVE'),
         admin_phone=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'phone', 'ADMINISTRATIVE'),
         admin_country=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'country', 'ADMINISTRATIVE'),
         tech_country=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'country', 'TECHNICAL'),
         tech_name=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                               ['firstName', 'lastName'], 'TECHNICAL'),
+                                                       ['firstName', 'lastName'], 'TECHNICAL'),
         tech_organization=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
-                                                                       'organization', 'TECHNICAL'),
+                                                               'organization', 'TECHNICAL'),
         tech_email=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'email', 'TECHNICAL'),
         dbot_score=dbot_score
     )
 
     hr_data = get_domain_hr_fields(domain_json)
 
-    context_res = {}
-    context_res.update(dbot_score.to_context())
-    context_res.update(domain_context.to_context())
+    # context_res = domain_json
+    # context_res.update(dbot_score.to_context())
+    # context_res.update(domain_context.to_context())
 
+    #demisto.log(context_res)
     results = CommandResults(
         readable_output=tableToMarkdown('Domain', hr_data, headers=HR_HEADERS_FOR_DOMAIN),
         outputs_prefix='CSCDomainManager.Domain',
-        outputs=context_res
+        indicator=domain_context,
+        outputs=domain_json
     )
     return results
 
@@ -540,7 +542,7 @@ def main() -> None:
 
         elif demisto.command() == 'domain':
             return_results(domain(client, args, reliability))
-        
+
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented')
 

@@ -521,6 +521,177 @@ script:
     - contextPath: Domain.Tech.Email
       description: Tech email
       type: String
+    - contextPath: CSCDomainManager.Domain.account.accountName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.account.accountNumber
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.brandName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.businessUnit
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.countryCode
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.criticalDomain
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.customFields.name
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.customFields.value
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.dnsType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.dnssecActivated
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.domain
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.extension
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.idn
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.idnReferenceName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.lastModifiedDate
+      description: ''
+      type: Date
+    - contextPath: CSCDomainManager.Domain.lastModifiedDescription
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.lastModifiedReason
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.localAgent
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.managedStatus
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.nameServers
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.newGtld
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.paidThroughDate
+      description: ''
+      type: Date
+    - contextPath: CSCDomainManager.Domain.qualifiedDomainName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.registrationDate
+      description: ''
+      type: Date
+    - contextPath: CSCDomainManager.Domain.registryExpiryDate
+      description: ''
+      type: Date
+    - contextPath: CSCDomainManager.Domain.serverDeleteProhibited
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.serverTransferProhibited
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.serverUpdateProhibited
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.urlf.redirectType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.urlf.urlForwarding
+      description: ''
+      type: Boolean
+    - contextPath: CSCDomainManager.Domain.whoisContacts.city
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.contactType
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.country
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.email
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.fax
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.firstName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.lastName
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.organization
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.phone
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.phoneExtn
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.postalCode
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.stateProvince
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.street1
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisContacts.street2
+      description: ''
+      type: String
+    - contextPath: CSCDomainManager.Domain.whoisPrivacy
+      description: ''
+      type: Boolean
+    - contextPath: DBotScore.Reliability
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: ''
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: ''
+      type: Date
+    - contextPath: Domain.WHOIS.NameServers
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: ''
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: ''
+      type: String
   runonce: false
   script: '-'
   type: python
