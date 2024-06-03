@@ -73,7 +73,7 @@ def test_extract_fqdn_or_domain_empty_indicators(mocker):
     results = demisto.results.call_args[0]
     print(f'test_extract_fqdn_or_domain_empty_indicators, {results=}')
 
-    assert results[0] == [{'Contents': [], 'ContentsFormat': 'json', 'Type': 1, 'EntryContext': {'Domain': '1Ab.Vt'}}]
+    assert results[0] == [{'Contents': [], 'ContentsFormat': 'json', 'Type': 1, 'EntryContext': {'Domain': ['1Ab.Vt']}}]
 
 
 def test_main_raise_error(mocker: MockFixture):

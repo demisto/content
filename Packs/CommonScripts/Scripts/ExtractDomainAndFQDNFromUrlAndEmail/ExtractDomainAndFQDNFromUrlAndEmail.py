@@ -127,7 +127,7 @@ def main():
                 "Type": entryTypes["note"],
                 "ContentsFormat": formats["json"],
                 "Contents": fqdns,
-                "EntryContext": {"Domains": domains}
+                "EntryContext": {"Domain": domains}
             }])
         else:
             # Return empty string so it wouldn't create an empty domain indicator.
