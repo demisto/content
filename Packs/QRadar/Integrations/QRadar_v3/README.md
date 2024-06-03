@@ -3563,7 +3563,7 @@ Retrieves a list of event collectors.
 | QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 
 
 
-<details><summary><h3 style="display: inline;"> View Your QRadar Version</h3></summary> 
+<details><summary><h3 style={{display:'inline'}}> View Your QRadar Version</h3></summary> 
 
 1. Enter QRadar service.
 2. Click the **Menu** toolbar. A scrolling toolbar will appear.
