@@ -2046,7 +2046,7 @@ def url_scan_and_get_analysis(
         client: Client,
         score_calculator: ScoreCalculator,
         args: dict,
-        url_relationships: dict
+        url_relationships: str
 ):
     """Calls to url-scan and gti-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
