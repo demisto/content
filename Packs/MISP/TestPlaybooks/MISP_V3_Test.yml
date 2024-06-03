@@ -362,7 +362,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Email.Address
+              simple: Accounts.Email
             iscontext: true
           right:
             value:
@@ -3582,5 +3582,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
-
-
