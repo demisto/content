@@ -1012,17 +1012,25 @@ def get_policy_command(args):
         })
 
     output_type = {
-        'blockedsenders': 'Policy',
-        'antispoofing-bypass': 'AntispoofingBypassPolicy',
-        'address-alteration': 'AddressAlterationPolicy',
+        "blockedsenders": "Blockedsenders",
+        "antispoofing-bypass": "AntispoofingBypassPolicy",
+        "address-alteration": "AddressAlterationPolicy",
     }
 
-    return CommandResults(
-        outputs_prefix=f'Mimecast.{output_type[policy_type]}',
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, contents, headers),
-        outputs_key_field='id'
-    )
+    return [
+        CommandResults(
+            outputs_prefix="Mimecast.Policy",
+            outputs=policies_context,
+            readable_output=tableToMarkdown(title, contents, headers),
+            outputs_key_field="id",
+        ),
+        CommandResults(
+            outputs_prefix=f"Mimecast.{output_type[policy_type]}",
+            outputs=policies_context,
+            readable_output=tableToMarkdown(title, contents, headers),
+            outputs_key_field="id",
+        ),
+    ]
 
 
 def get_policy_request(policy_type='blockedsenders', policy_id=None):
@@ -1454,17 +1462,25 @@ def delete_policy(args):
     }
 
     output_type = {
-        'blockedsenders': 'Policy',
+        'blockedsenders': 'Blockedsenders',
         'antispoofing-bypass': 'AntispoofingBypassPolicy',
         'address-alteration': 'AddressAlterationPolicy',
     }
 
-    return CommandResults(
-        outputs_prefix=f'Mimecast.{output_type[policy_type]}',
-        outputs=context,
-        readable_output=f'Mimecast Policy {policy_id} deleted successfully!',
-        outputs_key_field='ID'
-    )
+    return [
+        CommandResults(
+            outputs_prefix="Mimecast.Policy",
+            outputs=context,
+            readable_output=f"Mimecast Policy {policy_id} deleted successfully!",
+            outputs_key_field="ID",
+        ),
+        CommandResults(
+            outputs_prefix=f"Mimecast.{output_type[policy_type]}",
+            outputs=context,
+            readable_output=f"Mimecast Policy {policy_id} deleted successfully!",
+            outputs_key_field="ID",
+        ),
+    ]
 
 
 def delete_policy_request(policy_type, policy_id=None):

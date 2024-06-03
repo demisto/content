@@ -151,6 +151,16 @@ Get a policy by ID.
 | Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
 | Mimecast.Policy.Fromdate | date | Policy validation start date. | 
 | Mimecast.Policy.Todate | date | Policy expiration date. | 
+| Mimecast.Blockedsenders.ID | string | Policy ID. | 
+| Mimecast.Blockedsenders.Sender.Address | string | Block Sender by email address. | 
+| Mimecast.Blockedsenders.Sender.Domain | string | Block Sender by domain. | 
+| Mimecast.Blockedsenders.Sender.Group | string | Block Sender by group. | 
+| Mimecast.Blockedsenders.Bidirectional | boolean | Blocked policy is bidirectional or not. | 
+| Mimecast.Blockedsenders.Receiver.Address | string | Block emails to receiver type address. | 
+| Mimecast.Blockedsenders.Receiver.Domain | string | Block emails to receiver type domain. | 
+| Mimecast.Blockedsenders.Receiver.Group | string | Block emails to receiver type group. | 
+| Mimecast.Blockedsenders.Fromdate | date | Policy validation start date. | 
+| Mimecast.Blockedsenders.Todate | date | Policy expiration date. | 
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. | 
 | Mimecast.AntispoofingBypassPolicy.Sender.Address | string | Block Sender by email address. | 
 | Mimecast.AntispoofingBypassPolicy.Sender.Domain | string | Block Sender by domain. | 
@@ -173,15 +183,33 @@ Get a policy by ID.
 | Mimecast.AddressAlterationPolicy.Todate | date | Policy expiration date. | 
 
 #### Command example
-```!mimecast-get-policy policyType=blockedsenders policyID=eNo1jkkOgjAAAP```
+```!mimecast-get-policy policyType=blockedsenders policyID=eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg```
 #### Context Example
 ```json
 {
     "Mimecast": {
+        "Blockedsenders": {
+            "Bidirectional": false,
+            "FromDate": "1900-01-01T00:00:00+0000",
+            "ID": "eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg",
+            "Reciever": {
+                "Address": null,
+                "Domain": null,
+                "Group": null,
+                "Type": "everyone"
+            },
+            "Sender": {
+                "Address": null,
+                "Domain": null,
+                "Group": null,
+                "Type": "everyone"
+            },
+            "ToDate": "2100-01-01T23:59:59+0000"
+        },
         "Policy": {
             "Bidirectional": false,
             "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jkkOgjAAAP",
+            "ID": "eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg",
             "Reciever": {
                 "Address": null,
                 "Domain": null,
@@ -205,7 +233,7 @@ Get a policy by ID.
 >### Mimecast Get blockedsenders Policy
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
->| eNo1jkkOgjAAAP | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+>| eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 
 #### Command example
@@ -215,6 +243,24 @@ Get a policy by ID.
 {
     "Mimecast": {
         "AddressAlterationPolicy": {
+            "Bidirectional": null,
+            "FromDate": null,
+            "ID": "eNoVzs2OgjAUQOF3uVtY0IKdkcRFxfiHgwqIhh3S4tRU70wrGjS--zD7k5zvBVbWrZFKQAiHMrrbtMvPQUy_dLSaJx0lC5rNxs2JlNe97-nVJuFEbb6DanJ0Up5_TvMh0oUcqgHdKrb-bZPlgDLHi6tWdM6Tx-Y5W_P0g_mTBstCIxaPLMIRuKBF9QNhU2krXahbe8OLNDUK2VOiXcaJRzn1WV_epbEKrxASFxrUQpp_LwuCfvX-A6m-PQc",
+            "Reciever": {
+                "Address": null,
+                "Domain": null,
+                "Group": null,
+                "Type": null
+            },
+            "Sender": {
+                "Address": null,
+                "Domain": null,
+                "Group": null,
+                "Type": null
+            },
+            "ToDate": null
+        },
+        "Policy": {
             "Bidirectional": null,
             "FromDate": null,
             "ID": "eNoVzs2OgjAUQOF3uVtY0IKdkcRFxfiHgwqIhh3S4tRU70wrGjS--zD7k5zvBVbWrZFKQAiHMrrbtMvPQUy_dLSaJx0lC5rNxs2JlNe97-nVJuFEbb6DanJ0Up5_TvMh0oUcqgHdKrb-bZPlgDLHi6tWdM6Tx-Y5W_P0g_mTBstCIxaPLMIRuKBF9QNhU2krXahbe8OLNDUK2VOiXcaJRzn1WV_epbEKrxASFxrUQpp_LwuCfvX-A6m-PQc",
@@ -302,6 +348,7 @@ Delete a Blocked Sender Policy.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Mimecast.Policy.ID | string | Policy ID. | 
+| Mimecast.Blockedsenders.ID | string | Policy ID. | 
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. | 
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. | 
 

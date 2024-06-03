@@ -326,6 +326,36 @@ script:
     - contextPath: Mimecast.Policy.Todate
       description: Policy expiration date.
       type: date
+    - contextPath: Mimecast.Blockedsenders.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Sender.Address
+      description: Block Sender by email address.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Sender.Domain
+      description: Block Sender by domain.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Sender.Group
+      description: Block Sender by group.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Bidirectional
+      description: Blocked policy is bidirectional or not.
+      type: boolean
+    - contextPath: Mimecast.Blockedsenders.Receiver.Address
+      description: Block emails to receiver type address.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Receiver.Domain
+      description: Block emails to receiver type domain.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Receiver.Group
+      description: Block emails to receiver type group.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.Fromdate
+      description: Policy validation start date.
+      type: date
+    - contextPath: Mimecast.Blockedsenders.Todate
+      description: Policy expiration date.
+      type: date
     - contextPath: Mimecast.AntispoofingBypassPolicy.ID
       description: Policy ID.
       type: string
@@ -490,6 +520,9 @@ script:
     name: mimecast-delete-policy
     outputs:
     - contextPath: Mimecast.Policy.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.Blockedsenders.ID
       description: Policy ID.
       type: string
     - contextPath: Mimecast.AntispoofingBypassPolicy.ID
