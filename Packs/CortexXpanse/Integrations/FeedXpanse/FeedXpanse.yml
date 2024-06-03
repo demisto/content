@@ -142,4 +142,3 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.14.91134
 fromversion: 6.8.0
-#TODO Add tests?

@@ -66,26 +66,9 @@ class Client(BaseClient):
         return full_response
 
 
-''' COMMAND FUNCTIONS '''
+''' HELPER FUNCTIONS '''
 
 
-def test_module(client: Client):  # pragma: no cover
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-    client.list_asset_internet_exposure_request(search_to=1, use_paging=False)
-    return_results('ok')
-
-# TODO Move these to helper section
 def create_x509_certificate_grids(string_object: Optional[str]) -> list:
         """
         Creates a grid field related to the subject and issuer field of the x509 certificate object.
@@ -192,6 +175,25 @@ def build_asset_indicators(client: Client, raw_indicators: List[Dict[str, Any]])
     return indicators
 
 
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client):  # pragma: no cover
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    client.list_asset_internet_exposure_request(search_to=1, use_paging=False)
+    return_results('ok')
+
 def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all') -> \
         List[Dict[str, Any]] | Tuple[List[Dict[str, Any]], str]:
     """
@@ -206,7 +208,6 @@ def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all')
         asset_list.append("CERTIFICATE")
     if 'ipv4' in asset_type:
         asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
-    # TODO, might move the .get from these to underlying _pagination function
     asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}])
     
     assset_indicators = build_asset_indicators(client, asset_response)
