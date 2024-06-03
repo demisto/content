@@ -12,8 +12,8 @@ def main():
         demisto.results([{
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': [formatted_urls],
-            'EntryContext': {'URL': [formatted_urls]},
+            'Contents': formatted_urls,
+            'EntryContext': {'URL': formatted_urls},
         }])
 
     except Exception as e:
