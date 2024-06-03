@@ -104,7 +104,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -136,7 +135,7 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "Successful vs. Rate Limited API Calls by Integration",
+                "name": "API Call Status By Integration",
                 "prevName": "Successful vs. Rate Limited API Calls by Integration",
                 "dataType": "metrics",
                 "widgetType": "bar",
@@ -311,27 +310,27 @@
                             "name": "VirusTotal (API v3)"
                         },
                         {
-                            "color": "#d60d0d",
+                            "color": "#4DE406",
+                            "name": "Success"
+                        },
+                        {
+                            "color": "#F50057",
                             "name": "General Error"
                         },
                         {
-                            "color": "#4fa327",
-                            "name": "Success"
+                            "color": "#FFC4C6",
+                            "name": "Service Error"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "Auth Error"
                         },
                         {
                             "color": "#FD5BDE",
                             "name": "Quota Error"
                         },
                         {
-                            "color": "#f53c7e",
-                            "name": "Service Error"
-                        },
-                        {
-                            "color": "#eb6887",
-                            "name": "Auth Error"
-                        },
-                        {
-                            "color": "#229D80",
+                            "color": "#01A2EC",
                             "name": "Other"
                         }
                     ],
@@ -340,7 +339,6 @@
                     "hideLegend": false
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -398,7 +396,6 @@
                     "valuesFormat": "abbreviated"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -510,7 +507,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -654,7 +650,6 @@
                     "yAxisLabel": "Error count"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -781,7 +776,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -891,7 +885,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1001,7 +994,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1141,7 +1133,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1254,7 +1245,6 @@
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 3,
                 "widgetType": "line",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "x": 0,
@@ -1365,7 +1355,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1475,7 +1464,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1493,7 +1481,6 @@
                 "version": 5,
                 "cacheVersn": 0,
                 "modified": "2024-05-21T19:31:05.883188536Z",
-                "created": "2024-05-21T10:22:20.546514077Z",
                 "sizeInBytes": 0,
                 "packID": "",
                 "packName": "",
