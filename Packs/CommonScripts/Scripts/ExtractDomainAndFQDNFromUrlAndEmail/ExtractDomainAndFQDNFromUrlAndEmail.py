@@ -121,6 +121,8 @@ def main():
             fqdns.append(extract_fqdn(item))
             domains.append(item)
         if fqdns or domains:
+            if fqdns == ['']:
+                fqdns = []
             demisto.results({
                 "Type": entryTypes["note"],
                 "ContentsFormat": formats["json"],
