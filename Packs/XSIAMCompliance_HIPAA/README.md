@@ -1,4 +1,4 @@
-## **Generate Compliance Dashboards and Reports**
+## **Generate Compliance Dashboard and Reports**
 The HIPAA compliance pack provides a comprehensive dashboard and report template to easily monitor your Cortex XSIAM data compliance regulations and provide evidence for compliance audits.
 
 
