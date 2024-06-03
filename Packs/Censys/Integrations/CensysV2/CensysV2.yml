@@ -29,6 +29,7 @@ configuration:
   name: premium_access
   type: 8
   required: false
+  section: Collect
   advanced: true
   additionalinfo: |-
     Censys API provides reputation data exclusively to paid subscribers. 
@@ -59,6 +60,7 @@ configuration:
     Used only when `Determine IP score by labels` is set. 
     Labels to classify IP as Malicious. 
     Input can be an array or comma-separated values.
+  section: Collect
   advanced: true
 - display: IP Suspicious labels
   name: suspicious_labels
@@ -86,18 +88,21 @@ configuration:
     Used when `Determine IP score by labels` is set.
     Labels to classify IP as Suspicious.
     Input can be an array or comma-separated values.
+  section: Collect
   advanced: true
 - display: Malicious labels threshold
   name: malicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as malicious for IP.
+  section: Collect
   advanced: true
 - display: Suspicious labels threshold
   name: suspicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as suspicious for IP.
+  section: Collect
   advanced: true
 - display: Source Reliability
   name: integration_reliability
@@ -112,6 +117,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
   advanced: true
 description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
 display: Censys v2
