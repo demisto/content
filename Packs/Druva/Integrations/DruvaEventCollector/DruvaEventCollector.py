@@ -42,7 +42,7 @@ class Client(BaseClient):
                 self._set_headers(token)
                 return
 
-        demisto.debug("Since the cache is empty or the token has expired, regenerate a new token")
+        demisto.debug("IntegrationContext token cache is empty or token has expired, regenerating a new token")
         raw_token, expires_in_seconds = self._refresh_access_token()
         self._set_headers(raw_token)
 
