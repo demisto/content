@@ -35,9 +35,7 @@ def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
 def extract_hyperlinks_from_docx(file_path: str) -> Set:
     doc = Document(file_path)
     links = set()
-    rels = doc.part.rels
-    for rel in rels:
-        rel = rels[rel]
+    for rel in doc.part.rels.values():
         if rel.reltype == RT.HYPERLINK and rel.is_external:
             links.add(rel._target)
 
