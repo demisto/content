@@ -9,6 +9,7 @@ def test_formatter(mocker):
     FormatURL.main()
 
     results = demisto.results.call_args[0]
+    print(f'test_formatter, {results=}')
 
     assert results[0]['Contents'] == ['https://www.test.com']
 
