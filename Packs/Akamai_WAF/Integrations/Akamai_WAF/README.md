@@ -1081,24 +1081,7 @@ Acknowledge the warning message for uploading the certs and trust chains of enro
 #### Context Output
 
 There is no context output for this command.
-### akamai-acknowledge-warning-command
 
-***
-Acknowledge the warning message for uploading the certs and trust chains of enrollments.
-
-#### Base Command
-
-`akamai-acknowledge-warning-command`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| change_path | The path of the changed certificate. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
 ### akamai-modify-appsec-config-selected-hosts
 
 ***
