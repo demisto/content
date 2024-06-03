@@ -13,9 +13,9 @@ This is an AWS script that upgrades a package on the AWS EC2 instance.
 ---
 This script uses the following commands and scripts.
 
-* aws-ssm-command-run
-* aws-ssm-inventory-entry-list
 * AWS - System Manager
+* aws-ssm-inventory-entry-list
+* aws-ssm-command-run
 
 ## Inputs
 
@@ -27,6 +27,7 @@ This script uses the following commands and scripts.
 | asm_rule_id | ASM alert rule ID. |
 | version | Version of the package to be installed. |
 | region | Region of the EC2 instance. |
+| assume_role | Name of an AWS role to assume \(should be the same for all organizations\). |
 
 ## Outputs
 
@@ -34,4 +35,4 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AWSCommandID | This is the command Id of the command initiated by AWS SSM command | Unknown |
+| awsec2packageupgrade | This is the command Id of the command initiated by AWS SSM command | Unknown |

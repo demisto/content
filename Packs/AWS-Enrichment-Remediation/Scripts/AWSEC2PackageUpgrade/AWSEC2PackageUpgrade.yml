@@ -30,9 +30,11 @@ args:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
+- description: Name of an AWS role to assume (should be the same for all organizations).
+  name: assume_role
 comment: This is an AWS script that upgrades a package on the AWS EC2 instance.
 commonfields:
-  id: 'AWSEC2PackageUpgrade'
+  id: AWSEC2PackageUpgrade
   version: -1
 dockerimage: demisto/python3:3.10.14.92207
 enabled: true
@@ -40,7 +42,7 @@ engineinfo: {}
 mainengineinfo: {}
 name: AWSEC2PackageUpgrade
 outputs:
-- contextPath: AWSCommandID
+- contextPath: awsec2packageupgrade
   description: This is the command Id of the command initiated by AWS SSM command
 pswd: ""
 runas: DBotWeakRole

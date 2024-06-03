@@ -1,15 +1,15 @@
 id: AWS - Enrichment
 version: -1
-name: AWS - Enrichment
+name: AWS - Enrichment_patching
 description: Given the IP address this playbook enriches EC2 and IAM information.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
+    taskid: 96b01a55-849d-46ad-8ecc-cd1f103f805d
     type: start
     task:
-      id: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
+      id: 96b01a55-849d-46ad-8ecc-cd1f103f805d
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
+    taskid: bf2f9253-209f-48a6-8644-0513be7893f9
     type: title
     task:
-      id: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
+      id: bf2f9253-209f-48a6-8644-0513be7893f9
       version: -1
       name: |
         Done
@@ -52,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 1730
+          "x": -280,
+          "y": 2340
         }
       }
     note: false
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8d20eec3-078e-44e6-849d-739876ba76a1
+    taskid: 2bc235e1-e2b7-41af-8041-fda1d348ff05
     type: regular
     task:
-      id: 8d20eec3-078e-44e6-849d-739876ba76a1
+      id: 2bc235e1-e2b7-41af-8041-fda1d348ff05
       version: -1
       name: Lookup SecurityGroup information associated with InstanceID
       description: Describes one or more of your security groups.
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 1370
+          "y": 1670
         }
       }
     note: false
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 34bd81f1-1ad3-4ca5-8ceb-e87b995b16be
+    taskid: d4e0edec-eb3a-49b8-8fa5-aa1fe8b9d354
     type: condition
     task:
-      id: 34bd81f1-1ad3-4ca5-8ceb-e87b995b16be
+      id: d4e0edec-eb3a-49b8-8fa5-aa1fe8b9d354
       version: -1
       name: Was there an EC2 instance?
       description: Check whether the last command returned EC2 information or not.
@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 1150
+          "y": 1450
         }
       }
     note: false
@@ -154,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 28f25d84-28e3-4cf2-8480-832175edc4d5
+    taskid: 9f88a41a-1d92-4feb-886d-3d67645dc01d
     type: condition
     task:
-      id: 28f25d84-28e3-4cf2-8480-832175edc4d5
+      id: 9f88a41a-1d92-4feb-886d-3d67645dc01d
       version: -1
       name: Is AWS - EC2 enabled and is Input value defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -235,13 +235,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Describes one or more regions that are currently available to you.
-      id: 2936884e-c1ab-422a-81a8-0f380ee56d80
+      id: 6e0e9b0d-6f6a-493b-8927-6ff21186c26d
       iscommand: true
       name: aws-ec2-describe-regions
       script: AWS - EC2|||aws-ec2-describe-regions
       type: regular
       version: -1
-    taskid: 2936884e-c1ab-422a-81a8-0f380ee56d80
+    taskid: 6e0e9b0d-6f6a-493b-8927-6ff21186c26d
     timertriggers: []
     type: regular
     view: |-
@@ -279,12 +279,12 @@ tasks:
     task:
       brand: ""
       description: Determines if AWS regions were returned from the last command in order to proceed.
-      id: e8eb9593-4a8d-4203-84a2-12bf1490c09d
+      id: 0c70aa0c-d881-4a5b-8a1a-45d8b3792d49
       iscommand: false
       name: Were regions returned?
       type: condition
       version: -1
-    taskid: e8eb9593-4a8d-4203-84a2-12bf1490c09d
+    taskid: 0c70aa0c-d881-4a5b-8a1a-45d8b3792d49
     timertriggers: []
     type: condition
     view: |-
@@ -313,13 +313,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
-      id: d4b9a34c-46d1-46bf-8298-c3d7a5e84b22
+      id: 1dd458c4-c1c6-4ce8-8e64-9a9ff76184df
       iscommand: true
       name: aws-ec2-describe-ipam-resource-discoveries
       script: AWS - EC2|||aws-ec2-describe-ipam-resource-discoveries
       type: regular
       version: -1
-    taskid: d4b9a34c-46d1-46bf-8298-c3d7a5e84b22
+    taskid: 1dd458c4-c1c6-4ce8-8e64-9a9ff76184df
     timertriggers: []
     type: regular
     view: |-
@@ -357,12 +357,12 @@ tasks:
     task:
       brand: ""
       description: Determines if AWS IPAM resources discoveries were returned from the last command in order to proceed.
-      id: 1779dfae-71e4-460b-8e8f-295dd08a340f
+      id: 48226a7c-8dcf-46bd-8707-54268722b5c4
       iscommand: false
       name: Were IPAM resources discoveries returned?
       type: condition
       version: -1
-    taskid: 1779dfae-71e4-460b-8e8f-295dd08a340f
+    taskid: 48226a7c-8dcf-46bd-8707-54268722b5c4
     timertriggers: []
     type: condition
     view: |-
@@ -380,6 +380,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
+      - "25"
       - "10"
     note: false
     quietmode: 0
@@ -401,13 +402,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Describes one or more of your instances.
-      id: daab41ad-5569-4a64-8a87-64b678af54a6
+      id: 9c91d2e3-991e-4b9b-8e02-29c53436447b
       iscommand: true
       name: Lookup EC2 information associated with IP (default/all regions)
       script: AWS - EC2|||aws-ec2-describe-instances
       type: regular
       version: -1
-    taskid: daab41ad-5569-4a64-8a87-64b678af54a6
+    taskid: 9c91d2e3-991e-4b9b-8e02-29c53436447b
     timertriggers: []
     type: regular
     view: |-
@@ -448,13 +449,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Gets the public IP addresses that have been discovered by IPAM.
-      id: c6086dbb-2e37-4747-8ae1-517cba869c2c
+      id: b082201e-443d-4055-89be-169daadafb6c
       iscommand: true
       name: aws-ec2-get-ipam-discovered-public-addresses
       script: AWS - EC2|||aws-ec2-get-ipam-discovered-public-addresses
       type: regular
       version: -1
-    taskid: c6086dbb-2e37-4747-8ae1-517cba869c2c
+    taskid: b082201e-443d-4055-89be-169daadafb6c
     timertriggers: []
     type: regular
     view: |-
@@ -492,12 +493,12 @@ tasks:
     task:
       brand: ""
       description: Determines if an AWS IPAM public IP was returned from the last command in order to proceed.
-      id: d7730d11-6c48-4b1e-8476-c84a01f20418
+      id: 38001173-43c5-4284-8239-00c34c25a906
       iscommand: false
       name: Was there an IPAM discovered public IP returned?
       type: condition
       version: -1
-    taskid: d7730d11-6c48-4b1e-8476-c84a01f20418
+    taskid: 38001173-43c5-4284-8239-00c34c25a906
     timertriggers: []
     type: condition
     view: |-
@@ -534,12 +535,12 @@ tasks:
     task:
       brand: ""
       description: Determines if the AWSAssumeRoleName input values are defined in order to proceed.
-      id: 95e5b728-aaa4-4c5c-8caa-f7278422f282
+      id: 9a65bd61-a56a-4490-8789-844e95df7167
       iscommand: false
       name: Is AWSAssumeRoleName input defined?
       type: condition
       version: -1
-    taskid: 95e5b728-aaa4-4c5c-8caa-f7278422f282
+    taskid: 9a65bd61-a56a-4490-8789-844e95df7167
     timertriggers: []
     type: condition
     view: |-
@@ -558,6 +559,7 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+      - "27"
     note: false
     quietmode: 0
     scriptarguments:
@@ -574,13 +576,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Describes one or more of your instances.
-      id: 310aa2ab-87a5-4a20-873d-a131b4e65119
+      id: 6be69e25-01ab-4600-8d81-01ed7290bd85
       iscommand: true
       name: Lookup EC2 information associated with IP (IPAM info)
       script: AWS - EC2|||aws-ec2-describe-instances
       type: regular
       version: -1
-    taskid: 310aa2ab-87a5-4a20-873d-a131b4e65119
+    taskid: 6be69e25-01ab-4600-8d81-01ed7290bd85
     timertriggers: []
     type: regular
     view: |-
@@ -629,13 +631,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 021bf9ac-5325-4d87-8001-7f55417b5ba5
+      id: 3a0cc28e-3a28-4f1a-8de9-37cbd44e6f2e
       iscommand: false
       name: Set roleArn in temporary context
       script: Set
       type: regular
       version: -1
-    taskid: 021bf9ac-5325-4d87-8001-7f55417b5ba5
+    taskid: 3a0cc28e-3a28-4f1a-8de9-37cbd44e6f2e
     timertriggers: []
     type: regular
     view: |-
@@ -691,19 +693,19 @@ tasks:
     task:
       brand: ""
       description: Determines if the AWS - Organizations integration instance is configured to pull hierarchy info.
-      id: 96d1440f-aa11-440f-8489-b31756d03013
+      id: 59a3987c-8f23-4af8-8a39-397608d24efb
       iscommand: false
       name: Is AWS - Organizations enabled ?
       type: condition
       version: -1
-    taskid: 96d1440f-aa11-440f-8489-b31756d03013
+    taskid: 59a3987c-8f23-4af8-8a39-397608d24efb
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1370
+          "x": 890,
+          "y": 1670
         }
       }
   "24":
@@ -729,20 +731,224 @@ tasks:
     task:
       brand: ""
       description: Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
-      id: 7a4dfb5b-d397-4880-8a10-39c3362f2152
+      id: 0790f810-5a9a-41f8-8f66-51ab82e4bbd2
       iscommand: false
       name: AWSAccountHierarchy
       script: AWSAccountHierarchy
       type: regular
       version: -1
-    taskid: 7a4dfb5b-d397-4880-8a10-39c3362f2152
+    taskid: 0790f810-5a9a-41f8-8f66-51ab82e4bbd2
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 880,
-          "y": 1550
+          "y": 1890
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - System Manager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWS - Systems Manager integration instance is configured.
+      id: 3f9e9968-cae2-4f4e-86cf-e1d15e52fece
+      iscommand: false
+      name: Is AWS - Systems Manager enabled?
+      type: condition
+      version: -1
+    taskid: 3f9e9968-cae2-4f4e-86cf-e1d15e52fece
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instance_id:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region:
+        simple: ${AWS.Regions.RegionName}
+      type_name:
+        simple: Instance Information
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - System Manager
+      description: A list of inventory items returned by the request.
+      id: 74f8d800-1e59-4140-839d-b40524e401c0
+      iscommand: true
+      name: Get Instance ID information from SSM Inventory list.
+      script: AWS - System Manager|||aws-ssm-inventory-entry-list
+      type: regular
+      version: -1
+    taskid: 74f8d800-1e59-4140-839d-b40524e401c0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - System Manager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWS - Systems Manager integration instance is configured.
+      id: c233cee8-b8aa-4510-8740-d66f41467778
+      iscommand: false
+      name: Is AWS - Systems Manager enabled?
+      type: condition
+      version: -1
+    taskid: c233cee8-b8aa-4510-8740-d66f41467778
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1185
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instance_id:
+        simple: ${AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId}
+      region:
+        simple: ${AWS.EC2.IpamDiscoveredPublicAddresses.AddressRegion}
+      roleArn:
+        simple: ${AssumeRoleArn}
+      roleSessionName:
+        simple: AWS-SSM-Command
+      type_name:
+        simple: Instance Information
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - System Manager
+      description: A list of inventory items returned by the request.
+      id: c0ad2d69-2660-4d03-8d01-fb61577cb103
+      iscommand: true
+      name: Get Instance ID information from SSM Inventory list.
+      script: AWS - System Manager|||aws-ssm-inventory-entry-list
+      type: regular
+      version: -1
+    taskid: c0ad2d69-2660-4d03-8d01-fb61577cb103
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1450
         }
       }
 view: |-
@@ -758,45 +964,45 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2575,
-        "width": 1190,
-        "x": 210,
+        "height": 3185,
+        "width": 2060,
+        "x": -280,
         "y": -780
       }
     }
   }
 inputs:
-- key: ""
+- key: "AwsIP"
+  value:
+    complex:
+      accessor: remoteip
+      root: alert
+  required: true
+  description: "AWS IP in alert"
+  playbookInputQuery:
+- key: AWSAssumeRoleName
   value: {}
   required: false
-  description: ""
+  description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
   playbookInputQuery:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue:
+        tovalue:
+      todate: "0001-01-01T00:00:00Z"
     query: ""
     queryEntity: indicators
     results:
-    daterange:
-      fromdate: "0001-01-01T00:00:00Z"
-      todate: "0001-01-01T00:00:00Z"
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: "0001-01-01T00:00:00Z"
     runFromLastJobTime: true
-- key: AwsIP
-  value:
-    complex:
-      root: alert
-      accessor: remoteip
-  required: true
-  description: AWS IP in alert
-  playbookInputQuery:
-- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
-  key: AWSAssumeRoleName
-  playbookInputQuery:
   required: false
   value: {}
 outputs:
@@ -809,7 +1015,24 @@ outputs:
 - contextPath: AWSHierarchy
   description: AWS account hierarchy information.
   type: unknown
+- contextPath: AWS.SSM.InventoryEntry
+  description: AWS SSM information of an Instance ID.
+  type: unknown
 quiet: true
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AwsIP
+  - AWSAssumeRoleName
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - AWS.EC2.Instances
+  - AWS.EC2.SecurityGroups
+  - AWSHierarchy
+  - AWS.SSM.InventoryEntry

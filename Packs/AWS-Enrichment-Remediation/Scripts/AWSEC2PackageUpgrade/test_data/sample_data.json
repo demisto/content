@@ -1,6 +1,0 @@
-{  
-  "instance_id": "i-12345",  
-  "asm_rule_id": "InsecureOpenSSH",  
-  "version": "openssh-9.7p1",  
-  "region": "us-east-1"  
-}  
