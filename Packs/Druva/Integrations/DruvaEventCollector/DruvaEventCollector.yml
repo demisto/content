@@ -23,6 +23,11 @@ configuration:
   name: proxy
   section: Connect
   type: 8
+- display: The maximum number of events per fetch.
+  name: max_fetch
+  type: 0
+  defaultvalue: "10000"
+  section: Collect
 description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 display: Druva Event Collector
 name: DruvaEventCollector

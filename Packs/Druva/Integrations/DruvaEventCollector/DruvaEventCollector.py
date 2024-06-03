@@ -3,7 +3,8 @@ from CommonServerPython import *
 import urllib3
 import base64
 
-MAX_EVENTS = 500
+MAX_EVENTS_API_CALL = 500  # As a limitation of the API, we can only retrieve 500 events at a time
+MAX_FETCH = "10000"
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -117,7 +118,7 @@ class Client(BaseClient):
         self._headers = {"Authorization": f"Bearer {token}"}
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, max_fetch: str) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -126,10 +127,13 @@ def test_module(client: Client) -> str:
 
     Args:
         client (Client): Druva client to use.
-
+        max_fetch (str): The maximum number of events per fetch.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
+    max_fetch_int = arg_to_number(max_fetch)
+    if max_fetch_int > arg_to_number(MAX_FETCH) or max_fetch_int < 1:
+        raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_FETCH}")
     get_events(client=client)
     return "ok"
 
@@ -150,27 +154,35 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict
 
 
 def fetch_events(
-    client: Client, last_run: dict[str, str]
+    client: Client, last_run: dict[str, str], max_fetch: int | None
 ) -> tuple[list[dict], dict[str, str]]:
     """
     Args:
         client (Client): Druva client to use.
         last_run (dict): A dict with a key containing a pointer to the latest event created time we got from last fetch.
+        max_fetch (int | None): The maximum number of events per fetch.
     Returns:
-        new_tracker (dict): Next run dict containing the next tracker (a pointer to the next event).
+        last_run (dict): A dict containing the next tracker (a pointer to the next event).
         events (list): List of events that will be created in XSIAM.
     """
+    final_events: list[dict] = []
+    last_interation: bool = False
+    while len(final_events) < max_fetch and not last_interation:
+        tracker = last_run.get("tracker")  # None on first run
+        demisto.debug(f"fetching events, {tracker=}")
+        events, new_tracker = get_events(client, tracker)
 
-    tracker = last_run.get("tracker")  # None on first run
-    demisto.debug(f"fetching events, {tracker=}")
-    events, new_tracker = get_events(client, tracker)
-    demisto.debug(f"fetched {len(events or [])} events, {new_tracker=}")
+        # It means there are no more events to retrieve when there are fewer than 500 events
+        last_interation = len(events) < MAX_EVENTS_API_CALL
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {"tracker": new_tracker}
+        # Save the next_run as a dict with the last_fetch key to be stored
+        next_run = {"tracker": new_tracker}
+        last_run = next_run
+        final_events.extend(events)
 
-    demisto.debug(f"Setting next run {next_run}.")
-    return events, next_run
+    demisto.debug(f'fetched {len(final_events or [])} events, {last_run.get("tracker")=}')
+    demisto.debug(f"Setting next run {last_run}.")
+    return final_events, last_run
 
 
 """ MAIN FUNCTION """
@@ -213,7 +225,7 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            return_results(test_module(client, params["max_fetch"]))
 
         elif command == "druva-get-events":
             events, tracker = get_events(client, args.get("tracker"))
@@ -234,8 +246,8 @@ def main() -> None:  # pragma: no cover
             events, next_run = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
+                max_fetch=arg_to_number(params.get("max_fetch") or MAX_FETCH)
             )
-
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
