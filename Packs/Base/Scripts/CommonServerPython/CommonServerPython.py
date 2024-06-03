@@ -54,8 +54,9 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
 try:
-    if 'context' in demisto.callingContext \
-            and 'ExecutedCommands' in demisto.callingContext['context'] \
+    if 'ExecutedCommands' in demisto.callingContext['context'] \
+            and demisto.callingContext['context']['ExecutedCommands'] is not None \
+            and len (demisto.callingContext['context']['ExecutedCommands']) > 0 \
             and 'name' in demisto.callingContext['context']['ExecutedCommands'][0]:
         context_executed_commands_name = demisto.callingContext['context']['ExecutedCommands'][0]['name']
         with open('script_info.txt', 'w') as file_demisto_info:
