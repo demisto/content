@@ -9,12 +9,12 @@ def main():
     try:
         formatted_urls = format_urls(raw_urls)
 
-        demisto.results([{
+        demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': formatted_urls,
             'EntryContext': {'URL': formatted_urls},
-        }])
+        })
 
     except Exception as e:
         return_error(
