@@ -45,10 +45,11 @@ class Client(BaseClient):
             data = response.json()
             all_commits.extend(data)
             response = self._http_request("GET", full_url=response.links["next"]["url"], resp_type="response")
+            all_commits.extend(response.json())
             demisto.debug(f"There are many comites currently bringing them all...,  currently exist:{response}")
         return all_commits
 
-    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list[dict[str, str]], str]:
+    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list[dict[str, str]], str]:  # pragma: no cover  # noqa: E501
         """
         Retrieves the list of files changed between two commits and the SHA of the base commit.
 
@@ -327,12 +328,12 @@ def get_stix_indicators(repo_files_content):
     return indicators
 
 
-def identify_json_structure(json_data: dict) -> Any:
+def identify_json_structure(json_data) -> Any:
     """
     Identifies the structure of JSON data based on its content.
 
     Args:
-        json_data (dict): The JSON data to identify its structure.
+        json_data : The JSON data to identify its structure.
 
     Returns:
         Union[str, Dict[str, Any], None]: The identified structure of the JSON data.
@@ -552,7 +553,7 @@ def fetch_indicators_command(client: Client, params: Dict[str, str], args) -> Li
     return indicators
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

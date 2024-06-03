@@ -51,7 +51,9 @@ def test_get_content_files_from_repo(mocker):
     return_data = util_load_json("test_data/content_files_from_repo.json")
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
-    assert content_files == util_load_json("test_data/get_content-files-from-repo-result.json")
+    assert content_files == util_load_json(
+        "test_data/get_content-files-from-repo-result.json"
+    )
 
 
 def test_get_commit_files(mocker):
@@ -72,8 +74,14 @@ def test_get_commit_files(mocker):
     is_first_fetch = True
     all_commits_files = util_load_json("test_data/all-commit-files-res.json")
     current_repo_head_sha = "ad3e0503765479e9ee09bac5dee726eb918b9ebd"
-    mocker.patch.object(client, "get_files_between_commits", return_value=(all_commits_files, current_repo_head_sha))
-    relevant_files, current_repo_head_sha = get_commits_files(client, base, head, is_first_fetch)
+    mocker.patch.object(
+        client,
+        "get_files_between_commits",
+        return_value=(all_commits_files, current_repo_head_sha),
+    )
+    relevant_files, current_repo_head_sha = get_commits_files(
+        client, base, head, is_first_fetch
+    )
     assert relevant_files == util_load_json("test_data/relevant-files.json")
 
 
@@ -96,9 +104,15 @@ def test_filter_out_files_by_status():
         {"status": "added", "raw_url": "http://example.com/file5"},
     ]
 
-    expected_output = ["http://example.com/file1", "http://example.com/file2", "http://example.com/file5"]
+    expected_output = [
+        "http://example.com/file1",
+        "http://example.com/file2",
+        "http://example.com/file5",
+    ]
     actual_output = filter_out_files_by_status(commits_files)
-    assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
+    assert (
+        actual_output == expected_output
+    ), f"Expected {expected_output}, but got {actual_output}"
 
 
 @freeze_time("2024-05-12T15:30:49.330015")
@@ -147,7 +161,9 @@ def test_extract_text_indicators():
     """
     from FeedGitHub import extract_text_indicators
 
-    ioc_indicators_input = {"example.com": util_load_txt("test_data/test-ioc-indicators.txt")}
+    ioc_indicators_input = {
+        "example.com": util_load_txt("test_data/test-ioc-indicators.txt")
+    }
     params = {"owner": "example.owner", "repo": "example.repo"}
     res_indicators = extract_text_indicators(ioc_indicators_input, params)
     assert res_indicators == util_load_json("test_data/iocs-res.json")
@@ -186,7 +202,10 @@ def test_negative_limit(mocker):
 
     with pytest.raises(ValueError) as ve:
         get_indicators_command(client, {}, args)
-    assert ve.value.args[0] == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
+    assert (
+        ve.value.args[0]
+        == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
+    )
 
 
 def test_fetch_indicators(mocker):
@@ -205,11 +224,18 @@ def test_fetch_indicators(mocker):
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "setLastRun")
     params = {"fetch_since": "15 days ago"}
-    mocker.patch.object(client, "get_commits_between_dates", return_value="046a799ebe004e1bff686d6b774387b3bdb3d1ce")
+    mocker.patch.object(
+        client,
+        "get_commits_between_dates",
+        return_value="046a799ebe004e1bff686d6b774387b3bdb3d1ce",
+    )
     mocker.patch.object(
         FeedGitHub,
         "get_indicators",
-        return_value=(util_load_json("test_data/iterator-test.json"), "9a611449423b9992c126c20e47c5de4f58fc1c0e"),
+        return_value=(
+            util_load_json("test_data/iterator-test.json"),
+            "9a611449423b9992c126c20e47c5de4f58fc1c0e",
+        ),
     )
     results = FeedGitHub.fetch_indicators(client, None, params)
     assert results == util_load_json("test_data/fetch-indicators-res.json")
@@ -231,7 +257,6 @@ def test_get_indicators_command(mocker):
     from CommonServerPython import tableToMarkdown
 
     client = mock_client()
-    # args = {"limit": "6", "since": "15 days ago", "until": "now"}
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
     mocker.patch.object(
@@ -243,8 +268,145 @@ def test_get_indicators_command(mocker):
             "046a799ebe004e1bff686d6b774387b3bdb3d1ce",
         ],
     )
-    mocker.patch.object(FeedGitHub, "get_indicators", return_value=(util_load_json("test_data/iterator-test.json"), None))
+    mocker.patch.object(
+        FeedGitHub,
+        "get_indicators",
+        return_value=(util_load_json("test_data/iterator-test.json"), None),
+    )
     results = FeedGitHub.get_indicators_command(client, params={}, args={"limit": ""})
     hr_indicators = util_load_json("test_data/hr-indicators.json")
-    human_readable = tableToMarkdown("Indicators from GitHubFeed:", hr_indicators, headers=["Type", "Value"], removeNull=True)
+    human_readable = tableToMarkdown(
+        "Indicators from GitHubFeed:",
+        hr_indicators,
+        headers=["Type", "Value"],
+        removeNull=True,
+    )
     assert results.readable_output == human_readable
+
+
+def test_extract_commits(mocker):
+    """
+    Given:
+     - A mock response object with commit data.
+     - Mocked responses for paginated commit data.
+    When:
+     - Calling _extract_commits to retrieve and aggregate commit information.
+    Then:
+     - Returns a list of all commits from the paginated responses.
+    """
+    client = mock_client()
+    mocker.patch.object(demisto, "debug")
+
+    mock_response_single = mocker.MagicMock()
+    mock_response_single.links = {}
+    mock_response_single.json.return_value = [{"sha": "commit1"}, {"sha": "commit2"}]
+
+    mock_response_page1 = mocker.MagicMock()
+    mock_response_page2 = mocker.MagicMock()
+    mock_response_page1.links = {"next": {"url": "http://example.com/page2"}}
+    mock_response_page1.json.return_value = [{"sha": "commit1"}, {"sha": "commit2"}]
+    mock_response_page2.links = {}
+    mock_response_page2.json.return_value = [{"sha": "commit3"}, {"sha": "commit4"}]
+
+    mocker.patch.object(client, "_http_request", side_effect=[mock_response_page2])
+
+    commits_single = client._extract_commits(mock_response_single)
+    assert commits_single == [{"sha": "commit1"}, {"sha": "commit2"}]
+
+    commits_multiple = client._extract_commits(mock_response_page1)
+    expected_commits = [
+        {"sha": "commit1"},
+        {"sha": "commit2"},
+        {"sha": "commit3"},
+        {"sha": "commit4"},
+    ]
+    assert commits_multiple == expected_commits
+
+
+@freeze_time("2024-05-20T11:05:36.984413")
+def test_arrange_iocs_indicator_to_xsoar():
+    """
+    Given:
+     - A file path, a list of parsed indicators, and additional parameters.
+    When:
+     - Calling arrange_iocs_indicator_to_xsoar to format the indicators.
+    Then:
+     - Returns a list of formatted indicators with expected fields and values.
+    """
+    from FeedGitHub import arrange_iocs_indicator_to_xsoar
+
+    file_path = "test_file.txt"
+    parsed_indicators = [
+        {"value": "example.com", "type": "Domain"},
+        {"value": "123.456.789.0", "type": "IP"},
+    ]
+    params = {"owner": "example_owner", "repo": "example_repo"}
+    expected_result = [
+        {
+            "value": "example.com",
+            "type": "Domain",
+            "service": "github",
+            "fields": {
+                "references": "test_file.txt",
+                "tags": {"owner": "example_owner", "repo": "example_repo"},
+                "firstseenbysource": "2024-05-20T11:05:36.984413",
+            },
+            "rawJSON": {"value": "example.com", "type": "Domain"},
+        },
+        {
+            "value": "123.456.789.0",
+            "type": "IP",
+            "service": "github",
+            "fields": {
+                "references": "test_file.txt",
+                "tags": {"owner": "example_owner", "repo": "example_repo"},
+                "firstseenbysource": "2024-05-20T11:05:36.984413",
+            },
+            "rawJSON": {"value": "123.456.789.0", "type": "IP"},
+        },
+    ]
+    result = arrange_iocs_indicator_to_xsoar(file_path, parsed_indicators, params)
+    assert result == expected_result
+
+
+def test_identify_json_structure():
+    """
+    Given:
+     - A dictionary containing JSON data with different structures.
+    When:
+     - Calling identify_json_structure to identify the structure.
+    Then:
+     - Returns the identified structure based on the provided JSON data.
+    """
+    from FeedGitHub import identify_json_structure
+    json_data_bundle = {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}
+    assert identify_json_structure(json_data_bundle) == "Bundle"
+
+    json_data_envelope = {"objects": [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}]}
+    assert identify_json_structure(json_data_envelope) == "Envelope"
+
+    json_data_envelope_alt = {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}
+    assert identify_json_structure(json_data_envelope_alt) == "Envelope"
+
+    json_data_list = [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}]
+    assert identify_json_structure(json_data_list) == {"objects": json_data_list}
+
+    json_data_unknown = {"unknown_key": "unknown_value"}
+    assert identify_json_structure(json_data_unknown) is None
+
+
+# def test_main(mocker):
+#     import FeedGitHub
+#     client = mock_client()
+#     mocker.patch.object(demisto, "debug")
+#     mocker.patch.object(demisto, "error")
+#     mocker.patch.object(
+#         client,
+#         "get_commits_between_dates",
+#         return_value=[
+#             "9a611449423b9992c126c20e47c5de4f58fc1c0e",
+#             "aabaf42225cb4d18e338bc5c8c934f25be814704",
+#             "046a799ebe004e1bff686d6b774387b3bdb3d1ce",
+#         ],
+#     )
+#     mocker.patch.object(FeedGitHub, "get_indicators", return_value=(util_load_json("test_data/iterator-test.json"), None))
