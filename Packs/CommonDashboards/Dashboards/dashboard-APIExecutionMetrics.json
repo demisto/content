@@ -184,6 +184,113 @@
                                     ]
                                 ],
                                 "name": "Success"
+                            },
+                            "Auth Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "AuthError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Auth Error"
+                            },
+                            "Connection Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ConnectionError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Connection Error"
+                            },
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Proxy Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ProxyError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Proxy Error"
+                            },
+                            "Retry Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "RetryError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Retry Error"
+                            },
+                            "SSL Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "SSLError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "SSL Error"
+                            },
+                            "Service Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ServiceError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Service Error"
+                            },
+                            "Timeout Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "TimeoutError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Timeout Error"
                             }
                         }
                     ],
@@ -204,20 +311,33 @@
                             "name": "VirusTotal (API v3)"
                         },
                         {
-                            "color": "#F50057",
-                            "name": "Rasterize"
-                        },
-                        {
-                            "color": "#ce5050",
-                            "name": "Quota Error"
+                            "color": "#d60d0d",
+                            "name": "General Error"
                         },
                         {
                             "color": "#4fa327",
                             "name": "Success"
+                        },
+                        {
+                            "color": "#FD5BDE",
+                            "name": "Quota Error"
+                        },
+                        {
+                            "color": "#f53c7e",
+                            "name": "Service Error"
+                        },
+                        {
+                            "color": "#eb6887",
+                            "name": "Auth Error"
+                        },
+                        {
+                            "color": "#229D80",
+                            "name": "Other"
                         }
                     ],
                     "limitType": "top",
-                    "valuesFormat": "abbreviated"
+                    "valuesFormat": "abbreviated",
+                    "hideLegend": false
                 },
                 "category": "",
                 "created": "0001-01-01T00:00:00Z",
