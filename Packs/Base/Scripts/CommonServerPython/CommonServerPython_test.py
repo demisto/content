@@ -6904,13 +6904,13 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {'Address': 'user@example.com',
+            {"Email": {'Address': 'user@example.com'},
              'Domain': 'example.com',
-                'Description': 'test',
-                'Internal': True,
-                'STIXID': 'stix_id_test',
-                'Tags': ['tag1', 'tag2'],
-                'TrafficLightProtocol': 'traffic_light_protocol_test'}
+             'Description': 'test',
+             'Internal': True,
+             'STIXID': 'stix_id_test',
+             'Tags': ['tag1', 'tag2'],
+             'TrafficLightProtocol': 'traffic_light_protocol_test'}
 
     @pytest.mark.parametrize('item', [
         'CommunityNotes', 'Publications', 'ThreatTypes'
