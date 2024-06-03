@@ -457,7 +457,7 @@ def test_handle_html(mocker):
          'cid': 'image1.jpeg@111111111_111111111'
          }
     ]
-    expected_cleanBody = """<html>\n                        <body>\n                            <img src="cid:image0.png@111111111_111111111"/>\n                            <img src="cid:image1.jpeg@111111111_111111111"/>\n                        </body>\n                      </html>"""
+    expected_cleanBody = """<html>\n                        <body>\n                            <img src="cid:image0.png@111111111_111111111"/>\n                            <img src="cid:image1.jpeg@111111111_111111111"/>\n                        </body>\n                      </html>"""  # noqa: E501
     expected_file_results = [
         {'Contents': '',
          'ContentsFormat': 'text',
@@ -512,7 +512,7 @@ def test_handle_html_image_with_new_line(mocker):
                               'Type': 3,
                               'File': 'image0.png@111111111_111111111-imageName:image0.png',
                               'FileID': '1234567'}]
-    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@111111111_111111111"/>\n    </body>\n</html>"""
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@111111111_111111111"/>\n    </body>\n</html>"""  # noqa: E501
 
     cleanBody, attachments, file_results = client.handle_html(htmlBody)
 

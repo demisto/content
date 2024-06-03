@@ -98,7 +98,7 @@ p
 <img size="178792" data-outlook-trace="F:1|T:1" src="cid:89593b98-b18d-46aa-ba4f-26773138c3f7" style="max-width:100%">
 </div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
 <img size="8023" data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
-</div></body></html>"""
+</div></body></html>"""  # noqa: RUF001
 
 EXPECTED_RESULT_1 = ('\n<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div '
                      'dir="ltr">image 1:\n<div><div><img src=entry/download/37@119 alt="image_1.png" width="275" height="184">'
@@ -147,7 +147,7 @@ p
 <img size="178792" data-outlook-trace="F:1|T:1" src=entry/download/37@119 style="max-width:100%">
 </div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
 <img size="8023" data-outlook-trace="F:1|T:1" src=entry/download/38@120 style="max-width:100%">
-</div></body></html>"""
+</div></body></html>"""  # noqa: RUF001
 
 
 @pytest.mark.parametrize(

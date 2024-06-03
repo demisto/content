@@ -1,5 +1,4 @@
 from freezegun import freeze_time
-import base64
 import demistomock as demisto
 import pytest
 from test_data import input_data
@@ -921,7 +920,7 @@ def test_filter_by_fields(
     assert filter_by_fields(full_mail, filter_fields) == expected_result
 
 
-def test_handle_html_image_with_new_line():
+def test_handle_html_image_with_new_line(mocker):
     """
     Given:
         - html body of a message with an attached base64 image.
@@ -930,8 +929,10 @@ def test_handle_html_image_with_new_line():
     Then:
         - Ensure attachments list contains correct data, name and cid fields.
     """
-    from Gmail import handle_html
-    # mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    import Gmail
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(Gmail, "random_word_generator", return_value="111111111")
     htmlBody = """
 <html>
     <body>
@@ -939,27 +940,22 @@ def test_handle_html_image_with_new_line():
     </body>
 </html>"""
 
-    expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        }
-    ]
-    expected_cleanBody = """
-<html>
-    <body>
-        <img
-\t\t\t\t\t  src="cid:image0.png"/>
-    </body>
-</html>"""
+    expected_attachments = [{'maintype': 'image',
+                             'subtype': 'png',
+                             'data': b'\x01',
+                             'name': 'image0.png@111111111_111111111-imageName:image0.png',
+                             'cid': 'image0.png@111111111_111111111'}]
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@111111111_111111111"/>\n    </body>\n</html>"""
+    expected_file = [{'Contents': '',
+                      'ContentsFormat': 'text',
+                      'Type': 3, 'File': 'image0.png@111111111_111111111-imageName:image0.png',
+                      'FileID': '1234567'}]
 
-    cleanBody, attachments = handle_html(htmlBody)
+    cleanBody, attachments, file_results = Gmail.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+    assert expected_file == file_results
 
 
 part_test1 = [{

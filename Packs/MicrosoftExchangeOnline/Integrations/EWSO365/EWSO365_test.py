@@ -876,7 +876,44 @@ class TestEmailModule(unittest.TestCase):
             name="file.txt", content="data", is_inline=True, content_id="12345"
         )
         mock_message.assert_called_once()
-        assert isinstance(result, MagicMock)
+        assert isinstance(result[0], MagicMock)
+
+    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.HTMLBody')
+    @patch('EWSO365.Body')
+    @patch('EWSO365.Message')
+    def test_create_message_with_html_body_inline_image(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+        """
+        Test create_message function with an HTML body.
+        """
+        import EWSO365
+        # Setup
+        to = ["recipient@example.com"]
+        subject = "Test Subject"
+        html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+        original_html_body = '<p><img src="cid:image0@111111111_111111111"/></p>'
+        attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
+
+        mock_message.return_value = MagicMock()
+        mock_html_body.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock()
+        with patch.object(EWSO365.demisto, 'uniqueFile', return_value="1234567"), \
+                patch.object(EWSO365.demisto, 'getFilePath', return_value={"path": "", "name": ""}), \
+                patch.object(EWSO365, 'random_word_generator', return_value="111111111"):
+            # Call the function
+            result = create_message(
+                to, subject, html_body=html_body, attachments=attachments
+            )
+
+            # Assertions
+            mock_html_body.assert_called_once_with(original_html_body)
+            mock_message.assert_called_once()
+            assert isinstance(result[0], MagicMock)
+            assert result[1] == [{'Contents': '',
+                                  'ContentsFormat': 'text',
+                                  'Type': 3, 'File':
+                                      'image0@111111111_111111111-imageName:image0',
+                                      'FileID': '1234567'}]
 
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [
