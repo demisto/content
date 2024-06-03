@@ -1,4 +1,4 @@
-fromversion: 6.11.0
+fromversion: 6.10.0
 id: armis_security_ModelingRule
 name: Armis Security Modeling Rule
 rules: ''
