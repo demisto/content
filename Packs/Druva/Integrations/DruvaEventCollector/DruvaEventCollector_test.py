@@ -1,5 +1,11 @@
 from CommonServerPython import DemistoException
-from DruvaEventCollector import Client, test_module as run_test_module, get_events, fetch_events, DATE_FORMAT_FOR_TOKEN
+from DruvaEventCollector import (
+    Client,
+    test_module as run_test_module,
+    get_events,
+    fetch_events,
+    DATE_FORMAT_FOR_TOKEN,
+)
 import pytest
 import demistomock as demisto
 import requests
@@ -26,11 +32,11 @@ RESPONSE_WITH_EVENTS_1 = {
             "eventState": "Backed up with Errors",
             "inSyncDataSourceName": "Exchange Online",
             "severity": 4,
-            "facility": 23
+            "facility": 23,
         }
     ],
     "nextPageExists": False,
-    "tracker": "xxxx"
+    "tracker": "xxxx",
 }
 RESPONSE_WITH_EVENTS_2 = {
     "events": [
@@ -52,47 +58,51 @@ RESPONSE_WITH_EVENTS_2 = {
             "eventState": "Backed up with Errors",
             "inSyncDataSourceName": "Exchange Online",
             "severity": 4,
-            "facility": 23
+            "facility": 23,
         }
     ],
     "nextPageExists": False,
-    "tracker": "yyyy"
+    "tracker": "yyyy",
 }
-RESPONSE_WITHOUT_EVENTS = {
-    "events": [],
-    "nextPageExists": False,
-    "tracker": "xxxx"
-}
+RESPONSE_WITHOUT_EVENTS = {"events": [], "nextPageExists": False, "tracker": "xxxx"}
 INVALID_RESPONSE = {
-    "events": [{
-        "eventID": 0,
-        "eventType": "Backup",
-        "profileName": "Default",
-        "inSyncUserName": "user name",
-        "clientVersion": "7.5.0r(23c42be5)",
-        "clientOS": "Office 365 Exchange Online",
-        "ip": "",
-        "inSyncUserEmail": "test@test.com",
-        "eventDetails": "",
-        "timestamp": "2024-05-25T18:52:48Z",
-        "inSyncUserID": 0,
-        "profileID": 0,
-        "initiator": None,
-        "inSyncDataSourceID": 0,
-        "eventState": "Backed up with Errors",
-        "inSyncDataSourceName": "Exchange Online",
-        "severity": 4,
-        "facility": 23
-    }],
-    "nextPageExists": False
+    "events": [
+        {
+            "eventID": 0,
+            "eventType": "Backup",
+            "profileName": "Default",
+            "inSyncUserName": "user name",
+            "clientVersion": "7.5.0r(23c42be5)",
+            "clientOS": "Office 365 Exchange Online",
+            "ip": "",
+            "inSyncUserEmail": "test@test.com",
+            "eventDetails": "",
+            "timestamp": "2024-05-25T18:52:48Z",
+            "inSyncUserID": 0,
+            "profileID": 0,
+            "initiator": None,
+            "inSyncDataSourceID": 0,
+            "eventState": "Backed up with Errors",
+            "inSyncDataSourceName": "Exchange Online",
+            "severity": 4,
+            "facility": 23,
+        }
+    ],
+    "nextPageExists": False,
 }
 
 
 @pytest.fixture()
 def mock_client(mocker) -> Client:
-    mocker.patch.object(Client, "reuse_token_or_refresh", return_value='DUMMY_TOKEN')
-    client = Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
-    client.set_headers('DUMMY_TOKEN')
+    mocker.patch.object(Client, "reuse_token_or_refresh", return_value="DUMMY_TOKEN")
+    client = Client(
+        base_url="test",
+        client_id="client_id",
+        secret_key="secret_key",
+        verify=False,
+        proxy=False,
+    )
+    client._set_headers("DUMMY_TOKEN")
     return client
 
 
@@ -108,7 +118,11 @@ def test_test_module_command(mocker, mock_client):
     Then:
     - Test module passed
     """
-    mocker.patch.object(mock_client, "search_events", return_value={'events': [], 'tracker': 'DUMMY_TRACKER'})
+    mocker.patch.object(
+        mock_client,
+        "search_events",
+        return_value={"events": [], "tracker": "DUMMY_TRACKER"},
+    )
     result = run_test_module(client=mock_client)
     assert result == "ok"
 
@@ -124,7 +138,11 @@ def test_test_module_command_failure(mocker, mock_client):
     Then:
     - Test module failed
     """
-    mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException(message='Error: invalid_grant'))
+    mocker.patch.object(
+        mock_client,
+        "_http_request",
+        side_effect=DemistoException(message="Error: invalid_grant"),
+    )
     with pytest.raises(DemistoException):
         run_test_module(client=mock_client)
 
@@ -140,10 +158,12 @@ def test_get_events_command(mocker, mock_client):
     Then:
     - events and tracker as expected
     """
-    mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
+    mocker.patch.object(
+        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1
+    )
     events, tracker = get_events(client=mock_client)
 
-    assert tracker == 'xxxx'
+    assert tracker == "xxxx"
     assert len(events) == 1
 
 
@@ -180,7 +200,11 @@ def test_refresh_access_token(mocker, mock_client):
     response = requests.Response()
     response.status_code = 400
 
-    mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException(message="invalid_grant", res=response))
+    mocker.patch.object(
+        mock_client,
+        "_http_request",
+        side_effect=DemistoException(message="invalid_grant", res=response),
+    )
 
     error_message = "Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
 
@@ -200,11 +224,16 @@ def test_search_events_called_with(mocker, mock_client):
     -  Ensure all arguments were sent to the api call as expected
     """
 
-    http_mock = mocker.patch.object(mock_client, "_http_request", return_value=RESPONSE_WITHOUT_EVENTS)
+    http_mock = mocker.patch.object(
+        mock_client, "_http_request", return_value=RESPONSE_WITHOUT_EVENTS
+    )
 
-    mock_client.search_events(tracker='xxxx')
-    http_mock.assert_called_with(method='GET', url_suffix='/insync/eventmanagement/v2/events?tracker=xxxx',
-                                 headers={'Authorization': 'Bearer DUMMY_TOKEN', 'accept': 'application/json'})
+    mock_client.search_events(tracker="xxxx")
+    http_mock.assert_called_with(
+        method="GET",
+        url_suffix="/insync/eventmanagement/v2/events?tracker=xxxx",
+        headers={"Authorization": "Bearer DUMMY_TOKEN", "accept": "application/json"},
+    )
 
 
 def test_search_events_failure(mocker, mock_client):
@@ -219,9 +248,13 @@ def test_search_events_failure(mocker, mock_client):
     -  Ensure an exception was thrown due to invalid tracker
     """
 
-    mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException(message='Error: Invalid tracker'))
+    mocker.patch.object(
+        mock_client,
+        "_http_request",
+        side_effect=DemistoException(message="Error: Invalid tracker"),
+    )
     with pytest.raises(DemistoException):
-        mock_client.search_events(tracker='xxxx')
+        mock_client.search_events(tracker="xxxx")
 
 
 def test_fetch_events_command(mocker, mock_client):
@@ -236,34 +269,46 @@ def test_fetch_events_command(mocker, mock_client):
     - Ensure number of events fetched, and the next run, match the response data
     """
     # First fetch
-    mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
+    mocker.patch.object(
+        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1
+    )
     first_run = {}
     events, tracker_for_second_run = fetch_events(
-        client=mock_client,
-        last_run=first_run
+        client=mock_client, last_run=first_run
     )
 
     assert len(events) == 1
-    assert tracker_for_second_run['tracker'] == "xxxx"
-    assert events[0]['eventID'] == 0
+    assert tracker_for_second_run["tracker"] == "xxxx"
+    assert events[0]["eventID"] == 0
 
     # Second fetch
-    mock_search_events = mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2)
-    events, tracker_for_third_run = fetch_events(
-        client=mock_client,
-        last_run=tracker_for_second_run
+    mock_search_events = mocker.patch.object(
+        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2
     )
-    mock_search_events.assert_called_with(tracker_for_second_run.get('tracker'))
+    events, tracker_for_third_run = fetch_events(
+        client=mock_client, last_run=tracker_for_second_run
+    )
+    mock_search_events.assert_called_with(tracker_for_second_run.get("tracker"))
     assert len(events) == 1
-    assert tracker_for_third_run['tracker'] == "yyyy"
-    assert events[0]['eventID'] == 1
+    assert tracker_for_third_run["tracker"] == "yyyy"
+    assert events[0]["eventID"] == 1
 
 
 @freeze_time("2022-02-28 11:00:00")
-@pytest.mark.parametrize("integration_context", [({}),
-                                                 ({'Token': 'DUMMY TOKEN',
-                                                   'expiration_time': datetime(2022, 2, 28, 10, 50).strftime(
-                                                       DATE_FORMAT_FOR_TOKEN)})])
+@pytest.mark.parametrize(
+    "integration_context",
+    [
+        ({}),
+        (
+            {
+                "Token": "DUMMY TOKEN",
+                "expiration_time": datetime(2022, 2, 28, 10, 50).strftime(
+                    DATE_FORMAT_FOR_TOKEN
+                ),
+            }
+        ),
+    ],
+)
 def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     """
     Given:
@@ -275,14 +320,22 @@ def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     Then:
     - Ensure a new token is generated
     """
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext')
-    mock_refresh_access_token = mocker.patch.object(Client, "refresh_access_token", return_value={
-        "access_token": "",
-        "token_type": "bearer",
-        "expires_in": 0
-    })
-    Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
+    mocker.patch.object(
+        demisto, "getIntegrationContext", return_value=integration_context
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mock_refresh_access_token = mocker.patch.object(
+        Client,
+        "refresh_access_token",
+        return_value={"access_token": "", "token_type": "bearer", "expires_in": 0},
+    )
+    Client(
+        base_url="test",
+        client_id="client_id",
+        secret_key="secret_key",
+        verify=False,
+        proxy=False,
+    )
     mock_refresh_access_token.assert_called_once_with()
 
 
@@ -298,10 +351,25 @@ def test_reuse_token_or_refresh_valid_token(mocker):
     Then:
     - Ensure a new token is not generated
     """
-    mocker.patch.object(demisto, 'getIntegrationContext',
-                        return_value={'Token': 'DUMMY TOKEN',
-                                      'expiration_time': datetime(2022, 2, 28, 11, 10).strftime(DATE_FORMAT_FOR_TOKEN)})
-    mocker.patch.object(demisto, 'setIntegrationContext')
-    mock_refresh_access_token = mocker.patch.object(Client, "refresh_access_token", return_value='DUMMY_TOKEN')
-    Client(base_url="test", client_id='client_id', secret_key='secret_key', verify=False, proxy=False)
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={
+            "Token": "DUMMY TOKEN",
+            "expiration_time": datetime(2022, 2, 28, 11, 10).strftime(
+                DATE_FORMAT_FOR_TOKEN
+            ),
+        },
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mock_refresh_access_token = mocker.patch.object(
+        Client, "refresh_access_token", return_value="DUMMY_TOKEN"
+    )
+    Client(
+        base_url="test",
+        client_id="client_id",
+        secret_key="secret_key",
+        verify=False,
+        proxy=False,
+    )
     assert not mock_refresh_access_token.called
