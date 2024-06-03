@@ -1,4 +1,3 @@
-from datetime import timezone
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -20,7 +19,7 @@ PRODUCT = "Druva"
 
 class Client(BaseClient):
 
-    def __init__(self, base_url, client_id, secret_key, verify, proxy):
+    def __init__(self, base_url: str, client_id: str, secret_key: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.credentials = f"{client_id}:{secret_key}"
         self.login()

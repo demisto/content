@@ -10,8 +10,7 @@ import pytest
 import demistomock as demisto
 import requests
 from freezegun import freeze_time
-from datetime import datetime, timedelta
-from datetime import timezone
+from datetime import datetime
 
 RESPONSE_WITH_EVENTS_1 = {
     "events": [
@@ -328,7 +327,7 @@ def test_login_invalid_token(mocker, integration_context):
     mock_refresh_access_token = mocker.patch.object(
         Client,
         "_refresh_access_token",
-        return_value=("",  0)
+        return_value=("", 0)
     )
     Client(
         base_url="test",
@@ -338,6 +337,7 @@ def test_login_invalid_token(mocker, integration_context):
         proxy=False,
     )
     mock_refresh_access_token.assert_called_once_with()
+
 
 @freeze_time(datetime(2022, 2, 28, 11, 00))
 def test_login_valid_token(mocker):
