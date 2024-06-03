@@ -697,7 +697,13 @@ def get_blacklist_group_id():
 def get_blacklist_endpoints_request():
 
     blacklist = get_blacklist_group_id().get('SearchResult', {})
-    blacklist_id = blacklist.get('resources', [])[0]
+
+    resources = blacklist.get('resources', [])
+    if resources:
+        blacklist_id = resources[0]
+    else:
+        return_error('No blacklist endpoint were found.')
+
     black_id = blacklist_id.get('id')
 
     api_endpoint = f'/ers/config/endpoint?filter=groupId.EQ.{black_id}'
