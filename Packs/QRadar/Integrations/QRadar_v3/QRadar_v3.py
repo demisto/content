@@ -4255,12 +4255,12 @@ def qradar_search_retrieve_events_command(
         print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
         events = []
         status = QueryStatus.WAIT.value
-    # if is_last_run and status == QueryStatus.WAIT.value:
-    #     print_debug_msg("Its the last run of the polling, will cancel the query request. ")
-    #     client.search_cancel(search_id=search_id)
-    #     return CommandResults(
-    #         readable_output='Got polling timeout. Quary got cancelled.',
-    #     )
+    if is_last_run and status == QueryStatus.WAIT.value:
+        print_debug_msg("Its the last run of the polling, will cancel the query request. ")
+        client.search_cancel(search_id=search_id)
+        return CommandResults(
+            readable_output='Got polling timeout. Quary got cancelled.',
+        )
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(

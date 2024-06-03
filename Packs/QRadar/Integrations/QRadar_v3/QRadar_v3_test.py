@@ -15,7 +15,7 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, \
     Client, ASSET_PROPERTIES_NAME_MAP, REFERENCE_SETS_RAW_FORMATTED, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY, qradar_search_cancel_command
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
@@ -41,6 +41,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
     qradar_log_source_delete_command, qradar_log_source_update_command, convert_dict_to_actual_values, \
     enrich_offense_with_events, perform_long_running_loop, validate_integration_context, convert_list_to_actual_values, \
+    qradar_search_cancel_command, \
     MIRRORED_OFFENSES_FETCHED_CTX_KEY, FetchMode, IndicatorsSearcher
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
