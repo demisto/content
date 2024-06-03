@@ -10,7 +10,8 @@ import pytest
 import demistomock as demisto
 import requests
 from freezegun import freeze_time
-from datetime import datetime
+from datetime import datetime, timedelta
+from datetime import timezone
 
 RESPONSE_WITH_EVENTS_1 = {
     "events": [
@@ -94,7 +95,7 @@ INVALID_RESPONSE = {
 
 @pytest.fixture()
 def mock_client(mocker) -> Client:
-    mocker.patch.object(Client, "reuse_token_or_refresh", return_value="DUMMY_TOKEN")
+    mocker.patch.object(Client, "login", return_value="DUMMY_TOKEN")
     client = Client(
         base_url="test",
         client_id="client_id",
@@ -191,7 +192,7 @@ def test_refresh_access_token(mocker, mock_client):
     - a mock client
 
     When:
-    - running refresh_access_token method
+    - running _refresh_access_token method
 
     Then:
     - Ensure exception is thrown
@@ -209,7 +210,7 @@ def test_refresh_access_token(mocker, mock_client):
     error_message = "Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
 
     with pytest.raises(DemistoException, match=error_message):
-        mock_client.refresh_access_token()
+        mock_client._refresh_access_token()
 
 
 def test_search_events_called_with(mocker, mock_client):
@@ -294,7 +295,7 @@ def test_fetch_events_command(mocker, mock_client):
     assert events[0]["eventID"] == 1
 
 
-@freeze_time("2022-02-28 11:00:00")
+@freeze_time(datetime(2022, 2, 28, 11, 10))
 @pytest.mark.parametrize(
     "integration_context",
     [
@@ -309,13 +310,13 @@ def test_fetch_events_command(mocker, mock_client):
         ),
     ],
 )
-def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
+def test_login_invalid_token(mocker, integration_context):
     """
     Given:
     - An IntegrationContext without a Token or one that has expired
 
     When:
-    - Build a client (for checking reuse_token_or_refresh)
+    - Build a client (for checking login)
 
     Then:
     - Ensure a new token is generated
@@ -326,8 +327,8 @@ def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     mocker.patch.object(demisto, "setIntegrationContext")
     mock_refresh_access_token = mocker.patch.object(
         Client,
-        "refresh_access_token",
-        return_value={"access_token": "", "token_type": "bearer", "expires_in": 0},
+        "_refresh_access_token",
+        return_value=("",  0)
     )
     Client(
         base_url="test",
@@ -338,15 +339,14 @@ def test_reuse_token_or_refresh_invalid_token(mocker, integration_context):
     )
     mock_refresh_access_token.assert_called_once_with()
 
-
-@freeze_time("2022-02-28 11:00:00")
-def test_reuse_token_or_refresh_valid_token(mocker):
+@freeze_time(datetime(2022, 2, 28, 11, 00))
+def test_login_valid_token(mocker):
     """
     Given:
     - An IntegrationContext with valid Access Token
 
     When:
-    - Build a client (for checking reuse_token_or_refresh)
+    - Build a client (for checking login)
 
     Then:
     - Ensure a new token is not generated
@@ -363,7 +363,7 @@ def test_reuse_token_or_refresh_valid_token(mocker):
     )
     mocker.patch.object(demisto, "setIntegrationContext")
     mock_refresh_access_token = mocker.patch.object(
-        Client, "refresh_access_token", return_value="DUMMY_TOKEN"
+        Client, "_refresh_access_token", return_value=("DUMMY_TOKEN", 1800)
     )
     Client(
         base_url="test",

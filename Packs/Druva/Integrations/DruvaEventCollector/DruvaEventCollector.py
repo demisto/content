@@ -30,7 +30,7 @@ class Client(BaseClient):
         In this method, the validity of the Access Token is checked, since the Access Token has a 30 minutes validity period.
         Refreshes the token as needed.
         """
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.utcnow()
 
         if (cache := get_integration_context()) and (token := cache.get("Token")):
             expiration_time = datetime.strptime(
@@ -79,7 +79,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
-            if isinstance(e, DemistoException) and e.res and e.res.status_code == 400:
+            if isinstance(e, DemistoException) and e.res is not None and e.res.status_code == 400:
                 informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
                 raise DemistoException(
                     f"Error in test-module: {informative_message}"
