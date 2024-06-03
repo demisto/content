@@ -741,10 +741,10 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         raw_message (str): Raw email message from MimeContent type.
         from_address (str): the email address from which to reply.
     """
+    file_results = []
     if not attachments:
         attachments = []
     message_body, inline_attachments, file_results = get_message_for_body_type(body, body_type, html_body)
-    demisto.debug(f"{message_body=}")
     attachments += inline_attachments
     m = Message(
         account=account,
@@ -805,10 +805,6 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
         attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
-    demisto.debug("newwwwwww")
-    demisto.debug(f"{clean_body=}")
-    demisto.debug(f"{attachments=}")
-    demisto.debug(f"{file_results=}")
     return clean_body, attachments, file_results
 
 
@@ -1294,7 +1290,6 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
         labels.append({'type': 'Email/format', 'value': email_format})
 
         # handle attachments
-        demisto.debug(f"help_me_debug {item.attachments=}")
         if item.attachments:
             incident['attachment'] = []
             for attachment in item.attachments:
@@ -2442,7 +2437,6 @@ def send_email(args):
             'ContentsFormat': formats['html'],
             'Contents': args.get('htmlBody')
         })
-    demisto.debug(f"not_working {file_results=}, {type(file_results)=}")
     for file in file_results:
         results.append(file)
     return results
@@ -2508,7 +2502,6 @@ def get_protocol():  # pragma: no cover
 
 
 def encode_and_submit_results(obj):  # pragma: no cover
-    demisto.debug(f"{obj=}")
     demisto.results(obj)
 
 
@@ -2529,7 +2522,6 @@ def sub_main():  # pragma: no cover
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
-            demisto.debug(f"{incidents=}")
             demisto.incidents(incidents)
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))

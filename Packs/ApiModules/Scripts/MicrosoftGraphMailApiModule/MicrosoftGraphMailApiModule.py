@@ -143,7 +143,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             "Content-Type": "application/octet-stream"
         }
         demisto.debug(f'uploading session headers: {headers}')
-        demisto.debug("hiiiiiii")
         return requests.put(url=upload_url, data=chunk_data, headers=headers)
 
     def _get_root_folder_children(self, user_id, overwrite_rate_limit_retry=False):
@@ -429,7 +428,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             json_data (dict): message data.
         """
         email = email or self._mailbox_to_fetch
-        demisto.debug(f"{json_data.get('attachments')=}")
         self.http_request(
             'POST', f'/users/{email}/sendMail', json_data={'message': json_data}, resp_type="text"
         )
@@ -667,7 +665,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         email = email or self._mailbox_to_fetch
         for attachment in attachments:
-            demisto.debug(f"inside_add_attachments_via_upload_session {attachment=}")
             self.add_attachment_with_upload_session(
                 email=email,
                 draft_id=draft_id,
@@ -686,7 +683,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
-        demisto.debug(f"{attachment_size=}, {attachment_name=}, {is_inline=}")
         return self.http_request(
             'POST',
             f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
@@ -741,7 +737,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
-            demisto.debug(f"{next_chunk=}")
             end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
 
             chunk_data = attachment_data[start_chunk_index: end_chunk_index]
@@ -1152,7 +1147,6 @@ class GraphMailUtils:
         Due to security implications, we support only images here
         We might not have Beautiful Soup so just do regex search
         """
-        demisto.debug(f"{htmlBody=}")
         attachments = []
         cleanBody = ''
         if htmlBody:
@@ -1178,7 +1172,6 @@ class GraphMailUtils:
                 lastIndex = m.end() - 1
 
             cleanBody += htmlBody[lastIndex:]
-            demisto.debug(f"{cleanBody=}")
         return cleanBody, attachments
 
     @staticmethod
@@ -1196,7 +1189,6 @@ class GraphMailUtils:
         :rtype: ``dict``
         """
         if command in ['create-draft', 'send-mail']:
-            demisto.debug(f"this_is_in_prepare_args {args.get('htmlBody')=}")
             email_body, inline_attachments = GraphMailUtils.handle_html(
                 args.get('htmlBody')) if args.get('htmlBody', None) else args.get('body', '')
             processed_args = {
@@ -1241,7 +1233,7 @@ class GraphMailUtils:
         return args
 
     @staticmethod
-    def divide_attachments_according_to_size(attachments):
+    def divide_attachments_according_to_size(attachments=[]):
         """
         Divide attachments to those are larger than 3mb and those who are less than 3mb.
 
@@ -1252,7 +1244,6 @@ class GraphMailUtils:
 
         for attachment in attachments:
             if attachment.pop('requires_upload', None):  # if the attachment is bigger than 3mb, it requires upload session.
-                demisto.debug(f"{attachment=}")
                 more_than_3mb_attachments.append(attachment)
             else:
                 less_than_3mb_attachments.append(attachment)
@@ -1605,7 +1596,7 @@ class GraphMailUtils:
     @staticmethod
     def build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to,
-                      inline_attachments):
+                      inline_attachments=[]):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -2045,7 +2036,6 @@ def send_email_command(client: MsGraphMailBaseClient, args):
 
     2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
-    demisto.debug("inside_api_module")
     prepared_args = GraphMailUtils.prepare_args('send-mail', args)
     render_body = prepared_args.pop('renderBody', False)
     message_content = GraphMailUtils.build_message(**prepared_args)
@@ -2056,13 +2046,11 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     )
 
     if more_than_3mb_attachments:  # go through process 1 (in docstring)
-        demisto.debug("i_am_in_the_if")
         message_content['attachments'] = less_than_3mb_attachments
         client.send_mail_with_upload_session_flow(
             email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
         )
     else:  # go through process 2 (in docstring)
-        demisto.debug("i_am_in_the_else")
         client.send_mail(email=email, json_data=message_content)
 
     message_content.pop('attachments', None)

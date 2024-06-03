@@ -357,8 +357,8 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
+    demisto.debug(f"get_email_context {body=} {parsed_body=}")
 
-    # demisto.debug(f"this_is_the_attachments_field {email_data.get('payload', {})}")
     context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,

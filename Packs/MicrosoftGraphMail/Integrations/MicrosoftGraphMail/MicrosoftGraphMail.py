@@ -71,8 +71,6 @@ class MsGraphMailClient(MsGraphMailBaseClient):
             fetch_limit=self._emails_fetch_limit,
             id_field='ID'
         )
-        if incidents:
-            demisto.debug(f"this is debugging {incidents[0]['attachment']}")
 
         demisto.debug(
             f'fetched email IDs after removing duplications - {[email.get("ID") for email in incidents]}'

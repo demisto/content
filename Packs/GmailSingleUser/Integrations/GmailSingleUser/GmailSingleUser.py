@@ -308,24 +308,20 @@ class Client:
             else:
                 if part['body'].get('attachmentId') is not None and part.get('headers'):
                     identifier_id = ""
-                    # is_inline = False
                     for header in part['headers']:
                         if header.get('name') == 'Content-ID':
                             identifier_id = header.get('value')
                             if not identifier_id or identifier_id == "None":
                                 identifier_id = part['body'].get('attachmentId')
                             identifier_id = identifier_id.strip("<>")
-                        # if header.get('name') == 'Content-Disposition':
-                            # is_inline = 'inline' in header.get('value')
                     attachments.append({
                         'ID': part['body']['attachmentId'],
                         'Name': f"{identifier_id}-imageName:{part['filename']}",
-                        # 'is_inline': is_inline
                     })
 
         return body, html, attachments
 
-    def get_attachments(self, user_id, _id, identifiers_filter=None):
+    def get_attachments(self, user_id, _id, identifiers_filter=""):
         mail_args = {
             'userId': user_id,
             'id': _id,
@@ -584,11 +580,9 @@ class Client:
                 demisto.error(file_result['Contents'])
                 raise Exception(file_result['Contents'])
 
-            # is_file_attached = FileAttachmentType.ATTACHED if not attachment['is_inline'] else ""
             file_names.append({
                 'path': file_result['FileID'],
                 'name': attachment['Name'],
-                'description': f"-{attachment['ID']}",
             })
 
         incident = {
@@ -1130,13 +1124,11 @@ def mail_command(client: Client, args: dict, email_from, send_as, subject_prefix
         }
         if file_results:
             temp_array.append(html_result)
-            for file in file_results:
-                temp_array.append(file)
+            temp_array += file_results
             return temp_array
         return [send_mail_result, html_result]
     if file_results:
-        for file in file_results:
-            temp_array.append(file)
+        temp_array += file_results
         return temp_array
     return send_mail_result
 

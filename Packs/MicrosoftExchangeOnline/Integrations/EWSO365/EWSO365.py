@@ -1863,7 +1863,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
     )
 
 
-def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
+def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=[],
                    additional_headers=None, from_address=None, reply_to=None, importance=None):  # pragma: no cover
     """Creates the Message object that will be sent.
 
@@ -1882,6 +1882,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
     Returns:
         Message. Message object ready to be sent.
     """
+    file_results = []
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
@@ -1902,12 +1903,9 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
             if not attachment.get('cid'):
                 new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
             else:
-                demisto.debug(f"{attachment.get('name')=}, {attachment.get('cid')=}")
-                demisto.debug(f"{html_body=}")
                 new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                                 is_inline=True, content_id=attachment.get('cid'))
 
-            demisto.debug(f"{new_attachment=}")
             message.attach(new_attachment)
 
     return message, file_results
@@ -1998,6 +1996,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             content_format=EntryFormat.HTML,
             raw_response=htmlBody,
         ))
+
     return results
 
 
@@ -2586,8 +2585,6 @@ def sub_main():  # pragma: no cover
             demisto.debug(f"{incident_filter=}")
             incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
-            if incidents:
-                demisto.debug(f"this is my incident {incidents[0]}")
             demisto.incidents(incidents)
         elif command == "send-mail":
             commands_res = send_email(client, **args)

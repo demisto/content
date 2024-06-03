@@ -669,13 +669,31 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         return None
 
 
+def handle_image_type(base64_string):
+    first_chars = base64_string[:8]
+    decoded_data = base64.b64decode(first_chars)
+    image_types = {
+        b'\xFF\xD8\xFF': 'jpeg',
+        b'\x89\x50\x4E\x47': 'png',
+        b'\x47\x49\x46\x38': 'gif',
+        b'\x42\x4D': 'bmp',
+        b'\x52\x49\x46\x46': 'WebP',
+        b'\x49\x49\x2A\x00': 'tiff',
+        b'\x4D\x4D\x00\x2A': 'tiff'
+    }
+    for signature, image_type in image_types.items():
+        if decoded_data.startswith(signature):
+            return image_type
+    return 'png'
+
+
 def convert_internal_url_to_base64(match):
     original_src = match.group(1)
     result = demisto.executeCommand("core-api-download", {"uri": original_src})
     with open(demisto.investigation()['id'] + '_' + result[0]['FileID'], 'rb') as f:
         base64_data_image = base64.b64encode(f.read()).decode('utf-8')
-    # handle not png files??
-    return f'src="data:image/png;base64,{base64_data_image}" width="300" height="300"'
+    image_type = handle_image_type(base64_data_image)
+    return f'src="data:image/{image_type};base64,{base64_data_image}" width="300" height="300"'
 
 
 def format_body(new_email_body):
