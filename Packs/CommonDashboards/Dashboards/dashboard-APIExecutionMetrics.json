@@ -210,18 +210,6 @@
                     "hideLegend": false,
                     "legend": [
                         {
-                            "color": "#01A2EC",
-                            "name": "QRadar v3"
-                        },
-                        {
-                            "color": "#229D80",
-                            "name": "Microsoft Graph Mail Single User"
-                        },
-                        {
-                            "color": "#F50057",
-                            "name": "Gmail Single User"
-                        },
-                        {
                             "color": "#F50057",
                             "name": "General Error"
                         },
