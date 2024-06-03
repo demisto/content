@@ -395,6 +395,29 @@ def test_identify_json_structure():
     assert identify_json_structure(json_data_unknown) is None
 
 
+def test_filtering_stix_files():
+    """
+    Given:
+     - A list of content files containing both STIX and non-STIX files.
+    When:
+     - Calling filtering_stix_files to filter out only the STIX files.
+    Then:
+     - Returns a list containing only the STIX files from the input list.
+    """
+    from FeedGitHub import filtering_stix_files
+    content_files = [
+        [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}],  # STIX format
+        [{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}],  # STIX format
+        [{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}],  # Non-STIX format
+    ]
+    expected_result = [
+        {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"},
+        {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}},
+        {'type': 'non-stix', 'id': 'non-stix--12345678-1234-5678-1234-567812345678'}
+    ]
+    assert filtering_stix_files(content_files) == expected_result
+
+
 # def test_main(mocker):
 #     import FeedGitHub
 #     client = mock_client()
