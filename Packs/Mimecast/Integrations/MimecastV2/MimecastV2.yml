@@ -516,7 +516,7 @@ script:
       - antispoofing-bypass
       - address-alteration
       - blockedsenders
-    description: Delete a Blocked Sender Policy.
+    description: Delete Policy. For type of policy Blockedsenders works only in api 1.0.
     name: mimecast-delete-policy
     outputs:
     - contextPath: Mimecast.Policy.ID
