@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
+from dateutil import parser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = 'sailpoint'
 PRODUCT = 'identitynow'
 # Default lookback is 1 hour from current time
@@ -28,7 +29,6 @@ class Client(BaseClient):
         self.token = token
 
         try:
-            demisto.debug('in Client - Getting token.')
             self.token = self.get_token()
             self.headers = {
                 'Content-Type': 'application/json',
@@ -44,7 +44,6 @@ class Client(BaseClient):
         Returns:
             str: token
         """
-        demisto.debug('in generate_token - starting to generate token.')
         resp = self._http_request(
             method='POST',
             url_suffix="oauth/token",
@@ -57,12 +56,11 @@ class Client(BaseClient):
         token = resp.get('access_token')
         now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
         expiration_time = now_timestamp + resp.get('expires_in')
-        demisto.debug(f'in generate_token - Generated token that expires at: {expiration_time}.')
+        demisto.debug(f'Generated token that expires at: {expiration_time}.')
         integration_context = get_integration_context()
         integration_context.update({'token': token})
         # Subtract 60 seconds from the expiration time to make sure the token is still valid
         integration_context.update({'expires': expiration_time - 60})
-        demisto.debug(f'in generate_token - Updated integration context to be {integration_context}.')
         set_integration_context(integration_context)
 
         return token
@@ -74,7 +72,6 @@ class Client(BaseClient):
         Returns:
             str: token that will be added to authorization header.
         """
-        demisto.debug('in get_token - starting to get token.')
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         valid_until = integration_context.get('expires')
@@ -83,16 +80,16 @@ class Client(BaseClient):
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
         if token and valid_until and now_timestamp < valid_until:
-            demisto.debug(f'in get_token - Using existing token that expires at: {valid_until}.')
+            demisto.debug(f'Using existing token that expires at: {valid_until}.')
             return token
 
         # else generate a token and update the integration context accordingly
         token = self.generate_token()
-        demisto.debug('in get_token - Generated new token.')
+        demisto.debug('Generated a new token.')
 
         return token
 
-    def search_events(self, prev_id: str, from_date: str, limit: int | None = None) -> List[Dict]:
+    def search_events(self, prev_id: str, from_date: str, limit: int) -> List[Dict]:
         """
         Searches for events in SailPoint IdentityNow
         Args:
@@ -103,17 +100,18 @@ class Client(BaseClient):
             List of events
         """
         query = {"indices": ["events"],
-                 "queryType": "SAILPOINT",
-                 "queryVersion": "5.2",
-                 "query":
-                 {"query": f"type:* AND created: [{from_date} TO now]"},
-                 "timeZone": "America/Los_Angeles",
-                 "sort": ["+id"],
-                 "searchAfter": [prev_id]
-                 }
-        url_suffix = f'/v3/search?limit={limit}' if limit else '/v3/search'
-        demisto.debug(f'in search_events - Searching for events with query: {query}.')
-        return self._http_request(method='POST', url_suffix=url_suffix, data=query)
+                   "queryType": "SAILPOINT",
+                   "queryVersion": "5.2",
+                   "query":
+                   {"query": f"type:* AND created: [{from_date} TO now]"},
+                   "timeZone": "America/Los_Angeles",
+                   "sort": ["+id"],
+                   "searchAfter": [prev_id]
+                   }
+
+        url_suffix = f'/v3/search?limit={limit}'
+        demisto.debug(f'Searching for events with query: {query}.')
+        return self._http_request(method='POST', headers=self.headers, url_suffix=url_suffix, data=json.dumps(query))
 
 
 def test_module(client: Client) -> str:
@@ -128,8 +126,8 @@ def test_module(client: Client) -> str:
     try:
         fetch_events(
             client=client,
-            last_run={},
             max_events_per_fetch=1,
+            last_run={},
         )
 
     except Exception as e:
@@ -141,7 +139,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, limit: int, from_date: str, from_id: str = '0') -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, from_date: str, from_id: str = '0', limit: int = 50) -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
@@ -157,14 +155,13 @@ def get_events(client: Client, limit: int, from_date: str, from_id: str = '0') -
         from_date=from_date,
         limit=limit,
     )
-    demisto.debug(f'in get_events - Fetched {len(events)} events.')
-    demisto.debug(f'in get events - First event: {events[0]}' if events else 'No events fetched.')
+    demisto.debug(f'Fetched {len(events)} events.')
     hr = tableToMarkdown(name='Test Events', t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: dict[str, str],
-                 max_events_per_fetch: int
+def fetch_events(client: Client,
+                 max_events_per_fetch: int, last_run: dict[str, str],
                  ) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the SailPoint IdentityNow API
@@ -178,30 +175,28 @@ def fetch_events(client: Client, last_run: dict[str, str],
 
     all_events = []
     formatted_now = datetime.now().strftime(DATE_FORMAT)
+    # since we allow the user to set the max_events_per_fetch to 50,000, but the API only allows 10000 events per call
+    # we need to make multiple calls to the API to fetch all the events
     while max_events_per_fetch > 0:
-        demisto.debug(f'in fetch_events - Fetching events with max_events_per_fetch: {max_events_per_fetch}.')
+        current_batch_to_fetch = min(max_events_per_fetch, 10000)
+        demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
         events = client.search_events(
             prev_id=last_run.get('prev_id', "0"),
             from_date=last_run.get('prev_date', formatted_now),
-            limit=max_events_per_fetch,
+            limit=current_batch_to_fetch,
         )
-        demisto.debug(f'in fetch_events - Fetched {len(events)} events.')
-        demisto.debug(f'in fetch_events - First event: {events[0]}' if events else 'No events fetched.')
+        demisto.debug(f'Successfully fetched {len(events)} events.')
         if not events:
-            demisto.debug('in fetch_events - No more events to fetch.')
-            break
+            demisto.debug(f'No more events to fetch, setting next run to {last_run}.')
+            return last_run, all_events
+        all_events.extend(events)
         last_fetched_event = events[-1]
         last_fetched_id = last_fetched_event['id']
         last_fetched_creation_date = last_fetched_event['created']
-        demisto.debug(f'Fetched event with id: {last_fetched_id} and creation date: {last_fetched_creation_date}.')
-
         last_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
         max_events_per_fetch -= len(events)
-        all_events.extend(events)
-
-    next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
-    demisto.debug(f'Setting next run {next_run}.')
-    return next_run, all_events
+        demisto.debug(f'{max_events_per_fetch} events are left to fetch in the next calls.')
+    return last_run, all_events
 
 
 ''' MAIN FUNCTION '''
@@ -214,17 +209,16 @@ def add_time_and_status_to_events(events: List[Dict] | None) -> None:
         events: List of events
     Returns:
         None
-    """
+"""
     if events:
         for event in events:
             created = event.get('created')
             if created:
-                created = datetime.fromisoformat(created)
+                created = parser.parse(created)
 
             modified = event.get('modified')
             if modified:
-                modified = datetime.fromisoformat(modified)
-
+                modified = parser.parse(modified)
             if created and modified and modified > created:
                 event['_time'] = modified.strftime(DATE_FORMAT)
                 event["_ENTRY_STATUS"] = "modified"
@@ -263,12 +257,13 @@ def main() -> None:
             return_results(result)
 
         elif command == 'identitynow-get-events':
-            limit = arg_to_number(args.get('limit')) or 50
-            should_push_events = argToBoolean(args.get('should_push_events'))
+            limit = arg_to_number(args.get('limit', 50))
+            should_push_events = argToBoolean(args.get('should_push_events', False))
             time_to_start = arg_to_datetime(args.get('from_date'))
             formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else DEFAULT_LOOKBACK
-            id_to_start = args.get('from_id') or '0'
-            events, results = get_events(client, limit, from_date=formatted_time_to_start, from_id=id_to_start)
+            id_to_start = args.get('from_id', '0')
+            events, results = get_events(client,from_date=formatted_time_to_start,
+                                         from_id=id_to_start, limit=limit)   # type:ignore
             return_results(results)
             if should_push_events:
                 add_time_and_status_to_events(events)
@@ -282,8 +277,8 @@ def main() -> None:
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
-                last_run=last_run,
                 max_events_per_fetch=max_events_per_fetch,
+                last_run=last_run,
             )
 
             add_time_and_status_to_events(events)
