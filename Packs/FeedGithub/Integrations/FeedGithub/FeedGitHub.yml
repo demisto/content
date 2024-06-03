@@ -131,11 +131,11 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- additionalinfo: Insert as a comma-separated list.
-  display: Tags
+- display: Tags
   name: feedTags
-  required: false
   type: 0
+  additionalinfo: Supports CSV values.
+  required: false
 display: Github Feed
 name: Github Feed
 script:
@@ -161,6 +161,7 @@ script:
   subtype: python3
   type: python
 fromversion: 6.8.0
+description: This is the Feed GitHub integration for getting started with your feed integration.
 marketplaces:
 - xsoar
 - marketplacev2
