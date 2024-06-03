@@ -2719,5 +2719,3 @@ script:
 tests:
 - MISP V3 Test
 fromversion: 5.5.0
-
-
