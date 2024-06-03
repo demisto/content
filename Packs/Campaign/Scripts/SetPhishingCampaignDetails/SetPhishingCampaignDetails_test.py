@@ -34,9 +34,11 @@ INCIDENT_EXAMPLE = [
 ]
 CONTEXT_WITH_CAMPAIGN = {
     EMAIL_CAMPAIGN_KEY: {
-        "field_example": "field_example",
-        "field_example_2": "field_example",
-        "2": "field_example"
+        "incidents": [
+            {"id": "field_example"},
+            {"id": "field_example_2"},
+            {"id": "2"}
+        ],
     },
     'NotCampaign': 'field_example'
 }
