@@ -295,7 +295,7 @@ OLD_INCIDENT_CONTEXT = {
     ]
 }
 NEW_INCIDENT_REMOVE_CONTEXT = {
-    "incident":{
+    "incident": {
         "CustomFields": {"removedfromcampaigns": ['0']},
     },
     "EmailCampaign": {

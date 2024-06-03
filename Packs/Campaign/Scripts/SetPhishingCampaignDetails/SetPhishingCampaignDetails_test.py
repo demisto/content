@@ -309,3 +309,23 @@ def test_run_flow(mocker, campaign_id, incident_to_add_id, expected):
                         return_value=INCIDENTS_BY_ID[incident_to_add_id].get(EMAIL_CAMPAIGN_KEY))
     mocker.patch.object(demisto, 'incident', return_value={'id': incident_to_add_id})
     test_obj.run(campaign_id, False)
+
+
+def test_is_incident_removed_from_campaign(mocker):
+    # Mocking the incident context and dt function
+
+    mock_incident_context = {'CustomFields': {'removedfromcampaigns': ['campaign_id_1', 'campaign_id_2']}}
+    mocker.patch('CommonServerPython.demisto.incident', return_value=mock_incident_context)
+    mocker.patch('CommonServerPython.demisto.dt',
+                 return_value=mock_incident_context['CustomFields']['removedfromcampaigns'])
+
+    # Initialize SetPhishingCampaignDetails object
+    set_phishing_campaign_details = SetPhishingCampaignDetails()
+
+    # Test case where the incident has been removed from the campaign
+    campaign_id_to_check = 'campaign_id_1'
+    assert set_phishing_campaign_details.is_incident_removed_from_campaign(campaign_id_to_check) is True
+
+    # Test case where the incident has not been removed from the campaign
+    campaign_id_to_check = 'campaign_id_3'
+    assert set_phishing_campaign_details.is_incident_removed_from_campaign(campaign_id_to_check) is False
