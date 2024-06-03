@@ -196,18 +196,6 @@
                     ],
                     "legend": [
                         {
-                            "color": "#01A2EC",
-                            "name": "urlscan.io"
-                        },
-                        {
-                            "color": "#229D80",
-                            "name": "VirusTotal (API v3)"
-                        },
-                        {
-                            "color": "#F50057",
-                            "name": "Rasterize"
-                        },
-                        {
                             "color": "#ce5050",
                             "name": "Quota Error"
                         },
