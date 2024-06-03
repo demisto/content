@@ -19,7 +19,7 @@ If you change the *Query to fetch offenses* value, it will not re-fetch offenses
 The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query. 
 
 
-<details><summary><h1 style="display: inline;">Migration-</h1><h2 style="display: inline;"> from QradarV2 to V3</h2></summary>
+<details><summary><h1 style={{display: 'inline'}}>Migration-</h1><h2 style={{display: 'inline'}}> from QradarV2 to V3</h2></summary>
 
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ### Additions and Changes from QRadar v2 to QRadar v3
@@ -65,7 +65,7 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 
 # System Integration Setup (Device side steps)
 
-<details><summary><h3 style="display: inline;"> PAT (API Key) Authentication</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> PAT (API Key) Authentication</h3></summary> 
 
 #### Use the API Token Instead of Username and Password
  - In the **Username / API Key** field, type **_api_token_key**.  
@@ -73,11 +73,13 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 
 </details>
 
-<details><summary><h3 style="display: inline;"> View Your QRadar Version</h3> </summary> 
+<details><summary><h3 style={{display: 'inline'}}> View Your QRadar Version</h3> </summary> 
+
 1. Enter QRadar service.
 2. Click the **Menu** toolbar. A scrolling toolbar will appear.
 3. Click **About**. A new window will appear with the details of your QRadar version.  
 If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version. 
+
 </details>
    
 
@@ -138,7 +140,7 @@ For more information about mirroring configurations, see [here](https://xsoar.pa
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-<details><summary><h3 style="display: inline;"> qradar-offenses-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-offenses-list</h3></summary> 
 
 ### qradar-offenses-list
 ***
@@ -370,7 +372,7 @@ Gets offenses from QRadar.
 
 </details>
 
-<details><summary><h3 style="display: inline;"> qradar-offense-update</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-offense-update</h3></summary> 
 
 ### qradar-offense-update
 ***
@@ -521,9 +523,10 @@ Updates an offense.
 >|ID|Description|OffenseType|Status|Severity|DestinationHostname|LastUpdatedTime|Credibility|Rules|SourceAddress|AssignedTo|OffenseSource|Followup|EventCount|StartTime|FlowCount|DestinationAddress|LinkToOffense|RemoteDestinationCount|Relevance|Categories|Magnitude|Protected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-closing-reasons</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-closing-reasons</h3></summary> 
 ***
 Retrieves a list of offense closing reasons.
 
@@ -598,9 +601,10 @@ Retrieves a list of offense closing reasons.
 >| 1 | Non-Issue | false | false |
 >| 3 | Policy Violation | false | false |
 >| 4 | System Change (Upgrade, Reset, etc.) | true | false |
+
 </details>
 
-<details><summary><h3 style="display: inline;"> qradar-offense-notes-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-offense-notes-list</h3></summary> 
 
 ***
 Retrieves a list of notes for an offense.
@@ -659,9 +663,10 @@ Retrieves a list of notes for an offense.
 >|---|---|---|---|
 >| 53 | Note Regarding The Offense | API_user: admin | 2023-07-27T13:58:46.428000+00:00 |
 >| 60 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:23:05.473000+00:00 |
+
 </details>
 
-<details><summary><h3 style="display: inline;"> qradar-offense-note-create</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-offense-note-create</h3></summary> 
 
 ***
 Creates a note on an offense.
@@ -709,9 +714,10 @@ Creates a note on an offense.
 >|ID|Text|CreatedBy|CreateTime|
 >|---|---|---|---|
 >| 65 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:39:15.813000+00:00 |
+
 </details>
 
-<details><summary><h3 style="display: inline;"> qradar-rules-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-rules-list</h3></summary> 
 ***
 Retrieves a list of rules.
 
@@ -808,9 +814,10 @@ Retrieves a list of rules.
 >| 100068 | Login Successful After Scan Attempt | COMMON | true | 0 | SYSTEM | 2022-11-21T18:44:32.696000+00:00 | 2007-10-14T20:12:00.374000+00:00 | 0 | 0 | admin | 0 |
 >| 100102 | Potential Botnet Connection (DNS) | COMMON | false | 0 | SYSTEM | 2023-02-23T14:12:52.067000+00:00 | 2006-03-27T10:54:12.077000+00:00 | 0 | 0 | admin | 0 |
 >| 100109 | Host Port Scan Detected by Remote Host | COMMON | true | 0 | SYSTEM | 2023-02-23T14:12:49.992000+00:00 | 2005-12-22T00:54:48.708000+00:00 | 0 | 0 | admin | 0 |
+
 </details>
 
-<details><summary><h3 style="display: inline;"> qradar-rule-groups-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-rule-groups-list</h3></summary> 
 ***
 Retrieves a list of the rule groups.
 
@@ -943,9 +950,10 @@ Retrieves a list of the rule groups.
 >| 125 | Asset Reconciliation Exclusion | Rules focused on detection of suspicious asset reconciliation behavior. | admin | 2014-01-06T15:23:26.060000+00:00 | 3 | RULE_GROUP | 100045,<br/>100046,<br/>100047,<br/>100048,<br/>100049,<br/>100050,<br/>100051,<br/>100052,<br/>100053,<br/>100054,<br/>100055,<br/>100056,<br/>1607,<br/>1608,<br/>1609,<br/>1610,<br/>1611,<br/>1612,<br/>1613,<br/>1614,<br/>1615,<br/>1616,<br/>1617,<br/>1618 | 2 |
 >| 100020 | Horizontal Movement | Rules that indicate post-intrusion access activity | admin | 2015-07-08T20:14:12.250000+00:00 | 3 | RULE_GROUP | 100057,<br/>100059 | 2 |
 >| 101 | Anomaly | Rules based on log source and event anomalies such as high event rates or excessive connections. | admin | 2010-08-21T11:48:27.850000+00:00 | 3 | RULE_GROUP | 100001,<br/>100003,<br/>100044,<br/>100323,<br/>1219,<br/>1265,<br/>1335,<br/>1410,<br/>1411,<br/>1412,<br/>1431,<br/>1443,<br/>1460,<br/>1461,<br/>1471,<br/>1481,<br/>1509,<br/>1552,<br/>1566 | 1 |
+
 </details>
 
-<details><summary><h3 style="display: inline;"> qradar-assets-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> qradar-assets-list</h3></summary> 
 ***
 Retrieves assets list.
 
@@ -1070,8 +1078,10 @@ Retrieves assets list.
 >|IPAddress|
 >|---|
 >| 1.1.1.1 |
+
 </details>
-<details><summary><h3 style="display: inline;"> qradar-saved-searches-list</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}> qradar-saved-searches-list</h3></summary> 
 ***
 Retrieves a list of Ariel saved searches.
 
@@ -1150,9 +1160,11 @@ Retrieves a list of Ariel saved searches.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2817 | EC: AWS Cloud Attack Events | false | select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where "Experience Center" ilike '%AWSCloud%' order by "startTime" desc LIMIT 1000 start '2023-08-02 08:34' stop '2023-08-02 08:39' | 0144c7d8-a3fe-47c1-b16b-12721a34077e | false | 2023-02-23T14:12:52.611000+00:00 | 2019-04-02T17:39:08.493000+00:00 | EVENTS | admin |
 >| 2835 | Potential Ransomware (Suspicious activity, Possible Petya, NotPetya) | true | select * from flows where destinationport = '445' and (FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%70 00 73 00 65 00 78 00 65 00 63 00 73 00 76 00 63 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%50 00 53 00 45 00 58 00 45 00 53 00 56 00 43 00 2e 00 45 00 58 00 45%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%73 00 76 00 63 00 63 00 74 00 6c 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%5c 00 61 00 64 00 6d 00 69 00 6e 00 24 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%ff 53 4d 42 72 00 00 00 00 18 07 c0%') last 24 HOURS | 0791701a-80e3-4a1c-b11f-7bc943b96bf6 | false | 2023-03-05T13:34:00.352000+00:00 | 2017-07-02T18:11:44.984000+00:00 | FLOWS | admin |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-searches-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-searches-list</h3></summary> 
+
 ***
 Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands.
 
@@ -1389,9 +1401,11 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 >| c6a82de6-cfef-444e-9b0f-b124b5599b7b |
 >| 185971cc-ebbb-453d-b826-bffc59836be1 |
 >| 2a45ec38-d060-4aae-9a9c-730f49966fdc |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-search-create</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-search-create</h3></summary> 
+
 ***
 Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
 
@@ -1438,8 +1452,11 @@ Creates a new asynchronous Ariel search. Returns the search ID. Search status an
 >|ID|Status|
 >|---|---|
 >| 68d4e4e6-f512-4171-b130-d671334cb47d | WAIT |
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-search-status-get</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}>qradar-search-status-get</h3></summary> 
+
 ***
 Retrieves status information for a search, based on the search ID.
 
@@ -1459,8 +1476,10 @@ Retrieves status information for a search, based on the search ID.
 | --- | --- | --- |
 | QRadar.Search.Status | String | Status of the search. | 
 | QRadar.Search.ID | String | ID of the search. | 
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-search-results-get</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}>qradar-search-results-get</h3></summary> 
 
 ***
 Retrieves search results.
@@ -1482,8 +1501,11 @@ Retrieves search results.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-reference-sets-list</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}>qradar-reference-sets-list</h3></summary> 
+
 ***
 Retrieves a list of reference sets.
 
@@ -1557,8 +1579,11 @@ Retrieves a list of reference sets.
 >| Critical Assets | IP | FIRST_SEEN | 2015-08-27T17:15:40.583000+00:00 | 0 |
 >| BadRabbit_FileHash | ALNIC | FIRST_SEEN | 2017-10-25T16:31:15.992000+00:00 | 6 |
 >| Windows RCE IPs | IP | FIRST_SEEN | 2022-10-03T10:38:51.140000+00:00 | 19 |
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-reference-set-create</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}>qradar-reference-set-create</h3></summary> 
+
 ***
 Creates a new reference set.
 
@@ -1615,8 +1640,11 @@ Creates a new reference set.
 >|Name|ElementType|TimeToLive|TimeoutType|CreationTime|NumberOfElements|
 >|---|---|---|---|---|---|
 >| Malicious IPs | IP | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN | 2023-08-02T08:39:30.887000+00:00 | 0 |
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-reference-set-delete</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}>qradar-reference-set-delete</h3></summary> 
+
 ***
 Removes a reference set or purges its contents.
 
@@ -1641,7 +1669,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-reference-set-value-upsert</h3></summary>
+<details><summary><h3 style={{display: 'inline'}}>qradar-reference-set-value-upsert</h3></summary>
 
 ### qradar-reference-set-value-upsert
 ***
@@ -1720,9 +1748,10 @@ Adds or updates an element in a reference set.
 >|CreationTime|Data|ElementType|Name|NumberOfElements|TimeToLive|TimeoutType|
 >|---|---|---|---|---|---|---|
 >| 2023-08-02T08:39:30.887000+00:00 | {'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'} | IP | Malicious IPs | 3 | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-reference-set-value-delete</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-reference-set-value-delete</h3></summary> 
 
 ### qradar-reference-set-value-delete
 ***
@@ -1748,8 +1777,10 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### value: 1.1.1.1 of reference: Malicious IPs was deleted successfully
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-domains-list</h3></summary> 
+
+<details><summary><h3 style={{display: 'inline'}}>qradar-domains-list</h3></summary> 
 
 ### qradar-domains-list
 ***
@@ -1809,9 +1840,10 @@ Gets the list of domains. You must have System Administrator or Security Adminis
 >|Deleted|ID|TenantID|
 >|---|---|---|
 >| false | 0 | 0 |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-indicators-upload</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-indicators-upload</h3></summary> 
 
 ### qradar-indicators-upload
 ***
@@ -1848,7 +1880,7 @@ Uploads indicators to QRadar.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-geolocations-for-ip</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-geolocations-for-ip</h3></summary> 
 
 ### qradar-geolocations-for-ip
 ***
@@ -1953,9 +1985,10 @@ Retrieves the MaxMind GeoIP data for the specified IP address.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Mukilteo | NorthAmerica | 47.913,<br/>-122.3042 | 1.1.1.1 | 1000 | 47.913 | -122.3042 | 819 | America/Los_Angeles | US | United States | 98275 | US | United States |
 >| Mukilteo | NorthAmerica | 47.913,<br/>-122.3042 | 1.1.1.1 | 1000 | 47.913 | -122.3042 | 819 | America/Los_Angeles | US | United States | 98275 | US | United States |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-sources-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-sources-list</h3></summary> 
 
 ### qradar-log-sources-list
 ***
@@ -2127,9 +2160,10 @@ Retrieves a list of log sources.
 >| 68 | Search Results-2 :: ip-172-31-17-10 | Search Results | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.624000+00:00 | last_updated: 0<br/>status: NA | true | 0 | false | false | 355 | 2022-11-21T18:45:24.624000+00:00 | 1970-01-01T00:00:00+00:00 |
 >| 65 | System Notification-2 :: ip-172-31-17-10 | System Notification | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.621000+00:00 | last_updated: 0<br/>status: SUCCESS | true | 0 | false | false | 147 | 2022-11-21T18:45:24.621000+00:00 | 2023-08-02T08:39:00.106000+00:00 |
 >| 1262 | Experience Center: WindowsAuthServer @ 1.1.1.1 | WindowsAuthServer device | false | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 5 | 0 | 2018-10-24T15:25:21.928000+00:00 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | true | 0 | true | false | 12 | 2023-02-23T14:12:45.774000+00:00 | 2023-06-12T08:17:22.292000+00:00 |
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-custom-properties</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-custom-properties</h3></summary> 
 
 ### qradar-get-custom-properties
 ***
@@ -2232,7 +2266,7 @@ Retrieves a list of event regex properties.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-reset-last-run</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-reset-last-run</h3></summary> 
 
 ### qradar-reset-last-run
 ***
@@ -2304,7 +2338,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-offenses</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-offenses</h3></summary> 
 
 ### qradar-offenses
 ***
@@ -2352,8 +2386,9 @@ Gets offenses from QRadar.
 | QRadar.Offense.OffenseType | string | A number that represents the offense type. | 
 | QRadar.Offense.Protected | boolean | Is the offense protected. | 
 | QRadar.Offense.RemoteDestinationCount | Unknown | The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip | 
+
 </details>
-<details><summary><h3 style="display: inline;">qradar-offense-by-id</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-offense-by-id</h3></summary> 
 
 ### qradar-offense-by-id
 ***
@@ -2406,7 +2441,7 @@ Gets offense with matching offense ID from qradar.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-searches</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-searches</h3></summary> 
 
 ### qradar-searches
 ***
@@ -2432,7 +2467,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-search</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-search</h3></summary> 
 
 ### qradar-get-search
 ***
@@ -2458,7 +2493,7 @@ Gets a specific search id and status.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-search-results</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-search-results</h3></summary> 
 
 ### qradar-get-search-results
 ***
@@ -2485,7 +2520,7 @@ Gets search results.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-assets</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-assets</h3></summary> 
 
 ### qradar-get-assets
 ***
@@ -2520,7 +2555,7 @@ List all assets found in the model.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-asset-by-id</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-asset-by-id</h3></summary> 
 
 ### qradar-get-asset-by-id
 ***
@@ -2567,7 +2602,7 @@ Retrieves the asset by id.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-closing-reasons</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-closing-reasons</h3></summary> 
 
 ### qradar-get-closing-reasons
 ***
@@ -2596,7 +2631,7 @@ Get closing reasons.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-note</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-note</h3></summary> 
 
 ### qradar-get-note
 ***
@@ -2626,7 +2661,7 @@ Retrieve a note for an offense.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-create-note</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-create-note</h3></summary> 
 
 ### qradar-create-note
 ***
@@ -2656,7 +2691,7 @@ Create a note on an offense.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-reference-by-name</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-reference-by-name</h3></summary> 
 
 ### qradar-get-reference-by-name
 ***
@@ -2688,7 +2723,7 @@ Information about the reference set that had data added or updated. This returns
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-create-reference-set</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-create-reference-set</h3></summary> 
 
 ### qradar-create-reference-set
 ***
@@ -2719,7 +2754,7 @@ Creates a new reference set. If the provided name is already in use, this comman
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-delete-reference-set</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-delete-reference-set</h3></summary> 
 
 ### qradar-delete-reference-set
 ***
@@ -2741,7 +2776,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-create-reference-set-value</h3></summary>
+<details><summary><h3 style={{display: 'inline'}}>qradar-create-reference-set-value</h3></summary>
 
 ### qradar-create-reference-set-value
 ***
@@ -2772,7 +2807,7 @@ Add or update a value in a reference set.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-update-reference-set-value</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-update-reference-set-value</h3></summary> 
 
 ### qradar-update-reference-set-value
 ***
@@ -2803,7 +2838,7 @@ Adds or updates a value in a reference set.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-delete-reference-set-value</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-delete-reference-set-value</h3></summary> 
 
 ### qradar-delete-reference-set-value
 
@@ -2834,7 +2869,7 @@ Deletes a value in a reference set.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-delete-reference-set-value</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-delete-reference-set-value</h3></summary> 
 
 ### qradar-delete-reference-set-value
 
@@ -2862,9 +2897,10 @@ Deletes a value in a reference set.
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN | 
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-domains</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-domains</h3></summary> 
 
 ### qradar-delete-reference-set-value
 ***
@@ -2902,7 +2938,7 @@ Retrieve all Domains.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-get-domain-by-id</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-get-domain-by-id</h3></summary> 
 
 ### qradar-get-domain-by-id
 ***
@@ -2939,7 +2975,7 @@ Retrieves Domain information By ID.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-upload-indicators</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-upload-indicators</h3></summary> 
 
 ### qradar-upload-indicators
 ***
@@ -2967,7 +3003,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-ips-source-get</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-ips-source-get</h3></summary> 
 
 ### qradar-ips-source-get
 ***
@@ -3036,7 +3072,7 @@ Get Source IPs
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-ips-local-destination-get</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-ips-local-destination-get</h3></summary> 
 
 ### qradar-ips-local-destination-get
 ***
@@ -3079,7 +3115,7 @@ Get Source IPs
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-search-retrieve-events</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-search-retrieve-events</h3></summary> 
 
 ### qradar-search-retrieve-events
 ***
@@ -3132,7 +3168,7 @@ Polling command to search for events of a specific offense.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-create</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-remote-network-cidr-create</h3></summary> 
 
 ### qradar-remote-network-cidr-create
 ***
@@ -3159,7 +3195,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-remote-network-cidr-list</h3></summary> 
 
 ### qradar-remote-network-cidr-list
 ***
@@ -3193,7 +3229,7 @@ Retrieves the list of staged remote networks.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-delete</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-remote-network-cidr-delete</h3></summary> 
 
 ### qradar-remote-network-cidr-delete
 ***
@@ -3215,7 +3251,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-remote-network-cidr-update</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-remote-network-cidr-update</h3></summary> 
 
 ### qradar-remote-network-cidr-update
 ***
@@ -3249,7 +3285,7 @@ Updates an existing staged remote network.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-remote-network-deploy-execution</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-remote-network-deploy-execution</h3></summary> 
 
 ### qradar-remote-network-deploy-execution
 ***
@@ -3277,7 +3313,7 @@ Potentially harmful: This API command executes any waiting system deployments in
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-extensions-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-extensions-list</h3></summary> 
 
 ### qradar-log-source-extensions-list
 ***
@@ -3307,7 +3343,7 @@ Retrieves a list of log source extensions.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-delete</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-delete</h3></summary> 
 
 ### qradar-log-source-delete
 ***
@@ -3327,9 +3363,10 @@ Deletes a log source by ID or name. One of the arguments must be provided.
 #### Context Output
 
 There is no context output for this command.
+
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-wincollect-destinations-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-wincollect-destinations-list</h3></summary> 
 
 ***
 Retrieves a list of WinCollect destinations. 
@@ -3364,7 +3401,7 @@ In order to get wincollect_external_destination_ids - filter internal=false need
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-create</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-create</h3></summary> 
 
 ### qradar-log-source-create
 ***
@@ -3423,7 +3460,7 @@ Creates a new log source.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-languages-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-languages-list</h3></summary> 
 
 ### qradar-log-source-languages-list
 ***
@@ -3451,7 +3488,7 @@ Retrieves a list of log source languages.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-protocol-types-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-protocol-types-list</h3></summary> 
 
 ### qradar-log-source-protocol-types-list
 ***
@@ -3510,7 +3547,7 @@ Retrieves the list of protocol types.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-disconnected-log-collectors-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-disconnected-log-collectors-list</h3></summary> 
 
 ### qradar-disconnected-log-collectors-list
 ***
@@ -3542,7 +3579,7 @@ Retrieves a list of disconnected log collectors.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-update</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-update</h3></summary> 
 
 ### qradar-log-source-update
 ***
@@ -3583,7 +3620,7 @@ There is no context output for this command.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qradar-log-source-types-list</h3></summary> 
+<details><summary><h3 style={{ display: 'inline' }}>qradar-log-source-types-list</h3></summary> 
 
 ### qradar-log-source-types-list
 ***
@@ -3622,7 +3659,7 @@ Retrieves a list of log sources types.
 </details>
 
 
-<details><summary><h3 style="display: inline;">qradar-log-source-groups-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qradar-log-source-groups-list</h3></summary> 
 
 ### qradar-log-source-groups-list
 ***
@@ -3656,7 +3693,7 @@ Retrieves a list of log source languages.
 
 </details>
 
-<details><summary><h3 style="display: inline;">qardar-event-collectors-list</h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}>qardar-event-collectors-list</h3></summary> 
 
 ### qardar-event-collectors-list
 ***
@@ -3701,5 +3738,7 @@ EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARC
 It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
+
 </details>
+
 <details> <summary> General </summary> Test</details>
