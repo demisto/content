@@ -252,7 +252,7 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     return reviewer
 
 
-def get_metadata(pack_dirs: set[str]) -> dict:
+def get_metadata(pack_dirs: set[str]) -> set[dict]:
     """
     Get the pack metadata.
 
@@ -267,6 +267,7 @@ def get_metadata(pack_dirs: set[str]) -> dict:
     for pack_dir in pack_dirs:
         if pack_metadata := get_pack_metadata(pack_dir):
             print(f"pack metadata was retrieved for pack {pack_dir}")  # noqa: T201
+            print(f'metadata is: {pack_metadata}')
             pack_metadata_set.add(pack_metadata)
         else:
             print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
