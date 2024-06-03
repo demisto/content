@@ -11,8 +11,13 @@ you are implementing with your integration
 """
 
 import json
-from CSCDomainManager import *
 from CSCDomainManager import Client
+from CSCDomainManager import csc_domains_search_command
+from CSCDomainManager import csc_domains_availability_check_command
+from CSCDomainManager import csc_domains_configuration_list_command
+from CSCDomainManager import domain
+from CommonServerPython import DBotScoreReliability
+
 
 EXAMPLE_BASE_URL = 'https://test.com/api'
 VERIFY = True
@@ -100,14 +105,14 @@ def test_csc_domains_availability_check(mocker):
 def test_csc_domains_configuration_list(mocker):
     client = create_mock_client()
     args = {
-        'domain_name': 'cscpanw.org'
+        'domain_name': 'csc-panw.biz'
     }
     mocker.patch.object(client, 'send_get_request', return_value=GET_DOMAINS_CONFI_LIST)
     result = csc_domains_configuration_list_command(client, args)
     result_output = result.to_context().get('Contents')
-    assert len(result_output.get('configurations')) == 1
-    assert result_output.get('configurations')[0].get('domain') == 'test.com'
-    assert result_output.get('configurations')[0].get('domainLabel') == 'test'
+    assert len(result_output) == 1
+    assert result_output[0].get('domain') == 'csc-panw.biz'
+    assert result_output[0].get('domainLabel') == 'csc-panw'
 
 
 def test_domain(mocker):

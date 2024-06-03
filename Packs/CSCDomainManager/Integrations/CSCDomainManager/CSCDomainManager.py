@@ -89,7 +89,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify: bool, token:str, apikey:str):
+    def __init__(self, base_url, verify: bool, token: str, apikey: str):
         headers = {
             'Authorization': BEARER + token,
             'apikey': apikey,
@@ -133,7 +133,7 @@ def create_params_string(args):
     return params_str
 
 
-def extract_required_fields_for_domains_search_hr(domains_list) -> list:
+def get_domain_search_hr_fields(domains_list) -> list:
     filtered_domains = []
 
     for domain in domains_list:
@@ -287,7 +287,7 @@ def csc_domains_search_command(client: Client, args) -> Any:
         domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
         domains_list = domains_results.get('domains', [])
 
-    domains_with_required_fields = extract_required_fields_for_domains_search_hr(domains_list)
+    domains_with_required_fields = get_domain_search_hr_fields(domains_list)
 
     results = CommandResults(
         readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields,
@@ -409,7 +409,7 @@ def main() -> None:
         base_url = params.get('base_url')
         verify = not params.get('insecure', False)
         token = params.get('token', {}).get('password')
-        apikey = params.get('credentials', {}).get('password')
+        api_key = params.get('credentials', {}).get('password')
 
         # TODO to check
         reliability = params.get('integrationReliability')
@@ -424,7 +424,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify,
             token=token,
-            apikey=apikey
+            apikey=api_key
         )
 
         if demisto.command() == 'test-module':
