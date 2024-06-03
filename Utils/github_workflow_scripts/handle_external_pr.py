@@ -290,6 +290,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 if 'CONTRIBUTORS.json' in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
+                print(f'The content object: {content_object}')
                 if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
                     continue
                 integrations_checked.append(content_object.path)
