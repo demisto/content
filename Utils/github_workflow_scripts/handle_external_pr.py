@@ -268,6 +268,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
     Returns: `bool` whether a security engineer should be assigned
     """
     pack_dirs_to_check = packs_to_check_in_pr(pr_files)
+    integrations_checked = []
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
@@ -277,22 +278,37 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
             repo_name=repo_name
         ):
-            pack_metadata = get_metadata(pack_dirs_to_check)
+            pack_metadata_set = get_metadata(pack_dirs_to_check)
             for file in pr_files:
-                if "yml" in file and "Integrations" in file:
-                    content_yml = get_yaml(file_path=file)
-                    is_feed = content_yml.get("script").get("feed", "False")
-                    print(f'Is it a feed: {is_feed}')
-                    if is_feed:
-                        return True
+                # if "yml" in file and "Integrations" in file:
+                #     content_yml = get_yaml(file_path=file)
+                #     is_feed = content_yml.get("script").get("feed", "False")
+                #     print(f'Is it a feed: {is_feed}')
+                #     if is_feed:
+                #         return True
+
+                if 'CONTRIBUTORS.json' in file:
+                    continue
+                content_object = BaseContent.from_path(CONTENT_PATH / file)
+                if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
+                    continue
+                integrations_checked.append(content_object.path)
+                if content_object.is_feed:
+                    return True
+                pack = content_object.in_pack
+                tags = pack.tags
+                categories = pack.categories
+                if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+                    return True
     except Exception as er:
         print(f"couldn't checkout branch to get metadata, error is {er}")
         return False
-    print(f'the metadata is: {pack_metadata}')
-    tags = pack_metadata.get("tags")
-    categories = pack_metadata.get("categories")
-    if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
-        return True
+    for pack_metadata in pack_metadata_set:
+        print(f'the metadata is: {pack_metadata}')
+        tags = pack_metadata.get("tags")
+        categories = pack_metadata.get("categories")
+        if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
+            return True
     return False
 
 
@@ -312,15 +328,16 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
     for file in pr_files:
         if 'CONTRIBUTORS.json' in file:
             continue
-        integration = BaseContent.from_path(CONTENT_PATH / file)
-        if not integration:
+        content_object = BaseContent.from_path(CONTENT_PATH / file)
+        if not content_object:
+            # This means we were not able to find the file in content repo, and the contribution is new
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-        if not isinstance(integration, Integration) or integration.path in integrations_checked:
+        if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
             continue
-        integrations_checked.append(integration.path)
-        if integration.is_feed:
+        integrations_checked.append(content_object.path)
+        if content_object.is_feed:
             return True
-        pack = integration.in_pack
+        pack = content_object.in_pack
         tags = pack.tags
         categories = pack.categories
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:

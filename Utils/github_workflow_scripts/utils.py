@@ -262,12 +262,13 @@ def get_metadata(pack_dirs: set[str]) -> dict:
     Return:
         - pack metadata dictionary
     """
-    pack_metadata = {}
+    pack_metadata_set = set()
 
     for pack_dir in pack_dirs:
         if pack_metadata := get_pack_metadata(pack_dir):
             print(f"pack metadata was retrieved for pack {pack_dir}")  # noqa: T201
+            pack_metadata_set.add(pack_metadata)
         else:
             print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
 
-    return pack_metadata
+    return pack_metadata_set
