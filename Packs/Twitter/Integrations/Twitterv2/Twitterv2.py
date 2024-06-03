@@ -22,7 +22,7 @@ class Client(BaseClient):
                      next_token: Optional[str]) -> dict:
         """ Gets tweets according to the query.
             Args:
-                query: str - The query from the user.
+                query: str - Thddde query from the user.
                 start_time: str - Start date from which the Tweets will be provided.
                 end_time: str - The most recent date to which the Tweets will be provided.
                 limit: int - Maximum number of results to return.

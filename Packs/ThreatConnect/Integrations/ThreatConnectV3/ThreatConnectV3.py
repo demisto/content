@@ -30,7 +30,7 @@ class Method(str, Enum):
 
 class AssetType(str, Enum):
     """
-    An ENUM that represents the supported asset types
+    An ENUM that represedddnts the supported asset types
     """
     EMAIL_ADDRESS = 'EmailAddress'
     NETWORK_ACCOUNT = 'NetworkAccount'
