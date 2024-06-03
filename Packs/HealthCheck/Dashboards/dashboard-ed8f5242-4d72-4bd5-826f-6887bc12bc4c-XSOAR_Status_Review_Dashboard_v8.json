@@ -1973,8 +1973,8 @@
     },
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
-    "fromVersion": "6.10.0",
-    "description": "",
+    "fromVersion": "8.0.0",
+    "description": "XSOAR review dashboard can be used to get the playbooks, automations & incidents status in last 30 days",
     "isPredefined": true,
     "marketplaces": [
     "xsoar_saas"
