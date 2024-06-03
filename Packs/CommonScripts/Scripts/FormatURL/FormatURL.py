@@ -8,15 +8,13 @@ def main():
     raw_urls = argToList(demisto.args().get('input'), separator='|')
     try:
         formatted_urls = format_urls(raw_urls)
-        output = [{
+
+        demisto.results([{
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': [urls],
-            'EntryContext': {'URL': urls},
-        } for urls in formatted_urls]
-
-        for url in output:
-            demisto.results(url)
+            'Contents': [formatted_urls],
+            'EntryContext': {'URL': [formatted_urls]},
+        }])
 
     except Exception as e:
         return_error(
