@@ -752,7 +752,7 @@ FILES_TEST3 = {}
 @pytest.mark.parametrize(
     "attachments, email_html, email_related_incident, files, expected_result",
     [
-        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST1, ('', [])),
+        (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST1, ('dummyFileIdentifier', [])),
         (ATTACHMENTS, EMAIL_HTML, 'test@gmail.com', FILES_TEST2, ('456', [{'description': '', 'name': '456-imageName:image_2.png',
                                                                            'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
                                                                            'showMediaFile': False, 'type': ''}])),
@@ -785,6 +785,6 @@ def test_find_attachments_to_download(attachments, email_html, email_related_inc
     """
     import PreprocessEmail
     mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=files)
-    result = PreprocessEmail.find_attachments_to_download(attachments, email_html, email_related_incident)
+    result = PreprocessEmail.find_attachments_to_download(attachments, email_html, email_related_incident, "")
     assert result[0] == expected_result[0]
     assert result[1] == expected_result[1]
