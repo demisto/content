@@ -1,6 +1,8 @@
 Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
 This integration was integrated and tested with version v.5.24.0 of Zimperium v2.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration).
 
