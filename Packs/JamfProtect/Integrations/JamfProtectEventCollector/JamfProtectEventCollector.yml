@@ -48,6 +48,14 @@ configuration:
   type: 0
   advanced: true
   section: Collect
+- additionalinfo: Maximum number of computer events to fetch at a time.
+  defaultvalue: '1000'
+  display: Max computer events per fetch
+  name: max_fetch_computer
+  required: false
+  type: 0
+  advanced: true
+  section: Collect
 description: Use this integration to fetch audits and alerts from Jamf Protect as events in Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
