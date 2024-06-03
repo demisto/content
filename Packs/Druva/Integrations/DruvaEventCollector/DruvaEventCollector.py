@@ -39,10 +39,12 @@ class Client(BaseClient):
 
             # check if token is still valid, and use the old one. otherwise regenerate a new one
             if (expiration_time - now).total_seconds() > 0:
+                demisto.debug("No need to regenerate the token, it is still valid")
                 self._set_headers(token)
                 return
 
-        raw_token, exires_in_seconds = self._refresh_access_token()
+        demisto.debug("Since the cache is empty or the token has expired, regenerate a new token")
+        raw_token, expires_in_seconds = self._refresh_access_token()
         self._set_headers(raw_token)
 
         #  token["expires_in"] - 60 seconds for safety
@@ -50,7 +52,7 @@ class Client(BaseClient):
             {
                 "Token": raw_token,
                 "expiration_time": (
-                    now + timedelta(seconds=(exires_in_seconds - 60))
+                    now + timedelta(seconds=(expires_in_seconds - 60))
                 ).strftime(DATE_FORMAT_FOR_TOKEN),
             }
         )
