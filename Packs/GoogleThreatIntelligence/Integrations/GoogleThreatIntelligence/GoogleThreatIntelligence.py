@@ -1943,7 +1943,12 @@ def upload_file(client: Client, args: dict, private: bool = False) -> List[Comma
     return results
 
 
-def file_scan_and_get_analysis(client: Client, args: dict):
+def file_scan_and_get_analysis(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        args: dict,
+        file_relationships: str
+):
     """Calls to file-scan and gti-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
     extended = argToBoolean(args.get('extended_data', False))
@@ -1960,6 +1965,9 @@ def file_scan_and_get_analysis(client: Client, args: dict):
             args={
                 'entryID': args.get('entryID'),
                 'id': outputs.get('vtScanID'),
+                'file': outputs.get(
+                    f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)',
+                    {}).get('SHA256'),
                 'interval_in_seconds': interval,
                 'extended_data': extended,
             },
@@ -1973,13 +1981,14 @@ def file_scan_and_get_analysis(client: Client, args: dict):
     if not isinstance(outputs, dict):
         raise DemistoException('outputs is expected to be a dict')
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
-        return command_result
+        return file_command(client, score_calculator, args, file_relationships)
     scheduled_command = ScheduledCommand(
         command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
         next_run_in_seconds=interval,
         args={
             'entryID': args.get('entryID'),
             'id': outputs.get('id'),
+            'file': args.get('file'),
             'interval_in_seconds': interval,
             'extended_data': extended,
         },
@@ -2033,7 +2042,12 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
     return CommandResults(scheduled_command=scheduled_command)
 
 
-def url_scan_and_get_analysis(client: Client, args: dict):
+def url_scan_and_get_analysis(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        args: dict,
+        url_relationships: dict
+):
     """Calls to url-scan and gti-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
     extended = argToBoolean(args.get('extended_data', False))
@@ -2062,7 +2076,7 @@ def url_scan_and_get_analysis(client: Client, args: dict):
     if not isinstance(outputs, dict):
         raise DemistoException('outputs is expected to be a dict')
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
-        return command_result
+        return url_command(client, score_calculator, args, url_relationships)
     scheduled_command = ScheduledCommand(
         command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
         next_run_in_seconds=interval,
@@ -2695,11 +2709,11 @@ def main(params: dict, args: dict, command: str):
     elif command == f'{COMMAND_PREFIX}-assessment-get':
         results = get_assessment_command(client, score_calculator, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-and-analysis-get':
-        results = file_scan_and_get_analysis(client, args)
+        results = file_scan_and_get_analysis(client, score_calculator, args, file_relationships)
     elif command == f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get':
         results = private_file_scan_and_get_analysis(client, args)
     elif command == f'{COMMAND_PREFIX}-url-scan-and-analysis-get':
-        results = url_scan_and_get_analysis(client, args)
+        results = url_scan_and_get_analysis(client, score_calculator, args, url_relationships)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)
