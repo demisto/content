@@ -1,10 +1,8 @@
-import demistomock as demisto
+import demistomock as demisto # noqa: F401
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple, List, Iterable
-from ipaddress import IPv4Address, AddressValueError, summarize_address_range
+from typing import Dict, Any, Tuple, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -70,32 +68,32 @@ class Client(BaseClient):
 
 
 def create_x509_certificate_grids(string_object: Optional[str]) -> list:
-        """
-        Creates a grid field related to the subject and issuer field of the x509 certificate object.
+    """
+    Creates a grid field related to the subject and issuer field of the x509 certificate object.
 
-        Args:
-            string_object (Optional[str]): A str in format of C=ZA,ST=Western Cape,L=Cape Town,O=Thawte.
+    Args:
+        string_object (Optional[str]): A str in format of C=ZA,ST=Western Cape,L=Cape Town,O=Thawte.
 
-        Returns:
-            list: The return value. A list of dict [{"title": "C", "data": "ZA"}].
-        """
-        result_grid_list = []
-        if string_object:
-            # TODO sometimes there is something like `, Inc.`, not sure how to account for that
-            key_value_pairs = string_object.split(',')
-            for pair in key_value_pairs:
-                result_grid = {}
-                if '=' in pair:
-                    key, value = pair.split('=', 1)
-                    result_grid['title'] = key
-                    result_grid['data'] = value
-                    result_grid_list.append(result_grid)
-        return result_grid_list
+    Returns:
+        list: The return value. A list of dict [{"title": "C", "data": "ZA"}].
+    """
+    result_grid_list = []
+    if string_object:
+        # TODO sometimes there is something like `, Inc.`, not sure how to account for that
+        key_value_pairs = string_object.split(',')
+        for pair in key_value_pairs:
+            result_grid = {}
+            if '=' in pair:
+                key, value = pair.split('=', 1)
+                result_grid['title'] = key
+                result_grid['data'] = value
+                result_grid_list.append(result_grid)
+    return result_grid_list
 
 
-# TODO - might not be bad to add generic descriptin like `<name> <type> from Cortex Xpanse`
 def map_indicator_fields(raw_indicator: Dict[str, Any], asset_type: str) -> Dict[str, Any]:
-    indicator_fields = {"internal": True}
+    description = raw_indicator.get('name') + " indicator of asset type " + asset_type + " from Cortex Xpanse"
+    indicator_fields = {"internal": True, "description": description}
     if asset_type == 'Domain':
         if domain_details := raw_indicator.get("domain_details"):
             fields_mapping = {
@@ -194,8 +192,8 @@ def test_module(client: Client):  # pragma: no cover
     client.list_asset_internet_exposure_request(search_to=1, use_paging=False)
     return_results('ok')
 
-def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all') -> \
-        List[Dict[str, Any]] | Tuple[List[Dict[str, Any]], str]:
+def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all'):
+#       -> \ List[Dict[str, Any]] | List[Dict]:
     """
         Fetch indicators from Xpanse API and create indicators in XSOAR.
     """
@@ -208,7 +206,10 @@ def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all')
         asset_list.append("CERTIFICATE")
     if 'ipv4' in asset_type:
         asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
-    asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}])
+    if limit:
+        asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}], search_to=limit, use_paging=False)
+    else:
+        asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}])
     
     assset_indicators = build_asset_indicators(client, asset_response)
     
