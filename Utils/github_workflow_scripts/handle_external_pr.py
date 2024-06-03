@@ -268,6 +268,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
     Returns: `bool` whether a security engineer should be assigned
     """
     pack_dirs_to_check = packs_to_check_in_pr(pr_files)
+    print(f'pack dirs to check {pack_dirs_to_check}')
     integrations_checked = []
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
@@ -279,6 +280,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             repo_name=repo_name
         ):
             pack_metadata_set = get_metadata(pack_dirs_to_check)
+            print(f'pack metadata set: {pack_metadata_set}')
             for file in pr_files:
                 # if "yml" in file and "Integrations" in file:
                 #     content_yml = get_yaml(file_path=file)
