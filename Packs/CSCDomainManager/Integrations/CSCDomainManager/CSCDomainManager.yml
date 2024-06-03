@@ -106,115 +106,115 @@ script:
       description: dns type
       type: String
     - contextPath: CSCDomainManager.Domain.account.accountName
-      description: ''
+      description: 'The name of the account associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.account.accountNumber
-      description: ''
+      description: 'The account number associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.brandName
-      description: ''
+      description: 'The brand name associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.businessUnit
-      description: ''
+      description: 'The business unit associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.countryCode
-      description: ''
+      description: 'The country code associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.criticalDomain
-      description: ''
+      description: 'Indicates if the domain is critical.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.customFields.name
-      description: ''
+      description: 'The name of the custom field.'
       type: String
     - contextPath: CSCDomainManager.Domain.customFields.value
-      description: ''
+      description: 'The value of the custom field.'
       type: String
     - contextPath: CSCDomainManager.Domain.dnssecActivated
-      description: ''
+      description: 'Indicates if DNSSEC is activated for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.extension
-      description: ''
+      description: 'The extension of the domain, such as .com, .net, etc.'
       type: String
     - contextPath: CSCDomainManager.Domain.idn
-      description: ''
+      description: 'Indicates if the domain is an Internationalized Domain Name (IDN).'
       type: String
     - contextPath: CSCDomainManager.Domain.idnReferenceName
-      description: ''
+      description: 'The reference name for the IDN.'
       type: String
     - contextPath: CSCDomainManager.Domain.lastModifiedDate
-      description: ''
+      description: 'The date when the domain was last modified.'
       type: Date
     - contextPath: CSCDomainManager.Domain.lastModifiedDescription
-      description: ''
+      description: 'A description of the last modification made to the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.lastModifiedReason
-      description: ''
+      description: 'The reason for the last modification made to the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.localAgent
-      description: ''
+      description: 'Indicates if the domain has a local agent.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.newGtld
-      description: ''
+      description: 'Indicates if the domain is a new gTLD (Generic Top-Level Domain).'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.serverDeleteProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from deletion by the server.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.serverTransferProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from transfer by the server.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.serverUpdateProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from updates by the server.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.urlf.redirectType
-      description: ''
+      description: 'The type of redirect used in URL forwarding for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.urlf.urlForwarding
-      description: ''
+      description: 'Indicates if URL forwarding is enabled for the domain.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.whoisContacts.city
-      description: ''
+      description: 'The city of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.contactType
-      description: ''
+      description: 'The type of WHOIS contact (e.g., registrant, admin, tech).'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.country
-      description: ''
+      description: 'The country of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.email
-      description: ''
+      description: 'The email address of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.fax
-      description: ''
+      description: 'The fax number of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.firstName
-      description: ''
+      description: 'The first name of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.lastName
-      description: ''
+      description: 'The last name of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.organization
-      description: ''
+      description: 'The organization of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.phone
-      description: ''
+      description: 'The phone number of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.phoneExtn
-      description: ''
+      description: 'The phone extension of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.postalCode
-      description: ''
+      description: 'The postal code of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.stateProvince
-      description: ''
+      description: 'The state or province of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.street1
-      description: ''
+      description: 'The street address of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.street2
-      description: ''
+      description: 'The secondary street address of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisPrivacy
-      description: ''
+      description: 'Indicates if WHOIS privacy protection is enabled for the domain.'
       type: Boolean
   - arguments:
     - description: the domain name
@@ -224,25 +224,25 @@ script:
     name: csc-domains-availability-check
     outputs:
     - contextPath: CSCDomainManager.Domain.Availability.qualifiedDomainName
-      description: ''
+      description: 'The fully qualified domain name (FQDN) being checked for availability.'
       type: String
     - contextPath: CSCDomainManager.Domain.Availability.result.code
-      description: ''
+      description: 'The result code indicating the availability status of the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Availability.result.message
-      description: ''
+      description: 'A message providing additional information about the availability status.'
       type: String
     - contextPath: CSCDomainManager.Domain.Availability.basePrice.price
-      description: ''
+      description: 'The base price for registering the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Availability.basePrice.currency
-      description: ''
+      description: 'The currency of the base price.'
       type: String
     - contextPath: CSCDomainManager.Domain.Availability.listOfTheTerms
-      description: ''
+      description: 'A list of terms related to the availability of the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Availability.availableTerms
-      description: ''
+      description: 'The terms available for the domain registration.'
       type: Unknown
   - arguments:
     - description: domain name to filter by, can start with like=, in=
@@ -297,154 +297,154 @@ script:
       description: the account name
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.account.accountName
-      description: ''
+      description: 'The name of the account associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.account.accountNumber
-      description: ''
+      description: 'The account number associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.adminOrg
-      description: ''
+      description: 'The administrative organization managing the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.businessUnit
-      description: ''
+      description: 'The business unit associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.dnsData.dnsDomain
-      description: ''
+      description: 'The DNS domain information.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.dnsData.dnsProvider
-      description: ''
+      description: 'The DNS provider for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.dnsHostingType
-      description: ''
+      description: 'The type of DNS hosting used for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.dnsTraffic12moAve
-      description: ''
+      description: 'The average DNS traffic over the last 12 months.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.extension
-      description: ''
+      description: 'The extension of the domain, such as .com, .net, etc.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.hasCscUrlf
-      description: ''
+      description: 'Indicates if the domain has CSC URL forwarding enabled.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.hasDkim
-      description: ''
+      description: 'Indicates if DKIM is configured for the domain.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.hasDmarc
-      description: ''
+      description: 'Indicates if DMARC is configured for the domain.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.hasDnssecDs
-      description: ''
+      description: 'Indicates if the domain has DNSSEC DS records.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.hasSpf
-      description: ''
+      description: 'Indicates if SPF is configured for the domain.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.hasWww
-      description: ''
+      description: 'Indicates if the domain has a WWW record.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.isGtld
-      description: ''
+      description: 'Indicates if the domain is a gTLD (Generic Top-Level Domain).'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.isLive
-      description: ''
+      description: 'Indicates if the domain is live.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.isLiveType
-      description: ''
+      description: 'The type of live status for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.isMultilockEligible
-      description: ''
+      description: 'Indicates if the domain is eligible for multilock.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.isVital
-      description: ''
+      description: 'Indicates if the domain is considered vital.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.multiLocked
-      description: ''
+      description: 'Indicates if the domain is multilocked.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.numLiveMx
-      description: ''
+      description: 'The number of live MX records for the domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.numRootA
-      description: ''
+      description: 'The number of root A records for the domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.numRootTxt
-      description: ''
+      description: 'The number of root TXT records for the domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.numSslNetcraft
-      description: ''
+      description: 'The number of SSL certificates detected by Netcraft for the domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.numWwwA
-      description: ''
+      description: 'The number of WWW A records for the domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.numWwwCname
-      description: ''
+      description: 'The number of WWW CNAME records for the domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.regEmail
-      description: ''
+      description: 'The registration email address for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.regName
-      description: ''
+      description: 'The registration name for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.regOrg
-      description: ''
+      description: 'The registration organization for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.registryExpiryDate
-      description: ''
+      description: 'The expiration date of the domain registration in the registry.'
       type: Date
     - contextPath: CSCDomainManager.Domain.Configuration.rootHttpCode
-      description: ''
+      description: 'The HTTP response code for the root domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.rootHttpUrl
-      description: ''
+      description: 'The HTTP URL for the root domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.rootIsUrlf
-      description: ''
+      description: 'Indicates if the root domain is URL forwarding enabled.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.serverDeleteProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from deletion by the server.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.serverTransferProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from transfer by the server.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.serverUpdateProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from updates by the server.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.techEmail
-      description: ''
+      description: 'The technical contact email address for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.techName
-      description: ''
+      description: 'The technical contact name for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.techOrg
-      description: ''
+      description: 'The technical contact organization for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.tld
-      description: ''
+      description: 'The top-level domain (TLD) of the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.urlfTraffic12moAve
-      description: ''
+      description: 'The average URL forwarding traffic over the last 12 months.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.valueRootA
-      description: ''
+      description: 'The value of root A records for the domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.valueRootMx
-      description: ''
+      description: 'The value of root MX records for the domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.valueRootTxt
-      description: ''
+      description: 'The value of root TXT records for the domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.valueWwwA
-      description: ''
+      description: 'The value of WWW A records for the domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.valueWwwCname
-      description: ''
+      description: 'The value of WWW CNAME records for the domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.wwwHttpCode
-      description: ''
+      description: 'The HTTP response code for the WWW domain.'
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.wwwHttpUrl
-      description: ''
+      description: 'The HTTP URL for the WWW domain.'
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.wwwIsUrlf
-      description: ''
+      description: 'Indicates if the WWW domain is URL forwarding enabled.'
       type: Boolean
   - arguments:
     - description: 'Will contain domains values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com'
@@ -522,175 +522,133 @@ script:
       description: Tech email
       type: String
     - contextPath: CSCDomainManager.Domain.account.accountName
-      description: ''
+      description: Domain account name
       type: String
     - contextPath: CSCDomainManager.Domain.account.accountNumber
-      description: ''
+      description: Domain account number
       type: String
     - contextPath: CSCDomainManager.Domain.brandName
-      description: ''
+      description: Domain brand name
       type: String
     - contextPath: CSCDomainManager.Domain.businessUnit
-      description: ''
+      description: Domain business unit
       type: String
     - contextPath: CSCDomainManager.Domain.countryCode
-      description: ''
+      description: Domain country code
       type: String
     - contextPath: CSCDomainManager.Domain.criticalDomain
-      description: ''
+      description: Domain critical domain
       type: Boolean
     - contextPath: CSCDomainManager.Domain.customFields.name
-      description: ''
+      description: Domain custom fields name
       type: String
     - contextPath: CSCDomainManager.Domain.customFields.value
-      description: ''
+      description: 'The value of custom fields associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.dnsType
-      description: ''
+      description: 'The type of DNS used by the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.dnssecActivated
-      description: ''
+      description: 'Indicates whether DNSSEC is activated for the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.domain
-      description: ''
+      description: 'The domain name.'
       type: String
     - contextPath: CSCDomainManager.Domain.extension
-      description: ''
+      description: 'The extension of the domain, such as .com, .net, etc.'
       type: String
     - contextPath: CSCDomainManager.Domain.idn
-      description: ''
+      description: 'Indicates if the domain is an Internationalized Domain Name (IDN).'
       type: String
     - contextPath: CSCDomainManager.Domain.idnReferenceName
-      description: ''
+      description: 'The reference name for the Internationalized Domain Name (IDN).'
       type: String
     - contextPath: CSCDomainManager.Domain.lastModifiedDate
-      description: ''
+      description: 'The date when the domain was last modified.'
       type: Date
     - contextPath: CSCDomainManager.Domain.lastModifiedDescription
-      description: ''
+      description: 'A description of the last modification made to the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.lastModifiedReason
-      description: ''
+      description: 'The reason for the last modification of the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.localAgent
-      description: ''
+      description: 'Indicates if a local agent is associated with the domain.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.managedStatus
-      description: ''
+      description: 'The managed status of the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.nameServers
-      description: ''
+      description: 'The name servers associated with the domain.'
       type: String
     - contextPath: CSCDomainManager.Domain.newGtld
-      description: ''
+      description: 'Indicates if the domain is a new gTLD (Generic Top-Level Domain).'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.paidThroughDate
-      description: ''
+      description: 'The date through which the domain has been paid.'
       type: Date
     - contextPath: CSCDomainManager.Domain.qualifiedDomainName
-      description: ''
+      description: 'The fully qualified domain name (FQDN).'
       type: String
     - contextPath: CSCDomainManager.Domain.registrationDate
-      description: ''
+      description: 'The date when the domain was registered.'
       type: Date
     - contextPath: CSCDomainManager.Domain.registryExpiryDate
-      description: ''
+      description: 'The expiration date of the domain registration in the registry.'
       type: Date
     - contextPath: CSCDomainManager.Domain.serverDeleteProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from deletion by the server.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.serverTransferProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from transfer by the server.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.serverUpdateProhibited
-      description: ''
+      description: 'Indicates if the domain is prohibited from updates by the server.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.urlf.redirectType
-      description: ''
+      description: 'The type of URL forwarding redirect.'
       type: String
     - contextPath: CSCDomainManager.Domain.urlf.urlForwarding
-      description: ''
+      description: 'Indicates if URL forwarding is enabled for the domain.'
       type: Boolean
     - contextPath: CSCDomainManager.Domain.whoisContacts.city
-      description: ''
+      description: 'The city of the WHOIS contact.'
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.contactType
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.country
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.email
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.fax
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.firstName
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.lastName
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.organization
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.phone
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.phoneExtn
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.postalCode
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.stateProvince
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.street1
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisContacts.street2
-      description: ''
-      type: String
-    - contextPath: CSCDomainManager.Domain.whoisPrivacy
-      description: ''
-      type: Boolean
-    - contextPath: DBotScore.Reliability
-      description: ''
+      description: 'The type of WHOIS contact (e.g., Registrant, Admin, Tech).'
       type: String
     - contextPath: Domain.WHOIS.Admin.Country
-      description: ''
+      description: The country of the admin contact in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Admin.Email
-      description: ''
+      description: The email of the admin contact in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Admin.Name
-      description: ''
+      description: The name of the admin contact in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Admin.Phone
-      description: ''
+      description: The phone number of the admin contact in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
-      description: ''
+      description: The creation date of the domain in the WHOIS record.
       type: Date
     - contextPath: Domain.WHOIS.ExpirationDate
-      description: ''
+      description: The expiration date of the domain in the WHOIS record.
       type: Date
     - contextPath: Domain.WHOIS.NameServers
-      description: ''
+      description: The name servers listed in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Country
-      description: ''
+      description: The country of the registrant in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Email
-      description: ''
+      description: The email of the registrant in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Name
-      description: ''
+      description: The name of the registrant in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Phone
-      description: ''
+      description: The phone number of the registrant in the WHOIS record.
       type: String
   runonce: false
   script: '-'
