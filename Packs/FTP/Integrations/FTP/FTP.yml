@@ -3,17 +3,17 @@ commonfields:
   id: FTP
   version: -1
 configuration:
-- display: ''
+- display: 'Host'
   name: host
   required: true
   section: Connect
   type: 0
-- display: ''
+- display: 'User'
   name: user
   required: false
   section: Collect
   type: 0
-- display: ''
+- display: 'Password'
   displaypassword: API Key
   hiddenusername: true
   name: passwd

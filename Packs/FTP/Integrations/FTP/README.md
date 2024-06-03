@@ -9,9 +9,9 @@ This integration was integrated and tested with version xx of FTP.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    |  | True |
-    |  | False |
-    |  | True |
+    | Host | True |
+    | User | False |
+    | Password | True |
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
