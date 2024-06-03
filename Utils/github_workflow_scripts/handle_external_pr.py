@@ -279,8 +279,8 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
             repo_name=repo_name
         ):
-            pack_metadata_list = get_metadata(pack_dirs_to_check)
-            print(f'pack metadata list: {pack_metadata_list}')
+            # pack_metadata_list = get_metadata(pack_dirs_to_check)
+            # print(f'pack metadata list: {pack_metadata_list}')
             for file in pr_files:
                 # if "yml" in file and "Integrations" in file:
                 #     content_yml = get_yaml(file_path=file)
@@ -288,13 +288,14 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 #     print(f'Is it a feed: {is_feed}')
                 #     if is_feed:
                 #         return True
-
+                print(f'file is: {file}')
                 if 'CONTRIBUTORS.json' in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
                 print(f'The content object: {content_object}')
                 if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
                     continue
+                print(f'content object path is: {content_object.path}')
                 integrations_checked.append(content_object.path)
                 if content_object.is_feed:
                     return True
@@ -306,12 +307,12 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
     except Exception as er:
         print(f"couldn't checkout branch to get metadata, error is {er}")
         return False
-    for pack_metadata in pack_metadata_list:
-        print(f'the metadata is: {pack_metadata}')
-        tags = pack_metadata.get("tags")
-        categories = pack_metadata.get("categories")
-        if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
-            return True
+    # for pack_metadata in pack_metadata_list:
+    #     print(f'the metadata is: {pack_metadata}')
+    #     tags = pack_metadata.get("tags")
+    #     categories = pack_metadata.get("categories")
+    #     if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
+    #         return True
     return False
 
 
