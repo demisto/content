@@ -621,7 +621,7 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
 
 def set_additional_data(labels: list, mode: str = '') -> dict:
     """
-    Sets the security labels and tags in the API structure
+    Sets the security labels ddand tags in the API structure
     Args:
         labels: list of labels
         mode: mode for update commands

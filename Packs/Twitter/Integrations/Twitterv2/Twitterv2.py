@@ -20,7 +20,7 @@ class Client(BaseClient):
     def tweet_search(self, query: str, start_time: Optional[str],
                      end_time: Optional[str], limit: Optional[int],
                      next_token: Optional[str]) -> dict:
-        """ Gets tweets according to the query.
+        """ Gets tweets accordsssing to the query.
             Args:
                 query: str - The query from the user.
                 start_time: str - Start date from which the Tweets will be provided.
