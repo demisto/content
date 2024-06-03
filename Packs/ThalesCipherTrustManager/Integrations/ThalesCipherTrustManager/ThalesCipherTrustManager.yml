@@ -57,7 +57,8 @@ script:
       description: Duration in days of certificate. Either duration or not_after date must be specified.
       required: false
       secret: false
-      default: 365
+      default: false
+      defaultValue : 365
     - name: name
       isArray: false
       description: A unique name of Certificate, if not provided, will be set to cert-<id>.
@@ -1273,7 +1274,8 @@ script:
       description:  The duration of the certificate in days. Either not_after date or duration must be specified. not_after overrides duration if both are given.
       required: false
       secret: false
-      default: 365
+      default: false
+      defaultValue : 365
     - name: not_after
       isArray: false
       description: End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
@@ -1481,7 +1483,7 @@ script:
       isArray: false
       description: 'The password used to secure the users account. Allowed passwords are defined by the password policy. Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods. In all other cases, password is required. It is not included in user resource responses. Default global password complexity requirement: minimum characters = 8, maximum characters = 30, lower-case letters = 1, upper-case letters = 1, decimal digits = 1, special characters = 1'
       required: false
-      secret: false
+      secret: true
       default: false
     - name: email
       isArray: false
@@ -1666,13 +1668,13 @@ script:
       isArray: false
       description: The new password.
       required: true
-      secret: false
+      secret: true
       default: false
     - name: password
       isArray: false
       description: The own user's current password.
       required: true
-      secret: false
+      secret: true
       default: false
     - name: username
       isArray: false
@@ -1772,7 +1774,7 @@ script:
       isArray: false
       description: The password used to secure the user's account.
       required: false
-      secret: false
+      secret: true
       default: false
     - name: email
       isArray: false
