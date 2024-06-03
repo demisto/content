@@ -3543,11 +3543,11 @@ script:
     - description: Comment to append to updated alerts.
       name: comment
       required: false
-    description: |- 
+    description: |-
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.10.14.96411
   isfetch: true
   isfetch:xpanse: false
   script: ''
