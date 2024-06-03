@@ -1,7 +1,4 @@
 category: Email
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: MimecastV2
   version: -1
@@ -19,8 +16,8 @@ configuration:
 - display: Client Secret
   name: client_secret
   type: 9
-  hiddenusername: true
   displaypassword: Client Secret
+  hiddenusername: true
   additionalinfo: For API 2.0
   section: Connect
 - display: App ID
@@ -40,8 +37,8 @@ configuration:
 - display: User Email Address (Use for auto token refresh)
   name: email
   type: 0
-  hidden: true
   required: false
+  hidden: true
   additionalinfo: For API 1.0
   section: Connect
   advanced: true
@@ -80,10 +77,10 @@ configuration:
 - display: Secret Key
   name: secretKey_creds
   type: 9
+  required: false
   displaypassword: Secret Key
   additionalinfo: For API 1.0
   hiddenusername: true
-  required: false
   section: Connect
   advanced: true
 - display: SecretKey
@@ -247,7 +244,6 @@ script:
       type: string
   - description: Deprecated. Use mimecast-list-policies instead.
     name: mimecast-list-blocked-sender-policies
-    deprecated: true
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
@@ -479,7 +475,7 @@ script:
       description: The receiver type.
       type: String
   - arguments:
-    - description: Policy ID. The policy ID can be retrieved from the data.id field using the mimecast-list-policies command. 
+    - description: Policy ID. The policy ID can be retrieved from the data.id field using the mimecast-list-policies command.
       name: policyID
       required: true
     - description: The type of policy to delete.
@@ -1416,7 +1412,6 @@ script:
       - both
     description: Deprecated. Use mimecast-update-block-sender-policy instead.
     name: mimecast-update-policy
-    deprecated: true
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
@@ -1454,6 +1449,7 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: The receiver type.
       type: String
+    deprecated: true
   - name: mimecast-search-message
     description: Searches a message.
     arguments:
@@ -2176,7 +2172,7 @@ script:
     - name: page_size
       description: Number of items per page for pagination. Default value is '50'.
     - name: limit
-      description: The maximum number of items to return. 
+      description: The maximum number of items to return.
       defaultValue: 50
     outputs:
     - contextPath: Mimecast.ArchiveSearchLog.logs.createTime
@@ -3000,7 +2996,7 @@ script:
       - yes
       - no
     - name: option
-      description: The policy action to be taken. 
+      description: The policy action to be taken.
       required: true
       auto: PREDEFINED
       predefined:
@@ -3349,5 +3345,8 @@ script:
   dockerimage: demisto/python3:3.10.14.95956
 tests:
 - Mimecast test
-- Mimecast test api 2.0
+- Mimecast Test api 2.0
 fromversion: 5.0.0
+sectionorder:
+- Connect
+- Collect

@@ -141,16 +141,16 @@ Get a policy by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. | 
-| Mimecast.BlockedSendersPolicy.Sender.Address | string | Block Sender by email address. | 
-| Mimecast.BlockedSendersPolicy.Sender.Domain | string | Block Sender by domain. | 
-| Mimecast.BlockedSendersPolicy.Sender.Group | string | Block Sender by group. | 
-| Mimecast.BlockedSendersPolicy.Bidirectional | boolean | Blocked policy is bidirectional or not. | 
-| Mimecast.BlockedSendersPolicy.Receiver.Address | string | Block emails to receiver type address. | 
-| Mimecast.BlockedSendersPolicy.Receiver.Domain | string | Block emails to receiver type domain. | 
-| Mimecast.BlockedSendersPolicy.Receiver.Group | string | Block emails to receiver type group. | 
-| Mimecast.BlockedSendersPolicy.Fromdate | date | Policy validation start date. | 
-| Mimecast.BlockedSendersPolicy.Todate | unknown |  | 
+| Mimecast.Policy.ID | string | Policy ID. | 
+| Mimecast.Policy.Sender.Address | string | Block Sender by email address. | 
+| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. | 
+| Mimecast.Policy.Sender.Group | string | Block Sender by group. | 
+| Mimecast.Policy.Bidirectional | boolean | Blocked policy is bidirectional or not. | 
+| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
+| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
+| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
+| Mimecast.Policy.Fromdate | date | Policy validation start date. | 
+| Mimecast.Policy.Todate | date | Policy expiration date. | 
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. | 
 | Mimecast.AntispoofingBypassPolicy.Sender.Address | string | Block Sender by email address. | 
 | Mimecast.AntispoofingBypassPolicy.Sender.Domain | string | Block Sender by domain. | 
@@ -160,7 +160,7 @@ Get a policy by ID.
 | Mimecast.AntispoofingBypassPolicy.Receiver.Domain | string | Block emails to receiver type domain. | 
 | Mimecast.AntispoofingBypassPolicy.Receiver.Group | string | Block emails to receiver type group. | 
 | Mimecast.AntispoofingBypassPolicy.Fromdate | date | Policy validation start date. | 
-| Mimecast.AntispoofingBypassPolicy.Todate | unknown |  | 
+| Mimecast.AntispoofingBypassPolicy.Todate | date | Policy expiration date. | 
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. | 
 | Mimecast.AddressAlterationPolicy.Sender.Address | string | Block Sender by email address. | 
 | Mimecast.AddressAlterationPolicy.Sender.Domain | string | Block Sender by domain. | 
@@ -178,7 +178,7 @@ Get a policy by ID.
 ```json
 {
     "Mimecast": {
-        "BlockedSendersPolicy": {
+        "Policy": {
             "Bidirectional": false,
             "FromDate": "1900-01-01T00:00:00+0000",
             "ID": "eNo1jkkOgjAAAP",
@@ -209,43 +209,7 @@ Get a policy by ID.
 
 
 #### Command example
-```!mimecast-get-policy policyType="antispoofing-bypass" policyID=eNo1jrs12345```
-#### Context Example
-```json
-{
-    "Mimecast": {
-        "AntispoofingBypassPolicy": {
-            "Bidirectional": false,
-            "FromDate": "2021-05-29T09:41:48+0000",
-            "ID": "eNo1jrs12345",
-            "Reciever": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2024-05-29T09:41:48+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Get antispoofing-bypass Policy
->|Policy ID|Sender|Reciever|Bidirectional|Start|End|
->|---|---|---|---|---|---|
->| eNo1jrs12345 | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 2021-05-29T09:41:48+0000 | 2024-05-29T09:41:48+0000 |
-
-
-#### Command example
-```!mimecast-get-policy policyType="address-alteration" policyID=eNo1jrs12345```
+```!mimecast-get-policy policyType="address-alteration" policyID=eNoVjr0OgjAYAN-lKw5QoAqJQ5H4AwZQUBM2hKJV5IutFcX47uJ8yd19kGSlEoxXyEXqLNMl8frQfnVci4Mrk8XFwunCq09G3h5MvVknETV4crYK_6htaTaZZw7gFXO4jTecxHcVBTYmmh4WqnprPQ1Fv4jpdkxMv4Z83wDsu3QGUzRCpZIPuDFRQsWG-myXUkPHFJtkgE8mJIcWucYI1dBUTPwXiWUN9u8P87s5UQ```
 #### Context Example
 ```json
 {
@@ -253,7 +217,7 @@ Get a policy by ID.
         "AddressAlterationPolicy": {
             "Bidirectional": null,
             "FromDate": null,
-            "ID": "eNo1jrs12345",
+            "ID": "eNoVzs2OgjAUQOF3uVtY0IKdkcRFxfiHgwqIhh3S4tRU70wrGjS--zD7k5zvBVbWrZFKQAiHMrrbtMvPQUy_dLSaJx0lC5rNxs2JlNe97-nVJuFEbb6DanJ0Up5_TvMh0oUcqgHdKrb-bZPlgDLHi6tWdM6Tx-Y5W_P0g_mTBstCIxaPLMIRuKBF9QNhU2krXahbe8OLNDUK2VOiXcaJRzn1WV_epbEKrxASFxrUQpp_LwuCfvX-A6m-PQc",
             "Reciever": {
                 "Address": null,
                 "Domain": null,
@@ -277,7 +241,7 @@ Get a policy by ID.
 >### Mimecast Get address-alteration Policy
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
->| eNo1jrs12345 | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: null | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: null |  |  |  |
+>| eNoVzs2OgjAUQOF3uVtY0IKdkcRFxfiHgwqIhh3S4tRU70wrGjS--zD7k5zvBVbWrZFKQAiHMrrbtMvPQUy_dLSaJx0lC5rNxs2JlNe97-nVJuFEbb6DanJ0Up5_TvMh0oUcqgHdKrb-bZPlgDLHi6tWdM6Tx-Y5W_P0g_mTBstCIxaPLMIRuKBF9QNhU2krXahbe8OLNDUK2VOiXcaJRzn1WV_epbEKrxASFxrUQpp_LwuCfvX-A6m-PQc | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: null | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: null |  |  |  |
 
 
 ### mimecast-create-policy
@@ -331,49 +295,15 @@ Delete a Blocked Sender Policy.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policyID | Policy ID. The policy ID can be retrieved from the data.id field using the mimecast-list-policies command. | Required | 
-| policyType | The type of policy to delete. Possible values are: antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional | 
+| policyType | The type of policy to delete. Possible values are: antispoofing-bypass, address-alteration, blockedsenders. Default is blockedsenders. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Mimecast.Policy.ID | string | Policy ID. | 
-
-#### Command example
-```!mimecast-delete-policy policyType="antispoofing-bypass" policyID=eNo1jrs12345```
-#### Context Example
-```json
-{
-    "Mimecast": {
-        "Policy": {
-            "Deleted": true,
-            "ID": "eNo1jrs12345"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Mimecast Policy eNo1jrs12345 deleted successfully!
-
-#### Command example
-```!mimecast-delete-policy policyType="address-alteration" policyID=eNo1jrs12345```
-#### Context Example
-```json
-{
-    "Mimecast": {
-        "Policy": {
-            "Deleted": true,
-            "ID": "eNo1jrs12345"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Mimecast Policy eNo1jrs12345 deleted successfully!
+| Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. | 
+| Mimecast.AddressAlterationPolicy.ID | string | Policy ID. | 
 
 ### mimecast-manage-sender
 
@@ -1818,29 +1748,79 @@ List all existing Mimecast blocked sender policies.
 | --- | --- | --- |
 | policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional | 
 | page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
-| page_size | Sets the result to start returning results. Default value is 50. | Optional | 
+| page_size | Sets the result to start returning results. Default value is '50'. | Optional | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.Policy.ID | string | Policy ID. | 
-| Mimecast.Policy.Sender.Address | string | Block Sender by email address. | 
-| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. | 
-| Mimecast.Policy.Sender.Group | string | Block Sender by group. | 
-| Mimecast.Policy.Bidirectional | boolean | Blocked policy is bidirectional or not. | 
-| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. | 
-| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. | 
-| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. | 
-| Mimecast.Policy.FromDate | date | Policy validation start date. | 
-| Mimecast.Policy.ToDate | date | Policy expiration date. | 
-| Mimecast.Policy.Sender.Type | string | Block emails to sender type. | 
-| Mimecast.Policy.Receiver.Type | string | Block emails to receiver type. | 
-| Mimecast.Policies.addressAlterationSetId | string | Address Alteration ID. |
+| Mimecast.AddressAlterationPolicy.ID | string | Policy ID. | 
+| Mimecast.AddressAlterationPolicy.meta.status | Number | The status of the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.addressAlterationSetId | String | The Mimecast secure ID of the Address Alteration Set \(folder\) that will be applied by this policy. | 
+| Mimecast.AddressAlterationPolicy.id | String | The Mimecast secure ID of the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.policy.description | String | The description for the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.policy.fromPart | String | Should the sender address be considered based on the envelope, header, or either address. | 
+| Mimecast.AddressAlterationPolicy.policy.from.type | String | The type of sender address considered by the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.policy.to.type | String | The type of recipient address considered by the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.policy.fromType | String | The sender address type considered by the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.policy.toType | String | The recipient address type considered by the Address Alteration policy. | 
+| Mimecast.AddressAlterationPolicy.policy.fromEternal | Boolean | Should the policy start to apply, regardless of the current date and time, for the sender address. | 
+| Mimecast.AddressAlterationPolicy.policy.toEternal | Boolean | Should the policy start to apply, regardless of the current date and time, for the recipient address. | 
+| Mimecast.AddressAlterationPolicy.policy.fromDate | String | The start date that the policy should begin to apply. | 
+| Mimecast.AddressAlterationPolicy.policy.toDate | String | The end date that the policy should cease to apply. | 
+| Mimecast.AddressAlterationPolicy.policy.override | Boolean | Should the policy be considered for application, and apply if conditions are met, prior to other policies of the same type. | 
+| Mimecast.AddressAlterationPolicy.policy.bidirectional | Boolean | Should the policy also apply in reverse email flow. | 
+| Mimecast.AddressAlterationPolicy.policy.conditions | Unknown | Conditions of the sending platform to determine if the policy should be considered. | 
+| Mimecast.AddressAlterationPolicy.policy.enabled | Boolean | Should the policy be considered for emails processing through Mimecast. | 
+| Mimecast.AddressAlterationPolicy.policy.enforced | Boolean | Is the policy enforced. | 
+| Mimecast.AddressAlterationPolicy.policy.createTime | String | The creation timestamp of the policy. | 
+| Mimecast.AddressAlterationPolicy.policy.lastUpdated | string | Block emails to receiver type. | 
+| Mimecast.BlockedSendersPolicy.option | String | The option for the blocked sender policy. | 
+| Mimecast.BlockedSendersPolicy.id | String | The unique identifier for the blocked sender policy. | 
+| Mimecast.BlockedSendersPolicy.policy.description | String | A description of the blocked sender policy. | 
+| Mimecast.BlockedSendersPolicy.policy.fromPart | String | The part of the email address or domain from which the policy is applied. | 
+| Mimecast.BlockedSendersPolicy.policy.from.type | String | The type of sender address or domain for the policy. | 
+| Mimecast.BlockedSendersPolicy.policy.to.type | String | The type of recipient address or domain for the policy. | 
+| Mimecast.BlockedSendersPolicy.policy.fromType | String | The type of sender for the policy. | 
+| Mimecast.BlockedSendersPolicy.policy.toType | String | The type of recipient for the policy. | 
+| Mimecast.BlockedSendersPolicy.policy.fromEternal | Boolean | Indicates whether the policy applies indefinitely to the sender. | 
+| Mimecast.BlockedSendersPolicy.policy.toEternal | Boolean | Indicates whether the policy applies indefinitely to the recipient. | 
+| Mimecast.BlockedSendersPolicy.policy.fromDate | Date | The start date from which the policy is effective. | 
+| Mimecast.BlockedSendersPolicy.policy.toDate | Date | The end date until which the policy is effective. | 
+| Mimecast.BlockedSendersPolicy.policy.override | Boolean | Indicates whether the policy overrides other policies. | 
+| Mimecast.BlockedSendersPolicy.policy.bidirectional | Boolean | Indicates whether the policy applies in both directions. | 
+| Mimecast.BlockedSendersPolicy.policy.conditions | Unknown | The conditions under which the policy is applied. | 
+| Mimecast.BlockedSendersPolicy.policy.enabled | Boolean | Indicates whether the policy is enabled. | 
+| Mimecast.BlockedSendersPolicy.policy.enforced | Boolean | Indicates whether the policy is enforced. | 
+| Mimecast.BlockedSendersPolicy.policy.createTime | Date | The date and time when the policy was created. | 
+| Mimecast.BlockedSendersPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. | 
+| Mimecast.AntispoofingBypassPolicy.option | String | The option for the antispoofing bypass policy. | 
+| Mimecast.AntispoofingBypassPolicy.id | String | The unique identifier for the antispoofing bypass policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.description | String | A description of the antispoofing bypass policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.fromPart | String | The part of the email address or domain from which the policy is applied. | 
+| Mimecast.AntispoofingBypassPolicy.policy.from.type | String | The type of sender address or domain for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.from.emailDomain | String | The email domain of the sender for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.to.type | String | The type of recipient address or domain for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.to.emailDomain | String | The email domain of the recipient for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.fromType | String | The type of sender for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.fromValue | String | The value of the sender for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.toType | String | The type of recipient for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.toValue | String | The value of the recipient for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.fromEternal | Boolean | Indicates whether the policy applies indefinitely to the sender. | 
+| Mimecast.AntispoofingBypassPolicy.policy.toEternal | Boolean | Indicates whether the policy applies indefinitely to the recipient. | 
+| Mimecast.AntispoofingBypassPolicy.policy.fromDate | Date | The start date from which the policy is effective. | 
+| Mimecast.AntispoofingBypassPolicy.policy.toDate | Date | The end date until which the policy is effective. | 
+| Mimecast.AntispoofingBypassPolicy.policy.override | Boolean | Indicates whether the policy overrides other policies. | 
+| Mimecast.AntispoofingBypassPolicy.policy.bidirectional | Boolean | Indicates whether the policy applies in both directions. | 
+| Mimecast.AntispoofingBypassPolicy.policy.conditions.spfDomains | String | The SPF domains condition for the policy. | 
+| Mimecast.AntispoofingBypassPolicy.policy.enabled | Boolean | Indicates whether the policy is enabled. | 
+| Mimecast.AntispoofingBypassPolicy.policy.enforced | Boolean | Indicates whether the policy is enforced. | 
+| Mimecast.AntispoofingBypassPolicy.policy.createTime | Date | The date and time when the policy was created. | 
+| Mimecast.AntispoofingBypassPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. | 
 
 #### Command example
-```!mimecast-list-policies policyType="address-alteration" page_size=1 page=1```
+```!mimecast-list-policies policyType=blockedsenders limit=1```
 #### Context Example
 ```json
 {
@@ -1880,11 +1860,66 @@ List all existing Mimecast blocked sender policies.
 
 #### Human Readable Output
 
->### Mimecast list blocked sender policies: 
-> These are the existing Blocked Sender Policies:
+>### Mimecast list antispoofing-bypass policies: 
+> These are the existing antispoofing-bypass Policies:
 >|Policy ID|Sender|Reciever|Bidirectional|Start|End|
 >|---|---|---|---|---|---|
->| eNo1jsESgU121111 | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+>| eNo1jksOgjAUAO_SNYmFFn-JCyN-iEJERNS4wfKEIlAsIEHj3cWF-5nMvFEJrJbAQzRGR4OAHvEmcy89C-w4SZzn5uQ7PjP1ZNB4FdlK3SgZ3nrGwZ-bVxF56zygQ01NZRafSXCKYP8QK92vuBMUzWhJ8oRaD0pvO1Lbhzs_zl_hbrGR1gQpqBApZ-0vrVKCiYJYXVYiA8lECN3PzHOnKtamGul39BNkyUXewX9z3xZg_myMsfr5AuuvQdE | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: amazon.com<br/>Type: email_domain | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+
+
+#### Command example
+```!mimecast-list-policies policyType="address-alteration" limit=1```
+#### Context Example
+```json
+{
+    "Mimecast": {
+        "AddressAlterationPolicy": {
+            "addressAlterationSetId": "eNoVjr0OgjAYAN-lKw5QoAqJQ5H4AwZQUBM2hKJV5IutFcX47uJ8yd19kGSlEoxXyEXqLNMl8frQfnVci4Mrk8XFwunCq09G3h5MvVknETV4crYK_6htaTaZZw7gFXO4jTecxHcVBTYmmh4WqnprPQ1Fv4jpdkxMv4Z83wDsu3QGUzRCpZIPuDFRQsWG-myXUkPHFJtkgE8mJIcWucYI1dBUTPwXiWUN9u8P87s5UQ",
+            "id": "eNo1jk0TgUAAQP_Lns3Y2l1hxsEo5CPCCuOSbWWptrbSxPjvcnB_b957g5yzUnERgD6gzsyI2crn1ITntnMIXTuLUOx6zCZ3o6IFWiti5gyuqbn3LPsiQzpPfNzVtUjFtxPyjyHfZXJKvEK4flr1Jii542WG8XWDSmf_EAfrFWzGC7UcgBZIZSRY_UtrGBPSAqzMCxlzxWTAm58R3Q41qA911GnoJ1e5kEkD_81dnXL7Z0Mdws8XmjlBYQ",
+            "policy": {
+                "bidirectional": true,
+                "conditions": {
+                    "sourceIPs": [
+                        "8.8.8.8/24"
+                    ]
+                },
+                "createTime": "2024-05-28T10:01:06+0000",
+                "description": "test_update",
+                "enabled": true,
+                "enforced": false,
+                "from": {
+                    "emailDomain": "google.com",
+                    "type": "email_domain"
+                },
+                "fromDate": "1900-01-01T00:00:00+0000",
+                "fromEternal": true,
+                "fromPart": "header_from",
+                "fromType": "email_domain",
+                "fromValue": "google.com",
+                "lastUpdated": "2024-05-28T10:01:07+0000",
+                "override": true,
+                "to": {
+                    "emailDomain": "google.com",
+                    "type": "email_domain"
+                },
+                "toDate": "2100-01-01T23:59:59+0000",
+                "toEternal": true,
+                "toType": "email_domain",
+                "toValue": "google.com"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Mimecast list address-alteration policies: 
+> These are the existing address-alteration Policies:
+>|Policy ID|Sender|Reciever|Bidirectional|Start|End|
+>|---|---|---|---|---|---|
+>| eNo1jk0TgUAAQP_Lns3Y2l1hxsEo5CPCCuOSbWWptrbSxPjvcnB_b957g5yzUnERgD6gzsyI2crn1ITntnMIXTuLUOx6zCZ3o6IFWiti5gyuqbn3LPsiQzpPfNzVtUjFtxPyjyHfZXJKvEK4flr1Jii542WG8XWDSmf_EAfrFWzGC7UcgBZIZSRY_UtrGBPSAqzMCxlzxWTAm58R3Q41qA911GnoJ1e5kEkD_81dnXL7Z0Mdws8XmjlBYQ | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | true | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+
 
 ### mimecast-create-block-sender-policy
 
