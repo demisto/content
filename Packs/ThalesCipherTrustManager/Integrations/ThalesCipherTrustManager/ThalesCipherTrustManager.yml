@@ -57,7 +57,7 @@ script:
       description: Duration in days of certificate. Either duration or not_after date must be specified.
       required: false
       secret: false
-      default: false
+      default: 365
     - name: name
       isArray: false
       description: A unique name of Certificate, if not provided, will be set to cert-<id>.
@@ -1270,10 +1270,10 @@ script:
       default: false
     - name: duration
       isArray: false
-      description: End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
+      description:  The duration of the certificate in days. Either not_after date or duration must be specified. not_after overrides duration if both are given.
       required: false
       secret: false
-      default: false
+      default: 365
     - name: not_after
       isArray: false
       description: End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.

@@ -193,7 +193,7 @@ class CipherTrustClient(BaseClient):
 
     def delete_user(self, user_id: str) -> dict[str, Any]:
         return self._http_request(
-            method='PATCH',
+            method='DELETE',
             url_suffix=urljoin(USER_MANAGEMENT_USERS_URL_SUFFIX, user_id),
             return_empty_response=True,
         )
