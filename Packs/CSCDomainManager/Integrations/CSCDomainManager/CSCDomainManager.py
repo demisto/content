@@ -1,3 +1,4 @@
+import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
@@ -108,6 +109,15 @@ class Client(BaseClient):
 
 
 def create_params_string(args):
+    """
+    Create a string of the params written by the given filters to use in http request
+
+    Args:
+        args: demisto.args()
+
+    Returns:
+        A string of the params written by the given filters
+    """
     param_for_filter: list[str] = []
     additional_params: list[str] = []
 
@@ -133,7 +143,16 @@ def create_params_string(args):
     return params_str
 
 
-def get_domain_search_hr_fields(domains_list) -> list:
+def get_domains_search_hr_fields(domains_list) -> list:
+    """
+    Create a list of domains with the fields for human readable, using the domain_list argument
+
+    Args:
+        domains_list: domains list that was output from the http request
+
+    Returns:
+        A list of domains with the fields for human readable
+    """
     filtered_domains = []
 
     for domain in domains_list:
@@ -146,11 +165,11 @@ def get_domain_search_hr_fields(domains_list) -> list:
             'Paid Through Date': domain.get('paidThroughDate'),
             'Name Servers': domain.get('nameServers'),
             'Dns Type': domain.get('dnsType'),
-            'Whois Contact first Name': get_whois_contacts_fields_for_search_domains_command
+            'Whois Contact first Name': get_whois_contacts_fields_for_search_domains
             (domain.get('whoisContacts'), 'firstName'),
-            'Whois Contact last Name': get_whois_contacts_fields_for_search_domains_command
+            'Whois Contact last Name': get_whois_contacts_fields_for_search_domains
             (domain.get('whoisContacts'), 'lastName'),
-            'Whois Contact email': get_whois_contacts_fields_for_search_domains_command
+            'Whois Contact email': get_whois_contacts_fields_for_search_domains
             (domain.get('whoisContacts'), 'email')
         }
 
@@ -159,7 +178,16 @@ def get_domain_search_hr_fields(domains_list) -> list:
     return filtered_domains
 
 
-def extract_required_fields_for_domains_configurations_list_hr(configurations) -> list:
+def get_domains_configurations_hr_fields(configurations) -> list:
+    """
+    Create a list of domains configurations with the fields for human readable, using the configurations argument
+
+    Args:
+        configurations: domains configurations list that was output from the http request
+
+    Returns:
+        A list of domains configurations with the fields for human readable
+    """
     filtered_configurations = []
 
     for config in configurations:
@@ -180,7 +208,16 @@ def extract_required_fields_for_domains_configurations_list_hr(configurations) -
     return filtered_configurations
 
 
-def extract_required_fields_for_domains_availability_check_hr(available_domains):
+def get_domains_availability_check_hr_fields(available_domains):
+    """
+    Create a list of available domains with the fields for human readable, using the available_domains argument
+
+    Args:
+        available_domains: available domains list that was output from the http request
+
+    Returns:
+        A list of available domains with the fields for human readable
+    """
     filtered_available_domains = []
 
     for domain in available_domains:
@@ -198,7 +235,16 @@ def extract_required_fields_for_domains_availability_check_hr(available_domains)
     return filtered_available_domains
 
 
-def extract_required_fields_for_domain_hr(domain) -> dict:
+def get_domain_hr_fields(domain) -> dict:
+    """
+    Create a dict of the domain with the fields for human readable, using the domain argument
+
+    Args:
+        domain: domain dict that was output from the http request
+
+    Returns:
+        A dict of the domain with the fields for human readable
+    """
     filtered = {'Qualified Domain Name': domain.get('qualifiedDomainName'),
                 'Domain': domain.get('domain'),
                 'Idn': domain.get('idn'),
@@ -222,8 +268,37 @@ def extract_required_fields_for_domain_hr(domain) -> dict:
     return filtered
 
 
-def get_whois_contacts_fields_for_domain_command(whois_contact, field_names: str | List[str],
+def get_whois_contacts_fields_for_search_domains(whois_contacts, field_name: str) -> list:
+    """
+    Create a list of contact.field_name for each contact in whois_contacts. Specific arrangement for the search domains command
+
+    Args:
+        whois_contacts: list of contacts
+        field_name: the field to get for each contact
+
+    Returns:
+        A list of contact.field_name
+    """
+    results = []
+    for contact in whois_contacts:
+        results.append(contact.get(field_name))
+
+    return results
+
+
+def get_whois_contacts_fields_for_domain(whois_contact, field_names: str | List[str],
                                                  contact_type_condition: str) -> list:
+    """
+    Create a list of contact.field_name for each contact in whois_contacts. Specific arrangement for the domain command
+
+    Args:
+        whois_contacts: list of contacts
+        field_name: the field to get for each contact
+        contact_type_condition: a str to use for condition: choose the contacts with the specific contact_type
+
+    Returns:
+        A list of contact.field_name when contact is from type contact_type_condition
+    """
     results = []
     if isinstance(field_names, str):
         field_names = [field_names]
@@ -236,29 +311,18 @@ def get_whois_contacts_fields_for_domain_command(whois_contact, field_names: str
     return results
 
 
-def get_whois_contacts_fields_for_search_domains_command(whois_contacts, field_name: str) -> list:
-    results = []
-    for contact in whois_contacts:
-        results.append(contact.get(field_name))
-
-    return results
-
-
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+    """
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    Args:
+        client: CSCDomainManager client
 
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
     message: str = ''
     try:
@@ -273,21 +337,33 @@ def test_module(client: Client) -> str:
 
 
 def csc_domains_search_command(client: Client, args) -> Any:
+    """
+    Returning a list of domains with the applied filters
+
+    Args:
+        client: CSCDomainManager client
+        args: demisto.args()
+
+    Returns:
+        A list of domains with the applied filters
+    """
+    
     domains_results = {}
     qualified_domain_name = args.get('domain_name')
     if qualified_domain_name and '.' in qualified_domain_name:
         domains_list = [client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")]
 
     else:
-        if args.get('limit'):
-            args['page'] = '1'
-            args['page_size'] = args.get('limit')
+        args_copy = copy.deepcopy(args)
+        if args_copy.get('limit'):
+            args_copy['page'] = '1'
+            args_copy['page_size'] = args_copy.get('limit')
 
-        params_results = create_params_string(args)
+        params_results = create_params_string(args_copy)
         domains_results = client.send_get_request(url_suffix="/domains", params=params_results)
         domains_list = domains_results.get('domains', [])
 
-    domains_with_required_fields = get_domain_search_hr_fields(domains_list)
+    domains_with_required_fields = get_domains_search_hr_fields(domains_list)
 
     results = CommandResults(
         readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields,
@@ -300,11 +376,21 @@ def csc_domains_search_command(client: Client, args) -> Any:
 
 
 def csc_domains_availability_check_command(client: Client, args) -> Any:
+    """
+    Returning a list of available domains with the applied filters
+
+    Args:
+        client: CSCDomainManager client
+        args: demisto.args()
+
+    Returns:
+        A list of available domains with the applied filters
+    """
     domain_names = args.get('domain_name')
     params = f'qualifiedDomainNames={domain_names}'
     available_domains_results = (client.send_get_request("/availability", params)).get('results')
 
-    hr_output = extract_required_fields_for_domains_availability_check_hr(available_domains_results)
+    hr_output = get_domains_availability_check_hr_fields(available_domains_results)
 
     results = CommandResults(
         readable_output=tableToMarkdown('Domains Availability', hr_output, headers=HR_HEADERS_FOR_AVAILABILITY),
@@ -315,18 +401,29 @@ def csc_domains_availability_check_command(client: Client, args) -> Any:
 
 
 def csc_domains_configuration_list_command(client: Client, args) -> Any:
-    args['page'] = args.get('page') or DEFAULT_PAGE_SIZE_CONFI
-    args['page_size'] = args.get('page_size') or DEFAULT_PAGE_SIZE_SEARCH
+    """
+    Returning a list of domains configurations with the applied filters
 
-    if args.get('limit'):
-        args['page'] = '1'
-        args['page_size'] = args.get('limit')
+    Args:
+        client: CSCDomainManager client
+        args: demisto.args()
 
-    params_results = create_params_string(args)
+    Returns:
+        A list of domains configurations with the applied filters
+    """
+    args_copy = copy.deepcopy(args)
+    args_copy['page'] = args_copy.get('page') or DEFAULT_PAGE_SIZE_CONFI
+    args_copy['page_size'] = args_copy.get('page_size') or DEFAULT_PAGE_SIZE_SEARCH
+
+    if args_copy.get('limit'):
+        args_copy['page'] = '1'
+        args_copy['page_size'] = args_copy.get('limit')
+
+    params_results = create_params_string(args_copy)
     configurations_results = client.send_get_request(url_suffix="/domains/configuration", params=params_results)
 
     configurations_list = configurations_results.get('configurations', [])
-    configurations_with_required_fields = extract_required_fields_for_domains_configurations_list_hr(configurations_list)
+    configurations_with_required_fields = get_domains_configurations_hr_fields(configurations_list)
 
     results = CommandResults(
         readable_output=tableToMarkdown('Filtered Configurations',
@@ -357,29 +454,29 @@ def domain(client, args, reliability) -> Any:
         domain_idn_name=domain_json.get('idn'),
         expiration_date=domain_json.get('registryExpiryDate'),
         name_servers=domain_json.get('nameServers'),
-        registrant_name=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        registrant_name=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                      ['firstName', 'lastName'], 'REGISTRANT'),
-        registrant_email=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        registrant_email=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                       'email', 'REGISTRANT'),
-        registrant_phone=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        registrant_phone=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                       'phone', 'REGISTRANT'),
-        registrant_country=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        registrant_country=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                         'country', 'REGISTRANT'),
-        admin_name=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        admin_name=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                 ['firstName', 'lastName'], 'ADMINISTRATIVE'),
-        admin_email=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'email', 'ADMINISTRATIVE'),
-        admin_phone=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'phone', 'ADMINISTRATIVE'),
-        admin_country=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'country', 'ADMINISTRATIVE'),
-        tech_country=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'country', 'TECHNICAL'),
-        tech_name=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        admin_email=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'email', 'ADMINISTRATIVE'),
+        admin_phone=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'phone', 'ADMINISTRATIVE'),
+        admin_country=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'country', 'ADMINISTRATIVE'),
+        tech_country=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'country', 'TECHNICAL'),
+        tech_name=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                ['firstName', 'lastName'], 'TECHNICAL'),
-        tech_organization=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'),
+        tech_organization=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'),
                                                                        'organization', 'TECHNICAL'),
-        tech_email=get_whois_contacts_fields_for_domain_command(domain_json.get('whoisContacts'), 'email', 'TECHNICAL'),
+        tech_email=get_whois_contacts_fields_for_domain(domain_json.get('whoisContacts'), 'email', 'TECHNICAL'),
         dbot_score=dbot_score
     )
 
-    hr_data = extract_required_fields_for_domain_hr(domain_json)
+    hr_data = get_domain_hr_fields(domain_json)
 
     context_res = {}
     context_res.update(dbot_score.to_context())
@@ -443,6 +540,9 @@ def main() -> None:
 
         elif demisto.command() == 'domain':
             return_results(domain(client, args, reliability))
+        
+        else:
+            raise NotImplementedError(f'Command {demisto.command()} is not implemented')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
