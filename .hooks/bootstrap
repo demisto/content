@@ -75,12 +75,10 @@ else
         echo "Poetry isn't installed"
     fi
     if [[ "${should_install_poetry}" == "yes" ]]; then
-        POETRY_VERSION=2.14.1
         echo "Installing Poetry version:${POETRY_VERSION}"
         curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         error_code=$?
         if ! command -v poetry >/dev/null 2>&1; then
-            poetry_logs_update
             exit_on_error $? "Poetry isn't installed"
         fi
         if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
