@@ -2621,6 +2621,6 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "toVersion": "6.99.0",
-    "description": "",
+    "description": "XSOAR review dashboard can be used to get the playbooks, automations & system status in last 30 days",
     "isPredefined": true
 }
