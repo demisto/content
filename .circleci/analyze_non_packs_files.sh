@@ -13,7 +13,7 @@ echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs
 python3 -m ruff $all_1_depth_dirs --select=E,F,PLC,PLE --ignore=PLC1901 || errors=$?
 
 
-echo 'Linter exit code:' $errors
+echo 'analyze non-packs files exit code:' $errors
 if [[ $errors -ne 0 ]]; then
   exit 1
 fi
