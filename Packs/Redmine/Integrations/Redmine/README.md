@@ -53,7 +53,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | fixed_version_id | The target version ID for this issue. | Optional | 
 | assigned_to_id | The ID of the user to assign the issue to. | Optional | 
 | parent_issue_id | The ID of the parent issue. | Optional | 
-| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc. | Optional | 
+| custom_fields | The custom field to update.<br/>- "The format is `{\"customFieldID2\": \"value3\", \"customFieldID1\": [\"value1\",\"value2\"]}`."<br/>- Use an array if the field is of multiselect type.<br/>- Instruction for each custom field type:<br/>  - Boolean: use "0" for False and "1" for True.<br/>  - Date: the format is "yyyy-mm-dd".<br/>  - Float: A number with two digits after the decimal point.<br/>  - Integer: A number.<br/>  - Key/Value list: Use the Key (ID) of the value.<br/>  - User: Use the user ID.<br/> - Version- use the version ID.| Optional | 
 | watcher_user_ids | An array with watcher user IDs for this issue -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
 | estimated_hours | The number of hours estimated for this issue. | Optional | 
@@ -301,7 +301,7 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | fixed_version_id | The ID of the fixed version for the issue. | Optional | 
 | assigned_to_id | The ID of the user to whom the issue is assigned. | Optional | 
 | parent_issue_id | The ID of the parent issue, if applicable. | Optional | 
-| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. | Optional | 
+| custom_fields | The custom field to update.<br/>- "The format is `{\"customFieldID2\": \"value3\", \"customFieldID1\": [\"value1\",\"value2\"]}`."<br/>- Use an array if the field is of multiselect type.<br/>- Instruction for each custom field type:<br/>  - Boolean: use "0" for False and "1" for True.<br/>  - Date: the format is "yyyy-mm-dd".<br/>  - Float: A number with two digits after the decimal point.<br/>  - Integer: A number.<br/>  - Key/Value list: Use the Key (ID) of the value.<br/>  - User: Use the user ID.<br/> - Version- use the version ID.| Optional | 
 | watcher_user_ids | A comma-separated list of watcher IDs. -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
 | estimated_hours | The estimated number of hours to complete the issue. | Optional | 
