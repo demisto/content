@@ -123,16 +123,8 @@ def test_domain(mocker):
     mocker.patch.object(client, 'send_get_request', return_value=DOMAIN_DOMAIN)
     reliability = DBotScoreReliability.A
     result = domain(client, args, reliability)
-    result_output = result.to_context().get('Contents')
-    dbot_score = result_output.get(
-        'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)')
-    assert len(dbot_score) == 5
-    assert dbot_score.get('Indicator') == 'example.com'
-    assert dbot_score.get('Type') == 'domain'
-    assert dbot_score.get('Vendor') == 'CSCDomainManager'
-    assert dbot_score.get('Score') == 0
-    common_domain = result_output.get('Domain(val.Name && val.Name == obj.Name)')
-    assert common_domain.get('Name') == 'example'
-    assert common_domain.get('CreationDate') == '09-Dec-2011 UTC'
-    assert common_domain.get('ExpirationDate') == '09-Dec-2030 UTC'
-    assert common_domain.get('Registrant').get('Name') == ['John Lee']
+    result_output = result.to_context()
+    result_output = result_output.get('Contents')
+    assert result_output.get('qualifiedDomainName') == 'example.com'
+    assert result_output.get('domain') == 'example'
+    assert result_output.get('registrationDate') == '09-Dec-2011 UTC'

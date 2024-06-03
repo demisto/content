@@ -482,7 +482,7 @@ def domain(client, args, reliability) -> Any:
     # context_res.update(dbot_score.to_context())
     # context_res.update(domain_context.to_context())
 
-    #demisto.log(context_res)
+    # demisto.log(context_res)
     results = CommandResults(
         readable_output=tableToMarkdown('Domain', hr_data, headers=HR_HEADERS_FOR_DOMAIN),
         outputs_prefix='CSCDomainManager.Domain',
