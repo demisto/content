@@ -36,6 +36,7 @@ CONTEXT_WITH_CAMPAIGN = {
     EMAIL_CAMPAIGN_KEY: {
         "field_example": "field_example",
         "field_example_2": "field_example",
+        "2": "field_example"
     },
     'NotCampaign': 'field_example'
 }
@@ -263,6 +264,21 @@ COMPLETE_FLOW_CASES = [
           'recipients': ['victim-test7@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
           'severity': 3, 'similarity': 0.85, 'status': 1}]
         # expected, all incidents and similarity found in incident '5'
+    ),
+    (
+        '0', '6',  # case incident removed from campaign before
+        [{'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example.com', 'id': '1',
+          'name': 'Verify your example account 798', 'occurred': '2021-11-21T14:00:07.119800133Z',
+          'recipients': ['victim-test6@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
+          'severity': 0, 'similarity': 1, 'status': 1},
+         {'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example2.com', 'id': '2',
+          'name': 'Verify your example account 798', 'occurred': '2021-11-21T14:59:01.690685509Z',
+          'recipients': ['victim-test1@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
+          'severity': 0, 'similarity': 0.9999999999999999, 'status': 1},
+         {'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example.com', 'id': '3',
+          'name': 'Verify your example account 798', 'occurred': '2021-11-21T15:00:07.425185504Z',
+          'recipients': ['victim-test7@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
+          'severity': 3, 'similarity': 1, 'status': 1}]  # expected same campaign data as before
     )
 
 ]
