@@ -1,4 +1,3 @@
-import csv
 from collections import defaultdict
 
 import demistomock as demisto  # noqa: F401
@@ -299,20 +298,6 @@ def write_info_file(filename, contents, overwrite=False):
         else:
             file.write(f"\n{contents}")
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
-
-
-def read_from_tsv_file(filepath):
-    try:
-        with open(filepath, 'r', newline='') as file:
-            reader = csv.reader(file, delimiter='\t', quoting=csv.QUOTE_NONE, escapechar='\\')
-            lines = []
-            for row in reader:
-                lines.append(row)
-            demisto.info(f"File '{filepath}' contents: {lines}.")
-            return lines
-    except FileNotFoundError:
-        demisto.info(f"File '{filepath}' does not exist")
-        return None
 
 
 def opt_name(opt):
