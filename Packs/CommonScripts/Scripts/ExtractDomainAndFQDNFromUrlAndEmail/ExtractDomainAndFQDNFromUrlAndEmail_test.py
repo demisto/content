@@ -71,16 +71,6 @@ def test_extract_fqdn_or_domain_empty_indicators(mocker):
 
     main()
     results = demisto.results.call_args[0]
-    # print(f'test_extract_fqdn_or_domain_empty_indicators, {results=}')
-    # test_extract_fqdn_or_domain_empty_indicators, results=
-    # ([{
-    #     'Type': 1,
-    #     'ContentsFormat': 'json',
-    #     'Contents': [],
-    #    'EntryContext': {'Domain': ['1Ab.Vt']}}
-    # ],)
-    #
-    # test_extract_fqdn_or_domain_empty_indicators, results=([{'Type': 1, 'ContentsFormat': 'json', 'Contents': [], 'EntryContext': {'Domain': ['1Ab.Vt']}}],)
 
     assert results[0] == [{'Contents': [], 'ContentsFormat': 'json', 'Type': 1, 'EntryContext': {'Domain': ['1Ab.Vt']}}]
 
