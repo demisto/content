@@ -743,6 +743,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
         )
         demisto.debug(f"{response.status_code=}")
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
+            if response.status_code not in (201, 200):
+                raise Exception(f'{response.json()}')
+            
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
             end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
@@ -756,9 +759,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size
             )
-
-            if response.status_code not in (201, 200):
-                raise Exception(f'{response.json()}')
 
     def send_mail_with_upload_session_flow(self, email: str, json_data: dict,
                                            attachments_more_than_3mb: list[dict], reply_message_id: str = None):
