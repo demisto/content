@@ -57,6 +57,7 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
         readable_output=tableToMarkdown(
             'QR Code Read', {'Text': text}
         ),
+        ignore_auto_extract=True
     )
 
 
