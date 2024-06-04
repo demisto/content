@@ -1,6 +1,6 @@
 var apiid = params.creds ? params.creds.identifier : params.apiid;
 var apikey = params.creds ? params.creds.password : params.apikey;
-var base = 'https://my.incapsula.com';
+var base = 'https://my.imperva.com';
 var proxy = params.proxy;
 
 var sendRequest = function(url, body, queryName) {
