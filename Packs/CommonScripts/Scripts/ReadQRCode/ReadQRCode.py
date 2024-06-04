@@ -2,24 +2,28 @@ import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 from pyzbar import pyzbar
 import cv2
-from wurlitzer import pipes
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
 
 def read_qr_code(filename: str) -> list:
     demisto.debug('read_qr_code: enter')
-    debug_message = 'successfully decoded with pyzbar'
-    with pipes() as (out, err):  # don't use demisto.debug under the context manager.
-        img = cv2.imread(filename)
-        text = [d.data.decode() for d in pyzbar.decode(img)]
+    # debug_message = 'successfully decoded with pyzbar'
+    # with pipes() as (out, err):  # don't use demisto.debug under the context manager.
+    img = cv2.imread(filename)
+    demisto.debug('decoded image')
+    text = [d.data.decode() for d in pyzbar.decode(img)]
+    demisto.debug(f'{text=}')
 
-        if not text:
-            debug_message = "Couldn't extract text with pyzbar, retrying with cv2."
-            detect = cv2.QRCodeDetector()
-            text, *_ = detect.detectAndDecode(img)
+    if not text:
+        # debug_message = "Couldn't extract text with pyzbar, retrying with cv2."
+        demisto.debug("Couldn't extract text with pyzbar, retrying with cv2.")
+        detect = cv2.QRCodeDetector()
+        demisto.debug('created detect object')
+        text, *_ = detect.detectAndDecode(img)
+        demisto.debug(f'{text=}')
 
-    demisto.debug(debug_message)
-    demisto.debug(f'pipes stdout: {out.read()}, sterr: {err.read()}')
+    # demisto.debug(debug_message)
+    # demisto.debug(f'pipes stdout: {out.read()}, sterr: {err.read()}')
     demisto.debug('read_qr_code: exit')
     return text if isinstance(text, list) else [text]
 
