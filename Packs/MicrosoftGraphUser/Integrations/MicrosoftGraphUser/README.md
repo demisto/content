@@ -1,7 +1,7 @@
 Unified gateway to security insights - all from a unified Microsoft Graph User API.
 
 
-## Authentication
+## Authenticationn
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).  
 
 Required Permissions:

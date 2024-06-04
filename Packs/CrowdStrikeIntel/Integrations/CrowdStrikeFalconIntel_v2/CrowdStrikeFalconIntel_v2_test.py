@@ -4,7 +4,7 @@ import os
 import demistomock as demisto
 from CrowdStrikeFalconIntel_v2 import *
 from CommonServerPython import DBotScoreType, Common, DemistoException
-# TEST
+
 with open(os.path.normpath(os.path.join(__file__, '..', './test_data/indicator_resource.json'))) as f:
     INDICATOR_RESOURCE = json.load(f)
 
