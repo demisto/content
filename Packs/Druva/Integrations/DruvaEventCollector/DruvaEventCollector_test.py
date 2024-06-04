@@ -4,7 +4,7 @@ from DruvaEventCollector import (
     test_module as run_test_module,
     get_events,
     fetch_events,
-    DATE_FORMAT_FOR_TOKEN,
+    DATE_FORMAT_FOR_TOKEN, MAX_FETCH,
 )
 import pytest
 import demistomock as demisto
@@ -99,6 +99,7 @@ def mock_client(mocker) -> Client:
         base_url="test",
         client_id="client_id",
         secret_key="secret_key",
+        max_fetch=MAX_FETCH,
         verify=False,
         proxy=False,
     )
@@ -274,7 +275,7 @@ def test_fetch_events_command(mocker, mock_client):
     )
     first_run = {}
     events, tracker_for_second_run = fetch_events(
-        client=mock_client, last_run=first_run
+        client=mock_client, last_run=first_run, max_fetch=MAX_FETCH
     )
 
     assert len(events) == 1
@@ -286,7 +287,7 @@ def test_fetch_events_command(mocker, mock_client):
         mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2
     )
     events, tracker_for_third_run = fetch_events(
-        client=mock_client, last_run=tracker_for_second_run
+        client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH
     )
     mock_search_events.assert_called_with(tracker_for_second_run.get("tracker"))
     assert len(events) == 1
@@ -333,6 +334,7 @@ def test_login_invalid_token(mocker, integration_context):
         base_url="test",
         client_id="client_id",
         secret_key="secret_key",
+        max_fetch=MAX_FETCH,
         verify=False,
         proxy=False,
     )
@@ -369,7 +371,31 @@ def test_login_valid_token(mocker):
         base_url="test",
         client_id="client_id",
         secret_key="secret_key",
+        max_fetch=MAX_FETCH,
         verify=False,
         proxy=False,
     )
     assert not mock_refresh_access_token.called
+
+
+def test_max_fetch_validation():
+    """
+    Given:
+    - invalid max_fetch (more than 10,000)
+
+    When:
+    - init the client
+
+    Then:
+    - DemistoException is thrown with an appropriate message
+    """
+
+    with pytest.raises(DemistoException, match=f"The maximum number of events per fetch should be between 1 - {MAX_FETCH}"):
+        Client(
+            base_url="test",
+            client_id="client_id",
+            secret_key="secret_key",
+            max_fetch=(MAX_FETCH + 1),
+            verify=False,
+            proxy=False,
+        )

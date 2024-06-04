@@ -3,8 +3,9 @@ from CommonServerPython import *
 import urllib3
 import base64
 
+MIN_FETCH = 1
+MAX_FETCH = 10000
 MAX_EVENTS_API_CALL = 500  # As a limitation of the API, we can only retrieve 500 events at a time
-MAX_FETCH = "10000"
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -20,9 +21,12 @@ PRODUCT = "Druva"
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, client_id: str, secret_key: str, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, client_id: str, secret_key: str, max_fetch: int, verify: bool, proxy: bool):
+
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.credentials = f"{client_id}:{secret_key}"
+        self.max_fetch = max_fetch
+        self._max_fetch_validation()
         self.login()
 
     def login(self):
@@ -117,8 +121,12 @@ class Client(BaseClient):
     def _set_headers(self, token: str):
         self._headers = {"Authorization": f"Bearer {token}"}
 
+    def _max_fetch_validation(self):
+        if self.max_fetch > MAX_FETCH or self.max_fetch < MIN_FETCH:
+            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_FETCH}")
 
-def test_module(client: Client, max_fetch: str) -> str:
+
+def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -127,13 +135,9 @@ def test_module(client: Client, max_fetch: str) -> str:
 
     Args:
         client (Client): Druva client to use.
-        max_fetch (str): The maximum number of events per fetch.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    max_fetch_int = arg_to_number(max_fetch)
-    if max_fetch_int > arg_to_number(MAX_FETCH) or max_fetch_int < 1:
-        raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_FETCH}")
     get_events(client=client)
     return "ok"
 
@@ -154,13 +158,13 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict
 
 
 def fetch_events(
-    client: Client, last_run: dict[str, str], max_fetch: int | None
+    client: Client, last_run: dict[str, str], max_fetch: int
 ) -> tuple[list[dict], dict[str, str]]:
     """
     Args:
         client (Client): Druva client to use.
         last_run (dict): A dict with a key containing a pointer to the latest event created time we got from last fetch.
-        max_fetch (int | None): The maximum number of events per fetch.
+        max_fetch (int): The maximum number of events per fetch.
     Returns:
         last_run (dict): A dict containing the next tracker (a pointer to the next event).
         events (list): List of events that will be created in XSIAM.
@@ -169,7 +173,6 @@ def fetch_events(
     last_interation: bool = False
     while len(final_events) < max_fetch and not last_interation:
         tracker = last_run.get("tracker")  # None on first run
-        demisto.debug(f"fetching events, {tracker=}")
         events, new_tracker = get_events(client, tracker)
 
         # It means there are no more events to retrieve when there are fewer than 500 events
@@ -180,8 +183,6 @@ def fetch_events(
         last_run = next_run
         final_events.extend(events)
 
-    demisto.debug(f'fetched {len(final_events or [])} events, {last_run.get("tracker")=}')
-    demisto.debug(f"Setting next run {last_run}.")
     return final_events, last_run
 
 
@@ -212,6 +213,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     proxy = params.get("proxy", False)
     verify_certificate = not params.get("insecure", False)
+    max_fetch = arg_to_number(params.get("max_fetch")) or MAX_FETCH
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -219,13 +221,14 @@ def main() -> None:  # pragma: no cover
             base_url=params["url"],
             client_id=params["credentials"]["identifier"],
             secret_key=params["credentials"]["password"],
+            max_fetch=max_fetch,
             verify=verify_certificate,
             proxy=proxy,
         )
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client, params["max_fetch"]))
+            return_results(test_module(client))
 
         elif command == "druva-get-events":
             events, tracker = get_events(client, args.get("tracker"))
@@ -246,10 +249,13 @@ def main() -> None:  # pragma: no cover
             events, next_run = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
-                max_fetch=arg_to_number(params.get("max_fetch") or MAX_FETCH)
+                max_fetch=max_fetch
             )
+
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            demisto.debug(f'fetched {len(events or [])} events. Setting {next_run=}.')
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
