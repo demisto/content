@@ -1,0 +1,795 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: "Playbook to take account of local XSOAR Users compared to Active Directory XSOAR Users. \n\nPlaybook runs in demo or regular mode, this is a data point which should be specified by the admin before first running the playbook. If unsure, demo mode allows using the XSOAR Engineer Training integration for testing purposes. \n\nIt works by calling upon the XSOAR API for an account of the existing users, and also calls upon the Active Directory integration to request all users who have XSOAR permissions. Data is then displayed for analysis. There are three possible outcomes: nothing should be edited, we should delete the selected XSOAR users, or we should email the Active Directory administrator to create additional user accounts."
+id: Report XSOAR and Active Directory User Accounts
+inputs:
+- description: Email to send notice to create new AD users is missing
+  key: Admin
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Update the using instance as needed under the Advanced tab for better results. Uses the XSOAR Engineering Training integration to simulate the AD query to perform.
+  key: Demo Mode
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+- description: Provide if available
+  key: AD User
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Provide if available
+  key: AD User Email
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Provide if available
+  key: Distinguished Name
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Report XSOAR and Active Directory User Accounts
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4d6cd0e6-ca54-44b9-8d4a-0407bdea2675
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4d6cd0e6-ca54-44b9-8d4a-0407bdea2675
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      current:
+        simple: "false"
+      onCall:
+        simple: "false"
+      online:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.get.users
+      id: 58496618-2b64-43bc-822e-66649cd172a9
+      iscommand: true
+      name: Get XSOAR Current Users
+      script: Builtin|||getUsers
+      type: regular
+      version: -1
+    taskid: 58496618-2b64-43bc-822e-66649cd172a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: '${These are the AD Users that were returned.Answers.0}: these users need to either be provisioned XSOAR accounts or have their AD access removed.'
+      subject:
+        simple: AD Users who have XSOAR Access don't have accounts
+      to:
+        simple: ${inputs.Admin}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: df441ccb-8f48-4f58-87a8-879f16dc2447
+      iscommand: true
+      name: 'Email admin re: AD accounts created '
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: df441ccb-8f48-4f58-87a8-879f16dc2447
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1070
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: 'Emailed admin re: AD access but no XSOAR accounts.'
+      incidentcategory:
+        simple: ${incident.type}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: dfb64c8d-b621-400b-86f2-d2b99075bc82
+      iscommand: true
+      name: Close as email sent to admin
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: dfb64c8d-b621-400b-86f2-d2b99075bc82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1245
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: AD and XSOAR Users have the same entries and nothing needs to be edited.
+      incidentcategory:
+        simple: ${incident.type}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 4a184f58-ba3c-4620-81c0-37d52d50f4ce
+      iscommand: true
+      name: Close as no Issues Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4a184f58-ba3c-4620-81c0-37d52d50f4ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8b36262f-1582-49d8-8d54-b4bf4acb0d0e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 8b36262f-1582-49d8-8d54-b4bf4acb0d0e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: XSOAR user ${These are the AD Users that were returned.Answers.1} was deleted because it didn't have the AD access required.
+      incidentcategory:
+        simple: ${incident.type}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 8689471c-ce10-42d8-81dc-c091bba5102a
+      iscommand: true
+      name: Close Investigation as XSOAR User Deleted
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 8689471c-ce10-42d8-81dc-c091bba5102a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1245
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                root: DemistoUsers
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: admin
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                root: DemistoUsers
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: administrator
+      label: "yes"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8ad8003b-3d11-4f36-8f9b-31e2f039776f
+      iscommand: false
+      name: Take care not to delete Admin user
+      type: condition
+      version: -1
+    taskid: 8ad8003b-3d11-4f36-8f9b-31e2f039776f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
+      id: 802f20ab-cacb-47fa-8181-4dd9114f3dae
+      iscommand: false
+      name: Is Active Directory Query v2 enabled?
+      type: condition
+      version: -1
+    taskid: 802f20ab-cacb-47fa-8181-4dd9114f3dae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Queries Active Directory and returns information for the specified username.
+      id: cda8fd5c-6b61-4a38-859d-44935a7a9cbb
+      iscommand: true
+      name: Get account info from Active Directory
+      script: '|||ad-get-user'
+      type: regular
+      version: -1
+    taskid: cda8fd5c-6b61-4a38-859d-44935a7a9cbb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: XSOAR.Users
+      value:
+        simple: ${DemistoUsers.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 84d0c8b6-83cf-486d-863d-c9f0cdb09a8f
+      iscommand: false
+      name: Set Users When no Admin* Present
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 84d0c8b6-83cf-486d-863d-c9f0cdb09a8f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      itemtoremove:
+        simple: Admin
+      list:
+        simple: ${DemistoUsers.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Automation to loop through a list of items and remove one of them, returns a new list with the item removed. '
+      id: a4b734fa-fe47-4883-8bc1-345a1918c4bb
+      iscommand: false
+      name: Remove Item from List
+      scriptName: RemoveItemFromList
+      type: regular
+      version: -1
+    taskid: a4b734fa-fe47-4883-8bc1-345a1918c4bb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dn:
+        simple: ${inputs.Distinguished Name}
+      email:
+        simple: ${inputs.AD User Email}
+      username:
+        simple: ${inputs.AD User}
+      using:
+        simple: XSOAR Engineer Training_copy_instance_1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: XSOAR Engineer Training_copy
+      description: Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
+      id: c485c947-27b7-4ab2-82eb-b8aa9b21f918
+      iscommand: true
+      name: Query Engineer Training AD - for testing
+      script: XSOAR Engineer Training_copy|||xet-ad-get-user
+      type: regular
+      version: -1
+    taskid: c485c947-27b7-4ab2-82eb-b8aa9b21f918
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 370
+        }
+      }
+  "40":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Demo Mode
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f5dda494-3522-4c70-858d-fbf9aedc7695
+      iscommand: false
+      name: Testing Mode On?
+      type: condition
+      version: -1
+    taskid: f5dda494-3522-4c70-858d-fbf9aedc7695
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    form:
+      description: Review Users from both AD and XSOAR and see if there are any conflicts. If there are, you can always mark the ones you wish to delete from XSOAR or the ones you wish we email your sysadmin about to have their AD accounts created.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'AD Users with XSOAR Access - if selected here we will email your admin to create an account for this user '
+        options: []
+        optionsarg:
+        - simple: ${Account.DisplayName}
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: 'Select XSOAR Users to Delete from this list:'
+        options: []
+        optionsarg:
+        - simple: ${XSOAR.UpdatedUsers}
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Enter yes to skip all extra processing and close the incident
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: These are the AD Users that were returned
+      totalanswers: 0
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body: {}
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60d0f0db-6164-4141-8720-90e601a5a57d
+      iscommand: false
+      name: Show Current AD & XSOAR Users
+      type: collection
+      version: -1
+    taskid: 60d0f0db-6164-4141-8720-90e601a5a57d
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: These are the AD Users that were returned.Answers.0
+          operator: isNotEmpty
+      label: 'Email re: AD Users'
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: These are the AD Users that were returned.Answers.1
+          operator: isNotEmpty
+      label: Delete XSOAR User
+    continueonerrortype: ""
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      Delete XSOAR User:
+      - "46"
+      'Email re: AD Users':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2349cc1a-b473-489c-8ecf-5fb8224ed965
+      iscommand: false
+      name: Check Answer from Analyst
+      type: condition
+      version: -1
+    taskid: 2349cc1a-b473-489c-8ecf-5fb8224ed965
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+  "46":
+    continueonerrortype: ""
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      UserToDelete:
+        simple: ${These are the AD Users that were returned.Answers.1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Core REST API
+      id: fdb97de0-a0ec-4dd3-8c95-17ef3f6fb84d
+      iscommand: false
+      name: Delete XSOAR Users
+      scriptName: CustomDeleteUsersUsingCoreAPI
+      type: regular
+      version: -1
+    taskid: fdb97de0-a0ec-4dd3-8c95-17ef3f6fb84d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 1710,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

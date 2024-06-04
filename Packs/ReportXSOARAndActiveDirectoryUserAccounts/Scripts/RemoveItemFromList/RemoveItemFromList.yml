@@ -1,0 +1,34 @@
+args:
+- description: List item to loop through and return without the one item removed.
+  isArray: true
+  name: list
+  required: true
+  type: textArea
+- description: List entry to remove from given list.
+  name: itemtoremove
+  required: true
+  type: textArea
+comment: 'Automation to loop through a list of items and remove one of them, returns a new list with the item removed. '
+commonfields:
+  id: RemoveItemFromList
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.14.96411
+enabled: true
+engineinfo: {}
+name: RemoveItemFromList
+outputs:
+- contextPath: XSOAR.UpdatedUsers
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

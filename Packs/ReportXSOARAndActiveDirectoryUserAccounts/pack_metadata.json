@@ -1,0 +1,21 @@
+{
+    "name": "Report XSOAR and Active Directory User Accounts",
+    "description": "Pack to take account of local XSOAR Users compared to Active Directory XSOAR Users.\nPlaybook runs in demo or regular mode, this is a data point which should be specified by the admin before first running the playbook. If unsure, demo mode allows using the XSOAR Engineer Training integration for testing purposes.\nIt works by calling upon the XSOAR API for an account of the existing users, and also calls upon the Active Directory integration to request all users who have XSOAR permissions. Data is then displayed for analysis. There are three possible outcomes: nothing should be edited, we should delete the selected XSOAR users, or we should email the Active Directory administrator to create additional user accounts.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "ivette314",
+    "url": "",
+    "email": "",
+    "created": "2024-06-04T19:51:49Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "ivette314"
+    ]
+}
