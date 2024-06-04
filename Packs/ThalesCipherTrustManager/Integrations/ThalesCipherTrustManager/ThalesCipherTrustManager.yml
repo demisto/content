@@ -192,70 +192,61 @@ script:
       default: false
       defaultValue: 50
     outputs:
-      - contextPath: CipherTrust.CACertificate.skip
-        description: The number of records to skip in the query.
-        type: Integer
-      - contextPath: CipherTrust.CACertificate.limit
-        description: The maximum number of records to return in the query.
-        type: Integer
-      - contextPath: CipherTrust.CACertificate.total
-        description: The total number of records found.
-        type: Integer
-      - contextPath: CipherTrust.CACertificate.resources.name
+      - contextPath: CipherTrust.CACertificate.name
         description: The name of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.id
+      - contextPath: CipherTrust.CACertificate.id
         description: A unique identifier for the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.uri
+      - contextPath: CipherTrust.CACertificate.uri
         description: Uniform Resource Identifier associated with the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.account
+      - contextPath: CipherTrust.CACertificate.account
         description: Account associated with the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.application
+      - contextPath: CipherTrust.CACertificate.application
         description: Application associated with the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.devAccount
+      - contextPath: CipherTrust.CACertificate.devAccount
         description: Developer account associated with the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.createdAt
+      - contextPath: CipherTrust.CACertificate.createdAt
         description: Timestamp of when the certificate was created.
         type: Date
-      - contextPath: CipherTrust.CACertificate.resources.updatedAt
+      - contextPath: CipherTrust.CACertificate.updatedAt
         description: Timestamp of the last update of the certificate.
         type: Date
-      - contextPath: CipherTrust.CACertificate.resources.cert
+      - contextPath: CipherTrust.CACertificate.cert
         description: Certificate content.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.ca
+      - contextPath: CipherTrust.CACertificate.ca
         description: Certificate authority.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.revoked_at
+      - contextPath: CipherTrust.CACertificate.revoked_at
         description: Revocation timestamp.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.sha1Fingerprint
+      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
         description: SHA-1 fingerprint of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.sha256Fingerprint
+      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
         description: SHA-256 fingerprint of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.sha512Fingerprint
+      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
         description: SHA-512 fingerprint of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.serialNumber
+      - contextPath: CipherTrust.CACertificate.serialNumber
         description: Serial number of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.subject
+      - contextPath: CipherTrust.CACertificate.subject
         description: Subject of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.issuer
+      - contextPath: CipherTrust.CACertificate.issuer
         description: Issuer of the certificate.
         type: String
-      - contextPath: CipherTrust.CACertificate.resources.notBefore
+      - contextPath: CipherTrust.CACertificate.notBefore
         description: Timestamp of when the certificate is valid from.
         type: Date
-      - contextPath: CipherTrust.CACertificate.resources.notAfter
+      - contextPath: CipherTrust.CACertificate.notAfter
         description: Timestamp of when the certificate is valid until.
         type: Date
   - deprecated: false
@@ -492,70 +483,61 @@ script:
       default: false
       defaultValue: 50
     outputs:
-      - contextPath: CipherTrust.ExternalCertificate.skip
-        description: The number of records to skip in the query.
-        type: Integer
-      - contextPath: CipherTrust.ExternalCertificate.limit
-        description: The maximum number of records to return in the query.
-        type: Integer
-      - contextPath: CipherTrust.ExternalCertificate.total
-        description: The total number of records found.
-        type: Integer
-      - contextPath: CipherTrust.ExternalCertificate.resources.id
+      - contextPath: CipherTrust.ExternalCertificate.id
         description: A unique identifier for the certificate authority (CA) certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.uri
+      - contextPath: CipherTrust.ExternalCertificate.uri
         description: Uniform Resource Identifier associated with the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.account
+      - contextPath: CipherTrust.ExternalCertificate.account
         description: Account associated with the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.devAccount
+      - contextPath: CipherTrust.ExternalCertificate.devAccount
         description: Developer account associated with the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.application
+      - contextPath: CipherTrust.ExternalCertificate.application
         description: Application associated with the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.createdAt
+      - contextPath: CipherTrust.ExternalCertificate.createdAt
         description: Timestamp of when the CA certificate was created.
         type: Date
-      - contextPath: CipherTrust.ExternalCertificate.resources.updatedAt
+      - contextPath: CipherTrust.ExternalCertificate.updatedAt
         description: Timestamp of the last update of the CA certificate.
         type: Date
-      - contextPath: CipherTrust.ExternalCertificate.resources.name
+      - contextPath: CipherTrust.ExternalCertificate.name
         description: Name of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.cert
+      - contextPath: CipherTrust.ExternalCertificate.cert
         description: Certificate content.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.purpose.client_authentication
+      - contextPath: CipherTrust.ExternalCertificate.purpose.client_authentication
         description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.purpose.user_authentication
+      - contextPath: CipherTrust.ExternalCertificate.purpose.user_authentication
         description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.serialNumber
+      - contextPath: CipherTrust.ExternalCertificate.serialNumber
         description: Serial number of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.subject
+      - contextPath: CipherTrust.ExternalCertificate.subject
         description: Subject of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.issuer
+      - contextPath: CipherTrust.ExternalCertificate.issuer
         description: Issuer of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.notBefore
+      - contextPath: CipherTrust.ExternalCertificate.notBefore
         description: Timestamp of when the CA certificate is valid from.
         type: Date
-      - contextPath: CipherTrust.ExternalCertificate.resources.notAfter
+      - contextPath: CipherTrust.ExternalCertificate.notAfter
         description: Timestamp of when the CA certificate is valid until.
         type: Date
-      - contextPath: CipherTrust.ExternalCertificate.resources.sha1Fingerprint
+      - contextPath: CipherTrust.ExternalCertificate.sha1Fingerprint
         description: SHA-1 fingerprint of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.sha256Fingerprint
+      - contextPath: CipherTrust.ExternalCertificate.sha256Fingerprint
         description: SHA-256 fingerprint of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.resources.sha512Fingerprint
+      - contextPath: CipherTrust.ExternalCertificate.sha512Fingerprint
         description: SHA-512 fingerprint of the CA certificate.
         type: String
   - deprecated: false
@@ -785,7 +767,7 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: Returns a list of group resources. Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
+    description: Returns a list of group  Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
     name: ciphertrust-group-list
     arguments:
     - name: group_name
@@ -832,40 +814,28 @@ script:
       default: false
       defaultValue: 50
     outputs:
-    - contextPath: CipherTrust.Group.limit
-      description: The max number of records returned. Equivalent to 'limit' in SQL.
-      type: Number
-    - contextPath: CipherTrust.Group.skip
-      description: The index of the first record returned. Equivalent to 'offset' in SQL.
-      type: Number
-    - contextPath: CipherTrust.Group.total
-      description: The total records matching the query.
-      type: Number
-    - contextPath: CipherTrust.Group.messages
-      description: An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
-      type: Unknown
-    - contextPath: CipherTrust.Group.resources.name
+    - contextPath: CipherTrust.Group.name
       description: name of the group
       type: String
-    - contextPath: CipherTrust.Group.resources.created_at
+    - contextPath: CipherTrust.Group.created_at
       description: The time the group was created.
       type: Date
-    - contextPath: CipherTrust.Group.resources.updated_at
+    - contextPath: CipherTrust.Group.updated_at
       description: The time the group was last updated.
       type: Date
-    - contextPath: CipherTrust.Group.resources.user_metadata
+    - contextPath: CipherTrust.Group.user_metadata
       description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
       type: Unknown
-    - contextPath: CipherTrust.Group.resources.app_metadata
+    - contextPath: CipherTrust.Group.app_metadata
       description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
       type: Unknown
-    - contextPath: CipherTrust.Group.resources.client_metadata
+    - contextPath: CipherTrust.Group.client_metadata
       description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
       type: Unknown
-    - contextPath: CipherTrust.Group.resources.description
+    - contextPath: CipherTrust.Group.description
       description: description of the group
       type: String
-    - contextPath: CipherTrust.Group.resources.users_count
+    - contextPath: CipherTrust.Group.users_count
       description: It returns the total user count associated with the group
       type: Number
   - deprecated: false
@@ -1203,73 +1173,61 @@ script:
       default: false
       defaultValue: 50
     outputs:
-    - contextPath: CipherTrust.LocalCA.limit
-      description: The max number of records returned. Equivalent to 'limit' in SQL.
-      type: Number
-    - contextPath: CipherTrust.LocalCA.skip
-      description: The index of the first record returned. Equivalent to 'offset' in SQL.
-      type: Number
-    - contextPath: CipherTrust.LocalCA.total
-      description: The total records matching the query.
-      type: Number
-    - contextPath: CipherTrust.LocalCA.messages
-      description: An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
-      type: Unknown
-    - contextPath: CipherTrust.LocalCA.resources.id
+    - contextPath: CipherTrust.LocalCA.id
       description: A unique identifier for the certificate authority (CA).
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.uri
+    - contextPath: CipherTrust.LocalCA.uri
       description: Uniform Resource Identifier associated with the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.account
+    - contextPath: CipherTrust.LocalCA.account
       description: Account associated with the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.name
+    - contextPath: CipherTrust.LocalCA.name
       description: Name of the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.state
+    - contextPath: CipherTrust.LocalCA.state
       description: Current state of the CA (e.g., pending, active).
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.createdAt
+    - contextPath: CipherTrust.LocalCA.createdAt
       description: Timestamp of when the CA was created.
       type: Date
-    - contextPath: CipherTrust.LocalCA.resources.updatedAt
+    - contextPath: CipherTrust.LocalCA.updatedAt
       description: Timestamp of last update of the CA.
       type: Date
-    - contextPath: CipherTrust.LocalCA.resources.csr
+    - contextPath: CipherTrust.LocalCA.csr
       description: Certificate Signing Request for the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.cert
+    - contextPath: CipherTrust.LocalCA.cert
       description: Certificate associated with the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.serialNumber
+    - contextPath: CipherTrust.LocalCA.serialNumber
       description: Serial number of the CA's certificate.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.subject
+    - contextPath: CipherTrust.LocalCA.subject
       description: Subject of the CA's certificate.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.issuer
+    - contextPath: CipherTrust.LocalCA.issuer
       description: Issuer of the CA's certificate.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.notBefore
+    - contextPath: CipherTrust.LocalCA.notBefore
       description: Start date of the CA's certificate validity.
       type: Date
-    - contextPath: CipherTrust.LocalCA.resources.notAfter
+    - contextPath: CipherTrust.LocalCA.notAfter
       description: End date of the CA's certificate validity.
       type: Date
-    - contextPath: CipherTrust.LocalCA.resources.sha1Fingerprint
+    - contextPath: CipherTrust.LocalCA.sha1Fingerprint
       description: SHA1 fingerprint of the CA's certificate.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.sha256Fingerprint
+    - contextPath: CipherTrust.LocalCA.sha256Fingerprint
       description: SHA256 fingerprint of the CA's certificate.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.sha512Fingerprint
+    - contextPath: CipherTrust.LocalCA.sha512Fingerprint
       description: SHA512 fingerprint of the CA's certificate.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.purpose.client_authentication
+    - contextPath: CipherTrust.LocalCA.purpose.client_authentication
       description: Indicates if client authentication is enabled for the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.resources.purpose.user_authentication
+    - contextPath: CipherTrust.LocalCA.purpose.user_authentication
       description: Indicates if user authentication is enabled for the CA.
       type: String
   - deprecated: false
@@ -1488,7 +1446,7 @@ script:
       default: false
     - name: username
       isArray: false
-      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user  It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.
       required: false
       secret: false
       default: false
@@ -1588,7 +1546,7 @@ script:
       description: A unique identifier for API call usage.
       type: String
     - contextPath: CipherTrust.Users.username
-      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated.
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user  It cannot be updated.
       type: String
     - contextPath: CipherTrust.Users.connection
       description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
@@ -1868,7 +1826,7 @@ script:
       description: A unique identifier for API call usage.
       type: String
     - contextPath: CipherTrust.Users.username
-      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated.
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user  It cannot be updated.
       type: String
     - contextPath: CipherTrust.Users.connection
       description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
@@ -1940,7 +1898,7 @@ script:
       description: Flags related to login, such as prevent_ui_login.
       type: Unknown
   - deprecated: false
-    description: 'Returns a list of user resources. Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
+    description: 'Returns a list of user  Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
     name: ciphertrust-users-list
     arguments:
     - name: name
@@ -2054,103 +2012,91 @@ script:
       default: false
       defaultValue: 50
     outputs:
-    - contextPath: CipherTrust.Users.limit
-      description: The max number of records returned. Equivalent to 'limit' in SQL.
-      type: Number
-    - contextPath: CipherTrust.Users.skip
-      description: The index of the first record returned. Equivalent to 'offset' in SQL.
-      type: Number
-    - contextPath: CipherTrust.Users.total
-      description: The total records matching the query.
-      type: Number
-    - contextPath: CipherTrust.Users.messages
-      description: An optional list of warning messages, usually used to note when unsupported query parameters were ignored.
-      type: Unknown
-    - contextPath: CipherTrust.Users.resources.userid
+    - contextPath: CipherTrust.Users.userid
       description: A unique identifier for API call usage.
       type: String
-    - contextPath: CipherTrust.Users.resources.username
-      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user resources. It cannot be updated.
+    - contextPath: CipherTrust.Users.username
+      description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user  It cannot be updated.
       type: String
-    - contextPath: CipherTrust.Users.resources.connection
+    - contextPath: CipherTrust.Users.connection
       description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
       type: String
-    - contextPath: CipherTrust.Users.resources.email
+    - contextPath: CipherTrust.Users.email
       description: E-mail of the user
       type: String
-    - contextPath: CipherTrust.Users.resources.name
+    - contextPath: CipherTrust.Users.name
       description: Full name of the user
       type: String
-    - contextPath: CipherTrust.Users.resources.certificate_subject_dn
+    - contextPath: CipherTrust.Users.certificate_subject_dn
       description: The Distinguished Name of the user in certificate
       type: String
-    - contextPath: CipherTrust.Users.resources.enable_cert_auth
+    - contextPath: CipherTrust.Users.enable_cert_auth
       description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using certificate.'
       type: Boolean
-    - contextPath: CipherTrust.Users.resources.user_metadata
+    - contextPath: CipherTrust.Users.user_metadata
       description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
       type: Unknown
-    - contextPath: CipherTrust.Users.resources.app_metadata
+    - contextPath: CipherTrust.Users.app_metadata
       description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
       type: Unknown
-    - contextPath: CipherTrust.Users.resources.logins_count
+    - contextPath: CipherTrust.Users.logins_count
       description: Count for the number of logins
       type: Number
-    - contextPath: CipherTrust.Users.resources.last_login
+    - contextPath: CipherTrust.Users.last_login
       description: Timestamp of last login
       type: Date
-    - contextPath: CipherTrust.Users.resources.created_at
+    - contextPath: CipherTrust.Users.created_at
       description: Timestamp of when user was created
       type: Date
-    - contextPath: CipherTrust.Users.resources.updated_at
+    - contextPath: CipherTrust.Users.updated_at
       description: Timestamp of last update of the user
       type: Date
-    - contextPath: CipherTrust.Users.resources.allowed_auth_methods
+    - contextPath: CipherTrust.Users.allowed_auth_methods
       description: List of login authentication methods allowed to the user.
       type: Unknown
-    - contextPath: CipherTrust.Users.resources.expires_at
+    - contextPath: CipherTrust.Users.expires_at
       description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add expiration to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
       type: Date
-    - contextPath: CipherTrust.Users.resources.password_policy
+    - contextPath: CipherTrust.Users.password_policy
       description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
       type: String
-    - contextPath: CipherTrust.Users.resources.allowed_client_types
+    - contextPath: CipherTrust.Users.allowed_client_types
       description: List of client types allowed to the user.
       type: Unknown
-    - contextPath: CipherTrust.Users.resources.last_failed_login_at
+    - contextPath: CipherTrust.Users.last_failed_login_at
       description: Timestamp of last failed login
       type: Date
-    - contextPath: CipherTrust.Users.resources.failed_logins_count
+    - contextPath: CipherTrust.Users.failed_logins_count
       description: Count of failed logins
       type: Number
-    - contextPath: CipherTrust.Users.resources.failed_logins_initial_attempt_at
+    - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
       description: Timestamp of first failed login
       type: Date
-    - contextPath: CipherTrust.Users.resources.account_lockout_at
+    - contextPath: CipherTrust.Users.account_lockout_at
       description: Timestamp of account lockout
       type: Date
-    - contextPath: CipherTrust.Users.resources.nickname
+    - contextPath: CipherTrust.Users.nickname
       description: Nickname of the user
       type: String
-    - contextPath: CipherTrust.Users.resources.user_id
+    - contextPath: CipherTrust.Users.user_id
       description: The user's unique identifier
       type: String
-    - contextPath: CipherTrust.Users.resources.password_changed_at
+    - contextPath: CipherTrust.Users.password_changed_at
       description: Timestamp of when the password was last changed
       type: Date
-    - contextPath: CipherTrust.Users.resources.password_change_required
+    - contextPath: CipherTrust.Users.password_change_required
       description: Flag indicating if password change is required
       type: Boolean
-    - contextPath: CipherTrust.Users.resources.groups
+    - contextPath: CipherTrust.Users.groups
       description: List of groups the user belongs to
       type: Unknown
-    - contextPath: CipherTrust.Users.resources.auth_domain
+    - contextPath: CipherTrust.Users.auth_domain
       description: Authentication domain ID
       type: String
-    - contextPath: CipherTrust.Users.resources.login_flags
+    - contextPath: CipherTrust.Users.login_flags
       description: Flags related to user login
       type: Unknown
-    - contextPath: CipherTrust.Users.resources.auth_domain_name
+    - contextPath: CipherTrust.Users.auth_domain_name
       description: Name of the authentication domain
       type: String
   script: '-'

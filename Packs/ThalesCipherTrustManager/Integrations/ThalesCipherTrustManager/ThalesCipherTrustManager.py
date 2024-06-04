@@ -511,7 +511,7 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
             password_policy=args.get(CommandArguments.PASSWORD_POLICY),
             return_groups=optional_arg_to_bool(args.get(CommandArguments.RETURN_GROUPS)), )
         raw_response = client.get_users_list(params=params)
-        outputs = raw_response.get('resources')
+        outputs = raw_response.get('resources', [])
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -633,7 +633,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             cert=args.get(CommandArguments.CERT),
         )
         raw_response = client.get_local_ca_list(params=params)
-        outputs = raw_response.get('resources')
+        outputs = raw_response.get('resources', [])
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
