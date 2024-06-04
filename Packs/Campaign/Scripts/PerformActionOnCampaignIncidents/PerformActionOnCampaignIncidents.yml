@@ -15,7 +15,7 @@ comment: |-
 commonfields:
   id: PerformActionOnCampaignIncidents
   version: -1
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.10.14.96411
 enabled: true
 name: PerformActionOnCampaignIncidents
 script: ''
