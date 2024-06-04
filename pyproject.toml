@@ -86,6 +86,16 @@ jira = "^3.5.2"
 junitparser = "^3.1.0"
 tenacity = "^8.2.3"
 
+
+[tool.poetry.group.packwise]
+optional = true
+
+[tool.poetry.group.packwise.dependencies]
+pygithub = "*"
+loguru = "^0.7.2"
+pathspec = "^0.12.1"
+python-dotenv = "*"
+
 [tool.ruff]
 select = [
     "UP015"
