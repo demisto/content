@@ -112,7 +112,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: 'TODO Add description, change fetch interval to hours'
+description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Cortex Xpanse asset database.
 display: 'Xpanse Feed'
 name: Xpanse Feed
 script:
@@ -133,8 +133,14 @@ script:
     description: Retrieves a limited number of indicators.
     name: xpanse-get-indicators
     outputs:
-    - contextPath: ASM.Indicators.Commands.category
-      description: 'TODO, Add outputs'
+    - contextPath: ASM.Indicators.Name
+      description: 'The name of the indicator.'
+      type: String
+    - contextPath: ASM.Indicators.Description
+      description: 'The description of the indicator.'
+      type: String
+    - contextPath: ASM.Indicators.Type
+      description: 'The type of the indicator.'
       type: String
   feed: true
   script: '-'

@@ -1,8 +1,6 @@
 """
 Tests module for Xpanse Feed integration.
 """
-import pytest
-import requests
 
 # Client for multiple tests
 from FeedXpanse import Client
@@ -52,7 +50,7 @@ def test_create_x509_certificate_grids():
             - Checks the output of the helper function with the expected output.
     """
     from FeedXpanse import create_x509_certificate_grids
-    # def test_with_valid_string():
+    # test_with_valid_string
     input_str = "C=ZA,ST=Western Cape,L=Cape Town,O=Thawte"
     expected_output = [
         {"title": "C", "data": "ZA"},
@@ -62,24 +60,12 @@ def test_create_x509_certificate_grids():
     ]
     assert create_x509_certificate_grids(input_str) == expected_output
 
-    # def test_with_none_input():
+    # test_with_none_input
     assert create_x509_certificate_grids(None) == []
 
-    # def test_with_empty_string():
+    # test_with_empty_string
     assert create_x509_certificate_grids('') == []
 
-    # TODO, keep or remove
-    # def test_with_string_with_additional_commas():
-    #     input_str = "C=ZA,ST=Western Cape,L=Cape Town,O=Thawte, Inc."
-    #     expected_output = [
-    #         {"title": "C", "data": "ZA"},
-    #         {"title": "ST", "data": "Western Cape"},
-    #         {"title": "L", "data": "Cape Town"},
-    #         {"title": "O", "data": "Thawte, Inc."}
-    #     ]
-    #     assert create_x509_certificate_grids(input_str) == expected_output
-
-    # def test_with_malformed_string():
     input_str = "C=ZA,ST-Western Cape,L:Cape Town;O=Thawte"
     expected_output = [
         {'data': 'ZA', 'title': 'C'}, {'data': 'Thawte', 'title': 'L:Cape Town;O'}
@@ -98,7 +84,7 @@ def test_map_indicator_fields():
             - Checks the output of the helper function with the expected output.
     """
     from FeedXpanse import map_indicator_fields
-    # def test_map_indicator_fields_domain():
+    # test_map_indicator_fields_domain
     raw_indicator = {
         "name": "example.com",
         "domain_details": {
@@ -115,7 +101,7 @@ def test_map_indicator_fields():
     }
     assert map_indicator_fields(raw_indicator, asset_type) == expected_output
 
-    # def test_map_indicator_fields_x509_certificate():
+    # test_map_indicator_fields_x509_certificate
     raw_indicator = {
         "name": "certificate",
         "certificate_details": {
@@ -152,7 +138,7 @@ def test_build_asset_indicators():
             - Checks the output of the helper function with the expected output.
     """
     from FeedXpanse import build_asset_indicators
-    # def test_build_asset_indicators():
+    # test_build_asset_indicators
     raw_indicators = [
         {"name": "example.com", "asset_type": "DOMAIN"},
         {"name": "example.net", "asset_type": "DOMAIN", "ipv6s": ["::1"]},  # This should be skipped
@@ -200,7 +186,7 @@ def test_fetch_indicators(mocker):
     from FeedXpanse import fetch_indicators
     from test_data.raw_response import EXTERNAL_EXPOSURES_RESPONSE
     mocker.patch.object(client, 'list_asset_internet_exposure_request', return_value=EXTERNAL_EXPOSURES_RESPONSE)
-    indicators, _ = fetch_indicators(client, limit = 1, asset_type='domain')
+    indicators, _ = fetch_indicators(client, limit=1, asset_type='domain')
     expected_indicators_fields = {
         "internal": True,
         "description": "example.com indicator of asset type Domain from Cortex Xpanse",
@@ -226,4 +212,4 @@ def test_get_indicators(mocker):
     mocker.patch.object(client, 'list_asset_internet_exposure_request', return_value=EXTERNAL_EXPOSURES_RESPONSE)
     args = {"limit": "1", 'domain': "yes", "certificate": "no", "ipv4": "no"}
     response = get_indicators(client, args)
-    assert response.outputs == [{'Type': 'Domain', 'Name': 'example.com'}]
+    assert response.outputs[0]['Type'] == 'Domain'

@@ -1,8 +1,8 @@
-import demistomock as demisto # noqa: F401
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 import urllib3
-from typing import Dict, Any, Tuple, List
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,38 +11,43 @@ urllib3.disable_warnings()
 
 DEFAULT_FEED_TAGS = {'XPANSE'}
 DEFAULT_ASSET_SEARCH_LIMIT = 5000
-# DEFAULT_ASSET_SEARCH_LIMIT = 1000
 V1_URL_SUFFIX = "/public_api/v1"
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """
+    Client class to interact with the service API
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, feed_tags: List[str], tlp_color: str, headers: Dict):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, feed_tags: list[str], tlp_color: str, headers: dict):
+        """
+        Class initialization.
+        """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.verify = verify
         self.proxy = proxy
-        self.headers= headers
-
+        self.headers = headers
 
     def list_asset_internet_exposure_request(self, search_params: list[dict] = [], search_from: int = 0,
-                                             search_to: int = DEFAULT_ASSET_SEARCH_LIMIT, use_paging: bool = True) -> dict[str, Any]:
+                                             search_to: int = DEFAULT_ASSET_SEARCH_LIMIT,
+                                             use_paging: bool = True) -> list:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
             search_params (list): list of search parameters to add to the API call body.
             search_from (int): Starting search index.
             search_to (int): Ending search index.
+            use_paging (bool): whether to use paging or not (default is True)
 
         Returns:
-            dict: dict containing list of internet exposure assets.
+            List: list containing dictionaries of internet exposure assets.
         """
-        body = {"request_data": {"filters": search_params, "search_to": int(search_to), "search_from": int(search_from), "use_page_token": True}}
+        body = {"request_data": {"filters": search_params, "search_to": int(
+            search_to), "search_from": int(search_from), "use_page_token": True}}
         full_response = []
         while True:
             result = self._http_request(
@@ -60,7 +65,7 @@ class Client(BaseClient):
             if pagination is None:
                 break
             body["request_data"]["next_page_token"] = pagination
-        
+
         return full_response
 
 
@@ -79,7 +84,6 @@ def create_x509_certificate_grids(string_object: Optional[str]) -> list:
     """
     result_grid_list = []
     if string_object:
-        # TODO sometimes there is something like `, Inc.`, not sure how to account for that
         key_value_pairs = string_object.split(',')
         for pair in key_value_pairs:
             result_grid = {}
@@ -91,42 +95,61 @@ def create_x509_certificate_grids(string_object: Optional[str]) -> list:
     return result_grid_list
 
 
-def map_indicator_fields(raw_indicator: Dict[str, Any], asset_type: str) -> Dict[str, Any]:
-    description = raw_indicator.get('name') + " indicator of asset type " + asset_type + " from Cortex Xpanse"
+def map_indicator_fields(raw_indicator: dict[str, Any], asset_type: str) -> dict[str, Any]:
+    """
+    Create indicator field mapping based on asset_type
+
+    Args:
+        raw_indicator (Dict[str, Any]): raw indicator as JSON.
+        asset_type (str): indicator type
+
+    Returns:
+        Dict: dictionary of indicator field mappings.
+    """
+    # name is a required API return parameter
+    description = raw_indicator['name'] + " indicator of asset type " + asset_type + " from Cortex Xpanse"
     indicator_fields = {"internal": True, "description": description}
     if asset_type == 'Domain':
         if domain_details := raw_indicator.get("domain_details"):
-            fields_mapping = {
+            domain_fields_mapping: dict = {
                 "creationDate": "creationdate",
                 "registryExpiryDate": "expirationdate",
             }
-            
-            for key, mapped_key in fields_mapping.items():
-                if detail_value := domain_details.get(key): 
-                    indicator_fields[mapped_key] = timestamp_to_datestring(detail_value)
-    
-    elif asset_type == 'X509 Certificate':
-        if cert_details := raw_indicator.get("certificate_details"):
-            fields_mapping = {
-                "signatureAlgorithm": ("signaturealgorithm", None),
-                "serialNumber": ("serialnumber", None),
-                "validNotAfter": ("validitynotafter", timestamp_to_datestring),
-                "validNotBefore": ("validitynotbefore", timestamp_to_datestring),
-                "issuer": ("issuer", create_x509_certificate_grids),
-                "subject": ("subject", create_x509_certificate_grids),
-            }
 
-            for key, (mapped_key, processing_func) in fields_mapping.items():
-                if detail_value := cert_details.get(key):
-                    # Apply processing function if one is defined
-                    if processing_func:
-                        indicator_fields[mapped_key] = processing_func(detail_value)
-                    else:
-                        indicator_fields[mapped_key] = detail_value
+            for key, mapped_key in domain_fields_mapping.items():
+                if detail_value := domain_details.get(key):
+                    indicator_fields[mapped_key] = timestamp_to_datestring(detail_value)
+
+    elif asset_type == 'X509 Certificate' and (cert_details := raw_indicator.get("certificate_details")):
+        cert_fields_mapping: dict = {
+            "signatureAlgorithm": ("signaturealgorithm", None),
+            "serialNumber": ("serialnumber", None),
+            "validNotAfter": ("validitynotafter", timestamp_to_datestring),
+            "validNotBefore": ("validitynotbefore", timestamp_to_datestring),
+            "issuer": ("issuer", create_x509_certificate_grids),
+            "subject": ("subject", create_x509_certificate_grids),
+        }
+
+        for key, (mapped_key, processing_func) in cert_fields_mapping.items():
+            if detail_value := cert_details.get(key):
+                # Apply processing function if one is defined
+                if processing_func:
+                    indicator_fields[mapped_key] = processing_func(detail_value)
+                else:
+                    indicator_fields[mapped_key] = detail_value
     return indicator_fields
 
 
 def map_indicator_type(asset_type: str) -> str:
+    """
+    Correlates asset_type to indicator type or returns "None"
+
+    Args:
+        asset_type (str): Xpanse asset type.
+
+    Returns:
+        str: indicator type or "None".
+    """
     asset_types_mapping = {
         'UNASSOCIATED_RESPONSIVE_IP': 'IP',
         "DOMAIN": 'Domain',
@@ -136,12 +159,19 @@ def map_indicator_type(asset_type: str) -> str:
     return asset_types_mapping.get(asset_type, "None")
 
 
-def build_asset_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def build_asset_indicators(client: Client, raw_indicators: list[dict[str, Any]]) -> list:
     """
     Builds indicators JSON data in XSOAR expected format from the raw response.
+
+    Args:
+        client (Client): Xpanse client.
+        raw_indicators (List[Dict[str, Any]]): raw indicators as JSON.
+
+    Returns:
+        List: list of indicators to be send to XSOAR.
     """
     demisto.debug(f'Creating {len(raw_indicators)} asset indicators.')
-    indicators: List[Dict[str, Any]] = []
+    indicators: list = []
 
     for raw_indicator in raw_indicators:
         asset_type = raw_indicator.get("asset_type", 'None')
@@ -151,7 +181,8 @@ def build_asset_indicators(client: Client, raw_indicators: List[Dict[str, Any]])
         if raw_indicator.get("ipv6s") or indicator_type == 'None':
             continue
 
-        name = raw_indicator.get('name')
+        # name is a required API return parameter
+        name = raw_indicator['name']
         indicator_type = 'DomainGlob' if '*' in name and indicator_type == 'Domain' else indicator_type
         fields = map_indicator_fields(raw_indicator, indicator_type)
 
@@ -177,7 +208,8 @@ def build_asset_indicators(client: Client, raw_indicators: List[Dict[str, Any]])
 
 
 def test_module(client: Client):  # pragma: no cover
-    """Tests API connectivity and authentication'
+    """
+    Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -192,14 +224,24 @@ def test_module(client: Client):  # pragma: no cover
     client.list_asset_internet_exposure_request(search_to=1, use_paging=False)
     return_results('ok')
 
-def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all'):
-#       -> \ List[Dict[str, Any]] | List[Dict]:
+
+def fetch_indicators(client: Client, limit: Optional[int] = None,
+                     asset_type: str = 'all') -> tuple | list:
     """
-        Fetch indicators from Xpanse API and create indicators in XSOAR.
+    Fetch indicators from Xpanse API and create indicators in XSOAR.
+
+    Args:
+        client (Client): Xpanse client.
+        limit (int): limt the number of indicators to return.
+        asset_type (str): which asset_types to pull from API.
+
+    Returns:
+        List: list of indicators to be send to XSOAR.
+        List: raw response from API.
     """
     asset_list, asset_response = [], []
     if asset_type == 'all':
-        asset_list = ["CERTIFICATE","DOMAIN","UNASSOCIATED_RESPONSIVE_IP"]
+        asset_list = ["CERTIFICATE", "DOMAIN", "UNASSOCIATED_RESPONSIVE_IP"]
     if 'domain' in asset_type:
         asset_list.append("DOMAIN")
     if 'certificate' in asset_type:
@@ -207,26 +249,34 @@ def fetch_indicators(client: Client, limit: int = None, asset_type: str = 'all')
     if 'ipv4' in asset_type:
         asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
     if limit:
-        asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}], search_to=limit, use_paging=False)
+        # Had to add 1 to the limit to get the right return.
+        asset_response = client.list_asset_internet_exposure_request(
+            search_params=[{"field": "type", "operator": "in", "value": asset_list}], search_to=limit + 1, use_paging=False)
     else:
-        asset_response = client.list_asset_internet_exposure_request(search_params=[{"field": "type", "operator": "in", "value": asset_list}])
-    
+        asset_response = client.list_asset_internet_exposure_request(
+            search_params=[{"field": "type", "operator": "in", "value": asset_list}])
+
     assset_indicators = build_asset_indicators(client, asset_response)
-    
-    if limit:
-        return assset_indicators[:limit], asset_response
+
     return assset_indicators, asset_response
 
 
 ''' MAIN FUNCTION '''
 
 
-def get_indicators(client, args: Dict[str, Any]):
+def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get indicators from Xpanse API, mainly for debug.
+
+    Args:
+        client (Client): Xpanse client.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains Xpanse indicators.
     """
     hr_list = []
-    output_list = []
 
     asset_type = ''
     if argToBoolean(args.get('ip', 'yes')):
@@ -235,32 +285,28 @@ def get_indicators(client, args: Dict[str, Any]):
         asset_type += 'domain'
     if argToBoolean(args.get('certificate', 'yes')):
         asset_type += 'certificate'
-    
+
     limit = arg_to_number(args.get('limit', None))
 
     if limit and limit <= 0:
         raise ValueError('Limit must be a positive number.')
     if asset_type == '':
         raise ValueError('need to specify at least one asset type')
-    indicators, raw_res = fetch_indicators(client, limit, asset_type)
+    indicators, raw_res = fetch_indicators(client=client, limit=limit, asset_type=asset_type)
 
-    indicators = indicators[:limit] if isinstance(indicators, List) \
+    indicators = indicators[:limit] if isinstance(indicators, list) \
         else [indicators] if indicators else []
     for record in indicators:
-        hr = {'Name': record.get('value'), 'Type': record.get('type')}
+        hr = {'Name': record.get('value'), 'Type': record.get('type'), 'Description': record['fields']['description']}
         hr_list.append(hr)
-        output_list.append({'Type': record.get('type'),
-                            'Name': record.get('value')})
-    return CommandResults(outputs=output_list, outputs_prefix='ASM.Indicators', raw_response=raw_res,
-                          readable_output=tableToMarkdown("Xpanse indicators", hr_list, headers=['Name', 'Type']),
+    return CommandResults(outputs=hr_list, outputs_prefix='ASM.Indicators', raw_response=raw_res,
+                          readable_output=tableToMarkdown("Xpanse indicators", hr_list, headers=['Name', 'Type', 'Description']),
                           outputs_key_field='Name')
 
 
 def main() -> None:  # pragma: no cover
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+    """
+    main function
     """
     params = demisto.params()
     base_url = params.get('url')
@@ -308,7 +354,6 @@ def main() -> None:  # pragma: no cover
                                           f' {indicator}\n {err}')
                     raise
         elif command == 'xpanse-get-indicators':
-            #limit = arg_to_number(demisto.args().get('limit', None))
             return_results(get_indicators(client, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
