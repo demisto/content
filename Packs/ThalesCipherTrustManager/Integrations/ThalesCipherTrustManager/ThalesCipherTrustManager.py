@@ -426,7 +426,7 @@ def group_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
     raw_response = client.get_group_list(params=params)
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=raw_response.get('resources'),
         raw_response=raw_response,
         readable_output=tableToMarkdown('group', raw_response.get('resources'))
     )
@@ -491,7 +491,7 @@ def user_to_group_remove_command(client: CipherTrustClient, args: dict[str, Any]
 def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if user_id := args.get(CommandArguments.USER_ID):
         raw_response = client.get_user(user_id=user_id)
-        outputs = {'resources': [raw_response]}
+        outputs = raw_response
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                            args.get(CommandArguments.PAGE),
@@ -511,7 +511,7 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
             password_policy=args.get(CommandArguments.PASSWORD_POLICY),
             return_groups=optional_arg_to_bool(args.get(CommandArguments.RETURN_GROUPS)), )
         raw_response = client.get_users_list(params=params)
-        outputs = raw_response
+        outputs = raw_response.get('resources')
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -619,7 +619,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             chained=optional_arg_to_bool(args.get(CommandArguments.CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-        outputs = {'resources': [raw_response]}
+        outputs = raw_response
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(CommandArguments.LIMIT),
                                                            args.get(CommandArguments.PAGE),
@@ -633,7 +633,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             cert=args.get(CommandArguments.CERT),
         )
         raw_response = client.get_local_ca_list(params=params)
-        outputs = raw_response
+        outputs = raw_response.get('resources')
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -737,7 +737,7 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
                                                 params=params)
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=raw_response.get('resources'),
         raw_response=raw_response,
         readable_output=tableToMarkdown('certificates',
                                         raw_response.get('resources')),
@@ -836,7 +836,7 @@ def external_certificate_list_command(client: CipherTrustClient, args: dict[str,
     raw_response = client.get_external_certificates_list(params=params)
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=raw_response.get('resources'),
         raw_response=raw_response,
         readable_output=tableToMarkdown('external certificates',
                                         raw_response.get('resources')),

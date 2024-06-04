@@ -547,7 +547,7 @@ def test_group_list_command(mock_get_group_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == GROUP_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_group_list.return_value
+    assert result.outputs == mock_get_group_list.return_value.get('resources')
     assert result.raw_response == mock_get_group_list.return_value
 
 
@@ -652,7 +652,7 @@ def test_users_list_command(mock_get_users_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == USERS_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_users_list.return_value
+    assert result.outputs == mock_get_users_list.return_value.get('resources')
     assert result.raw_response == mock_get_users_list.return_value
 
 
@@ -669,7 +669,7 @@ def test_users_list_command_id_provided(mock_get_user):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == USERS_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == {'resources': [mock_get_user.return_value]}
+    assert result.outputs == mock_get_user.return_value
     assert result.raw_response == mock_get_user.return_value
 
 
@@ -773,7 +773,7 @@ def test_local_ca_list_command(mock_get_local_ca_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_local_ca_list.return_value
+    assert result.outputs == mock_get_local_ca_list.return_value.get('resources')
     assert result.raw_response == mock_get_local_ca_list.return_value
 
 
@@ -790,7 +790,7 @@ def test_local_ca_list_command_id_provided(mock_get_local_ca):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == {'resources': [mock_get_local_ca.return_value]}
+    assert result.outputs == mock_get_local_ca.return_value
     assert result.raw_response == mock_get_local_ca.return_value
 
     args = {"chained": "true"}
@@ -927,7 +927,7 @@ def test_certificate_list_command(mock_get_certificates_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_certificates_list.return_value
+    assert result.outputs == mock_get_certificates_list.return_value.get('resources')
     assert result.raw_response == mock_get_certificates_list.return_value
 
 
@@ -1053,5 +1053,5 @@ def test_external_certificate_list_command(mock_get_external_certificates_list, 
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_external_certificates_list.return_value
+    assert result.outputs == mock_get_external_certificates_list.return_value.get('resources')
     assert result.raw_response == mock_get_external_certificates_list.return_value
