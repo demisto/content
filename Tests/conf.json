@@ -2016,11 +2016,6 @@
             "timeout": 400
         },
         {
-            "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing",
-            "is_mockable": false
-        },
-        {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
             "timeout": 500,
@@ -6058,7 +6053,6 @@
         "CortexXDR",
         "PAN-OS",
         "QRadar",
-        "PhishTank",
         "OpenPhish",
         "AbuseDB",
         "CrowdStrikeFalcon",
