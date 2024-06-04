@@ -1,5 +1,5 @@
 CSCDomainManager
-This integration was integrated and tested with version xx of CSCDomainManager.
+This integration was integrated and tested with version 2.0.0 of CSCDomainManager.
 
 ## Configure CSCDomainManager on Cortex XSOAR
 
@@ -59,43 +59,43 @@ Gets the domains by the applied filters
 | CSCDomainManager.Domain.paidThroughDate | String | paid through date | 
 | CSCDomainManager.Domain.nameServers | String | servers names | 
 | CSCDomainManager.Domain.dnsType | String | dns type | 
-| CSCDomainManager.Domain.account.accountName | String |  | 
-| CSCDomainManager.Domain.account.accountNumber | String |  | 
-| CSCDomainManager.Domain.brandName | String |  | 
-| CSCDomainManager.Domain.businessUnit | String |  | 
-| CSCDomainManager.Domain.countryCode | String |  | 
-| CSCDomainManager.Domain.criticalDomain | Boolean |  | 
-| CSCDomainManager.Domain.customFields.name | String |  | 
-| CSCDomainManager.Domain.customFields.value | String |  | 
-| CSCDomainManager.Domain.dnssecActivated | String |  | 
-| CSCDomainManager.Domain.extension | String |  | 
-| CSCDomainManager.Domain.idn | String |  | 
-| CSCDomainManager.Domain.idnReferenceName | String |  | 
-| CSCDomainManager.Domain.lastModifiedDate | Date |  | 
-| CSCDomainManager.Domain.lastModifiedDescription | String |  | 
-| CSCDomainManager.Domain.lastModifiedReason | String |  | 
-| CSCDomainManager.Domain.localAgent | Boolean |  | 
-| CSCDomainManager.Domain.newGtld | Boolean |  | 
-| CSCDomainManager.Domain.serverDeleteProhibited | Boolean |  | 
-| CSCDomainManager.Domain.serverTransferProhibited | Boolean |  | 
-| CSCDomainManager.Domain.serverUpdateProhibited | Boolean |  | 
-| CSCDomainManager.Domain.urlf.redirectType | String |  | 
-| CSCDomainManager.Domain.urlf.urlForwarding | Boolean |  | 
-| CSCDomainManager.Domain.whoisContacts.city | String |  | 
-| CSCDomainManager.Domain.whoisContacts.contactType | String |  | 
-| CSCDomainManager.Domain.whoisContacts.country | String |  | 
-| CSCDomainManager.Domain.whoisContacts.email | String |  | 
-| CSCDomainManager.Domain.whoisContacts.fax | String |  | 
-| CSCDomainManager.Domain.whoisContacts.firstName | String |  | 
-| CSCDomainManager.Domain.whoisContacts.lastName | String |  | 
-| CSCDomainManager.Domain.whoisContacts.organization | String |  | 
-| CSCDomainManager.Domain.whoisContacts.phone | String |  | 
-| CSCDomainManager.Domain.whoisContacts.phoneExtn | String |  | 
-| CSCDomainManager.Domain.whoisContacts.postalCode | String |  | 
-| CSCDomainManager.Domain.whoisContacts.stateProvince | String |  | 
-| CSCDomainManager.Domain.whoisContacts.street1 | String |  | 
-| CSCDomainManager.Domain.whoisContacts.street2 | String |  | 
-| CSCDomainManager.Domain.whoisPrivacy | Boolean |  | 
+| CSCDomainManager.Domain.account.accountName | String | The name of the account associated with the domain. | 
+| CSCDomainManager.Domain.account.accountNumber | String | The account number associated with the domain. | 
+| CSCDomainManager.Domain.brandName | String | The brand name associated with the domain. | 
+| CSCDomainManager.Domain.businessUnit | String | The business unit associated with the domain. | 
+| CSCDomainManager.Domain.countryCode | String | The country code associated with the domain. | 
+| CSCDomainManager.Domain.criticalDomain | Boolean | Indicates if the domain is critical. | 
+| CSCDomainManager.Domain.customFields.name | String | The name of the custom field. | 
+| CSCDomainManager.Domain.customFields.value | String | The value of the custom field. | 
+| CSCDomainManager.Domain.dnssecActivated | String | Indicates if DNSSEC is activated for the domain. | 
+| CSCDomainManager.Domain.extension | String | The extension of the domain, such as .com, .net, etc. | 
+| CSCDomainManager.Domain.idn | String | Indicates if the domain is an Internationalized Domain Name \(IDN\). | 
+| CSCDomainManager.Domain.idnReferenceName | String | The reference name for the IDN. | 
+| CSCDomainManager.Domain.lastModifiedDate | Date | The date when the domain was last modified. | 
+| CSCDomainManager.Domain.lastModifiedDescription | String | A description of the last modification made to the domain. | 
+| CSCDomainManager.Domain.lastModifiedReason | String | The reason for the last modification made to the domain. | 
+| CSCDomainManager.Domain.localAgent | Boolean | Indicates if the domain has a local agent. | 
+| CSCDomainManager.Domain.newGtld | Boolean | Indicates if the domain is a new gTLD \(Generic Top-Level Domain\). | 
+| CSCDomainManager.Domain.serverDeleteProhibited | Boolean | Indicates if the domain is prohibited from deletion by the server. | 
+| CSCDomainManager.Domain.serverTransferProhibited | Boolean | Indicates if the domain is prohibited from transfer by the server. | 
+| CSCDomainManager.Domain.serverUpdateProhibited | Boolean | Indicates if the domain is prohibited from updates by the server. | 
+| CSCDomainManager.Domain.urlf.redirectType | String | The type of redirect used in URL forwarding for the domain. | 
+| CSCDomainManager.Domain.urlf.urlForwarding | Boolean | Indicates if URL forwarding is enabled for the domain. | 
+| CSCDomainManager.Domain.whoisContacts.city | String | The city of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.contactType | String | The type of WHOIS contact \(e.g., registrant, admin, tech\). | 
+| CSCDomainManager.Domain.whoisContacts.country | String | The country of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.email | String | The email address of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.fax | String | The fax number of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.firstName | String | The first name of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.lastName | String | The last name of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.organization | String | The organization of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.phone | String | The phone number of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.phoneExtn | String | The phone extension of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.postalCode | String | The postal code of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.stateProvince | String | The state or province of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.street1 | String | The street address of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.street2 | String | The secondary street address of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisPrivacy | Boolean | Indicates if WHOIS privacy protection is enabled for the domain. | 
 
 #### Command example
 ```!csc-domains-search domain_name=csc-panw.biz```
@@ -235,13 +235,13 @@ Gets the domains by the applied filters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CSCDomainManager.Domain.Availability.qualifiedDomainName | String |  | 
-| CSCDomainManager.Domain.Availability.result.code | String |  | 
-| CSCDomainManager.Domain.Availability.result.message | String |  | 
-| CSCDomainManager.Domain.Availability.basePrice.price | String |  | 
-| CSCDomainManager.Domain.Availability.basePrice.currency | String |  | 
-| CSCDomainManager.Domain.Availability.listOfTheTerms | String |  | 
-| CSCDomainManager.Domain.Availability.availableTerms | Unknown |  | 
+| CSCDomainManager.Domain.Availability.qualifiedDomainName | String | The fully qualified domain name \(FQDN\) being checked for availability. | 
+| CSCDomainManager.Domain.Availability.result.code | String | The result code indicating the availability status of the domain. | 
+| CSCDomainManager.Domain.Availability.result.message | String | A message providing additional information about the availability status. | 
+| CSCDomainManager.Domain.Availability.basePrice.price | String | The base price for registering the domain. | 
+| CSCDomainManager.Domain.Availability.basePrice.currency | String | The currency of the base price. | 
+| CSCDomainManager.Domain.Availability.listOfTheTerms | String | A list of terms related to the availability of the domain. | 
+| CSCDomainManager.Domain.Availability.availableTerms | Unknown | The terms available for the domain registration. | 
 
 #### Command example
 ```!csc-domains-availability-check domain_name=csc-panw.biz```
@@ -310,56 +310,56 @@ Gets the domains by the applied filters
 | CSCDomainManager.Domain.Configuration.adminName | String | admin name | 
 | CSCDomainManager.Domain.Configuration.accountNumber | String | the account number | 
 | CSCDomainManager.Domain.Configuration.accountName | String | the account name | 
-| CSCDomainManager.Domain.Configuration.account.accountName | String |  | 
-| CSCDomainManager.Domain.Configuration.account.accountNumber | String |  | 
-| CSCDomainManager.Domain.Configuration.adminOrg | String |  | 
-| CSCDomainManager.Domain.Configuration.businessUnit | String |  | 
-| CSCDomainManager.Domain.Configuration.dnsData.dnsDomain | String |  | 
-| CSCDomainManager.Domain.Configuration.dnsData.dnsProvider | String |  | 
-| CSCDomainManager.Domain.Configuration.dnsHostingType | String |  | 
-| CSCDomainManager.Domain.Configuration.dnsTraffic12moAve | Number |  | 
-| CSCDomainManager.Domain.Configuration.extension | String |  | 
-| CSCDomainManager.Domain.Configuration.hasCscUrlf | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.hasDkim | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.hasDmarc | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.hasDnssecDs | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.hasSpf | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.hasWww | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.isGtld | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.isLive | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.isLiveType | String |  | 
-| CSCDomainManager.Domain.Configuration.isMultilockEligible | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.isVital | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.multiLocked | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.numLiveMx | Number |  | 
-| CSCDomainManager.Domain.Configuration.numRootA | Number |  | 
-| CSCDomainManager.Domain.Configuration.numRootTxt | Number |  | 
-| CSCDomainManager.Domain.Configuration.numSslNetcraft | Number |  | 
-| CSCDomainManager.Domain.Configuration.numWwwA | Number |  | 
-| CSCDomainManager.Domain.Configuration.numWwwCname | Number |  | 
-| CSCDomainManager.Domain.Configuration.regEmail | String |  | 
-| CSCDomainManager.Domain.Configuration.regName | String |  | 
-| CSCDomainManager.Domain.Configuration.regOrg | String |  | 
-| CSCDomainManager.Domain.Configuration.registryExpiryDate | Date |  | 
-| CSCDomainManager.Domain.Configuration.rootHttpCode | Number |  | 
-| CSCDomainManager.Domain.Configuration.rootHttpUrl | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.rootIsUrlf | Boolean |  | 
-| CSCDomainManager.Domain.Configuration.serverDeleteProhibited | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.serverTransferProhibited | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.serverUpdateProhibited | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.techEmail | String |  | 
-| CSCDomainManager.Domain.Configuration.techName | String |  | 
-| CSCDomainManager.Domain.Configuration.techOrg | String |  | 
-| CSCDomainManager.Domain.Configuration.tld | String |  | 
-| CSCDomainManager.Domain.Configuration.urlfTraffic12moAve | Number |  | 
-| CSCDomainManager.Domain.Configuration.valueRootA | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.valueRootMx | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.valueRootTxt | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.valueWwwA | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.valueWwwCname | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.wwwHttpCode | Number |  | 
-| CSCDomainManager.Domain.Configuration.wwwHttpUrl | Unknown |  | 
-| CSCDomainManager.Domain.Configuration.wwwIsUrlf | Boolean |  | 
+| CSCDomainManager.Domain.Configuration.account.accountName | String | The name of the account associated with the domain. | 
+| CSCDomainManager.Domain.Configuration.account.accountNumber | String | The account number associated with the domain. | 
+| CSCDomainManager.Domain.Configuration.adminOrg | String | The administrative organization managing the domain. | 
+| CSCDomainManager.Domain.Configuration.businessUnit | String | The business unit associated with the domain. | 
+| CSCDomainManager.Domain.Configuration.dnsData.dnsDomain | String | The DNS domain information. | 
+| CSCDomainManager.Domain.Configuration.dnsData.dnsProvider | String | The DNS provider for the domain. | 
+| CSCDomainManager.Domain.Configuration.dnsHostingType | String | The type of DNS hosting used for the domain. | 
+| CSCDomainManager.Domain.Configuration.dnsTraffic12moAve | Number | The average DNS traffic over the last 12 months. | 
+| CSCDomainManager.Domain.Configuration.extension | String | The extension of the domain, such as .com, .net, etc. | 
+| CSCDomainManager.Domain.Configuration.hasCscUrlf | Boolean | Indicates if the domain has CSC URL forwarding enabled. | 
+| CSCDomainManager.Domain.Configuration.hasDkim | Boolean | Indicates if DKIM is configured for the domain. | 
+| CSCDomainManager.Domain.Configuration.hasDmarc | Boolean | Indicates if DMARC is configured for the domain. | 
+| CSCDomainManager.Domain.Configuration.hasDnssecDs | Boolean | Indicates if the domain has DNSSEC DS records. | 
+| CSCDomainManager.Domain.Configuration.hasSpf | Boolean | Indicates if SPF is configured for the domain. | 
+| CSCDomainManager.Domain.Configuration.hasWww | Boolean | Indicates if the domain has a WWW record. | 
+| CSCDomainManager.Domain.Configuration.isGtld | Boolean | Indicates if the domain is a gTLD \(Generic Top-Level Domain\). | 
+| CSCDomainManager.Domain.Configuration.isLive | Boolean | Indicates if the domain is live. | 
+| CSCDomainManager.Domain.Configuration.isLiveType | String | The type of live status for the domain. | 
+| CSCDomainManager.Domain.Configuration.isMultilockEligible | Boolean | Indicates if the domain is eligible for multilock. | 
+| CSCDomainManager.Domain.Configuration.isVital | Boolean | Indicates if the domain is considered vital. | 
+| CSCDomainManager.Domain.Configuration.multiLocked | Boolean | Indicates if the domain is multilocked. | 
+| CSCDomainManager.Domain.Configuration.numLiveMx | Number | The number of live MX records for the domain. | 
+| CSCDomainManager.Domain.Configuration.numRootA | Number | The number of root A records for the domain. | 
+| CSCDomainManager.Domain.Configuration.numRootTxt | Number | The number of root TXT records for the domain. | 
+| CSCDomainManager.Domain.Configuration.numSslNetcraft | Number | The number of SSL certificates detected by Netcraft for the domain. | 
+| CSCDomainManager.Domain.Configuration.numWwwA | Number | The number of WWW A records for the domain. | 
+| CSCDomainManager.Domain.Configuration.numWwwCname | Number | The number of WWW CNAME records for the domain. | 
+| CSCDomainManager.Domain.Configuration.regEmail | String | The registration email address for the domain. | 
+| CSCDomainManager.Domain.Configuration.regName | String | The registration name for the domain. | 
+| CSCDomainManager.Domain.Configuration.regOrg | String | The registration organization for the domain. | 
+| CSCDomainManager.Domain.Configuration.registryExpiryDate | Date | The expiration date of the domain registration in the registry. | 
+| CSCDomainManager.Domain.Configuration.rootHttpCode | Number | The HTTP response code for the root domain. | 
+| CSCDomainManager.Domain.Configuration.rootHttpUrl | Unknown | The HTTP URL for the root domain. | 
+| CSCDomainManager.Domain.Configuration.rootIsUrlf | Boolean | Indicates if the root domain is URL forwarding enabled. | 
+| CSCDomainManager.Domain.Configuration.serverDeleteProhibited | Unknown | Indicates if the domain is prohibited from deletion by the server. | 
+| CSCDomainManager.Domain.Configuration.serverTransferProhibited | Unknown | Indicates if the domain is prohibited from transfer by the server. | 
+| CSCDomainManager.Domain.Configuration.serverUpdateProhibited | Unknown | Indicates if the domain is prohibited from updates by the server. | 
+| CSCDomainManager.Domain.Configuration.techEmail | String | The technical contact email address for the domain. | 
+| CSCDomainManager.Domain.Configuration.techName | String | The technical contact name for the domain. | 
+| CSCDomainManager.Domain.Configuration.techOrg | String | The technical contact organization for the domain. | 
+| CSCDomainManager.Domain.Configuration.tld | String | The top-level domain \(TLD\) of the domain. | 
+| CSCDomainManager.Domain.Configuration.urlfTraffic12moAve | Number | The average URL forwarding traffic over the last 12 months. | 
+| CSCDomainManager.Domain.Configuration.valueRootA | Unknown | The value of root A records for the domain. | 
+| CSCDomainManager.Domain.Configuration.valueRootMx | Unknown | The value of root MX records for the domain. | 
+| CSCDomainManager.Domain.Configuration.valueRootTxt | Unknown | The value of root TXT records for the domain. | 
+| CSCDomainManager.Domain.Configuration.valueWwwA | Unknown | The value of WWW A records for the domain. | 
+| CSCDomainManager.Domain.Configuration.valueWwwCname | Unknown | The value of WWW CNAME records for the domain. | 
+| CSCDomainManager.Domain.Configuration.wwwHttpCode | Number | The HTTP response code for the WWW domain. | 
+| CSCDomainManager.Domain.Configuration.wwwHttpUrl | Unknown | The HTTP URL for the WWW domain. | 
+| CSCDomainManager.Domain.Configuration.wwwIsUrlf | Boolean | Indicates if the WWW domain is URL forwarding enabled. | 
 
 #### Command example
 ```!csc-domains-configuration-list domain_name=csc-panw.biz```
@@ -496,31 +496,31 @@ Gets the domains by the applied filters
 | CSCDomainManager.Domain.countryCode | String | Domain country code | 
 | CSCDomainManager.Domain.criticalDomain | Boolean | Domain critical domain | 
 | CSCDomainManager.Domain.customFields.name | String | Domain custom fields name | 
-| CSCDomainManager.Domain.customFields.value | String |  | 
-| CSCDomainManager.Domain.dnsType | String |  | 
-| CSCDomainManager.Domain.dnssecActivated | String |  | 
-| CSCDomainManager.Domain.domain | String |  | 
-| CSCDomainManager.Domain.extension | String |  | 
-| CSCDomainManager.Domain.idn | String |  | 
-| CSCDomainManager.Domain.idnReferenceName | String |  | 
-| CSCDomainManager.Domain.lastModifiedDate | Date |  | 
-| CSCDomainManager.Domain.lastModifiedDescription | String |  | 
-| CSCDomainManager.Domain.lastModifiedReason | String |  | 
-| CSCDomainManager.Domain.localAgent | Boolean |  | 
-| CSCDomainManager.Domain.managedStatus | String |  | 
-| CSCDomainManager.Domain.nameServers | String |  | 
-| CSCDomainManager.Domain.newGtld | Boolean |  | 
-| CSCDomainManager.Domain.paidThroughDate | Date |  | 
-| CSCDomainManager.Domain.qualifiedDomainName | String |  | 
-| CSCDomainManager.Domain.registrationDate | Date |  | 
-| CSCDomainManager.Domain.registryExpiryDate | Date |  | 
-| CSCDomainManager.Domain.serverDeleteProhibited | Boolean |  | 
-| CSCDomainManager.Domain.serverTransferProhibited | Boolean |  | 
-| CSCDomainManager.Domain.serverUpdateProhibited | Boolean |  | 
-| CSCDomainManager.Domain.urlf.redirectType | String |  | 
-| CSCDomainManager.Domain.urlf.urlForwarding | Boolean |  | 
-| CSCDomainManager.Domain.whoisContacts.city | String |  | 
-| CSCDomainManager.Domain.whoisContacts.contactType | String |  | 
+| CSCDomainManager.Domain.customFields.value | String | The value of custom fields associated with the domain. | 
+| CSCDomainManager.Domain.dnsType | String | The type of DNS used by the domain. | 
+| CSCDomainManager.Domain.dnssecActivated | String | Indicates whether DNSSEC is activated for the domain. | 
+| CSCDomainManager.Domain.domain | String | The domain name. | 
+| CSCDomainManager.Domain.extension | String | The extension of the domain, such as .com, .net, etc. | 
+| CSCDomainManager.Domain.idn | String | Indicates if the domain is an Internationalized Domain Name \(IDN\). | 
+| CSCDomainManager.Domain.idnReferenceName | String | The reference name for the Internationalized Domain Name \(IDN\). | 
+| CSCDomainManager.Domain.lastModifiedDate | Date | The date when the domain was last modified. | 
+| CSCDomainManager.Domain.lastModifiedDescription | String | A description of the last modification made to the domain. | 
+| CSCDomainManager.Domain.lastModifiedReason | String | The reason for the last modification of the domain. | 
+| CSCDomainManager.Domain.localAgent | Boolean | Indicates if a local agent is associated with the domain. | 
+| CSCDomainManager.Domain.managedStatus | String | The managed status of the domain. | 
+| CSCDomainManager.Domain.nameServers | String | The name servers associated with the domain. | 
+| CSCDomainManager.Domain.newGtld | Boolean | Indicates if the domain is a new gTLD \(Generic Top-Level Domain\). | 
+| CSCDomainManager.Domain.paidThroughDate | Date | The date through which the domain has been paid. | 
+| CSCDomainManager.Domain.qualifiedDomainName | String | The fully qualified domain name \(FQDN\). | 
+| CSCDomainManager.Domain.registrationDate | Date | The date when the domain was registered. | 
+| CSCDomainManager.Domain.registryExpiryDate | Date | The expiration date of the domain registration in the registry. | 
+| CSCDomainManager.Domain.serverDeleteProhibited | Boolean | Indicates if the domain is prohibited from deletion by the server. | 
+| CSCDomainManager.Domain.serverTransferProhibited | Boolean | Indicates if the domain is prohibited from transfer by the server. | 
+| CSCDomainManager.Domain.serverUpdateProhibited | Boolean | Indicates if the domain is prohibited from updates by the server. | 
+| CSCDomainManager.Domain.urlf.redirectType | String | The type of URL forwarding redirect. | 
+| CSCDomainManager.Domain.urlf.urlForwarding | Boolean | Indicates if URL forwarding is enabled for the domain. | 
+| CSCDomainManager.Domain.whoisContacts.city | String | The city of the WHOIS contact. | 
+| CSCDomainManager.Domain.whoisContacts.contactType | String | The type of WHOIS contact \(e.g., Registrant, Admin, Tech\). | 
 | Domain.WHOIS.Admin.Country | String | The country of the admin contact in the WHOIS record. | 
 | Domain.WHOIS.Admin.Email | String | The email of the admin contact in the WHOIS record. | 
 | Domain.WHOIS.Admin.Name | String | The name of the admin contact in the WHOIS record. | 
