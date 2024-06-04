@@ -931,6 +931,10 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+        - RSA
+        - ECDSA
+      auto: PREDEFINED
     - name: copy_from_ca
       isArray: false
       description: ID of any Local CA. If given, the csr properties are copied from the given CA.
@@ -979,6 +983,15 @@ script:
       required: false
       secret: false
       default: false
+      predefined:
+        - 256
+        - 384
+        - 521
+        - 1024
+        - 2048
+        - 3072
+        - 4096
+      auto: PREDEFINED
     outputs:
     - contextPath: CipherTrust.LocalCA.id
       description: Unique identifier for the CA.
