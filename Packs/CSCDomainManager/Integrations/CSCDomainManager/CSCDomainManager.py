@@ -499,6 +499,13 @@ def main() -> None:
     :rtype:
     """
 
+    args = {
+        'domain_name': 'csc-panw',
+        'registry_expiry_date': '22-Apr-2025',
+        'page': '2'
+    }
+    params_str = create_params_string(args)
+
     params = demisto.params()
     args = demisto.args()
 
