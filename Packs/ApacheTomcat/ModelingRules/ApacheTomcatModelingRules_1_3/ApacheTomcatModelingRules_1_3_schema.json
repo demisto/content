@@ -1,8 +1,0 @@
-{
-  "apache_tomcat_raw": {
-    "_raw_log": {
-      "type": "string",
-      "is_array": false
-    }
-  }
-}

@@ -1,6 +1,0 @@
-!commvault-security-set-disable-data-aging
-!commvault-security-get-generate-token
-!commvault-security-set-disable-saml-provider
-!commvault-security-get-copy-files-list-to-war-room
-!commvault-security-set-disable-user user_email='dummy@company.com'
-!commvault-security-get-generate-token

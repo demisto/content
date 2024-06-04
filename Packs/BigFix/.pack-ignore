@@ -1,9 +1,0 @@
-[file:BigFix_image.png]
-ignore=IM111
-
-[known_words]
-hcl
-
-[file:BigFix.yml]
-ignore=BA124
-

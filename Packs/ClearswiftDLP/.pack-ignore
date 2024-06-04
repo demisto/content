@@ -1,6 +1,0 @@
-[file:ClearswiftDLP.yml]
-ignore=MR108,PR101
-
-[known_words]
-dlp
-Clearswift

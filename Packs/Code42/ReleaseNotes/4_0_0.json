@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Deprecated code42-departingemployee-* and code42-highriskemployee-* commands. Use the code42-watchlist-* commands instead."
-}
