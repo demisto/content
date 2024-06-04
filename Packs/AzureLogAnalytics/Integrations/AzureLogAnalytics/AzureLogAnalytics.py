@@ -29,10 +29,11 @@ AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.az
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
-                 private_key, client_credentials, managed_identities_client_id=None):
+                 private_key, client_credentials, azure_cloud, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
         self.ms_client = MicrosoftClient(
@@ -47,7 +48,7 @@ class Client:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope='' if client_credentials else AUTH_CODE_SCOPE, #TODO: update 
+            scope='' if client_credentials else AUTH_CODE_SCOPE,
             tenant_id=tenant_id,
             auth_code=auth_code,
             ok_codes=(200, 202, 204, 400, 401, 403, 404, 409),
@@ -58,6 +59,7 @@ class Client:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
             command_prefix="azure-log-analytics",
+            azure_cloud = azure_cloud
         )
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
@@ -660,6 +662,7 @@ def main():
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             client_credentials=client_credentials,
+            azure_cloud=get_azure_cloud(params, 'Azure Log Analytics'),
             managed_identities_client_id=managed_identities_client_id,
         )
 
