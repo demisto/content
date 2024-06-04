@@ -1225,10 +1225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: bb00ca3d-82a5-4b82-8ce2-a5593eecb43b
+    taskid: b0a86d11-3080-4aa3-8b7e-dafc19c29ce4
     type: regular
     task:
-      id: bb00ca3d-82a5-4b82-8ce2-a5593eecb43b
+      id: b0a86d11-3080-4aa3-8b7e-dafc19c29ce4
       version: -1
       name: Set Number of Related Alerts
       description: |-
@@ -1268,7 +1268,7 @@ tasks:
     fieldMapping:
     - incidentfield: Number Of Found Related Alerts
       output:
-        simple: NumOfRelatedAlerts
+        simple: ${NumOfRelatedAlerts}
     - incidentfield: Alert Search Results
       output:
         complex:
