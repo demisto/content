@@ -34,9 +34,7 @@
         },
         {
             "integrations": "CSCDomainManager",
-            "playbookID": "CSCDomainManager_Test",
-            "timeout": 500,
-            "nightly": true
+            "playbookID": "CSCDomainManager_Test"
         },
         {
             "playbookID": "Test Playbook - NGFW Scan",
