@@ -2621,6 +2621,6 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "toVersion": "6.99.0",
-    "description": "XSOAR review dashboard can be used to get the playbooks, automations & system status in last 30 days",
+    "description": "XSOAR review dashboard can be used to get the playbooks, automations & system status in last 30 days. Note that 'CORE REST API' integration need to be enabled with admin credentials before start using this dashboard",
     "isPredefined": true
 }
