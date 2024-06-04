@@ -163,7 +163,10 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
             results = executor.map(run_command, accounts)
         return list(results)
 
-    return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
+    if (ROLE_NAME and not IS_ARN_PROVIDED):
+        support_multithreading()
+        return account_runner
+    return func
 
 
 """MAIN FUNCTIONS"""
