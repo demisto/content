@@ -1,15 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 from CSCDomainManager import Client
 from CSCDomainManager import csc_domains_search_command
@@ -34,6 +22,7 @@ ACCEPT_VAL = "example"
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 GET_REQUEST_EXAMPLE1 = util_load_json('./test_data/get_domain.json')
 GET_REQUEST_QUALIFIED_DOMAIN_NAME = util_load_json('./test_data/get_domain_qualified_domain_name.json')
@@ -62,7 +51,7 @@ def test_create_params_string():
     }
     params_str = create_params_string(args)
     assert params_str == 'filter=domain==csc-panw,registryExpiryDate==22-Apr-2025'
-    
+
     args = {
         'domain_name': 'csc-panw',
         'registry_expiry_date': '22-Apr-2025',
@@ -70,8 +59,7 @@ def test_create_params_string():
     }
     params_str = create_params_string(args)
     assert params_str == 'filter=domain==csc-panw,registryExpiryDate==22-Apr-2025&page=2'
-    
-    
+
     args = {
         'admin_email': 'example@panw.com',
         'email': 'example@panwcom',
@@ -79,19 +67,21 @@ def test_create_params_string():
     }
     params_str = create_params_string(args)
     assert params_str == 'filter=adminEmail==example@panw.com,email==example@panwcom,organization==panw'
-    
-    
+
+
 def test_get_domains_search_hr_fields():
     results = get_domains_search_hr_fields(DOMAINS_LIST)
     assert len(results) == 1
     assert len(results[0]) == 11
     assert results[0].get('Dns Type') == "CSC_BASIC"
-    
+
+
 def test_get_domains_configurations_hr_fields():
     results = get_domains_configurations_hr_fields(CONFIGURATIONS_LIST)
     assert len(results) == 1
     assert len(results[0]) == 9
     assert results[0].get('Domain extension') == 'biz'
+
 
 def test_get_domains_availability_check_hr_fields():
     results = get_domains_availability_check_hr_fields(AVAILABLE_DOMAINS_LIST)
@@ -99,19 +89,23 @@ def test_get_domains_availability_check_hr_fields():
     assert len(results[0]) == 6
     assert results[0].get('Message') == 'Domain already in portfolio'
 
+
 def test_get_domain_hr_fields():
     results = get_domain_hr_fields(DOMAIN_DOMAIN)
     assert len(results) == 17
     assert results.get('Domain') == 'example'
     assert results.get('Generic top-level domains') is False
 
+
 def test_get_whois_contacts_fields_for_search_domains():
     results = get_whois_contacts_fields_for_search_domains(WHOIS_CONTACTS, 'firstName')
     assert results == ['Domain', 'Domain', 'DNS']
 
+
 def test_get_whois_contacts_fields_for_domain():
     results = get_whois_contacts_fields_for_domain(WHOIS_CONTACTS, ['firstName', 'lastName'], 'REGISTRANT')
     assert results == ['Domain Administrator']
+
 
 def test_csc_domains_search(mocker):
     client = create_mock_client()

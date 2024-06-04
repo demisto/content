@@ -3,10 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
-# Disable insecure warnings
-# urllib3.disable_warnings()
-
-
 ''' CONSTANTS '''
 DEFAULT_PAGE = 1
 DEFAULT_PAGE_SIZE_SEARCH = 50
@@ -75,7 +71,6 @@ SELECTORS_MAPPING = {'domain_name': 'domain',
                      'page': 'page',
                      'page_size': 'size',
                      }
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
@@ -108,7 +103,7 @@ class Client(BaseClient):
         return results
 
 
-def create_params_string(args):
+def create_params_string(args) -> str:
     """
     Create a string of the params written by the given filters to use in http request
 
@@ -208,7 +203,7 @@ def get_domains_configurations_hr_fields(configurations) -> list:
     return filtered_configurations
 
 
-def get_domains_availability_check_hr_fields(available_domains):
+def get_domains_availability_check_hr_fields(available_domains) -> list:
     """
     Create a list of available domains with the fields for human readable, using the available_domains argument
 
@@ -336,7 +331,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def csc_domains_search_command(client: Client, args) -> Any:
+def csc_domains_search_command(client: Client, args) -> CommandResults:
     """
     Returning a list of domains with the applied filters
 
@@ -375,7 +370,7 @@ def csc_domains_search_command(client: Client, args) -> Any:
     return results
 
 
-def csc_domains_availability_check_command(client: Client, args) -> Any:
+def csc_domains_availability_check_command(client: Client, args) -> CommandResults:
     """
     Returning a list of available domains with the applied filters
 
@@ -400,7 +395,7 @@ def csc_domains_availability_check_command(client: Client, args) -> Any:
     return results
 
 
-def csc_domains_configuration_list_command(client: Client, args) -> Any:
+def csc_domains_configuration_list_command(client: Client, args) -> CommandResults:
     """
     Returning a list of domains configurations with the applied filters
 
@@ -436,7 +431,18 @@ def csc_domains_configuration_list_command(client: Client, args) -> Any:
     return results
 
 
-def domain(client, args, reliability) -> Any:
+def domain(client, args, reliability) -> CommandResults:
+    """
+    Gets the domain
+
+    Args:
+        client: CSCDomainManager client
+        args: demisto.args()
+        reliability: The source reliability. Default set to A.
+
+    Returns:
+       the domain information
+    """
     qualified_domain_name = args.get('domain')
     domain_json = client.send_get_request(url_suffix=f"/domains/{qualified_domain_name}", params="")
 
@@ -478,11 +484,6 @@ def domain(client, args, reliability) -> Any:
 
     hr_data = get_domain_hr_fields(domain_json)
 
-    # context_res = domain_json
-    # context_res.update(dbot_score.to_context())
-    # context_res.update(domain_context.to_context())
-
-    # demisto.log(context_res)
     results = CommandResults(
         readable_output=tableToMarkdown('Domain', hr_data, headers=HR_HEADERS_FOR_DOMAIN),
         outputs_prefix='CSCDomainManager.Domain',
@@ -492,19 +493,12 @@ def domain(client, args, reliability) -> Any:
     return results
 
 
-def main() -> None:
+def main():
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
-
-    args = {
-        'domain_name': 'csc-panw',
-        'registry_expiry_date': '22-Apr-2025',
-        'page': '2'
-    }
-    params_str = create_params_string(args)
 
     params = demisto.params()
     args = demisto.args()
@@ -517,7 +511,6 @@ def main() -> None:
         token = params.get('token', {}).get('password')
         api_key = params.get('credentials', {}).get('password')
 
-        # TODO to check
         reliability = params.get('integrationReliability')
         reliability = reliability if reliability else DBotScoreReliability.A
 
@@ -538,8 +531,7 @@ def main() -> None:
             return_results(results)
 
         elif demisto.command() == 'csc-domains-search':
-            results = csc_domains_search_command(client, args)
-            return_results(results)
+            return_results(csc_domains_search_command(client, args))
 
         elif demisto.command() == 'csc-domains-availability-check':
             return_results(csc_domains_availability_check_command(client, args))
