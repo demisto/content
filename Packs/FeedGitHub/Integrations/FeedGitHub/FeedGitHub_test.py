@@ -416,20 +416,3 @@ def test_filtering_stix_files():
         {'type': 'non-stix', 'id': 'non-stix--12345678-1234-5678-1234-567812345678'}
     ]
     assert filtering_stix_files(content_files) == expected_result
-
-
-# def test_main(mocker):
-#     import FeedGitHub
-#     client = mock_client()
-#     mocker.patch.object(demisto, "debug")
-#     mocker.patch.object(demisto, "error")
-#     mocker.patch.object(
-#         client,
-#         "get_commits_between_dates",
-#         return_value=[
-#             "9a611449423b9992c126c20e47c5de4f58fc1c0e",
-#             "aabaf42225cb4d18e338bc5c8c934f25be814704",
-#             "046a799ebe004e1bff686d6b774387b3bdb3d1ce",
-#         ],
-#     )
-#     mocker.patch.object(FeedGitHub, "get_indicators", return_value=(util_load_json("test_data/iterator-test.json"), None))
