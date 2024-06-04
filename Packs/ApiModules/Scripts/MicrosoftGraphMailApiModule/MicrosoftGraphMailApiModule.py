@@ -730,7 +730,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
         start_chunk_index = 0
         # The if is for adding functionality of inline attachment sending from layout
-        end_chunk_index = attachment_size - 1 if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
+        end_chunk_index = attachment_size if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
 
         chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 
@@ -741,6 +741,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             chunk_data=chunk_data,
             attachment_size=attachment_size
         )
+        demisto.debug(f"{response.status_code=}")
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
