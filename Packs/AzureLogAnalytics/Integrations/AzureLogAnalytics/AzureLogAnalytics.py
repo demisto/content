@@ -35,8 +35,12 @@ class Client:
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
+        suffix = (
+            f"subscriptions/{subscription_id}/resourceGroups/'{resource_group_name}/"
+            + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
+        )
+        base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
+
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,  # client_id for client credential
