@@ -1974,7 +1974,7 @@
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
     "fromVersion": "8.0.0",
-    "description": "XSOAR review dashboard can be used to get the playbooks, automations & incidents status in last 30 days",
+    "description": "XSOAR review dashboard can be used to get the playbooks, automations & incidents status in last 30 days. Note that 'CORE REST API' integration need to be enabled with admin credentials before start using this dashboard",
     "isPredefined": true,
     "marketplaces": [
     "xsoar_saas"
