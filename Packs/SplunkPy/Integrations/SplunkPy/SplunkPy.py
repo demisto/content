@@ -673,14 +673,17 @@ class Notable:
 
         for e in self.enrichments:
             if e.type == DRILLDOWN_ENRICHMENT and total_drilldown_searches > 1:
-                # A notable can have more than one drilldown search enrichment, in that case we will keep the searches results in
-                # a dictionary that it's keys are the search queries and the values are the search results
+                # A notable can have more than one drilldown search enrichment, in that case we keep the searches results in
+                # a list of dictionaries - each dict contains the query detail and the search results of a drilldown search
 
-                if not self.data.get(e.type, {}):  # first drilldown enrichment result to add - initiate the dict
-                    self.data[e.type] = {e.query_name: {"query_search": e.query_search, "query_results": e.data}}
+                drilldown_enrichment_details = {"query_name": e.query_name, "query_search": e.query_search,
+                                                "query_results": e.data, "enrichment_status": e.status}
+                
+                if not self.data.get(e.type):  # first drilldown enrichment result to add - initiate the list
+                    self.data[e.type] = [drilldown_enrichment_details]
 
                 else:  # there are previous drilldown enrichments in the notable's data
-                    self.data[e.type][e.query_name] = {"query_search": e.query_search, "query_results": e.data}
+                    self.data[e.type].append(drilldown_enrichment_details)
 
                 if not self.data.get('successful_drilldown_enrichment'):
                     # Drilldown enrichment is successful if at least one drilldown search was successful
@@ -1269,8 +1272,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     )
 
                     enrichment.status = Enrichment.FAILED
-                    demisto.error(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} was failed due to an error:\
-                                 {str(e)}')
+                    demisto.error(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} was failed.')
 
         if notable.handled():
             task_status = True

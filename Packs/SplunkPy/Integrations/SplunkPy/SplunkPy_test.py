@@ -1198,16 +1198,21 @@ def test_drilldown_searches_counter(enrichments, expected_result):
                         query_name='query_name2', query_search='query_search2', data=[{'result1': 'c'}, {'result2': 'd'}]),
       splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='3', status=splunk.Enrichment.SUCCESSFUL,
                         query_name='query_name3', query_search='query_search3', data=[{'result1': 'e'}, {'result2': 'f'}])],
-     {'query_name1': {'query_search': 'query_search1', 'query_results': [{'result1': 'a'}, {'result2': 'b'}]},
-      'query_name2': {'query_search': 'query_search2', 'query_results': [{'result1': 'c'}, {'result2': 'd'}]},
-      'query_name3': {'query_search': 'query_search3', 'query_results': [{'result1': 'e'}, {'result2': 'f'}]}}
+     [{'query_name': 'query_name1', 'query_search': 'query_search1', 'query_results': [{'result1': 'a'}, {'result2': 'b'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL},
+      {'query_name': 'query_name2', 'query_search': 'query_search2', 'query_results': [{'result1': 'c'}, {'result2': 'd'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL},
+      {'query_name': 'query_name3', 'query_search': 'query_search3', 'query_results': [{'result1': 'e'}, {'result2': 'f'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL}]
      ),
     ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
                         query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}]),
       splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2', status=splunk.Enrichment.SUCCESSFUL,
                         query_name='query_name2', query_search='query_search2', data=[{'result1': 'c'}, {'result2': 'd'}])],
-     {'query_name1': {'query_search': 'query_search1', 'query_results': [{'result1': 'a'}, {'result2': 'b'}]},
-      'query_name2': {'query_search': 'query_search2', 'query_results': [{'result1': 'c'}, {'result2': 'd'}]}}
+     [{'query_name': 'query_name1', 'query_search': 'query_search1', 'query_results': [{'result1': 'a'}, {'result2': 'b'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL},
+      {'query_name': 'query_name2', 'query_search': 'query_search2', 'query_results': [{'result1': 'c'}, {'result2': 'd'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL}]
      ),
     ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
                         query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}])],
