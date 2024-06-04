@@ -1,5 +1,8 @@
 import demistomock as demisto  # noqa: F401
+import re
 from CommonServerPython import *  # noqa: F401
+
+
 # type: ignore
 # mypy: ignore-errors
 from copy import deepcopy
@@ -392,6 +395,32 @@ class Client(BaseClient):
         params = remove_empty_elements({"q": query})
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
         return response
+
+    def worklog_attachment_get_request(self, worklog_id: str) -> List[fileResult]:
+        """
+        Get BmcITSM Work Log Attachments.
+
+        Args:
+            worklog_id (str): The Work Log ID to pull the attachments from.
+
+        Returns:
+            Dict[str, Any]: API response from BmcITSM.
+        """
+        attachments = []
+        for i in range(1,4):
+            res = self._http_request("GET",
+                                     f"arsys/v1/entry/HPD:WorkLog/{worklog_id}/attach/z2AF Work Log0{i}",
+                                     resp_type="response")
+            try:
+                content_disposition = res.headers['content-disposition']
+            except KeyError:
+                continue
+            fname = re.findall("filename\*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
+            fname = fname[0].strip().strip('"')
+            attachments.append(fileResult(fname, res.content))
+
+        return attachments
+        #return CommandResults(attachments)
 
     def ticket_delete_request(self, ticket_form: str, ticket_id: str) -> str:
         """
@@ -1673,6 +1702,46 @@ def service_request_definition_list_command(client: Client, args: Dict[str, Any]
         record_id_key="Request ID",
     )
     return command_results
+
+
+def worklog_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """List BmcITSM Work Log command.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    context_output_mapper = {
+        "Work Log Type": "Type",
+        "Description": "Description",
+        "Detailed Description": "DetailedDescription",
+        "Work Log Submitter": "Submitter",
+        "Communication Type": "CommunicationType",
+        "Communication Source": "CommunicationSource",
+        "Number of Attachments": "NumberOfAttachments",
+        "Work Log ID": "WorklogID",
+    }
+    args["ids"] = argToList(args.get("ticket_ids"))
+    command_results = list_command(
+        client,
+        args,
+        "HPD:WorkLog",
+        context_output_mapper,
+        header_prefix="List Work Logs.",
+        outputs_prefix="BmcITSM.WorkLog",
+        outputs_key_field="ID",
+        record_id_key="Incident Number",
+    )
+    return command_results
+
+
+def worklog_attachment_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    worklog_id = args.get("worklog_id")
+    res = client.worklog_attachment_get_request(worklog_id)
+    return res
 
 
 def incident_template_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3915,6 +3984,8 @@ def main() -> None:
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
             "bmc-itsm-ticket-delete": ticket_delete_command,
+            "bmc-itsm-worklog-list": worklog_list_command,
+            "bmc-itsm-worklog-attachment-get": worklog_attachment_get_command,
             "bmc-itsm-user-list": user_list_command,
             "bmc-itsm-company-list": company_list_command,
             "bmc-itsm-service-request-create": service_request_create_command,
@@ -3983,3 +4054,4 @@ def main() -> None:
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
+
