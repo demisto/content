@@ -27,7 +27,7 @@ configuration:
   section: Collect
   display: Indicator Reputation
   name: feedReputation
-  defaultvalue: None
+  defaultvalue: Good
   options:
   - None
   - Good
@@ -36,7 +36,7 @@ configuration:
   type: 18
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -98,14 +98,15 @@ configuration:
 - name: feedExpirationPolicy
   display: ''
   type: 17
+  defaultvalue: suddenDeath
   options:
+  - suddenDeath
   - never
   - interval
   - indicatorType
-  - suddenDeath
   section: Collect
   required: false
-- defaultvalue: '720'
+- defaultvalue: '1440'
   name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
