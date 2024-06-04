@@ -22,6 +22,17 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - Identity Analytics - Alert Handling",
+            "integrations": [
+                "Active Directory Query v2",
+                "VirusTotal (API v3)"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "virus_total_v3"
+            ]
+        },
+        {
             "playbookID": "Endpoint Investigation Plan - Test",
             "timeout": 600
         },

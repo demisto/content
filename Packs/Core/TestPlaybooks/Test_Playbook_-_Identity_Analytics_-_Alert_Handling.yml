@@ -1,0 +1,2071 @@
+id: Test Playbook - Identity Analytics - Alert Handling
+version: -1
+name: Test Playbook - Identity Analytics - Alert Handling
+description: |-
+  This playbook tests the ‘Identity Analytics - Alert Handling' playbook which is part of the ‘Core’ pack.
+
+  The following tests are conducted in the playbook:
+  1-Confirm that alert fields were populated correctly by the custom output mapping rules and the ‘setalert’ automation.
+  2- Ensure that the context data is correctly extracted.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
+    type: start
+    task:
+      id: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
+    type: regular
+    task:
+      id: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 21a38306-359b-466b-8f13-29c254dd1489
+    type: regular
+    task:
+      id: 21a38306-359b-466b-8f13-29c254dd1489
+      version: -1
+      name: Get Available Users - AD
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4208cc5d-a495-4b58-8390-e2ec20b47d70
+    type: condition
+    task:
+      id: 4208cc5d-a495-4b58-8390-e2ec20b47d70
+      version: -1
+      name: Users Retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "304"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ActiveDirectory.Users.name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 350e14ec-8eae-4ea7-8ce7-ce5890e6c63e
+    type: title
+    task:
+      id: 350e14ec-8eae-4ea7-8ce7-ce5890e6c63e
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "269"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4931b845-286f-4a29-8c88-8f36d375bd3e
+    type: title
+    task:
+      id: 4931b845-286f-4a29-8c88-8f36d375bd3e
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+      - "302"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: bf93b539-fca2-4775-8749-ef27e98f7ae0
+    type: condition
+    task:
+      id: bf93b539-fca2-4775-8749-ef27e98f7ae0
+      version: -1
+      name: Verify Number Of Related Alerts
+      description: Verify that the ‘NumOfRelatedAlerts’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: NumOfRelatedAlerts
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: e514c625-9b92-4ba3-84a8-aa67c4f87f6b
+    type: regular
+    task:
+      id: e514c625-9b92-4ba3-84a8-aa67c4f87f6b
+      version: -1
+      name: Verify Context Error - Number Of Related Alerts
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'NumOfRelatedAlerts' context key was not extracted properly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'key' input configuration was changed for the 'SetAndHandleEmpty' automation used in the 'Set Number of Related Alerts' task.
+          3- The 'value' input configuration was changed for the 'SetAndHandleEmpty' automation used in the 'Set Number of Related Alerts' task.
+          4- the 'Get entity alerts by MITRE tactics' playbook did not return any results.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "256":
+    id: "256"
+    taskid: a9a1c41e-894a-466e-8e4a-41f22b84dde4
+    type: title
+    task:
+      id: a9a1c41e-894a-466e-8e4a-41f22b84dde4
+      version: -1
+      name: Done Verifying Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "306"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "265":
+    id: "265"
+    taskid: ae8a00cf-273e-47aa-8238-29a9b26144d9
+    type: regular
+    task:
+      id: ae8a00cf-273e-47aa-8238-29a9b26144d9
+      version: -1
+      name: Set 'Username' To Alert Field
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      username:
+        complex:
+          root: ActiveDirectory.Users
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ActiveDirectory.Users.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ActiveDirectory.Users.mail
+                iscontext: true
+              ignorecase: true
+          accessor: name
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "266":
+    id: "266"
+    taskid: 71275f55-c66c-49bd-84ac-697fe422afff
+    type: playbook
+    task:
+      id: 71275f55-c66c-49bd-84ac-697fe422afff
+      version: -1
+      name: Identity Analytics - Alert Handling
+      description: |-
+        The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
+
+        Analysis:
+        - Enriches the IP and the account, providing additional context and information about these indicators.
+
+        Verdict:
+        - Determines the appropriate verdict based on the data collected from the enrichment phase.
+
+        Investigation:
+        - Checks for related XDR alerts to the user by Mitre tactics to identify malicious activity.
+        - Checks for specific arguments for malicious usage from Okta using the 'Okta User Investigation' sub-playbook.
+        - Checks for specific arguments for malicious usage from Azure using the 'Azure User Investigation' sub-playbook.
+
+        Verdict Handling:
+        - Handles malicious alerts by initiating appropriate response actions, including blocking malicious IP and revoking or clearing user's sessions.
+        - Handles non-malicious alerts identified during the investigation.
+      playbookName: Identity Analytics - Alert Handling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoContainment:
+        simple: "False"
+      AutoRemediation:
+        simple: "False"
+      AzureMfaFailedLogonThreshold:
+        simple: "1"
+      ClearUserSessions:
+        simple: "False"
+      FailedLogonThreshold:
+        simple: "1"
+      OktaSuspiciousEventsThreshold:
+        simple: "1"
+      RelatedAlertsThreshold:
+        simple: "1"
+      UserContainment:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "268":
+    id: "268"
+    taskid: 236b39f9-f21e-4df3-84e6-1001159bbdae
+    type: regular
+    task:
+      id: 236b39f9-f21e-4df3-84e6-1001159bbdae
+      version: -1
+      name: Set 'IP.Address' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      key:
+        simple: IP.Address
+      value:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1860,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: 460da925-cd41-41d0-861d-a060b36133cb
+    type: title
+    task:
+      id: 460da925-cd41-41d0-861d-a060b36133cb
+      version: -1
+      name: Check Alert Field
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "270"
+      - "272"
+      - "274"
+      - "276"
+      - "278"
+      - "280"
+      - "282"
+      - "284"
+      - "286"
+      - "288"
+      - "290"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "270":
+    id: "270"
+    taskid: a62c74a2-f5b4-4fe5-83c6-c9c83b93c222
+    type: condition
+    task:
+      id: a62c74a2-f5b4-4fe5-83c6-c9c83b93c222
+      version: -1
+      name: Verify Number Of Found Related Alerts
+      description: Verify that the ‘numberoffoundrelatedalerts’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "271"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: alert.numberoffoundrelatedalerts
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "271":
+    id: "271"
+    taskid: 3358070e-b0bd-49ba-8e56-cb486474d5d5
+    type: regular
+    task:
+      id: 3358070e-b0bd-49ba-8e56-cb486474d5d5
+      version: -1
+      name: Verify Context Error - Number Of Found Related Alerts
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘numberoffoundrelatedalerts’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'key' input configuration was changed for the 'SetAndHandleEmpty' automation used in the 'Set Number of Related Alerts' task.
+          3- The 'value' input configuration was changed for the 'SetAndHandleEmpty' automation used in the 'Set Number of Related Alerts' task.
+          4- the 'Get entity alerts by MITRE tactics' playbook did not return any results.
+          5- The mapping rule for the 'Number Of Found Related Alerts' alert field was removed.
+          6- A change was made to the 'outputs' value for the 'Number Of Found Related Alerts' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "272":
+    id: "272"
+    taskid: 52336c7a-87b8-4fc1-889d-52b5c8da9736
+    type: condition
+    task:
+      id: 52336c7a-87b8-4fc1-889d-52b5c8da9736
+      version: -1
+      name: Verify Alert Search Results
+      description: Verify that the ‘alertsearchresults’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "273"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.alertsearchresults
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: 5fe1b2d8-8b2a-4cef-8d54-5a7602f28d07
+    type: regular
+    task:
+      id: 5fe1b2d8-8b2a-4cef-8d54-5a7602f28d07
+      version: -1
+      name: Verify Context Error - Alert Search Results
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘alertsearchresults’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- the 'Get entity alerts by MITRE tactics' playbook did not return any results.
+          3- The mapping rule for the 'Alert Search Results' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'Alert Search Results' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "274":
+    id: "274"
+    taskid: 817d975c-7f22-40a7-8c0b-b92df7f67a0a
+    type: condition
+    task:
+      id: 817d975c-7f22-40a7-8c0b-b92df7f67a0a
+      version: -1
+      name: Verify User Risk Level
+      description: Verify that the ‘userrisklevel’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "275"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.userrisklevel
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "275":
+    id: "275"
+    taskid: 0a82551d-3257-4113-8ed4-ff0a860e9126
+    type: regular
+    task:
+      id: 0a82551d-3257-4113-8ed4-ff0a860e9126
+      version: -1
+      name: Verify Context Error - User Risk Level
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘userrisklevel’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- the 'Get entity alerts by MITRE tactics' playbook did not return any results.
+          3- The mapping rule for the 'User Risk Level' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'User Risk Level' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "276":
+    id: "276"
+    taskid: 9d4a9ac2-c203-405d-8726-f6b286663e3c
+    type: condition
+    task:
+      id: 9d4a9ac2-c203-405d-8726-f6b286663e3c
+      version: -1
+      name: Verify Failed Logon Events
+      description: Verify that the ‘failedlogonevents’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "277"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.failedlogonevents
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "277":
+    id: "277"
+    taskid: 5edb80fe-b6c8-4ab3-8a9e-cd83ac6eb77d
+    type: regular
+    task:
+      id: 5edb80fe-b6c8-4ab3-8a9e-cd83ac6eb77d
+      version: -1
+      name: Verify Context Error - Failed Logon Events
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘failedlogonevents’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- the 'Azure - User Investigation' playbook did not return any results.
+          3- The mapping rule for the 'Failed Logon Events' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'Failed Logon Events' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "278":
+    id: "278"
+    taskid: 99f406f9-0842-4743-8738-22ff862893db
+    type: condition
+    task:
+      id: 99f406f9-0842-4743-8738-22ff862893db
+      version: -1
+      name: Verify Email
+      description: Verify that the ‘email’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "279"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.email
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1750,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "279":
+    id: "279"
+    taskid: fbf13d29-ccfa-4bbd-883c-2fcb256cd8be
+    type: regular
+    task:
+      id: fbf13d29-ccfa-4bbd-883c-2fcb256cd8be
+      version: -1
+      name: Verify Context Error - Email
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘email’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' and the 'Fetch cloud alert extra data' playbook did not return any results.
+          3- The mapping rule for the 'Email' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'Email' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1750,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "280":
+    id: "280"
+    taskid: 8482abdf-1621-4901-83d8-b352be77ae97
+    type: condition
+    task:
+      id: 8482abdf-1621-4901-83d8-b352be77ae97
+      version: -1
+      name: Verify Account Member Of
+      description: Verify that the ‘accountmemberof’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "281"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.accountmemberof
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2150,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "281":
+    id: "281"
+    taskid: efd6b953-3e67-4871-8652-254813202dce
+    type: regular
+    task:
+      id: efd6b953-3e67-4871-8652-254813202dce
+      version: -1
+      name: Verify Context Error - Account Member Of
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘accountmemberof’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
+          3- The mapping rule for the 'Account Member Of' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'Account Member Of' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2150,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "282":
+    id: "282"
+    taskid: 11de9847-b002-44f9-8053-20cc37a99d56
+    type: condition
+    task:
+      id: 11de9847-b002-44f9-8053-20cc37a99d56
+      version: -1
+      name: Verify Cloud Account ID
+      description: Verify that the ‘cloudaccountid’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "283"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.cloudaccountid
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2540,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "283":
+    id: "283"
+    taskid: bb482d29-c2de-4a34-82ab-89d52cdcd420
+    type: regular
+    task:
+      id: bb482d29-c2de-4a34-82ab-89d52cdcd420
+      version: -1
+      name: Verify Context Error - Cloud Account ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘cloudaccountid’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
+          3- The mapping rule for the 'Cloud Account ID' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'Cloud Account ID' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2540,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "284":
+    id: "284"
+    taskid: 7f3dc8fe-a21d-45e2-8079-e47b29548826
+    type: condition
+    task:
+      id: 7f3dc8fe-a21d-45e2-8079-e47b29548826
+      version: -1
+      name: Verify Account ID
+      description: Verify that the ‘accountid’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "285"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.accountid
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2930,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "285":
+    id: "285"
+    taskid: 1408e059-4b84-45e9-8a59-df2fd349cfb5
+    type: regular
+    task:
+      id: 1408e059-4b84-45e9-8a59-df2fd349cfb5
+      version: -1
+      name: Verify Context Error - Account ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘accountid’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
+          3- The mapping rule for the 'Account ID' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'Account ID' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2930,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "286":
+    id: "286"
+    taskid: a8ebc973-1d72-4cc1-83d3-626ab658cd87
+    type: condition
+    task:
+      id: a8ebc973-1d72-4cc1-83d3-626ab658cd87
+      version: -1
+      name: Verify SAM Account Name
+      description: Verify that the ‘sAMAccountName’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "287"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.samaccountname
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3320,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "287":
+    id: "287"
+    taskid: 63b1137e-cfc9-4ef3-886f-31db0331ea9f
+    type: regular
+    task:
+      id: 63b1137e-cfc9-4ef3-886f-31db0331ea9f
+      version: -1
+      name: Verify Context Error - SAM Account Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘ sAMAccountName’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
+          3- The mapping rule for the 'sAMAccountName' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'sAMAccountName' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3320,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "288":
+    id: "288"
+    taskid: 401cc249-60c8-452e-8680-c9e1ed514f0c
+    type: condition
+    task:
+      id: 401cc249-60c8-452e-8680-c9e1ed514f0c
+      version: -1
+      name: Verify Account Status
+      description: Verify that the ‘accountstatus’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "289"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.accountstatus
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3710,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "289":
+    id: "289"
+    taskid: a9f70512-1077-4e38-845f-3a2b2ce38040
+    type: regular
+    task:
+      id: a9f70512-1077-4e38-845f-3a2b2ce38040
+      version: -1
+      name: Verify Context Error - Account Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘ accountstatus’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
+          3- The mapping rule for the 'accountstatus' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'accountstatus' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3710,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "290":
+    id: "290"
+    taskid: b10ebe76-383f-4d92-8b32-21cbd22c1711
+    type: condition
+    task:
+      id: b10ebe76-383f-4d92-8b32-21cbd22c1711
+      version: -1
+      name: Verify Manager Email Address
+      description: Verify that the ‘manageremailaddress’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "291"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.manageremailaddress
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4100,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "291":
+    id: "291"
+    taskid: aeb4a8cf-2829-4b3e-8a36-f2a4bbfbe210
+    type: regular
+    task:
+      id: aeb4a8cf-2829-4b3e-8a36-f2a4bbfbe210
+      version: -1
+      name: Verify Context Error - Manager Email Address
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘ manageremailaddress’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
+          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
+          3- The mapping rule for the 'manageremailaddress' alert field was removed.
+          4- A change was made to the 'outputs' value for the 'manageremailaddress' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4100,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "292":
+    id: "292"
+    taskid: bffdbf80-8b7e-43a3-8bd3-5d33d44718b1
+    type: regular
+    task:
+      id: bffdbf80-8b7e-43a3-8bd3-5d33d44718b1
+      version: -1
+      name: Set 'foundIncidents' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      key:
+        simple: foundIncidents.severity
+      value:
+        simple: high
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "293":
+    id: "293"
+    taskid: 8fc71761-3c79-452e-8c5f-047802502bb5
+    type: regular
+    task:
+      id: 8fc71761-3c79-452e-8c5f-047802502bb5
+      version: -1
+      name: Set 'event.auth_identity' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Core.OriginalAlert.event.auth_identity
+      stringify:
+        simple: "true"
+      value:
+        simple: test@test.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "294":
+    id: "294"
+    taskid: 5546ea04-8718-4b78-833f-0e477209aaaa
+    type: regular
+    task:
+      id: 5546ea04-8718-4b78-833f-0e477209aaaa
+      version: -1
+      name: Set 'AzureFailLoginCount' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      key:
+        simple: AzureFailLoginCount
+      value:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "295":
+    id: "295"
+    taskid: ac4f561c-7127-4e3c-824d-6c23a9dadab0
+    type: regular
+    task:
+      id: ac4f561c-7127-4e3c-824d-6c23a9dadab0
+      version: -1
+      name: Set 'NumOfOktaFailedLogon' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      key:
+        simple: NumOfOktaFailedLogon
+      value:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "296":
+    id: "296"
+    taskid: 882ae487-3956-48c3-8662-a3695958307b
+    type: regular
+    task:
+      id: 882ae487-3956-48c3-8662-a3695958307b
+      version: -1
+      name: Set 'ActiveDirectory' to Context
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      keys:
+        simple: mail,memberOf,sAMAccountName
+      parent:
+        simple: ActiveDirectory
+      values:
+        simple: test2@test.com,CN=Domain Admins,test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "297":
+    id: "297"
+    taskid: b8a43984-0118-4663-810d-24f442aa83bf
+    type: regular
+    task:
+      id: b8a43984-0118-4663-810d-24f442aa83bf
+      version: -1
+      name: Set 'MSGraphUser' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      key:
+        simple: MSGraphUser.ID
+      value:
+        simple: "000000000001"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "298":
+    id: "298"
+    taskid: 56998d02-5041-4ebb-82c6-a18147a74882
+    type: regular
+    task:
+      id: 56998d02-5041-4ebb-82c6-a18147a74882
+      version: -1
+      name: Set 'Account' to Context
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      keys:
+        simple: ID,Status
+      parent:
+        simple: Account
+      values:
+        simple: 001,disable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "299":
+    id: "299"
+    taskid: a4e7f681-8c38-409b-8685-743c5d7165fa
+    type: regular
+    task:
+      id: a4e7f681-8c38-409b-8685-743c5d7165fa
+      version: -1
+      name: Set 'UserManagerEmail' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      key:
+        simple: UserManagerEmail
+      value:
+        simple: ManagerEmail@test.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "300":
+    id: "300"
+    taskid: aab9a8c2-3b0a-489d-8fda-73ccd6560ebe
+    type: condition
+    task:
+      id: aab9a8c2-3b0a-489d-8fda-73ccd6560ebe
+      version: -1
+      name: Verify Verdict
+      description: Verify that the ‘ Verdict’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "301"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4490,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "301":
+    id: "301"
+    taskid: f9b9a665-b49f-4a89-83b6-75bf369bdf25
+    type: regular
+    task:
+      id: f9b9a665-b49f-4a89-83b6-75bf369bdf25
+      version: -1
+      name: Verify Context Error - Verdict
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘ Verdict’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set Alert Verdict' task.
+          2- The mapping rule for the 'Verdict' alert field was removed.
+          3- A change was made to the 'outputs' value for the 'Verdict' alert field mapping rule.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4490,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "302":
+    id: "302"
+    taskid: 64977738-e4a1-4e2c-81af-4cc22f485b98
+    type: condition
+    task:
+      id: 64977738-e4a1-4e2c-81af-4cc22f485b98
+      version: -1
+      name: Verify Verdict
+      description: Verify that the ‘Verdict’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "303"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "303":
+    id: "303"
+    taskid: aef7bcc6-5955-41db-8b1c-90c7e731552a
+    type: regular
+    task:
+      id: aef7bcc6-5955-41db-8b1c-90c7e731552a
+      version: -1
+      name: Verify Context Error - Verdict
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Verdict' context key was not extracted properly. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set Alert Verdict' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set Alert Verdict' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Set Alert Verdict' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "304":
+    id: "304"
+    taskid: 7b9f528a-6bbb-401e-8e83-442ff1775743
+    type: title
+    task:
+      id: 7b9f528a-6bbb-401e-8e83-442ff1775743
+      version: -1
+      name: Set Information to Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "265"
+      - "268"
+      - "292"
+      - "294"
+      - "295"
+      - "296"
+      - "297"
+      - "298"
+      - "299"
+      - "293"
+      - "308"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "305":
+    id: "305"
+    taskid: ad6203d9-d2b1-4572-85d3-d18aaeafbc46
+    type: title
+    task:
+      id: ad6203d9-d2b1-4572-85d3-d18aaeafbc46
+      version: -1
+      name: Done Verifying Alert Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "306"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "306":
+    id: "306"
+    taskid: 277d4cdf-d375-490e-8974-bce285c77675
+    type: title
+    task:
+      id: 277d4cdf-d375-490e-8974-bce285c77675
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "308":
+    id: "308"
+    taskid: 6b85e306-5f16-490f-8aef-410032b8737f
+    type: regular
+    task:
+      id: 6b85e306-5f16-490f-8aef-410032b8737f
+      version: -1
+      name: Set 'RiskyUser.risk_level' to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Core.RiskyUser.risk_level
+      stringify:
+        simple: "true"
+      value:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "302_256_yes": 0.17,
+      "70_256_yes": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 7520,
+        "x": -4490,
+        "y": -150
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2
