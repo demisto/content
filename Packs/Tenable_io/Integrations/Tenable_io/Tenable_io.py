@@ -291,9 +291,12 @@ class Client(BaseClient):
         Returns: Chunk of vulnerabilities from API.
 
         """
+
         result = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
                                     headers=self._headers, ok_codes=(200, 404))
+        demisto.debug(f"result returned from api: {result}")
         if isinstance(result, dict) and result.get("status") == 404:
+            demisto.debug(f"result message is: {result.get('message')}")
             if result.get('message') == 'Export expired or not found':
                 return EXPORT_EXPIRED
             else:
@@ -721,6 +724,7 @@ def get_vulnerabilities_chunks(client: Client, export_uuid: str):
             if result == INVALID_CHUNK:
                 continue
             vulnerabilities.extend(result)
+    demisto.debug(f"vulns are: {vulnerabilities}")
     for vuln in vulnerabilities:
         vuln['_time'] = vuln.get('received') or vuln.get('indexed')
     return vulnerabilities, status
