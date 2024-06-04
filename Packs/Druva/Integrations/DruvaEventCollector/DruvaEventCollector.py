@@ -154,6 +154,11 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict
     """
 
     response = client.search_events(tracker)
+
+    demisto.debug(f'##################### Number of Events: {len(response["events"])} ##################################')
+    demisto.debug(
+        f'########## Response - first raw event - {response["events"][0] if response["events"] else "No events"} ##############')
+
     return response["events"], response["tracker"]
 
 
@@ -169,6 +174,7 @@ def fetch_events(
         last_run (dict): A dict containing the next tracker (a pointer to the next event).
         events (list): List of events that will be created in XSIAM.
     """
+    demisto.debug(f'##################### Last Run: {last_run} ##################################')
     final_events: list[dict] = []
     last_interation: bool = False
     while len(final_events) < max_fetch and not last_interation:
