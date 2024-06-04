@@ -77,8 +77,7 @@ def create_x509_certificate_grids(string_object: Optional[str]) -> list:
     Creates a grid field related to the subject and issuer field of the x509 certificate object.
 
     Args:
-        string_object (Optional[str]): A str in format of C=ZA,ST=Western Cape,L=Cape Town,O=Thawte.
-
+        string_object (Optional[str]): A str in format of C=ZA, Inc.,ST=Western Cape,L=Cape Town,O=Thawte.
     Returns:
         list: The return value. A list of dict [{"title": "C", "data": "ZA"}].
     """
@@ -87,11 +86,15 @@ def create_x509_certificate_grids(string_object: Optional[str]) -> list:
         key_value_pairs = string_object.split(',')
         for pair in key_value_pairs:
             result_grid = {}
+            # '=' in pair means we extracted the right entries for k/v
             if '=' in pair:
                 key, value = pair.split('=', 1)
                 result_grid['title'] = key
                 result_grid['data'] = value
                 result_grid_list.append(result_grid)
+            # If no '=' that means we had a ',' within the value we need to append
+            else:
+                result_grid_list[-1]['data'] = (result_grid_list[-1]['data'] + ", " + pair).replace("\\", "")
     return result_grid_list
 
 
@@ -290,8 +293,11 @@ def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
 
     if limit and limit <= 0:
         raise ValueError('Limit must be a positive number.')
+    if limit and limit > DEFAULT_ASSET_SEARCH_LIMIT:
+        raise ValueError('Limit must be less that the API limit of ' + str(DEFAULT_ASSET_SEARCH_LIMIT) + '.')
     if asset_type == '':
         raise ValueError('need to specify at least one asset type')
+    
     indicators, raw_res = fetch_indicators(client=client, limit=limit, asset_type=asset_type)
 
     indicators = indicators[:limit] if isinstance(indicators, list) \
