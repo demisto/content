@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import re
 from CommonServerPython import *  # noqa: F401
-
-
 # type: ignore
 # mypy: ignore-errors
 from copy import deepcopy
@@ -420,7 +418,6 @@ class Client(BaseClient):
             attachments.append(fileResult(fname, res.content))
 
         return attachments
-        #return CommandResults(attachments)
 
     def ticket_delete_request(self, ticket_form: str, ticket_id: str) -> str:
         """
