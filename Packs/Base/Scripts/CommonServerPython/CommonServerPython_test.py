@@ -1276,7 +1276,7 @@ def test_fileResult(mocker, request, data, data_expected, filename):
     file_id = str(uuid.uuid4())
     mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
     mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
-    file_name = f"{file_id}_fileresult"
+    file_name = "{}_fileresult".format(file_id)
 
     def cleanup():
         try:
