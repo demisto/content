@@ -412,4 +412,4 @@ The supported fields in the mirroring out process are:
 **Important Note:**
 You have two options how to close Varonis Alert:
  - The first option is to change the Varonis Alert Status field in the XSOAR incident. In this case, the status of the alert in Varonis SaaS service will be change by the mirroring functionality, but the Incident in XSOAR won't be closed.
- - The second one is to close an Incident. In this case, the Varonis Alert will be closed on the Varonis side by the post-processing script.
+ - The second one is to close the incident in XSOAR. In this case, the Varonis Alert will be closed on the Varonis side by the post-processing script.
