@@ -249,6 +249,7 @@ def submit_url(client, args):
         )
 
     return_error("Validation Failed. Please check the format of the submitted URL")
+    return None
 
 
 def submit_file(client, args):
@@ -410,9 +411,8 @@ def get_job_summary(client, args):
             if resources:
                 for resource in resources:
                     file_metadata = resource.get('FileMetadata')
-                    if file_metadata:
-                        if file_metadata.get('SHA256') == submission.get('SHA256'):
-                            size = file_metadata.get('Size')
+                    if file_metadata and file_metadata.get('SHA256') == submission.get('SHA256'):
+                        size = file_metadata.get('Size')
 
             dbot_score = Common.DBotScore(
                 indicator=submission.get('SHA256'),
