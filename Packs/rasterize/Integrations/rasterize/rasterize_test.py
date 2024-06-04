@@ -9,7 +9,6 @@ import http.server
 import time
 import threading
 import pytest
-import csv
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)

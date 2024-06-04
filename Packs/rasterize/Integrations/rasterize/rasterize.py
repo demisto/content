@@ -758,7 +758,7 @@ def perform_rasterize(path: str | list[str],
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
     if browser:
-        demisto.log("in perform_rasterize found browser")
+        demisto.log("in perform_rasterize found browser")   # TODO: Remove log
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
