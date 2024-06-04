@@ -5,9 +5,6 @@ args:
 - description: ASM alert rule ID.
   name: asm_rule_id
   required: true
-- description: Version of the package to be installed.
-  name: version
-  required: true
 - auto: PREDEFINED
   description: Region of the EC2 instance.
   name: region
@@ -30,6 +27,7 @@ args:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
+  required: true
 - description: Name of an AWS role to assume (should be the same for all organizations).
   name: assume_role
 comment: This is an AWS script that upgrades a package on the AWS EC2 instance.

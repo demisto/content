@@ -14,8 +14,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Set
 * AWSEC2PackageUpgrade
+* Set
 
 ### Commands
 
@@ -29,7 +29,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | ASM Rule ID | ASM rule ID | InsecureOpenSSH | Required |
 | Instance ID | Instance ID of the EC2 | i-0e3097bd313c4b430 | Required |
-| Version | Version of the Package | openssh-9.7p1 | Required |
 | Region | AWS Region of the EC2 instance. | us-east-1 | Optional |
 | Assume Role | AWS Role to be assumed. |  | Optional |
 

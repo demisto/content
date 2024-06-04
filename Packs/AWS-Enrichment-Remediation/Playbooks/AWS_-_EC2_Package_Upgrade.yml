@@ -5,7 +5,6 @@ inputSections:
   inputs:
   - ASM Rule ID
   - Instance ID
-  - Version
   - Region
   - Assume Role
   name: General (Inputs group)
@@ -22,12 +21,6 @@ inputs:
   required: true
   value:
     simple: i-0e3097bd313c4b430
-- description: Version of the Package
-  key: Version
-  playbookInputQuery:
-  required: true
-  value:
-    simple: openssh-9.7p1
 - description: AWS Region of the EC2 instance.
   key: Region
   playbookInputQuery:
@@ -118,11 +111,6 @@ tasks:
             value:
               simple: inputs.Instance ID
           operator: isExists
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.Version
-          operator: isExists
       label: "yes"
     continueonerrortype: ""
     id: "2"
@@ -141,12 +129,12 @@ tasks:
     task:
       brand: ""
       description: Determines if the AWS - Systems Manager integration instance is configured and Input values are defined.
-      id: 06711aea-d3db-4f90-85bc-212589b17506
+      id: c9d66d10-4666-4682-8542-cd79db2820e9
       iscommand: false
       name: Is AWS - Systems Manager enabled and are Input values defined?
       type: condition
       version: -1
-    taskid: 06711aea-d3db-4f90-85bc-212589b17506
+    taskid: c9d66d10-4666-4682-8542-cd79db2820e9
     timertriggers: []
     type: condition
     view: |-
@@ -211,13 +199,13 @@ tasks:
     task:
       brand: ""
       description: This is an AWS script that upgrades a package on the AWS EC2 instance.
-      id: 99a829d9-3349-4f06-80aa-c129b9b90873
+      id: 6be26195-bb94-4dbe-8d57-65b5a2795a4d
       iscommand: false
       name: 'AWS EC2 Package Upgrade '
       script: AWSEC2PackageUpgrade
       type: regular
       version: -1
-    taskid: 99a829d9-3349-4f06-80aa-c129b9b90873
+    taskid: 6be26195-bb94-4dbe-8d57-65b5a2795a4d
     timertriggers: []
     type: regular
     view: |-
@@ -421,7 +409,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       key:
-        simple: packageUpgradeFlag
+        simple: remediatedFlag
       stringify:
         simple: "false"
       value:
@@ -431,13 +419,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: e97509b4-66f8-40c3-87bb-35ac5648e95c
+      id: ce37dfb4-2343-454c-8b9f-359603b5cedb
       iscommand: false
-      name: Set packageUpgradeFlag to true
+      name: Set remediatedFlag to true
       script: Set
       type: regular
       version: -1
-    taskid: e97509b4-66f8-40c3-87bb-35ac5648e95c
+    taskid: ce37dfb4-2343-454c-8b9f-359603b5cedb
     timertriggers: []
     type: regular
     view: |-
@@ -460,7 +448,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       key:
-        simple: packageUpgradeFlag
+        simple: remediatedFlag
       stringify:
         simple: "false"
       value:
@@ -470,13 +458,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 9ec3ba73-e6d3-4750-8616-b226d99c693e
+      id: 11283910-296e-4999-8415-0c0c6d9b42d5
       iscommand: false
-      name: Set packageUpgradeFlag to false
+      name: Set remediatedFlag to false
       script: Set
       type: regular
       version: -1
-    taskid: 9ec3ba73-e6d3-4750-8616-b226d99c693e
+    taskid: 11283910-296e-4999-8415-0c0c6d9b42d5
     timertriggers: []
     type: regular
     view: |-
