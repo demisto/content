@@ -2,8 +2,8 @@ import json
 import io
 import demistomock as demisto
 
-from ArcannaAI import Client, get_jobs, post_event, get_default_job_id, set_default_job_id, get_event_status, \
-    send_event_feedback, get_feedback_field
+from ArcannaAI import Client, get_jobs, post_event, get_event_status, \
+    send_event_feedback
 
 client = Client(api_key="dummy", base_url="demisto.con", verify=False, proxy=False, default_job_id=-1)
 
@@ -57,23 +57,6 @@ arcanna_jobs_response = [
 arcanna_event_feedback_response = {
     "status": "updated"
 }
-
-
-def test_arcanna_get_default_job_id_command(mocker):
-    mocker.patch.object(client, "get_default_job_id", return_value=10)
-    command_result = get_default_job_id(client)
-    assert command_result.raw_response == 10
-
-
-def test_arcanna_set_default_job_id_command(mocker):
-    mocker.patch.object(client, "set_default_job_id")
-    mocker.patch.object(client, "get_default_job_id", return_value=10)
-    command_args = {
-        "job_id": 10
-    }
-    mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = set_default_job_id(client, command_args)
-    assert command_result.raw_response == 10
 
 
 def test_arcanna_get_jobs_command(mocker):
@@ -145,21 +128,12 @@ def test_arcanna_send_event_feedback_command(mocker):
     command_args = {
         "job_id": 10,
         "event_id": 10110011,
-        "close_reason": "Resolved",
+        "feedback": "Escalate",
+        "decision_set": ["Drop", "Escalate"],
         "username": "dbot"
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = send_event_feedback(client=client,
-                                         close_reasons=["False Positive","Resolved"],
-                                         args=command_args)
+    command_result = send_event_feedback(client=client, 1201, args=command_args)
 
     assert command_result.outputs_prefix == "Arcanna.Event"
     assert command_result.raw_response['status'] == "updated"
-
-
-def test_arcanna_get_feedback_field():
-    params = {
-        "closing_reason_field": "closeReason"
-    }
-    command_result = get_feedback_field(params)
-    assert command_result.outputs_prefix == "Arcanna.FeedbackField"
