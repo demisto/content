@@ -2629,6 +2629,7 @@ def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults
         'NetworkStatus': agent.get('networkStatus'),
         'ID': agent.get('id')
     } for agent in agents]
+    contents.append({'AgentsAffected': agents_affected})
 
     return CommandResults(
         readable_output=f'{agents_affected} agent(s) successfully connected to the network.',

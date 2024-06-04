@@ -988,6 +988,9 @@ script:
     description: Connects agents to the network.
     name: sentinelone-connect-agent
     outputs:
+    - contextPath: SentinelOne.Agent.AgentsAffected
+      description: The number of affected agents.
+      type: Number
     - contextPath: SentinelOne.Agent.NetworkStatus
       description: Agent network status.
       type: String
