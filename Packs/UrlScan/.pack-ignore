@@ -1,6 +1,0 @@
-[file:UrlScan.yml]
-ignore=IN124
-
-[file:UrlScan_image.png]
-ignore=IM111
-

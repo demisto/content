@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Attack surface rule command changed from ***asm-list-attack-surface-rules*** to ***asm-get-attack-surface-rules***."
-}

@@ -1,6 +1,0 @@
-[file:integration-EasyVista.yml]
-ignore=IN135
-
-[file:EasyVista.yml]
-ignore=BA124
-

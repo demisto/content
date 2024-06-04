@@ -1,7 +1,0 @@
-{
-    "error": {
-        "code": 400,
-        "message": "generic::invalid_argument: page token is not valid",
-        "status": "INVALID_ARGUMENT"
-    }
-}

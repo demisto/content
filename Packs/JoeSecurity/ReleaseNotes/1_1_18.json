@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The export_to_jbxview parameter is deprecated and are no longer used"
-}

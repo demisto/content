@@ -1,1 +1,0 @@
-!feedexpanse-get-indicators max_indicators=1 certificate=yes ip=yes domain=yes

@@ -1,9 +1,0 @@
-[file:Kafka_V2.yml]
-ignore=IN126,BA108,BA109
-
-[file:KafkaV3_image.png]
-ignore=IM111
-
-[file:Kafka_V2_image.png]
-ignore=IM111
-

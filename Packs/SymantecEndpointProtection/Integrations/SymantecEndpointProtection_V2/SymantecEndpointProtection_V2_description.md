@@ -1,1 +1,0 @@
-Integration with Symantec Endpoint Protection Manager using the SEPM REST API.

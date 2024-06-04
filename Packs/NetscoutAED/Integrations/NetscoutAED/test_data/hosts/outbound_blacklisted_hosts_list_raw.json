@@ -1,9 +1,0 @@
-{
-    "blacklisted-hosts": [
-        {
-            "annotation": "blacklisted outbound",
-            "hostAddress": "6.6.6.6",
-            "updateTime": 1615814171
-        }
-    ]
-}

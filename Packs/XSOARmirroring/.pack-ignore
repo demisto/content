@@ -1,6 +1,0 @@
-[file:classifier-mapper-incoming-XSOAR_Mirroring.json]
-ignore=BA101
-
-[known_words]
-playbookId
-UTC

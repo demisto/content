@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Updated the mapper QRadar - Generic Incoming Mapper to use Last Mirrored Time Stamp incident field instead of LastMirroredInTime incident field."
-}
