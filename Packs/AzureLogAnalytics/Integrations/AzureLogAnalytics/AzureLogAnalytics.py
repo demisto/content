@@ -1,4 +1,5 @@
 from collections.abc import Callable
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -23,7 +24,7 @@ SAVED_SEARCH_HEADERS = [
 ]
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
-AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation' # TODO: Update
+AUTH_CODE_SCOPE = "https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation"
 
 
 class Client:
@@ -59,7 +60,7 @@ class Client:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
             command_prefix="azure-log-analytics",
-            azure_cloud = azure_cloud
+            azure_cloud=azure_cloud
         )
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
