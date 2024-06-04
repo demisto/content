@@ -7,8 +7,7 @@ import json
 import urllib3
 import traceback
 import requests
-import time
-from typing import Any, Dict
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -110,11 +109,10 @@ def get_jobs(client: Client) -> CommandResults:
 def export_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
     event_id = args.get("event_id")
-
     result = client.export_event(job_id=job_id, event_id=event_id)
     headers = ["arcanna_event", "status", "ingest_timestamp","event_id", "error_message"]
     readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result)
-
+    
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
     }
@@ -126,13 +124,14 @@ def export_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> C
     )
 
 
+
+
 def trigger_training(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
     username = args.get("username", None)
     result = client.trigger_training(job_id=job_id, username=username)
     headers = ["result", "error_message"]
     readable_output = tableToMarkdown(name="Arcanna Training", headers=headers, t=result)
-
     outputs = {
         'Arcanna.Training(val.job_id && val.job_id === obj.job_id)': createContext(result)
     }
@@ -142,6 +141,7 @@ def trigger_training(client: Client, default_job_id: int, args: Dict[str, Any]) 
         outputs=outputs,
         raw_response=result
     )
+
 
 def get_decision_set(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
@@ -154,6 +154,7 @@ def get_decision_set(client: Client, default_job_id: int, args: Dict[str, Any]) 
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(outcome)
     }
+
 
     return CommandResults(
         readable_output=readable_output,
@@ -196,8 +197,10 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
         raw_response=result
     )
 
+
 def get_event_status(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
+
     event_id = args.get("event_id")
     result = client.get_event_status(job_id, event_id)
     
@@ -238,7 +241,6 @@ def send_event_feedback(client: Client, default_job_id: int, args: Dict[str, Any
     
     headers = ["feedback_status", "status", "details"]
     readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result)
-
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
     }
