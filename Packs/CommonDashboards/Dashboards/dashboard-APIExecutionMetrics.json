@@ -104,7 +104,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -136,7 +135,7 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "Successful vs. Rate Limited API Calls by Integration",
+                "name": "API Call Status By Integration",
                 "prevName": "Successful vs. Rate Limited API Calls by Integration",
                 "dataType": "metrics",
                 "widgetType": "bar",
@@ -184,6 +183,113 @@
                                     ]
                                 ],
                                 "name": "Success"
+                            },
+                            "Auth Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "AuthError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Auth Error"
+                            },
+                            "Connection Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ConnectionError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Connection Error"
+                            },
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Proxy Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ProxyError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Proxy Error"
+                            },
+                            "Retry Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "RetryError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Retry Error"
+                            },
+                            "SSL Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "SSLError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "SSL Error"
+                            },
+                            "Service Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ServiceError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Service Error"
+                            },
+                            "Timeout Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "TimeoutError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Timeout Error"
                             }
                         }
                     ],
@@ -204,23 +310,35 @@
                             "name": "VirusTotal (API v3)"
                         },
                         {
-                            "color": "#F50057",
-                            "name": "Rasterize"
+                            "color": "#229D80",
+                            "name": "Success"
                         },
                         {
-                            "color": "#ce5050",
+                            "color": "#F50057",
+                            "name": "General Error"
+                        },
+                        {
+                            "color": "#FFC4C6",
+                            "name": "Service Error"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "Auth Error"
+                        },
+                        {
+                            "color": "#FD5BDE",
                             "name": "Quota Error"
                         },
                         {
-                            "color": "#4fa327",
-                            "name": "Success"
+                            "color": "#01A2EC",
+                            "name": "Other"
                         }
                     ],
                     "limitType": "top",
-                    "valuesFormat": "abbreviated"
+                    "valuesFormat": "abbreviated",
+                    "hideLegend": false
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -278,7 +396,6 @@
                     "valuesFormat": "abbreviated"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -390,7 +507,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -534,7 +650,6 @@
                     "yAxisLabel": "Error count"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -661,7 +776,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -771,7 +885,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -881,7 +994,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1021,7 +1133,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1134,7 +1245,6 @@
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 3,
                 "widgetType": "line",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "x": 0,
@@ -1245,7 +1355,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1355,7 +1464,6 @@
                     "yAxisLabel": "Request Counts"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
                 "sizeInBytes": 0
             },
             "reflectDimensions": true
@@ -1373,7 +1481,6 @@
                 "version": 5,
                 "cacheVersn": 0,
                 "modified": "2024-05-21T19:31:05.883188536Z",
-                "created": "2024-05-21T10:22:20.546514077Z",
                 "sizeInBytes": 0,
                 "packID": "",
                 "packName": "",
