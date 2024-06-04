@@ -30,23 +30,23 @@ def main():
         if 'query_name' in drilldown_results[0]:
             # Get drilldown results of multiple drilldown searches
             markdown = "#### Drilldown Searches Results\n"
-            
+
             for drilldown in drilldown_results:
                 markdown += f"**Query Name:** {drilldown.get('query_name','')}\n\n **Query"\
-                f"Search:**\n{drilldown.get('query_search','')}\n\n **Results:**\n"
-                
+                    f"Search:**\n{drilldown.get('query_search','')}\n\n **Results:**\n"
+
                 if drilldown.get('enrichment_status') == 'Enrichment failed':
                     markdown += "\nDrilldown enrichment failed."
-                    
+
                 elif results := drilldown.get("query_results", []):
                     markdown += tableToMarkdown("", results[:MAX_RESULTS_TO_DISPLAY], headers=results[0].keys())
-                    #markdown += tableToMarkdown("", results, headers=results[0].keys())
-                    
+                    # markdown += tableToMarkdown("", results, headers=results[0].keys())
+
                 else:
                     markdown += "\nNo results found for drilldown search."
-                    
+
                 markdown += "\n\n"
-                
+
         else:
             # Drilldown results of a single drilldown search
             markdown = tableToMarkdown("", drilldown_results, headers=drilldown_results[0].keys())

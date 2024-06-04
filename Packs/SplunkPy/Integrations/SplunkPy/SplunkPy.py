@@ -678,7 +678,7 @@ class Notable:
 
                 drilldown_enrichment_details = {"query_name": e.query_name, "query_search": e.query_search,
                                                 "query_results": e.data, "enrichment_status": e.status}
-                
+
                 if not self.data.get(e.type):  # first drilldown enrichment result to add - initiate the list
                     self.data[e.type] = [drilldown_enrichment_details]
 
