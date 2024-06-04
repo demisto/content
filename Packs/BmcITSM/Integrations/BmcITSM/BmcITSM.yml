@@ -1,34 +1,38 @@
-category: Utilities
 commonfields:
   id: BmcITSM
   version: -1
+name: BmcITSM
+display: BmcITSM
+category: Utilities
+description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
-- additionalinfo: 'For Example: https://localhost:8008'
-  defaultvalue: https://localhost:8008
+- name: url
   display: Server URL
-  name: url
   required: true
+  defaultvalue: https://localhost:8008
   type: 0
-- display: User Name
-  displaypassword: Password
-  name: credentials
+  additionalinfo: "For Example: https://localhost:8008"
+- name: credentials
+  display: User Name
   required: true
   type: 9
-- additionalinfo: Default is 50. Maximum is 200.
-  defaultvalue: "50"
+  displaypassword: Password
+- name: max_fetch
   display: Maximum Number of Incidents per Fetch
-  name: max_fetch
-  required: false
+  defaultvalue: "50"
   type: 0
-- defaultvalue: 7 days
+  additionalinfo: Default is 50. Maximum is 200.
+  required: false
+- name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
-  name: first_fetch
-  required: false
+  defaultvalue: 7 days
   type: 0
-- additionalinfo: The type of the tickets to fetch.
-  defaultvalue: All
+  required: false
+- name: ticket_type
   display: Ticket Type
-  name: ticket_type
+  defaultvalue: All
+  type: 16
+  additionalinfo: The type of the tickets to fetch.
   options:
   - service request
   - incident
@@ -39,11 +43,11 @@ configuration:
   - work order
   - All
   required: false
-  type: 16
-- additionalinfo: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
-  defaultvalue: All
+- name: ticket_status
   display: Ticket Status
-  name: ticket_status
+  defaultvalue: All
+  type: 16
+  additionalinfo: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
   options:
   - Draft
   - In Cart
@@ -79,11 +83,11 @@ configuration:
   - Corrected
   - All
   required: false
-  type: 16
-- additionalinfo: The impact of the tickets to fetch.
-  defaultvalue: All
+- name: ticket_impact
   display: Ticket Impact
-  name: ticket_impact
+  defaultvalue: All
+  type: 16
+  additionalinfo: The impact of the tickets to fetch.
   options:
   - 1-Extensive/Widespread
   - 2-Significant/Large
@@ -91,11 +95,11 @@ configuration:
   - 4-Minor/Localized
   - All
   required: false
-  type: 16
-- additionalinfo: The urgency of the tickets to fetch.
-  defaultvalue: All
+- name: ticket_urgency
   display: Ticket Urgency
-  name: ticket_urgency
+  defaultvalue: All
+  type: 16
+  additionalinfo: The urgency of the tickets to fetch.
   options:
   - 1-Critical
   - 2-High
@@ -103,13 +107,12 @@ configuration:
   - 4-Low
   - All
   required: false
-  type: 16
-- additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+- name: query
   display: Fetch by Query
-  name: query
-  required: false
   type: 0
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM).'
+  additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+  required: false
+- additionalinfo: "Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM)."
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -118,73 +121,57 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
+  hidden:
+  - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
+  hidden:
+  - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
   display: Close Mirrored BMC Helix ITSM Ticket
   name: close_ticket
-  required: false
   type: 8
-- defaultvalue: "false"
+  hidden:
+  - marketplacev2
+  required: false
+- name: proxy
   display: Use system proxy settings
-  name: proxy
-  required: false
+  defaultvalue: "false"
   type: 8
-- defaultvalue: "false"
+  required: false
+- name: insecure
   display: Trust any certificate (not secure)
-  name: insecure
-  required: false
+  defaultvalue: "false"
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
-description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
-display: BmcITSM
-name: BmcITSM
 script:
+  script: ""
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.14.96411
   commands:
-  - arguments:
-    - description: A comma-separated list of user IDs. Used as a filtering argument.
-      isArray: true
-      name: user_ids
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The user first name. Used as a filtering argument.
-      name: first_name
-    - description: The user first name. Used as a filtering argument.
-      name: last_name
-    - description: The user company name. Used as a filtering argument.
-      name: company
-    - description: The user department name. Used as a filtering argument.
-      name: department
-    - description: The user organization name. Used as a filtering argument.
-      name: organization
+  - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-user-list
     outputs:
     - contextPath: BmcITSM.User.Id
       description: The user ID.
@@ -195,96 +182,122 @@ script:
     - contextPath: BmcITSM.User.LastName
       description: The user last name.
       type: String
-  - arguments:
-    - description: A comma-separated list of company ID. Filtering argument.
+    arguments:
+    - name: user_ids
+      description: A comma-separated list of user IDs. Used as a filtering argument.
       isArray: true
-      name: company_ids
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
       description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The user company name. Used as a filtering argument.
-      name: company
-    - description: The user company type. Used as a filtering argument.
-      name: company_type
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: first_name
+      description: The user first name. Used as a filtering argument.
+    - name: last_name
+      description: The user first name. Used as a filtering argument.
+    - name: company
+      description: The user company name. Used as a filtering argument.
+    - name: department
+      description: The user department name. Used as a filtering argument.
+    - name: organization
+      description: The user organization name. Used as a filtering argument.
+  - name: bmc-itsm-company-list
     description: Retrieves a list of companies from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-company-list
     outputs:
-    - contextPath: BmcITSM.Company.Id
+    - type: String
+      contextPath: BmcITSM.Company.Id
       description: The company ID.
-      type: String
-    - contextPath: BmcITSM.Company.Name
+    - type: String
+      contextPath: BmcITSM.Company.Name
       description: The company name.
-      type: String
-    - contextPath: BmcITSM.Company.Type
+    - type: String
+      contextPath: BmcITSM.Company.Type
       description: The company type.
-      type: String
-  - arguments:
-    - description: A comma-separated list of service request definition IDs. Used as a filtering argument.
+    arguments:
+    - name: company_ids
+      description: A comma-separated list of company ID. Filtering argument.
       isArray: true
-      name: srd_ids
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
       description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The service request ticket definition description. Used as a filtering argument.
-      name: description
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: company
+      description: The user company name. Used as a filtering argument.
+    - name: company_type
+      description: The user company type. Used as a filtering argument.
+  - name: bmc-itsm-service-request-definition-list
     description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-service-request-definition-list
     outputs:
-    - contextPath: BmcITSM.ServiceRequestDefinition.Id
+    - type: String
+      contextPath: BmcITSM.ServiceRequestDefinition.Id
       description: The service request ticket definition ID.
-      type: String
-    - contextPath: BmcITSM.ServiceRequestDefinition.Description
+    - type: String
+      contextPath: BmcITSM.ServiceRequestDefinition.Description
       description: The service request ticket definition description.
-      type: String
-    - contextPath: BmcITSM.ServiceRequestDefinition.InstanceID
+    - type: String
+      contextPath: BmcITSM.ServiceRequestDefinition.InstanceID
       description: The service request ticket instance ID. Used for creating service requests.
-      type: String
-  - arguments:
-    - description: A comma-separated list of service request definition IDs. Used as a filtering argument.
+    arguments:
+    - name: srd_ids
+      description: A comma-separated list of service request definition IDs. Used as a filtering argument.
       isArray: true
-      name: ticket_ids
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
       description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The Work Log description. Used as a filtering argument.
-      name: description
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: description
+      description: The service request ticket definition description. Used as a filtering argument.
+  - name: bmc-itsm-worklog-list
     description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-worklog-list
+    arguments:
+    - name: ticket_ids
+      description: A comma-separated list of service request definition IDs. Used as a filtering argument.
+      isArray: true
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: description
+      description: The Work Log description. Used as a filtering argument.
     outputs:
     - contextPath: BmcITSM.WorkLog.ID
       description: The Work Log ID.
       type: String
-  - arguments:
-    - description: A comma-separated list of service request definition IDs. Used as a filtering argument.
-      name: worklog_id
+  - name: bmc-itsm-worklog-attachment-get
     description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-worklog-attachment-get
+    arguments:
+    - name: worklog_id
+      description: "A comma-separated list of service request definition IDs. Used as a filtering argument."
     outputs:
     - contextPath: BmcITSM.Attachment.ID
       description: The Work Log ID.
       type: String
-  - arguments:
-    - auto: PREDEFINED
+  - name: bmc-itsm-ticket-list
+    description: Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    arguments:
+    - name: ticket_type
       description: The type of tickets to search for.
-      name: ticket_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - service request
       - incident
@@ -293,22 +306,21 @@ script:
       - problem investigation
       - known error
       - work order
-      required: true
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: A comma-separated list of ticket request IDs. Used as a filtering argument. Use Display ID for work order type.
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
+      description: "The maximum number of records to retrieve."
+      defaultValue: "50"
+    - name: page_size
+      description: "The maximum number of records to retrieve per page."
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: ticket_ids
+      description: A comma-separated list of ticket request IDs. Used as a filtering argument. Use Display ID for work order type.
       isArray: true
-      name: ticket_ids
-    - auto: PREDEFINED
-      description: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
-      name: status
+    - name: status
+      description: "The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s)."
+      auto: PREDEFINED
       predefined:
       - Draft
       - In Cart
@@ -342,41 +354,41 @@ script:
       - Assigned To Vendor
       - No Action Planned
       - Corrected
-    - auto: PREDEFINED
+    - name: impact
       description: The ticket impact. Used as a filtering argument.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
+    - name: urgency
       description: The ticket urgency. Used as a filtering argument.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-    - auto: PREDEFINED
+    - name: priority
       description: The ticket priority. Used as a filtering argument.
-      name: priority
+      auto: PREDEFINED
       predefined:
       - Critical
       - High
       - Medium
       - Low
-    - auto: PREDEFINED
+    - name: risk_level
       description: The ticket risk level. Used as a filtering argument.
-      name: risk_level
+      auto: PREDEFINED
       predefined:
       - Risk Level 1
       - Risk Level 2
       - Risk Level 3
       - Risk Level 4
-    - auto: PREDEFINED
+    - name: change_type
       description: The ticket change type level. Relevant only for ticket type change requests. Used as a filtering argument.
-      name: change_type
+      auto: PREDEFINED
       predefined:
       - Project
       - Change
@@ -386,10 +398,8 @@ script:
       - Asset Lease
       - Purchase Requisition
       - Asset Maintenance
-    - description: The ticket summary. Used as a filtering argument.
-      name: summary
-    description: Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-ticket-list
+    - name: summary
+      description: 'The ticket summary. Used as a filtering argument.'
     outputs:
     - contextPath: BmcITSM.Ticket.RequestID
       description: The ticket ID.
@@ -448,21 +458,23 @@ script:
     - contextPath: BmcITSM.Ticket.LastModifiedDate
       description: The ticket last update date time in UTC.
       type: Date
-  - arguments:
-    - description: The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command.
-      name: srd_instance_id
+  - name: bmc-itsm-service-request-create
+    description: "Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list. To see the entire JSON then you can use the raw_response=true at the end of the command."
+    arguments:
+    - name: srd_instance_id
+      description: The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command.
       required: true
-    - description: The requester first name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
-      name: first_name
-    - description: The requester last name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
-      name: last_name
-    - description: The requester login ID. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
-      name: login_id
-    - description: The service request ticket summary.
-      name: summary
-    - auto: PREDEFINED
+    - name: first_name
+      description: The requester first name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
+    - name: last_name
+      description: The requester last name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
+    - name: login_id
+      description: The requester login ID. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
+    - name: summary
+      description: "The service request ticket summary."
+    - name: status
       description: The service request ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Draft
       - In Cart
@@ -476,26 +488,24 @@ script:
       - Rejected
       - Cancelled
       - Closed
-    - auto: PREDEFINED
+    - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-    - auto: PREDEFINED
+    - name: impact
       description: The ticket impact. Required when the ticket creation is without a template.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      name: additional_fields
-    description: Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-service-request-create
+    - name: additional_fields
+      description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
     outputs:
     - contextPath: BmcITSM.ServiceRequest.RequestID
       description: The service request ticket unique request ID.
@@ -506,12 +516,14 @@ script:
     - contextPath: BmcITSM.ServiceRequest.CreateDate
       description: The service request ticket create date time in UTC.
       type: Date
-  - arguments:
-    - description: The unique identifier of the service request ticket to update.
-      name: ticket_request_id
+  - name: bmc-itsm-service-request-update
+    description: Updates the details of a service request ticket for a given request ID. User and company related arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list commands.
+    arguments:
+    - name: ticket_request_id
+      description: The unique identifier of the service request ticket to update.
       required: true
-    - description: The customer first name. By default it is determined by the logged in user.
-      name: customer_first_name
+    - name: customer_first_name
+      description: The customer first name. By default it is determined by the logged in user.
     - description: The customer last name. By default it is determined by the logged in user.
       name: customer_last_name
     - auto: PREDEFINED
@@ -574,46 +586,46 @@ script:
       name: assignee
     - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
       name: additional_fields
-    description: Updates the details of a service request ticket for a given request ID. User and company related arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list commands.
-    name: bmc-itsm-service-request-update
-  - arguments:
-    - description: The ID of the incident ticket to update.
-      name: ticket_request_id
+  - name: bmc-itsm-incident-update
+    description: "Update incident ticket."
+    arguments:
+    - name: ticket_request_id
+      description: The ID of the incident ticket to update.
       required: true
-    - description: The customer first name the incident ticket is for.
-      name: first_name
-    - description: The customer last name the incident ticket is for.
-      name: last_name
-    - description: The incident ticket summary.
-      name: summary
-    - auto: PREDEFINED
+    - name: first_name
+      description: The customer first name the incident ticket is for.
+    - name: last_name
+      description: The customer last name the incident ticket is for.
+    - name: summary
+      description: The incident ticket summary.
+    - name: service_type
       description: The type of the incident ticket.
-      name: service_type
+      auto: PREDEFINED
       predefined:
       - User Service Restoration
       - User Service Request
       - Infrastructure Restoration
       - Infrastructure Event
       - Security Incident
-    - auto: PREDEFINED
+    - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-    - auto: PREDEFINED
+    - name: impact
       description: The ticket impact. Required when the ticket creation is without a template.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
+    - name: status
       description: The incident ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - New
       - Assigned
@@ -622,9 +634,9 @@ script:
       - Resolved
       - Closed
       - Cancelled
-    - auto: PREDEFINED
+    - name: reported_source
       description: The incident ticket reported source.
-      name: reported_source
+      auto: PREDEFINED
       predefined:
       - Direct Input
       - Email,External Escalation
@@ -637,31 +649,31 @@ script:
       - Web
       - Other
       - BMC Impact Manager Event
-    - auto: PREDEFINED
+    - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      name: additional_fields
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee, or any other custom field.'
-    - description: The incident ticket summary.
-      name: detailed_description
-    - description: The company associated with the requester. By default it is determined by the logged in user.
-      name: company
-    - description: The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure.
-      name: assigned_support_company
-    - description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
-      name: assigned_support_organization
-    - description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
-      name: assigned_group
-    - description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee
-    - description: The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together.
-      name: assignee_login_id
-    - description: The region, which makes up the second tier of the customer’s business organization data structure.
-      name: region
-    - description: The site group associated with the region.
-      name: site_group
-    - description: The site associated with the site group.
-      name: site
+      auto: PREDEFINED
+    - name: detailed_description
+      description: The incident ticket summary.
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+    - name: assigned_support_company
+      description: The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure.
+    - name: assigned_support_organization
+      description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
+    - name: assigned_group
+      description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
+    - name: assignee
+      description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: assignee_login_id
+      description: The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together.
+    - name: region
+      description: The region, which makes up the second tier of the customer’s business organization data structure.
+    - name: site_group
+      description: The site group associated with the region.
+    - name: site
+      description: The site associated with the site group.
     - auto: PREDEFINED
       description: The reason for updating the ticket status. Required when status is provided.
       name: status_reason
@@ -689,16 +701,17 @@ script:
       - Resolved by Causal Incident
     - description: The ticket resolution description. Required when status is provided.
       name: resolution
-    description: Update incident ticket.
-    name: bmc-itsm-incident-update
-  - arguments:
-    - description: A comma-separated list of ticket request IDs to delete.
-      isArray: true
-      name: ticket_ids
+  - name: bmc-itsm-ticket-delete
+    description: Deletes a ticket by its request ID. Only admin users can perform this command.
+    arguments:
+    - name: ticket_ids
+      description: A comma-separated list of ticket request IDs to delete.
       required: true
-    - auto: PREDEFINED
+      isArray: true
+    - name: ticket_type
       description: The type of the tickets to delete.
-      name: ticket_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - incident
       - task
@@ -706,50 +719,49 @@ script:
       - problem investigation
       - known error
       - work order
+  - name: bmc-itsm-incident-create
+    description: Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service.
+    arguments:
+    - name: first_name
+      description: The customer first name the incident ticket is for.
       required: true
-    description: Deletes a ticket by its request ID. Only admin users can perform this command.
-    name: bmc-itsm-ticket-delete
-  - arguments:
-    - description: The customer first name the incident ticket is for.
-      name: first_name
+    - name: last_name
+      description: "The customer last name the incident ticket is for."
       required: true
-    - description: The customer last name the incident ticket is for.
-      name: last_name
-      required: true
-    - description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command.
-      name: template_instance_id
-    - description: The incident ticket summary. Required when the template_instance_id argument is not provided.
-      name: summary
-    - auto: PREDEFINED
-      description: The type of the incident ticket. Required when the template_instance_id argument is not provided.
-      name: service_type
+    - name: template_instance_id
+      description: "The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command."
+    - name: summary
+      description: The incident ticket summary. Required when the template_instance_id argument is not provided.
+    - name: service_type
+      description: "The type of the incident ticket. Required when the template_instance_id argument is not provided."
+      auto: PREDEFINED
       predefined:
       - User Service Restoration
       - User Service Request
       - Infrastructure Restoration
       - Infrastructure Event
       - Security Incident
-    - auto: PREDEFINED
-      description: The ticket urgency. Required when the ticket creation is without a template.
-      name: urgency
+    - name: urgency
+      description: "The ticket urgency. Required when the ticket creation is without a template."
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
       required: true
-    - auto: PREDEFINED
-      description: The ticket impact. Required when the creation is without a template.
-      name: impact
+    - name: impact
+      description: "The ticket impact. Required when the creation is without a template."
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
       required: true
-    - auto: PREDEFINED
-      description: Incident status.
-      name: status
+    - name: status
+      description: "Incident status."
+      auto: PREDEFINED
       predefined:
       - New
       - Assigned
@@ -759,9 +771,9 @@ script:
       - Closed
       - Cancelled
       required: true
-    - auto: PREDEFINED
+    - name: reported_source
       description: The incident ticket reported source.  Required when the template_instance_id argument is not provided.
-      name: reported_source
+      auto: PREDEFINED
       predefined:
       - Direct Input
       - Email,External Escalation
@@ -774,33 +786,31 @@ script:
       - Web
       - Other
       - BMC Impact Manager Event
-    - auto: PREDEFINED
+    - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      name: additional_fields
+      auto: PREDEFINED
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee, or any other custom field.'
-    - description: The incident ticket detailed description.
-      name: details
-    - description: The company associated with the requester. By default it is determined by the logged in user.
-      name: company
-    - description: The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure.
-      name: assigned_support_company
-    - description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
-      name: assigned_support_organization
-    - description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
-      name: assigned_group
-    - description: The full name of the employee the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee
-    - description: The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee_login_id
-    - description: The region associated with the company.
-      name: region
-    - description: The site group associated with the region.
-      name: site_group
-    - description: The site associated with the site group.
-      name: site
-    description: Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service.
-    name: bmc-itsm-incident-create
+    - name: details
+      description: 'The incident ticket detailed description.'
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+    - name: assigned_support_company
+      description: The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure.
+    - name: assigned_support_organization
+      description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
+    - name: assigned_group
+      description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
+    - name: assignee
+      description: The full name of the employee the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: assignee_login_id
+      description: The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: region
+      description: The region associated with the company.
+    - name: site_group
+      description: The site group associated with the region.
+    - name: site
+      description: The site associated with the site group.
     outputs:
     - contextPath: BmcITSM.Incident.RequestID
       description: The incident ticket request ID.
@@ -811,24 +821,26 @@ script:
     - contextPath: BmcITSM.Incident.CreateDate
       description: The incident ticket create date time in UTC.
       type: Date
-  - arguments:
-    - description: The requester first name.
-      name: first_name
+  - name: bmc-itsm-change-request-create
+    description: "Creates a change request ticket in BMC Helix ITSM. The ticket is created by using a template or from scratch."
+    arguments:
+    - name: first_name
+      description: The requester first name.
       required: true
-    - description: The requester last name.
-      name: last_name
+    - name: last_name
+      description: The requester last name.
       required: true
-    - description: The customer first name.
-      name: customer_first_name
-    - description: The customer last name.
-      name: customer_last_name
-    - description: The change request ticket title. Required when the template ID argument is not provided.
-      name: summary
-    - description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The ID can be retrieved by executing the bmc-itsm-change-request-template-list command.
-      name: template_id
-    - auto: PREDEFINED
-      description: The change request ticket type. Required when the ticket creation is without a template.
-      name: change_type
+    - name: customer_first_name
+      description: The customer first name.
+    - name: customer_last_name
+      description: The customer last name.
+    - name: summary
+      description: "The change request ticket title. Required when the template ID argument is not provided."
+    - name: template_id
+      description: "The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The ID can be retrieved by executing the bmc-itsm-change-request-template-list command."
+    - name: change_type
+      description: "The change request ticket type. Required when the ticket creation is without a template."
+      auto: PREDEFINED
       predefined:
       - Project
       - Change
@@ -838,9 +850,9 @@ script:
       - Asset Lease
       - Purchase Requisition
       - Asset Maintenance
-    - auto: PREDEFINED
+    - name: change_timing
       description: The class of the change request ticket which best describes your scenario.
-      name: change_timing
+      auto: PREDEFINED
       predefined:
       - Emergency
       - Expedited
@@ -848,34 +860,34 @@ script:
       - Normal
       - No Impact
       - Standard
-    - auto: PREDEFINED
+    - name: impact
       description: The change request ticket impact. Required when the ticket creation is without a template.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
-      description: The change request ticket urgency. Required when the ticket creation is without a template.
-      name: urgency
+    - name: urgency
+      description: 'The change request ticket urgency. Required when the ticket creation is without a template.'
       predefined:
-      - 1-Critical
+      - '1-Critical'
       - 2-High
       - 3-Medium
       - 4-Low
-    - auto: PREDEFINED
+      auto: PREDEFINED
+    - name: risk_level
       description: The change request ticket risk level. Required when the ticket creation is without a template.
-      name: risk_level
+      auto: PREDEFINED
       predefined:
       - Risk Level 1
       - Risk Level 2
       - Risk Level 3
       - Risk Level 4
       - Risk Level 5
-    - auto: PREDEFINED
+    - name: status
       description: The change request ticket status. Required when the ticket creation is without a template.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Request For Authorization
       - Request For Change
@@ -889,12 +901,10 @@ script:
       - Completed
       - Closed
       - Cancelled
-    - description: The company associated with the change request process. Required when template ID argument is not provided.
-      name: location_company
-    - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      name: additional_fields
-    description: Creates a change request ticket in BMC Helix ITSM. The ticket is created by using a template or from scratch.
-    name: bmc-itsm-change-request-create
+    - name: location_company
+      description: The company associated with the change request process. Required when template ID argument is not provided.
+    - name: additional_fields
+      description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
     outputs:
     - contextPath: BmcITSM.ChangeRequest.RequestID
       description: The change request ticket unique request ID.
@@ -905,19 +915,21 @@ script:
     - contextPath: BmcITSM.ChangeRequest.CreateDate
       description: The change request ticket create date time.
       type: Date
-  - arguments:
-    - description: The ID of the change request ticket to update.
-      name: ticket_request_id
+  - name: bmc-itsm-change-request-update
+    description: "Updates the details of change request ticket for the specified request ID."
+    arguments:
+    - name: ticket_request_id
+      description: The ID of the change request ticket to update.
       required: true
-    - description: The customer first name the change request ticket is for.
-      name: first_name
-    - description: The customer last name the change request ticket is for.
-      name: last_name
-    - description: The change request ticket summary.
-      name: summary
-    - auto: PREDEFINED
+    - name: first_name
+      description: The customer first name the change request ticket is for.
+    - name: last_name
+      description: The customer last name the change request ticket is for.
+    - name: summary
+      description: The change request ticket summary.
+    - name: change_type
       description: The change request ticket type.
-      name: change_type
+      auto: PREDEFINED
       predefined:
       - Project
       - Change
@@ -927,9 +939,9 @@ script:
       - Asset Lease
       - Purchase Requisition
       - Asset Maintenance
-    - auto: PREDEFINED
-      description: The class of the change request ticket which best describes your scenario.
-      name: change_timing
+    - name: change_timing
+      description: "The class of the change request ticket which best describes your scenario."
+      auto: PREDEFINED
       predefined:
       - Emergency
       - Expedited
@@ -937,34 +949,34 @@ script:
       - Normal
       - No Impact
       - Standard
-    - auto: PREDEFINED
+    - name: impact
       description: The change request ticket impact.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
+    - name: urgency
       description: The change request ticket urgency.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-    - auto: PREDEFINED
+    - name: risk_level
       description: The change request ticket risk level.
-      name: risk_level
+      auto: PREDEFINED
       predefined:
       - Risk Level 1
       - Risk Level 2
       - Risk Level 3
       - Risk Level 4
       - Risk Level 5
-    - auto: PREDEFINED
+    - name: status
       description: The change request ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Request For Authorization
       - Request For Change
@@ -978,18 +990,18 @@ script:
       - Completed
       - Closed
       - Cancelled
-    - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      name: additional_fields
-    - description: The company associated with the requester. By default it is determined by the logged in user.
-      name: company
-    - description: The organization associated with the requester.
-      name: organization
-    - description: The department associated with the requester.
-      name: department
-    - description: The company associated with the change request process.
-      name: location_company
-    - description: The region associated with the company location.
-      name: region
+    - name: additional_fields
+      description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+    - name: organization
+      description: "The organization associated with the requester."
+    - name: department
+      description: 'The department associated with the requester.'
+    - name: location_company
+      description: The company associated with the change request process.
+    - name: region
+      description: The region associated with the company location.
     - description: The site group associated with the region.
       name: site_group
     - description: The site associated with the site group.
@@ -1035,42 +1047,43 @@ script:
       - On Hold
     - description: The change request ticket details.
       name: details
-    description: Updates the details of change request ticket for the specified request ID.
-    name: bmc-itsm-change-request-update
-  - arguments:
-    - description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
-      name: template_id
-    - description: The task ticket summary.
-      name: summary
+  - name: bmc-itsm-task-create
+    description: 'Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, known error and work order.'
+    arguments:
+    - name: template_id
+      description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
+    - name: summary
+      description: The task ticket summary.
       required: true
-    - description: The task ticket detailed description.
-      name: details
+    - name: details
+      description: The task ticket detailed description.
       required: true
-    - auto: PREDEFINED
-      description: The parent ticket type.
-      name: root_ticket_type
+    - name: root_ticket_type
+      description: "The parent ticket type."
+      required: true
+      auto: PREDEFINED
       predefined:
       - change request
       - incident
       - problem investigation
       - known error
       - work order
+    - name: root_request_id
+      description: The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders.
       required: true
-    - description: The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders.
-      name: root_request_id
-      required: true
-    - description: The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed.
-      name: root_request_name
-    - auto: PREDEFINED
-      defaultValue: Real
+    - name: root_request_name
+      description: The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed.
+    - name: root_request_mode
       description: The parent ticket request mode.
-      name: root_request_mode
+      defaultValue: "Real"
+      auto: PREDEFINED
       predefined:
       - Real
       - Simulation
-    - auto: PREDEFINED
+    - name: status
       description: The task status.
-      name: status
+      required: true
+      auto: PREDEFINED
       predefined:
       - Staged
       - Assigned
@@ -1079,60 +1092,57 @@ script:
       - Waiting
       - Closed
       - Bypassed
-      required: true
-    - auto: PREDEFINED
+    - name: task_type
       description: Whether the task is manual or automatic.
-      name: task_type
+      auto: PREDEFINED
       predefined:
       - Automatic
       - Manual
-    - auto: PREDEFINED
+    - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
-      name: additional_fields
+      auto: PREDEFINED
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
-    - auto: PREDEFINED
+    - name: priority
       description: The task ticket priority.
-      name: priority
+      auto: PREDEFINED
       predefined:
       - Critical
       - High
       - Medium
       - Low
       required: true
-    - description: The company associated with the task process.
-      name: location_company
+    - name: location_company
+      description: The company associated with the task process.
       required: true
-    - description: The technical support team associated with the company.
-      name: support_company
-    - description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      name: assigned_support_organization
-    - description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      name: assigned_support_group
-    - auto: PREDEFINED
+    - name: support_company
+      description: The technical support team associated with the company.
+    - name: assigned_support_organization
+      description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: assigned_support_group
+      description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: impact
       description: The task ticket impact.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
+    - name: urgency
       description: The task ticket urgency.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-    - description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee
-    - description: The task ticket scheduled future start date. For example, in 12 hours, in 7 days.
-      name: scedulded_start_date
-    - description: The task ticket scheduled future end date. For example, in 12 hours, in 7 days.
-      name: scedulded_end_date
-    description: 'Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, known error and work order.'
-    name: bmc-itsm-task-create
+    - name: assignee
+      description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: scedulded_start_date
+      description: "The task ticket scheduled future start date. For example, in 12 hours, in 7 days."
+    - name: scedulded_end_date
+      description: The task ticket scheduled future end date. For example, in 12 hours, in 7 days.
     outputs:
     - contextPath: BmcITSM.Task.RequestID
       description: The task ticket unique Request ID.
@@ -1143,25 +1153,27 @@ script:
     - contextPath: BmcITSM.Task.CreateDate
       description: The task ticket creation date time in UTC.
       type: Date
-  - arguments:
-    - description: The ID of the task ticket to update.
-      name: ticket_request_id
+  - name: bmc-itsm-task-update
+    description: Updates the task ticket.
+    arguments:
+    - name: ticket_request_id
+      description: The ID of the task ticket to update.
       required: true
-    - description: The task ticket summary.
-      name: summary
-    - description: The task ticket detailed description.
-      name: details
-    - auto: PREDEFINED
+    - name: summary
+      description: The task ticket summary.
+    - name: details
+      description: "The task ticket detailed description."
+    - name: priority
       description: The task ticket priority.
-      name: priority
+      auto: PREDEFINED
       predefined:
       - Critical
       - High
       - Medium
       - Low
-    - auto: PREDEFINED
+    - name: status
       description: The task ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Staged
       - Assigned
@@ -1170,9 +1182,9 @@ script:
       - Waiting
       - Closed
       - Bypassed
-    - auto: PREDEFINED
+    - name: status_reason
       description: The reason for changing the ticket status. Required when the status is changed.
-      name: status_reason
+      auto: PREDEFINED
       predefined:
       - Success
       - Failed
@@ -1185,45 +1197,46 @@ script:
       - Task Rule
       - Completion
       - Error
-    - description: The company associated with the requester. By default it is determined by the logged in user.
-      name: company
-    - description: The company associated with the task process.
-      name: location_company
-    - description: The technical support team associated with the company.
-      name: support_company
-    - description: The full name of the employee the ticket is assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee
-    - description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      name: assigned_support_organization
-    - description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      name: assigned_group
-    - auto: PREDEFINED
-      description: The task ticket type.
-      name: task_type
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+    - name: location_company
+      description: The company associated with the task process.
+    - name: support_company
+      description: The technical support team associated with the company.
+    - name: assignee
+      description: The full name of the employee the ticket is assigned to. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: assigned_support_organization
+      description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
+    - name: assigned_group
+      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: task_type
+      description: "The task ticket type."
+      auto: PREDEFINED
       predefined:
       - Automatic
       - Manual
-    - auto: PREDEFINED
+    - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
-      name: additional_fields
+      auto: PREDEFINED
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
-    - description: The task ticket scheduled future start date. For example, in 12 hours, in 7 days.
-      name: scedulded_start_date
-    - description: The task ticket scheduled future end date. For example, in 12 hours, in 7 days.
-      name: scedulded_end_date
-    description: Updates the task ticket.
-    name: bmc-itsm-task-update
-  - arguments:
-    - description: The customer first name the ticket request is for.
-      name: first_name
+    - name: scedulded_start_date
+      description: The task ticket scheduled future start date. For example, in 12 hours, in 7 days.
+    - name: scedulded_end_date
+      description: The task ticket scheduled future end date. For example, in 12 hours, in 7 days.
+  - name: bmc-itsm-problem-investigation-create
+    description: "Creates a problem investigation ticket."
+    arguments:
+    - name: first_name
+      description: The customer first name the ticket request is for.
       required: true
-    - description: The customer last name the ticket request is for.
-      name: last_name
+    - name: last_name
+      description: The customer last name the ticket request is for.
       required: true
-    - auto: PREDEFINED
+    - name: status
       description: The problem investigation ticket status.
-      name: status
+      required: true
+      auto: PREDEFINED
       predefined:
       - Draft
       - Under Review
@@ -1235,63 +1248,62 @@ script:
       - Rejected
       - Closed
       - Cancelled
-      required: true
-    - auto: PREDEFINED
+    - name: investigation_driver
       description: The problem investigation ticket driver.
-      name: investigation_driver
+      required: true
+      auto: PREDEFINED
       predefined:
       - High Impact Incident
       - Re-Occurring Incidents
       - Non-Routine Incident
       - Other
+    - name: summary
+      description: The problem investigation ticket summary.
       required: true
-    - description: The problem investigation ticket summary.
-      name: summary
-      required: true
-    - description: The detailed description on the problem investigation ticket.
-      name: details
-    - auto: PREDEFINED
+    - name: details
+      description: The detailed description on the problem investigation ticket.
+    - name: impact
       description: The problem investigation ticket impact.
-      name: impact
+      required: true
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-      required: true
-    - auto: PREDEFINED
+    - name: urgency
       description: The problem investigation ticket urgency.
-      name: urgency
+      required: true
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-      required: true
-    - description: The future resolution date. For example, in 12 hours, in 7 days.
-      name: target_resolution_date
-    - description: The company associated with the requester. By default it is determined by the logged in user.
-      name: company
-    - description: The region of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      name: region
-    - description: The site group of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      name: site_group
-    - description: The site of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      name: site
-    - description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee
-    - description: The full name of the employee the ticket will be assigned to as the problem coordinator. It can be retrieved by using the bmc-itsm-user-list command.
-      name: assignee_pbm_mgr
-    - description: The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      name: assigned_group_pbm_mgr
-    - description: The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      name: support_company_pbm_mgr
-    - description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      name: support_organization_pbm_mgr
-    - description: The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      name: assigned_support_company
-    - description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      name: assigned_support_organization
+    - name: target_resolution_date
+      description: The future resolution date. For example, in 12 hours, in 7 days.
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+    - name: region
+      description: "The region of the problem investigation location. The arguments region, site_group, and site should be provided together."
+    - name: site_group
+      description: The site group of the problem investigation location. The arguments region, site_group, and site should be provided together.
+    - name: site
+      description: "The site of the problem investigation location. The arguments region, site_group, and site should be provided together."
+    - name: assignee
+      description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: assignee_pbm_mgr
+      description: The full name of the employee the ticket will be assigned to as the problem coordinator. It can be retrieved by using the bmc-itsm-user-list command.
+    - name: assigned_group_pbm_mgr
+      description: The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
+    - name: support_company_pbm_mgr
+      description: The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
+    - name: support_organization_pbm_mgr
+      description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
+    - name: assigned_support_company
+      description: The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
+    - name: assigned_support_organization
+      description: 'The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.'
     - description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
       name: assigned_group
     - description: The justification for the ticket creation.
@@ -1302,8 +1314,6 @@ script:
       name: resolution
     - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
       name: additional_fields
-    description: Creates a problem investigation ticket.
-    name: bmc-itsm-problem-investigation-create
     outputs:
     - contextPath: BmcITSM.ProblemInvestigation.RequestID
       description: The problem investigation ticket unique Request ID.
@@ -1314,13 +1324,15 @@ script:
     - contextPath: BmcITSM.ProblemInvestigation.CreateDate
       description: The problem investigation ticket creation date time in UTC.
       type: Date
-  - arguments:
-    - description: The problem investigation ticket request ID.
-      name: ticket_request_id
+  - name: bmc-itsm-problem-investigation-update
+    description: "Updates The problem investigation ticket type."
+    arguments:
+    - name: ticket_request_id
+      description: The problem investigation ticket request ID.
       required: true
-    - auto: PREDEFINED
+    - name: status
       description: The problem investigation ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Draft
       - Under Review
@@ -1332,62 +1344,62 @@ script:
       - Rejected
       - Closed
       - Cancelled
-    - auto: PREDEFINED
+    - name: investigation_driver
       description: The problem investigation ticket driver.
-      name: investigation_driver
+      auto: PREDEFINED
       predefined:
       - High Impact Incident
       - Re-Occuring Incidents
       - Non-Routine Incident
       - Other
-    - description: The problem investigation ticket summary.
-      name: summary
-    - auto: PREDEFINED
+    - name: summary
+      description: The problem investigation ticket summary.
+    - name: impact
       description: The problem investigation ticket impact.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
+    - name: urgency
       description: The problem investigation ticket urgency.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-    - description: The problem investigation ticket target resolution date. For example, in 12 hours, in 7 days.
-      name: target_resolution_date
-    - description: The problem investigation ticket detailed description.
-      name: details
-    - description: The company associated with the requester. By default it is determined by the logged in user.
-      name: company
-    - description: The region of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      name: region
-    - description: The site group of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      name: site_group
-    - description: The site of the problem investigation location.The arguments region, site_group, and site should be provided together.
-      name: site
-    - description: The technical support person the ticket is assigned to.
-      name: assigned_to
-    - description: The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      name: assigned_group_pbm_mgr
-    - description: The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      name: support_company_pbm_mgr
-    - description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      name: support_organization_pbm_mgr
-    - description: The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      name: assigned_support_company
-    - description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      name: assigned_support_organization
-    - description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      name: assigned_group
-    - description: The justification for the ticket creation.
-      name: investigation_justification
-    - description: The problem workaround.
-      name: temporary_workaround
+    - name: target_resolution_date
+      description: "The problem investigation ticket target resolution date. For example, in 12 hours, in 7 days."
+    - name: details
+      description: The problem investigation ticket detailed description.
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+    - name: region
+      description: The region of the problem investigation location. The arguments region, site_group, and site should be provided together.
+    - name: site_group
+      description: The site group of the problem investigation location. The arguments region, site_group, and site should be provided together.
+    - name: site
+      description: "The site of the problem investigation location.The arguments region, site_group, and site should be provided together."
+    - name: assigned_to
+      description: The technical support person the ticket is assigned to.
+    - name: assigned_group_pbm_mgr
+      description: "The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together."
+    - name: support_company_pbm_mgr
+      description: The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
+    - name: support_organization_pbm_mgr
+      description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
+    - name: assigned_support_company
+      description: The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
+    - name: assigned_support_organization
+      description: "The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together."
+    - name: assigned_group
+      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+    - name: investigation_justification
+      description: The justification for the ticket creation.
+    - name: temporary_workaround
+      description: 'The problem workaround.'
     - description: The ticket resolution.
       name: resolution
     - auto: PREDEFINED
@@ -1397,12 +1409,12 @@ script:
       - Publish
       - Reject
       - Not Applicable
-    description: Updates The problem investigation ticket type.
-    name: bmc-itsm-problem-investigation-update
-  - arguments:
-    - auto: PREDEFINED
+  - name: bmc-itsm-known-error-create
+    description: Create known error ticket.
+    arguments:
+    - name: status
       description: The known error ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Assigned
       - Scheduled For Correction
@@ -1412,33 +1424,33 @@ script:
       - Closed
       - Cancelled
       required: true
-    - description: The known error ticket summary.
-      name: summary
+    - name: summary
+      description: 'The known error ticket summary.'
       required: true
-    - description: The known error ticket Detailed description.
-      name: details
+    - name: details
+      description: The known error ticket Detailed description.
       required: true
-    - auto: PREDEFINED
+    - name: impact
       description: The known error ticket impact.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
       required: true
-    - auto: PREDEFINED
+    - name: urgency
       description: The known error ticket urgency.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
       required: true
-    - auto: PREDEFINED
+    - name: view_access
       description: Whether if the ticket is for internal view or public view.
-      name: view_access
+      auto: PREDEFINED
       predefined:
       - Public
       - Internal
@@ -1473,25 +1485,25 @@ script:
       name: temporary_workaround
     - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
       name: additional_fields
-    description: Create known error ticket.
-    name: bmc-itsm-known-error-create
     outputs:
-    - contextPath: BmcITSM.KnownError.RequestID
+    - type: String
+      contextPath: BmcITSM.KnownError.RequestID
       description: Known Error unique Request ID.
-      type: String
-    - contextPath: BmcITSM.KnownError.DisplayID
+    - type: String
+      contextPath: BmcITSM.KnownError.DisplayID
       description: KnownError Display ID.
-      type: String
-    - contextPath: BmcITSM.KnownError.CreateDate
+    - type: Date
+      contextPath: BmcITSM.KnownError.CreateDate
       description: KnownError Create time in UTC.
-      type: Date
-  - arguments:
-    - description: The known error ticket request ID.
-      name: ticket_request_id
+  - name: bmc-itsm-known-error-update
+    description: Update Known Error ticket type.
+    arguments:
+    - name: ticket_request_id
+      description: 'The known error ticket request ID.'
       required: true
-    - auto: PREDEFINED
+    - name: status
       description: The known error ticket status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - Assigned
       - Scheduled For Correction
@@ -1500,21 +1512,21 @@ script:
       - Corrected
       - Closed
       - Cancelled
-    - description: The known error ticket summary.
-      name: summary
-    - description: The known error ticket detailed description.
-      name: details
-    - auto: PREDEFINED
+    - name: summary
+      description: The known error ticket summary.
+    - name: details
+      description: The known error ticket detailed description.
+    - name: impact
       description: The known error ticket impact.
-      name: impact
+      auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-    - auto: PREDEFINED
+    - name: urgency
       description: The known error ticket urgency.
-      name: urgency
+      auto: PREDEFINED
       predefined:
       - 1-Critical
       - 2-High
@@ -1562,35 +1574,33 @@ script:
       name: assignee_pbm_mgr
     - description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
       name: additional_fields
-    description: Update Known Error ticket type.
-    name: bmc-itsm-known-error-update
-  - arguments:
-    - description: A comma-separated list of change request template IDs. Used as a filtering argument.
-      isArray: true
-      name: template_ids
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The change request ticket description. Used as a filtering argument.
-      name: description
+  - name: bmc-itsm-change-request-template-list
     description: Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-change-request-template-list
+    arguments:
+    - name: template_ids
+      description: 'A comma-separated list of change request template IDs. Used as a filtering argument.'
+      isArray: true
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: description
+      description: The change request ticket description. Used as a filtering argument.
     outputs:
-    - contextPath: BmcITSM.ChangeRequestTemplate.Id
+    - type: String
+      contextPath: BmcITSM.ChangeRequestTemplate.Id
       description: The change request ticket template ID.
-      type: String
-    - contextPath: BmcITSM.ChangeRequestTemplate.Description
+    - type: String
+      contextPath: BmcITSM.ChangeRequestTemplate.Description
       description: The change request ticket template description.
-      type: String
-    - contextPath: BmcITSM.ChangeRequestTemplate.InstanceID
+    - type: String
+      contextPath: BmcITSM.ChangeRequestTemplate.InstanceID
       description: The change request ticket template instance ID. Useful for creating change request tickets.
-      type: String
   - arguments:
     - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
       name: query
@@ -1620,9 +1630,9 @@ script:
   - arguments:
     - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
       name: query
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
+    - description: The maximum number of records to retrieve.
       name: limit
+      defaultValue: "50"
     - description: The maximum number of records to retrieve per page.
       name: page_size
     - description: The page number of the results to retrieve.
@@ -1646,42 +1656,42 @@ script:
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields
-  - arguments:
-    - description: The ticket ID.
-      name: id
-      required: true
-    - description: Retrieves entries that were created after lastUpdate.
-      name: lastUpdate
-      required: true
+  - name: get-remote-data
     description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-    name: get-remote-data
-  - arguments:
-    - description: A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
-      name: lastUpdate
+    arguments:
+    - name: id
+      description: The ticket ID.
+      required: true
+    - name: lastUpdate
+      description: Retrieves entries that were created after lastUpdate.
+      required: true
+  - name: get-modified-remote-data
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
-    name: get-modified-remote-data
-  - arguments:
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
-      name: limit
-      type: String
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-      type: String
-    - description: The page number of the results to retrieve.
-      name: page
-      type: String
-    - description: Company name. Used as a filtering argument.
-      name: company
-      type: String
-    - description: Support organization name. Used as a filtering argument.
-      name: support_organization
-      type: String
-    - description: Support group name. Used as a filtering argument.
-      name: support_group
-      type: String
+    arguments:
+    - name: lastUpdate
+      description: A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+  - name: bmc-itsm-support-group-list
     description: Lists all support groups. Useful for getting possible (Company, Support Organization, Support Group) triplets.
-    name: bmc-itsm-support-group-list
+    arguments:
+    - name: limit
+      description: The maximum number of records to retrieve.
+      type: String
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+      type: String
+    - name: page
+      description: The page number of the results to retrieve.
+      type: String
+    - name: company
+      description: Company name. Used as a filtering argument.
+      type: String
+    - name: support_organization
+      description: Support organization name. Used as a filtering argument.
+      type: String
+    - name: support_group
+      description: Support group name. Used as a filtering argument.
+      type: String
     outputs:
     - contextPath: BmcITSM.SupportGroup.SupportGroupID
       description: The support group ID.
@@ -1695,29 +1705,29 @@ script:
     - contextPath: BmcITSM.SupportGroup.SupportGroupName
       description: The support group.
       type: String
-  - arguments:
-    - description: The query to search by. For example, query="Company like \"BMCOpsMonitoring\"". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).
-      name: query
-      type: String
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
-      name: limit
-      type: String
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-      type: String
-    - description: The page number of the results to retrieve.
-      name: page
-      type: String
-    - description: A comma-separated list of work order template GUIDs. Used as a filtering argument.
-      isArray: true
-      name: template_ids
-      type: String
-    - description: The work order template name. Used as a filtering argument.
-      name: template_name
-      type: String
+  - name: bmc-itsm-work-order-template-list
     description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON, you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-work-order-template-list
+    arguments:
+    - name: query
+      description: The query to search by. For example, query="Company like \"BMCOpsMonitoring\"". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).
+      type: String
+    - name: limit
+      description: The maximum number of records to retrieve.
+      type: String
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+      type: String
+    - name: page
+      description: The page number of the results to retrieve.
+      type: String
+    - name: template_ids
+      description: A comma-separated list of work order template GUIDs. Used as a filtering argument.
+      isArray: true
+      type: String
+    - name: template_name
+      description: The work order template name. Used as a filtering argument.
+      type: String
     outputs:
     - contextPath: BmcITSM.WorkOrderTemplate.Id
       description: The work order template ID.
@@ -1902,13 +1912,11 @@ script:
       type: String
     description: Updates the work order ticket.
     name: bmc-itsm-work-order-update
-  dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: ''
-  subtype: python3
-  type: python
-sourcemoduleid: BmcITSM
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
