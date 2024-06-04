@@ -1190,7 +1190,7 @@ class GraphMailUtils:
         """
         if command in ['create-draft', 'send-mail']:
             email_body, inline_attachments = GraphMailUtils.handle_html(
-                args.get('htmlBody')) if args.get('htmlBody', None) else args.get('body', '')
+                args.get('htmlBody')) if args.get('htmlBody', None) else (args.get('body', ''), [])
             processed_args = {
                 'to_recipients': argToList(args.get('to')),
                 'cc_recipients': argToList(args.get('cc')),
