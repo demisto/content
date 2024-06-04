@@ -1115,7 +1115,7 @@ script:
       type: textArea
     - auto: PREDEFINED
       defaultValue: post-verification-warnings-ack
-      description: Enum Found as the last part of Change.allowedInput[].update hypermedia URL.supported values include:change-management-ack,lets-encrypt-challenges-completed,post-verification-warnings-ack,pre-verification-warnings-ack.
+      description: Enum found as the last part of Change.allowedInput[].update hypermedia URL.
       name: allowed_input_type_param
       predefined:
       - change-management-ack
