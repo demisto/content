@@ -398,7 +398,7 @@ To set up the mirroring:
     | **Option** | **Description** |
     | --- | --- |
     | None | Turns off incident mirroring. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Vsronis SaaS service (outgoing mirrored fields). |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Varonis SaaS service (outgoing mirrored fields). |
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
