@@ -187,7 +187,7 @@ def fetch_events(client: Client,
         )
         demisto.debug(f'Successfully fetched {len(events)} events.')
         if not events:
-            demisto.debug(f'No more events to fetch, setting next run to {last_run}.')
+            demisto.debug(f'No more events to fetch, return for next run: {last_run}.')
             return last_run, all_events
         all_events.extend(events)
         last_fetched_event = events[-1]
@@ -282,12 +282,14 @@ def main() -> None:
             )
 
             add_time_and_status_to_events(events)
+            demisto.debug(f'Sending {len(events)} events to Xsiam.')
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,
                 product=PRODUCT
             )
             demisto.setLastRun(next_run)
+            demisto.debug(f'Next run is set to: {next_run}.')
 
     # Log exceptions and return errors
     except Exception as e:
