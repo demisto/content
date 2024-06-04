@@ -2929,7 +2929,6 @@ def cache_notable(notable: Notable):
     cache = Cache.load_from_integration_context(integration_context)
     cache.manually_fetched_notables.append(notable)
     cache.dump_to_integration_context(integration_context)
-    demisto.info(f"@@@ AD MATAY SPLUNKPY {str(integration_context)}")
     demisto.info(f"[SplunkPy] Successfully cached notable with id: {notable.id} | {str(integration_context)=}")
 
 
