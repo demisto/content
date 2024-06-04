@@ -431,7 +431,7 @@ def csc_domains_configuration_list_command(client: Client, args) -> CommandResul
     return results
 
 
-def domain(client, args, reliability) -> CommandResults:
+def domain(client: Client, args, reliability) -> CommandResults:
     """
     Gets the domain
 
