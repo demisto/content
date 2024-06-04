@@ -23,6 +23,11 @@ def util_read_tsv(filename):
         return ret_value
 
 
+def util_generate_mock_info_file(info):
+    from rasterize import write_info_file
+    write_info_file("test_data/info.tsv", info, overwrite=True)
+
+
 def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -519,4 +524,25 @@ def test_chrome_options_in_chrome_options_and_instance_id_linked(mocker):
     browser, chrome_port = chrome_manager()
 
     assert browser == "browser_object"
-    assert chrome_port == "1234"
+    assert chrome_port == "2222"
+
+
+def test_delete_row_with_old_chrome_configurations_from_info_file():
+    from rasterize import delete_row_with_old_chrome_configurations_from_info_file
+
+    rasterize.CHROME_INSTANCES_FILE_PATH = "test_data/info.tsv"
+
+    mock_info = """2222\t22222222-2222-2222-2222-222222222222\tchrome_options2
+3333\t33333333-3333-3333-3333-333333333333\tchrome_options3
+test\ttesttest-test-test-test-testtesttest\tchrome_options0
+4444\t44444444-4444-4444-4444-444444444444\tchrome_options4
+"""
+    util_generate_mock_info_file(mock_info)
+    chrome_port_to_delete = "test"
+    instance_id_to_delete = "testtest-test-test-test-testtesttest"
+
+    mock_file_content = util_read_tsv("test_data/info.tsv")
+    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
+
+    delete_row_with_old_chrome_configurations_from_info_file(
+        mock_file_content_edited, chrome_port_to_delete, instance_id_to_delete)
