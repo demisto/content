@@ -33,6 +33,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "CSCDomainManager",
+            "playbookID": "CSCDomainManager_Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "Test Playbook - NGFW Scan",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
