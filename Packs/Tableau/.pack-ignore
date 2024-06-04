@@ -1,6 +1,0 @@
-[file:Tableau_1_3.yml]
-ignore=MR108
-
-[file:Tableau.yml]
-ignore=MR108,PR101
-

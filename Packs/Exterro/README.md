@@ -1,1 +1,0 @@
-With the Exterro FTK Connect automation platform, users can now leverage Cortex XSOARs security orchestration and automation capabilities to trigger the immediate capture and preservation of endpoint evidence by FTK Enterprise, FTK Central, or FTK Lab. This seamless handoff of data is crucial for incident investigation and recovery, as well as avoiding potential data spoliation.

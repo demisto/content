@@ -1,5 +1,0 @@
-[file:classifier-OTSecurity_API_Classifier_v1.json]
-ignore=BA101
-
-[file:1_0_3.md]
-ignore=RN116

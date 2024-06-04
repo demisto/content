@@ -1,1 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes": "falsePositive argument was removed from ***tc-update-indicator*** command, since it does not appear in ThreatConnect V3 API documentation."}

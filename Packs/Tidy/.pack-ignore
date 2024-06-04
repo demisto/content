@@ -1,8 +1,0 @@
-[file:Tidy.yml]
-ignore=BA124,RM110
-
-[file:README.md]
-ignore=RM104
-
-[file:Tidy_image.png]
-ignore=IM111

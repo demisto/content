@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Fixed an issue where the context path of command outputs was incorrect."
-}

@@ -1,4 +1,0 @@
-{
-    "breakingChanges":true,
-    "breakingChangesNotes":"Assets from offenses will be fetched with a limit. This limit is configured in 'assets limit' parameter and the default value is 100"
-  }

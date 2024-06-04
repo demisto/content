@@ -1,8 +1,0 @@
-[file:IBMResilientSystems.yml]
-ignore=IN126
-
-[file:README.md]
-ignore=RM106
-
-[known_words]
-rs

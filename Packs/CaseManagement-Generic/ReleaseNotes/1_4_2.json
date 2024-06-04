@@ -1,1 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes":"The scripts AssignToMeButton, GenerateSummaryReportButton, LinkIncidentsButton were moved to the *CommonScripts* pack. Make sure to update the *CommonScripts* pack to the latest version in order to use these scripts."}

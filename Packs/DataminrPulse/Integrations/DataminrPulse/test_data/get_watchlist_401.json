@@ -1,8 +1,0 @@
-{
-  "errors": [
-    {
-      "code": 103,
-      "message": "Authentication error. Invalid token"
-    }
-  ]
-}

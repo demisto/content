@@ -1,1 +1,0 @@
-{"breakingChanges":true,"breakingChangesNotes":"The *intsights-get-iocs* and *intsights-get-ioc-by-value* commands return different outputs according to the new api endpoints."}

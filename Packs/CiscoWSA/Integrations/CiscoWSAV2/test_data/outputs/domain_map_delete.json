@@ -1,9 +1,0 @@
-{
-    "res_code": 200,
-    "res_data": {
-        "delete_success": [
-            "test.com"
-        ]
-    },
-    "res_message": "Success: 1, Failure: 0"
-}

@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Changed the pack name from 'SplunkCIMFields' to 'SplunkScripts' to better reflect its content."
-}

@@ -1,9 +1,0 @@
-[file:VMwareESXiParsingRules.yml]
-ignore=PR101
-
-[file:VMwareESXI_1_3.yml]
-ignore=MR108
-
-[file:VMwareESXiModelingRules.yml]
-ignore=MR108
-

@@ -1,9 +1,0 @@
-{
-    "kind": "object#LocalUserObj",
-    "selfLink": "selfLink",
-    "name": "Lucario",
-    "MSCHAPauthenticated": false,
-    "privilegeLevel": 15,
-    "ASDM_CLIAccessType": "Full",
-    "objectId": "Lucario"
-}

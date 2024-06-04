@@ -1,2 +1,0 @@
-Minerva Labs integration with Cortex XSOAR.
-The integration queries the Minerva server for new events, endpoint status, groups and able to create active response such as adding vaccinations and exclusions.

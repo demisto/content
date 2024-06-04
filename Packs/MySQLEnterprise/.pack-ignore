@@ -1,9 +1,0 @@
-[file:MySQLEnterpriseEventCollector.yml]
-ignore=MR108
-
-[file:MySQLEnterprise_1_3.yml]
-ignore=MR108
-
-[file:MySQLEnterprise.yml]
-ignore=PR101
-

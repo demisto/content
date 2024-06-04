@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Once updating to this version *fetch alerts* is no longer supported in XSIAM. To add events as alerts, make sure to add correlation rules."
-}

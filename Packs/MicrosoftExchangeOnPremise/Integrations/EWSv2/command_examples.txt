@@ -1,1 +1,0 @@
-!ews-resolve-name identifier=`example@example.com` full-contact-data=True

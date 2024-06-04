@@ -1,8 +1,0 @@
-[file:Pipl.yml]
-ignore=IN144,DB100,IN101
-
-[file:Pipl_image.png]
-ignore=IM111
-
-[known_words]
-pipl

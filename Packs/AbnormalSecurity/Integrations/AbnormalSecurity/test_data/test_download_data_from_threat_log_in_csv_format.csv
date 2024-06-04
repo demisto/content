@@ -1,3 +1,0 @@
-Date,From Display Name,From Email,Subject,Recipient Email,Original Folder,Job Title of Sender,Job Title of Recipient,Abnormal's best guess of attack type,Abnormal's best guess of attack strategy,Abnormal's best guess of impersonated entity,Abnormal's best guess of attack vector,Remediation Status
-2021-07-20 20:14:32+00:00,'Kevin Lau',abc@def.com,[LIKELY PHISHING] does this go to junk,,,,,Email Account Takeover,Internal Compromised Email Account,None / Others,Text,Auto-Remediated to Junk
-2021-07-14 21:10:39+00:00,'Sexual Health From Everyday Heal..',newsletters@everydayhealth.com,[LIKELY PHISHING] Don't Let This Stop You From Having Great Sex,,,,,Spam,Unknown Sender,None / Others,Link,Auto-Remediated

@@ -1,7 +1,0 @@
-{
-  "error": {
-    "code": 400,
-    "message": "generic::invalid_argument: provided rule ID 12345 is not valid",
-    "status": "INVALID_ARGUMENT"
-  }
-}
