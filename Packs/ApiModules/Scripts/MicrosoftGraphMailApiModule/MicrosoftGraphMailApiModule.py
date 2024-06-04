@@ -670,10 +670,12 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 draft_id=draft_id,
                 attachment_data=attachment.get('data', ''),
                 attachment_name=attachment.get('name', ''),
-                is_inline=attachment.get('isInline', False)
+                is_inline=attachment.get('isInline', False),
+                content_id=attachment.get('contentId', None)
             )
 
-    def get_upload_session(self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool) -> dict:
+    def get_upload_session(self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool,
+                           content_id=None) -> dict:
         """
         Create an upload session for a specific draft ID.
         Args:
@@ -683,21 +685,25 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
+        json_data = {
+            'attachmentItem': {
+                'attachmentType': 'file',
+                'name': attachment_name,
+                'size': attachment_size,
+                'isInline': is_inline
+            }
+        }
+        if content_id:
+            json_data['attachmentItem']['contentId'] = content_id
+        demisto.debug(f"{json_data=}")
         return self.http_request(
             'POST',
             f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
-            json_data={
-                'attachmentItem': {
-                    'attachmentType': 'file',
-                    'name': attachment_name,
-                    'size': attachment_size,
-                    'isInline': is_inline
-                }
-            }
+            json_data=json_data
         )
 
     def add_attachment_with_upload_session(self, email: str, draft_id: str, attachment_data: bytes,
-                                           attachment_name: str, is_inline: bool = False):
+                                           attachment_name: str, is_inline: bool = False, content_id=None):
         """
         Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
         more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
@@ -715,7 +721,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
             draft_id=draft_id,
             attachment_name=attachment_name,
             attachment_size=attachment_size,
-            is_inline=is_inline
+            is_inline=is_inline,
+            content_id=content_id
         )
         upload_url = upload_session.get('uploadUrl')
         if not upload_url:
