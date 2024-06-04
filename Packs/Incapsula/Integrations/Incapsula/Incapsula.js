@@ -1,6 +1,6 @@
 var apiid = params.creds ? params.creds.identifier : params.apiid;
 var apikey = params.creds ? params.creds.password : params.apikey;
-var base = 'https://my.imperva.com';
+var base = 'https://my.incapsula.com';
 var proxy = params.proxy;
 
 var sendRequest = function(url, body, queryName) {
@@ -156,5 +156,5 @@ switch (command) {
         }
         return 'not cool';
     default:
-        return sendRequest(base + urlDict[command] + encodeToURLQuery(args), '',  urlDict[command]);
+        return sendRequest(base + urlDict[command], encodeToURLQuery(args).substr(1), urlDict[command]);
 }
