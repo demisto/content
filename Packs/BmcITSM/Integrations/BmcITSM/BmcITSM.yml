@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: BmcITSM_Enes
+  id: BmcITSM
   version: -1
 configuration:
 - additionalinfo: 'For Example: https://localhost:8008'
@@ -156,8 +156,8 @@ configuration:
   required: false
   type: 19
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
-display: BmcITSM_Enes
-name: BmcITSM_Enes
+display: BmcITSM
+name: BmcITSM
 script:
   commands:
   - arguments:
