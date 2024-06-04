@@ -182,7 +182,7 @@ def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]
     return result
 
 
-def get_json_data(object_type_id: str, attributes: str = None, attributes_json: str = None) -> Dict[str, Any]:
+def get_attributes_json_data(object_type_id: str, attributes: str = None, attributes_json: str = None) -> Dict[str, Any]:
 
     if not attributes and not attributes_json:
         raise ValueError('Either attributes or attributes_json must be provided.')
@@ -343,7 +343,7 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
 
-    json_data = get_json_data(object_type_id, attributes, attributes_json)
+    json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.create_object(json_data)
     outputs, object_id = parse_object_results(res).values()
 
@@ -361,7 +361,7 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
 
     jira_object = client.http_get(f'/object/{object_id}')
     object_type_id = jira_object.get('objectType').get('id')
-    json_data = get_json_data(object_type_id, attributes, attributes_json)
+    json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.update_object(object_id, json_data)
     _, object_id = parse_object_results(res).values()
 
