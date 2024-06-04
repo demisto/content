@@ -94,7 +94,6 @@ class SetPhishingCampaignDetails:
             return current_incident_data
 
         if self.is_incident_removed_from_campaign(campaign_id):
-            print("Current incident was previously removed from the campaign.")
             demisto.debug("Current incident was previously removed from the campaign.")
 
             return campaign_data

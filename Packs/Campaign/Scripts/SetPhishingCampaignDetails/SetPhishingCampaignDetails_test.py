@@ -354,14 +354,17 @@ def test_merge_contexts(mocker):
     set_phishing_campaign_details = SetPhishingCampaignDetails()
 
     # Test for creating a new campaign with current incident data
-    merged_data_new_campaign = set_phishing_campaign_details.merge_contexts(current_incident_data, campaign_data_new_campaign, campaign_id)
+    merged_data_new_campaign = set_phishing_campaign_details.merge_contexts(
+        current_incident_data, campaign_data_new_campaign, campaign_id)
     assert merged_data_new_campaign == current_incident_data
 
     # Test for adding current incident to an existing campaign
-    merged_data_existing_campaign = set_phishing_campaign_details.merge_contexts(current_incident_data, campaign_data_existing_campaign, campaign_id)
+    merged_data_existing_campaign = set_phishing_campaign_details.merge_contexts(
+        current_incident_data, campaign_data_existing_campaign, campaign_id)
     assert merged_data_existing_campaign == campaign_data_existing_campaign
 
     # Test for returning campaign data if incident is removed from campaign
     mocker.patch.object(SetPhishingCampaignDetails, 'is_incident_removed_from_campaign', return_value=True)
-    merged_data_removed_from_campaign = set_phishing_campaign_details.merge_contexts(current_incident_data, campaign_data_existing_campaign, campaign_id)
+    merged_data_removed_from_campaign = set_phishing_campaign_details.merge_contexts(
+        current_incident_data, campaign_data_existing_campaign, campaign_id)
     assert merged_data_removed_from_campaign == campaign_data_existing_campaign
