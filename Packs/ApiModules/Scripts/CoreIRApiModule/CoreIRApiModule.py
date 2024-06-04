@@ -10,7 +10,7 @@ from typing import Tuple, Callable
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-
+a=5
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
