@@ -63,13 +63,18 @@ script:
     - description: registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024
       name: registry_expiry_date
       required: false
-    - description: can write your own filter according to ?
+    - description: can write your own filter according to selectors such as 
+       accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
+       criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
+       lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
+       qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited,
+       stateProvince, street1, street2, urlForwarding, whoisPrivacy
       name: filter
       required: false
-    - description: sorting the output by ?
+    - description: 'sorting the output by a selector and desc/asc, for example: propertyName,asc'
       name: sort
       required: false
-    - description: first page to show ?
+    - description: page number
       name: page
       required: false
     - description: the size of rows in a page
@@ -254,10 +259,15 @@ script:
     - description: email to filter by, can start with like=, in=
       name: domain_email
       required: false
-    - description: can write your own filter according to ?
+    - description: can write your own filter according to selectors such as 
+       accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
+       criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
+       lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
+       qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited,
+       stateProvince, street1, street2, urlForwarding, whoisPrivacy
       name: filter
       required: false
-    - description: first page to show ?
+    - description: page number
       name: page
       required: false
     - description: the size of rows in a page
