@@ -9,7 +9,7 @@ var sendRequest = function(url, body, queryName) {
             {
                 Method: 'POST',
                 Body: body,
-                Headers: {'content-type': ['application/x-www-form-urlencoded']},
+                Headers: {'content-type': ['application/x-www-form-urlencoded'], 'x-API-Id': apiid, 'x-API-Key': apikey},
             },
             true,
             proxy
