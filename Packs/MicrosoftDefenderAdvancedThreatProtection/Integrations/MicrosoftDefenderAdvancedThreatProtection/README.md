@@ -7224,4 +7224,8 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 ```!microsoft-atp-list-machines-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
 #### Human Readable Output
 
->Microsoft Defender ATP no device found.
+>### Microsoft Defender ATP Machine:
+>
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
