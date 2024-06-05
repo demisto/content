@@ -1,0 +1,215 @@
+id: ZoomMailTest
+version: -1
+name: ZoomMailTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 110771b3-8fa2-4c19-8988-731dc5b0bfff
+    type: start
+    task:
+      id: 110771b3-8fa2-4c19-8988-731dc5b0bfff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fed1e8ff-ba40-41f1-8d46-353aebe33630
+    type: regular
+    task:
+      id: fed1e8ff-ba40-41f1-8d46-353aebe33630
+      version: -1
+      name: zoom-mail-email-list
+      description: Lists the messages in the user's mailbox.
+      script: Zoom Mail|||zoom-mail-email-list
+      type: regular
+      iscommand: true
+      brand: Zoom Mail
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email:
+        simple: xsoar_test@zmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4044fb6d-5982-4ca8-8fcc-516132adacd3
+    type: regular
+    task:
+      id: 4044fb6d-5982-4ca8-8fcc-516132adacd3
+      version: -1
+      name: zoom-mail-mailbox-profile-get
+      description: Retrieves the mailbox profile.
+      script: Zoom Mail|||zoom-mail-mailbox-profile-get
+      type: regular
+      iscommand: true
+      brand: Zoom Mail
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e85de1c2-4c92-406d-8ee0-7c8873e48b79
+    type: regular
+    task:
+      id: e85de1c2-4c92-406d-8ee0-7c8873e48b79
+      version: -1
+      name: zoom-mail-thread-list
+      description: Get an email thread.
+      script: Zoom Mail|||zoom-mail-thread-list
+      type: regular
+      iscommand: true
+      brand: Zoom Mail
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      thread_id:
+        simple: ${ZoomMail.Email.[0].threadId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2027da09-9028-4b20-880d-68c663ce27e3
+    type: regular
+    task:
+      id: 2027da09-9028-4b20-880d-68c663ce27e3
+      version: -1
+      name: zoom-mail-user-list
+      description: Lists the available users.
+      script: Zoom Mail|||zoom-mail-user-list
+      type: regular
+      iscommand: true
+      brand: Zoom Mail
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e76927cc-d266-469a-862c-c623e10a5f42
+    type: regular
+    task:
+      id: e76927cc-d266-469a-862c-c623e10a5f42
+      version: -1
+      name: End
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: Tests the functionality of the ZoomMail integration.
