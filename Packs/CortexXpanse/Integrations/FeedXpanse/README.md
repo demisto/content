@@ -46,7 +46,7 @@ Retrieves a limited number of indicators.
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. | Required | 
 | ip | Retrieve discovered IPs. Default is yes. | Optional | 
-| domain | Retrieve discovered Domains. Default is yes. | Optional | 
+| domain | Retrieve discovered domains. Default is yes. | Optional | 
 | certificate | Retrieve discovered certificates. Default is yes. | Optional | 
 
 #### Context Output

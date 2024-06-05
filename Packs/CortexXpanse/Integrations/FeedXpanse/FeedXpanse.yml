@@ -126,7 +126,7 @@ script:
       description: Retrieve discovered IPs.
       name: ip
     - defaultValue: yes
-      description: Retrieve discovered Domains.
+      description: Retrieve discovered domains.
       name: domain
     - defaultValue: yes
       description: Retrieve discovered certificates.
@@ -135,13 +135,13 @@ script:
     name: xpanse-get-indicators
     outputs:
     - contextPath: ASM.Indicators.Name
-      description: 'The name of the indicator.'
+      description: The name of the indicator.
       type: String
     - contextPath: ASM.Indicators.Description
-      description: 'The description of the indicator.'
+      description: The description of the indicator.
       type: String
     - contextPath: ASM.Indicators.Type
-      description: 'The type of the indicator.'
+      description: The type of the indicator.
       type: String
   feed: true
   script: '-'
