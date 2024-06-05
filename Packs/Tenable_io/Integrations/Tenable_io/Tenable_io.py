@@ -1847,31 +1847,6 @@ def fetch_vulnerabilities(client: Client, assets_last_run: dict):
     return vulnerabilities
 
 
-
-
-    vulnerabilities = []
-    export_uuid = last_run.get('vuln_export_uuid')
-    if export_uuid:
-        demisto.info(f'Got export uuid from API {export_uuid}')
-        vulnerabilities, status = get_vulnerabilities_chunks(client=client, export_uuid=export_uuid)
-        if status in ['PROCESSING', 'QUEUED']:
-            last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
-        # set params for next run
-        if status == 'FINISHED':
-            last_run.pop('vuln_export_uuid', None)
-            if not last_run.get('assets_export_uuid'):
-                last_run.pop('nextTrigger', None)
-                last_run.pop('type', None)
-        elif status in ['CANCELLED', 'ERROR']:
-            export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
-                                                      last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
-            last_run.update({'vuln_export_uuid': export_uuid})
-            last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
-
-    demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {last_run=}.')
-    return vulnerabilities
-
-
 def run_vulnerabilities_fetch(client, last_run):
 
     demisto.info("fetch vulnerabilies from the API")
