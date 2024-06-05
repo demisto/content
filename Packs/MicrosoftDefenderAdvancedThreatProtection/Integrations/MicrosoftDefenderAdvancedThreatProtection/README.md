@@ -7177,7 +7177,7 @@ There is no context output for this command.
 ### microsoft-atp-list-machines-by-ip
 
 ***
-Retrieves machines that interacted with the requested internal IP in the time range of 15 minutes prior and after a given timestamp. Note, this command is different than the endpoint command in witch returns data about the given machines
+Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
 
 #### Base Command
 
@@ -7190,7 +7190,7 @@ Retrieves machines that interacted with the requested internal IP in the time ra
 | ip | The endpoint IP address. | Required | 
 | timestamp | The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z Also supports relative time. | Required | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored.'. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. | Optional | 
 
 #### Context Output
 
@@ -7222,86 +7222,6 @@ Retrieves machines that interacted with the requested internal IP in the time ra
 
 #### Command example
 ```!microsoft-atp-list-machines-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
-#### Context Example
-```json
-{
-    "Endpoint": {
-        "Hostname": "msde-agent-host-win2016-dc.msde.lab.demisto",
-        "ID": "1234",
-        "IPAddress": "8.8.8.8",
-        "MACAddress": "1234",
-        "OS": "WindowsServer2016",
-        "OSVersion": "1607 x64 bit",
-        "Status": "Online",
-        "Vendor": "Microsoft Defender ATP"
-    },
-    "MicrosoftATP": {
-        "Machine": {
-            "AgentVersion": "10.8735.1493.6981",
-            "ComputerDNSName": "msde-agent-host-win2016-dc.msde.lab.demisto",
-            "ExposureLevel": "Medium",
-            "FirstSeen": "2022-01-31T10:04:07.338Z",
-            "HealthStatus": "Active",
-            "ID": "96444b946be25250354edef5fdc23aca2c5",
-            "IPAddresses": [
-                {
-                    "ipAddress": "8.8.8.8",
-                    "macAddress": "420100001B",
-                    "operationalStatus": "Up",
-                    "type": "Ethernet"
-                },
-                {
-                    "ipAddress": "fe80::e3:2150:698:654",
-                    "macAddress": "420001B",
-                    "operationalStatus": "Up",
-                    "type": "Ethernet"
-                },
-                {
-                    "ipAddress": "127.0.0.1",
-                    "macAddress": null,
-                    "operationalStatus": "Up",
-                    "type": "SoftwareLoopback"
-                },
-                {
-                    "ipAddress": "::1",
-                    "macAddress": null,
-                    "operationalStatus": "Up",
-                    "type": "SoftwareLoopback"
-                },
-                {
-                    "ipAddress": "f0::fe:8.8.8.8",
-                    "macAddress": "00000000000E0",
-                    "operationalStatus": "Down",
-                    "type": "Tunnel"
-                },
-                {
-                    "ipAddress": "fe80::fff:fff:ffe",
-                    "macAddress": "0000000000E0",
-                    "operationalStatus": "Down",
-                    "type": "Tunnel"
-                }
-            ],
-            "IsAADJoined": false,
-            "LastExternalIPAddress": "8.8.8.8",
-            "LastIPAddress": "8.8.8",
-            "LastSeen": "2022-05-28T07:58:06.26Z",
-            "MACAddress": "42080001B",
-            "OSBuild": 14393,
-            "OSPlatform": "WindowsServer2016",
-            "OSProcessor": "x64",
-            "OSVersion": "1607",
-            "RBACGroupID": 2353,
-            "RBACGroupName": "UnassignedGroup",
-            "RiskScore": "Medium"
-        }
-    }
-}
-```
-
 #### Human Readable Output
 
->### Microsoft Defender ATP Machine:
->|ID|Hostname|OSVersion|IPAddress|Status|MACAddress|Vendor|
->|---|---|---|---|---|---|---|
->| 96444b946be252d1f4550354edef5fdc23aca2c5 | msde-agent-host-win2016-dc.msde.lab.demisto | 1607 x64 bit | 8. | Online | 42010A80001B | Microsoft Defender ATP |
-
+>Microsoft Defender ATP no device found.
