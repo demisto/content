@@ -315,6 +315,12 @@ class CipherTrustClient(BaseClient):
             params=params,
         )
 
+    def get_external_ca(self, external_ca_id: str) -> dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -843,22 +849,26 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict[st
 
 
 def external_certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
-                                                       args.get(PAGE),
-                                                       args.get(PAGE_SIZE))
-    params = assign_params(
-        skip=skip,
-        limit=limit,
-        subject=args.get(SUBJECT),
-        issuer=args.get(ISSUER),
-        serialNumber=args.get(SERIAL_NUMBER),
-        cert=args.get(CERT),
-    )
+    if external_ca_id := args.get(EXTERNAL_CA_ID):
+        raw_response = client.get_external_ca(external_ca_id=external_ca_id)
+        outputs : object = remove_key_from_outputs(raw_response, ['cert'], ['Certificate.pem'])
+    else:
+        skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
+                                                           args.get(PAGE),
+                                                           args.get(PAGE_SIZE))
+        params = assign_params(
+            skip=skip,
+            limit=limit,
+            subject=args.get(SUBJECT),
+            issuer=args.get(ISSUER),
+            serialNumber=args.get(SERIAL_NUMBER),
+            cert=args.get(CERT),
+        )
 
-    raw_response = client.get_external_certificates_list(params=params)
+        raw_response = client.get_external_certificates_list(params=params)
 
-    outputs = [remove_key_from_outputs(external_ca_entry, ['cert']) for external_ca_entry in
-               raw_response.get('resources', [])]
+        outputs = [remove_key_from_outputs(external_ca_entry, ['cert']) for external_ca_entry in
+                   raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,

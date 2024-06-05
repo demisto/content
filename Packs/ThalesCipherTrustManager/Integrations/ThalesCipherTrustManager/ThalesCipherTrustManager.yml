@@ -427,6 +427,12 @@ script:
     description: Returns a list of external CA certificates. The results can be filtered, using the command arguments.
     name: ciphertrust-external-certificate-list
     arguments:
+    - name: external_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI).
+      required: false
+      secret: false
+      default: false
     - name: subject
       isArray: false
       description: Filter by the subject
