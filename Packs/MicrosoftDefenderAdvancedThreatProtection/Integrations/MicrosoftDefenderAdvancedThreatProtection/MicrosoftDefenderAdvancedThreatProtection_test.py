@@ -97,16 +97,14 @@ test_list_machines_by_ip_data = [
 
 
 @pytest.mark.parametrize('params, expected_len', test_list_machines_by_ip_data)
-def test_list_machines_by_ip(mocker, params, expected_len):
-    """_summary_
-
-    Args:
-        mocker (_type_): _description_
-        params (_type_): _description_
-        expected_len (_type_): _description_
-
-    Returns:
-        _type_: _description_
+def test_list_machines_by_ip_with_limit(mocker, params, expected_len):
+    """
+    Given:
+        -A limit argument.
+    When:
+        -running list-machines-by-ip command.
+    Then:
+        -The number of machines returned is not grater than the limit and http request is called with the right args.
     """
     from MicrosoftApiModule import MicrosoftClient
     raw_response = {'value': [{}, {}, {}]}
@@ -114,9 +112,9 @@ def test_list_machines_by_ip(mocker, params, expected_len):
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     list_machines_by_ip_command(client_mocker, params)
     assert mock_http_request.call_args.kwargs == {'method': 'GET',
-                                                  'url_suffix': "machines/findbyip(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)"}
+                                                 'url_suffix': "machines/findbyip(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)"}
     assert len(mock_handle_machines.call_args.args[0]) == expected_len
-
+    
 
 def test_get_alert_related_ips_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_alert_related_ips_command

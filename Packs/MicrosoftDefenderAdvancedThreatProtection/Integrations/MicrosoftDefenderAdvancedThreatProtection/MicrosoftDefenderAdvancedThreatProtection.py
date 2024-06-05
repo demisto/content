@@ -5081,10 +5081,10 @@ def validate_args_endpoint_command(hostnames, ips, ids):
 
 
 def handle_machines(machines_response):
-    """Converts the machine's list that the API returns to a CommandResults list with all data needed.
+    """Converts the raw response of the API to a CommandResults list with all data needed.
 
     Args:
-        The API response, a list of machines.
+        The raw API response, a list of machines.
 
     Returns:
         CommandResults list.
