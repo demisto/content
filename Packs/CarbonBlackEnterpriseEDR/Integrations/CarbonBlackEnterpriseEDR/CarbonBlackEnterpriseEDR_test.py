@@ -328,3 +328,25 @@ def test_add_alert_notes_command(mocker):
 
     assert "Successfully added notes to alert: \"789012\"" in result.readable_output
     assert result.raw_response == MOCK_UPDATE_ALERT_NOTES_RESPONSE
+
+def test_test_module(mocker):
+    """
+    Given:
+        - All relevant parameters for the integration.
+
+    When:
+        - testing the integration.
+
+    Then:
+        - The http request is called with the right API version.
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+    from CarbonBlackEnterpriseEDR import test_module
+    http_request = mocker.patch.object(client, '_http_request', return_value=[])
+    test_module(client=client)
+    assert 'v7' in http_request.call_args.kwargs['url_suffix']
