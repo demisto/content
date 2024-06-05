@@ -42,6 +42,6 @@ You can configure the specific vendor and product for this instance.
    | Parameter     | Value   
    | :---          | :---        
    | `Vendor`      | Enter **SilverFort**.
-   | `Product`     | Enter **Unified Identity Protection**.
+   | `Product`     | Enter **Admin_console**.
 
 </~XSIAM>
