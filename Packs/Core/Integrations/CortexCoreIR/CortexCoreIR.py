@@ -6,7 +6,7 @@ from CoreIRApiModule import *
 urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-
+A=5
 INTEGRATION_CONTEXT_BRAND = 'Core'
 INTEGRATION_NAME = 'Cortex Core - IR'
 
