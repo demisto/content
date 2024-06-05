@@ -1106,7 +1106,7 @@ script:
       description: Indicates if user authentication is enabled for the CA.
       type: String
   - deprecated: false
-    description: Returns a list of local CA certificates. The results can be filtered, using the command arguments.
+    description: Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. Chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
     name: ciphertrust-local-ca-list
     arguments:
     - name: subject
