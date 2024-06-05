@@ -2975,7 +2975,7 @@ def fetch_notable_event_command(service: client.Service, args: dict) -> CommandR
     cache_notable_data(notable)
 
     readable_output = tableToMarkdown(name=f'Notable {notable.id} fetched', t=notable.data)
-    readable_output += f'\nAn incident will be created in XSOAR upon the next periodic \'Fetch Incidents\' cycle.'
+    readable_output += '\nAn incident will be created in XSOAR upon the next periodic \'Fetch Incidents\' cycle.'
     return CommandResults(readable_output=readable_output)
 
 
