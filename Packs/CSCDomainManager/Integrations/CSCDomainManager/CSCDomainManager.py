@@ -101,26 +101,27 @@ class Client(BaseClient):
             headers=self._headers
         )
         return results
-    
+
     def get_qualified_domain_name(self, qualified_domain_name):
         return [self.send_get_request(f"/domains/{qualified_domain_name}", "")]
-    
+
     def get_domains(self, params):
         return self.send_get_request("/domains", params)
-    
+
     def get_available_domains(self, params):
         return self.send_get_request("/availability", params)
-    
+
     def get_configurations(self, params):
         return self.send_get_request("/domains/configuration", params)
-    
-    
+
+
 def parse_and_format_date(value: str) -> str:
     date = dateparser.parse(value)
-    if date is None: #not a date
+    if date is None:  # not a date
         return_error(f'Failed to execute {demisto.command()} command. Invalid Date')
-    
-    formatted_date = date.strftime("%d-%b-%Y")
+
+    else:
+        formatted_date = date.strftime("%d-%b-%Y")
     return formatted_date
 
 
@@ -266,23 +267,23 @@ def get_domain_hr_fields(domain) -> dict:
         A dict of the domain with the fields for human readable
     """
     hr_formatted_domain = {'Qualified Domain Name': domain.get('qualifiedDomainName'),
-                'Domain': domain.get('domain'),
-                'Idn': domain.get('idn'),
-                'Generic top-level domains': domain.get('newGtld'),
-                'Managed Status': domain.get('managedStatus'),
-                'Registration Date': domain.get('registrationDate'),
-                'Registry Expiry Date': domain.get('registryExpiryDate'),
-                'Paid Through Date': domain.get('paidThroughDate'),
-                'Country Code': domain.get('countryCode'),
-                'Server Delete Prohibited': domain.get('countryCode'),
-                'Server Transfer Prohibited': domain.get('serverDeleteProhibited'),
-                'Server Update Prohibite d': domain.get('serverTransferProhibited'),
-                'Name Servers': domain.get('nameServers'),
-                'Dns Type': domain.get('dnsType'),
-                'Whois Contact first Name': domain.get('whoisContacts')[0].get('firstName'),
-                'Whois Contact last Name': domain.get('whoisContacts')[0].get('lastName'),
-                'Whois Contact email': domain.get('whoisContacts')[0].get('email')
-                }
+                           'Domain': domain.get('domain'),
+                           'Idn': domain.get('idn'),
+                           'Generic top-level domains': domain.get('newGtld'),
+                           'Managed Status': domain.get('managedStatus'),
+                           'Registration Date': domain.get('registrationDate'),
+                           'Registry Expiry Date': domain.get('registryExpiryDate'),
+                           'Paid Through Date': domain.get('paidThroughDate'),
+                           'Country Code': domain.get('countryCode'),
+                           'Server Delete Prohibited': domain.get('countryCode'),
+                           'Server Transfer Prohibited': domain.get('serverDeleteProhibited'),
+                           'Server Update Prohibite d': domain.get('serverTransferProhibited'),
+                           'Name Servers': domain.get('nameServers'),
+                           'Dns Type': domain.get('dnsType'),
+                           'Whois Contact first Name': domain.get('whoisContacts')[0].get('firstName'),
+                           'Whois Contact last Name': domain.get('whoisContacts')[0].get('lastName'),
+                           'Whois Contact email': domain.get('whoisContacts')[0].get('email')
+                           }
 
     domain.get('whoisContacts')
     return hr_formatted_domain
@@ -302,7 +303,7 @@ def get_whois_contacts_fields_for_search_domains(whois_contacts, field_name: str
     return [contact.get(field_name) for contact in whois_contacts]
 
 
-def get_whois_contacts_fields_for_domain(whois_contact,field_names: List[str], contact_type_condition: str)  -> list:
+def get_whois_contacts_fields_for_domain(whois_contact, field_names: List[str], contact_type_condition: str) -> list:
     """
     Create a list of contact.field_name for each contact in whois_contacts. Specific arrangement for the domain command
 
@@ -463,7 +464,7 @@ def domain(client: Client, args, reliability) -> CommandResults:
     """
     qualified_domain_name = args.get('domain')
     domain_json = client.get_domains(qualified_domain_name)
-    
+
     dbot_score = Common.DBotScore(
         indicator=qualified_domain_name,
         indicator_type=DBotScoreType.DOMAIN,
@@ -480,15 +481,15 @@ def domain(client: Client, args, reliability) -> CommandResults:
         expiration_date=domain_json.get('registryExpiryDate'),
         name_servers=domain_json.get('nameServers'),
         registrant_name=get_whois_contacts_fields_for_domain(whois_contacts, ['firstName', 'lastName'], 'REGISTRANT'),
-        registrant_email=get_whois_contacts_fields_for_domain(whois_contacts,['email'], 'REGISTRANT'),
-        registrant_phone=get_whois_contacts_fields_for_domain(whois_contacts,['phone'], 'REGISTRANT'),
-        registrant_country=get_whois_contacts_fields_for_domain(whois_contacts,['country'], 'REGISTRANT'),
-        admin_name=get_whois_contacts_fields_for_domain(whois_contacts,['firstName', 'lastName'], 'ADMINISTRATIVE'),
+        registrant_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'REGISTRANT'),
+        registrant_phone=get_whois_contacts_fields_for_domain(whois_contacts, ['phone'], 'REGISTRANT'),
+        registrant_country=get_whois_contacts_fields_for_domain(whois_contacts, ['country'], 'REGISTRANT'),
+        admin_name=get_whois_contacts_fields_for_domain(whois_contacts, ['firstName', 'lastName'], 'ADMINISTRATIVE'),
         admin_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'ADMINISTRATIVE'),
         admin_phone=get_whois_contacts_fields_for_domain(whois_contacts, ['phone'], 'ADMINISTRATIVE'),
         admin_country=get_whois_contacts_fields_for_domain(whois_contacts, ['country'], 'ADMINISTRATIVE'),
         tech_country=get_whois_contacts_fields_for_domain(whois_contacts, ['country'], 'TECHNICAL'),
-        tech_name=get_whois_contacts_fields_for_domain(whois_contacts,['firstName', 'lastName'], 'TECHNICAL'),
+        tech_name=get_whois_contacts_fields_for_domain(whois_contacts, ['firstName', 'lastName'], 'TECHNICAL'),
         tech_organization=get_whois_contacts_fields_for_domain(whois_contacts, ['organization'], 'TECHNICAL'),
         tech_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'TECHNICAL'),
         dbot_score=dbot_score

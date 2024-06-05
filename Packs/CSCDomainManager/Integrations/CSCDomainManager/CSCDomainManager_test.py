@@ -51,12 +51,12 @@ def test_create_params_string():
     }
     params_str = create_params_string(args)
     assert params_str == 'filter=domain==csc-panw,registryExpiryDate==22-Apr-2025'
-    
+
     args = {
         'domain_name': 'csc-panw',
         'registry_expiry_date': '22/04/2025'
     }
-    
+
     params_str = create_params_string(args)
     assert params_str == 'filter=domain==csc-panw,registryExpiryDate==22-Apr-2025'
 
