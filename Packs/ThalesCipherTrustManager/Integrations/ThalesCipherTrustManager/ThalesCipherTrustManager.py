@@ -633,7 +633,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-        outputs: object = remove_key_from_outputs(raw_response, ['csr', 'cert'])
+        outputs: object = remove_key_from_outputs(raw_response, ['csr', 'cert'] , ['CSR.pem', 'Certificate.pem'])
 
     else:  # get a list of local CAs with optional filtering
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
