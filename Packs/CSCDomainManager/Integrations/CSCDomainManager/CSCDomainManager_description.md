@@ -1,22 +1,16 @@
-## Configure CSCDomainManager on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CSCDomainManager.
-3. Click **Add instance** to create and configure a new integration instance.
-
-| **Parameter** | **Description** | **Required** |
+| **Parameter** | **Description** |
 | --- | --- | --- |
-| Base URL | The endpoint URL | True |
-| Token | The token to use for connection | True |
-| API Key | The API Key to use for connection | True |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Base URL | The endpoint URL |
+| Token | The token to use for connection |
+| API Key | The API Key to use for connection |
+| Source Reliability | Reliability of the source providing the intelligence data |
+| Trust any certificate (not secure) |  |
+| Use system proxy settings |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
+Click **Test** to validate the URLs, token, and connection.
 
 ## Access and Security
- Customers request access through their CSC service team.  Their service team will gather the details for
+Customers request access through their CSC service team.  Their service team will gather the details for
 the service account that will be used to access the API; and
 the API administrator(s) (one or more authorized client users) who will manage the credentials through our CSCDomainManagerSM web portal.
  
