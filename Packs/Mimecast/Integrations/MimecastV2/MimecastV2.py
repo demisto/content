@@ -51,7 +51,7 @@ CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
 demisto.info(f"{USE_OAUTH2=}")
-demisto.info(f"len CLIENT_ID:{len(str(CLIENT_ID))}")
+demisto.info(f"len CLIENT_ID :{len(str(CLIENT_ID))}")
 demisto.info(f"len CLIENT_SECRET:{len(str(CLIENT_SECRET))}")
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = 'blockedsenders'
