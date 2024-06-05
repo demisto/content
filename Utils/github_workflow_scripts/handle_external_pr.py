@@ -298,6 +298,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 if content_object.is_feed:
                     return True
                 pack = content_object.in_pack
+                print(f'pack is: {pack}')
                 tags = pack.tags
                 categories = pack.categories
                 if TIM_TAGS in tags or TIM_CATEGORIES in categories:
