@@ -851,7 +851,7 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict[st
 def external_certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if external_ca_id := args.get(EXTERNAL_CA_ID):
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
-        outputs : object = remove_key_from_outputs(raw_response, ['cert'], ['Certificate.pem'])
+        outputs: object = remove_key_from_outputs(raw_response, ['cert'], ['Certificate.pem'])
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
                                                            args.get(PAGE),
