@@ -1,13 +1,16 @@
 [MODEL: dataset = "silverfort_admin_console_raw"]
+//The event type we're mapping is "Authentication"
 filter cefdeviceeventclassid = "Authentication"
 | alter
-    src_user = arrayindex(regextract(suser,"(\S+)\@"),0),
-    coordinates = if(cs11 != "n/a", split(cs11, ",")),
-    outcome_reason = arrayindex(regextract(cs2, "\w+\s\((.+)\)"), 0),
-    risks = if(cs7 != "n/a", replace(cs7, "_", " "))
+    src_user = arrayindex(regextract(suser,"(\S+)\@"),0), //src_user comes sometimes as UPN
+    coordinates = if(cs11 != "n/a", split(cs11, ",")), //The coordinates comes as <latitude>,<longitude>
+    outcome_reason = arrayindex(regextract(cs2, "\w+\s\((.+)\)"), 0), //The format of 'cs2' is 'Denied (Bad Password)', we're extracting the outcome reason, which will appear mostly in Denied.
+    risks = if(cs7 != "n/a", replace(cs7, "_", " ")) //Comes with underscore instead of space delimiter
 | alter
     latitude = if(cs11 != "n/a", to_float(arrayindex(coordinates, 0))),
     longitude = if(cs11 != "n/a", to_float(arrayindex(coordinates, 1)))
+
+//Mapping to XDM fields
 | alter
     xdm.source.user.username = coalesce(src_user,suser),
     xdm.source.user.upn = if(src_user != null, suser),
