@@ -459,7 +459,7 @@ class Client(BaseClient):
                            json_data=data,
                            resp_type="text")
 
-        return f"Created relationship between {request_id01} and {request_id02}"
+        return f"Created relationship between {request_id01} and {request_id02}."
 
     def create_service_request_request(
         self,
