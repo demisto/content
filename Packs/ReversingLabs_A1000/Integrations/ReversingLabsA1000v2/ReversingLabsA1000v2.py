@@ -1368,6 +1368,109 @@ def list_containers_output(resp_json):
     return results
 
 
+def upload_from_url_command(a1000: A1000):
+    action = demisto.getArg("action")
+    file_url = demisto.getArg("file_url")
+    crawler = demisto.getArg("crawler")
+    archive_password = demisto.getArg("archive_password")
+    sandbox_platform = demisto.getArg("sandbox_platform")
+    task_id = demisto.getArg("task_id")
+    retry = demisto.getArg("retry")
+    if retry:
+        retry = argToBoolean(retry)
+
+    if action == "UPLOAD":
+        resp = a1000.upload_sample_from_url(
+            file_url=file_url,
+            crawler=crawler,
+            archive_password=archive_password,
+            rl_cloud_sandbox_platform=sandbox_platform
+        )
+
+    elif action == "GET REPORT":
+        resp = a1000.get_submitted_url_report(task_id=task_id, retry=retry)
+
+    elif action == "UPLOAD AND GET REPORT":
+        resp = a1000.upload_sample_from_url_and_get_report(
+            file_url=file_url,
+            crawler=crawler,
+            archive_password=archive_password,
+            rl_cloud_sandbox_platform=sandbox_platform,
+            retry=retry
+        )
+
+    elif action == "CHECK ANALYSIS STATUS":
+        resp = a1000.check_submitted_url_status(task_id=task_id)
+
+    else:
+        return_error("This action is not supported.")
+
+    results = upload_from_url_output(resp_json=resp.json(), action=action)
+    return results
+
+
+def upload_from_url_output(resp_json, action):
+    markdown = f"""## ReversingLabs A1000 URL sample actions - {action}\n"""
+
+    if action == "UPLOAD":
+        output = tableToMarkdown("Upload results", resp_json)
+        indicator = None
+
+    else:
+        report = resp_json.get("report")
+
+        output = f"""**Processing status**: {resp_json.get("processing_status")}
+        **Classification**: {report.get("classification")}
+        **Risk score**: {report.get("riskscore")}
+        **ID**: {report.get("id")}
+        **SHA-1**: {report.get("sha1")}
+        **SHA-256**: {report.get("sha256")}
+        **SHA-512**: {report.get("sha512")}
+        **MD5**: {report.get("md5")}
+        **IMPHASH**: {report.get("imphash")}
+        **Category**: {report.get("category")}
+        **File type**: {report.get("file_type")}
+        **File subtype**: {report.get("file_subtype")}
+        **File size**: {report.get("file_size")}
+        **Classification origin**: {report.get("classification_origin")}
+        **Classification reason**: {report.get("classification_reason")}
+        """
+
+        av_scanners = tableToMarkdown("AV Scanners", report.get("av_scanners_summary"))
+        rl_sandbox = tableToMarkdown("RL Cloud Sandbox", report.get("rl_cloud_sandbox"))
+
+        output = output + "\n" + av_scanners + rl_sandbox
+
+        score = classification_to_score(report.get("classification").upper())
+
+        dbot_score = Common.DBotScore(
+            indicator=report.get("sha1"),
+            indicator_type=DBotScoreType.FILE,
+            integration_name="ReversingLabs A1000 v2",
+            score=score,
+            malicious_description=report.get("file_subtype"),
+            reliability=RELIABILITY
+        )
+
+        indicator = Common.File(
+            md5=report.get("md5"),
+            sha1=report.get("sha1"),
+            sha256=report.get("sha256"),
+            dbot_score=dbot_score
+        )
+
+    markdown = markdown + output
+
+    command_results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_upload_from_url_actions": resp_json},
+        indicator=indicator,
+        readable_output=markdown
+    )
+
+    return command_results
+
+
 def main():
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
@@ -1446,6 +1549,8 @@ def main():
             return_results(yara_retro_command(a1000))
         elif demisto.command() == 'reversinglabs-a1000-list-containers':
             return_results(list_containers_command(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-upload-from-url-actions':
+            return_results(upload_from_url_command(a1000))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
 

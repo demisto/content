@@ -609,7 +609,39 @@ script:
       - contextPath: ReversingLabs.a1000_list_containers
         description: A10000 list top-level containers.
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.93622
+  - name: reversinglabs-a1000-upload-from-url-actions
+    description: Actions for uploading a sample from a URL and fetching the analysis results.
+    arguments:
+      - name: action
+        description: Which action to perform. Upload a sample from URL, get the report for an sample or both actions combined.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'UPLOAD'
+          - 'GET REPORT'
+          - 'UPLOAD AND GET REPORT'
+          - 'CHECK ANALYSIS STATUS'
+      - name: file_url
+        description: URL to the file you want to submit for analysis. Used in UPLOAD and UPLOAD AND GET REPORT.
+      - name: crawler
+        description: Which crawler to use - local or cloud. Used in UPLOAD and UPLOAD AND GET REPORT.
+        auto: PREDEFINED
+        predefined:
+          - 'local'
+          - 'cloud'
+      - name: archive_password
+        description: Required if the sample is an archive and it has a password. Used in UPLOAD and UPLOAD AND GET REPORT.
+      - name: sandbox_platform
+        description: Which sandbox platform to use. Check the A1000 documentation to see the current list of supported platforms. Used in UPLOAD and UPLOAD AND GET REPORT.
+      - name: task_id
+        description: ID of the URL processing task. Used in GET REPORT.
+      - name: retry
+        description: Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT.
+    outputs:
+      - contextPath: ReversingLabs.a1000_upload_from_url_actions
+        description: Actions for uploading a sample from a URL and fetching the analysis results.
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.96712
   runonce: false
   script: '-'
   subtype: python3
