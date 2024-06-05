@@ -58,7 +58,7 @@ DRILLDOWN_ENRICHMENT = 'Drilldown'
 ASSET_ENRICHMENT = 'Asset'
 IDENTITY_ENRICHMENT = 'Identity'
 SUBMITTED_NOTABLES = 'submitted_notables'
-MANUALLY_FETCHED_NOTABLES = 'manually_fetched_notables'
+MANUALLY_FETCHED_NOTABLES_DATA = 'manually_fetched_notables_data'
 EVENT_ID = 'event_id'
 JOB_CREATION_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 NOT_YET_SUBMITTED_NOTABLES = 'not_yet_submitted_notables'
@@ -441,10 +441,10 @@ class Cache:
         submitted_notables (list): The list of all submitted notables that needs to be handled.
     """
 
-    def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, manually_fetched_notables=None):
+    def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, manually_fetched_notables_data=None):
         self.not_yet_submitted_notables = not_yet_submitted_notables or []
         self.submitted_notables = submitted_notables or []
-        self.manually_fetched_notables = manually_fetched_notables or []
+        self.manually_fetched_notables_data = manually_fetched_notables_data or []
 
     def done_submitting(self):
         return not self.not_yet_submitted_notables
@@ -500,7 +500,7 @@ class Cache:
         return cls(
             not_yet_submitted_notables=list(map(Notable.from_json, cache_dict.get(NOT_YET_SUBMITTED_NOTABLES, []))),
             submitted_notables=list(map(Notable.from_json, cache_dict.get(SUBMITTED_NOTABLES, []))),
-            manually_fetched_notables=list(map(Notable.from_json, cache_dict.get(MANUALLY_FETCHED_NOTABLES, [])))
+            manually_fetched_notables_data=cache_dict.get(MANUALLY_FETCHED_NOTABLES_DATA, [])
         )
 
     @classmethod
@@ -686,6 +686,21 @@ def build_fetch_query(params):
     return fetch_query
 
 
+def get_manually_fetched_notables_from_cache(service: client.Service, cache_object: Cache):
+    manually_fetched_notables = []
+    if cache_object:
+        while cache_object.manually_fetched_notables_data:
+            notable_data = cache_object.manually_fetched_notables_data.pop()  # Emptying the manually fetched notables cache.
+            demisto.debug(f'[SplunkPy] Handling notable data: {notable_data}')
+            notable = get_splunk_notable_by_id(service=service,
+                                               event_id=notable_data[EVENT_ID],
+                                               earliest_time=notable_data[EARLIEST_TIME],
+                                               latest_time=notable_data[LATEST_TIME])
+            demisto.debug(f'[SplunkPy] Got notable: {str(notable)}')
+            manually_fetched_notables.append(notable)
+    return manually_fetched_notables
+
+
 def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str,
                    cache_object: Cache = None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
@@ -772,11 +787,8 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     demisto.debug(f'SplunkPy - total number of dropped incidents is: {num_of_dropped}')
 
     # Getting manually fetched notable events from cache.
-    manually_fetched_notables = []
-    if cache_object:
-        manually_fetched_notables = cache_object.manually_fetched_notables.copy()
-        cache_object.manually_fetched_notables.clear()
-    demisto.info(f'[SplunkPy] handling manually fetched notables: {[notable.id for notable in manually_fetched_notables]}')
+    manually_fetched_notables = get_manually_fetched_notables_from_cache(service, cache_object)
+    demisto.info(f'[SplunkPy] handling manually fetched notables: {manually_fetched_notables}')
 
     manually_fetched_incidents = [
         notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
@@ -844,7 +856,6 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
             demisto.debug('running fetch_incidents_for_mapping')
-
             fetch_incidents_for_mapping(integration_context)
         else:
             demisto.debug('running run_enrichment_mechanism')
@@ -2921,18 +2932,31 @@ def get_splunk_notable_by_id(service: client.Service,
     return Notable(result.pop()) if result else None
 
 
-def cache_notable(notable: Notable):
+def cache_notable_data(notable: Notable):
     """
-    Caching notable in integration context for incident creation within periodic 'fetch-incidents'.
+    Caching notable's data in integration's context for incident creation within periodic 'fetch-incidents'.
     """
     integration_context = get_integration_context()
     cache = Cache.load_from_integration_context(integration_context)
-    cache.manually_fetched_notables.append(notable)
+
+    # Maintaining a reduced timeframe for quicker retrieval on fetch-incidents.
+    occurred_time = dateparser.parse(notable.data.get('_time'))
+    notable_fetch_data = {
+        EVENT_ID: notable.id,
+        # Reformatting datetime string for splunk compatability.
+        EARLIEST_TIME: str(occurred_time).replace(' ', 'T'),
+        LATEST_TIME: str(occurred_time + timedelta(days=1)).replace(' ', 'T')
+    }
+    cache.manually_fetched_notables_data.append(notable_fetch_data)
     cache.dump_to_integration_context(integration_context)
-    demisto.info(f"[SplunkPy] Successfully cached notable with id: {notable.id} | {str(integration_context)=}")
+    demisto.info(f"[SplunkPy] Successfully cached notable fetch data: {notable_fetch_data}")
 
 
 def fetch_notable_event_command(service: client.Service, args: dict) -> CommandResults:
+    """
+        Fetches a single notable event from Splunk and caches its metadata in integration's context for retrieval and
+        incident creation within periodic 'fetch-incidents'.
+    """
     if not params.get('isFetch'):
         raise DemistoException("'Fetch Incidents' is not enabled. Please enable it within SplunkPy integration instance "
                                "configuration in order to be able to manually fetch incidents.")
@@ -2947,9 +2971,12 @@ def fetch_notable_event_command(service: client.Service, args: dict) -> CommandR
     if not notable:
         return CommandResults(readable_output="A notable event with the provided ID was not found within the provided timeframe.")
 
-    # Caching the notable event in integration's context for XSOAR submission within periodic fetch.
-    cache_notable(notable)
-    return CommandResults(readable_output=tableToMarkdown(name=f'Notable {notable.id}', t=notable.data))
+    # Caching the notable event's ID & timeframe in integration's context for efficient XSOAR submission within periodic fetch.
+    cache_notable_data(notable)
+
+    readable_output = tableToMarkdown(name=f'Notable {notable.id} fetched', t=notable.data)
+    readable_output += f'\nAn incident will be created in XSOAR upon the next periodic \'Fetch Incidents\' cycle.'
+    return CommandResults(readable_output=readable_output)
 
 
 def main():  # pragma: no cover
