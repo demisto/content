@@ -485,6 +485,50 @@ def test_fetch_incidents_with_params(mocker, client):
     assert incidents[0]['severity'] == 4
 
 
+def test_fetch_incidents_when_invalid_page_reached(mocker, client, requests_mock):
+    """
+    Given:
+    - A client object.
+    - A mocked 'getLastRun' method.
+    - A mocked 'setLastRun' method.
+    - A mocked list entities endpoint which returns a 404 error.
+    - Parameters for fetching incidents.
+
+    When:
+    - Fetching incidents using the 'fetch_incidents' function with the provided parameters.
+
+    Then:
+    - Assert that the number of fetched incidents is equal to the expected count.
+    """
+    last_run = json.dumps({'time': '2023-05-15T09:39:09Z',
+                           'next_url': 'https://serverurl.com/api/v3.3/entities'
+                                       '?is_prioritized=True'
+                                       '&last_detection_timestamp_gte=2023-05'
+                                       '-15T09 '
+                                       '%3A39%3A09Z&ordering'
+                                       '=last_detection_timestamp&page=2'
+                                       '&page_size '
+                                       '=2&state=active&type=account',
+                           'already_fetched': [352, 343]})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'value': last_run})
+    mocker.patch.object(demisto, 'setLastRun')
+    entity_data = util_load_json(f'{TEST_DATA_DIR}/invalid_page_number_404_error.json')
+    requests_mock.get(BASE_URL + ENDPOINTS['ENTITY_ENDPOINT'], json=entity_data, status_code=404)
+    params = {
+        'isFetch': True,
+        'first_fetch': '1 day',
+        'max_fetch': '20',
+        'entity_type': 'account',
+        'is_prioritized': "Yes",
+        'tags': 'tag1,tag2',
+        'entity_importance': 'High',
+        'urgency_score': '80'
+    }
+
+    incidents = fetch_incidents(client, params)
+    assert len(incidents) == 0
+
+
 def test_fetch_incidents_with_invalid_max_fetch(client):
     """
     Given:
@@ -3228,6 +3272,60 @@ def test_get_modified_remote_command_max_mirroring_limit_reached(client):
                                                                   settings={'TIMEZONE': 'UTC'})
                     VectraXDR.VectraClient.list_entities_request.assert_called_once_with(
                         last_modified_timestamp="2023-09-20T10:00:00Z", page=1, page_size=500, state="")
+
+
+def test_get_modified_remote_data_command_when_invalid_page_reached(client, requests_mock):
+    """
+    Given:
+    - A client object.
+    - A mocked list entities endpoint which returns a 404 error.
+    - Parameters for fetching modified incidents.
+
+    When:
+    - Fetching modified incidents using the 'get_modified_remote_data_command' function with the provided parameters.
+
+    Then:
+    - Assert that the number of modified incidents is equal to the expected count.
+    """
+    entity_data = util_load_json(f'{TEST_DATA_DIR}/invalid_page_number_404_error.json')
+    requests_mock.get(BASE_URL + ENDPOINTS['ENTITY_ENDPOINT'], json=entity_data, status_code=404)
+    args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
+
+    modified_remote_response = get_modified_remote_data_command(client, args)
+    assert modified_remote_response.modified_incident_ids == []
+
+
+def test_get_remote_data_command_when_detections_found(mocker, client):
+    """
+    Given:
+    - A client object.
+    - A mocked get entities endpoint.
+    - A mocked list detection endpoint.
+
+    When:
+    - Fetching modified incident using the 'get_remote_data_command' function with the provided parameters.
+
+    Then:
+    - Assert that the reopening entry exists.
+    """
+    entity_data = util_load_json(f'{TEST_DATA_DIR}/get_entity_response.json')
+    mocker.patch("VectraXDR.VectraClient.get_entity_request", return_value=entity_data)
+    detection_data = util_load_json(f'{TEST_DATA_DIR}/entity_detection_list_response.json')
+    mocker.patch.object(client, 'list_detections_request', return_value=detection_data)
+    mocker.patch.object(client, 'list_assignments_request', return_value={})
+    args = {
+        'id': '334-account',
+        'lastUpdate': '2023-06-20T10:00:00+00:00'
+    }
+
+    get_remote_response = get_remote_data_command(client, args)
+    assert get_remote_response.entries == [{
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    }]
 
 
 def test_get_remote_data_command_entity_needs_update(capfd, client, mocker):
