@@ -8,9 +8,6 @@
 		"SentinelOne Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Account Member Of": {
-					"simple": "agentDetectionInfo.accountName"
-				},
 				"Agent ID": {
 					"simple": "agentRealtimeInfo.agentId"
 				},
@@ -19,12 +16,6 @@
 				},
 				"Classification": {
 					"simple": "threatInfo.classification"
-				},
-				"Cloud Account ID": {
-					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudAccount"
-				},
-				"Cloud Instance ID": {
-					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudInstanceId"
 				},
 				"Device External IP": {
 					"simple": "agentDetectionInfo.externalIp"
@@ -39,7 +30,7 @@
 					"simple": "agentDetectionInfo.agentIpV4"
 				},
 				"Device MAC Address": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[0].physical"
+					"simple": "agentRealtimeInfo.networkInterfaces.physical"
 				},
 				"Device Name": {
 					"simple": "agentRealtimeInfo.agentComputerName"
@@ -59,14 +50,8 @@
 				"Endpoint": {
 					"simple": "agentRealtimeInfo.agentComputerName"
 				},
-				"Endpoint Isolation Status": {
-					"simple": "agentRealtimeInfo.agentNetworkStatus"
-				},
 				"External Confidence": {
 					"simple": "threatInfo.confidenceLevel"
-				},
-				"File Hash": {
-					"simple": "threatInfo.sha1"
 				},
 				"File MD5": {
 					"simple": "threatInfo.md5"
@@ -113,8 +98,41 @@
 				"SeninelOne AWS Network": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudNetwork"
 				},
-				"SeninelOne AWS Tag": {
-					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudTags.[0]"
+				"SeninelOne AWS Tags": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudTags"
+				},
+				"SeninelOne AZURE Image": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudImage"
+				},
+				"SeninelOne AZURE Instance ID": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudInstanceId"
+				},
+				"SeninelOne AZURE Instance Size": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudInstanceSize"
+				},
+				"SeninelOne AZURE Location": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudLocation"
+				},
+				"SeninelOne AZURE Tags": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudTags"
+				},
+				"SeninelOne GCP Image": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudImage"
+				},
+				"SeninelOne GCP Instance ID": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudInstanceId"
+				},
+				"SeninelOne GCP Instance Size": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudInstanceSize"
+				},
+				"SeninelOne GCP Location": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudLocation"
+				},
+				"SeninelOne GCP Network": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudNetwork"
+				},
+				"SeninelOne GCP Tags": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudTags"
 				},
 				"SentinelOne AWS Account": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudAccount"
@@ -123,10 +141,16 @@
 					"simple": "agentDetectionInfo.cloudProviders.AWS.awsRole"
 				},
 				"SentinelOne AWS Security Group": {
-					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSecurityGroups.[0]"
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSecurityGroups"
 				},
 				"SentinelOne AWS SubnetId": {
-					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSubnetIds.[0]"
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSubnetIds"
+				},
+				"SentinelOne AZURE Account": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudAccount"
+				},
+				"SentinelOne AZURE Resource Group": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.azureResourceGroup"
 				},
 				"SentinelOne Account ID": {
 					"simple": "agentDetectionInfo.accountId"
@@ -134,8 +158,17 @@
 				"SentinelOne Account Name": {
 					"simple": "agentDetectionInfo.accountName"
 				},
+				"SentinelOne Agent Network Status": {
+					"simple": "agentRealtimeInfo.agentNetworkStatus"
+				},
 				"SentinelOne Classification Source": {
 					"simple": "threatInfo.classificationSource"
+				},
+				"SentinelOne GCP Account": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudAccount"
+				},
+				"SentinelOne GCP Service Account": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.gcpServiceAccount"
 				},
 				"SentinelOne Group ID": {
 					"simple": "agentDetectionInfo.groupId"
@@ -149,8 +182,8 @@
 				"SentinelOne Kubernetes Controller Kind": {
 					"simple": "kubernetesInfo.controllerKind"
 				},
-				"SentinelOne Kubernetes Controller Label": {
-					"simple": "kubernetesInfo.controllerLabels.[0]"
+				"SentinelOne Kubernetes Controller Labels": {
+					"simple": "kubernetesInfo.controllerLabels"
 				},
 				"SentinelOne Kubernetes Controller Name": {
 					"simple": "kubernetesInfo.controllerName"
@@ -158,68 +191,26 @@
 				"SentinelOne Kubernetes Namespace": {
 					"simple": "kubernetesInfo.namespace"
 				},
-				"SentinelOne Kubernetes Namespace Label": {
-					"simple": "kubernetesInfo.namespaceLabels.[0]"
+				"SentinelOne Kubernetes Namespace Labels": {
+					"simple": "kubernetesInfo.namespaceLabels"
 				},
 				"SentinelOne Kubernetes Node": {
 					"simple": "kubernetesInfo.node"
 				},
-				"SentinelOne Kubernetes Node Label": {
-					"simple": "kubernetesInfo.nodeLabels.[0]"
+				"SentinelOne Kubernetes Node Labels": {
+					"simple": "kubernetesInfo.nodeLabels"
 				},
 				"SentinelOne Kubernetes Pod": {
 					"simple": "kubernetesInfo.pod"
 				},
-				"SentinelOne Kubernetes Pod Label": {
-					"simple": "kubernetesInfo.podLabels.[0]"
+				"SentinelOne Kubernetes Pod Labels": {
+					"simple": "kubernetesInfo.podLabels"
 				},
 				"SentinelOne Kubernetes isContainerQuarantine": {
 					"simple": "kubernetesInfo.isContainerQuarantine"
 				},
-				"SentinelOne Network Interface.[0].ID": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[0].id"
-				},
-				"SentinelOne Network Interface.[0].Inet": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[0].inet.[0]"
-				},
-				"SentinelOne Network Interface.[0].Inet6": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[0].inet6.[0]"
-				},
-				"SentinelOne Network Interface.[0].Name": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[0].name"
-				},
-				"SentinelOne Network Interface.[0].Physical": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[0].physical"
-				},
-				"SentinelOne Network Interface.[1].ID": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[1].id"
-				},
-				"SentinelOne Network Interface.[1].Inet": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[1].inet.[0]"
-				},
-				"SentinelOne Network Interface.[1].Inet6": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[1].inet6.[0]"
-				},
-				"SentinelOne Network Interface.[1].Name": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[1].name"
-				},
-				"SentinelOne Network Interface.[1].Physical": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[1].physical"
-				},
-				"SentinelOne Network Interface.[2].ID": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[2].id"
-				},
-				"SentinelOne Network Interface.[2].Inet": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[2].inet.[0]"
-				},
-				"SentinelOne Network Interface.[2].Inet6": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[2].inet6.[0]"
-				},
-				"SentinelOne Network Interface.[2].Name": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[2].name"
-				},
-				"SentinelOne Network Interface.[2].Physical": {
-					"simple": "agentRealtimeInfo.networkInterfaces.[2].physical"
+				"SentinelOne Network Interface Details": {
+					"simple": "agentRealtimeInfo.networkInterfaces"
 				},
 				"SentinelOne Site ID": {
 					"simple": "agentDetectionInfo.siteId"
