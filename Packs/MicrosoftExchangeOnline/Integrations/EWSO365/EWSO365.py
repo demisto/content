@@ -2132,7 +2132,7 @@ def items(message):
         demisto.debug(
             f"{APP_NAME}: We got an exception items method, The exception is {exception=}"
         )
-        if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
+        if "invalid arguments; address parts cannot contain CR or LF" in str(exception):
 
             for k, v in message._headers:
                 try:
