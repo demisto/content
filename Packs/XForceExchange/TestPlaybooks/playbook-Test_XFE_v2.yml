@@ -142,7 +142,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 8.8.8.8
+              simple: 8.8.8.7
       - - operator: isEqualString
           left:
             value:
