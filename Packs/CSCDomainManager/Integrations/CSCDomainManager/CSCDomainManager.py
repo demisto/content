@@ -115,6 +115,13 @@ class Client(BaseClient):
         return self.send_get_request("/domains/configuration", params)
     
     
+def parse_and_format_date(value: str) -> str:
+    date = dateparser.parse(value)
+    if date is None: #not a date
+        return_error(f'Failed to execute {demisto.command()} command. Invalid Date')
+    
+    formatted_date = date.strftime("%d-%b-%Y")
+    return formatted_date
 
 
 def create_params_string(args) -> str:
@@ -136,10 +143,14 @@ def create_params_string(args) -> str:
             if arg_key == 'filter':
                 param_for_filter.append(value)
             elif isinstance(value, str) and len(value) >= 3 and value[:3] in SEARCH_OPERATORS:
+                if arg_key in ['registration_date', 'registry_expiry_date']:
+                    value = value[:3] + parse_and_format_date(value[3:])
                 param_for_filter.append(f"{param_key}={value}")
             elif arg_key in ['sort', 'page', 'page_size']:
                 additional_params.append(f"{param_key}={value}")
             else:
+                if arg_key in ['registration_date', 'registry_expiry_date']:
+                    value = parse_and_format_date(value)
                 param_for_filter.append(f"{param_key}=={value}")
 
     params_str = 'filter='
