@@ -462,6 +462,5 @@ def test_get_date_timestamp():
             - Validate that the return date are as expected.
     """
     from SymantecCloudSOCEventCollector import get_date_timestamp
-    
+
     assert get_date_timestamp('2024-06-02T07:39:08Z') == get_date_timestamp('2024-06-02T07:39:08')
-    

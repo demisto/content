@@ -221,10 +221,9 @@ def get_date_timestamp(str_date: str) -> datetime:
         - (datetime) A date.
     """
     try:
-        
+
         return datetime.strptime(str_date, DATE_FORMAT_SYMANTEC)
     except ValueError:
-        demisto.debug(f'{str_date=} are in different format then the expected {DATE_FORMAT_SYMANTEC=}')
         return datetime.strptime(str_date, DATE_FORMAT)
 
 
