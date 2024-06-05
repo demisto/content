@@ -28,7 +28,6 @@ CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
 EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
 
 
-
 PAGE = 'page'
 PAGE_SIZE = 'page_size'
 LIMIT = 'limit'
@@ -299,7 +298,7 @@ LOCAL_CA_CREATE_TEST_ARGS = [
         IP: "192.168.1.1,10.0.0.1",
         NAME: "example-localca",
         NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, '
-                                               '{"OU": "ExampleOrg Inc."}]',
+        '{"OU": "ExampleOrg Inc."}]',
         SIZE: "2048"
     },
 ]
@@ -343,7 +342,7 @@ LOCAL_CA_SELF_SIGN_TEST_ARGS = [
       'not_after': '2024-01-01T00:00:00Z'}),
 
     ({LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00'
-                                                                                                             ':00Z',
+      ':00Z',
       'not_after': 'two weeks'})
 ]
 
