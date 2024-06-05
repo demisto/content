@@ -749,15 +749,7 @@ def get_vulnerabilities_export_status(client: Client, assets_last_run):
     demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
         assets_last_run.update({'vulns_available_chunks': chunks_available})
-        # for chunk_id in chunks_available:
-            # result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
-            # if result == NOT_FOUND_ERROR:
-            #     demisto.info(f"generating new export uuid due to 404 error.")
-            #     return [], 'ERROR'
-            #
-            # vulnerabilities.extend(result)
-    # for vuln in vulnerabilities:
-    #     vuln['_time'] = vuln.get('received') or vuln.get('indexed')
+
     return status
 
 
