@@ -324,7 +324,9 @@ class CipherTrustClient(BaseClient):
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
     tuple[int, int]:
-    if page_str is not None:
+    if page_str and limit_str:
+        raise ValueError('Only one of the "page" and "limit" arguments should be provided.')
+    if page_str:
         page_from_arg = arg_to_number(page_str)
         if page_from_arg is None:
             raise ValueError(f'Invalid page number: {page_str}')
@@ -567,7 +569,8 @@ def user_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Comm
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(CommandArguments.USER_ID)} has been updated successfully!'
     )
 
 
@@ -658,7 +661,9 @@ def local_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) -> 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(CommandArguments.LOCAL_CA_ID)} has been updated successfully!'
+
     )
 
 
