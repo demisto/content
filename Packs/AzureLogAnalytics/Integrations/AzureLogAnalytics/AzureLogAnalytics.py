@@ -36,7 +36,7 @@ class Client:
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
         suffix = (
-            f"subscriptions/{subscription_id}/resourceGroups/'{resource_group_name}/"
+            f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
             + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
         )
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
