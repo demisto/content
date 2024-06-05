@@ -2091,7 +2091,12 @@ def decode_email_data(email_obj: Message):
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
         demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                     f'using utf-8.\nAttached email:\n{email_obj}')
+                     f'using utf-8.\nAttached email details:'
+                     f'\nMessage-ID = {email_obj.get("Message-ID")}'
+                     f'\nDate = {email_obj.get("Date")}'
+                     f'\nSubject = {email_obj.get("Subject")}'
+                     f'\nFrom = {email_obj.get("From")}'
+                     f'\nTo = {email_obj.get("To")}')
         try:
             data = attached_email_bytes.decode('utf-8')
         except UnicodeDecodeError:
