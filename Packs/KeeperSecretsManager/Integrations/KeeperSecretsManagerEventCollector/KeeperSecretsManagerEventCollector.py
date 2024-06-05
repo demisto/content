@@ -3,6 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from keepercommander import api
 from keepercommander.params import KeeperParams
 from keepercommander.__main__ import get_params_from_config
+import subprocess
+from unittest.mock import patch
+
 
 """Base Integration for Cortex XSOAR (aka Demisto)
 
@@ -119,6 +122,9 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 """ MAIN FUNCTION """
 
+def foo(my_params: KeeperParams):
+    with patch('builtins.input', return_value=''):
+        api.login(my_params)
 
 def main() -> None:
     """main function, parses params and runs command functions
@@ -141,7 +147,8 @@ def main() -> None:
     print('hello')
     # silence command-line output temporarily
     # sys.stdout, sys.stderr = os.devnull, os.devnull
-    api.login(my_params)
+    foo(my_params=my_params)
+    # api.login(my_params)
     x = 0
     # unsilence command-line output
     # sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
