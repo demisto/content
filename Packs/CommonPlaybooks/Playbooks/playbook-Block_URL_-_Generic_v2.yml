@@ -1419,3 +1419,4 @@ fromversion: 6.5.0
 system: true
 marketplaces:
   - xsoar
+  - xpanse

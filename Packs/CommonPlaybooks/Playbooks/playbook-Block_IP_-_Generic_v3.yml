@@ -3779,3 +3779,4 @@ contentitemexportablefields:
     propagationLabels: []
 marketplaces:
   - xsoar
+  - xpanse
