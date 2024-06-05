@@ -19,6 +19,7 @@ from pytest_mock import MockerFixture
 from requests_mock import MockerCore
 
 from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
+from MicrosoftApiModule import *  # noqa: E402
 
 
 def util_load_json(path: str) -> dict:
@@ -120,7 +121,7 @@ CLIENT = Client(
     proxy=False,
     certificate_thumbprint=None,
     private_key=None,
-    azure_cloud=None,
+    azure_cloud=AZURE_WORLDWIDE_CLOUD,
     client_credentials=False,
 )
 
