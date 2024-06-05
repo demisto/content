@@ -4,6 +4,7 @@ from datetime import date
 from AWSApiModule import *  # noqa: E402
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
+from threading import current_thread
 
 """CONSTANTS"""
 
@@ -145,7 +146,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
         accounts = argToList(PARAMS.get('accounts_to_access'))
 
         def run_command(account_id: str) -> CommandResults:
-            demisto.debug(f'running command with {account_id=}')
+            demisto.debug(f'running command with {account_id=}, thread_id={current_thread().name}')
             new_args = args | {
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
                 'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
