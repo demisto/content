@@ -2,7 +2,7 @@ commonfields:
   id: BmcITSM
   version: -1
 name: BmcITSM
-display: BmcITSM
+display: BMC Helix ITSM
 category: Utilities
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
@@ -719,7 +719,6 @@ script:
       - problem investigation
       - known error
       - work order
-<<<<<<< HEAD
     outputs: []
   - name: bmc-itsm-ticket-create-relationship
     description: Creates a relationship between two tickets.
@@ -760,7 +759,7 @@ script:
     - name: first_request_id
       description: First Request ID
       required: true
-    - name: second_form_name02
+    - name: second_form_name
       description: Second Form Name
       required: true
       auto: PREDEFINED
@@ -782,8 +781,6 @@ script:
       - true
       - false
     outputs: []
-=======
->>>>>>> mirroring
   - name: bmc-itsm-incident-create
     description: Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service.
     arguments:
@@ -1184,12 +1181,8 @@ script:
       description: The technical support team associated with the company.
     - name: assigned_support_organization
       description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-<<<<<<< HEAD
       defaultValue:
     - name: assigned_group
-=======
-    - name: assigned_support_group
->>>>>>> mirroring
       description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
     - name: impact
       description: The task ticket impact.

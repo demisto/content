@@ -485,7 +485,7 @@ class Client(BaseClient):
                            json_data=data,
                            resp_type="text")
 
-        return f"Created relationship between {request_id01} and {request_id02}."
+        return f"Created relationship between {first_request_id} and {second_request_id}."
 
     def create_service_request_request(
         self,
@@ -1769,7 +1769,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
             first_request_id=second_request_id,
             second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
-            second_request_id02=first_request_id,
+            second_request_id=first_request_id,
         )
 
     return res
