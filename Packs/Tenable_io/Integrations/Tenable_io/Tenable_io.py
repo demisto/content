@@ -295,7 +295,7 @@ class Client(BaseClient):
         result = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
                                     headers=self._headers, ok_codes=(200, 404))
         demisto.debug(f"result returned from api: {result}")
-        if isinstance(result, dict) and result.get("status") == 404:
+        if isinstance(result, dict) and (result.get("status") == 404 or result.get('error')):
             demisto.debug(f"result message is: {result.get('message')}")
             if result.get('message') == 'Export expired or not found':
                 return EXPORT_EXPIRED
@@ -347,7 +347,7 @@ class Client(BaseClient):
         result = self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
                                     headers=self._headers, ok_codes=(404, 200))
         # export uuid has expired
-        if isinstance(result, dict) and result.get("status") == 404:
+        if isinstance(result, dict) and (result.get("status") == 404 or result.get('error')):
             demisto.debug("status code is 404.")
             if result.get('message') == 'Export expired or not found':
                 return EXPORT_EXPIRED

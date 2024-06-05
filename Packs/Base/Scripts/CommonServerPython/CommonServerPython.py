@@ -11926,7 +11926,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
