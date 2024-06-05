@@ -71,7 +71,7 @@ configuration:
 - display: Types of Notifications to Send.
   name: permitted_notifications
   hidden:
-    - marketplace
+    - xsoar
   type: 16
   section: Collect
   required: false
