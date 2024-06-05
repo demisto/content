@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: O365 Defender SafeLinks - Single User (Deprecated)
+  id: O365 Defender SafeLinks - Single User
   version: -1
 configuration:
 - display: Exchange Online URL
@@ -25,7 +25,7 @@ configuration:
   advanced: true
   required: false
 description: Deprecated. Use O365 Defender SafeLinks instead. Enables URL scanning, rewriting inbound email messages in the mail flow, time-of-click URL verification, and links in email messages and other locations.
-display: O365 Defender SafeLinks - Single User
+display: O365 Defender SafeLinks - Single User (Deprecated)
 name: O365 Defender SafeLinks - Single User
 script:
   commands:
