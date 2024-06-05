@@ -169,7 +169,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.92207
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
@@ -768,6 +768,67 @@ script:
       - known error
       - work order
     outputs: []
+  - name: bmc-itsm-ticket-create-relationship
+    description: Creates a relationship between two tickets.
+    arguments:
+    - name: request_type
+      description: Request Type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Incident
+      - Asset
+      - Work order
+    - name: request_description
+      description: Request Description
+      required: true
+    - name: association_type
+      description: Association Type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Caused
+      - Caused by
+      - Duplicate of
+      - Original of
+      - Resolved
+      - Resolved by
+    - name: first_form_name
+      description: First Form Name
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+    - name: first_request_id
+      description: First Request ID
+      required: true
+    - name: second_form_name02
+      description: Second Form Name
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+    - name: second_request_id
+      description: Second Request ID
+      required: true
+    - name: bidirectional
+      description: Bidirectionality
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    outputs: []
   - name: bmc-itsm-incident-create
     description: "Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service."
     arguments:
@@ -1235,7 +1296,7 @@ script:
     - name: assigned_support_organization
       description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
       defaultValue:
-    - name: assigned_support_group
+    - name: assigned_group
       description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
       defaultValue: ""
     - name: impact
