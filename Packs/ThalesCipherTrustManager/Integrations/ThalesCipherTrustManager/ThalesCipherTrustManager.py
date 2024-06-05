@@ -282,16 +282,12 @@ class CipherTrustClient(BaseClient):
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/revoke',
             json_data=request_data,
-            return_empty_response=True,
-            empty_valid_codes=[200],
         )
 
     def resume_certificate(self, ca_id: str, cert_id: str) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/resume',
-            return_empty_response=True,
-            empty_valid_codes=[200],
         )
 
     def upload_external_certificate(self, request_data: dict) -> dict[str, Any]:
