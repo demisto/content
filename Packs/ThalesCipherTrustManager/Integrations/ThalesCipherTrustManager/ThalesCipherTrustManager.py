@@ -320,9 +320,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-    tuple[int, int]:
-    if page_str and limit_str:
-        raise ValueError('Only one of the "page" and "limit" arguments should be provided.')
+        tuple[int, int]:
     if page_str:
         page_from_arg = arg_to_number(page_str)
         if page_from_arg is None:
@@ -385,7 +383,7 @@ def load_content_from_file(entry_id: str) -> str:
 
 
 def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file_names: Optional[list[str] | str] = None) -> dict[
-    str, Any]:
+        str, Any]:
     new_outputs = outputs.copy()
     if isinstance(keys, list):
         if (file_names and not isinstance(file_names, list)) or (file_names and len(file_names) != len(keys)):
@@ -630,12 +628,12 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-        LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-        outputs = remove_key_from_outputs(raw_response, ['csr', 'cert'])
+        outputs: object = remove_key_from_outputs(raw_response, ['csr', 'cert'])
 
     else:  # get a list of local CAs with optional filtering
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
@@ -657,8 +655,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=tableToMarkdown('local CAs',
-                                        raw_response.get('resources') if raw_response.get('resources') else raw_response),
+        readable_output=tableToMarkdown('local CAs', outputs),
     )
 
 
@@ -818,7 +815,7 @@ def external_certificate_upload_command(client: CipherTrustClient, args: dict[st
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=outputs
     )
 
 
@@ -858,13 +855,15 @@ def external_certificate_list_command(client: CipherTrustClient, args: dict[str,
     )
 
     raw_response = client.get_external_certificates_list(params=params)
-    outputs = remove_key_from_outputs(raw_response.get('resources'), 'cert', 'Certificate.pem')
+
+    outputs = [remove_key_from_outputs(external_ca_entry, ['cert']) for external_ca_entry in
+               raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
         readable_output=tableToMarkdown('external certificates',
-                                        raw_response.get('resources')),
+                                        outputs),
     )
 
 
