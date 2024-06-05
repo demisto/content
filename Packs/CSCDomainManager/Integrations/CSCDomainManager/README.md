@@ -9,7 +9,7 @@ This integration was integrated and tested with version 2.0.0 of CSCDomainManage
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Base URL |  | True |
+    | Base URL | The endpoint URL | True |
     | Token | The token to use for connection | True |
     | API Key | The API Key to use for connection | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
@@ -41,9 +41,9 @@ Gets the domains by the applied filters
 | email | email to filter by, can start with like=, in=. | Optional | 
 | organization | organization to filter by, can start with like=, in=. | Optional | 
 | registry_expiry_date | registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024. | Optional | 
-| filter | can write your own filter according to ?. | Optional | 
-| sort | sorting the output by ?. | Optional | 
-| page | first page to show ?. | Optional | 
+| filter | can write your own filter according to selectors such as accountName, accountNumber, brandName, businessUnit, city, country, countryCode, criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy. | Optional | 
+| sort | sorting the output by a selector and desc/asc, for example: propertyName,asc. | Optional | 
+| page | page number. | Optional | 
 | page_size | the size of rows in a page. | Optional | 
 | limit | the limit of rows. | Optional | 
 
@@ -220,6 +220,7 @@ Gets the domains by the applied filters
 ### csc-domains-availability-check
 
 ***
+Check registration availability for one or more domain names
 
 #### Base Command
 
@@ -280,6 +281,7 @@ Gets the domains by the applied filters
 ### csc-domains-configuration-list
 
 ***
+Get domains configuration information for owned domains with optional filtering
 
 #### Base Command
 
@@ -292,8 +294,8 @@ Gets the domains by the applied filters
 | domain_name | domain name to filter by, can start with like=, in=. | Optional | 
 | registration_date | registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024. | Optional | 
 | domain_email | email to filter by, can start with like=, in=. | Optional | 
-| filter | can write your own filter according to ?. | Optional | 
-| page | first page to show ?. | Optional | 
+| filter | can write your own filter according to selectors such as accountName, accountNumber, brandName, businessUnit, city, country, countryCode, criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy. | Optional | 
+| page | page number. | Optional | 
 | page_size | the size of rows in a page. | Optional | 
 | limit | to fill. | Optional | 
 
@@ -452,6 +454,7 @@ Gets the domains by the applied filters
 ### domain
 
 ***
+Get domain data by qualified domain name
 
 #### Base Command
 

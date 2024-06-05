@@ -7,6 +7,7 @@ configuration:
   display: Base URL
   name: base_url
   required: true
+  additionalinfo: The endpoint URL
   type: 0
 - displaypassword: Token
   additionalinfo: The token to use for connection
@@ -48,7 +49,7 @@ name: CSCDomainManager
 script:
   commands:
   - arguments:
-    - description: domain name to filter by, can start with like=, in=
+    - description: domain name to filter by, can start with like=ב, in=
       name: domain_name
       required: false
     - description: registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024
@@ -225,7 +226,7 @@ script:
     - description: the domain name
       name: domain_name
       required: true
-    description:
+    description: Check registration availability for one or more domain names
     name: csc-domains-availability-check
     outputs:
     - contextPath: CSCDomainManager.Domain.Availability.qualifiedDomainName
@@ -276,7 +277,7 @@ script:
     - description: to fill
       name: limit
       required: false
-    description:
+    description: Get domains configuration information for owned domains with optional filtering
     name: csc-domains-configuration-list
     outputs:
     - contextPath: CSCDomainManager.Domain.Configuration.domain
@@ -462,7 +463,7 @@ script:
       isArray: true
       required: true
       default: true
-    description:
+    description: Get domain data by qualified domain name
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
