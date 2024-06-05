@@ -56,6 +56,14 @@ configuration:
   required: false
 - section: Collect
   advanced: true
+  display: Minutes to delay
+  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay).
+  name: fetch_delay
+  defaultvalue: "10"
+  type: 0
+  required: false
+- section: Collect
+  advanced: true
   display: Device Fetch Interval
   additionalinfo: Time between fetch of devices (for example 12 hours, 60 minutes, etc.).
   name: deviceFetchInterval
