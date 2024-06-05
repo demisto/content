@@ -625,6 +625,7 @@ script:
     arguments:
     - name: submission_ids
       description: A comma-separated list of submission IDs.
+      required: true
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
       defaultValue: "true"
