@@ -27,7 +27,7 @@ filter cefdeviceeventclassid = "Authentication"
     xdm.event.outcome = if(cs2 contains "Allowed", XDM_CONST.OUTCOME_SUCCESS, cs2 contains "Denied", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.observer.action = if(cs3 != "n/a",cs3),
     xdm.event.outcome_reason = if(cs5 != "n/a", cs5, outcome_reason),
-    xdm.alert.risks = split(risks ","),
+    xdm.alert.risks = split(risks ,","),
     xdm.network.rule = if(cs8 != "n/a", replace(cs8, "_", " ")),
     xdm.source.location.country = if(cs9 != "n/a", cs9),
     xdm.source.location.city = if(cs10 != "n/a", cs10),
