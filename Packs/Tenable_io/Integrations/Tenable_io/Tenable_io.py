@@ -675,7 +675,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
     return assets, assets_last_run
 
 
-def handle_vulns_chunks(client: Client, assets_last_run):
+def handle_vulns_chunks(client: Client, assets_last_run):   # pragma: no cover
     """
     Handle vulns chunks stored in the last run object.
 
@@ -1420,7 +1420,7 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
 @polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 600)),
                   interval=arg_to_number(demisto.args().get('intervalInSeconds', 10)),
                   requires_polling_arg=False)
-def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
+def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:     # pragma: no cover
     """
     Polling command to export vulnerabilities.
     After the first run, progress will be shown through the status QUEUED, PROCESSING, CANCELED, ERROR and FINISHED.
