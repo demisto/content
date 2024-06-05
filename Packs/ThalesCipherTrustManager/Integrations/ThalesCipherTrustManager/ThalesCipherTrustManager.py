@@ -323,7 +323,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-    tuple[int, int]:
+        tuple[int, int]:
     if page_str and limit_str:
         raise ValueError('Only one of the "page" and "limit" arguments should be provided.')
     if page_str:
@@ -386,7 +386,7 @@ def load_content_from_file(entry_id: str) -> str:
 
 
 def remove_key_from_outputs_and_return_as_file_result(outputs: dict[str, Any], key_and_file_name: list | tuple) -> dict[
-    str, Any]:
+        str, Any]:
     new_outputs = outputs.copy()
 
     if isinstance(key_and_file_name, list):
@@ -623,7 +623,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-        CommandArguments.LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+            CommandArguments.LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CommandArguments.CHAINED)),
         )
