@@ -1,8 +1,8 @@
 from collections import defaultdict
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
+import psutil
 import base64
 import os
 import pychrome
@@ -52,7 +52,7 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-browser_to_chrome_process = {}
+# browser_to_chrome_process = {}
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -345,6 +345,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
         demisto.debug(f"Starting Chrome with {subprocess_options=}")
 
         process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
+        demisto.log(f"{process}")  # TODO: Remoev this log
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
@@ -354,7 +355,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             browser = is_chrome_running_locally(chrome_port)
             if browser:
                 demisto.log(f"Created new browser at port {chrome_port}")  # TODO: Remove log
-                browser_to_chrome_process[browser] = process
+                # browser_to_chrome_process[browser] = process
                 new_row = f"{chrome_port}\t{instance_id}\t{chrome_options}"
                 demisto.log(f"write_info_file {new_row}")  # TODO: Remove log
                 write_info_file(CHROME_INSTANCES_FILE_PATH, new_row)
@@ -372,11 +373,32 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     return None, None
 
 
-def terminate_chrome(browser):
-    process = browser_to_chrome_process.get(browser)
-    demisto.debug(f'terminate_chrome, {process=}')
+def terminate_chrome(instance_id, chrome_port, chrome_binary=CHROME_EXE):
+    # demisto.log(f"{browser}")
+    # for browser, process in browser_to_chrome_process.items():
+    #     demisto.log(f"{browser}")
+    #     demisto.log(f"{process}")
+    # process = browser_to_chrome_process.get(browser)
+    processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
+    chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={chrome_port}"]
 
-    threading.excepthook = excepthook_recv_loop
+    chrome_renderer_identifiers = ["--type=renderer"]
+    process_in_list = [process for process in processes
+                       if all(identifier in process for identifier in chrome_identifiers)
+                       and not any(identifier in process for identifier in chrome_renderer_identifiers)]
+
+    demisto.log(f"{process_in_list}")
+
+    process_string_representation = process_in_list[0]
+    pid = int(process_string_representation.split()[1])
+    demisto.log(f"{pid=}")
+    process = psutil.Process(pid)
+    # Execute the command and capture the output
+    # process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    # demisto.log(f"{process=}")
+    # demisto.debug(f'terminate_chrome, {process=}')
+    # demisto.log(f'terminate_chrome, {process=}')
+    # threading.excepthook = excepthook_recv_loop
 
     if process:
         demisto.debug(f'terminate_chrome, {process=}')
@@ -454,7 +476,7 @@ def chrome_manager():
         browser = is_chrome_running_locally(chrome_port)
         demisto.log(f"terminating chrome instance on port {chrome_port}")  # TODO: Remove log
         demisto.debug(f"terminating chrome instance on port {chrome_port}")
-        terminate_chrome(browser)
+        terminate_chrome(instance_id, chrome_port)
         delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_id)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
@@ -758,7 +780,7 @@ def perform_rasterize(path: str | list[str],
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
     if browser:
-        demisto.log("in perform_rasterize found browser")   # TODO: Remove log
+        demisto.log("in perform_rasterize found browser")  # TODO: Remove log
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
@@ -793,7 +815,8 @@ def perform_rasterize(path: str | list[str],
                           f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
-                terminate_chrome(browser)
+                # terminate_chrome(browser) # TODO: make terminate_all !
+                return
                 demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
                 write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
             else:
