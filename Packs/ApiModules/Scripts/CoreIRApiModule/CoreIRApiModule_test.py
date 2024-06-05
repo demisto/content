@@ -14,7 +14,7 @@ from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RES
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
     change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
-
+a=5
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )

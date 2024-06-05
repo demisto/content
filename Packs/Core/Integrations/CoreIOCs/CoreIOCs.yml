@@ -41,7 +41,7 @@ configuration:
   name: query
   required: true
   type: 0
-description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+description: The Cortex aCore - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Indicators detection
 name: Cortex Core - IOC
 script:

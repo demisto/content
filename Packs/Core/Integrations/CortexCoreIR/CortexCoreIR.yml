@@ -8,7 +8,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Server URL (copy URL from Core - click ? to see more info.)
+- display: Serveaar URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
   hidden: true
