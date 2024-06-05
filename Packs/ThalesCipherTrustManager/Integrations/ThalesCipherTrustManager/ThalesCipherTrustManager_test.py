@@ -28,69 +28,69 @@ CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
 EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
 
 
-class CommandArguments:
-    PAGE = 'page'
-    PAGE_SIZE = 'page_size'
-    LIMIT = 'limit'
-    GROUP_NAME = 'group_name'
-    USER_ID = 'user_id'
-    CONNECTION = 'connection'
-    CLIENT_ID = 'client_id'
-    NAME = 'name'
-    DESCRIPTION = 'description'
-    FORCE = 'force'
-    USERNAME = 'username'
-    EMAIL = 'email'
-    GROUPS = 'groups'
-    EXCLUDE_GROUPS = 'exclude_groups'
-    AUTH_DOMAIN_NAME = 'auth_domain_name'
-    ACCOUNT_EXPIRED = 'account_expired'
-    ALLOWED_AUTH_METHODS = 'allowed_auth_methods'
-    ALLOWED_CLIENT_TYPES = 'allowed_client_types'
-    PASSWORD_POLICY = 'password_policy'
-    RETURN_GROUPS = 'return_groups'
-    CERTIFICATE_SUBJECT_DN = 'certificate_subject_dn'
-    EXPIRES_AT = 'expires_at'
-    IS_DOMAIN_USER = 'is_domain_user'
-    PREVENT_UI_LOGIN = 'prevent_ui_login'
-    PASSWORD_CHANGE_REQUIRED = 'password_change_required'
-    PASSWORD = 'password'
-    FAILED_LOGINS_COUNT = 'failed_logins_count'
-    NEW_PASSWORD = 'new_password'
-    AUTH_DOMAIN = 'auth_domain'
-    CN = 'cn'
-    ALGORITHM = 'algorithm'
-    COPY_FROM_CA = 'copy_from_ca'
-    DNS_NAMES = 'dns_names'
-    IP = 'ip'
-    NAME_FIELDS_RAW_JSON = 'name_fields_raw_json'
-    NAME_FIELDS_JSON_ENTRY_ID = 'name_fields_json_entry_id'
-    SIZE = 'size'
-    SUBJECT = 'subject'
-    LOCAL_CA_ID = 'local_ca_id'
-    CHAINED = 'chained'
-    ISSUER = 'issuer'
-    STATE = 'state'
-    CERT = 'cert'
-    ALLOW_CLIENT_AUTHENTICATION = 'allow_client_authentication'
-    ALLOW_USER_AUTHENTICATION = 'allow_user_authentication'
-    DURATION = 'duration'
-    NOT_AFTER = 'not_after'
-    NOT_BEFORE = 'not_before'
-    PARENT_ID = 'partent_id'
-    CA_ID = 'ca_id'
-    CSR = 'csr'
-    PURPOSE = 'purpose'
-    ID = 'id'
-    CERT_ID = 'cert_id'
-    REASON = 'reason'
-    PARENT = 'parent'
-    EXTERNAL_CA_ID = 'external_ca_id'
-    SERIAL_NUMBER = 'serial_number'
-    CERT_ENTRY_ID = 'cert_entry_id'
-    NEW_GROUP_NAME = 'new_group_name'
-    CSR_ENTRY_ID = 'csr_entry_id'
-    EXTERNAL_CERT_ID = 'external_cert_id'
+
+PAGE = 'page'
+PAGE_SIZE = 'page_size'
+LIMIT = 'limit'
+GROUP_NAME = 'group_name'
+USER_ID = 'user_id'
+CONNECTION = 'connection'
+CLIENT_ID = 'client_id'
+NAME = 'name'
+DESCRIPTION = 'description'
+FORCE = 'force'
+USERNAME = 'username'
+EMAIL = 'email'
+GROUPS = 'groups'
+EXCLUDE_GROUPS = 'exclude_groups'
+AUTH_DOMAIN_NAME = 'auth_domain_name'
+ACCOUNT_EXPIRED = 'account_expired'
+ALLOWED_AUTH_METHODS = 'allowed_auth_methods'
+ALLOWED_CLIENT_TYPES = 'allowed_client_types'
+PASSWORD_POLICY = 'password_policy'
+RETURN_GROUPS = 'return_groups'
+CERTIFICATE_SUBJECT_DN = 'certificate_subject_dn'
+EXPIRES_AT = 'expires_at'
+IS_DOMAIN_USER = 'is_domain_user'
+PREVENT_UI_LOGIN = 'prevent_ui_login'
+PASSWORD_CHANGE_REQUIRED = 'password_change_required'
+PASSWORD = 'password'
+FAILED_LOGINS_COUNT = 'failed_logins_count'
+NEW_PASSWORD = 'new_password'
+AUTH_DOMAIN = 'auth_domain'
+CN = 'cn'
+ALGORITHM = 'algorithm'
+COPY_FROM_CA = 'copy_from_ca'
+DNS_NAMES = 'dns_names'
+IP = 'ip'
+NAME_FIELDS_RAW_JSON = 'name_fields_raw_json'
+NAME_FIELDS_JSON_ENTRY_ID = 'name_fields_json_entry_id'
+SIZE = 'size'
+SUBJECT = 'subject'
+LOCAL_CA_ID = 'local_ca_id'
+CHAINED = 'chained'
+ISSUER = 'issuer'
+STATE = 'state'
+CERT = 'cert'
+ALLOW_CLIENT_AUTHENTICATION = 'allow_client_authentication'
+ALLOW_USER_AUTHENTICATION = 'allow_user_authentication'
+DURATION = 'duration'
+NOT_AFTER = 'not_after'
+NOT_BEFORE = 'not_before'
+PARENT_ID = 'partent_id'
+CA_ID = 'ca_id'
+CSR = 'csr'
+PURPOSE = 'purpose'
+ID = 'id'
+CERT_ID = 'cert_id'
+REASON = 'reason'
+PARENT = 'parent'
+EXTERNAL_CA_ID = 'external_ca_id'
+SERIAL_NUMBER = 'serial_number'
+CERT_ENTRY_ID = 'cert_entry_id'
+NEW_GROUP_NAME = 'new_group_name'
+CSR_ENTRY_ID = 'csr_entry_id'
+EXTERNAL_CERT_ID = 'external_cert_id'
 
 
 '''
@@ -99,76 +99,76 @@ Mock Data
 
 GROUPS_LIST_TEST_ARGS = [
     {},
-    {CommandArguments.GROUP_NAME: 'group1'},
-    {CommandArguments.USER_ID: 'user1'},
-    {CommandArguments.CONNECTION: 'connection1'},
-    {CommandArguments.CLIENT_ID: 'client1'},
+    {GROUP_NAME: 'group1'},
+    {USER_ID: 'user1'},
+    {CONNECTION: 'connection1'},
+    {CLIENT_ID: 'client1'},
     {
-        CommandArguments.GROUP_NAME: 'group2',
-        CommandArguments.USER_ID: 'user2'
+        GROUP_NAME: 'group2',
+        USER_ID: 'user2'
     },
     {
-        CommandArguments.CONNECTION: 'connection2',
-        CommandArguments.CLIENT_ID: 'client2'
+        CONNECTION: 'connection2',
+        CLIENT_ID: 'client2'
     },
     {
-        CommandArguments.GROUP_NAME: 'group3',
-        CommandArguments.USER_ID: 'user3',
-        CommandArguments.CONNECTION: 'connection3',
-        CommandArguments.CLIENT_ID: 'client3'
+        GROUP_NAME: 'group3',
+        USER_ID: 'user3',
+        CONNECTION: 'connection3',
+        CLIENT_ID: 'client3'
     },
 ]
 
 GROUP_CREATE_TEST_ARGS = [
     {
-        CommandArguments.NAME: 'group1',
+        NAME: 'group1',
     },
     {
-        CommandArguments.NAME: 'group2',
-        CommandArguments.DESCRIPTION: 'description2'
+        NAME: 'group2',
+        DESCRIPTION: 'description2'
     }
 ]
 GROUP_DELETE_TEST_ARGS = [
-    {CommandArguments.GROUP_NAME: 'group1'},
-    {CommandArguments.GROUP_NAME: 'group2', CommandArguments.FORCE: 'true'}
+    {GROUP_NAME: 'group1'},
+    {GROUP_NAME: 'group2', FORCE: 'true'}
 ]
 GROUP_UPDATE_TEST_ARGS = [
     {
-        CommandArguments.GROUP_NAME: 'group1',
-        CommandArguments.DESCRIPTION: 'description1_updated'
+        GROUP_NAME: 'group1',
+        DESCRIPTION: 'description1_updated'
     }
 ]
 USER_TO_GROUP_ADD_TEST_ARGS = [
     {
-        CommandArguments.GROUP_NAME: 'group1',
-        CommandArguments.USER_ID: 'user1'
+        GROUP_NAME: 'group1',
+        USER_ID: 'user1'
     }
 ]
 USER_TO_GROUP_REMOVE_TEST_ARGS = [
     {
-        CommandArguments.GROUP_NAME: 'group1',
-        CommandArguments.USER_ID: 'user1'
+        GROUP_NAME: 'group1',
+        USER_ID: 'user1'
     },
 ]
 
 USERS_LIST_TEST_ARGS = [
     {
-        CommandArguments.NAME: "John Doe",
-        CommandArguments.USERNAME: "johndoe",
-        CommandArguments.EMAIL: "john.doe@example.com",
-        CommandArguments.GROUPS: "group1,group2",
-        CommandArguments.EXCLUDE_GROUPS: "group3",
-        CommandArguments.AUTH_DOMAIN_NAME: "example_domain",
-        CommandArguments.ACCOUNT_EXPIRED: "true",
-        CommandArguments.ALLOWED_AUTH_METHODS: "password",
-        CommandArguments.ALLOWED_CLIENT_TYPES: "confidential",
-        CommandArguments.PASSWORD_POLICY: "example_policy",
-        CommandArguments.RETURN_GROUPS: "true"
+        NAME: "John Doe",
+        USERNAME: "johndoe",
+        EMAIL: "john.doe@example.com",
+        GROUPS: "group1,group2",
+        EXCLUDE_GROUPS: "group3",
+        AUTH_DOMAIN_NAME: "example_domain",
+        ACCOUNT_EXPIRED: "true",
+        ALLOWED_AUTH_METHODS: "password",
+        ALLOWED_CLIENT_TYPES: "confidential",
+        PASSWORD_POLICY: "example_policy",
+        RETURN_GROUPS: "true"
     },
 ]
 USER_CREATE_TEST_ARGS = [
     {
-        "name": "Test User",
+        NAME: "Test User",
         "user_id": "root|12345678-1234-1234-1234-123456789012",
         "username": "testuser",
         "password": "TestPassword!123",
@@ -243,64 +243,64 @@ USER_CREATE_TEST_ARGS = [
 
 USER_UPDATE_TEST_ARGS = [
     {
-        CommandArguments.NAME: "John Doe",
-        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
-        CommandArguments.USERNAME: "johndoe",
-        CommandArguments.PASSWORD: "password123",
-        CommandArguments.EMAIL: "john.doe@example.com",
-        CommandArguments.PASSWORD_CHANGE_REQUIRED: "true",
-        CommandArguments.ALLOWED_AUTH_METHODS: "password,user_certificate",
-        CommandArguments.ALLOWED_CLIENT_TYPES: "public,confidential",
-        CommandArguments.CERTIFICATE_SUBJECT_DN: "CN=John Doe,OU=Example,O=Example Corp,C=US",
-        CommandArguments.EXPIRES_AT: "2025-12-31T23:59:59Z",
-        CommandArguments.FAILED_LOGINS_COUNT: 0,
-        CommandArguments.PREVENT_UI_LOGIN: "true",
-        CommandArguments.PASSWORD_POLICY: "complex"
+        NAME: "John Doe",
+        USER_ID: "local|f4k3-u51d-1234",
+        USERNAME: "johndoe",
+        PASSWORD: "password123",
+        EMAIL: "john.doe@example.com",
+        PASSWORD_CHANGE_REQUIRED: "true",
+        ALLOWED_AUTH_METHODS: "password,user_certificate",
+        ALLOWED_CLIENT_TYPES: "public,confidential",
+        CERTIFICATE_SUBJECT_DN: "CN=John Doe,OU=Example,O=Example Corp,C=US",
+        EXPIRES_AT: "2025-12-31T23:59:59Z",
+        FAILED_LOGINS_COUNT: 0,
+        PREVENT_UI_LOGIN: "true",
+        PASSWORD_POLICY: "complex"
     },
     {
-        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
+        USER_ID: "local|f4k3-u51d-1234",
     },
     {
-        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
-        CommandArguments.EXPIRES_AT: "tomorrow",
+        USER_ID: "local|f4k3-u51d-1234",
+        EXPIRES_AT: "tomorrow",
     },
     {
-        CommandArguments.USER_ID: "local|f4k3-u51d-1234",
-        CommandArguments.EXPIRES_AT: "empty",
-        CommandArguments.ALLOWED_AUTH_METHODS: "empty",
-        CommandArguments.ALLOWED_CLIENT_TYPES: "empty"
+        USER_ID: "local|f4k3-u51d-1234",
+        EXPIRES_AT: "empty",
+        ALLOWED_AUTH_METHODS: "empty",
+        ALLOWED_CLIENT_TYPES: "empty"
 
     },
 
 ]
 USER_DELETE_TEST_ARGS = [
-    {CommandArguments.USER_ID: 'user1'},
+    {USER_ID: 'user1'},
 ]
 USER_PASSWORD_CHANGE_TEST_ARGS = [
     {
-        CommandArguments.USERNAME: 'user1',
-        CommandArguments.PASSWORD: 'old_password',
-        CommandArguments.NEW_PASSWORD: 'new_password',
-        CommandArguments.AUTH_DOMAIN: 'local_account'
+        USERNAME: 'user1',
+        PASSWORD: 'old_password',
+        NEW_PASSWORD: 'new_password',
+        AUTH_DOMAIN: 'local_account'
     },
 ]
 
 LOCAL_CA_CREATE_TEST_ARGS = [
 
     {
-        CommandArguments.CN: "test.localca2",
+        CN: "test.localca2",
     },
     {
-        CommandArguments.CN: "example.localca",
-        CommandArguments.ALGORITHM: "RSA",
-        CommandArguments.COPY_FROM_CA: "abcd1234-ab12-cd34-ef56-abcdef123456",
-        CommandArguments.DNS_NAMES: "example.com,example.org",
-        CommandArguments.EMAIL: "admin@example.com,contact@example.org",
-        CommandArguments.IP: "192.168.1.1,10.0.0.1",
-        CommandArguments.NAME: "example-localca",
-        CommandArguments.NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, '
+        CN: "example.localca",
+        ALGORITHM: "RSA",
+        COPY_FROM_CA: "abcd1234-ab12-cd34-ef56-abcdef123456",
+        DNS_NAMES: "example.com,example.org",
+        EMAIL: "admin@example.com,contact@example.org",
+        IP: "192.168.1.1,10.0.0.1",
+        NAME: "example-localca",
+        NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, '
                                                '{"OU": "ExampleOrg Inc."}]',
-        CommandArguments.SIZE: "2048"
+        SIZE: "2048"
     },
 ]
 FAKE_CERT = ("-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa"
@@ -320,133 +320,133 @@ LOCAL_CA_LIST_TEST_ARGS = [
 
 ]
 LOCAL_CA_UPDATE_TEST_ARGS = [
-    {CommandArguments.LOCAL_CA_ID: "1localca-23e4567-e89b-12d3-a456-426614174000"},
+    {LOCAL_CA_ID: "1localca-23e4567-e89b-12d3-a456-426614174000"},
     {
-        CommandArguments.LOCAL_CA_ID: "localca-123e4567-e89b-12d3-a456-426614174000",
-        CommandArguments.ALLOW_CLIENT_AUTHENTICATION: "true",
-        CommandArguments.ALLOW_USER_AUTHENTICATION: "true"
+        LOCAL_CA_ID: "localca-123e4567-e89b-12d3-a456-426614174000",
+        ALLOW_CLIENT_AUTHENTICATION: "true",
+        ALLOW_USER_AUTHENTICATION: "true"
     },
 ]
 LOCAL_CA_DELETE_TEST_ARGS = [
-    {CommandArguments.LOCAL_CA_ID: "localca-123e4567-e89b-12d3-a456-426614174000"},
+    {LOCAL_CA_ID: "localca-123e4567-e89b-12d3-a456-426614174000"},
 ]
 LOCAL_CA_SELF_SIGN_TEST_ARGS = [
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
+    ({LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z'}),
 
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
+    ({LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'duration': '365'}),
 
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z',
+    ({LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_after': '2024-12-31T23:59:59Z',
       'duration':
           '365'}),
 
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
+    ({LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z',
       'not_after': '2024-01-01T00:00:00Z'}),
 
-    ({CommandArguments.LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00'
+    ({LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00'
                                                                                                              ':00Z',
       'not_after': 'two weeks'})
 ]
 
 LOCAL_CA_SELF_SIGN_TEST_MISSING_ARGS = [
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000'}),
-    ({CommandArguments.LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
+    ({LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000'}),
+    ({LOCAL_CA_ID: 'localca-123e4567-e89b-12d3-a456-426614174000', 'not_before': '2023-01-01T00:00:00Z'}),
 ]
 LOCAL_CA_INSTALL_TEST_ARGS = [
     {
-        CommandArguments.LOCAL_CA_ID: "localca-123e4567-e89-b12d3-a456-426614174000",
-        CommandArguments.CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
-        CommandArguments.PARENT_ID: "123e4567-e89-b12d3-a456-426614174000",
+        LOCAL_CA_ID: "localca-123e4567-e89-b12d3-a456-426614174000",
+        CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
+        PARENT_ID: "123e4567-e89-b12d3-a456-426614174000",
     }
 ]
 CERTIFICATE_ISSUE_TEST_ARGS = [
     {
         # Test Case 1: All arguments provided, including both NOT_BEFORE and NOT_AFTER
-        CommandArguments.CA_ID: "localca-ca12345",
-        CommandArguments.CSR_ENTRY_ID: "csr12345",
-        CommandArguments.PURPOSE: "test",
-        CommandArguments.DURATION: 365,
-        CommandArguments.NAME: "Test Certificate 1",
-        CommandArguments.NOT_BEFORE: "2024-06-01T12:34:56Z",
-        CommandArguments.NOT_AFTER: "2025-06-02T12:34:56Z"
+        CA_ID: "localca-ca12345",
+        CSR_ENTRY_ID: "csr12345",
+        PURPOSE: "test",
+        DURATION: 365,
+        NAME: "Test Certificate 1",
+        NOT_BEFORE: "2024-06-01T12:34:56Z",
+        NOT_AFTER: "2025-06-02T12:34:56Z"
     },
     {
         # Test Case 2: NOT_BEFORE provided, but NOT_AFTER is missing
-        CommandArguments.CA_ID: "localca-ca67890",
-        CommandArguments.CSR_ENTRY_ID: "csr67890",
-        CommandArguments.PURPOSE: "test",
-        CommandArguments.DURATION: 180,
-        CommandArguments.NAME: "Test Certificate 2",
-        CommandArguments.NOT_BEFORE: "2024-06-01T12:34:56Z"
+        CA_ID: "localca-ca67890",
+        CSR_ENTRY_ID: "csr67890",
+        PURPOSE: "test",
+        DURATION: 180,
+        NAME: "Test Certificate 2",
+        NOT_BEFORE: "2024-06-01T12:34:56Z"
     },
     {
         # Test Case 3: Only DURATION is provided, neither NOT_BEFORE nor NOT_AFTER
-        CommandArguments.CA_ID: "localca-ca54321",
-        CommandArguments.CSR_ENTRY_ID: "csr54321",
-        CommandArguments.PURPOSE: "production",
-        CommandArguments.DURATION: 90,
-        CommandArguments.NAME: "Test Certificate 3"
+        CA_ID: "localca-ca54321",
+        CSR_ENTRY_ID: "csr54321",
+        PURPOSE: "production",
+        DURATION: 90,
+        NAME: "Test Certificate 3"
     },
     {
         # Test Case 4: NOT_AFTER provided, but NOT_BEFORE is missing
-        CommandArguments.CA_ID: "localca-ca09876",
-        CommandArguments.CSR_ENTRY_ID: "csr09876",
-        CommandArguments.PURPOSE: "development",
-        CommandArguments.NAME: "Test Certificate 4",
-        CommandArguments.NOT_AFTER: "2025-06-02T12:34:56Z",
+        CA_ID: "localca-ca09876",
+        CSR_ENTRY_ID: "csr09876",
+        PURPOSE: "development",
+        NAME: "Test Certificate 4",
+        NOT_AFTER: "2025-06-02T12:34:56Z",
     }
 ]
 
 CERTIFICATE_LIST_TEST_ARGS = [
-    {CommandArguments.CA_ID: "localca-123e456-12d3-a456-426614174000"},
-    {CommandArguments.CA_ID: "localca-123e456-12d3-a456-426614174000",
-     CommandArguments.SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
-     CommandArguments.ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
-     CommandArguments.CERT: FAKE_CERT,
-     CommandArguments.ID: "123e456-12d3-a456-426614174000",
-     CommandArguments.PAGE: 0,
-     CommandArguments.PAGE_SIZE: 10,
-     CommandArguments.LIMIT: 10},
+    {CA_ID: "localca-123e456-12d3-a456-426614174000"},
+    {CA_ID: "localca-123e456-12d3-a456-426614174000",
+     SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     CERT: FAKE_CERT,
+     ID: "123e456-12d3-a456-426614174000",
+     PAGE: 0,
+     PAGE_SIZE: 10,
+     LIMIT: 10},
 ]
 LOCAL_CERTIFICATE_DELETE_TEST_ARGS = [
     {
-        CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
-        CommandArguments.LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+        CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
+        LOCAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
     }
 ]
 CERTIFICATE_REVOKE_TEST_ARGS = [
-    {CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
-     CommandArguments.CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
-     CommandArguments.REASON: "certificateHold"}
+    {CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
+     CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
+     REASON: "certificateHold"}
 ]
 CERTIFICATE_RESUME_TEST_ARGS = [{
-    CommandArguments.CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
-    CommandArguments.CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
+    CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
+    CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
 }]
 EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = [
     {
-        CommandArguments.CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
-        CommandArguments.NAME: "Test Certificate",
-        CommandArguments.PARENT: "URI-REFERENCE",
+        CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
+        NAME: "Test Certificate",
+        PARENT: "URI-REFERENCE",
 
     }
 ]
 EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = [
-    {CommandArguments.EXTERNAL_CERT_ID: "123e456"}
+    {EXTERNAL_CERT_ID: "123e456"}
 ]
 EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = [
-    {CommandArguments.EXTERNAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
-     CommandArguments.ALLOW_CLIENT_AUTHENTICATION: "false",
-     CommandArguments.ALLOW_USER_AUTHENTICATION: "true"}
+    {EXTERNAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
+     ALLOW_CLIENT_AUTHENTICATION: "false",
+     ALLOW_USER_AUTHENTICATION: "true"}
 ]
 EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = [
     {},
-    {CommandArguments.SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
-     CommandArguments.ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
-     CommandArguments.SERIAL_NUMBER: "0",
-     CommandArguments.CERT: FAKE_CERT,
-     CommandArguments.PAGE: 0,
-     CommandArguments.PAGE_SIZE: 10,
-     CommandArguments.LIMIT: 10},
+    {SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
+     SERIAL_NUMBER: "0",
+     CERT: FAKE_CERT,
+     PAGE: 0,
+     PAGE_SIZE: 10,
+     LIMIT: 10},
 ]
 
 ''' HELPER FUNCTIONS TESTS'''
@@ -583,7 +583,7 @@ def test_group_delete_command(mock_delete_group, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_delete_group.return_value
     assert result.raw_response == mock_delete_group.return_value
-    assert result.readable_output == f'{args.get(CommandArguments.GROUP_NAME)} has been deleted successfully!'
+    assert result.readable_output == f'{args.get(GROUP_NAME)} has been deleted successfully!'
 
 
 @pytest.mark.parametrize('args', GROUP_UPDATE_TEST_ARGS)
@@ -635,8 +635,8 @@ def test_user_to_group_remove_command(mock_remove_user_from_group, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_remove_user_from_group.return_value
     assert result.raw_response == mock_remove_user_from_group.return_value
-    assert result.readable_output == (f'{args[CommandArguments.USER_ID]} has been deleted successfully from'
-                                      f' {args[CommandArguments.GROUP_NAME]}')
+    assert result.readable_output == (f'{args[USER_ID]} has been deleted successfully from'
+                                      f' {args[GROUP_NAME]}')
 
 
 @pytest.mark.parametrize('args', USERS_LIST_TEST_ARGS)
@@ -663,7 +663,7 @@ def test_users_list_command_id_provided(mock_get_user):
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
-    args = {CommandArguments.USER_ID: 'user1'}
+    args = {USER_ID: 'user1'}
 
     result = users_list_command(client, args)
 
@@ -722,7 +722,7 @@ def test_user_delete_command(mock_delete_user, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_delete_user.return_value
     assert result.raw_response == mock_delete_user.return_value
-    assert result.readable_output == f'{args[CommandArguments.USER_ID]} has been deleted successfully!'
+    assert result.readable_output == f'{args[USER_ID]} has been deleted successfully!'
 
 
 @pytest.mark.parametrize('args', USER_PASSWORD_CHANGE_TEST_ARGS)
@@ -740,7 +740,7 @@ def test_user_password_change_command(mock_change_current_user_password, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_change_current_user_password.return_value
     assert result.raw_response == mock_change_current_user_password.return_value
-    assert result.readable_output == f'Password has been changed successfully for {args[CommandArguments.USERNAME]}!'
+    assert result.readable_output == f'Password has been changed successfully for {args[USERNAME]}!'
 
 
 @pytest.mark.parametrize('args', LOCAL_CA_CREATE_TEST_ARGS)
@@ -832,7 +832,7 @@ def test_local_ca_delete_command(mock_delete_local_ca, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_delete_local_ca.return_value
     assert result.raw_response == mock_delete_local_ca.return_value
-    assert result.readable_output == f'{args[CommandArguments.LOCAL_CA_ID]} has been deleted successfully!'
+    assert result.readable_output == f'{args[LOCAL_CA_ID]} has been deleted successfully!'
 
 
 @pytest.mark.parametrize('args', LOCAL_CA_SELF_SIGN_TEST_ARGS)
@@ -911,7 +911,7 @@ def test_certificate_issue_command_missing_args(mock_load_content_from_file, moc
     mock_load_content_from_file.return_value = FAKE_CSR
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
-    args = {CommandArguments.CA_ID: "ca12345", CommandArguments.CSR_ENTRY_ID: "csr12345", CommandArguments.PURPOSE: "test"}
+    args = {CA_ID: "ca12345", CSR_ENTRY_ID: "csr12345", PURPOSE: "test"}
     with pytest.raises(ValueError):
         certificate_issue_command(client, args)
 
@@ -948,7 +948,7 @@ def test_local_certificate_delete_command(mock_delete_certificate, args):
     assert result.outputs_prefix is None
     assert result.outputs == mock_delete_certificate.return_value
     assert result.raw_response == mock_delete_certificate.return_value
-    assert result.readable_output == f'{args[CommandArguments.LOCAL_CA_ID]} has been deleted successfully!'
+    assert result.readable_output == f'{args[LOCAL_CA_ID]} has been deleted successfully!'
 
 
 @pytest.mark.parametrize('args', CERTIFICATE_REVOKE_TEST_ARGS)
@@ -966,7 +966,7 @@ def test_certificate_revoke_command(mock_revoke_certificate, args):
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_revoke_certificate.return_value
     assert result.raw_response == mock_revoke_certificate.return_value
-    assert result.readable_output == f'{args[CommandArguments.CERT_ID]} has been revoked'
+    assert result.readable_output == f'{args[CERT_ID]} has been revoked'
 
 
 @pytest.mark.parametrize('args', CERTIFICATE_RESUME_TEST_ARGS)
@@ -984,7 +984,7 @@ def test_certificate_resume_command(mock_resume_certificate, args):
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_resume_certificate.return_value
     assert result.raw_response == mock_resume_certificate.return_value
-    assert result.readable_output == f'{args[CommandArguments.CERT_ID]} has been resumed'
+    assert result.readable_output == f'{args[CERT_ID]} has been resumed'
 
 
 @pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS)
@@ -1021,7 +1021,7 @@ def test_external_certificate_delete_command(mock_delete_external_certificate, a
     assert result.outputs_prefix is None
     assert result.outputs == mock_delete_external_certificate.return_value
     assert result.raw_response == mock_delete_external_certificate.return_value
-    assert result.readable_output == f'{args[CommandArguments.EXTERNAL_CERT_ID]} has been deleted successfully!'
+    assert result.readable_output == f'{args[EXTERNAL_CERT_ID]} has been deleted successfully!'
 
 
 @pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS)
