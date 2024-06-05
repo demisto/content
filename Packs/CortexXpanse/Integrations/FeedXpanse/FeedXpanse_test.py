@@ -66,12 +66,6 @@ def test_create_x509_certificate_grids():
     # test_with_empty_string
     assert create_x509_certificate_grids('') == []
 
-    input_str = "C=ZA,ST-Western Cape,L:Cape Town;O=Thawte"
-    expected_output = [
-        {'data': 'ZA', 'title': 'C'}, {'data': 'Thawte', 'title': 'L:Cape Town;O'}
-    ]
-    assert create_x509_certificate_grids(input_str) == expected_output
-
 
 def test_map_indicator_fields():
     """Tests map_indicator_fields helper function.

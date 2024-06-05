@@ -297,7 +297,7 @@ def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
         raise ValueError('Limit must be less that the API limit of ' + str(DEFAULT_ASSET_SEARCH_LIMIT) + '.')
     if asset_type == '':
         raise ValueError('need to specify at least one asset type')
-    
+
     indicators, raw_res = fetch_indicators(client=client, limit=limit, asset_type=asset_type)
 
     indicators = indicators[:limit] if isinstance(indicators, list) \
