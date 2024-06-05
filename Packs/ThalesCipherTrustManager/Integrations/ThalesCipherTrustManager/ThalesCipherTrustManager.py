@@ -107,7 +107,7 @@ class CipherTrustClient(BaseClient):
     """ A client class to interact with the Thales CipherTrust API """
 
     def __init__(self, username: str, password: str, server_url: str, proxy: bool, verify: bool):
-        base_url = urljoin(server_url, f'api/v1')
+        base_url = urljoin(server_url, 'api/v1')
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         res = self.create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
@@ -323,7 +323,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-    tuple[int, int]:
+        tuple[int, int]:
     if page_str and limit_str:
         raise ValueError('Only one of the "page" and "limit" arguments should be provided.')
     if page_str:
@@ -362,10 +362,11 @@ def add_empty_list_param(request_data: dict, argument_value: Optional[str], para
 
 
 def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_name: str) -> None:
-    if argument_value is not None:
-        if 'login_flags' not in request_data:
-            request_data['login_flags'] = {}
-        request_data['login_flags'][flag_name] = argument_value
+    if argument_value is None:
+        return
+    if 'login_flags' not in request_data:
+        request_data['login_flags'] = {}
+    request_data['login_flags'][flag_name] = argument_value
 
 
 def optional_safe_load_json(raw_json_string: Optional[str], json_entry_id: Optional[str]) -> dict:
@@ -385,7 +386,7 @@ def load_content_from_file(entry_id: str) -> str:
 
 
 def remove_key_from_outputs_and_return_as_file_result(outputs: dict[str, Any], key_and_file_name: list | tuple) -> dict[
-    str, Any]:
+        str, Any]:
     new_outputs = outputs.copy()
 
     if isinstance(key_and_file_name, list):

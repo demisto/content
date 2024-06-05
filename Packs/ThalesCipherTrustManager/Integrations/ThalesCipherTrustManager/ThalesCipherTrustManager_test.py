@@ -1,5 +1,3 @@
-import copy
-
 from CommonServerPython import CommandResults
 from unittest.mock import patch
 import pytest
