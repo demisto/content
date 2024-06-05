@@ -1,6 +1,6 @@
 {
     "name": "Thales CipherTrust Manager",
-    "description": "Manage Secrets and Protect Sensitive Data through HashiCorp Vault.",
+    "description": "Manage Secrets and Protect Sensitive Data through Thales CipherTrust security platform",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
