@@ -686,7 +686,7 @@ def build_fetch_query(params):
     return fetch_query
 
 
-def get_manually_fetched_notables_from_cache(service: client.Service, cache_object: Cache):
+def get_manually_fetched_notables_from_cache(service: client.Service, cache_object: Optional[Cache]) -> list:
     manually_fetched_notables = []
     if cache_object:
         while cache_object.manually_fetched_notables_data:
@@ -797,8 +797,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 
     if not enrich_notables:
         demisto.incidents(manually_fetched_incidents + incidents)
-
-    else:   # Should submit notables for enrichment.
+    elif cache_object:   # Should submit notables for enrichment.
         cache_object.not_yet_submitted_notables.extend(manually_fetched_notables)
         cache_object.not_yet_submitted_notables.extend(notables)
         if DUMMY not in last_run_data:
@@ -2940,7 +2939,11 @@ def cache_notable_data(notable: Notable):
     cache = Cache.load_from_integration_context(integration_context)
 
     # Maintaining a reduced timeframe for quicker retrieval on fetch-incidents.
-    occurred_time = dateparser.parse(notable.data.get('_time'))
+    try:
+        occurred_time = dateparser.parse(notable.data.get('_time'))
+    except KeyError as e:
+        raise DemistoException('Notable event has no occured time value, skipping its fetch')
+
     notable_fetch_data = {
         EVENT_ID: notable.id,
         # Reformatting datetime string for splunk compatability.
