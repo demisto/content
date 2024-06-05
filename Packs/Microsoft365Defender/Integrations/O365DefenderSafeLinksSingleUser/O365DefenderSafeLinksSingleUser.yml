@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: O365 Defender SafeLinks - Single User
+  id: O365 Defender SafeLinks - Single User (Deprecated)
   version: -1
 configuration:
 - display: Exchange Online URL
@@ -24,7 +24,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Enables URL scanning, rewriting inbound email messages in the mail flow, time-of-click URL verification, and links in email messages and other locations.
+description: Deprecated. Use O365 Defender SafeLinks instead. Enables URL scanning, rewriting inbound email messages in the mail flow, time-of-click URL verification, and links in email messages and other locations.
 display: O365 Defender SafeLinks - Single User
 name: O365 Defender SafeLinks - Single User
 script:
@@ -960,6 +960,7 @@ script:
   script: '-'
   type: powershell
   dockerimage: demisto/powershell-ubuntu:7.4.1.86201
+deprecated: true
 fromversion: 6.0.0
 tests:
 - No Test
