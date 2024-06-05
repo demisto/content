@@ -734,22 +734,25 @@ def test_vulnerabilities_process(mocker, requests_mock):
         - Verify export uuid being updated in the integration context
         - Verify vulnerabilities returned and finished flag is up.
     """
-    from Tenable_io import generate_export_uuid, get_vulnerabilities_chunks, run_vulnerabilities_fetch, Client
+
+    from Tenable_io import generate_export_uuid, handle_vulns_chunks, get_vulnerabilities_export_status, Client
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
     last_run = {}
-    assert run_vulnerabilities_fetch(client, last_run=last_run)
 
     generate_export_uuid(client, last_run=last_run)
     assert last_run.get('vuln_export_uuid') == '123'
 
-    vulnerabilities, finished = get_vulnerabilities_chunks(client, '123')
+    status = get_vulnerabilities_export_status(client, last_run)
+    assert status == "FINISHED"
+    assert last_run.get("vulns_available_chunks")
+
+    vulnerabilities, last_run = handle_vulns_chunks(client, last_run)
 
     assert len(vulnerabilities) == 1
-    assert finished
 
 
 def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
@@ -848,11 +851,11 @@ FETCH_ASSETS_EXAMPLES = [
         [],
         {'assets_export_uuid': '222', 'nextTrigger': '30', 'type': 1}
     ),
-    # export uuid is valid, but chunk is not valid.
+    # # export uuid is valid, but chunk is not valid.
     (
         {'status': 404, 'message': 'invalid chunk'},
         [],
-        {}
+        {'assets_export_uuid': '222', 'nextTrigger': '30', 'type': 1}
     )
 ]
 

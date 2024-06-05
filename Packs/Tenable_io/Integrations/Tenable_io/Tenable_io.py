@@ -170,11 +170,11 @@ DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'tenable'
 PRODUCT = 'io'
 CHUNK_SIZE = 5000
+ASSETS_NUMBER = 50
 MAX_CHUNKS_PER_FETCH = 10
 ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 60
-EXPORT_EXPIRED = "uuid expired"
-INVALID_CHUNK = "invalid chunk ID"
+NOT_FOUND_ERROR = '404'
 
 
 class Client(BaseClient):
@@ -294,13 +294,10 @@ class Client(BaseClient):
 
         result = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
                                     headers=self._headers, ok_codes=(200, 404))
-        demisto.debug(f"result returned from api: {result}")
+
         if isinstance(result, dict) and (result.get("status") == 404 or result.get('error')):
-            demisto.debug(f"result message is: {result.get('message')}")
-            if result.get('message') == 'Export expired or not found':
-                return EXPORT_EXPIRED
-            else:
-                return INVALID_CHUNK
+            demisto.debug(f"404 error was received, result from api: {result}")
+            return NOT_FOUND_ERROR
         return result
 
     def get_asset_export_uuid(self, fetch_from):
@@ -348,11 +345,8 @@ class Client(BaseClient):
                                     headers=self._headers, ok_codes=(404, 200))
         # export uuid has expired
         if isinstance(result, dict) and (result.get("status") == 404 or result.get('error')):
-            demisto.debug("status code is 404.")
-            if result.get('message') == 'Export expired or not found':
-                return EXPORT_EXPIRED
-            else:
-                return INVALID_CHUNK
+            demisto.debug(f"404 error was received, result from api: {result}")
+            return NOT_FOUND_ERROR
         return result
 
 
@@ -617,7 +611,7 @@ def generate_export_uuid(client: Client, last_run):
     demisto.info("Getting vulnerabilities export uuid for report.")
     last_found: float = get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))   # type: ignore
 
-    export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE, last_found=last_found)
+    export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER, last_found=last_found)
 
     demisto.info(f'vulnerabilities export uuid is {export_uuid}')
     last_run.update({'vuln_export_uuid': export_uuid})
@@ -634,7 +628,7 @@ def generate_assets_export_uuid(client: Client, assets_last_run):
 
     """
 
-    demisto.info("Getting assets export uuid.")
+    demisto.info("Generating assets export uuid.")
     fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
 
     export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
@@ -659,8 +653,8 @@ def handle_assets_chunks(client: Client, assets_last_run):
     assets = []
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         result = client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
-        if result == EXPORT_EXPIRED:
-            demisto.debug(f"export uuid with value: {export_uuid} has expired,generating new export uuid to start new fetch.")
+        if result == NOT_FOUND_ERROR:
+            demisto.info(f"generating new export uuid to start new fetch due to 404 error.")
 
             export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
@@ -668,9 +662,6 @@ def handle_assets_chunks(client: Client, assets_last_run):
             assets_last_run.pop('assets_available_chunks', None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
             return [], assets_last_run
-        if result == INVALID_CHUNK:
-            updated_stored_chunks.remove(chunk_id)
-            continue
         assets.extend(result)
         updated_stored_chunks.remove(chunk_id)
     if updated_stored_chunks:
@@ -682,6 +673,47 @@ def handle_assets_chunks(client: Client, assets_last_run):
         assets_last_run.pop('assets_available_chunks', None)
         assets_last_run.pop('assets_export_uuid', None)
     return assets, assets_last_run
+
+
+def handle_vulns_chunks(client: Client, assets_last_run):
+    """
+    Handle vulns chunks stored in the last run object.
+
+    Args:
+        client: Client class object.
+        assets_last_run: assets last run object.
+
+    """
+    demisto.debug("in handle vulns chunks")
+    stored_chunks = assets_last_run.get('vulns_available_chunks', [])
+    updated_stored_chunks = stored_chunks.copy()
+    export_uuid = assets_last_run.get('vuln_export_uuid')
+    vulnerabilities = []
+    for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
+        result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
+        if result == NOT_FOUND_ERROR:
+            demisto.info(f"generating new export uuid to start new fetch due to 404 error.")
+
+            export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
+                                                      last_found=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
+            assets_last_run.update({'vuln_export_uuid': export_uuid})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
+            assets_last_run.pop('vulns_available_chunks', None)
+            demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
+            return [], assets_last_run
+        vulnerabilities.extend(result)
+        updated_stored_chunks.remove(chunk_id)
+    for vuln in vulnerabilities:
+        vuln['_time'] = vuln.get('received') or vuln.get('indexed')
+    if updated_stored_chunks:
+        assets_last_run.update({'vulns_available_chunks': updated_stored_chunks,
+                                'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')})
+    else:
+        assets_last_run.pop('nextTrigger', None)
+        assets_last_run.pop('type', None)
+        assets_last_run.pop('vulns_available_chunks', None)
+        assets_last_run.pop('vuln_export_uuid', None)
+    return vulnerabilities, assets_last_run
 
 
 def get_asset_export_job_status(client: Client, assets_last_run):
@@ -702,7 +734,7 @@ def get_asset_export_job_status(client: Client, assets_last_run):
     return status
 
 
-def get_vulnerabilities_chunks(client: Client, export_uuid: str):
+def get_vulnerabilities_export_status(client: Client, assets_last_run):
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
@@ -713,21 +745,20 @@ def get_vulnerabilities_chunks(client: Client, export_uuid: str):
 
     """
     vulnerabilities = []
-    status, chunks_available = client.get_vuln_export_status(export_uuid=export_uuid)
+    status, chunks_available = client.get_vuln_export_status(export_uuid=assets_last_run.get("vuln_export_uuid"))
     demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
-        for chunk_id in chunks_available:
-            result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
-            if result == EXPORT_EXPIRED:
-                demisto.info(f"export uuid with value: {export_uuid} has expired, generating new export uuid.")
-                return [], 'ERROR'
-            if result == INVALID_CHUNK:
-                continue
-            vulnerabilities.extend(result)
-    demisto.debug(f"vulns are: {vulnerabilities}")
-    for vuln in vulnerabilities:
-        vuln['_time'] = vuln.get('received') or vuln.get('indexed')
-    return vulnerabilities, status
+        assets_last_run.update({'vulns_available_chunks': chunks_available})
+        # for chunk_id in chunks_available:
+            # result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
+            # if result == NOT_FOUND_ERROR:
+            #     demisto.info(f"generating new export uuid due to 404 error.")
+            #     return [], 'ERROR'
+            #
+            # vulnerabilities.extend(result)
+    # for vuln in vulnerabilities:
+    #     vuln['_time'] = vuln.get('received') or vuln.get('indexed')
+    return status
 
 
 def test_module(client: Client, params):
@@ -1766,7 +1797,6 @@ def fetch_assets_command(client: Client, assets_last_run):
         status = get_asset_export_job_status(client=client, assets_last_run=assets_last_run)
 
         if status in ['PROCESSING', 'QUEUED']:
-            demisto.debug(f"status is still {status}")
             assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
         # set params for next run
         if status == 'FINISHED':
@@ -1790,7 +1820,7 @@ def run_assets_fetch(client, last_run):
     return fetch_assets_command(client, last_run)
 
 
-def fetch_vulnerabilities(client: Client, last_run: dict):
+def fetch_vulnerabilities(client: Client, assets_last_run: dict):
     """
     Fetches vulnerabilities if job has succeeded.
     Args:
@@ -1800,6 +1830,33 @@ def fetch_vulnerabilities(client: Client, last_run: dict):
     Returns:
         Vulnerabilities fetched from the API.
     """
+    vulnerabilities = []
+    # if already in assets_last_run meaning its still polling chunks from api
+    export_uuid = assets_last_run.get('vuln_export_uuid')
+    # if exists, still downloading chunks from prev fetch call
+    available_chunks = assets_last_run.get('vulns_available_chunks', [])
+    if available_chunks:
+        vulnerabilities, assets_last_run = handle_vulns_chunks(client, assets_last_run)
+    elif export_uuid:
+        status = get_vulnerabilities_export_status(client=client, assets_last_run=assets_last_run)
+
+        if status in ['PROCESSING', 'QUEUED']:
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
+        # set params for next run
+        if status == 'FINISHED':
+            assets, assets_last_run = handle_vulns_chunks(client, assets_last_run)
+        elif status in ['CANCELLED', 'ERROR']:
+            export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
+                                                      last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
+            assets_last_run.update({'vuln_export_uuid': export_uuid})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
+
+    demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {assets_last_run=}.')
+    return vulnerabilities
+
+
+
+
     vulnerabilities = []
     export_uuid = last_run.get('vuln_export_uuid')
     if export_uuid:
@@ -1814,7 +1871,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict):
                 last_run.pop('nextTrigger', None)
                 last_run.pop('type', None)
         elif status in ['CANCELLED', 'ERROR']:
-            export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
+            export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
                                                       last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
             last_run.update({'vuln_export_uuid': export_uuid})
             last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
@@ -1950,438 +2007,14 @@ def main():  # pragma: no cover
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('type'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
-            demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
+            demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
-            send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
-#             vulnerabilities = [
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 2,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Service detection",
-#         "Id": 22964,
-#         "Name": "Service Detection",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 2,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 166602,
-#         "Name": "Asset Attribute: Fully Qualified Domain Name (FQDN)",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Settings",
-#         "Id": 19506,
-#         "Name": "Nessus Scan Information",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 1
-#             }
-#         ],
-#         "CvssBaseScore": 2.6,
-#         "Family": "Misc.",
-#         "Id": 71049,
-#         "Name": "SSH Weak MAC Algorithms Enabled",
-#         "RecastedCount": 0,
-#         "Severity": "Low",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 39520,
-#         "Name": "Backported Security Patch Detection (SSH)",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Misc.",
-#         "Id": 70657,
-#         "Name": "SSH Algorithms and Languages Supported",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 66293,
-#         "Name": "Unix Operating System on Extended Support",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 54615,
-#         "Name": "Device Type",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Service detection",
-#         "Id": 149334,
-#         "Name": "SSH Password Authentication Accepted",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Misc.",
-#         "Id": 153588,
-#         "Name": "SSH SHA-1 HMAC Algorithms Enabled",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 10287,
-#         "Name": "Traceroute Information",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Settings",
-#         "Id": 117886,
-#         "Name": "OS Security Patch Assessment Not Available",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 10881,
-#         "Name": "SSH Protocol Versions Supported",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Resurfaced"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Service detection",
-#         "Id": 10884,
-#         "Name": "Network Time Protocol (NTP) Server Detection",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 2
-#             }
-#         ],
-#         "CvssBaseScore": 4.3,
-#         "Family": "Misc.",
-#         "Id": 90317,
-#         "Name": "SSH Weak Algorithms Supported",
-#         "RecastedCount": 0,
-#         "Severity": "Medium",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 45590,
-#         "Name": "Common Platform Enumeration (CPE)",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 1
-#             }
-#         ],
-#         "Cvss3BaseScore": 3.7,
-#         "CvssBaseScore": 2.6,
-#         "Family": "Misc.",
-#         "Id": 70658,
-#         "Name": "SSH Server CBC Mode Ciphers Enabled",
-#         "RecastedCount": 0,
-#         "Severity": "Low",
-#         "VprScore": 3.6,
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 25220,
-#         "Name": "TCP/IP Timestamps Supported",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Web Servers",
-#         "Id": 18261,
-#         "Name": "Apache Banner Linux Distribution Disclosure",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "CvssBaseScore": 2.1,
-#         "Family": "General",
-#         "Id": 10114,
-#         "Name": "ICMP Timestamp Request Remote Date Disclosure",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VprScore": 4.2,
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 12053,
-#         "Name": "Host Fully Qualified Domain Name (FQDN) Resolution",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 10919,
-#         "Name": "Open Port Re-check",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "General",
-#         "Id": 11936,
-#         "Name": "OS Identification",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 1
-#             }
-#         ],
-#         "Cvss3BaseScore": 3.7,
-#         "CvssBaseScore": 2.6,
-#         "Family": "Misc.",
-#         "Id": 153953,
-#         "Name": "SSH Weak Key Exchange Algorithms Enabled",
-#         "RecastedCount": 0,
-#         "Severity": "Low",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Settings",
-#         "Id": 110723,
-#         "Name": "Target Credential Status by Authentication Protocol - No Credentials Provided",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     },
-#     {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 1,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Service detection",
-#         "Id": 10267,
-#         "Name": "SSH Server Type and Version Information",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 1,
-#         "VulnerabilityState": "Active"
-#     }
-# ]
-            demisto.debug(f"sending {len(vulnerabilities)} to server.")
-            send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
+            if assets:
+                demisto.debug('sending assets to XSIAM.')
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
+            if vulnerabilities:
+                demisto.debug('sending vulnerabilities to XSIAM.')
+                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
             demisto.info("Done Sending data to XSIAM.")
 
