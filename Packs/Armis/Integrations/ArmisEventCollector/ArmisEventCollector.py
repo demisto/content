@@ -204,7 +204,8 @@ def test_module(client: Client) -> str:
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_start_time: datetime | None, fetch_delay: int):
+def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_start_time: datetime | None,
+                               fetch_delay: int = DEFAULT_FETCH_DELAY):
     """ Calculates the fetch start time.
         There are three cases for fetch start time calculation:
         - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
@@ -215,6 +216,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
     Args:
         last_fetch_time (datetime | str | None): Last fetch time (from last run).
         fetch_start_time (datetime | None): Fetch start time.
+        fetch_delay (int): The number of minutes to delay the search until.
 
     Raises:
         DemistoException: If the transformation to to datetime object failed.
