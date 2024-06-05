@@ -255,6 +255,20 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
+def check_if_pack_or_integration_is_feed(content_object) -> bool:
+    if not isinstance(content_object, Integration):
+        return False
+    if content_object.is_feed:
+        return True
+    pack = content_object.in_pack
+    print(f' check_if_pack_or_integration_is_feed the pack is: {pack} ')
+    tags = pack.tags
+    categories = pack.categories
+    if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+       return True
+    return False
+
+
 def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
     Checks if tim reviewer needed, if the pack is new and not part of Master
@@ -267,7 +281,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
 
     Returns: `bool` whether a security engineer should be assigned
     """
-    pack_dirs_to_check = packs_to_check_in_pr(pr_files)
+    # pack_dirs_to_check = packs_to_check_in_pr(pr_files)
     integrations_checked = []
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
@@ -290,19 +304,20 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 if 'CONTRIBUTORS.json' in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
-                print(f'The content object: {content_object}')
-                if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
-                    continue
-                print(f'content object path is: {content_object.path}')
-                integrations_checked.append(content_object.path)
-                if content_object.is_feed:
-                    return True
-                pack = content_object.in_pack
-                print(f'pack is: {pack}')
-                tags = pack.tags
-                categories = pack.categories
-                if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-                    return True
+                print(f'check_new_pack_metadata - The content object: {content_object}')
+                check_if_pack_or_integration_is_feed(content_object)
+                # if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
+                #     continue
+                # print(f'content object path is: {content_object.path}')
+                # integrations_checked.append(content_object.path)
+                # if content_object.is_feed:
+                #     return True
+                # pack = content_object.in_pack
+                # print(f'pack is: {pack}')
+                # tags = pack.tags
+                # categories = pack.categories
+                # if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+                #     return True
     except Exception as er:
         print(f"couldn't checkout branch to get metadata, error is {er}")
         return False
@@ -332,20 +347,23 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
         if 'CONTRIBUTORS.json' in file:
             continue
         content_object = BaseContent.from_path(CONTENT_PATH / file)
+        print(f' is_tim_content - content object {content_object}')
         if not content_object:
             # This means we were not able to find the file in content repo, and the contribution is new
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-        if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
-            continue
-        integrations_checked.append(content_object.path)
-        if content_object.is_feed:
-            return True
-        pack = content_object.in_pack
-        tags = pack.tags
-        categories = pack.categories
-        if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-            return True
-    return False
+
+        return check_if_pack_or_integration_is_feed(content_object)
+        # if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
+        #     continue
+        # integrations_checked.append(content_object.path)
+        # if content_object.is_feed:
+        #     return True
+        # pack = content_object.in_pack
+        # tags = pack.tags
+        # categories = pack.categories
+        # if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+        #     return True
+    # return False
 
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
