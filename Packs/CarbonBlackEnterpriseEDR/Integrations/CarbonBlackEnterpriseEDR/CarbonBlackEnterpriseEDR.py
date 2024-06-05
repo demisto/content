@@ -20,30 +20,29 @@ class Client(BaseClient):
                                                                              'X-Auth-Token': self.token})
 
     def test_module_request(self):
-        url_suffix = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
+        url_suffix = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/_search'
         body = {
             "criteria": {
                 "group_results": True,
                 "minimum_severity": 3
             },
-            "sort": [{"field": "first_event_time", "order": "DESC"}],
-            "rows": 1,
-            "start": 0
+            "sort": [{"field": "first_event_timestamp", "order": "DESC"}],
+            "rows": 0,
+            "start": 1
         }
 
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
 
-    def search_alerts_request(self, group_results: bool = None, minimum_severity: int = None, create_time: dict = None,
+    def search_alerts_request(self, minimum_severity: int = None, create_time: dict = None,
                               device_os_version: list = None, policy_id: list = None, alert_tag: list = None,
                               alert_id: list = None, device_username: list = None, device_id: list = None,
                               device_os: list = None, process_sha256: list = None, policy_name: list = None,
-                              reputation: list = None, alert_type: list = None, alert_category: list = None,
-                              workflow: list = None, device_name: list = None, process_name: list = None,
-                              sort_field: str = None, sort_order: str = None, limit: str = None) -> dict:
-        suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
+                              reputation: list = None, alert_type: list = None, device_name: list = None,
+                              process_name: list = None, sort_field: str = None, sort_order: str = None,
+                              limit: str = None) -> dict:
+        suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/_search'
         body = {
             'criteria': assign_params(
-                group_results=group_results,
                 minimum_severity=minimum_severity,
                 create_time=create_time,
                 device_os_version=device_os_version,
@@ -57,8 +56,6 @@ class Client(BaseClient):
                 policy_name=policy_name,
                 reputation=reputation,
                 type=alert_type,
-                category=alert_category,
-                workflow=workflow,
                 device_name=device_name,
                 process_name=process_name
             ),
@@ -461,7 +458,6 @@ def test_module(client):
 
 
 def alert_list_command(client: Client, args: dict) -> CommandResults | str:
-    group_results = args.get('group_results')
     minimum_severity = args.get('minimum_severity')
     create_time = assign_params(
         start=args.get('start_time'),
@@ -478,8 +474,6 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     policy_name = argToList(args.get('policy_name'))
     reputation = argToList(args.get('reputation'))
     alert_type = argToList(args.get('alert_type'))
-    alert_category = argToList(args.get('alert_category'))
-    workflow = argToList(args.get('workflow'))
     device_name = argToList(args.get('device_name'))
     process_name = argToList(args.get('process_name'))
     sort_field = args.get('sort_field')
@@ -489,10 +483,10 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     headers = ['AlertID', 'CreateTime', 'DeviceID', 'DeviceName', 'DeviceOS', 'PolicyName', 'ProcessName', 'Type',
                'WorkflowState']
 
-    result = client.search_alerts_request(group_results, minimum_severity, create_time,
+    result = client.search_alerts_request(minimum_severity, create_time,
                                           device_os_version, policy_id, alert_tag, alert_id, device_username,
                                           device_id, device_os, process_sha256, policy_name,
-                                          reputation, alert_type, alert_category, workflow, device_name,
+                                          reputation, alert_type, device_name,
                                           process_name, sort_field, sort_order, limit)
 
     alerts = result.get('results', [])
