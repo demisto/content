@@ -953,7 +953,8 @@ def test_parse_incident_from_item_with_attachment_with_corrupted_header(mocker):
         to_recipients=[],
         attachments=[
             ItemAttachment(
-                item=Item(mime_content=content),
+                item=Item(mime_content=content, headers=[MessageHeader(name="Content-Type",
+                                                                       value="text/plain; charset=\"us-ascii\"")]),
                 attachment_id=AttachmentId(),
                 last_modified_time=EWSDate(year=2021, month=1, day=25),
             )
