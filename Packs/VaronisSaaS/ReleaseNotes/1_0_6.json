@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The type of the Alert Status incident field was changed to singleSelect.\nThe type of the Close Reason incident field was changed to singleSelect.\nMake sure to check and update any custom Playbooks/Scripts that use the above context paths."
+}
