@@ -373,12 +373,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     return None, None
 
 
-def terminate_chrome(instance_id, chrome_port, chrome_binary=CHROME_EXE):
-    # demisto.log(f"{browser}")
-    # for browser, process in browser_to_chrome_process.items():
-    #     demisto.log(f"{browser}")
-    #     demisto.log(f"{process}")
-    # process = browser_to_chrome_process.get(browser)
+def terminate_chrome(chrome_port):
     processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
     chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={chrome_port}"]
 
@@ -387,21 +382,12 @@ def terminate_chrome(instance_id, chrome_port, chrome_binary=CHROME_EXE):
                        if all(identifier in process for identifier in chrome_identifiers)
                        and not any(identifier in process for identifier in chrome_renderer_identifiers)]
 
-    demisto.log(f"{process_in_list}")
-
     process_string_representation = process_in_list[0]
     pid = int(process_string_representation.split()[1])
-    demisto.log(f"{pid=}")
     process = psutil.Process(pid)
-    # Execute the command and capture the output
-    # process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    # demisto.log(f"{process=}")
-    # demisto.debug(f'terminate_chrome, {process=}')
-    # demisto.log(f'terminate_chrome, {process=}')
-    # threading.excepthook = excepthook_recv_loop
 
     if process:
-        demisto.debug(f'terminate_chrome, {process=}')
+        demisto.debug(f'terminate_chrome, {process=} on port {chrome_port}')
         process.kill()
 
     demisto.debug('terminate_chrome, Finish')
@@ -473,10 +459,7 @@ def chrome_manager():
         demisto.log(f"case 4, chrome_options not in chromes_options and instance_id in instances_id")  # TODO: Remove log
 
         chrome_port = instance_id_to_port.get(instance_id)
-        browser = is_chrome_running_locally(chrome_port)
-        demisto.log(f"terminating chrome instance on port {chrome_port}")  # TODO: Remove log
-        demisto.debug(f"terminating chrome instance on port {chrome_port}")
-        terminate_chrome(instance_id, chrome_port)
+        terminate_chrome(chrome_port)
         delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_id)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
