@@ -372,5 +372,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
   - xsoar
-  - xpanse
+  - marketplacev2
 deprecated: true
