@@ -419,25 +419,25 @@ class Client(BaseClient):
         return response
 
     def ticket_create_relationship_request(self,
-                                           request_type01: str,
-                                           request_description01: str,
-                                           association_type01: str,
-                                           form_name01: str,
-                                           request_id01: str,
-                                           form_name02: str,
-                                           request_id02: str,
+                                           request_type: str,
+                                           request_description: str,
+                                           association_type: str,
+                                           first_form_name: str,
+                                           first_request_id: str,
+                                           second_form_name: str,
+                                           second_request_id: str,
                                            ) -> str:
         """
         BmcITSM ticket relationship request.
 
         Args:
-            request_type01 (str): The ticket type to create relationship.
-            request_description01 (str): The description of the relationship.
-            association_type01: The association type of the relationship.
-            form_name01: The form name of the incident.
-            request_id01: The ID of the incident to create relationship.
-            form_name02: The form name of the incident.
-            request_id02: The ID of the incident to create relationship.
+            request_type (str): The ticket type to create relationship.
+            request_description (str): The description of the relationship.
+            association_type: The association type of the relationship.
+            first_form_name: The form name of the incident.
+            first_request_id: The ID of the incident to create relationship.
+            second_form_name: The form name of the incident.
+            second_request_id: The ID of the incident to create relationship.
 
         Returns:
             str: API response from BmcITSM.
@@ -445,13 +445,13 @@ class Client(BaseClient):
 
         data = {
             "values": {
-                "Request Type01": request_type01,
-                "Request Description01": request_description01,
-                "Association Type01": association_type01,
-                "Form Name01": form_name01,
-                "Request ID01": request_id01,
-                "Form Name02": form_name02,
-                "Request ID02": request_id02
+                "Request Type01": request_type,
+                "Request Description01": request_description,
+                "Association Type01": association_type,
+                "Form Name01": first_form_name,
+                "Request ID01": first_request_id,
+                "Form Name02": second_form_name,
+                "Request ID02": second_request_id
             }
         }
         self._http_request("POST",
@@ -459,7 +459,7 @@ class Client(BaseClient):
                            json_data=data,
                            resp_type="text")
 
-        return f"Relationship between {request_id01} and {request_id02} is created"
+        return f"Created relationship between {request_id01} and {request_id02}"
 
     def create_service_request_request(
         self,
@@ -1698,7 +1698,7 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
 
 def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    """BmcITSM ticket delete command.
+    """BmcITSM ticket create relationship command.
 
     Args:
         client (Client): BmcITSM API client.
@@ -1708,41 +1708,42 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    request_type01 = args.get("request_type01")
-    request_description01 = args.get("request_description01")
-    association_type01 = args.get("association_type01")
-    form_name01 = args.get("form_name01")
-    request_id01 = args.get("request_id01")
-    form_name02 = args.get("form_name02")
-    request_id02 = args.get("request_id02")
+    request_type = args.get("request_type")
+    request_description = args.get("request_description")
+    association_type = args.get("association_type")
+    first_form_name = args.get("first_form_name")
+    first_request_id = args.get("first_request_id")
+    second_form_name = args.get("second_form_name")
+    second_request_id = args.get("second_request_id")
     bidirectional = argToBoolean(args.get("bidirectional"))
     res = client.ticket_create_relationship_request(
-        request_type01=request_type01,
-        request_description01=request_description01,
-        association_type01=association_type01,
-        form_name01=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name01],
-        request_id01=request_id01,
-        form_name02=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name02],
-        request_id02=request_id02,
+        request_type=request_type,
+        request_description=request_description,
+        association_type=association_type,
+        first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
+        first_request_id=first_request_id,
+        second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
+        second_request_id=second_request_id,
     )
 
     if bidirectional:
         association_types = {
             "Caused": "Caused by",
+            "Caused by": "Caused",
             "Duplicate of": "Original of",
+            "Original of": "Duplicate of",
             "Resolved": "Resolved by",
+            "Resolved by": "Resolved",
         }
-        association_type01 = association_types.get(association_type01) or [
-            k for k, v in association_types.items() if v == association_type01][0]
 
         res = client.ticket_create_relationship_request(
-            request_type01=request_type01,
-            request_description01=request_description01,
-            association_type01=association_type01,
-            form_name01=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name02],
-            request_id01=request_id02,
-            form_name02=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[form_name01],
-            request_id02=request_id01,
+            request_type=request_type,
+            request_description=request_description,
+            association_type=association_types[association_type],
+            first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
+            first_request_id=second_request_id,
+            second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
+            second_request_id02=first_request_id,
         )
 
     return res
