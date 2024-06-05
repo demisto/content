@@ -105,9 +105,6 @@ script:
       - contextPath: CipherTrust.CACertificate.updatedAt
         description: Timestamp of the last update of the CA.
         type: Date
-      - contextPath: CipherTrust.CACertificate.cert
-        description: Certificate associated with the CA.
-        type: String
       - contextPath: CipherTrust.CACertificate.serialNumber
         description: Serial number of the CA's certificate.
         type: String
@@ -216,9 +213,6 @@ script:
       - contextPath: CipherTrust.CACertificate.updatedAt
         description: Timestamp of the last update of the certificate.
         type: Date
-      - contextPath: CipherTrust.CACertificate.cert
-        description: Certificate content.
-        type: String
       - contextPath: CipherTrust.CACertificate.ca
         description: Certificate authority.
         type: String
@@ -290,9 +284,6 @@ script:
       - contextPath: CipherTrust.CACertificate.updatedAt
         description: Timestamp of the last update of the certificate.
         type: Date
-      - contextPath: CipherTrust.CACertificate.cert
-        description: Certificate content.
-        type: String
       - contextPath: CipherTrust.CACertificate.ca
         description: Certificate authority.
         type: String
@@ -385,9 +376,6 @@ script:
       - contextPath: CipherTrust.CACertificate.updatedAt
         description: Timestamp of the last update of the certificate.
         type: Date
-      - contextPath: CipherTrust.CACertificate.cert
-        description: Certificate content.
-        type: String
       - contextPath: CipherTrust.CACertificate.ca
         description: Certificate authority.
         type: String
@@ -507,9 +495,6 @@ script:
       - contextPath: CipherTrust.ExternalCertificate.name
         description: Name of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.cert
-        description: Certificate content.
-        type: String
       - contextPath: CipherTrust.ExternalCertificate.purpose.client_authentication
         description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
         type: String
@@ -595,9 +580,6 @@ script:
       - contextPath: CipherTrust.ExternalCertificate.name
         description: Name of the CA certificate.
         type: String
-      - contextPath: CipherTrust.ExternalCertificate.cert
-        description: Certificate content.
-        type: String
       - contextPath: CipherTrust.ExternalCertificate.purpose.client_authentication
         description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
         type: String
@@ -674,9 +656,6 @@ script:
       type: Date
     - contextPath: CipherTrust.ExternalCertificate.name
       description: Name of the CA certificate.
-      type: String
-    - contextPath: CipherTrust.ExternalCertificate.cert
-      description: Certificate content.
       type: String
     - contextPath: CipherTrust.ExternalCertificate.purpose.client_authentication
       description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
@@ -990,9 +969,6 @@ script:
     - contextPath: CipherTrust.LocalCA.state
       description: State of the CA.
       type: String
-    - contextPath: CipherTrust.LocalCA.csr
-      description: Certificate Signing Request (CSR) for the CA.
-      type: String
     - contextPath: CipherTrust.LocalCA.subject
       description: Distinguished Name (DN) of the CA subject.
       type: String
@@ -1072,9 +1048,6 @@ script:
     - contextPath: CipherTrust.CAInstall.updatedAt
       description: Timestamp of the last update of the CA.
       type: Date
-    - contextPath: CipherTrust.CAInstall.cert
-      description: Certificate associated with the CA.
-      type: String
     - contextPath: CipherTrust.CAInstall.serialNumber
       description: Serial number of the CA's certificate.
       type: String
@@ -1194,12 +1167,6 @@ script:
     - contextPath: CipherTrust.LocalCA.updatedAt
       description: Timestamp of last update of the CA.
       type: Date
-    - contextPath: CipherTrust.LocalCA.csr
-      description: Certificate Signing Request for the CA.
-      type: String
-    - contextPath: CipherTrust.LocalCA.cert
-      description: Certificate associated with the CA.
-      type: String
     - contextPath: CipherTrust.LocalCA.serialNumber
       description: Serial number of the CA's certificate.
       type: String
@@ -1287,12 +1254,6 @@ script:
     - contextPath: CipherTrust.CASelfSign.updatedAt
       description: Timestamp of the last update of the CA.
       type: Date
-    - contextPath: CipherTrust.CASelfSign.csr
-      description: Certificate Signing Request for the CA, if updated.
-      type: String
-    - contextPath: CipherTrust.CASelfSign.cert
-      description: Certificate associated with the CA.
-      type: String
     - contextPath: CipherTrust.CASelfSign.serialNumber
       description: Serial number of the CA's certificate.
       type: String
@@ -1375,12 +1336,6 @@ script:
     - contextPath: CipherTrust.LocalCA.updatedAt
       description: Timestamp of the last update of the CA.
       type: Date
-    - contextPath: CipherTrust.LocalCA.csr
-      description: Certificate Signing Request for the CA, if updated.
-      type: String
-    - contextPath: CipherTrust.LocalCA.cert
-      description: Certificate associated with the CA.
-      type: String
     - contextPath: CipherTrust.LocalCA.serialNumber
       description: Serial number of the CA's certificate.
       type: String
