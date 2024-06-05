@@ -33,7 +33,7 @@ VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 5000
-DEFAULT_FETCH_DELAY = 10
+DEFAULT_FETCH_DELAY = 0
 DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
     'Alerts': EVENT_TYPE(unique_id_key='alertId', aql_query=f'in:{EVENT_TYPE_ALERTS}', type=EVENT_TYPE_ALERTS, order_by='time',
@@ -96,7 +96,7 @@ class Client(BaseClient):
         return raw_response.get('data', {}).get('results', [])
 
     def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: datetime,
-                           order_by: str = 'time', from_param: None | int = None, before: datetime = datetime.now()):
+                           order_by: str = 'time', from_param: None | int = None, before: Optional[datetime] = None):
         """ Fetches events using AQL query.
 
         Args:
@@ -109,7 +109,9 @@ class Client(BaseClient):
         Returns:
             (list[dict], int): A tuple with the List of events objects represented as dictionaries and the next event pointer.
         """
-        aql_query = f'{aql_query} after:{after.strftime(DATE_FORMAT)} before {before.strftime(DATE_FORMAT)}'
+        aql_query = f'{aql_query} after:{after.strftime(DATE_FORMAT)}'
+        if before:
+            aql_query = f'{aql_query} before:{before.strftime(DATE_FORMAT)}'
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if from_param:
             params['from'] = from_param
@@ -207,9 +209,8 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
         There are three cases for fetch start time calculation:
         - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
         - Case 2: last_run is empty & from_date parameter exist (armis-get-events command with from_date argument).
-        - Case 3: first fetch in the instance (no last_run), this will return None
-                  (The request will get the last events from the API in the
-                  page size of 'max_events' (fetch-events / armis-get-events commands).
+        - Case 3: first fetch in the instance (no last_run), this will leave after as None.
+                  (This will eventually be evaluated to before time - 1 minute)
 
     Args:
         last_fetch_time (datetime | str | None): Last fetch time (from last run).
@@ -222,6 +223,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
         datetime: Fetch start time value for current fetch cycle, and the time until to run the query for.
     """
     before_time = datetime.now()
+    after_time = None
     if fetch_delay:
         before_time = before_time - timedelta(minutes=(fetch_delay))
     # case 1
@@ -233,17 +235,13 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
             last_fetch_datetime = last_fetch_time
         if not last_fetch_datetime:
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
-        if last_fetch_datetime > before_time:
-            last_fetch_datetime = before_time - timedelta(minutes=1)
-        return last_fetch_datetime, before_time
+        after_time = last_fetch_datetime
     # case 2
     elif fetch_start_time:
-        if fetch_start_time > before_time:
-            last_fetch_datetime = before_time - timedelta(minutes=1)
-        return fetch_start_time, before_time
-    # case 3
-    else:
-        return before_time - timedelta(minutes=1), before_time
+        after_time = fetch_start_time
+    if not after_time or after_time > before_time:
+        after_time = before_time - timedelta(minutes=1)
+    return after_time, before_time
 
 
 def are_two_datetime_equal_by_second(x: datetime, y: datetime):

@@ -57,9 +57,9 @@ configuration:
 - section: Collect
   advanced: true
   display: Minutes to delay
-  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay).
+  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay), default is 0.
   name: fetch_delay
-  defaultvalue: "10"
+  defaultvalue: "0"
   type: 0
   required: false
 - section: Collect
