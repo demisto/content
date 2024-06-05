@@ -235,6 +235,11 @@ class Service:
         return self.jobs
 
 
+def load_test_data(json_path) -> dict:
+    with open(json_path) as f:
+        return dict(json.load(f))
+
+
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
@@ -2178,8 +2183,91 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     assert splunk.handle_message(item) is expected
 
 
-def test_fetch_notable_event_command():
-    """
+test_notable_event = load_test_data('test_data/test_notable_event.json')
 
+
+@pytest.mark.parametrize(
+    'event_id, expected_notable', [
+        ('5E6DE97D-B137-47AB-8905-8C4F42998937@@notable@@e4f07602f507975e9f7ba47c4ae0c417',
+         Notable(test_notable_event)),
+        ('INVALID_ID', None)
+    ])
+def test_get_splunk_notable_by_id(mocker, event_id: str, expected_notable: splunk.Notable):
     """
-    assert False
+        Given: An valid/invalid event ID of a splunk notable event.
+        When: Executing 'get_splunk_notable_by_id(...)' with the given event ID.
+        Then: Getting a proper Notable object in return (or None if the event ID is invalid).
+    """
+    from SplunkPy import get_splunk_notable_by_id
+
+    mock_service = mocker.patch('splunklib.client.connect')
+    mock_service.jobs.oneshot.return_value = 'DUMMY_RESULT_STREAM'
+
+    # Mocking the JSONResultsReader to return the expected results
+    if event_id is not 'INVALID_ID':
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[load_test_data('test_data/test_notable_event.json')])
+    else:
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[])
+
+    notable = get_splunk_notable_by_id(service=mock_service, event_id=event_id, earliest_time='', latest_time='')
+
+    if expected_notable:
+        assert isinstance(notable, Notable)
+        assert notable.id == expected_notable.id
+        assert notable.data == expected_notable.data
+    else:
+        assert notable is None
+
+
+test_notable_event_no_time = test_notable_event.copy()
+test_notable_event_no_time.pop('_time', None)
+
+
+# TODO - Make this test pass
+@pytest.mark.parametrize(
+    'notable_data, expected_exception, expected_log', [
+        (
+            test_notable_event,
+            None,
+            "[SplunkPy] Successfully cached notable fetch data: {'EVENT_ID': '12345', 'EARLIEST_TIME': '2023-06-05T12:34:56', "
+            "'LATEST_TIME': '2023-06-06T12:34:56'}"
+        ),
+        (
+            test_notable_event_no_time,
+            DemistoException,
+            None
+        ),
+    ]
+)
+def test_cache_notable_data(mocker, notable_data, expected_exception, expected_log):
+    from SplunkPy import cache_notable_data, EVENT_ID, EARLIEST_TIME, LATEST_TIME
+
+    # Create the Notable object
+    notable = Notable(notable_data)
+
+    mock_integration_context = {}
+    mocker.patch('splunk.get_integration_context', return_value=mock_integration_context)
+
+    # Mocking Cache methods
+    mock_cache = mocker.MagicMock()
+    mocker.patch('splunk.Cache.load_from_integration_context', return_value=mock_cache)
+
+    # Mocking demisto.info
+    mock_demisto_info = mocker.patch('splunk.demisto.info')
+
+    if expected_exception:
+        with pytest.raises(expected_exception, match='Notable event has no occured time value, skipping its fetch'):
+            cache_notable_data(notable)
+        assert len(mock_cache.manually_fetched_notables_data) == 0
+        mock_cache.dump_to_integration_context.assert_not_called()
+        mock_demisto_info.assert_not_called()
+    else:
+        cache_notable_data(notable)
+        assert len(mock_cache.manually_fetched_notables_data) == 1
+        notable_fetch_data = mock_cache.manually_fetched_notables_data[0]
+        occurred_time = datetime.strptime(notable_data['_time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        assert notable_fetch_data[EVENT_ID] == notable_data['id']
+        assert notable_fetch_data[EARLIEST_TIME] == occurred_time.replace(' ', 'T')
+        assert notable_fetch_data[LATEST_TIME] == (occurred_time + timedelta(days=1)).replace(' ', 'T')
+        mock_cache.dump_to_integration_context.assert_called_once_with(mock_integration_context)
+        mock_demisto_info.assert_called_once_with(expected_log)

@@ -2941,7 +2941,9 @@ def cache_notable_data(notable: Notable):
     # Maintaining a reduced timeframe for quicker retrieval on fetch-incidents.
     try:
         occurred_time = dateparser.parse(notable.data.get('_time'))
-    except KeyError as e:
+        if not occurred_time:
+            raise ValueError
+    except (KeyError, ValueError):
         raise DemistoException('Notable event has no occured time value, skipping its fetch')
 
     notable_fetch_data = {
