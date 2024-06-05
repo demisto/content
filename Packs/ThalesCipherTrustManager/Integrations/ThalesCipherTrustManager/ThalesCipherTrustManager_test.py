@@ -1,3 +1,5 @@
+import copy
+
 from CommonServerPython import CommandResults
 from unittest.mock import patch
 import pytest
@@ -748,6 +750,8 @@ def test_user_password_change_command(mock_change_current_user_password, args):
 def test_local_ca_create_command(mock_create_local_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_create_command
     mock_create_local_ca.return_value = util_load_json('test_data/mock_local_ca_create_response.json')
+    mock_outputs = mock_create_local_ca.return_value.copy()
+    mock_outputs.pop('csr')
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -756,7 +760,7 @@ def test_local_ca_create_command(mock_create_local_ca, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_create_local_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_create_local_ca.return_value
 
 

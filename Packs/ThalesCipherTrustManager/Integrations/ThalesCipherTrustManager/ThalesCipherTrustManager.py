@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
+
 GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
 USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
 LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
@@ -326,7 +327,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-        tuple[int, int]:
+    tuple[int, int]:
     if page_str is not None:
         page_from_arg = arg_to_number(page_str)
         if page_from_arg is None:
@@ -385,10 +386,18 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
-def verify_required_arg(arg_name: str, arg: Optional[str]) -> str:
-    if arg is None:
-        raise ValueError(f'Required {arg_name} argument is missing')
-    return arg
+def remove_key_from_outputs_and_return_as_file_result(outputs: dict[str, Any], key_and_file_name: list | tuple) -> dict[
+    str, Any]:
+    new_outputs = outputs.copy()
+
+    if isinstance(key_and_file_name, list):
+        return_results(
+            [fileResult(file_name, new_outputs.pop(key, ''), EntryType.ENTRY_INFO_FILE) for key, file_name in key_and_file_name])
+
+    else:
+        return_results(fileResult(key_and_file_name[1], new_outputs.pop(key_and_file_name[0], ''), EntryType.ENTRY_INFO_FILE))
+
+    return new_outputs
 
 
 ''' COMMAND FUNCTIONS '''
@@ -445,7 +454,7 @@ def group_create_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
 
 def group_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(force=args.get(CommandArguments.FORCE))
-    client.delete_group(group_name=verify_required_arg(CommandArguments.GROUP_NAME, args.get(CommandArguments.GROUP_NAME)),
+    client.delete_group(group_name=args.get(CommandArguments.GROUP_NAME, ''),
                         request_data=request_data)
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.GROUP_NAME)} has been deleted successfully!'
@@ -456,7 +465,7 @@ def group_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
     request_data = assign_params(description=args.get(CommandArguments.DESCRIPTION),
                                  name=args.get(CommandArguments.NEW_GROUP_NAME))
     raw_response = client.update_group(
-        group_name=verify_required_arg(CommandArguments.GROUP_NAME, args.get(CommandArguments.GROUP_NAME)),
+        group_name=args.get(CommandArguments.GROUP_NAME, ''),
         request_data=request_data)
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
@@ -466,10 +475,8 @@ def group_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
 
 
 def user_to_group_add_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    raw_response = client.add_user_to_group(group_name=verify_required_arg(CommandArguments.GROUP_NAME,
-                                                                           args.get(CommandArguments.GROUP_NAME)),
-                                            user_id=verify_required_arg(CommandArguments.USER_ID,
-                                                                        args.get(CommandArguments.USER_ID)))
+    raw_response = client.add_user_to_group(group_name=args.get(CommandArguments.GROUP_NAME, ''),
+                                            user_id=args.get(CommandArguments.USER_ID, ''))
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
@@ -478,10 +485,8 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict[str, Any]) -
 
 
 def user_to_group_remove_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.remove_user_from_group(group_name=verify_required_arg(CommandArguments.GROUP_NAME,
-                                                                 args.get(CommandArguments.GROUP_NAME)),
-                                  user_id=verify_required_arg(CommandArguments.USER_ID,
-                                                              args.get(CommandArguments.USER_ID)))
+    client.remove_user_from_group(group_name=args.get(CommandArguments.GROUP_NAME, ''),
+                                  user_id=args.get(CommandArguments.USER_ID, ''))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.USER_ID)} has been deleted successfully from '
                         f'{args.get(CommandArguments.GROUP_NAME)}'
@@ -561,7 +566,7 @@ def user_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Comm
     add_empty_list_param(request_data, args.get(CommandArguments.ALLOWED_AUTH_METHODS), "allowed_auth_methods")
     add_empty_list_param(request_data, args.get(CommandArguments.ALLOWED_CLIENT_TYPES), "allowed_client_types")
     add_login_flags(request_data, optional_arg_to_bool(args.get(CommandArguments.PREVENT_UI_LOGIN)), "prevent_ui_login")
-    raw_response = client.update_user(user_id=verify_required_arg(CommandArguments.USER_ID, args.get(CommandArguments.USER_ID)),
+    raw_response = client.update_user(user_id=args.get(CommandArguments.USER_ID, ''),
                                       request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -571,7 +576,7 @@ def user_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Comm
 
 
 def user_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.delete_user(user_id=verify_required_arg(CommandArguments.USER_ID, args.get(CommandArguments.USER_ID)))
+    client.delete_user(user_id=args.get(CommandArguments.USER_ID, ''))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.USER_ID)} has been deleted successfully!'
     )
@@ -604,9 +609,11 @@ def local_ca_create_command(client: CipherTrustClient, args: dict[str, Any]) -> 
         size=arg_to_number(args.get(CommandArguments.SIZE)),
     )
     raw_response = client.create_local_ca(request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, ('csr', 'CSR.pem'))
+
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
@@ -648,18 +655,19 @@ def local_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) -> 
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
         allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
     )
-    raw_response = client.update_local_ca(local_ca_id=verify_required_arg(CommandArguments.LOCAL_CA_ID,
-                                                                          args.get(CommandArguments.LOCAL_CA_ID)),
+    raw_response = client.update_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID, ''),
                                           params=params)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('csr', 'CSR.pem'), ('cert', 'Certificate.pem')])
+
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
 
 def local_ca_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.delete_local_ca(local_ca_id=verify_required_arg(CommandArguments.LOCAL_CA_ID, args.get(CommandArguments.LOCAL_CA_ID)))
+    client.delete_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID, ''))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.LOCAL_CA_ID)} has been deleted successfully!'
     )
@@ -673,28 +681,31 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
         notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
         notBefore=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_BEFORE)),
     )
-    raw_response = client.self_sign_local_ca(local_ca_id=verify_required_arg(CommandArguments.LOCAL_CA_ID,
-                                                                             args.get(CommandArguments.LOCAL_CA_ID)),
+    raw_response = client.self_sign_local_ca(local_ca_id=args.get(CommandArguments.LOCAL_CA_ID, ''),
                                              request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('csr', 'CSR.pem'), ('cert', 'Certificate.pem')])
+
     return CommandResults(
         outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
 
 def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    cert = load_content_from_file(verify_required_arg(CommandArguments.CERT_ENTRY_ID, args.get(CommandArguments.CERT_ENTRY_ID)))
+    cert = load_content_from_file(args.get(CommandArguments.CERT_ENTRY_ID, ''))
     request_data = assign_params(
         cert=cert,
         parent_id=args.get(CommandArguments.PARENT_ID),
     )
     raw_response = client.install_local_ca(
-        local_ca_id=verify_required_arg(CommandArguments.LOCAL_CA_ID, args.get(CommandArguments.LOCAL_CA_ID)),
+        local_ca_id=args.get(CommandArguments.LOCAL_CA_ID, ''),
         request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('csr', 'CSR.pem'), ('cert', 'Certificate.pem')])
+
     return CommandResults(
         outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
@@ -702,7 +713,7 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
 def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if args.get(CommandArguments.NOT_AFTER) is None and args.get(CommandArguments.DURATION) is None:
         raise ValueError('Either the "not_after" or "duration" argument must be provided.')
-    csr = load_content_from_file(verify_required_arg(CommandArguments.CSR_ENTRY_ID, args.get(CommandArguments.CSR_ENTRY_ID)))
+    csr = load_content_from_file(args.get(CommandArguments.CSR_ENTRY_ID, ''))
     request_data = assign_params(
         csr=csr,
         purpose=args.get(CommandArguments.PURPOSE),
@@ -711,11 +722,12 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
         notAfter=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_AFTER)),
         notBefore=optional_arg_to_datetime_string(args.get(CommandArguments.NOT_BEFORE)),
     )
-    raw_response = client.issue_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
+    raw_response = client.issue_certificate(ca_id=args.get(CommandArguments.CA_ID, ''),
                                             request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('cert', 'Certificate.pem')])
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
@@ -732,8 +744,7 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         cert=args.get(CommandArguments.CERT),
         id=args.get(CommandArguments.ID),
     )
-    raw_response = client.get_certificates_list(ca_id=verify_required_arg(CommandArguments.CA_ID,
-                                                                          args.get(CommandArguments.CA_ID)),
+    raw_response = client.get_certificates_list(ca_id=args.get(CommandArguments.CA_ID, ''),
                                                 params=params)
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
@@ -745,9 +756,8 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
 
 
 def local_certificate_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.delete_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
-                              local_ca_id=verify_required_arg(CommandArguments.LOCAL_CA_ID,
-                                                              args.get(CommandArguments.LOCAL_CA_ID)))
+    client.delete_certificate(ca_id=args.get(CommandArguments.CA_ID, ''),
+                              local_ca_id=args.get(CommandArguments.LOCAL_CA_ID, ''))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.LOCAL_CA_ID)} has been deleted successfully!'
     )
@@ -757,48 +767,49 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
     request_data = assign_params(
         reason=args.get(CommandArguments.REASON),
     )
-    raw_response = client.revoke_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
-                                             cert_id=verify_required_arg(CommandArguments.CERT_ID,
-                                                                         args.get(CommandArguments.CERT_ID)),
+    raw_response = client.revoke_certificate(ca_id=args.get(CommandArguments.CA_ID, ''),
+                                             cert_id=args.get(CommandArguments.CERT_ID, ''),
                                              request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('cert', 'Certificate.pem')])
+
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response,
         readable_output=f'{args.get(CommandArguments.CERT_ID)} has been revoked'
     )
 
 
 def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    raw_response = client.resume_certificate(ca_id=verify_required_arg(CommandArguments.CA_ID, args.get(CommandArguments.CA_ID)),
-                                             cert_id=verify_required_arg(CommandArguments.CERT_ID,
-                                                                         args.get(CommandArguments.CERT_ID)))
+    raw_response = client.resume_certificate(ca_id=args.get(CommandArguments.CA_ID, ''),
+                                             cert_id=args.get(CommandArguments.CERT_ID, ''))
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('cert', 'Certificate.pem')])
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response,
         readable_output=f'{args.get(CommandArguments.CERT_ID)} has been resumed'
     )
 
 
 def external_certificate_upload_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    cert = load_content_from_file(verify_required_arg(CommandArguments.CERT_ENTRY_ID, args.get(CommandArguments.CERT_ENTRY_ID)))
+    cert = load_content_from_file(args.get(CommandArguments.CERT_ENTRY_ID, ''))
     request_data = assign_params(
         cert=cert,
         name=args.get(CommandArguments.NAME),
         parent=args.get(CommandArguments.PARENT),
     )
     raw_response = client.upload_external_certificate(request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('cert', 'Certificate.pem')])
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
 
 def external_certificate_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.delete_external_certificate(external_cert_id=verify_required_arg(CommandArguments.EXTERNAL_CERT_ID,
-                                                                            args.get(CommandArguments.EXTERNAL_CERT_ID)))
+    client.delete_external_certificate(external_cert_id=args.get(CommandArguments.EXTERNAL_CERT_ID, ''))
     return CommandResults(
         readable_output=f'{args.get(CommandArguments.EXTERNAL_CERT_ID)} has been deleted successfully!'
     )
@@ -809,13 +820,12 @@ def external_certificate_update_command(client: CipherTrustClient, args: dict[st
         allow_client_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_CLIENT_AUTHENTICATION)),
         allow_user_authentication=optional_arg_to_bool(args.get(CommandArguments.ALLOW_USER_AUTHENTICATION))
     )
-    raw_response = client.update_external_certificate(external_ca_id=verify_required_arg(CommandArguments.EXTERNAL_CA_ID,
-                                                                                         args.get(
-                                                                                             CommandArguments.EXTERNAL_CA_ID)),
+    raw_response = client.update_external_certificate(external_ca_id=args.get(CommandArguments.EXTERNAL_CA_ID, ''),
                                                       request_data=request_data)
+    outputs = remove_key_from_outputs_and_return_as_file_result(raw_response, [('cert', 'Certificate.pem')])
     return CommandResults(
         outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
 
