@@ -30,12 +30,75 @@ class Client(BaseClient):
         headers = {'Authorization': f'Bearer {api_key}', 'Accept': 'application/json'}
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def http_get(self, url_suffix, params=None):
+    def get_schema_list(self):
         return self._http_request(
             method='GET',
-            url_suffix=url_suffix,
+            url_suffix='/objectschema/list'
+        )
+
+    def get_object_type_list(self, schema_id: str, query, exclude):
+        url_suffix = f'objectschema/{schema_id}/objecttypes/flat'
+
+        # build request params
+        params = {}
+        if query:
+            params['query'] = query
+        if exclude:
+            params['exclude'] = exclude
+
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def get_object_type_attributes(
+        self,
+        object_type_id: str,
+        is_editable: bool = False,
+        order_by_name: bool = False,
+        query: str = None,
+        include_value_exist: bool = False,
+        exclude_parent_attributes: bool = False,
+        include_children: bool = False,
+        order_by_required: bool = False
+    ):
+        url_suffix = f'objecttype/{object_type_id}/attributes'
+
+        # build request params
+        params = {
+            'onlyValueEditable': is_editable,
+            'orderByName': order_by_name,
+            'query': query,
+            'includeValueExist': include_value_exist,
+            'excludeParentAttributes': exclude_parent_attributes,
+            'includeChildren': include_children,
+            'orderByRequired': order_by_required
+        }
+
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def get_object(self, object_id):
+        return self._http_request(method='GET', url_suffix=f'/object/{object_id}')
+
+    def search_objects(self, ql_query: str, include_attributes: bool, page: int, page_size: int, limit: int = None):
+        params = {
+            'qlQuery': ql_query,
+            'includeAttributes': include_attributes,
+            'page': page,
+            'resultsPerPage': limit if limit else page_size
+        }
+
+        return self._http_request(
+            method='GET',
+            url_suffix='/aql/objects',
             params=params
         )
+
+    def get_comment_list(self, object_id: str):
+        return self._http_request(method='GET', url_suffix=f'/comment/object/{object_id}')
+
+    def get_object_connected_tickets(self, object_id: str):
+        return self._http_request(method='GET', url_suffix=f'/objectconnectedtickets/{object_id}/tickets')
+
+    def get_object_attachment_list(self, object_id):
+        return self._http_request(method='GET', url_suffix=f'/attachments/object/{object_id}')
 
     def get_file(self, file_url):
         return self._http_request(
@@ -224,7 +287,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
     try:
-        client.http_get('objectschema/list')
+        client.get_schema_list()
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -252,7 +315,7 @@ def jira_asset_get_workspace_command(args: dict[str, Any], params: dict[str, Any
 def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
-    res = client.http_get('objectschema/list')
+    res = client.get_schema_list()
     object_schemas = res.get('objectschemas', [])
     key_mapping = {'id': 'ID', 'objectSchemaKey': 'Key'}
 
@@ -276,17 +339,9 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
     exclude = args.get('exclude')
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
-    url_suffix = f'objectschema/{schema_id}/objecttypes/flat'
-
-    # build request params
-    params = {}
-    if query:
-        params['query'] = query
-    if exclude:
-        params['exclude'] = exclude
 
     # build outputs
-    res = client.http_get(url_suffix, params)
+    res = client.get_object_type_list(schema_id, query, exclude)
     object_types = convert_keys_to_pascal(list(res), {'id': 'ID', 'parentObjectTypeId': 'ParentTypeID'})
     if not all_results:
         limit = int(limit)
@@ -308,7 +363,6 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
     object_type_id = args.get('object_type_id')
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
-    url_suffix = f'objecttype/{object_type_id}/attributes'
 
     # build request params
     params = {
@@ -322,7 +376,16 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
     }
 
     # build outputs
-    res = client.http_get(url_suffix, params)
+    res = client.get_object_type_attributes(
+        object_type_id=object_type_id,
+        order_by_name=bool(args.get('order_by_name', False)),
+        query=args.get('query'),
+        include_value_exist=bool(('include_value_exist', False)),
+        exclude_parent_attributes=bool(args.get('exclude_parent_attributes', False)),
+        include_children=bool(args.get('include_children', False)),
+        order_by_required=bool(args.get('order_by_required', False))
+    )
+
     outputs = clean_object_attributes(list(res))
 
     if not all_results:
@@ -359,7 +422,7 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
     attributes_json = args.get('attributes_json')
     object_id = args.get('object_id')
 
-    jira_object = client.http_get(f'/object/{object_id}')
+    jira_object = client.get_object(object_id)
     object_type_id = jira_object.get('objectType').get('id')
     json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.update_object(object_id, json_data)
@@ -386,7 +449,7 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
     object_id = args.get('object_id')
 
     try:
-        res = client.http_get(f'/object/{object_id}')
+        res = client.get_object(object_id)
         pascal_res = convert_keys_to_pascal([res], {'id': 'ID'})
         hr_headers = ['ID', 'Label', 'Type', 'Created']
         outputs, readable_output = get_object_outputs(pascal_res)
@@ -405,22 +468,19 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
 
 
 def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    # build request params
     ql_query = args.get('ql_query')
     include_attributes = bool(args.get('include_attributes', False))
     page = int(args.get('page', 1))
     page_size = int(args.get('page_size', 50))
     limit = args.get('limit')
-    params = {
-        'qlQuery': ql_query,
-        'includeAttributes': include_attributes,
-        'page': page,
-        'resultsPerPage': limit if limit else page_size
-    }
 
-    res = client.http_get(url_suffix='/aql/objects', params=params)
+    # build outputs
+    res = client.search_objects(ql_query, include_attributes, page, page_size, limit)
     pascal_res = convert_keys_to_pascal(res['objectEntries'], {'id': 'ID'})
     hr_headers = ['ID', 'Label', 'Type', 'ObjectKey']
     outputs, readable_output = get_object_outputs(pascal_res)
+
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
         outputs_key_field='ID',
@@ -430,11 +490,12 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any]) -> [dict, CommandResults]:
+    # build request params
     object_type_id = args.get('object_type_id')
-    url_suffix = f'objecttype/{object_type_id}/attributes'
-    params = {'onlyValueEditable': args.get('is_editable', False)}
-    res = client.http_get(url_suffix, params)
+    is_editable = args.get('is_editable', False)
 
+    # build outputs
+    res = client.get_object_type_attributes(object_type_id=object_type_id, is_editable=is_editable)
     if args.get('is_required'):
         res = [attribute for attribute in res if attribute.get('minimumCardinality') > 0]
 
@@ -464,7 +525,7 @@ def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> C
 
 def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
-    res = client.http_get(f'/comment/object/{object_id}')
+    res = client.get_comment_list(object_id)
     outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     outputs = [{k: v for k, v in output.items() if k != 'Actor'} for output in outputs]
     hr_headers = ['ID', 'Comment']
@@ -479,7 +540,7 @@ def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> Com
 
 def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
-    res = client.http_get(f'/objectconnectedtickets/{object_id}/tickets')
+    res = client.get_object_connected_tickets(object_id)
     outputs = convert_keys_to_pascal(list(res.get('tickets')), {'id': 'ID'})
     hr_headers = ['ID', 'Title', 'Status', 'Type']
     readable_output = [{'Status': output.get('Status').get('name'), 'Type': output.get('Type').get('name'),
@@ -511,7 +572,7 @@ def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> C
 def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> List[CommandResults | dict] | CommandResults:
     object_id = args.get('object_id')
     download_file = args.get('download_file', False)
-    res = list(client.http_get(f'/attachments/object/{object_id}'))
+    res = list(client.get_object_attachment_list(f'/attachments/object/{object_id}'))
     outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     hr_header = ['ID', 'Filename', 'Filesize', 'Comment']
 
