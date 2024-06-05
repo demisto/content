@@ -311,6 +311,12 @@ set_xsoar_incident_entries_args = [incident_closes,
                                    incident_no_status,
                                    ]
 
+# updated_object
+incident_new_status = ({'status': 'New'})
+incident_in_progress_status = ({'status': 'In Progress'})
+incident_reopened_status = ({'status': 'Reopened'})
+check_reopen_set_xsoar_incident_entries_args = [incident_new_status, incident_in_progress_status, incident_reopened_status]
+
 # updated_object, entry_content, close_incident
 detection_closes = ({'status': 'closed'},
                     'dbotIncidentClose',
