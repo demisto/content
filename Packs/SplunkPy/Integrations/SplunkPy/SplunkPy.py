@@ -723,7 +723,6 @@ class Notable:
         # any interruption we will have at least one enrichment object for each enrichment type (for drilldown enrichment we could
         # have more than one enrichment object - in a case of multiple drilldown searches enrichment).
 
-        # TODO: consult with Yuval regarding the delicate change in the condition here.
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
