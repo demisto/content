@@ -55,6 +55,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Active Directory
   - AWS IAM
   - Azure IAM
+  - Venafi
   - Cortex Endpoint (XSIAM/XDR)
   - Email addresses found in tags
   - GCP IAM
@@ -81,6 +82,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
   - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
   - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
+  - [Cortex ASM - Certificate Enrichment](#cortex-asm---certificate-enrichment)
   - [Cortex ASM - Cortex Endpoint Enrichment](#cortex-asm---cortex-endpoint-enrichment)
   - [Cortex ASM - Cortex Endpoint Remediation](#cortex-asm---cortex-endpoint-remediation)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
@@ -137,6 +139,12 @@ A playbook that given the IP address enriches AWS information relevant to ASM al
 A playbook that given the IP address enriches Azure information relevant to ASM alerts.
 
 ![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
+
+#### Cortex ASM - Certificate Enrichment
+
+A playbook to enrich certificate information.
+
+![Cortex ASM - Certificate Enrichment](https://raw.githubusercontent.com/demisto/content/40617981cad1fbf6ee241a890a14807568840aa6/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Certificate_Enrichment.png)
 
 #### Cortex ASM - Cortex Endpoint Enrichment
 
