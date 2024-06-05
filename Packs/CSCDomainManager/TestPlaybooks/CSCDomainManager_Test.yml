@@ -1,6 +1,5 @@
-id: a9aa3de6-5877-483a-8fda-7985d6422555
-version: 16
-vcShouldKeepItemLegacyProdMachine: false
+id: CSCDomainManager_Test
+version: -1
 name: CSCDomainManager_Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -589,8 +589,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: ${CSCDomainManager.Domain.DBotScore(val.Indicator && val.Indicator
-          == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type).Indicator}
+        simple: ${CSCDomainManager.Domain.DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type).Indicator}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -621,5 +620,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.10.0
 
+description: ''
