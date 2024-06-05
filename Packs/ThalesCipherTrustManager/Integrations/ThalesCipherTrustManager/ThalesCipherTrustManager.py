@@ -392,15 +392,17 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
         for idx, key in enumerate(keys):
             value = new_outputs.pop(key, '')
             if file_names:
-                files_results.append(fileResult(file_names[idx], value, EntryType.ENTRY_INFO_FILE))
+                if value is not None:
+                    files_results.append(fileResult(file_names[idx], value, EntryType.ENTRY_INFO_FILE))
         if file_names:
             return_results(files_results)
     else:
-        value = new_outputs.pop(keys, '')
+        value = new_outputs.pop(keys, None)
         if file_names:
             if not isinstance(file_names, str):
                 raise ValueError('file_names argument must be a string if keys argument is a string')
-            return_results(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
+            if value is not None:
+                return_results(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
     return new_outputs
 
 
@@ -633,7 +635,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-        outputs: object = remove_key_from_outputs(raw_response, ['csr', 'cert'] , ['CSR.pem', 'Certificate.pem'])
+        outputs: object = remove_key_from_outputs(raw_response, ['csr', 'cert'], ['CSR.pem', 'Certificate.pem'])
 
     else:  # get a list of local CAs with optional filtering
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
