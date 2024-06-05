@@ -256,8 +256,6 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def check_if_pack_or_integration_is_feed(content_object) -> bool:
-    if not isinstance(content_object, Integration):
-        return False
     if content_object.is_feed:
         return True
     pack = content_object.in_pack
@@ -346,7 +344,7 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
     integrations_checked = []
     for file in pr_files:
         print(f'is_tim_content - file name: {file}')
-        if 'CONTRIBUTORS.json' in file:
+        if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
             continue
         content_object = BaseContent.from_path(CONTENT_PATH / file)
         print(f' is_tim_content - content object {content_object}')
