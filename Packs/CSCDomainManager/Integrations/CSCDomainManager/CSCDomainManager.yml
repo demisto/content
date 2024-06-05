@@ -64,7 +64,7 @@ script:
     - description: registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024
       name: registry_expiry_date
       required: false
-    - description: can write your own filter according to selectors such as 
+    - description: can write your own filter by using selectors such as 
        accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
        criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
        lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
@@ -260,7 +260,7 @@ script:
     - description: email to filter by, can start with like=, in=
       name: domain_email
       required: false
-    - description: can write your own filter according to selectors such as 
+    - description: can write your own filter by using selectors such as 
        accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
        criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
        lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
