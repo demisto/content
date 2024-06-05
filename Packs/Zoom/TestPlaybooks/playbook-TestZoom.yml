@@ -800,5 +800,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-toversion: 6.8.0
-marketplaces: ["xsoar_on_prem"]
