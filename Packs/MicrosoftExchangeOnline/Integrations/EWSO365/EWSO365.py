@@ -2128,7 +2128,7 @@ def items(message):
     headers_list = []
     try:
         headers_list = message.items()
-    except ValueError as ex:
+    except ValueError as exception:
         demisto.debug(
             f"{APP_NAME}: We got an exception items method, The exception is {ex=}"
         )
@@ -2163,7 +2163,7 @@ def items(message):
                                 )
                             )
         else:  # We are not familiar with this error.
-            raise ex
+            raise exception
     return headers_list
 
 
