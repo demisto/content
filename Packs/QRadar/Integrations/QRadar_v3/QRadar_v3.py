@@ -4243,11 +4243,9 @@ def qradar_search_retrieve_events_command(
     if not end_date or end_date.year == 1:
         end_date = None
     # determine if this is the last run of the polling command
-    is_last_run = (datetime.now() + timedelta(seconds=120)).timestamp() >= end_date.timestamp() \
+    is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
     try:
-        print_debug_msg(f'{is_last_run=}')
-        print_debug_msg(f'{end_date=}')
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id'))
     except (DemistoException, requests.Timeout) as e:
         if is_last_run:
