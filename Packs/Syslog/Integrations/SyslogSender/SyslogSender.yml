@@ -86,6 +86,8 @@ configuration:
 - defaultvalue: Low
   display: Minimum severity of incidents to send messages on
   name: severity
+  hidden:
+    - marketplacev2
   options:
   - Unknown
   - Low

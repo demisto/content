@@ -83,6 +83,8 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: 'Low'
+  hidden:
+    - marketplacev2
   options:
   - Unknown
   - Informational

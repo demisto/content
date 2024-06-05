@@ -48,6 +48,8 @@ configuration:
   defaultvalue: Low
 - display: Types of Notifications to Send.
   name: permitted_notifications
+  hidden:
+    - marketplacev2
   type: 16
   section: Collect
   required: false
@@ -62,6 +64,23 @@ configuration:
   - taskCompleted
   - incidentStatusChanged
   - failedFetchIncidents
+  - mentionNew
+  - mentionOld
+  advanced: true
+  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+- display: Types of Notifications to Send.
+  name: permitted_notifications
+  hidden:
+    - marketplace
+  type: 16
+  section: Collect
+  required: false
+  options:
+  - investigationClosed
+  - investigationDeleted
+  - alertReminderSLA
+  - taskCompleted
+  - failedFetchAlerts
   - mentionNew
   - mentionOld
   advanced: true
