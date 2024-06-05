@@ -9,6 +9,17 @@ def read_qr_code(filename: str) -> list:
     demisto.debug('read_qr_code: enter')
     # debug_message = 'successfully decoded with pyzbar'
     # with pipes() as (out, err):  # don't use demisto.debug under the context manager.
+
+    #  for debug purposes:
+    import os
+    demisto.debug('\n'.join((
+        '\nFile info:'
+        f'name: {filename}',
+        f'size: {os.path.getsize(filename)}',
+        f'created: {os.path.getctime(filename)}',
+        f'last modified: {os.path.getmtime(filename)}',
+    )))
+
     img = cv2.imread(filename)
     demisto.debug('decoded image')
     text = [d.data.decode() for d in pyzbar.decode(img)]
