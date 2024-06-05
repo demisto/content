@@ -544,4 +544,4 @@ test\ttesttest-test-test-test-testtesttest\tchrome_options0
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
 
     delete_row_with_old_chrome_configurations_from_info_file(
-        mock_file_content_edited, chrome_port_to_delete, instance_id_to_delete)
+        mock_file_content_edited, instance_id_to_delete, chrome_port_to_delete)

@@ -1,3 +1,4 @@
+import signal
 from collections import defaultdict
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -51,8 +52,6 @@ CHROME_OPTIONS = ["--headless",
                   "--disable-dev-shm-usage",
                   f'--user-agent="{USER_AGENT}"',
                   ]
-
-# browser_to_chrome_process = {}
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -355,7 +354,6 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             browser = is_chrome_running_locally(chrome_port)
             if browser:
                 demisto.log(f"Created new browser at port {chrome_port}")  # TODO: Remove log
-                # browser_to_chrome_process[browser] = process
                 new_row = f"{chrome_port}\t{instance_id}\t{chrome_options}"
                 demisto.log(f"write_info_file {new_row}")  # TODO: Remove log
                 write_info_file(CHROME_INSTANCES_FILE_PATH, new_row)
@@ -371,6 +369,23 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     demisto.info('Could not connect to Chrome.')
 
     return None, None
+
+
+def terminate_all_chromes():
+    demisto.log("in terminate_all_chromes")
+    processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
+    chrome_identifiers = ["chrom", "headless"]
+    chrome_renderer_identifiers = ["--type=renderer"]
+    process_in_list = [process for process in processes
+                       if all(identifier in process for identifier in chrome_identifiers)
+                       and not any(identifier in process for identifier in chrome_renderer_identifiers)]
+
+    demisto.log(f"{process_in_list}")
+    demisto.log(f"len: {len(process_in_list)}")
+
+    pids = [int(process.split()[1]) for process in process_in_list]
+    os.setpgid(pids[0], 0)
+    os.killpg(pids[0], signal.SIGTERM)
 
 
 def terminate_chrome(chrome_port):
@@ -398,7 +413,9 @@ def chrome_manager():
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
     demisto.log(f"in chrome_manager {chrome_options=}, {instance_id=}")  # TODO: Remove log
     demisto.log(f"{instance_id=}")  # TODO: Remove log
-
+    terminate_all_chromes()
+    # TODO: Remove all instances from chrome_instances.tsv
+    exit()
     if not instance_id:
         instance_id = 'NO-INSTANCE-ID'
     if not chrome_options:
@@ -460,7 +477,7 @@ def chrome_manager():
 
         chrome_port = instance_id_to_port.get(instance_id)
         terminate_chrome(chrome_port)
-        delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_id)
+        delete_row_with_old_chrome_configurations_from_info_file(info, instance_id, chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options in instance_id_to_chromes_options[instance_id] and instance_id in instances_id:
@@ -529,7 +546,7 @@ def get_chrome_port():
             return chrome_port
 
 
-def delete_row_with_old_chrome_configurations_from_info_file(info, chrome_port, instance_id):
+def delete_row_with_old_chrome_configurations_from_info_file(info, instance_id, chrome_port):
     index_to_delete = -1
 
     info_without_new_lines = info.strip()
