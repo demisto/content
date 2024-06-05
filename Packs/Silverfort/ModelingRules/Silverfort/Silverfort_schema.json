@@ -4,7 +4,7 @@
             "type": "string",
             "is_array": false
         },
-        "cefDeviceEventClassId": {
+        "cefdeviceeventclassid": {
             "type": "string",
             "is_array": false
         },
@@ -72,7 +72,7 @@
             "type": "string",
             "is_array": false
         },
-        "destinationServiceName": {
+        "destinationservicename": {
             "type": "string",
             "is_array": false
         },
