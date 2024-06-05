@@ -391,9 +391,8 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
         files_results = []
         for idx, key in enumerate(keys):
             value = new_outputs.pop(key, '')
-            if file_names:
-                if value is not None:
-                    files_results.append(fileResult(file_names[idx], value, EntryType.ENTRY_INFO_FILE))
+            if file_names and value:
+                files_results.append(fileResult(file_names[idx], value, EntryType.ENTRY_INFO_FILE))
         if file_names:
             return_results(files_results)
     else:
@@ -401,7 +400,7 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
         if file_names:
             if not isinstance(file_names, str):
                 raise ValueError('file_names argument must be a string if keys argument is a string')
-            if value is not None:
+            if value:
                 return_results(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
     return new_outputs
 
