@@ -1,6 +1,14 @@
 {
     "silverfort_admin_console_raw": {
+        "rt": {
+            "type": "string",
+            "is_array": false
+        },
         "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefseverity": {
             "type": "string",
             "is_array": false
         },
@@ -41,6 +49,10 @@
             "is_array": false
         },
         "cs5": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs7": {
             "type": "string",
             "is_array": false
         },
