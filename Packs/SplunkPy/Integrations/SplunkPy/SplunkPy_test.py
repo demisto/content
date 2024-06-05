@@ -2205,7 +2205,7 @@ def test_get_splunk_notable_by_id(mocker, event_id: str, expected_notable: splun
     mock_service.jobs.oneshot.return_value = 'DUMMY_RESULT_STREAM'
 
     # Mocking the JSONResultsReader to return the expected results
-    if event_id is not 'INVALID_ID':
+    if event_id != 'INVALID_ID':
         mocker.patch('splunklib.results.JSONResultsReader', return_value=[load_test_data('test_data/test_notable_event.json')])
     else:
         mocker.patch('splunklib.results.JSONResultsReader', return_value=[])
