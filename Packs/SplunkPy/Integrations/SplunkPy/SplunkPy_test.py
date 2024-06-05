@@ -10,6 +10,7 @@ from splunklib.binding import AuthenticationError
 from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
+from SplunkPy import Notable
 from pytest_mock import MockerFixture
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
