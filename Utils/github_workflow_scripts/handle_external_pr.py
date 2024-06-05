@@ -306,8 +306,8 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
 
     Arguments:
     - pr_files: List[str] The list of files changed in the Pull Request.
-    - 'external_pr_branch': str : name of branch to checkout
-    - 'repo_name': str : name of repository
+    - 'external_pr_branch' (str) : name of the external branch to checkout
+    - 'repo_name' (str) : name of the external repository
 
     Returns: returns True or False if tim reviewer needed
     """
@@ -342,8 +342,8 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_
     Arguments:
     - pr_files: tThe list of files changed in the Pull Request
     - support_label: the support label of the PR - the highest one.
-    - 'external_pr_branch': str : name of branch to checkout
-    - 'repo_name': str : name of repository
+    - 'external_pr_branch' (str) : name of the external branch to checkout
+    - 'repo_name' (str) : name of the external repository
 
     Returns: True or false if tim reviewer needed
     """
