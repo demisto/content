@@ -2129,23 +2129,40 @@ def items(message):
     try:
         headers_list = message.items()
     except ValueError as ex:
-        demisto.debug(f"{APP_NAME}: We got an exception items method, The exception is {ex=}")
+        demisto.debug(
+            f"{APP_NAME}: We got an exception items method, The exception is {ex=}"
+        )
         if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
-            
+
             for k, v in message._headers:
                 try:
                     headers_list.append((k, message.policy.header_fetch_parse(k, v)))
                 except ValueError as ex:
-                    demisto.debug(f"{APP_NAME}: We got an exception regrading to the {k=},{v=} header, The exception is {ex=}")
-                    if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
+                    demisto.debug(
+                        f"{APP_NAME}: We got an exception regrading to the {k=},{v=} header, The exception is {ex=}"
+                    )
+                    if (
+                        "invalid arguments; address parts cannot contain CR or LF"
+                        in str(ex)
+                    ):
                         address_list, value = parser.get_address_list(v)
                         address = address_list.value
-                        demisto.debug(f"{APP_NAME}: The header after parsing is {address=}")
-                        if '\r' in address or '\n' in address:
-                            demisto.debug(f"{APP_NAME}: The header contains \r or \n {address=}")
-                            headers_list.append((k, message.policy.header_fetch_parse(k,
-                                                                              address.replace('\r', '').replace('\n', ''))))
-        else: # We are not familiar with this error.
+                        demisto.debug(
+                            f"{APP_NAME}: The header after parsing is {address=}"
+                        )
+                        if "\r" in address or "\n" in address:
+                            demisto.debug(
+                                f"{APP_NAME}: The header contains \r or \n {address=}"
+                            )
+                            headers_list.append(
+                                (
+                                    k,
+                                    message.policy.header_fetch_parse(
+                                        k, address.replace("\r", "").replace("\n", "")
+                                    ),
+                                )
+                            )
+        else:  # We are not familiar with this error.
             raise ex
     return headers_list
 
