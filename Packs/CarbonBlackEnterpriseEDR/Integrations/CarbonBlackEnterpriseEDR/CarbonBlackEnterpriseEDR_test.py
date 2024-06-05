@@ -9,6 +9,13 @@ from CarbonBlackEnterpriseEDR import (
 import demistomock as demisto
 from freezegun import freeze_time
 
+client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
 PROCESS_CASES = [
     (
         {'process_hash': '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6',
@@ -44,12 +51,6 @@ def test_create_process_search_body(mocker, demisto_args, expected_results):
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
     m = mocker.patch.object(client, '_http_request', return_value={})
 
     client.create_search_process_request(**demisto_args)
@@ -81,12 +82,6 @@ def test_create_process_search_failing(mocker, requests_mock, demisto_args, expe
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
     mocker.patch.object(client, '_http_request', return_value={})
 
     with pytest.raises(Exception) as e:
@@ -125,12 +120,6 @@ def test_create_event_by_process_search_body(mocker, demisto_args, expected_resu
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
     m = mocker.patch.object(client, '_http_request', return_value={})
 
     client.create_search_event_by_process_request(**demisto_args)
@@ -166,12 +155,6 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
     mocker.patch.object(client, '_http_request', return_value={})
 
     with pytest.raises(Exception) as e:
@@ -196,13 +179,6 @@ def test_add_threat_tags_command(mocker):
         - validate that the returned results were parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
     mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_THREAT_TAGS_RESPONSE)
 
     args = {'threat_id': '123456', 'tags': ['tag1', 'tag2']}
@@ -233,13 +209,6 @@ def test_add_threat_notes_command(mocker):
         - validate that the returned results were parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
     mocker.patch.object(client, '_http_request', return_value=MOCK_CREATE_THREAT_NOTES_RESPONSE)
 
     args = {'threat_id': '123456', 'notes': 'These are threat notes'}
@@ -273,13 +242,6 @@ def test_get_threat_tags_command(mocker):
         - validate that the returned results was parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
     mocker.patch.object(client, '_http_request', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
 
     args = {'threat_id': '123456'}
@@ -310,13 +272,6 @@ def test_add_alert_notes_command(mocker):
         - validate that the returned results were parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
     mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_ALERT_NOTES_RESPONSE)
 
     args = {'alert_id': '789012', 'notes': 'These are alert notes'}
@@ -340,12 +295,6 @@ def test_test_module(mocker):
     Then:
         - The http request is called with the right API version.
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
     from CarbonBlackEnterpriseEDR import test_module
     http_request = mocker.patch.object(client, '_http_request', return_value=[])
     test_module(client=client)
