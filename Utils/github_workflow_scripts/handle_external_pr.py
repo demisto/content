@@ -301,6 +301,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 #     print(f'Is it a feed: {is_feed}')
                 #     if is_feed:
                 #         return True
+                print(f'check_new_pack_metadata - file name: {file}')
                 if 'CONTRIBUTORS.json' in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
@@ -344,6 +345,7 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
     """
     integrations_checked = []
     for file in pr_files:
+        print(f'is_tim_content - file name: {file}')
         if 'CONTRIBUTORS.json' in file:
             continue
         content_object = BaseContent.from_path(CONTENT_PATH / file)
