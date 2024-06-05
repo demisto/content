@@ -463,8 +463,8 @@ def get_affected_content_items(
         all_docker_images=list(content_items_by_docker_image.keys()),
     )
 
-    if benchmark_docker_tags and set(benchmark_docker_tags.keys()) != set(affected_docker_images):
-        raise Exception("Dockers configured in benchmark_docker_tags should match the dockers of the docker_images_arg argument")
+    # if benchmark_docker_tags and set(benchmark_docker_tags.keys()) != set(affected_docker_images):
+    #     raise Exception("Dockers configured in benchmark_docker_tags should match the dockers of the docker_images_arg argument")
 
     default_batches: list[dict[str, Any]] = image_configs["default"]["batches"]
     affected_content_items_by_docker_image = get_affected_content_items_by_docker_image(
