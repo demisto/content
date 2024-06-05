@@ -41,7 +41,7 @@ class Client(BaseClient):
             url_suffix=f"/api/v1/jobs/{job_id}/train?username={username}",
             ok_codes=(200,201,422)
         )
-    
+
     def get_decision_set(self, job_id: int) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
