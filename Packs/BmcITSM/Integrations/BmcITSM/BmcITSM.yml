@@ -771,7 +771,7 @@ script:
   - name: bmc-itsm-ticket-create-relationship
     description: Creates a relationship between two tickets.
     arguments:
-    - name: request_type01
+    - name: request_type
       description: Request Type
       required: true
       auto: PREDEFINED
@@ -779,10 +779,10 @@ script:
       - Incident
       - Asset
       - Work order
-    - name: request_description01
+    - name: request_description
       description: Request Description
       required: true
-    - name: association_type01
+    - name: association_type
       description: Association Type
       required: true
       auto: PREDEFINED
@@ -793,8 +793,8 @@ script:
       - Original of
       - Resolved
       - Resolved by
-    - name: form_name01
-      description: Form Name
+    - name: first_form_name
+      description: First Form Name
       required: true
       auto: PREDEFINED
       predefined:
@@ -804,11 +804,11 @@ script:
       - problem investigation
       - known error
       - work order
-    - name: request_id01
-      description: Request ID
+    - name: first_request_id
+      description: First Request ID
       required: true
-    - name: form_name02
-      description: Form Name
+    - name: second_form_name02
+      description: Second Form Name
       required: true
       auto: PREDEFINED
       predefined:
@@ -818,11 +818,11 @@ script:
       - problem investigation
       - known error
       - work order
-    - name: request_id02
-      description: Request ID
+    - name: second_request_id
+      description: Second Request ID
       required: true
     - name: bidirectional
-      description: Request ID
+      description: Bidirectionality
       defaultValue: true
       auto: PREDEFINED
       predefined:
