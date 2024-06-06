@@ -24,7 +24,7 @@ USERNAME = demisto.getParam('credentials')['identifier']
 PASSWORD = demisto.getParam('credentials')['password']
 FETCH_INTERVAL = demisto.getParam('fetch_interval')
 VALIDATE_CERT = not demisto.params().get('insecure', True)
-
+kj = 24
 ''' HELPER FUNCTIONS '''
 
 
