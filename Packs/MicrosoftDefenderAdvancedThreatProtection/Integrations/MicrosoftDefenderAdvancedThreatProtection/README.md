@@ -7204,7 +7204,7 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
 | MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
 | MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP address to access the internet. | 
 | MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
 | MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
 | MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
