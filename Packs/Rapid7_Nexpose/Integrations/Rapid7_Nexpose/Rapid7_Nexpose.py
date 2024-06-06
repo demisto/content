@@ -5963,6 +5963,27 @@ def create_asset_group_command(client: Client, name: str, description: str, type
                                ip_address_is: str | None = None, host_name_is: str | None = None,
                                risk_score_higher_than: str | None = None, vulnerability_title_contains: str | None = None,
                                site_id_in: str | None = None, site_name_in: str | None = None, query: str | None = None, ):
+    """
+    Creates a new asset group in Nexpose.
+
+    Args:
+        client (Client): Client to use for API requests.
+        name (str): The name of the asset group.
+        description (str): The description of the asset group.
+        type (str): The type of the asset group, valid values: "dynamic" or "static".
+        match (str, optional): The match criteria for the asset group.
+        ip_address_is (str, optional): Filter by IP address.
+        host_name_is (str, optional): Filter by host name.
+        risk_score_higher_than (str, optional): Filter by risk score higher than the specified value.
+        vulnerability_title_contains (str, optional): Filter by vulnerability title.
+        site_id_in (str, optional): Filter by site ID.
+        site_name_in (str, optional): Filter by site name.
+        query (str, optional): Additional queries to use as a filter, in the format: {field} {operator} {value}.
+                                Multiple queries can be specified, separated by a ";" separator.
+
+    Returns:
+        CommandResults: The results of the command execution.
+    """
     filters_data = parse_asset_filters(
         client=client,
         ip_address_is=ip_address_is,
@@ -5974,7 +5995,7 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         query=query)
 
     if type == "dynamic" and not filters_data:
-        raise DemistoException("you must use filters to create a dynamic asset group")
+        raise DemistoException("You must add filters to create a dynamic asset group")
 
     filters = convert_asset_search_filters(filters_data)
 
@@ -5992,6 +6013,22 @@ def create_asset_group_command(client: Client, name: str, description: str, type
 def get_list_asset_group_command(client: Client, group_id: str | None = None, group_name: str | None = None,
                                  type: str | None = None, page_size: str | None = None, page: str | None = None,
                                  limit: str | None = None, sort: str | None = None):
+    """
+    Get a list of asset groups or a asset group by ID.
+
+    Args:
+        client (Client): Client to use for API requests.
+        id (str, optional): Get asset group by ID.
+        name (str, optional): Filters the returned asset groups to only those containing the value within their name.
+        type (str, optional): Filters the returned asset groups to only those of this type.
+        page_size (str, optional): Number of records to retrieve in each API call when pagination is used.
+        page (str, optional): A specific page to retrieve when pagination is used. Page indexing starts at 0.
+        limit (str, optional): A number of records to limit the response to.
+        sort (str, optional): The sorting criteria for the results.
+
+    Returns:
+        CommandResults: Results of the asset groups retrieval.
+    """
     if id_int := arg_to_number(group_id, required=False):
         asset_groups = client.get_asset_group_by_id(id=id_int)
     else:

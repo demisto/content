@@ -2484,7 +2484,7 @@ script:
       description: Additional queries to use as a filter, following the Search Criteria API standard.
         The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
         For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
-    description: Create an asset group.
+    description: 'Create an asset group. Note: All filters are relevant only for dynamic asset groups.'
     outputs:
     - contextPath: Nexpose.AssetGroup.id
       description: The asset group ID.
