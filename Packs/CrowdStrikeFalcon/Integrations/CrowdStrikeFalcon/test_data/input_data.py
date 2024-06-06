@@ -317,6 +317,25 @@ incident_in_progress_status = ({'status': 'In Progress'})
 incident_reopened_status = ({'status': 'Reopened'})
 check_reopen_set_xsoar_incident_entries_args = [incident_new_status, incident_in_progress_status, incident_reopened_status]
 
+# updated_object
+detection_new_status = ({'status': 'new'})
+detection_in_progress_status = ({'status': 'in_progress'})
+detection_reopened_status = ({'status': 'reopened'})
+detection_true_positive_status = ({'status': 'true_positive'})
+detection_false_positive_status = ({'status': 'false_positive'})
+detection_ignored_status = ({'status': 'ignored'})
+check_reopen_set_xsoar_detections_entries_args = [detection_new_status, detection_in_progress_status, detection_reopened_status,
+                                                  detection_true_positive_status, detection_false_positive_status,
+                                                  detection_ignored_status]
+
+# updated_object
+idp_mobile_detection_new_status = ({'status': 'new'})
+idp_mobile_detection_in_progress_status = ({'status': 'in_progress'})
+idp_mobile_detection_reopened_status = ({'status': 'reopened'})
+idp_mobile_detection_closed_status = ({'status': 'closed'})
+set_xsoar_idp_or_mobile_detection_entries = [idp_mobile_detection_new_status, idp_mobile_detection_in_progress_status,
+                                             idp_mobile_detection_reopened_status, idp_mobile_detection_closed_status]
+
 # updated_object, entry_content, close_incident
 detection_closes = ({'status': 'closed'},
                     'dbotIncidentClose',

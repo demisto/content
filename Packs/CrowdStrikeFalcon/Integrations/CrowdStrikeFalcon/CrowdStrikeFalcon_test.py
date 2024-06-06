@@ -4205,7 +4205,7 @@ def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
         - the close_incident parameter that was set when setting the integration
         - the reopen statuses set.
     When
-        - running get_remote_data_command with changes to make on a incident
+        - running get_remote_data_command with changes to make on an incident
     Then
         - add the relevant entries only if the status is Reopened.
     """
@@ -4215,10 +4215,10 @@ def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
     entries = []
     reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
     set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
-    if updated_object.get('status') != 'Reopened':
-        assert entries == []
-    else:
+    if updated_object.get('status') == 'Reopened':
         assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    else:
+        assert entries == []
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
@@ -4239,6 +4239,58 @@ def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, clos
     set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
+def test_set_xsoar_detection_entries_reopen_check(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_detection_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    if updated_object.get('status') == 'reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
+def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_idp_or_mobile_detection_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, input_data.remote_incident_id, 'IDP', reopen_statuses)
+    if updated_object.get('status') == 'reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    elif updated_object.get('status') == 'closed':
+        assert 'dbotIncidentClose' in entries[0].get('Contents')
+        assert 'closeReason' in entries[0].get('Contents')
+        assert entries[0].get('Contents', {}).get('closeReason') == 'IDP was closed on CrowdStrike Falcon'
     else:
         assert entries == []
 
