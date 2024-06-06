@@ -279,7 +279,7 @@ script:
       description: The operating system processor.
       type: String
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: The last IP on the machine.
+      description: The last IP address on the machine.
       type: String
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
       description: The last machine IP to access the internet.
