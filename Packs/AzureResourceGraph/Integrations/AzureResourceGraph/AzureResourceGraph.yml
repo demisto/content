@@ -93,9 +93,12 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
   - name: azure-rg-list-operations
     arguments:
-    - defaultValue: '50'
-      description: The maximum number of operations to return (Default is 50).
+    - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
       name: limit
+    - description: The maximum number of operations to return for page.
+      name: page_size
+    - description: The page number to return.
+      name: page
     outputs:
     - contextPath: AzureResourceGraph.Operations
       description: A list of available Azure Resource Graph operations permissions and descriptions.

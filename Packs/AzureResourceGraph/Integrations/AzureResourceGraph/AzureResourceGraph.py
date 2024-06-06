@@ -5,6 +5,7 @@ from MicrosoftApiModule import *  # noqa: E402
 '''GLOBAL VARS'''
 API_VERSION = '2022-10-01'
 APP_NAME = 'azure-resource-graph'
+MAX_PAGE_SIZE = 50
 
 
 class AzureResourceGraphClient:
@@ -48,8 +49,9 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     response = client.query_resources(query)
 
     query_data = response.get('data')
+    total_records = response.get('totalRecords')
 
-    title = f"Results of query:\n```{query}```"
+    title = f"Results of query:\n```{query}```\n\n Total Records:{total_records}"
     human_readable = tableToMarkdown(title, query_data, removeNull=True)
 
     return CommandResults(
@@ -62,20 +64,36 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
 
 
 def list_operations_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:
-    limit = arg_to_number(args.get('limit')) or 50
+    limit = arg_to_number(args.get('limit'))
+    page_size = arg_to_number(args.get('page_size'))
+    page = arg_to_number(args.get('page'))
 
     response = client.list_operations()
-    value = response.get('value')
+    operations_list = response.get('value')
+    md_output_notes = ""
+    
+    if page and not page_size:
+        raise DemistoException("Please enter a value for \"page_size\" when using \"page\".")
+    if page_size and not page:
+        raise DemistoException("Please enter a value for \"page\" when using \"page_size\".")
+    if page and page_size:
+        if limit:
+            md_output_notes = "\"limit\" was ignored for paging parameters."
+            demisto.debug("\"limit\" was ignored for paging parameters.")
+        operations_list = pagination(operations_list, page_size, page)
+    
+    if page_size:
+        limit = page_size
 
     operations = []
-    for operation in value[:limit]:
+    for operation in operations_list[:limit]:
         operation_context = {
             'Name': operation.get('name'),
             'Display': operation.get('display')
         }
         operations.append(operation_context)
 
-    title = 'List of Azure Resource Graph Operations'
+    title = 'List of Azure Resource Graph Operations\n\n' + md_output_notes
     human_readable = tableToMarkdown(title, operations, removeNull=True)
 
     return CommandResults(
@@ -95,6 +113,25 @@ def test_module(client: AzureResourceGraphClient):
             return 'ok'
     except DemistoException as e:
         return_error(f"Test connection failed with message {e}")
+
+
+## Helper Methods
+
+def pagination(response, page_size, page_number):
+    """Method to generate a page (slice) of data.
+    Args:
+        response: The response from the API.
+        limit: Maximum number of objects to retrieve.
+        page: Page number
+    Returns:
+        Return a list of objects from the response according to the page and limit per page.
+    """
+    if page_size > MAX_PAGE_SIZE:
+        page_size = MAX_PAGE_SIZE
+    
+    starting_index = (page_number - 1) * page_size
+    ending_index = starting_index + page_size
+    return response[starting_index:ending_index]
 
 
 def main():
