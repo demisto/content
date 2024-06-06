@@ -117,7 +117,10 @@ def test_handle_post_with_invalid_json(mocker, client):
      "rawJson": {"key": "value"}},
     {"name": "Test Incident 1", "type": "Test Type 1",
      "occurred": "2024-03-17T12:00:00Z",
-     "key": "value"}
+     "key": "value"},
+    {"name": "Test Incident 1", "type": "Test Type 1",
+     "occurred": "2024-03-17T12:00:00Z",
+     "raw_json": {"key": "value"}}
 ])
 def test_parse_request(body):
     """

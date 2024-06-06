@@ -100,7 +100,10 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE - Retrieve File",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "timeout": 1200,
+            "is_mockable": false
+
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -128,8 +131,12 @@
             "integrations": "Cortex XDR - IR"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
+            "timeout": 1200
         },
         {
             "integrations": "Twitter v2",
@@ -311,6 +318,16 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "AWS - IAM Identity Center",
+            "playbookID": "AWS-IAMIdentityCenter-Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Exabeam Data Lake",
+            "playbookID": "ExabeamDataLake-test",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
             "fromversion": "5.0.0",
@@ -448,7 +465,7 @@
         {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
-            "instance_names": "azure_nsg_prod",
+            "instance_names": ["azure_nsg_client_cred", "azure_nsg_prod"],
             "playbookID": "Azure NSG - Test"
         },
         {
@@ -868,7 +885,8 @@
         {
             "integrations": "AlienVault OTX v2",
             "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130
+            "memory_threshold": 130,
+            "timeout": 500
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -1605,7 +1623,7 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 400,
+            "timeout": 600,
             "memory_threshold": 150
         },
         {
@@ -1993,11 +2011,6 @@
             "timeout": 400
         },
         {
-            "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing",
-            "is_mockable": false
-        },
-        {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
             "timeout": 500,
@@ -2092,7 +2105,8 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_names": "no_sync"
+            "instance_names": "no_sync",
+            "timeout": 600
         },
         {
             "playbookID": "test-domain-indicator",
@@ -3041,6 +3055,11 @@
             "playbookID": "Exabeam - Test"
         },
         {
+            "integrations": "ExabeamSecOpsPlatform",
+            "playbookID": "ExabeamSecurityOperationsPlatform-test",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "Cisco Spark Test New"
         },
@@ -3830,6 +3849,7 @@
         {
             "integrations": "Azure Storage",
             "playbookID": "Azure Storage - Test",
+            "instance_names": ["Azure_Storage", "azure_storage_client_cred"],
             "is_mockable": false
         },
         {
@@ -4221,6 +4241,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Venafi"
+            ]
+        },
+        {
+            "playbookID": "VenafiV2_Test",
+            "fromversion": "6.9.0",
+            "integrations": [
+                "VenafiTLSProtect"
             ]
         },
         {
@@ -5654,6 +5681,11 @@
             "playbookID": "Fortimail"
         },
         {
+            "integrations": "Zoom Mail",
+            "playbookID": "ZoomMailTest",
+            "instance_names": "zoom_mail_test"
+        },
+        {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
@@ -6016,7 +6048,6 @@
         "CortexXDR",
         "PAN-OS",
         "QRadar",
-        "PhishTank",
         "OpenPhish",
         "AbuseDB",
         "CrowdStrikeFalcon",

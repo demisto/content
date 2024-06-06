@@ -65,6 +65,7 @@ SECURITY_CONTENT_ITEMS = [
     "Triggers"
 ]
 PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
+LABELS_TO_SKIP_PR_REVIEW = {'contribution on hold'}
 
 
 def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
@@ -93,6 +94,24 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
     return 0
 
 
+def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bool:
+    """ Checks if the current PR has the label "contribution on hold" or pr is in draft state,
+        if so - the PR won't be counted for the PR count to determine reviewer
+
+        Args:
+            pr (PullRequest): The PR
+            pr_labels (list): The PR labels
+
+        Returns:
+            bool: if PR need to be skipped
+    """
+    pr_labels_set = set(pr_labels)
+    if pr.draft or LABELS_TO_SKIP_PR_REVIEW.issubset(pr_labels_set):
+        print(f'PR number {pr.number} with draft status {pr.draft} and labels {pr_labels_set} will be skipped from count ')
+        return True
+    return False
+
+
 def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have been assigned to a user
     for each potential reviewer and returns the user with the smallest amount.
@@ -111,7 +130,7 @@ def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) 
     for pull in pulls:
         # we only consider 'Contribution' prs when computing who to assign
         pr_labels = [label.name.casefold() for label in pull.labels]
-        if label_to_consider not in pr_labels:
+        if label_to_consider not in pr_labels or skip_pr_from_count_for_reviewer(pull, pr_labels):
             continue
         assignees = {assignee.login for assignee in pull.assignees}
         for reviewer in potential_reviewers:
@@ -313,7 +332,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
-        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
+        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login in ["xsoar-bot", "content-bot"] else pr.user.login
         if existing_pr_author == pr_creator:
             similar_prs.append(pr)
     print(f'PR\'s by the same author: {similar_prs}')
@@ -352,7 +371,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     Returns:
     - Reviewer to assign
     """
-    if pr.user.login == "xsoar-bot":
+    if pr.user.login in ["xsoar-bot", "content-bot"]:
         pr_creator = get_user_from_pr_body(pr)
     else:
         pr_creator = pr.user.login
