@@ -1,0 +1,85 @@
+id: MattermostAskUser_testplaybook
+version: -1
+name: MattermostAskUser_testplaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 004b674b-0db6-442f-8789-916397c9f3b4
+    type: start
+    task:
+      id: 004b674b-0db6-442f-8789-916397c9f3b4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4b08bfc8-201b-4983-84c5-d6fb85c45ac1
+    type: regular
+    task:
+      id: 4b08bfc8-201b-4983-84c5-d6fb85c45ac1
+      version: -1
+      name: MattermostAskUser
+      description: Ask a user a question on Mattermost and expect a response. The response can also close a task (might be conditional) in a playbook.
+      scriptName: MattermostAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: test mattermostAskUser
+      user:
+        simple: demistodev
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 255,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: ''
