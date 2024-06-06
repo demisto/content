@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import urllib
+import uuid
 import warnings
 
 import dateparser
@@ -1265,29 +1266,29 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-# TODO: Enable this unittest once it is fixed in CIAC-10650
-# @mark.parametrize('data,data_expected,filename', [
-#     ("this is a test", b"this is a test", "test.txt"),
-#     ("this is a test", b"this is a test", "../../../test.txt"),
-#     (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
-#     (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
-# ])  # noqa: E124
-# def test_fileResult(mocker, request, data, data_expected, filename):
-#     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
-#     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
-#     file_name = "1_test_file_result"
+@mark.parametrize('data,data_expected,filename', [
+    ("this is a test", b"this is a test", "test.txt"),
+    ("this is a test", b"this is a test", "../../../test.txt"),
+    (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
+    (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
+])  # noqa: E124
+def test_fileResult(mocker, request, data, data_expected, filename):
+    file_id = str(uuid.uuid4())
+    mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+    file_name = "{}_fileresult".format(file_id)
 
-#     def cleanup():
-#         try:
-#             os.remove(file_name)
-#         except OSError:
-#             pass
+    def cleanup():
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
 
-#     request.addfinalizer(cleanup)
-#     res = fileResult(filename, data)
-#     assert res['File'] == "test.txt"
-#     with open(file_name, 'rb') as f:
-#         assert f.read() == data_expected
+    request.addfinalizer(cleanup)
+    res = fileResult(filename, data)
+    assert res['File'] == "test.txt"
+    with open(file_name, 'rb') as f:
+        assert f.read() == data_expected
 
 
 # Error that always returns a unicode string to it's str representation
