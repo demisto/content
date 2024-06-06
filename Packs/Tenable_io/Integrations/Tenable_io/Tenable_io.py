@@ -654,7 +654,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         result = client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
-            demisto.info(f"generating new export uuid to start new fetch due to 404 error.")
+            demisto.info("generating new export uuid to start new fetch due to 404 error.")
 
             export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
@@ -690,7 +690,7 @@ def handle_vulns_chunks(client: Client, assets_last_run):   # pragma: no cover
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
-            demisto.info(f"generating new export uuid to start new fetch due to 404 error.")
+            demisto.info("generating new export uuid to start new fetch due to 404 error.")
 
             export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
                                                       last_found=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
