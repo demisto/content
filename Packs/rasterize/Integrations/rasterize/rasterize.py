@@ -507,9 +507,6 @@ def generate_new_chrome_instance(instance_id, chrome_options):
     chrome_port = get_chrome_port()
     browser, chrome_port = start_chrome_headless(str(chrome_port), instance_id, chrome_options)
     return browser, chrome_port
-    # if browser:
-    #     return browser, chrome_port
-    # return None, None
 
 
 def get_chrome_port():
