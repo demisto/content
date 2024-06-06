@@ -8,4 +8,4 @@ ignore=BA101
 ignore=BA101
 
 [file:1_6_1.md]
-ignore=RN114  # remove this after https://github.com/demisto/demisto-sdk/pull/4327 will be merged.
+ignore=RN113,RN114
