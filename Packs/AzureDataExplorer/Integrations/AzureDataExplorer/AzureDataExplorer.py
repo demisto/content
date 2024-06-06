@@ -15,7 +15,9 @@ DEFAULT_PAGE_NUMBER = '1'
 DEFAULT_LIMIT = '50'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 REQUEST_BASE_TIMEOUT = 20
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
+                       'Client Credentials': CLIENT_CREDENTIALS}
 
 
 class DataExplorerClient:
