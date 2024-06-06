@@ -21,5 +21,6 @@
     ],
     "itemPrefix": [
         "AWS Security Hub"
-    ]
+    ],
+    "defaultDataSource": "AWS Security Hub Event Collector"
 }
