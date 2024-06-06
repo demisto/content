@@ -1,4 +1,7 @@
 category: Cloud Services
+sectionorder:  
+- Connect  
+- Collect  
 commonfields:
   id: Azure Resource Graph
   version: -1
@@ -7,27 +10,32 @@ configuration:
   name: host
   defaultvalue: https://management.azure.com
   type: 0
-  required: true
+  required: true  
+  section: Connect  
 - display: ID (Client ID)
   name: auth_id
   type: 4
-  required: false
+  required: false  
+  section: Connect 
   hidden: true
 - display: Token (Tenant ID)
   name: tenant_id
   type: 4
-  required: false
+  required: false  
+  section: Connect  
   hidden: true
 - display: Key (Client Secret)
   name: enc_key
   type: 4
-  required: false
-  hidden: true
+  required: false  
+  section: Connect 
+  hidden: false
 - display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
   required: false
-  hidden: true
+  section: Connect  
+  hidden: false  
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
 - display: ""
   displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
@@ -93,7 +101,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
   - name: azure-rg-list-operations
     arguments:
-    - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
+    - description: 'The maximum number of operations to return. NOTE: Do not use with "page" and "page_size".'
       name: limit
     - description: The maximum number of operations to return for page.
       name: page_size
@@ -114,7 +122,7 @@ script:
       name: page
     - name: query
       required: true
-      description: The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL).
+      description: 'The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/'
     outputs:
     - contextPath: AzureResourceGraph.Query
       description: Data returned from query.
