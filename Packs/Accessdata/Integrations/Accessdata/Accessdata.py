@@ -17,7 +17,7 @@ disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
+gh = 24
 ACCESS_DATA = 'Accessdata'
 JOBID_KEY = 'Accessdata.Job.ID'
 JOBRESULT_KEY = 'Accessdata.Job.Result'
