@@ -978,7 +978,8 @@ def pdf_report_output(resp, action, sample_hash):
     file_result = None
 
     if action == "CREATE REPORT":
-        markdown = markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n **Download endpoint**: {resp.get("download_endpoint")}"""
+        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n""" +
+                    f"""**Download endpoint**: {resp.get("download_endpoint")}""")
         context = resp
 
     elif action == "CHECK STATUS":
@@ -1020,7 +1021,9 @@ def static_analysis_report_output(resp_json, sample_hash):
     indicators_table = tableToMarkdown("Indicators", resp_json.get("indicators"))
     tags_table = tableToMarkdown("Tags", resp_json.get("tags"))
 
-    markdown = f"""## ReversingLabs A1000 static analysis report for {sample_hash}\n **Classification**: {classification_obj.get("classification")}
+    markdown = f"## ReversingLabs A1000 static analysis report for {sample_hash}\n"
+
+    fields = f"""**Classification**: {classification_obj.get("classification")}
     **Factor**: {classification_obj.get("factor")}
     **Result**: {classification_obj.get("result")}
     **SHA-1**: {resp_json.get("sha1")}
@@ -1029,6 +1032,8 @@ def static_analysis_report_output(resp_json, sample_hash):
     **SHA-512**: {resp_json.get("sha512")}
     **Story**: {resp_json.get("story")}\n {indicators_table} {tags_table}
     """
+
+    markdown = markdown + fields
 
     dbot_score = Common.DBotScore(
         indicator=sample_hash,
@@ -1098,7 +1103,8 @@ def dynamic_analysis_report_output(resp, action, sample_hash, report_format):
     file_result = None
 
     if action == "CREATE REPORT":
-        markdown = markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n **Download endpoint**: {resp.get("download_endpoint")}"""
+        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n""" +
+                    f"""**Download endpoint**: {resp.get("download_endpoint")}""")
         context = resp
 
     elif action == "CHECK STATUS":
