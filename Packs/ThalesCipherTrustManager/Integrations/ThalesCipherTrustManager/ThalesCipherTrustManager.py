@@ -21,14 +21,15 @@ LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
 CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
 CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
-EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
-
+EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCA"
+CSR_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CSR"
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
 USER_MANAGEMENT_USERS_URL_SUFFIX = '/usermgmt/users/'
 LOCAL_CAS_URL_SUFFIX = '/ca/local-cas/'
 EXTERNAL_CAS_URL_SUFFIX = '/ca/external-cas/'
+CA_CSR_URL_SUFFIX = '/ca/csr'
 
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 2000
@@ -287,28 +288,28 @@ class CipherTrustClient(BaseClient):
             url_suffix=f'{urljoin(LOCAL_CAS_URL_SUFFIX, ca_id)}/certs/{cert_id}/resume',
         )
 
-    def upload_external_certificate(self, request_data: dict) -> dict[str, Any]:
+    def upload_external_ca(self, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix=EXTERNAL_CAS_URL_SUFFIX,
             json_data=request_data,
         )
 
-    def delete_external_certificate(self, external_cert_id: str) -> dict[str, Any]:
+    def delete_external_ca(self, external_ca_id: str) -> dict[str, Any]:
         return self._http_request(
             method='DELETE',
-            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_cert_id),
+            url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
             return_empty_response=True,
         )
 
-    def update_external_certificate(self, external_ca_id: str, request_data: dict) -> dict[str, Any]:
+    def update_external_ca(self, external_ca_id: str, request_data: dict) -> dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
             json_data=request_data,
         )
 
-    def get_external_certificates_list(self, params: dict) -> dict[str, Any]:
+    def get_external_ca_list(self, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=EXTERNAL_CAS_URL_SUFFIX,
@@ -319,6 +320,13 @@ class CipherTrustClient(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=urljoin(EXTERNAL_CAS_URL_SUFFIX, external_ca_id),
+        )
+
+    def create_csr(self, request_data: dict) -> dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix=CA_CSR_URL_SUFFIX,
+            json_data=request_data,
         )
 
 
@@ -810,45 +818,45 @@ def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) 
     )
 
 
-def external_certificate_upload_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     cert = load_content_from_file(args.get(CERT_ENTRY_ID, ''))
     request_data = assign_params(
         cert=cert,
         name=args.get(NAME),
         parent=args.get(PARENT),
     )
-    raw_response = client.upload_external_certificate(request_data=request_data)
+    raw_response = client.upload_external_ca(request_data=request_data)
     outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
     return CommandResults(
-        outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=outputs
     )
 
 
-def external_certificate_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    client.delete_external_certificate(external_cert_id=args.get(EXTERNAL_CERT_ID, ''))
+def external_ca_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+    client.delete_external_ca(external_ca_id=args.get(EXTERNAL_CA_ID, ''))
     return CommandResults(
         readable_output=f'{args.get(EXTERNAL_CERT_ID)} has been deleted successfully!'
     )
 
 
-def external_certificate_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+def external_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     request_data = assign_params(
         allow_client_authentication=optional_arg_to_bool(args.get(ALLOW_CLIENT_AUTHENTICATION)),
         allow_user_authentication=optional_arg_to_bool(args.get(ALLOW_USER_AUTHENTICATION))
     )
-    raw_response = client.update_external_certificate(external_ca_id=args.get(EXTERNAL_CA_ID, ''),
-                                                      request_data=request_data)
+    raw_response = client.update_external_ca(external_ca_id=args.get(EXTERNAL_CA_ID, ''),
+                                             request_data=request_data)
     outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
     return CommandResults(
-        outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response
     )
 
 
-def external_certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if external_ca_id := args.get(EXTERNAL_CA_ID):
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
         outputs: object = remove_key_from_outputs(raw_response, ['cert'], ['Certificate.pem'])
@@ -865,17 +873,23 @@ def external_certificate_list_command(client: CipherTrustClient, args: dict[str,
             cert=args.get(CERT),
         )
 
-        raw_response = client.get_external_certificates_list(params=params)
+        raw_response = client.get_external_ca_list(params=params)
 
         outputs = [remove_key_from_outputs(external_ca_entry, ['cert']) for external_ca_entry in
                    raw_response.get('resources', [])]
     return CommandResults(
-        outputs_prefix=EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+        outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
         readable_output=tableToMarkdown('external certificates',
                                         outputs),
     )
+
+
+def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
+    request_data = assign_params()
+    client.create_csr(request_data=request_data)
+    return CommandResults()
 
 
 ''' MAIN FUNCTION '''
@@ -921,10 +935,11 @@ def main():
         'ciphertrust-local-certificate-delete': local_certificate_delete_command,
         'ciphertrust-certificate-revoke': certificate_revoke_command,
         'ciphertrust-certificate-resume': certificate_resume_command,
-        'ciphertrust-external-certificate-upload': external_certificate_upload_command,
-        'ciphertrust-external-certificate-delete': external_certificate_delete_command,
-        'ciphertrust-external-certificate-update': external_certificate_update_command,
-        'ciphertrust-external-certificate-list': external_certificate_list_command,
+        'ciphertrust-external-ca-upload': external_ca_upload_command,
+        'ciphertrust-external-ca-delete': external_ca_delete_command,
+        'ciphertrust-external-ca-update': external_ca_update_command,
+        'ciphertrust-external-ca-list': external_ca_list_command,
+        'ciphertrust-csr-generate': csr_generate_command,
     }
 
     try:

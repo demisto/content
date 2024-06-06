@@ -25,7 +25,7 @@ LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
 CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
 CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
-EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCertificate"
+EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCA"
 
 
 PAGE = 'page'
@@ -421,7 +421,7 @@ CERTIFICATE_RESUME_TEST_ARGS = [{
     CA_ID: "localca-b765018b-0a64-419f-b537-c30863aa4002",
     CERT_ID: "123e4567-e89b-12d3-a456-426614174000",
 }]
-EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = [
+EXTERNAL_CA_UPLOAD_TEST_ARGS = [
     {
         CERT_ENTRY_ID: "123e4567-e89-b12d3-a456-426614174000",
         NAME: "Test Certificate",
@@ -429,15 +429,15 @@ EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS = [
 
     }
 ]
-EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS = [
-    {EXTERNAL_CERT_ID: "123e456"}
+EXTERNAL_CA_DELETE_TEST_ARGS = [
+    {EXTERNAL_CA_ID: "123e456"}
 ]
-EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS = [
+EXTERNAL_CA_UPDATE_TEST_ARGS = [
     {EXTERNAL_CA_ID: "123e4567-e89b-12d3-a456-426614174000",
      ALLOW_CLIENT_AUTHENTICATION: "false",
      ALLOW_USER_AUTHENTICATION: "true"}
 ]
-EXTERNAL_CERTIFICATE_LIST_TEST_ARGS = [
+EXTERNAL_CA_LIST_TEST_ARGS = [
     {},
     {SUBJECT: "CN=Test User,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
      ISSUER: "CN=Test CA,OU=Test Unit,O=Test Organization,L=Test City,ST=Test State,C=Test Country",
@@ -986,73 +986,73 @@ def test_certificate_resume_command(mock_resume_certificate, args):
     assert result.readable_output == f'{args[CERT_ID]} has been resumed'
 
 
-@pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPLOAD_TEST_ARGS)
+@pytest.mark.parametrize('args', EXTERNAL_CA_UPLOAD_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 @patch(MOCKER_LOAD_CONTENT_FROM_FILE)
-def test_external_certificate_upload_command(mock_load_content_from_file, mock_upload_external_certificate, args):
-    from ThalesCipherTrustManager import CipherTrustClient, external_certificate_upload_command
-    mock_upload_external_certificate.return_value = util_load_json('test_data/mock_external_certificate_upload_response.json')
+def test_external_ca_upload_command(mock_load_content_from_file, mock_upload_external_ca, args):
+    from ThalesCipherTrustManager import CipherTrustClient, external_ca_upload_command
+    mock_upload_external_ca.return_value = util_load_json('test_data/mock_external_ca_upload_response.json')
     mock_load_content_from_file.return_value = FAKE_CERT
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
-    result = external_certificate_upload_command(client, args)
+    result = external_ca_upload_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_upload_external_certificate.return_value
-    assert result.raw_response == mock_upload_external_certificate.return_value
+    assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
+    assert result.outputs == mock_upload_external_ca.return_value
+    assert result.raw_response == mock_upload_external_ca.return_value
 
 
-@pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_DELETE_TEST_ARGS)
+@pytest.mark.parametrize('args', EXTERNAL_CA_DELETE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
-def test_external_certificate_delete_command(mock_delete_external_certificate, args):
-    from ThalesCipherTrustManager import CipherTrustClient, external_certificate_delete_command
-    mock_delete_external_certificate.return_value = None
+def test_external_ca_delete_command(mock_delete_external_ca, args):
+    from ThalesCipherTrustManager import CipherTrustClient, external_ca_delete_command
+    mock_delete_external_ca.return_value = None
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
-    result = external_certificate_delete_command(client, args)
+    result = external_ca_delete_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix is None
-    assert result.outputs == mock_delete_external_certificate.return_value
-    assert result.raw_response == mock_delete_external_certificate.return_value
-    assert result.readable_output == f'{args[EXTERNAL_CERT_ID]} has been deleted successfully!'
+    assert result.outputs == mock_delete_external_ca.return_value
+    assert result.raw_response == mock_delete_external_ca.return_value
+    assert result.readable_output == f'{args[EXTERNAL_CA_ID]} has been deleted successfully!'
 
 
-@pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS)
+@pytest.mark.parametrize('args', EXTERNAL_CA_UPDATE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
-def test_external_certificate_update_command(mock_update_external_certificate, args):
-    from ThalesCipherTrustManager import CipherTrustClient, external_certificate_update_command
-    mock_update_external_certificate.return_value = util_load_json('test_data/mock_external_certificate_update_response.json')
+def test_external_ca_update_command(mock_update_external_ca, args):
+    from ThalesCipherTrustManager import CipherTrustClient, external_ca_update_command
+    mock_update_external_ca.return_value = util_load_json('test_data/mock_external_ca_update_response.json')
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
-    result = external_certificate_update_command(client, args)
+    result = external_ca_update_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_update_external_certificate.return_value
-    assert result.raw_response == mock_update_external_certificate.return_value
+    assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
+    assert result.outputs == mock_update_external_ca.return_value
+    assert result.raw_response == mock_update_external_ca.return_value
 
 
-@pytest.mark.parametrize('args', EXTERNAL_CERTIFICATE_UPDATE_TEST_ARGS)
+@pytest.mark.parametrize('args', EXTERNAL_CA_UPDATE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
-def test_external_certificate_list_command(mock_get_external_certificates_list, args):
-    from ThalesCipherTrustManager import CipherTrustClient, external_certificate_list_command
-    mock_get_external_certificates_list.return_value = util_load_json(
-        'test_data/mock_external_certificate_list_response.json')
+def test_external_ca_list_command(mock_get_external_ca_list, args):
+    from ThalesCipherTrustManager import CipherTrustClient, external_ca_list_command
+    mock_get_external_ca_list.return_value = util_load_json(
+        'test_data/mock_external_ca_list_response.json')
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
-    result = external_certificate_list_command(client, args)
+    result = external_ca_list_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == EXTERNAL_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_external_certificates_list.return_value.get('resources')
-    assert result.raw_response == mock_get_external_certificates_list.return_value
+    assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
+    assert result.outputs == mock_get_external_ca_list.return_value.get('resources')
+    assert result.raw_response == mock_get_external_ca_list.return_value
