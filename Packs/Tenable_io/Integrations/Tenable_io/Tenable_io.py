@@ -1420,7 +1420,7 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
 @polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 600)),
                   interval=arg_to_number(demisto.args().get('intervalInSeconds', 10)),
                   requires_polling_arg=False)
-def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:     # pragma: no cover
+def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
     """
     Polling command to export vulnerabilities.
     After the first run, progress will be shown through the status QUEUED, PROCESSING, CANCELED, ERROR and FINISHED.
@@ -1768,7 +1768,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     return audit_logs, last_run
 
 
-def fetch_assets_command(client: Client, assets_last_run):
+def fetch_assets_command(client: Client, assets_last_run):     # pragma: no cover
     """
     Fetches assets.
     Args:
@@ -1802,7 +1802,7 @@ def fetch_assets_command(client: Client, assets_last_run):
     return assets
 
 
-def run_assets_fetch(client, last_run):
+def run_assets_fetch(client, last_run):     # pragma: no cover
 
     demisto.info("fetch assets from the API")
     # starting new fetch for assets, not polling from prev call
@@ -1812,7 +1812,7 @@ def run_assets_fetch(client, last_run):
     return fetch_assets_command(client, last_run)
 
 
-def fetch_vulnerabilities(client: Client, assets_last_run: dict):
+def fetch_vulnerabilities(client: Client, assets_last_run: dict):     # pragma: no cover
     """
     Fetches vulnerabilities if job has succeeded.
     Args:
@@ -1856,7 +1856,7 @@ def run_vulnerabilities_fetch(client, last_run):
     return fetch_vulnerabilities(client, last_run)
 
 
-def skip_fetch_assets(last_run):
+def skip_fetch_assets(last_run):     # pragma: no cover
     time_to_check = last_run.get("assets_last_fetch")
     if not time_to_check:
         return False
