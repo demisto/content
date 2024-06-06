@@ -1,22 +1,25 @@
 commonfields:
   id: AdoptionMetrics
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ''
-dockerimage: demisto/python3:3.10.14.91134
-enabled: true
-engineinfo: {}
 name: AdoptionMetrics
-runas: DBotWeakRole
-runonce: false
 script: ''
-scripttarget: 0
-subtype: python3
+type: python
 tags:
 - widget
 - dynamic-section
-type: python
+comment: "The dashboard provide a high level overview on the usage of Cortex XSOAR. It contains data points and metrics on enriched and observed threat intelligence, playbook and automation executions, and data sources being ingested into Cortex XSOAR."
+enabled: true
+engineinfo: {}
+runas: DBotWeakRole
+runonce: false
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.14.91134
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+
+
+
+
+

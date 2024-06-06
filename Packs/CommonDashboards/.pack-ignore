@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:dashboard-SLA.json]
 ignore=BA101
+
+[file:1_6_1.md]
+ignore=RN114  # remove this after https://github.com/demisto/demisto-sdk/pull/4327 will be merged.
