@@ -7218,7 +7218,7 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
 | MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
 | MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. | 
-| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+| MicrosoftATP.Machine.AgentVersion | String | The machine agent version. | 
 
 #### Command example
 ```!microsoft-atp-list-machines-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
