@@ -66,7 +66,7 @@ class Client(BaseClient):
                 }
             ],
             'rows': limit,
-            'start': 0
+            'start': 1
         }
 
         return self._http_request('POST', suffix_url, json_data=body)

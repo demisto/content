@@ -371,13 +371,6 @@ script:
       description: The MAC address of the endpoint.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Whether to group results.
-      name: group_results
-      predefined:
-      - 'true'
-      - 'false'
     - description: Alert minimum severity (In range of 1-10).
       name: minimum_severity
     - description: Device OS version. Supports comma-separated values.
@@ -402,16 +395,12 @@ script:
       name: reputation
     - description: Alert type. Supports comma-separated values.
       name: alert_type
-    - description: Alert category. Supports comma-separated values.
-      name: alert_category
-    - description: Alert workflow. Supports comma-separated values.
-      name: workflow
     - description: Device name. Supports comma-separated values.
       name: device_name
     - description: Process name. Supports comma-separated values.
       name: process_name
     - auto: PREDEFINED
-      defaultValue: first_event_time
+      defaultValue: first_event_timestamp
       description: Field by which to sort the results. Can be "first_event_time", or "last_event_time".
       name: sort_field
       predefined:
@@ -548,29 +537,11 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.severity
       description: Alert severity.
       type: Number
-    - contextPath: CarbonBlackEEDR.Alert.category
-      description: Alert category.
-      type: String
     - contextPath: CarbonBlackEEDR.Alert.threat_cause_vector
       description: Threat cause vector.
       type: String
     - contextPath: CarbonBlackEEDR.Alert.device_username
       description: Device username.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.changed_by
-      description: Alert workflow - changed by.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.comment
-      description: Alert workflow - comment.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.last_update_time
-      description: Alert workflow - last updated time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.workflow.remediation
-      description: Alert workflow - remediation.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.state
-      description: Alert workflow - state.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list

@@ -298,4 +298,4 @@ def test_test_module(mocker):
     from CarbonBlackEnterpriseEDR import test_module
     http_request = mocker.patch.object(client, '_http_request', return_value=[])
     test_module(client=client)
-    assert 'v7' in http_request.call_args.kwargs['url_suffix']
+    assert '/api/alerts/v7/orgs' in http_request.call_args.kwargs['url_suffix']
