@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"Updated the parameter 'Minimum severity of incidents to send messages on', since it is not supported by XSIAM."
+}
