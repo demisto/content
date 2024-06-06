@@ -8,7 +8,7 @@
  */
 filter _raw_log ~= "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}"
 | alter tmp_timestamp_string = arrayindex(regextract(_raw_log, "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}"), 0)
-| alter _time = parse_timestamp("%d-%b-%Y %H:%M:%E3S", tmp_timestamp_string)
+| alter _time = coalesce(parse_timestamp("%d-%b-%Y %H:%M:%E3S", tmp_timestamp_string), _time)
 | fields - tmp_timestamp_string; // Remove the temporary utility field
 
 /* 
@@ -39,7 +39,7 @@ filter // Exclude DNS Queries & Responses events timestamp format
 | alter // Converts the previous year string representation to datetime format 
     tmp_previous_year_timestamp_datetime = if(tmp_previous_year_timestamp_string != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_previous_year_timestamp_string), null)
 | alter // Set to the relevant timestamp 
-    _time = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime) 
+    _time = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime, _time) 
 | fields - tmp*; // Remove all temporary util fields 
 
 /* 
@@ -61,5 +61,5 @@ filter // Exclude DNS Queries & Responses events timestamp format and Infoblox s
     tmp_precision_length = 2, parse_timestamp("%FT%H:%M:%E2S%Ez", tmp_timestamp),
     tmp_precision_length = 3, parse_timestamp("%FT%H:%M:%E3S%Ez", tmp_timestamp),
     tmp_precision_length = 6, parse_timestamp("%FT%H:%M:%E6S%Ez", tmp_timestamp))
-| alter _time = tmp_time
+| alter _time = coalesce(tmp_time, _time)
 | fields - tmp*; // Remove all temporary util fields 
