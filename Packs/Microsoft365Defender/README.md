@@ -1,4 +1,4 @@
-With the Microsoft 365 Defender content pack, you can determine how a threat entered your environment and what part of your organization is affected. 
+With the Microsoft Defender XDR content pack, you can determine how a threat entered your environment and what part of your organization is affected. 
 
 
 ## What does this pack do?
