@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: JizoNDR
   version: -1
@@ -8,14 +11,14 @@ display: JizoNDR (Partner Contribution)
 description: This integration ensures interaction with the JizoM API.
 configuration:
 - section: Collect
-  display: username
-  displaypassword: password
+  display: Username  
+  displaypassword: Password  
   name: credentials
   type: 9
   required: true
   additionalinfo: Reliability of the source providing the intelligence data.
 - section: Connect
-  display: 'Server URL '
+  display: Server URL 
   name: url
   type: 0
   required: true
@@ -27,8 +30,9 @@ configuration:
 - section: Connect
   display: Incident type
   name: incidentType
+  defaultvalue: Jizo Alert
   type: 13
-  required: false
+  required: false 
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
@@ -49,10 +53,10 @@ configuration:
   required: false
 - display: First fetch time
   name: first_fetch
-  defaultvalue: "2024-01-01"
+  defaultvalue: 3 days
   type: 0
   required: false
-- display: ' Maximum number of alerts per fetch'
+- display: Maximum number of alerts per fetch 
   name: max_fetch
   defaultvalue: "10"
   type: 0
@@ -63,60 +67,60 @@ script:
   - name: jizo-protocols-get
     arguments:
     - name: ip_src
-      description: ip address of source machine
+      description: The ip address of the source machine.
       type: textArea
     - name: ip_dest
-      description: ip address of destination machine
+      description: The ip address of the destination machine.
       type: textArea
     - name: datetime_from
-      description: default -7 days
+      description: The default value is 7 days ago. 
       type: textArea
     - name: datetime_to
-      description: default  now
+      description: The default is now.  
       type: textArea
     - name: timestamp
       type: textArea
     - name: probe_name
       type: textArea
     - name: page
-      description: page number (pagination)
+      description: A page number for pagination. 
       type: keyValue
     - name: limit
-      description: maximum number of protocols to display per alert
+      description: The maximum number of protocols to display per alert.
       type: keyValue
     description: Get jizo protocols
   - name: jizo-peers-get
     arguments:
     - name: ip_src
-      description: ip address of source machine
+      description: The ip address of the source machine.
       type: textArea
     - name: ip_dest
-      description: ip address of destination machine
+      description: The ip address of the destination machine. 
       type: textArea
     - name: datetime_from
-      description: default-7 days
+      description: The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: default-now
+      description: The default is now.
       type: textArea
     - name: timestamp
       type: textArea
     - name: probe_name
       type: textArea
     - name: page
-      description: page number (pagination)
+      description: A page number for pagination. 
       type: keyValue
     - name: limit
-      description: maximum number of samples to display per alert
+      description: The maximum number of samples to display per alert.
       type: keyValue
     description: Get jizo peers
   - name: jizo-query-records-get
     arguments:
     - name: ip_src
-      description: ip address of source machine
+      description: The ip address of the source machine.
       type: textArea
     - name: ip_dest
-      description: ip address of destination machine
+      description: The ip address of the destination machine.
       type: textArea
     - name: proto
       description: protocol
@@ -124,10 +128,10 @@ script:
     - name: app_proto
       type: textArea
     - name: port_src
-      description: port of source machine
+      description: The port of the source machine.  
       type: textArea
     - name: port_dest
-      description: port of destination machine
+      description: The port of the destination machine.  
       type: textArea
     - name: flow_id
       type: textArea
@@ -138,18 +142,18 @@ script:
     - name: port
       type: textArea
     - name: datetime_from
-      description: default -7 days
+      description: The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: default-now
+      description: The default is now.
       type: textArea
     - name: timestamp
       type: textArea
     - name: page
-      description: page number (pagination)
+      description: A page number for pagination.
       type: keyValue
     - name: limit
-      description: maximum number of samples to display per alert
+      description: The maximum number of samples to display per alert.
       type: keyValue
     description: Get jizo query records
   - name: jizo-alert-rules-get
@@ -163,10 +167,10 @@ script:
     - name: port
       type: textArea
     - name: datetime_from
-      description: default-7days
+      description: The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: default-now
+      description: The default is now.
       type: textArea
     - name: timestamp
       type: textArea
@@ -177,10 +181,10 @@ script:
     - name: type_data
       type: textArea
     - name: page
-      description: page number (pagination)
+      description: A page number for pagination.
       type: keyValue
     - name: limit
-      description: maximum number of samples to display per alert
+      description: The maximum number of samples to display per alert.
       type: keyValue
     description: Get jizo alerts rules
   - name: jizo-device-records-get
@@ -196,27 +200,27 @@ script:
     - name: port
       type: textArea
     - name: datetime_from
-      description: default-7 days
+      description: The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: default-now
+      description: The default is now.
       type: textArea
     - name: timestamp
       type: textArea
     - name: page
-      description: page number (pagination)
+      description: A page number for pagination.
       type: keyValue
     - name: limit
-      description: maximum number of samples to display per alert
+      description: The maximum number of samples to display per alert.
       type: keyValue
     description: Get jizo device records
   - name: jizo-device-alerts-get
     arguments:
     - name: ip_src
-      description: ip address of source machine
+      description: The ip address of the source machine.
       type: textArea
     - name: ip_dest
-      description: ip address of destination machine
+      description: The ip address of the destination machine.
       type: textArea
     - name: port_src
       type: textArea
@@ -227,18 +231,18 @@ script:
     - name: port
       type: textArea
     - name: datetime_from
-      description: default -7 days
+      description: The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: default now
+      description: The default is now.
       type: textArea
     - name: timestamp
       type: textArea
     - name: page
-      description: page number (pagination)
+      description: A page number for pagination.
       type: keyValue
     - name: limit
-      description: maximum number of samples to display per alert
+      description: The maximum number of samples to display per alert.
       type: keyValue
     description: Get jizo device alerts
   dockerimage: demisto/python3:3.10.13.87159
@@ -246,3 +250,5 @@ script:
   runonce: false
   subtype: python3
   isFetchSamples: true
+
+defaultmapperin: Jizo NDR - Incoming Mapper"
