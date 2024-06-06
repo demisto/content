@@ -1,4 +1,6 @@
 """ IMPORTS """
+import zipfile
+from pathlib import Path
 
 import urllib3
 from urllib.parse import quote
@@ -97,6 +99,11 @@ PARENT = 'parent'
 EXTERNAL_CA_ID = 'external_ca_id'
 SERIAL_NUMBER = 'serial_number'
 EXTERNAL_CERT_ID = 'external_cert_id'
+ENCRYPTION_ALGO = 'encryption_algo'
+KEY_SIZE = 'key_size'
+PRIVATE_KEY_BYTES = 'private_key_bytes'
+ENCRYPTION_PASSWORD = 'encryption_password'
+PRIVATE_KEY_FILE_PASSWORD = 'private_key_file_password'
 
 '''CLIENT CLASS'''
 
@@ -417,6 +424,66 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
             if value:
                 return_results(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
     return new_outputs
+
+
+def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]:
+    """
+    Creates a password-protected ZIP file from the given data
+
+       :type filename: ``str``
+       :param filename: The name of the file to be created (required)
+
+       :type data: ``str``
+       :param data: The file data (required)
+
+       :type password: ``str``
+       :param password: The password for encrypting the ZIP file (required)
+
+       :return: A Demisto war room entry
+       :rtype: ``dict``
+    """
+
+    temp = demisto.uniqueFile()
+    # pylint: disable=undefined-variable
+    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
+        data = data.encode('utf-8')
+
+    # Convert password to bytes, required by the zipfile library
+    password_bytes = password.encode()
+    # pylint: enable=undefined-variable
+    # create a file to zip, it will be deleted afterwords and only the zip will remain
+    file_to_zip_path = demisto.investigation()['id'] + '_' + temp
+    with open(file_to_zip_path, 'wb') as f:
+        f.write(data)
+
+    # Create a new ZIP file
+    with zipfile.ZipFile(demisto.investigation()['id'] + '_' + temp + 'password_protected', 'w') as zf:
+        # Add the file to the ZIP file
+        zf.write(file_to_zip_path, arcname=Path(file_to_zip_path).name, compress_type=zipfile.ZIP_DEFLATED)
+        # Set the password
+        zf.setpassword(password_bytes)
+    # Remove the original file
+    os.remove(file_to_zip_path)
+
+    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
+    # xsoar returns empty files to war-rooms
+    if isinstance(filename, str):
+        replaced_filename = filename.replace("../", "")
+        if filename != replaced_filename:
+            filename = replaced_filename
+            demisto.debug(
+                "replaced {filename} with new file name {replaced_file_name}".format(
+                    filename=filename, replaced_file_name=replaced_filename
+                )
+            )
+
+    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': EntryType.ENTRY_INFO_FILE, 'File': filename,
+            'FileID': temp}
+
+
+def return_password_protected_file_result(file_name: str, file_content: str, password: str) -> None:
+    file_result = zipProtectedFileResult(file_name, file_content, password)
+    return_results(file_result)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -887,9 +954,34 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
 
 
 def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    request_data = assign_params()
-    client.create_csr(request_data=request_data)
-    return CommandResults()
+    if not args.get(ENCRYPTION_PASSWORD) and not args.get(PRIVATE_KEY_FILE_PASSWORD):
+        raise ValueError('Either the "password" or "private_key_file_password" argument must be provided. '
+                         'The private key must be stored securely on the client side')
+    request_data = assign_params(
+        cn=args.get(CN),
+        algorithm=args.get(ALGORITHM),
+        dnsNames=argToList(args.get(DNS_NAMES)),
+        emailAddresses=argToList(args.get(EMAIL)),
+        encryptionAlgo=args.get(ENCRYPTION_ALGO),
+        ipAddresses=argToList(args.get(IP)),
+        name=args.get(NAME),
+        names=optional_safe_load_json(args.get(NAME_FIELDS_RAW_JSON),
+                                      args.get(NAME_FIELDS_JSON_ENTRY_ID)),
+        password=args.get(ENCRYPTION_PASSWORD),
+        privateKeyBytes=args.get(PRIVATE_KEY_BYTES),
+        size=arg_to_number(args.get(KEY_SIZE)),
+
+    )
+    raw_response = client.create_csr(request_data=request_data)
+    outputs = remove_key_from_outputs(raw_response, 'csr', 'CSR.pem')
+    if private_key_file_password := args.get(PRIVATE_KEY_FILE_PASSWORD):
+        return_password_protected_file_result('privateKey.pem', outputs.pop('key', ''), private_key_file_password)
+    else:
+        outputs = remove_key_from_outputs(raw_response, 'key', 'privateKey.pem')
+    return CommandResults(
+        outputs_prefix=CSR_CONTEXT_OUTPUT_PREFIX,
+        readable_output=f'CSR and its corresponding private key have been generated successfully for {args.get(CN)}.',
+    )
 
 
 ''' MAIN FUNCTION '''

@@ -26,6 +26,108 @@ configuration:
 script:
   commands:
   - deprecated: false
+    description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned back in the result. This means that both the CSR and the private key must be stored securely on the client side.The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
+    name: ciphertrust-csr-generate
+    arguments:
+      - name: cn
+        isArray: false
+        description: Common Name
+        required: true
+        secret: false
+        default: false
+      - name: algorithm
+        isArray: false
+        description: RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
+        required: false
+        secret: false
+        default: false
+        predefined:
+          - RSA
+          - ECDSA
+        auto: PREDEFINED
+      - name: dns_names
+        isArray: true
+        description: Subject Alternative Names (SAN) values (comma seperated string)
+        required: false
+        secret: false
+        default: false
+      - name: email
+        isArray: true
+        description: E-mail addresses (comma seperated string)
+        required: false
+        secret: false
+        default: false
+      - name: ip
+        isArray: true
+        description: IP addresses (comma seperated string)
+        required: false
+        secret: false
+        default: false
+      - name: name
+        isArray: false
+        description: A unique name of CSR.
+        required: false
+        secret: false
+        default: false
+      - name: encryption_algo
+        isArray: false
+        description: Private key encryption algorithm. AES256 (default), AES192, AES128, TDES.
+        required: false
+        secret: false
+        default: false
+        predefined:
+          - AES256
+          - AES192
+          - AES128
+          - TDES
+        auto: PREDEFINED
+      - name: name_fields_raw_json
+        isArray: true
+        description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]"'
+        required: false
+        secret: false
+        default: false
+      - name: name_fields_json_entry_id
+        isArray: false
+        description: Entry Id of the file that contains JSON representation of the name_fields_raw_json
+        required: false
+        secret: false
+        default: false
+      - name: key_size
+        isArray: false
+        description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'
+        required: false
+        secret: false
+        default: false
+        predefined:
+          - 1024
+          - 2048
+          - 3072
+          - 4096
+          - 256
+          - 384
+          - 521
+        auto: PREDEFINED
+      - name: encryption_password
+        isArray: false
+        description: Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory.
+        required: false
+        secret: true
+        default: false
+      - name: private_key_file_password
+        isArray: false
+        description: Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided.
+        required: false
+        secret: true
+        default: false
+      - name: private_key_bytes
+        isArray: false
+        description: Private Key bytes of the key which is to be used while creating CSR (Algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size.
+        required: false
+        secret: false
+        default: false
+    outputs: []
+  - deprecated: false
     description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
     name: ciphertrust-certificate-issue
     arguments:
