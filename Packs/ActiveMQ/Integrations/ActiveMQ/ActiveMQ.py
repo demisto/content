@@ -14,7 +14,7 @@ PASSWORD = demisto.params().get('credentials', {}).get('password')
 CLIENT_CERT = demisto.params().get('client_cert')
 CLIENT_KEY = demisto.params().get('client_key')
 ROOT_CA = demisto.params().get('root_ca')
-
+tr = 24
 
 class MsgListener(stomp.ConnectionListener):
     def __init__(self):
