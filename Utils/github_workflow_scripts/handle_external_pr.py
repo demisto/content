@@ -332,8 +332,6 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
-        if int(pr.number) == 34741:
-            continue
         existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
         if existing_pr_author == pr_creator:
             similar_prs.append(pr)
@@ -352,14 +350,10 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     - Reviewer of the found pr's
     """
     content_reviewers_set = set(content_reviewers)
-    print (f"Content reviewers are : {content_reviewers_set}")
     for pr in other_prs_by_same_user:
-        print (f'the PR is: {pr}')
-        print (f'the requested reviewers are : {pr.assignees}')
-        assignee_names = {reviewer.login for reviewer in pr.assignees}
-        print(f'reviewer names are : {assignee_names}')
+        print (f'the requested assignees are : {pr.assignees}')
+        assignee_names = {assignee.login for assignee in pr.assignees}
         existing_reviewer = content_reviewers_set.intersection(assignee_names)
-        print(f'existing reviewer {existing_reviewer}')
         if existing_reviewer:
             return existing_reviewer.pop()
         else:
@@ -383,7 +377,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     else:
         pr_creator = pr.user.login
 
-    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, "enes-oezdemir", pr_number)
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
 
     reviewer_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
     if reviewer_to_assign:
