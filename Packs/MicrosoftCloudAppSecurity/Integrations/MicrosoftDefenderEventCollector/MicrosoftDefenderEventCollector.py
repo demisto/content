@@ -22,10 +22,15 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = {'alerts': {'type': 'alerts', 'filters': {}},
-                     'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
-                     'activities_login': {'type': 'activities', 'filters': {
-                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
+ALL_EVENT_TYPES = 'Alerts,Admin activities,Login activities'
+MAPPING_EVENT_TYPES = {'Alerts': 'alerts',
+                       'Admin activities': 'activities_admin',
+                       'Login activities': 'activities_login'
+                       }
+TYPES_SYNTAX = {'alerts': {'type': 'alerts', 'filters': {}},
+                'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
+                'activities_login': {'type': 'activities', 'filters': {
+                    "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
@@ -153,10 +158,15 @@ class IntegrationEventsClient(ABC):
 
 class IntegrationGetEvents(ABC):
     def __init__(
-            self, client: IntegrationEventsClient, options: IntegrationOptions
+        self, client: IntegrationEventsClient, options: IntegrationOptions, event_types_to_fetch: list[str]
     ) -> None:
         self.client = client
         self.options = options
+        self.event_types_to_fetch = {}
+        for event_type in event_types_to_fetch:
+            if event_type in MAPPING_EVENT_TYPES:
+                mapped_event_type = MAPPING_EVENT_TYPES[event_type]
+                self.event_types_to_fetch[mapped_event_type] = TYPES_SYNTAX[mapped_event_type]
 
     def run(self):
         stored = []
@@ -281,8 +291,8 @@ class DefenderGetEvents(IntegrationGetEvents):
         # - activities with filter to get the admin events
         # - activities with different filter to get the login events
         # - alerts with no filter
-        # TYPES_TO_RETRIEVE dictionary contains the filters and the endpoint according to the event type.
-        for event_type_name, endpoint_details in TYPES_TO_RETRIEVE.items():
+        # TYPES_SYNTAX dictionary contains the filters and the endpoint according to the event type.
+        for event_type_name, endpoint_details in self.event_types_to_fetch.items():
             self.client.request.params.pop('filters', None)
             self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
@@ -384,6 +394,7 @@ def main(command: str, demisto_params: dict):
     try:
         demisto_params['client_secret'] = demisto_params['credentials']['password']
         push_to_xsiam = argToBoolean(demisto_params.get('should_push_events', 'false'))
+        event_types_to_fetch = argToList(demisto_params.get('event_types_to_fetch', ALL_EVENT_TYPES))
 
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
@@ -396,7 +407,7 @@ def main(command: str, demisto_params: dict):
 
         client = DefenderClient(request=request, options=options, authenticator=authenticator,
                                 after=after)
-        get_events = DefenderGetEvents(client=client, options=options)
+        get_events = DefenderGetEvents(client=client, options=options, event_types_to_fetch=event_types_to_fetch)
 
         if command == 'test-module':
             return_results(module_test(get_events=get_events))

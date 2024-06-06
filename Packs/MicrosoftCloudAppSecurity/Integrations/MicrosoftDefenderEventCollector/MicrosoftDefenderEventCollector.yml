@@ -79,6 +79,16 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Event types to fetch
+  name: event_types_to_fetch
+  section: Collect
+  required: true
+  type: 16
+  defaultvalue: Alerts,Admin activities,Login activities
+  options:
+  - Alerts
+  - Admin activities
+  - Login activities
 description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector
