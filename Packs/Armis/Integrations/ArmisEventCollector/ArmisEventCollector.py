@@ -112,6 +112,7 @@ class Client(BaseClient):
         aql_query = f'{aql_query} after:{after.strftime(DATE_FORMAT)}'
         if before:
             aql_query = f'{aql_query} before:{before.strftime(DATE_FORMAT)}'
+            demisto.info(f"info-log: Fetching events until {before}.")
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if from_param:
             params['from'] = from_param
@@ -244,6 +245,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
     if after_time:
         after_time = after_time.replace(tzinfo=None)
     if not after_time or after_time > before_time:
+        demisto.info("info-log: last run time is later than before time, overwriting after time.")
         after_time = before_time - timedelta(minutes=1)
     return after_time, before_time
 
@@ -329,7 +331,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
 
 
 def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, max_fetch: int, last_run: dict,
-                        next_run: dict, fetch_start_time: datetime | None, fetch_delay: int):
+                        next_run: dict, fetch_start_time: datetime | None, fetch_delay: int = DEFAULT_FETCH_DELAY):
     """ Fetch events by specific event type.
 
     Args:
@@ -360,7 +362,7 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         from_param=last_fetch_next,
         before=before_time
     )
-
+    new_events: list[dict] = []
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
