@@ -673,6 +673,20 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
+      
+  - name: splunk-notable-event-fetch
+    description: Fetch a single notable event.
+    arguments:
+    - name: event_id
+      description: Notable event ID.
+      required: true
+    - name: earliest_time
+      description: 'Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. Default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00.'
+      required: false
+    - name: latest_time
+      description: 'Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago).'
+      required: false
+
   dockerimage: demisto/splunksdk-py3:1.0.0.91477
   isfetch: true
   ismappable: true
