@@ -1,5 +1,3 @@
-import signal
-from collections import defaultdict
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
@@ -22,6 +20,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
+from collections import defaultdict
 
 pypdf_logger = logging.getLogger("PyPDF2")
 pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
@@ -799,8 +798,8 @@ def perform_rasterize(path: str | list[str],
                           f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
-                # terminate_chrome(browser) # TODO: make terminate_all !
-                return
+                terminate_chrome(killall=True)
+                write_info_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
                 demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
                 write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
             else:
