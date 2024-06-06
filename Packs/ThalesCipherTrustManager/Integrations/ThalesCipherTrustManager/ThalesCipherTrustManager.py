@@ -450,9 +450,9 @@ def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]
 
     # Convert password to bytes, required by the zipfile library
     password_bytes = password.encode()
-    # pylint: enable=undefined-variable
     # create a file to zip, it will be deleted afterwords and only the zip will remain
     file_to_zip_path = demisto.investigation()['id'] + '_' + temp
+    # pylint: enable=undefined-variable
     with open(file_to_zip_path, 'wb') as f:
         f.write(data)
 
