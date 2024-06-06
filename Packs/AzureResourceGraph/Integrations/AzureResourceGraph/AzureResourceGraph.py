@@ -104,54 +104,6 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     )
 
 
-# def query_resources_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:
-#     """
-    
-#     reference: https://learn.microsoft.com/en-us/rest/api/azureresourcegraph/resourcegraph/resources/resources?view=rest-azureresourcegraph-resourcegraph-2022-10-01&tabs=HTTP
-
-#     Args:
-#         client (AzureResourceGraphClient): _description_
-#         args (dict[str, Any]): _description_
-#             limit
-#             page_size
-#             page
-#             sort
-
-#     Returns:
-#         CommandResults: _description_
-#     """
-#     limit = arg_to_number(args.get('limit'))
-#     page_size = arg_to_number(args.get('page_size'))
-#     sort = arg_to_number(args.get('sort', "desc"))
-#     skiptoken = arg_to_number(args.get('skiptoken'))
-    
-#     facets = {
-#         "sortOrder": sort
-#     }
-    
-#     options = {
-#         "$top":limit
-#     }
-    
-#     query = args.get('query')
-#     response = client.query_resources(query=query, facets=facets, options=options)
-
-#     query_data = response.get('data')
-#     total_records = response.get('totalRecords')
-
-#     title = f"Results of query:\n```{query}```\n\n Total Records:{total_records}"
-#     human_readable = tableToMarkdown(title, query_data, removeNull=True)
-
-#     return CommandResults(
-#         readable_output=human_readable,
-#         outputs_prefix='AzureResourceGraph.Query',
-#         outputs_key_field='Query',
-#         outputs=query_data,
-#         raw_response=response
-#     )
-    
-
-
 def list_operations_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get('limit'))
     page_size = arg_to_number(args.get('page_size'))
