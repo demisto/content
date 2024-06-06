@@ -7,16 +7,16 @@
 		"Jizo Alert": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Jizo Alert Category": {
+				"Category": {
 					"simple": "category"
 				},
-				"Jizo Alert ID": {
+				"Alert ID": {
 					"simple": "id"
 				},
-				"Jizo Alert Name": {
+				"Name": {
 					"simple": "name"
 				},
-				"Jizo Alert Type ": {
+				"Alert Type ": {
 					"simple": "alert_type"
 				}
 			}
