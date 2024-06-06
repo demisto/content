@@ -244,7 +244,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
         after_time = fetch_start_time
     if after_time:
         after_time = after_time.replace(tzinfo=None)
-    if not after_time or after_time > before_time:
+    if not after_time or after_time >= before_time:
         demisto.info("info-log: last run time is later than before time, overwriting after time.")
         after_time = before_time - timedelta(minutes=1)
     return after_time, before_time
