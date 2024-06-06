@@ -1,0 +1,3 @@
+!databee-device-search hostname=a limit=1
+!databee-user-search full_name=a limit=1
+!databee-finding-search impact=High limit=1
