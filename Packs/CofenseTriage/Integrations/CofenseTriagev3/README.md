@@ -2,6 +2,8 @@ The Cofense Triage v3 integration uses the Cofense Triage v2 API (previous integ
 
 Security teams can ingest data from Triage such as email reporters, email reports and clusters, threat indicators, and rule matching to name a few. In addition, ingest and create threat indicators, categorize reports, and obtain second stage threat indicators from malicious emails. This integration was integrated and tested with version 1.22.0 of Cofense Triage.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#Breaking-changes-from-the-previous-version-of-this-integration---Cofense-Triage-v3).
 
