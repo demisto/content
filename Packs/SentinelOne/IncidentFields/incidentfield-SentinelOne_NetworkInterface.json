@@ -32,7 +32,7 @@
 	"toServerVersion": "",
 	"type": "grid",
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"columns": [
 		{
 			"key": "id",
