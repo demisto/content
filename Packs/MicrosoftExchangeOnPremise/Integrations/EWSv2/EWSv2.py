@@ -61,6 +61,7 @@ class exchangelibInsecureSSLAdapter(SSLAdapter):
         del verify
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
+
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
 
@@ -131,7 +132,6 @@ MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
-
 
 # initialized in main()
 EWS_SERVER = ''
@@ -336,10 +336,10 @@ def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-                exchangelib.items.DistributionList,
-                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+            Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+            exchangelib.items.DistributionList,
+            exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+            exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -1101,7 +1101,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                            and header.name != 'Content-Type':
+                                        and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -1507,7 +1507,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders() # pylint: disable=E1101
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()  # pylint: disable=E1101
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
     if selected_all_fields:
@@ -1654,19 +1654,14 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root = account.public_folders_root if is_public else account.root.tois # account.root
+    root = account.public_folders_root if is_public else account.root.tois  # pylint: disable=E1101
     root_collection = FolderCollection(account=account, folders=[root])
     folders = []
     for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
 
-    try:
-        readable_output = root.tree()   # pylint: disable=E1101
-
-    except Exception as e:   # This is temporarily until the exchangelib version will be bumped
-        demisto.debug(f'error was caught in tree {e}')
-        readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
+    readable_output = root.tree()  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
