@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The **joe-submission-info** command now requires the *submission_ids* argument."
+}
