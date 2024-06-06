@@ -1109,6 +1109,13 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"},
      'View all wineventlogs involving user="test"'),
     ({}, 'Test query name', {}, 'Test query name')
+], ids=[
+    "search query fields in notables data and raw data",
+    "search query fields in notable data more than one value",
+    "search query fields don't exist in notable data and raw data",
+    "query name fields in notables data and raw data",
+    "query name fields in raw data",
+    "query name without fields to replace"
 ])
 def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
     """
@@ -1171,6 +1178,10 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
     ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1'),
         splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
         splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 0)
+], ids=[
+    "A Notable with 3 drilldown enrichments",
+    "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+    "A Notable with 2 asset enrichments and 1 identity enrichment"
 ])
 def test_drilldown_searches_counter(enrichments, expected_result):
     """
@@ -1219,6 +1230,11 @@ def test_drilldown_searches_counter(enrichments, expected_result):
      [{'result1': 'a'}, {'result2': 'b'}]
      ),
     ([], None)
+], ids=[
+    "A Notable with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment",
+    "A Notable with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+    "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+    "A Notable without drilldown enrichments, 1 asset enrichments and 1 identity enrichment"
 ])
 def test_to_incident_notable_enrichments_data(enrichments, expected_data):
     """
@@ -1307,6 +1323,18 @@ def test_to_incident_notable_enrichments_data(enrichments, expected_data):
       splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
                         data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
      )
+], ids=[
+    "A Notable with 1 successful Asset enrichment",
+    "A Notable with 1 failed Asset enrichment",
+    "A Notable with 1 successful Identity enrichment",
+    "A Notable with 1 failed Identity enrichment",
+    "A Notable with 1 successful Drilldown enrichment",
+    "A Notable with 1 failed Drilldown enrichment",
+    "A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful)",
+    "A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful)",
+    "A Notable with 2 Drilldown enrichments [failed, failed]",
+    "A Notable with 2 Drilldown enrichments [successful, successful]",
+    "A Notable with 3 Drilldown enrichments [failed, successful, failed]"
 ])
 def test_to_incident_notable_enrichments_status(enrichments, enrichment_type, expected_stauts_result):
     """
@@ -1394,6 +1422,10 @@ def test_parse_drilldown_searches():
     ({'event_id': 'test_id', 'drilldown_search': 'test_search', 'drilldown_searches': ['test_search1', 'test_search2']}, 0),
     ({'event_id': 'test_id', 'drilldown_search': '', 'drilldown_searches': ['test_search1', 'test_search2']}, 1),
     ({'event_id': 'test_id', 'drilldown_searches': ['test_search1', 'test_search2']}, 1)
+], ids=[
+    "A notable data with both 'drilldown_search' and 'drilldown_searches' keys with values",
+    "A notable data with both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value",
+    "A notable data with 'drilldown_searches' key only"
 ])
 def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call_count):
     """
@@ -1436,6 +1468,9 @@ def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call
            ]
       },
      0)
+], ids=[
+    "A notable data with one drilldown search",
+    "A notable data with multiple drilldown searches"
 ])
 def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_count):
     """
@@ -1485,6 +1520,9 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
        'search index="test"\n| where user = \'test_user\'')]),
+], ids=[
+    "A notable data with one drilldown search enrichment",
+    "A notable data with multiple (two) drilldown searches to enrich"
 ])
 def test_drilldown_enrichment(notable_data, expected_result):
     """
@@ -1492,7 +1530,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
     Given:
         1. A notable data with one drilldown search enrichment.
-        2. A notable data with multiple (2) drilldown searches to enrich.
+        2. A notable data with multiple (two) drilldown searches to enrich.
 
 
     When:
@@ -1541,6 +1579,12 @@ def test_drilldown_enrichment(notable_data, expected_result):
               "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
                   "$user|s$\",\"earliest\":,\"latest\":}"], '_raw': ""},
      "Couldn't build search query for notable test_id with the following drilldown search"),
+], ids=[
+    "A notable data without drilldown enrichment data",
+    "A notable data with a single drilldown enrichment without search timeframe data",
+    "A notable data with a single drilldown enrichment with an invalid search query",
+    "A notable data with multiple drilldown enrichments without search timeframe data",
+    "A notable data with multiple drilldown enrichments with invalid search queries"
 ])
 def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_log_message):
     """
