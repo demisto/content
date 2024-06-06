@@ -1,25 +1,22 @@
 import json
 from collections.abc import Callable
-from pathlib import Path
-
 import pytest
-from AzureLogAnalytics import (
-    Client,
-    create_or_update_saved_search_command,
-    delete_saved_search_command,
-    delete_search_job_command,
-    execute_query_command,
-    get_saved_search_by_id_command,
-    get_search_job_command,
-    list_saved_searches_command,
-    run_search_job_command,
-    tags_arg_to_request_format,
-)
+from pathlib import Path
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
-
-from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
-from MicrosoftApiModule import *  # noqa: E402
+from CommonServerPython import CommandResults, ScheduledCommand, DemistoException
+from AzureLogAnalytics import (
+    Client,
+    execute_query_command,
+    list_saved_searches_command,
+    tags_arg_to_request_format,
+    get_saved_search_by_id_command,
+    create_or_update_saved_search_command,
+    delete_saved_search_command,
+    run_search_job_command,
+    get_search_job_command,
+    delete_search_job_command
+)
 
 
 def util_load_json(path: str) -> dict:
@@ -121,7 +118,6 @@ CLIENT = Client(
     proxy=False,
     certificate_thumbprint=None,
     private_key=None,
-    azure_cloud=AZURE_WORLDWIDE_CLOUD,
     client_credentials=False,
 )
 
@@ -263,9 +259,8 @@ def test_test_module_command_with_managed_identities(
     Then:
      - Ensure the output are as expected
     """
+    from AzureLogAnalytics import main, MANAGED_IDENTITIES_TOKEN_URL
     import AzureLogAnalytics
-    from AzureLogAnalytics import MANAGED_IDENTITIES_TOKEN_URL, main
-
     import demistomock as demisto
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
@@ -302,10 +297,9 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         - Ensure the generated url are as expected.
     """
     # prepare
-    import AzureLogAnalytics
-    from AzureLogAnalytics import main
-
     import demistomock as demisto
+    from AzureLogAnalytics import main
+    import AzureLogAnalytics
 
     redirect_uri = "redirect_uri"
     tenant_id = "tenant_id"

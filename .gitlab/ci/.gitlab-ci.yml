@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: remove_pre_commit_and_validate_from_docker_auto_update
+  CURRENT_BRANCH_NAME: add_playbook_failure_filtering
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: remove_pre_commit_and_validate_from_docker_auto_update
+    ref: add_playbook_failure_filtering
     project: "${CI_PROJECT_NAMESPACE}/infra"

@@ -36,10 +36,11 @@ def test_MattermostAskUser(mocker):
     from MattermostAskUser import main
     mocker.patch.object(demisto, 'args', return_value={'message': 'message', 'persistent': 'persistent',
                                                        'replyEntriesTag': 'replyEntriesTag',
-                                                       'task': '1', 'user': {'email'}, 'lifetime': 'test'})
+                                                       'option1': {'no'}, 'option2': {'yes'},
+                                                       'task': 'none', 'user': {'emai'}})
     execute_command_add_entitlement_res = [{'Type': EntryType.NOTE, 'Contents': 'some-guid'}]
     execute_command_send_notification_res = [{'Type': EntryType.NOTE, 'HumanReadable':
-                                                                      'Message sent to Mattermost successfully.'
+                                                                      'Message sent to Slack successfully.'
                                                                       ' \nThread ID is: 1660645689.649679'}]
     execute_mock = mocker.patch.object(demisto, 'executeCommand', side_effect=[execute_command_add_entitlement_res,
                                                                                execute_command_send_notification_res])
