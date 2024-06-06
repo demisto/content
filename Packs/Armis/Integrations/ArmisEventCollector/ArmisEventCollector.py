@@ -241,6 +241,8 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
     # case 2
     elif fetch_start_time:
         after_time = fetch_start_time
+    if after_time:
+        after_time = after_time.replace(tzinfo=None)
     if not after_time or after_time > before_time:
         after_time = before_time - timedelta(minutes=1)
     return after_time, before_time
