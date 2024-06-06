@@ -290,12 +290,15 @@ def read_info_file(filename):
 def write_info_file(filename, contents, overwrite=False):
     demisto.info(f"Saving File '{filename}' with {contents}.")
     mode = 'w' if overwrite else 'a'
-    with open(filename, mode, encoding='utf-8') as file:
-        if overwrite:
-            file.write(contents)
-        else:
-            file.write(f"\n{contents}")
-        demisto.info(f"File '{filename}' saved successfully with {contents}.")
+    try:
+        with open(filename, mode, encoding='utf-8') as file:
+            if overwrite:
+                file.write(contents)
+            else:
+                file.write(f"\n{contents}")
+            demisto.info(f"File '{filename}' saved successfully with {contents}.")
+    except (IOError, OSError) as e:
+        demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
 def opt_name(opt):
@@ -343,7 +346,6 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
         demisto.debug(f"Starting Chrome with {subprocess_options=}")
 
         process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
-        demisto.log(f"{process}")  # TODO: Remoev this log
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
@@ -430,7 +432,7 @@ def chrome_manager():
             or
             case 2: new instance with the same existing chrome configuration as another instance
             or
-            case 3: chrome configuration not exist and integration instance not exist in the file
+            case 3: chrome configuration does not exist and integration instance does not exist in the file
         Then:
             create new browser
         """
@@ -457,7 +459,7 @@ def chrome_manager():
         """
 
         demisto.log(f"case 4, chrome_options not in chromes_options and instance_id in instances_id")  # TODO: Remove log
-
+        demisto.debug(f"Found instance_id but with different {chrome_options=}")
         chrome_port = instance_id_to_port.get(instance_id)
         terminate_chrome(chrome_port)
         delete_row_with_old_chrome_configurations_from_info_file(info, instance_id, chrome_port)
@@ -472,17 +474,13 @@ def chrome_manager():
         """
 
         demisto.log(f"case 5 - instance_id linked to chrome_options - using the existing chrome")  # TODO: Remove log
-
+        demisto.debug(f"Found {instance_id=} with matching {chrome_options=}")
         chrome_port = chrome_options_to_port.get(chrome_options)
         browser = is_chrome_running_locally(chrome_port)
-        if browser:
-            return browser, chrome_port
-        demisto.error(f'Could not find browser for {instance_id=}, {chromes_options=}')
-        return None, None
+        return browser, chrome_port
 
     else:
-        message = f"ERROR: Cannot connect to Chrome with these parameters: {instance_id=}, {chromes_options=}"
-        demisto.log(message)  # TODO: Remove log
+        message = f"ERROR: Cannot connect to Chrome with parameters: {instance_id=}, {chrome_options=}"
         demisto.info(message)
         demisto.error(message)
 
@@ -508,9 +506,10 @@ def get_chrome_instances_info_dictionaries(info):
 def generate_new_chrome_instance(instance_id, chrome_options):
     chrome_port = get_chrome_port()
     browser, chrome_port = start_chrome_headless(str(chrome_port), instance_id, chrome_options)
-    if browser:
-        return browser, chrome_port
-    return None, None
+    return browser, chrome_port
+    # if browser:
+    #     return browser, chrome_port
+    # return None, None
 
 
 def get_chrome_port():
