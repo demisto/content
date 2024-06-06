@@ -33,7 +33,6 @@
 	"threshold": 72,
 	"toServerVersion": "",
 	"type": "multiSelect",
-	"orgType": "multiSelect",
 	"unmapped": false,
 	"unsearchable": false,
 	"useAsKpi": false,

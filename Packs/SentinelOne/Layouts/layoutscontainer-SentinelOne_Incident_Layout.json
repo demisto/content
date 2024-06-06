@@ -1440,7 +1440,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "senineloneawsimage",
+								"fieldId": "sentineloneawsimage",
 								"height": 22,
 								"id": "6e183de0-18e3-11ef-89b6-151b8d6d43c9",
 								"index": 1,
@@ -1449,7 +1449,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "senineloneawsinstanceid",
+								"fieldId": "sentineloneawsinstanceid",
 								"height": 22,
 								"id": "6fd2bf20-18e3-11ef-89b6-151b8d6d43c9",
 								"index": 2,
@@ -1459,7 +1459,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "senineloneawsinstancesize",
+								"fieldId": "sentineloneawsinstancesize",
 								"height": 22,
 								"id": "7134c020-18e3-11ef-89b6-151b8d6d43c9",
 								"index": 3,
@@ -1470,7 +1470,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "senineloneawslocation",
+								"fieldId": "sentineloneawslocation",
 								"height": 22,
 								"id": "72574720-18e3-11ef-89b6-151b8d6d43c9",
 								"index": 4,
@@ -1480,7 +1480,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "senineloneawstags",
+								"fieldId": "sentineloneawstags",
 								"height": 22,
 								"id": "934965e0-23d2-11ef-95fc-1b9c4b27fdb7",
 								"index": 5,
@@ -1490,7 +1490,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "senineloneawsnetwork",
+								"fieldId": "sentineloneawsnetwork",
 								"height": 22,
 								"id": "747c4a00-18e3-11ef-89b6-151b8d6d43c9",
 								"index": 6,
@@ -1553,7 +1553,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "seninelonegcpimage",
+								"fieldId": "sentinelonegcpimage",
 								"height": 22,
 								"id": "82f574a0-225a-11ef-af23-abdacce06c42",
 								"index": 1,
@@ -1562,7 +1562,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "seninelonegcpinstanceid",
+								"fieldId": "sentinelonegcpinstanceid",
 								"height": 22,
 								"id": "84cc3070-225a-11ef-af23-abdacce06c42",
 								"index": 2,
@@ -1571,7 +1571,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "seninelonegcpinstancesize",
+								"fieldId": "sentinelonegcpinstancesize",
 								"height": 22,
 								"id": "871efa10-225a-11ef-af23-abdacce06c42",
 								"index": 3,
@@ -1580,7 +1580,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "seninelonegcplocation",
+								"fieldId": "sentinelonegcplocation",
 								"height": 22,
 								"id": "89df79a0-225a-11ef-af23-abdacce06c42",
 								"index": 4,
@@ -1590,7 +1590,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "seninelonegcptags",
+								"fieldId": "sentinelonegcptags",
 								"height": 22,
 								"id": "906dca10-225a-11ef-af23-abdacce06c42",
 								"index": 5,
@@ -1600,7 +1600,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "seninelonegcpnetwork",
+								"fieldId": "sentinelonegcpnetwork",
 								"height": 22,
 								"id": "8d665670-225a-11ef-af23-abdacce06c42",
 								"index": 6,
@@ -1644,7 +1644,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "senineloneazureimage",
+								"fieldId": "sentineloneazureimage",
 								"height": 22,
 								"id": "a61798a0-225a-11ef-af23-abdacce06c42",
 								"index": 1,
@@ -1654,7 +1654,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "senineloneazureinstanceid",
+								"fieldId": "sentineloneazureinstanceid",
 								"height": 22,
 								"id": "b0494e90-225a-11ef-af23-abdacce06c42",
 								"index": 2,
@@ -1665,7 +1665,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "senineloneazureinstancesize",
+								"fieldId": "sentineloneazureinstancesize",
 								"height": 22,
 								"id": "b503f070-225a-11ef-af23-abdacce06c42",
 								"index": 3,
@@ -1675,7 +1675,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "senineloneazurelocation",
+								"fieldId": "sentineloneazurelocation",
 								"height": 22,
 								"id": "b78c9720-225a-11ef-af23-abdacce06c42",
 								"index": 4,
@@ -1684,7 +1684,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "senineloneazuretags",
+								"fieldId": "sentineloneazuretags",
 								"height": 22,
 								"id": "ba4b6900-225a-11ef-af23-abdacce06c42",
 								"index": 5,

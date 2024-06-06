@@ -83,55 +83,55 @@
 				"OS Version": {
 					"simple": "agentRealtimeInfo.agentOsRevision"
 				},
-				"SeninelOne AWS Image": {
+				"SentinelOne AWS Image": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudImage"
 				},
-				"SeninelOne AWS Instance ID": {
+				"SentinelOne AWS Instance ID": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudInstanceId"
 				},
-				"SeninelOne AWS Instance Size": {
+				"SentinelOne AWS Instance Size": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudInstanceSize"
 				},
-				"SeninelOne AWS Location": {
+				"SentinelOne AWS Location": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudLocation"
 				},
-				"SeninelOne AWS Network": {
+				"SentinelOne AWS Network": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudNetwork"
 				},
-				"SeninelOne AWS Tags": {
+				"SentinelOne AWS Tags": {
 					"simple": "agentDetectionInfo.cloudProviders.AWS.cloudTags"
 				},
-				"SeninelOne AZURE Image": {
+				"SentinelOne AZURE Image": {
 					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudImage"
 				},
-				"SeninelOne AZURE Instance ID": {
+				"SentinelOne AZURE Instance ID": {
 					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudInstanceId"
 				},
-				"SeninelOne AZURE Instance Size": {
+				"SentinelOne AZURE Instance Size": {
 					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudInstanceSize"
 				},
-				"SeninelOne AZURE Location": {
+				"SentinelOne AZURE Location": {
 					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudLocation"
 				},
-				"SeninelOne AZURE Tags": {
+				"SentinelOne AZURE Tags": {
 					"simple": "agentDetectionInfo.cloudProviders.Azure.cloudTags"
 				},
-				"SeninelOne GCP Image": {
+				"SentinelOne GCP Image": {
 					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudImage"
 				},
-				"SeninelOne GCP Instance ID": {
+				"SentinelOne GCP Instance ID": {
 					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudInstanceId"
 				},
-				"SeninelOne GCP Instance Size": {
+				"SentinelOne GCP Instance Size": {
 					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudInstanceSize"
 				},
-				"SeninelOne GCP Location": {
+				"SentinelOne GCP Location": {
 					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudLocation"
 				},
-				"SeninelOne GCP Network": {
+				"SentinelOne GCP Network": {
 					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudNetwork"
 				},
-				"SeninelOne GCP Tags": {
+				"SentinelOne GCP Tags": {
 					"simple": "agentDetectionInfo.cloudProviders.GCP.cloudTags"
 				},
 				"SentinelOne AWS Account": {
