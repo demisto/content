@@ -2179,6 +2179,11 @@ script:
     - name: name
       description: Filters the returned tags to only those containing the value within their name.
     - name: type
+      auto: PREDEFINED
+      predefined:
+      - Owner
+      - Location
+      - Custom
       description: Filters the returned tags to only those of this type.
     - name: page_size
       description: Number of records to retrieve in each API call when pagination is used.
