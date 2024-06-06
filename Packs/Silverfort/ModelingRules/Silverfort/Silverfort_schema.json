@@ -1,7 +1,7 @@
 {
     "silverfort_admin_console_raw": {
         "rt": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "cefdeviceeventclassid": {
