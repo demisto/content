@@ -303,7 +303,7 @@ script:
       description: The machine exposure score.
       type: String
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, False otherwise.
+      description: True if the machine is AAD joined, false otherwise.
       type: Boolean
     - contextPath: MicrosoftATP.Machine.AADDeviceID
       description: The AAD Device ID.
