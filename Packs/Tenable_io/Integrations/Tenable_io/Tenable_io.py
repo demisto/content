@@ -744,7 +744,6 @@ def get_vulnerabilities_export_status(client: Client, assets_last_run):
     Returns: All information from all chunks available.
 
     """
-    vulnerabilities = []
     status, chunks_available = client.get_vuln_export_status(export_uuid=assets_last_run.get("vuln_export_uuid"))
     demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
