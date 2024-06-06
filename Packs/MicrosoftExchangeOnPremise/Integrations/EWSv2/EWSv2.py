@@ -21,7 +21,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol
+from exchangelib.protocol import BaseProtocol, Protocol, FaultTolerance
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
@@ -49,12 +49,17 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
+class exchangelibInsecureSSLAdapter(SSLAdapter):
+
+    def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
+
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
-
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -212,7 +217,7 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibInsecureSSLAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
@@ -247,7 +252,7 @@ def prepare():  # pragma: no cover
             config_args['service_endpoint'] = EWS_SERVER
         else:
             config_args['server'] = EWS_SERVER
-        return Configuration(**config_args), None
+        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), None
 
 
 def construct_config_args(context_dict, credentials):  # pragma: no cover
