@@ -7190,7 +7190,7 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | ip | The endpoint IP address. | Required | 
 | timestamp | The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z Also supports relative time. | Required | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. | Optional | 
+| all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional | 
 
 #### Context Output
 

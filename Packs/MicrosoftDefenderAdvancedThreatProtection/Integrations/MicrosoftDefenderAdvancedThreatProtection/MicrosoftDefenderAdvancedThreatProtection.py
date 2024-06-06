@@ -5080,17 +5080,15 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def handle_machines(machines_response):
+def handle_machines(machines_response: list) ->list[CommandResults]:
     """Converts the raw response of the API to a CommandResults list with all data needed.
-
     Args:
         The raw API response, a list of machines.
-
     Returns:
         CommandResults list.
     """
 
-    headers = ['ID', 'Hostname', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
+    headers = ['ID', 'Hostname','OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
 
     machines_outputs = []
 
@@ -5119,9 +5117,11 @@ def handle_machines(machines_response):
 
 
 def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
-    """Retrieves machines that comunicated with the requested internal ip in the time range of 15 minutes prior and after a given
+    """Retreives Machines that were seen with the requested internal IP in the time range of 15 minutes prior and after a given
     timestamp.
-
+    Args:
+        client: MsClient
+        args: dict
     Returns:
         CommandResults list.
     """
