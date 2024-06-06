@@ -42,6 +42,7 @@ configuration:
   options:
   - Device Code
   - Authorization Code
+  - Client Credentials
 - name: tenant_id
   display: Tenant ID (for Authorization Code mode)
   defaultvalue:
