@@ -3575,10 +3575,10 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
 
 
 def update_address_alteration_policy_command(args: dict) -> CommandResults:
-    id = args.get('policy_id')
     policy_obj, _ = get_arguments_for_policy_command(args)
     # Using dictionary comprehension to filter out keys with None or empty string values
     policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+    id = args.get('policy_id')
 
     data: dict[str, Any] = {
         'id': id,
