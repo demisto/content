@@ -44,21 +44,21 @@ configuration:
   - Authorization Code
   - Client Credentials
 - name: tenant_id
-  display: Tenant ID (for Authorization Code mode)
+  display: Tenant ID
   defaultvalue:
   type: 0
   additionalinfo: ""
   required: false
 - name: credentials
-  display: Client Secret (for Authorization Code mode)
+  display: Client Secret
   defaultvalue:
   type: 9
   additionalinfo: ""
-  displaypassword: Client Secret (for Authorization Code mode)
+  displaypassword: Client Secret
   hiddenusername: true
   required: false
 - name: redirect_uri
-  display: Application redirect URI (for Authorization Code mode)
+  display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
