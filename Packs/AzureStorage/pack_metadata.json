@@ -2,7 +2,11 @@
     "name": "Azure Storage Management",
     "description": "Deploy and manage storage accounts and blob service properties.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "1.2.25",
+=======
+    "currentVersion": "1.2.27",
+>>>>>>> master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

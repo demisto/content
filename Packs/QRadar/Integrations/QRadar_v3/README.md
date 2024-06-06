@@ -1,9 +1,7 @@
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 This integration was integrated and tested with version 14-20 of QRadar v3
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure IBM QRadar v3 on Cortex XSOAR
 
@@ -1488,6 +1486,40 @@ Retrieves search results.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
+
+### qradar-search-delete
+
+***
+Deleted search from Qradar, based on the search ID.
+
+#### Base Command
+
+`qradar-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
+### qradar-reference-sets-list
+
+### qradar-search-cancel
+
+***
+Cancelled search in QRadar based on search_id.
+
+#### Base Command
+
+`qradar-search-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
 
 ### qradar-reference-sets-list
 
