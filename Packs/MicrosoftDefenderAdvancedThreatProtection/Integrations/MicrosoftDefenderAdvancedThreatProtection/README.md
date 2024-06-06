@@ -7211,7 +7211,7 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
 | MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
 | MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, false otherwise. | 
 | MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
 | MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
 | MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
