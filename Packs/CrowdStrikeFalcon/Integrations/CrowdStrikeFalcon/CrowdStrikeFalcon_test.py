@@ -4196,6 +4196,7 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
     else:
         assert entries == []
 
+
 @pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
 def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
     """
