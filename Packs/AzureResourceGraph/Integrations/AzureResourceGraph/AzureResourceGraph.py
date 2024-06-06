@@ -34,8 +34,8 @@ class AzureResourceGraphClient:
             params=self.default_params,
         )
 
-    def query_resources(self, query):
-        request_data = {"query": query}
+    def query_resources(self, query: str, paging_options: dict):
+        request_data = {"query": query, "options": paging_options}
         return self.ms_client.http_request(
             method='POST',
             full_url=f"{self.server}/providers/Microsoft.ResourceGraph/resources",
@@ -45,22 +45,111 @@ class AzureResourceGraphClient:
 
 
 def query_resources_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:
+    limit = arg_to_number(args.get('limit'))
+    page_size = arg_to_number(args.get('page_size'))
+    page_number = arg_to_number(args.get('page'))
     query = args.get('query')
-    response = client.query_resources(query)
+    list_of_query_results = []
+    total_records = 0
+    
+    if page_number and page_size:
+        skip = (page_number - 1) * page_size + 1
+        params = {'$skip': skip, '$top': page_size}
+        response = client.query_resources(query=query, paging_options=params)
+        total_records = response.get('totalRecords')
+        list_of_query_results = response.get('data')
+    elif page_number:
+        params = {'$top': page_size}
+        response = client.query_resources(query=query, paging_options=params)
+        total_records = response.get('totalRecords')
+        list_of_query_results = response.get('data')
+    else:
+        query_results = []
+        skip_token = ""
+        counter = 0
+        
+        while True:
+            if skip_token:
+                params = {'$skipToken': skip_token}
+            else:
+                params = {}
+            
+            response = client.query_resources(query=query, paging_options=params)
 
-    query_data = response.get('data')
-    total_records = response.get('totalRecords')
+            list_of_query_results = response.get('data')
+            query_results.extend(list_of_query_results)
+            counter += len(list_of_query_results)
+            if limit and counter >= limit:
+                break
+            if '$skipToken' in response and (not limit or counter < limit):
+                skip_token = response.get('$skipToken')
+            else:
+                break
+            
+        total_records = response.get('totalRecords')
+        list_of_query_results = query_results
 
-    title = f"Results of query:\n```{query}```\n\n Total Records:{total_records}"
-    human_readable = tableToMarkdown(title, query_data, removeNull=True)
+    if limit:
+        list_of_query_results = query_results[:limit]
+
+    title = f"Results of query:\n```{query}```\n\n Total Number of Possible Records:{total_records} \n"
+    human_readable = tableToMarkdown(title, list_of_query_results, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='AzureResourceGraph.Query',
         outputs_key_field='Query',
-        outputs=query_data,
+        outputs=list_of_query_results,
         raw_response=response
     )
+
+
+# def query_resources_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:
+#     """
+    
+#     reference: https://learn.microsoft.com/en-us/rest/api/azureresourcegraph/resourcegraph/resources/resources?view=rest-azureresourcegraph-resourcegraph-2022-10-01&tabs=HTTP
+
+#     Args:
+#         client (AzureResourceGraphClient): _description_
+#         args (dict[str, Any]): _description_
+#             limit
+#             page_size
+#             page
+#             sort
+
+#     Returns:
+#         CommandResults: _description_
+#     """
+#     limit = arg_to_number(args.get('limit'))
+#     page_size = arg_to_number(args.get('page_size'))
+#     sort = arg_to_number(args.get('sort', "desc"))
+#     skiptoken = arg_to_number(args.get('skiptoken'))
+    
+#     facets = {
+#         "sortOrder": sort
+#     }
+    
+#     options = {
+#         "$top":limit
+#     }
+    
+#     query = args.get('query')
+#     response = client.query_resources(query=query, facets=facets, options=options)
+
+#     query_data = response.get('data')
+#     total_records = response.get('totalRecords')
+
+#     title = f"Results of query:\n```{query}```\n\n Total Records:{total_records}"
+#     human_readable = tableToMarkdown(title, query_data, removeNull=True)
+
+#     return CommandResults(
+#         readable_output=human_readable,
+#         outputs_prefix='AzureResourceGraph.Query',
+#         outputs_key_field='Query',
+#         outputs=query_data,
+#         raw_response=response
+#     )
+    
 
 
 def list_operations_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:

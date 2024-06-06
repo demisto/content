@@ -106,6 +106,12 @@ script:
     description: Gets all Azure Resource Graph operations permissions and descriptions.
   - name: azure-rg-query
     arguments:
+    - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
+      name: limit
+    - description: The maximum number of operations to return for page.
+      name: page_size
+    - description: The page number to return.
+      name: page
     - name: query
       required: true
       description: The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL).
