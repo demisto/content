@@ -11,10 +11,12 @@ configuration:
   type: 0
   required: true
   additionalinfo: This is base URL for your instance.
-- display: API Key
+- display: ""
+  displaypassword: API Key
   name: credentials
   type: 9
   required: true
+  hiddenusername: true
   additionalinfo: This is API key for your instance, this can be created in Safe Breach User                 Administration -> API keys, it must be saved as there is no way to view it again.
 - display: Account ID
   name: account_id
