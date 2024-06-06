@@ -112,7 +112,7 @@ class CipherTrustClient(BaseClient):
     """ A client class to interact with the Thales CipherTrust API """
 
     def __init__(self, username: str, password: str, server_url: str, proxy: bool, verify: bool):
-        base_url = urljoin(server_url, 'api/v1')
+        base_url = urljoin(server_url, '/api/v1')
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         res = self.create_auth_token(username, password)
         self._headers = {'Authorization': f'Bearer {res.get("jwt")}', 'accept': 'application/json'}
