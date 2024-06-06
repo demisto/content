@@ -208,3 +208,22 @@ def test_list_to_headers_and_lines(list_data, expected_headers, expected_lines):
     headers, lines = list_to_headers_and_lines(list_data, ",")
     assert expected_headers == headers
     assert expected_lines == lines
+
+
+def test_parse_list_with_new_line_at_the_end(mocker):
+    """
+    Given:
+        - A list with a new line at the end.
+    When:
+        - Parsing the list.
+    Then:
+        - Make sure that no exception is raised and the code finished gracefully.
+    """
+    list_with_new_line_at_the_end = """,mapping_framework,mapping_framework_version,capability_group,capability_id
+0,veris,1.3.7,action.hacking
+
+"""
+    from GetListRow import parse_list
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": list_with_new_line_at_the_end}])
+    res = parse_list(parse_all='false', header="mapping_framework", value="veris", list_name='test_list', list_separator=',')
+    assert res
