@@ -926,7 +926,7 @@ def test_create_block_sender_policy_command(mocker):
             'fromValue': 'google.com', 'option': 'block_sender', 'toType': 'everyone'}
     mock_response = util_load_json('test_data/create_block_sender_policy_response.json')
     result_outputs = util_load_json('test_data/create_block_sender_policy_result_outputs.json')
-    result_readable_output = util_load_json('test_data/create_block_sender_policy_result_readable_output.json')
+    result_readable_output = util_load_json('test_data/create_block_sender_policy_result_readable_output.md')
     mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=mock_response)
     result = MimecastV2.create_block_sender_policy_command(args)
     assert result.outputs == result_outputs
