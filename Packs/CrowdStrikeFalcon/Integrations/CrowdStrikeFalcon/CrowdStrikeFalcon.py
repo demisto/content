@@ -2315,15 +2315,20 @@ def get_remote_idp_or_mobile_detection_data(remote_incident_id):
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
+    demisto.debug(f'in get_remote_idp_or_mobile_detection_data {mirrored_data=}')
     detection_type = ''
+    mirroring_fields = ['status']
     updated_object: dict[str, Any] = {}
     if 'idp' in mirrored_data['product']:
         updated_object = {'incident_type': IDP_DETECTION}
         detection_type = 'IDP'
+        mirroring_fields.append('id')
     if 'mobile' in mirrored_data['product']:
         updated_object = {'incident_type': MOBILE_DETECTION}
         detection_type = 'Mobile'
-    set_updated_object(updated_object, mirrored_data, ['status'])
+        mirroring_fields.append('mobile_detection_id')
+    set_updated_object(updated_object, mirrored_data, mirroring_fields)
+    demisto.debug(f'in get_remote_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
     return mirrored_data, updated_object, detection_type
 
 

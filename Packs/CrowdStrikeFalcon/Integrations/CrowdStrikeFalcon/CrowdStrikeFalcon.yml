@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdstrikeFalcon
+  id: CrowdstrikeFalcon - Rotem
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -194,8 +194,8 @@ configuration:
   advanced: true
   required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
-name: CrowdstrikeFalcon
+display: CrowdStrike Falcon - Rotem
+name: CrowdstrikeFalcon - Rotem
 script:
   commands:
   - arguments:
