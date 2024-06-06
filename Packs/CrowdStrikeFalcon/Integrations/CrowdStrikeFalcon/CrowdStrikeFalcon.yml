@@ -170,7 +170,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: The Crowdsrike Falcon statuses that will reopen an incident in XSOAR if it is closed.
+  additionalinfo: Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination.
   options:
   - New
   - In progress
