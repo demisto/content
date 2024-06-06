@@ -352,6 +352,8 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     content_reviewers_set = set(content_reviewers)
     print (f"Content reviewers are : {content_reviewers_set}")
     for pr in other_prs_by_same_user:
+        print (f'the PR is: {pr}')
+        print (f'the requested reviewers are : {pr.requested_reviewers}')
         reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
         print(f'reviewer names are : {reviewer_names}')
         existing_reviewer = content_reviewers_set.intersection(reviewer_names)
