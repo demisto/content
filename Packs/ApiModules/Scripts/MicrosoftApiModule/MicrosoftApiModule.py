@@ -8,7 +8,7 @@ import requests
 import re
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
+#TEST
 
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
