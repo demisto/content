@@ -282,7 +282,7 @@ script:
       description: The last IP address on the machine.
       type: String
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: The last machine IP to access the internet.
+      description: The last machine IP address to access the internet.
       type: String
     - contextPath: MicrosoftATP.Machine.OSBuild
       description: The operating system build number.
