@@ -126,9 +126,10 @@ class TestHelperFunction:
     case_last_run_exist_after_higher_than_before = (date_1, datetime_2, (datetime(2023, 1, 1, 0, 59), datetime(2023, 1, 1, 1, 0)))
     case_last_run_exist_after_lower_than_before = (date_3, datetime_4, (datetime_3, datetime(2023, 1, 1, 1, 0)))
     case_from_date_parameter_after_higher_than_before = (None, datetime_1,
-                                                         (datetime(2023, 1, 1, 0, 59), datetime(2023, 1, 1, 1, 0)))  # type: ignore
-    case_from_date_parameter_after_lower_than_before =(None, datetime_3,
-                                                       (datetime(2023, 1, 1, 0, 0), datetime(2023, 1, 1, 1, 0)))  # type: ignore
+                                                         (datetime(2023, 1, 1, 0, 59),
+                                                          datetime(2023, 1, 1, 1, 0)))  # type: ignore
+    case_from_date_parameter_after_lower_than_before = (None, datetime_3,
+                                                        (datetime(2023, 1, 1, 0, 0), datetime(2023, 1, 1, 1, 0)))  # type: ignore
     case_first_fetch_no_from_date_parameter = (None, None, (datetime(2023, 1, 1, 0, 59), datetime(2023, 1, 1, 1, 0)))
 
     @pytest.mark.parametrize(
