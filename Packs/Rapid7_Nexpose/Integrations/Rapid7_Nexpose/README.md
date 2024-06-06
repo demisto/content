@@ -3035,3 +3035,73 @@ There is no context output for this command.
 
 >Added assets 8.8.8.8 to site with ID 848
 
+### nexpose-list-asset-group
+
+***
+Return a list of asset groups.
+
+#### Base Command
+
+`nexpose-list-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | Get asset group by ID. | Optional | 
+| group_name | Filters the returned asset groups to only those containing the value within their name. | Optional | 
+| type | Filters the returned asset groups to only those of this type. Possible values are: static, dynamic. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | A number of records to limit the response to. | Optional | 
+| sort | The criteria to sort the records by, in the format property[,ASC\|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetGroup.assets | Number | The number of assets in the asset group. | 
+| Nexpose.AssetGroup.id | Number | The unique identifier of the asset group. | 
+| Nexpose.AssetGroup.name | String | The name of the asset group. | 
+| Nexpose.AssetGroup.riskScore | Number | The cumulative risk score of the asset group. | 
+| Nexpose.AssetGroup.type | String | The type of the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.critical | Number | The number of critical vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.moderate | Number | The number of moderate vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.severe | Number | The number of severe vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.total | Number | The total number of vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.description | String | The description of the asset group. | 
+#### Command example
+```!nexpose-list-asset-group limit=2```
+### nexpose-create-asset-group
+
+***
+Create an asset group.
+
+#### Base Command
+
+`nexpose-create-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The asset group name. | Required | 
+| type | The asset group type. Possible values are: static, dynamic. | Required | 
+| description | The description of the asset group. | Required | 
+| ip_address_is | A specific IP address to search for. | Optional | 
+| host_name_is | A specific host name to search for. | Optional | 
+| risk_score_higher_than | A minimum risk score to use as a filter. | Optional | 
+| vulnerability_title_contains | A string to search for in vulnerability titles. | Optional | 
+| site_id_in | Site IDs to filter for. Can be a comma-separated list. | Optional | 
+| site_name_in | Site names to filter for. Can be a comma-separated list. | Optional | 
+| match | Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included. Possible values are: All, Any. Default is Any. | Optional | 
+| query | Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetGroup.id | int | The asset group ID. | 
+
+#### Command example
+```!nexpose-create-asset-group name=test3 type=dynamic ip_address_is=1.1.1.1 query=`risk-score is-greater-than 8000` escription=test```

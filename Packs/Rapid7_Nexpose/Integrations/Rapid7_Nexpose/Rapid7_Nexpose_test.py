@@ -2001,3 +2001,71 @@ def test_parse_filters(mocker, mock_client, kwargs, expected_output):
     result = parse_asset_filters(client=mock_client, **kwargs)
 
     assert result == expected_output
+
+
+@pytest.mark.parametrize(
+    "name, type, description, ip_address_is, match, expected_post_data",
+    [
+        ("test", "dynamic", "description test", "1.1.1.1", "Any",
+            {
+                "name": "test",
+                "type": "dynamic",
+                "description": "description test",
+                "searchCriteria": {
+                    "filters": [
+                        {"field": "ip-address", "operator": "is", "value": "1.1.1.1"}
+                    ],
+                    "match": "Any",
+                },
+            },
+         )
+    ],
+)
+def test_create_asset_group_command(mocker, mock_client, name, type, description, ip_address_is, match, expected_post_data):
+    http_request = mocker.patch.object(
+        BaseClient, "_http_request", return_value={"id": 1}
+    )
+    result = create_asset_group_command(
+        client=mock_client,
+        name=name,
+        type=type,
+        description=description,
+        ip_address_is=ip_address_is,
+        match=match,
+    )
+    http_request.assert_called_with(
+        url_suffix="/asset_groups",
+        method="POST",
+        resp_type="json",
+        json_data=expected_post_data,
+    )
+    assert result.outputs == {"id": 1}
+
+
+@pytest.mark.parametrize("name, type, group_id, limit, api_mock_file", [
+    ("test", "dynamic", None, "2", "client_get_asset_groups"),
+    (None, None, "1", None, "client_get_asset_groups")
+])
+def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limit, api_mock_file):
+    api_data = load_test_data("api_mock", api_mock_file)
+    paged_http_request = mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
+    http_request = mocker.patch.object(Client, "_http_request", return_value=api_data[0])
+    get_list_asset_group_command(client=mock_client, group_name=name, type=type, group_id=group_id, limit=limit)
+
+    if group_id is None:
+        paged_http_request.assert_called_with(
+            url_suffix="/asset_groups",
+            method="GET",
+            resp_type="json",
+            params={"name": "test", "type": "dynamic"},
+            page_size=None,
+            page=None,
+            limit=2,
+            sort=None
+        )
+    else:
+        http_request.assert_called_with(
+            url_suffix=f"/asset_groups/{group_id}",
+            method="GET",
+            resp_type="json"
+        )

@@ -2438,6 +2438,104 @@ script:
     - contextPath: Nexpose.ExcludedAssetGroup.resources
       description: The asset group ID.
       type: int
+  - name: nexpose-create-asset-group
+    arguments:
+    - name: name
+      required: true
+      description: The asset group name.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - static
+      - dynamic
+      description: The asset group type.
+    - name: description
+      required: true
+      description: The description of the asset group.
+    - name: ip_address_is
+      description: A specific IP address to search for.
+    - name: host_name_is
+      description: A specific host name to search for.
+    - name: risk_score_higher_than
+      description: A minimum risk score to use as a filter.
+    - name: vulnerability_title_contains
+      description: A string to search for in vulnerability titles.
+    - name: site_id_in
+      description: Site IDs to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: site_name_in
+      description: Site names to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Any
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included.
+        "Any" requires only one filter to match for an asset to be included.
+      defaultValue: Any
+    - name: query
+      description: Additional queries to use as a filter, following the Search Criteria API standard.
+        The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
+        For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+    description: Create an asset group.
+    outputs:
+    - contextPath: Nexpose.AssetGroup.id
+      description: The asset group ID.
+      type: int
+  - name: nexpose-list-asset-group
+    arguments:
+    - name: group_id
+      description: Get asset group by ID.
+    - name: group_name
+      description: Filters the returned asset groups to only those containing the value within their name.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - static
+      - dynamic
+      description: Filters the returned asset groups to only those of this type.
+    - name: page_size
+      description: Number of records to retrieve in each API call when pagination is used.
+    - name: page
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
+    - name: limit
+      description: A number of records to limit the response to.
+    - name: sort
+      description: The criteria to sort the records by, in the format property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters.
+    description: Return a list of asset groups.
+    outputs:
+    - contextPath: Nexpose.AssetGroup.assets
+      description: 'The number of assets in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.id
+      description: 'The unique identifier of the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.name
+      description: 'The name of the asset group.'
+      type: String
+    - contextPath: Nexpose.AssetGroup.riskScore
+      description: 'The cumulative risk score of the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.type
+      description: 'The type of the asset group.'
+      type: String
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.critical
+      description: 'The number of critical vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.moderate
+      description: 'The number of moderate vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.severe
+      description: 'The number of severe vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.total
+      description: 'The total number of vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.description
+      description: 'The description of the asset group.'
+      type: String
   runonce: false
   script: '-'
   type: python

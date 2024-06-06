@@ -2063,6 +2063,40 @@ class Client(BaseClient):
 
         return self._http_request(**request_data)
 
+    def create_asset_group(self, name: str, type: str, description: str, filters: list[dict] | None = None,
+                           match: str | None = MATCH_DEFAULT_VALUE) -> dict:
+        json_data = assign_params(name=name, type=type, description=description,
+                                  searchCriteria=find_valid_params(filters=filters, match=match))
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/asset_groups",
+            json_data=json_data,
+            resp_type="json"
+        )
+
+    def get_asset_groups(self, name: str | None = None, type: str | None = None, page_size: int | None = DEFAULT_PAGE_SIZE,
+                         page: int | None = None, sort: str | None = None, limit: int | None = None) -> list[dict]:
+        params = assign_params(name=name, type=type)
+
+        return self._paged_http_request(
+            url_suffix="/asset_groups",
+            method="GET",
+            params=params,
+            page_size=page_size,
+            page=page,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_asset_group_by_id(self, id: int) -> list[dict]:
+        return self._http_request(
+            url_suffix=f"/asset_groups/{id}",
+            method="GET",
+            resp_type="json",
+        )
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -5925,6 +5959,65 @@ def list_site_assets_command(client: Client, site_id: str, asset_type: str, targ
     )
 
 
+def create_asset_group_command(client: Client, name: str, description: str, type: str, match: str | None = None,
+                               ip_address_is: str | None = None, host_name_is: str | None = None,
+                               risk_score_higher_than: str | None = None, vulnerability_title_contains: str | None = None,
+                               site_id_in: str | None = None, site_name_in: str | None = None, query: str | None = None, ):
+    filters_data = parse_asset_filters(
+        client=client,
+        ip_address_is=ip_address_is,
+        host_name_is=host_name_is,
+        risk_score_higher_than=risk_score_higher_than,
+        site_id_in=site_id_in,
+        site_name_in=site_name_in,
+        vulnerability_title_contains=vulnerability_title_contains,
+        query=query)
+
+    if type == "dynamic" and not filters_data:
+        raise DemistoException("you must use filters to create a dynamic asset group")
+
+    filters = convert_asset_search_filters(filters_data)
+
+    res = client.create_asset_group(name=name, description=description, type=type, filters=filters, match=match)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"A new asset group {name} created successfully with ID: {res.get('id', 'ID not found')}",
+        raw_response=res
+    )
+
+
+def get_list_asset_group_command(client: Client, group_id: str | None = None, group_name: str | None = None,
+                                 type: str | None = None, page_size: str | None = None, page: str | None = None,
+                                 limit: str | None = None, sort: str | None = None):
+    if id_int := arg_to_number(group_id, required=False):
+        asset_groups = client.get_asset_group_by_id(id=id_int)
+    else:
+        page_size_int = arg_to_number(page_size, required=False)
+        page_int = arg_to_number(page, required=False)
+        limit_int = arg_to_number(limit, required=False)
+
+        asset_groups = client.get_asset_groups(
+            name=group_name,
+            type=type,
+            page_size=page_size_int,
+            page=page_int,
+            limit=limit_int,
+            sort=sort
+        )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=asset_groups,
+        readable_output=tableToMarkdown("Asset groups list", remove_dict_key(deepcopy(asset_groups), "searchCriteria"),
+                                        headerTransform=string_to_table_header),
+        raw_response=asset_groups
+    )
+
+
 def main():  # pragma: no cover
     try:
         args = demisto.args()
@@ -6097,6 +6190,10 @@ def main():  # pragma: no cover
             results = list_site_assets_command(client=client, asset_type="assets", target_type="excluded", **args)
         elif command == "nexpose-list-site-excluded-asset-group":
             results = list_site_assets_command(client=client, asset_type="asset_groups", target_type="excluded", **args)
+        elif command == "nexpose-list-asset-group":
+            results = get_list_asset_group_command(client=client, **args)
+        elif command == "nexpose-create-asset-group":
+            results = create_asset_group_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

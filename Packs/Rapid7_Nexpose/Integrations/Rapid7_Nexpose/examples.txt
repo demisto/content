@@ -57,3 +57,5 @@
 !nexpose-remove-site-excluded-asset site_id=848 assets=8.8.8.8
 !nexpose-list-site-excluded-asset site_id=848
 !nexpose-list-site-excluded-asset-group site_id=848
+!nexpose-list-asset-group limit=2
+!nexpose-create-asset-group name=test3 type=dynamic ip_address_is=1.1.1.1 risk_score_higher_than=8000 description=test
