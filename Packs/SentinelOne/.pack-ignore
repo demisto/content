@@ -13,3 +13,6 @@ whitelist
 [file:SentinelOneModelingRules.yml]
 ignore=MR108
 
+[file:layoutscontainer-SentinelOne_Incident_Layout.json]
+ignore=LO107
+
