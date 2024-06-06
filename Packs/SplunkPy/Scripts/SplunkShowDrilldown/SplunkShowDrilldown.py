@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_RESULTS_TO_DISPLAY = 10  # TODO: need to remove this const (used only for demo)
-
 
 def main():
     drilldown_results = []
@@ -39,8 +37,7 @@ def main():
                     markdown += "\nDrilldown enrichment failed."
 
                 elif results := drilldown.get("query_results", []):
-                    markdown += tableToMarkdown("", results[:MAX_RESULTS_TO_DISPLAY], headers=results[0].keys())
-                    # markdown += tableToMarkdown("", results, headers=results[0].keys())
+                    markdown += tableToMarkdown("", results, headers=results[0].keys())
 
                 else:
                     markdown += "\nNo results found for drilldown search."
