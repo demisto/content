@@ -906,3 +906,30 @@ def test_update_address_alteration_policy_command(mocker):
     assert result.outputs == mock_response.get("data")
     assert result.readable_output == f'{id} has been updated successfully'
     assert result.outputs_prefix == 'Mimecast.AddressAlterationPolicy'
+    assert result.outputs_key_field == 'id'
+
+
+def test_create_block_sender_policy_command(mocker):
+    """Unit test
+    Given:
+    - Valid input arguments to create a block sender policy.
+
+    When:
+    - The create_or_update_policy_request method is called.
+
+    Then:
+    - Ensure the returned result matches the expected output.
+    - Ensure the readable output is as expected.
+    - Ensure the outputs prefix and key field are correct.
+    """
+    args = {'description': 'test', 'fromPart': 'both', 'fromType': 'email_domain',
+            'fromValue': 'google.com', 'option': 'block_sender', 'toType': 'everyone'}
+    mock_response = util_load_json('test_data/create_block_sender_policy_response.json')
+    result_outputs = util_load_json('test_data/create_block_sender_policy_result_outputs.json')
+    result_readable_output = util_load_json('test_data/create_block_sender_policy_result_readable_output.json')
+    mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=mock_response)
+    result = MimecastV2.create_block_sender_policy_command(args)
+    assert result.outputs == result_outputs
+    assert result.readable_output == result_readable_output
+    assert result.outputs_prefix == 'Mimecast.BlockedSendersPolicy'
+    assert result.outputs_key_field == 'id'
