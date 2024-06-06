@@ -241,7 +241,7 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
-  - description: Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+  - description: Find machines seen with the requested internal IP address in the time range of 15 minutes prior and after a given timestamp.
     name: microsoft-atp-list-machines-by-ip
     arguments:
     - description: The endpoint IP address.
