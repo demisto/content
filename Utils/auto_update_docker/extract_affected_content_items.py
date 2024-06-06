@@ -405,7 +405,7 @@ def get_affected_content_items(
         default="",
         help=(
             "A comma separated key:value pair, where the keys are docker images, and values are the"
-            " biggest tag of all the effected CVEs tags for a given image, and if an image has a tag equal or less than it,"
+            " biggest tag of all the affected CVEs tags for a given image, and if an image has a tag equal or less than it,"
             " then it will be updated to the latest tag."
         ),
         parser=docker_tags_parser,
@@ -462,9 +462,6 @@ def get_affected_content_items(
         images_to_exclude=images_to_exclude,
         all_docker_images=list(content_items_by_docker_image.keys()),
     )
-
-    # if benchmark_docker_tags and set(benchmark_docker_tags.keys()) != set(affected_docker_images):
-    #     raise Exception("Dockers configured in benchmark_docker_tags should match the dockers of the docker_images_arg argument")
 
     default_batches: list[dict[str, Any]] = image_configs["default"]["batches"]
     affected_content_items_by_docker_image = get_affected_content_items_by_docker_image(
