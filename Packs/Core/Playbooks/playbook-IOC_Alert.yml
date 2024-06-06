@@ -1536,6 +1536,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test Playbook - IOC Alert
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
