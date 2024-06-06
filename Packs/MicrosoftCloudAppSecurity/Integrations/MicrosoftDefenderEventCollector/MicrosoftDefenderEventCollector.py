@@ -162,11 +162,11 @@ class IntegrationGetEvents(ABC):
     ) -> None:
         self.client = client
         self.options = options
-        self.event_types_to_fetch = {}
-        for event_type in event_types_to_fetch:
-            if event_type in MAPPING_EVENT_TYPES:
-                mapped_event_type = MAPPING_EVENT_TYPES[event_type]
-                self.event_types_to_fetch[mapped_event_type] = TYPES_SYNTAX[mapped_event_type]
+        self.event_types_to_fetch = {
+            MAPPING_EVENT_TYPES[event_type]: TYPES_SYNTAX[MAPPING_EVENT_TYPES[event_type]]
+            for event_type in event_types_to_fetch
+            if event_type in MAPPING_EVENT_TYPES
+        }
 
     def run(self):
         stored = []
