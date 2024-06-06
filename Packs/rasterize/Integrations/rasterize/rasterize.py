@@ -371,39 +371,42 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     return None, None
 
 
-def terminate_all_chromes():
-    demisto.log("in terminate_all_chromes")
+# def terminate_all_chromes():
+#     demisto.log("in terminate_all_chromes")
+#     processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
+#     chrome_identifiers = ["chrom", "headless"]
+#     chrome_renderer_identifiers = ["--type=renderer"]
+#     process_in_list = [process for process in processes
+#                        if all(identifier in process for identifier in chrome_identifiers)
+#                        and not any(identifier in process for identifier in chrome_renderer_identifiers)]
+#
+#     demisto.log(f"{process_in_list}")
+#     demisto.log(f"len: {len(process_in_list)}")
+#
+#     pids = [int(process.split()[1]) for process in process_in_list]
+#     os.setpgid(pids[0], 0)
+#     os.killpg(pids[0], signal.SIGTERM)
+
+
+def terminate_chrome(chrome_port=None, killall=False):
     processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
-    chrome_identifiers = ["chrom", "headless"]
     chrome_renderer_identifiers = ["--type=renderer"]
+    chrome_identifiers = ["chrom", "headless"] if killall else ["chrom", "headless", f"--remote-debugging-port={chrome_port}"]
     process_in_list = [process for process in processes
                        if all(identifier in process for identifier in chrome_identifiers)
                        and not any(identifier in process for identifier in chrome_renderer_identifiers)]
 
-    demisto.log(f"{process_in_list}")
-    demisto.log(f"len: {len(process_in_list)}")
+    if killall:
+        pids = [int(process.split()[1]) for process in process_in_list]
+    else:
+        process_string_representation = process_in_list[0]
+        pids = [int(process_string_representation.split()[1])]
 
-    pids = [int(process.split()[1]) for process in process_in_list]
-    os.setpgid(pids[0], 0)
-    os.killpg(pids[0], signal.SIGTERM)
-
-
-def terminate_chrome(chrome_port):
-    processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
-    chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={chrome_port}"]
-
-    chrome_renderer_identifiers = ["--type=renderer"]
-    process_in_list = [process for process in processes
-                       if all(identifier in process for identifier in chrome_identifiers)
-                       and not any(identifier in process for identifier in chrome_renderer_identifiers)]
-
-    process_string_representation = process_in_list[0]
-    pid = int(process_string_representation.split()[1])
-    process = psutil.Process(pid)
-
-    if process:
-        demisto.debug(f'terminate_chrome, {process=} on port {chrome_port}')
-        process.kill()
+    for pid in pids:
+        process = psutil.Process(pid)
+        if process:
+            demisto.debug(f'terminate_chrome, {process=} on port {chrome_port}')
+            process.kill()
 
     demisto.debug('terminate_chrome, Finish')
 
@@ -413,7 +416,7 @@ def chrome_manager():
     chrome_options = demisto.callingContext.get('params', {}).get('chrome_options')
     demisto.log(f"in chrome_manager {chrome_options=}, {instance_id=}")  # TODO: Remove log
     demisto.log(f"{instance_id=}")  # TODO: Remove log
-    terminate_all_chromes()
+    # terminate_chrome()
     # TODO: Remove all instances from chrome_instances.tsv
     exit()
     if not instance_id:
