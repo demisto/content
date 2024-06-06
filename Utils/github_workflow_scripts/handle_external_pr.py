@@ -350,9 +350,12 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     - Reviewer of the found pr's
     """
     content_reviewers_set = set(content_reviewers)
+    print (f"Content reviewers are : {content_reviewers_set}")
     for pr in other_prs_by_same_user:
         reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
+        print(f'reviewer names are : {reviewer_names}')
         existing_reviewer = content_reviewers_set.intersection(reviewer_names)
+        print(f'existing reviewer {existing_reviewer}')
         if existing_reviewer:
             return existing_reviewer.pop()
         else:
@@ -376,7 +379,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     else:
         pr_creator = pr.user.login
 
-    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, "enes-oezdemir", pr_number)
 
     reviewer_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
     if reviewer_to_assign:
