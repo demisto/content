@@ -201,8 +201,6 @@ tasks:
         simple: "2"
       hostname:
         simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
-      retry-count:
-        simple: "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -217,7 +215,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
