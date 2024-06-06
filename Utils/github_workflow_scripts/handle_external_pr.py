@@ -332,7 +332,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
-        if pr.number == "34741":
+        if int(pr.number) == 34741:
             continue
         existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
         if existing_pr_author == pr_creator:
