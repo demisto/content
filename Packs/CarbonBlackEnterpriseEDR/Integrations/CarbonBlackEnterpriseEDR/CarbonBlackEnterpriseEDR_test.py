@@ -290,7 +290,7 @@ def test_test_module(mocker):
         - All relevant parameters for the integration.
 
     When:
-        - testing the integration.
+        - testing the configuration of the integration.
 
     Then:
         - The http request is called with the right API version.
