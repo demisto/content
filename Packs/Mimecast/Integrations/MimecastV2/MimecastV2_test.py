@@ -831,6 +831,7 @@ def test_create_antispoofing_bypass_policy_command(mocker):
     assert result.outputs == mock_response.get("data")
     assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
     assert result.readable_output == f'Anti-Spoofing Bypass policy {id} was created successfully'
+    assert result.outputs_key_field == "id"
 
 
 def test_update_antispoofing_bypass_policy_command(mocker):
