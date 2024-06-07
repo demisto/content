@@ -768,6 +768,7 @@ def init_rtr_batch_session(host_ids: list, offline=False, timeout=None) -> str:
         :return: The session batch ID to execute the command on
     """
     endpoint_url = '/real-time-response/combined/batch-init-session/v1'
+    demisto.debug(f'calling endpoint {endpoint_url}')
     body = json.dumps({
         'host_ids': host_ids,
         'queue_offline': offline
@@ -3996,8 +3997,8 @@ def run_command():
     output = []
 
     if target == 'batch':
-        batch_id = args.get('batch_id', None) if args.get(
-            'batch_id', None) else init_rtr_batch_session(host_ids, offline, timeout)
+        batch_id = args.get('batch_id', None) if args.get('batch_id', None) else \
+            init_rtr_batch_session(host_ids, offline, timeout)
         demisto.debug(f"{args.get('batch_id', None)=} , {batch_id=}")
         timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
         timer.start()
@@ -5025,7 +5026,9 @@ def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str
     """
     General function to run RTR commands depending on the given command.
     """
+    demisto.debug(f'calling init rtr batch session with {timeout=}')
     batch_id = init_rtr_batch_session(host_ids, offline, timeout=timeout)
+    demisto.debug('calling execute_run_batch_write_cmd_with_timer')
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
                                     host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
