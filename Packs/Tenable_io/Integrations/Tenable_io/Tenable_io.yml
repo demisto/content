@@ -1322,33 +1322,711 @@ script:
     - contextPath: InfoFile.Extension
       description: The file extension of the file.
   - arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: Set this argument to True in order to create events, otherwise the command will only display the events.
-        name: should_push_events
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
-      - description: The maximum number of alerts to return (maximum value - 5000).
-        name: limit
-      - description: Return events that occurred after the specified date.
-        name: from_date
-      - description: Return events that occurred before the specified date.
-        name: to_date
-      - description: Return events that contain the specified actor UUID.
-        name: actor_id
-      - description: Return events matching the specified target UUID.
-        name: target_id
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: The maximum number of alerts to return (maximum value - 5000).
+      name: limit
+    - description: Return events that occurred after the specified date.
+      name: from_date
+    - description: Return events that occurred before the specified date.
+      name: to_date
+    - description: Return events that contain the specified actor UUID.
+      name: actor_id
+    - description: Return events matching the specified target UUID.
+      name: target_id
     description: Returns audit logs extracted from Tenable io.
     name: tenable-io-get-audit-logs
+  - name: tenable-io-list-templates
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - scan
+      - policy
+      - remediation
+      description: The type of templates to retrieve (scan, policy, or remediation).
+    outputs:
+    - contextPath: TenableIO.Templates.unsuported
+      description: If true, the template is not supported.
+      type: boolean
+    - contextPath: TenableIO.Templates.cloud_only
+      description: If true, the template is only available on the cloud.
+      type: boolean
+    - contextPath: TenableIO.Templates.desc
+      description: The description of the template.
+      type: string
+    - contextPath: TenableIO.Templates.subscription_only
+      description: If true, the template is only available for subscribers.
+      type: boolean
+    - contextPath: TenableIO.Templates.is_was
+      description: If true, the template can be used for Tenable Web App Scanning only.
+      type: boolean
+    - contextPath: TenableIO.Templates.title
+      description: The long name of the template.
+      type: string
+    - contextPath: TenableIO.Templates.is_agent
+      description: If true, the template can only be used for agent scans.
+      type: boolean
+    - contextPath: TenableIO.Templates.uuid
+      description: The UUID for the template. Use this value to specify the template when creating scans and policies.
+      type: string
+    - contextPath: TenableIO.Templates.manager_only
+      description: If true, can only be used by manager.
+      type: boolean
+    - contextPath: TenableIO.Templates.name
+      description: The short name of the template.
+      type: string
+    description: 'Lists Tenable-provided scan templates. '
+  - name: tenable-io-get-plugin-details
+    arguments:
+    - name: plugin_id
+      required: true
+      description: The ID of the plugin to lookup within the family.
+    outputs:
+    - contextPath: TenableIO.PluginDetails.risk_factor
+      description: The severity level of the vulnerabilities targeted by the plugin.
+      type: string
+    - contextPath: TenableIO.PluginDetails.plugin_name
+      description: The name of the plugin.
+      type: string
+    - contextPath: TenableIO.PluginDetails.plugin_publication_date
+      description: The date the plugin was published.
+      type: date
+    - contextPath: TenableIO.PluginDetails.family_name
+      description: The name of the plugin family.
+      type: string
+    - contextPath: TenableIO.PluginDetails.id
+      description: The ID of the plugin.
+      type: number
+    - contextPath: TenableIO.PluginDetails.synopsis
+      description: A brief summary of the vulnerability.
+      type: string
+    - contextPath: TenableIO.PluginDetails.description
+      description: The description of the vulnerability.
+      type: string
+    - contextPath: TenableIO.PluginDetails.solution
+      description: Information on how to fix the vulnerability.
+      type: string
+    - contextPath: TenableIO.PluginDetails.script_version
+      description: The plugin version.
+      type: string
+    - contextPath: TenableIO.PluginDetails.fname
+      description: Name of impacted file.
+      type: string
+    - contextPath: TenableIO.PluginDetails.name
+      description: The name of the plugin.
+      type: string
+    description: Gets the details of the plugin associated with the scan or policy.
+  - name: tenable-io-list-policies
+    arguments: []
+    outputs:
+    - contextPath: TenableIO.Policies.id
+      description: The unique ID of the policy.
+      type: number
+    - contextPath: TenableIO.Policies.template_uuid
+      description: The UUID for the Tenable-provided template used to create the policy.
+      type: string
+    - contextPath: TenableIO.Policies.name
+      description: The name of the policy.
+      type: string
+    - contextPath: TenableIO.Policies.description
+      description: The description of the policy.
+      type: string
+    - contextPath: TenableIO.Policies.owner_id
+      description: The unique ID of the owner of the policy.
+      type: string
+    - contextPath: TenableIO.Policies.owner
+      description: The username for the owner of the policy.
+      type: string
+    - contextPath: TenableIO.Policies.shared
+      description: The shared status of the policy (1 if shared with users other than owner, 0 if not shared).
+      type: number
+    - contextPath: TenableIO.Policies.user_permissions
+      description: The sharing permissions for the policy.
+      type: number
+    - contextPath: TenableIO.Policies.creation_date
+      description: The creation date of the policy in Unix time format.
+      type: number
+    - contextPath: TenableIO.Policies.last_modification_date
+      description: The last modification date for the policy in Unix time format.
+      type: number
+    - contextPath: TenableIO.Policies.visibility
+      description: The visibility of the target (private or shared).
+      type: number
+    - contextPath: TenableIO.Policies.no_target
+      description: If true, the policy configuration does not include targets.
+      type: boolean
+    description: Returns a list of policies (scan templates).
+  - name: tenable-io-list-folders
+    arguments: []
+    outputs:
+    - contextPath: TenableIO.Folders.id
+      description: The unique ID of the folder.
+      type: number
+    - contextPath: TenableIO.Folders.name
+      description: 'The name of the folder. This value corresponds to the folder type as follows:  main—My Scans trash—Trash -custom—user-defined string.'
+      type: string
+    - contextPath: TenableIO.Folders.type
+      description: 'The type of the folder:  main—Tenable-provided folder. Contains all scans that you create but do not assign to a custom folder, as well as any scans shared with you by other users. If you do not specify a scan folder when creating a scan, Tenable Vulnerability Management stores scans in this folder by default. This folder corresponds to the My Scans folder in the Tenable Vulnerability Management user interface. trash—Tenable-provided folder. This folder corresponds to the Trash folder in the Tenable Vulnerability Management user interface. It contains all scans that the current user has moved to the trash folder. After you move a scan to the trash folder, the scan remains in the trash folder until a user with at least Can Edit [64] scan permissions permanently deletes the scan. custom—User-created folder. Contains scans as assigned by the current user. You can create custom folders to meet your organizational needs.'
+      type: string
+    - contextPath: TenableIO.Folders.default_tag
+      description: 'Indicates whether or not the folder is the default:  1—The folder is the default. 0—The folder is not the default. The main folder is the default folder. You cannot change the default folder.'
+      type: number
+    - contextPath: TenableIO.Folders.custom
+      description: 'Indicates whether or not the folder is a custom folder:  1—User-created folder. You can rename or delete this folder. 0—System-created folder. You cannot rename or delete this folder.'
+      type: number
+    - contextPath: TenableIO.Folders.unread_count
+      description: The number of scans in the folder that the current user has not yet viewed in the Tenable Vulnerability Management user interface.
+      type: number
+    description: Lists both Tenable-provided folders and the current user's custom folders.
+  - name: tenable-io-list-plugins-by-family
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the plugin family you want to retrieve the list of plugins for.
+    outputs:
+    - contextPath: TenableIO.Family.plugins.id
+      description: The unique ID of the plugin.
+      type: number
+    - contextPath: TenableIO.Family.plugins.name
+      description: The name of the plugin.
+      type: string
+    - contextPath: TenableIO.Family.id
+      description: The name of the plugin family.
+      type: number
+    - contextPath: TenableIO.Family.name
+      description: The unique ID of the plugin family.
+      type: string
+    description: Returns the list of plugins for the specified family ID.
+  - name: tenable-io-list-plugin-families
+    arguments:
+    - name: all
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Specifies whether to return all plugin families. If true, the plugin families hidden in Tenable Vulnerability Management UI, for example, Port Scanners, are included in the list.
+    outputs:
+    - contextPath: TenableIO.Families.count
+      description: The number of plugins in the family.
+      type: number
+    - contextPath: TenableIO.Families.name
+      description: The name of the family.
+      type: string
+    - contextPath: TenableIO.Families.id
+      description: The unique ID of the family.
+      type: number
+    description: Returns the list of plugin families.
+  - name: tenable-io-list-scanners
+    arguments: []
+    outputs:
+    - contextPath: TenableIO.Scanners.creation_date
+      description: The Unix timestamp when the scanner was created. This attribute specifies the original creation date if the scanner was migrated.
+      type: number
+    - contextPath: TenableIO.Scanners.distro
+      description: The scanner operating system distribution.
+      type: string
+    - contextPath: TenableIO.Scanners.group
+      description: Indicates whether the scanner belongs to a scanner group ('true') or not ('false').
+      type: boolean
+    - contextPath: TenableIO.Scanners.hostname
+      description: The hostname of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.id
+      description: The unique ID of the scanner.
+      type: number
+    - contextPath: TenableIO.Scanners.ip_addresses
+      description: A list of IP addresses associated with the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.key
+      description: The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the Link a Sensor in the Tenable Vulnerability Management User Guide.
+      type: string
+    - contextPath: TenableIO.Scanners.last_connect
+      description: The Unix timestamp when any of the scanner's tasks have provided its last update.
+      type: string
+    - contextPath: TenableIO.Scanners.last_modification_date
+      description: The Unix timestamp when the scanner was last modified.
+      type: number
+    - contextPath: TenableIO.Scanners.engine_version
+      description: The version of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.loaded_plugin_set
+      description: The current plugin set on the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.registration_code
+      description: The registration code of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.license.type
+      description: The license type.
+      type: string
+    - contextPath: TenableIO.Scanners.license.ips
+      description: The number of hosts the scanner is licensed to use.
+      type: number
+    - contextPath: TenableIO.Scanners.license.agents
+      description: The number of agents the scanner is licensed to use.
+      type: number
+    - contextPath: TenableIO.Scanners.license.scanners
+      description: The number of scanners the scanner is licensed to use.
+    - contextPath: TenableIO.Scanners.license.apps.type
+      description: The Tenable products licensed on the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.license.apps.consec.type
+      description: Indicates that the scanner is licensed to perform Tenable Container Security scans.
+      type: string
+    - contextPath: TenableIO.Scanners.license.apps.consec.mode
+      description: Indicates whether the product license is an evaluation license (eval) or standard license (standard).
+      type: number
+    - contextPath: TenableIO.Scanners.license.apps.consec.expiration_date
+      description: The Unix timestamp when the license expires.
+      type: number
+    - contextPath: TenableIO.Scanners.license.apps.consec.activation_code
+      description: The activation code you used to enable the license. This value is present for standard licenses only.
+      type: number
+    - contextPath: TenableIO.Scanners.license.apps.consec.max_gb
+      description: The maximum memory (in GB) on the scanner allotted for the Tenable licensed application.
+      type: number
+    - contextPath: TenableIO.Scanners.license.apps.was.type
+      description: Indicates that the scanner is licensed to perform Tenable Web App Scanning scans.
+      type: string
+    - contextPath: TenableIO.Scanners.license.apps.was.mode
+      description: Indicates whether the product license is an evaluation license (eval) or standard license (standard).
+      type: string
+    - contextPath: TenableIO.Scanners.license.apps.was.expiration_date
+      description: The Unix timestamp when the license expires.
+      type: number
+    - contextPath: TenableIO.Scanners.license.apps.was.activation_code
+      description: The activation code you used to enable the license. This value is present for standard licenses only.
+      type: number
+    - contextPath: TenableIO.Scanners.license.apps.was. web_assets
+      description: The number of web assets which your license authorizes you to scan.
+      type: number
+    - contextPath: TenableIO.Scanners.linked
+      description: 'Specifies whether you disabled (0) or enabled (1) the scanner. '
+      type: number
+    - contextPath: TenableIO.Scanners.name
+      description: The user-defined name of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.network_name
+      description: The name of the network object associated with the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.num_scans
+      description: The number of scans (tasks) the scanner is currently executing.
+      type: number
+    - contextPath: TenableIO.Scanners.owner
+      description: The owner of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.owner_id
+      description: The ID of the owner of the scanner.
+      type: number
+    - contextPath: TenableIO.Scanners.owner_name
+      description: The username of the owner of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.owner_uuid
+      description: The UUID of the owner of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.platform
+      description: The platform of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.pool
+      description: Indicates whether the scanner is part of a scanner group ('true') or not ('false').
+      type: boolean
+    - contextPath: TenableIO.Scanners.scan_count
+      description: The number of scans that the scanner is currently running.
+      type: number
+    - contextPath: TenableIO.Scanners.shared
+      description: Indicates whether anyone other than the scanner owner has explicit access to the scanner (1).
+      type: boolean
+    - contextPath: TenableIO.Scanners.source
+      description: Always set to service.
+      type: string
+    - contextPath: TenableIO.Scanners.status
+      description: The status of the scanner (on or off).
+      type: string
+    - contextPath: TenableIO.Scanners.timestamp
+      description: Equivalent to the last_modification_date attribute.
+      type: number
+    - contextPath: TenableIO.Scanners.type
+      description: The type of scanner (local, managed, managed_pvs, pool, remote, or webapp).
+      type: string
+    - contextPath: TenableIO.Scanners.ui_build
+      description: The backend build of Nessus that is running on the scanner.
+      type: number
+    - contextPath: TenableIO.Scanners.ui_version
+      description: The backend version of Nessus that is running on the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.user_permissions
+      description: 'The permissions you (the current user) have been assigned for the scanner. '
+      type: number
+    - contextPath: TenableIO.Scanners.uuid
+      description: The UUID of the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.remote_uuid
+      description: The UUID of the Nessus installation on the scanner.
+      type: string
+    - contextPath: TenableIO.Scanners.supports_remote_logs
+      description: Indicates if the scanner supports remote logging.
+      type: boolean
+    - contextPath: TenableIO.Scanners.supports_webapp
+      description: Indicates if the scanner supports Tenable Web App Scanning.
+      type: boolean
+    - contextPath: TenableIO.Scanners.aws_update_interval
+      description: Specifies how often, in minutes, the scanner checks in with Tenable Vulnerability Management (Amazon Web Services scanners only).
+      type: number
+    description: Returns the scanner list.
+  - name: tenable-io-create-scan
+    arguments:
+    - name: template_uuid
+      required: true
+      description: The UUID for the Tenable-provided scan template to use.
+    - name: credentials
+      description: An object that specifies credential parameters that enable a scanner to authenticate a connection to a target host.  See https://developer.tenable.com/reference/scans-create for example json.
+      isArray: true
+    - name: plugins
+      description: A list of plugins to add to the non-remediation scans.  See https://developer.tenable.com/reference/scans-create for examples.
+    - name: settings
+      required: true
+      description: JSON object containing settings for scan.  Must include name at a minimum.  See https://developer.tenable.com/reference/scans-create for example and other config options.
+    outputs:
+    - contextPath: TenableIO.Scan.tag_type
+      description: The type of tag.
+      type: string
+    - contextPath: TenableIO.Scan.container_id
+      description: The unique ID of your Tenable Vulnerability Management instance.
+      type: string
+    - contextPath: TenableIO.Scan.owner_uuid
+      description: The unique ID of the scan owner.
+      type: string
+    - contextPath: TenableIO.Scan.uuid
+      description: The UUID of the schedule for the scan.
+      type: string
+    - contextPath: TenableIO.Scan.name
+      description: The user-defined scan name.
+      type: string
+    - contextPath: TenableIO.Scan.description
+      description: A brief user-defined description of the scan.
+      type: string
+    - contextPath: TenableIO.Scan.policy_id
+      description: The unique ID of the policy associated with the scan.
+      type: number
+    - contextPath: TenableIO.Scan.scanner_uuid
+      description: The UUID of the scanner that the scan is configured to use, if the scan is not configured for scan routing.
+      type: string
+    - contextPath: TenableIO.Scan.target_network_uuid
+      description: The UUID of the network object that Tenable Vulnerability Management associates with the scan results if the scan is configured for scan routing.
+      type: string
+    - contextPath: TenableIO.Scan.emails
+      description: A comma-separated list of accounts that receive the email summary report.
+      type: string
+    - contextPath: TenableIO.Scan.sms
+      description: A comma-separated list of mobile phone numbers that receive notification of the scan.
+      type: string
+    - contextPath: TenableIO.Scan.enabled
+      description: A value indicating whether the scan schedule is active (true) or inactive (false).
+      type: boolean
+    - contextPath: TenableIO.Scan.dashboard_file
+      description: The name of the dashboard file associated with the scan.
+      type: string
+    - contextPath: TenableIO.Scan.remediation
+      description: If 1, your vulnerability remediation actions on scan targets have been successful.
+      type: number
+    - contextPath: TenableIO.Scan.include_aggregate
+      description: A value indicating whether the scan results appear in dashboards.
+      type: boolean
+    - contextPath: TenableIO.Scan.scan_time_window
+      description: 'Depends on the type of scan:  For Nessus Agent scans, scan_time_window is the time frame, in minutes, during which agents must transmit scan results to Tenable Vulnerability Management in order to be included in dashboards and reports. If your request omits this parameter, the default value is 180 minutes. For Nessus scanner scans, scan_time_window is the time frame, in minutes, after which the scan will automatically stop. If your request omits this parameter, the default value is 0 and the scan will not stop after a certain time frame.'
+      type: string
+    - contextPath: TenableIO.Scan.custom_targets
+      description: Targets specified in the alt_targets parameter of the POST /scans/{scan_id}/launch request body used to run the scan.
+      type: string
+    - contextPath: TenableIO.Scan.triggers.type
+      description: The type of scan launch trigger (periodic or file-exists).
+      type: string
+    - contextPath: TenableIO.Scan.triggers.options. periodic_hourly_interval
+      description: The number of hours between successive scan launches. This option is only applicable for scan trigger type periodic.
+      type: number
+    - contextPath: TenableIO.Scan.triggers.options. filename
+      description: The name of the file which, when created, will trigger a scan launch. This option is only applicable for scan trigger type file-exists.
+      type: string
+    - contextPath: TenableIO.Scan.reporting_mode
+      description: 'Indicates the reporting mode for Nessus Agent scans:  baseline—A scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans. differential—A scan that produces smaller results by removing plugin outputs that have not changed since the last scan. null—A normal Nessus Agent scan that does not support baseline or differential reporting modes.'
+      type: string
+    - contextPath: TenableIO.Scan.interval_type
+      description: For Nessus Agent scans, indicates whether the info-level reporting setting (refresh_reporting_type) is set to scans or days.
+      type: string
+    - contextPath: TenableIO.Scan.interval_value
+      description: For Nessus Agent scans, indicates the interval value for info-level reporting. For the scans refresh reporting interval type, values range from 2 to 10. For the days refresh reporting interval type, values range from 1 to 7.
+      type: number
+    - contextPath: TenableIO.Scan.baseline_next_scan
+      description: Indicates whether or not the next Nessus Agent scan is a baseline scan. A baseline scan is a Nessus Agent scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans.
+      type: string
+    - contextPath: TenableIO.Scan.agent_scan_launch_type
+      description: For Nessus Agent scans, indicates whether the agent scan should use the scan window (scheduled) or rule-based (triggered) method for scan launches.
+      type: string
+    - contextPath: TenableIO.Scan.starttime
+      description: 'For one-time scans, the starting time and date for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the rrules parameter.  This attribute has the following format: YYYYMMDDTHHMMSS.'
+      type: string
+    - contextPath: TenableIO.Scan.rrules
+      description: 'The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR. If the scan is not scheduled to recur, this attribute is null. '
+      type: string
+    - contextPath: TenableIO.Scan.timezone
+      description: The timezone of the scheduled start time for the scan.
+      type: string
+    - contextPath: TenableIO.Scan.notification_filters.value
+      description: The attribute value Tenable Vulnerability Management filters on. For example, when filtering on severity, this attribute might specify Critical.
+      type: string
+    - contextPath: TenableIO.Scan.notification_filters.quality
+      description: The operator Tenable Vulnerability Management applies to the filter value, for example, eq.
+      type: string
+    - contextPath: TenableIO.Scan.notification_filters.filter
+      description: The attribute name. For example, use the risk_factor attribute if you want to filter on vulnerability severity.
+      type: string
+    - contextPath: TenableIO.Scan.tag_targets
+      description: The list of asset tag identifiers the scan uses to determine which assets it evaluates.
+      type: string
+    - contextPath: TenableIO.Scan.shared
+      description: If 1, the scan is shared with users other than the scan owner. The level of sharing is specified in the acls attribute of the scan details.
+      type: boolean
+    - contextPath: TenableIO.Scan.user_permissions
+      description: The sharing permissions for the scan.
+      type: number
+    - contextPath: TenableIO.Scan.default_permissions
+      description: The default permissions for the scan.
+      type: string
+    - contextPath: TenableIO.Scan.owner
+      description: The owner of the scan.
+      type: string
+    - contextPath: TenableIO.Scan.owner_id
+      description: The unique ID of the owner of the scan.
+      type: number
+    - contextPath: TenableIO.Scan.last_modification_date
+      description: For newly-created scans, the date on which the scan configuration was created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was last modified. Instead, it represents the date on which the scan was last launched, in Unix time format. Tenable Vulnerability Management updates this attribute each time the scan launches.
+      type: date
+    - contextPath: TenableIO.Scan.creation_date
+      description: For newly-created scans, the date on which the scan configuration was originally created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was originally created. Instead, it represents the date on which the scan was first launched, in Unix time format.
+      type: date
+    - contextPath: TenableIO.Scan.type
+      description: The type of scan.
+      type: string
+    - contextPath: TenableIO.Scan.id
+      description: The unique ID of the scan.
+      type: number
+    description: Creates a scan configuration.
+  - name: tenable-io-list-connectors
+    arguments:
+    - name: limit
+      description: The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of 1000.
+      defaultValue: '1000'
+    - name: offset
+      default: true
+      description: The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of 0.
+      defaultValue: '0'
+    - name: sort
+      description: The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (asc or desc). For example, name:desc would sort results by the name field in descending order.  If you specify multiple fields, the fields must be separated by commas. For example, name:desc,date_created:asc would first sort results by the name field in descending order and then by the date_created field in ascending order.
+    outputs:
+    - contextPath: TenableIO.Connectors.type
+      description: The type of the connector. Types include aws, aws_keyless, aws_fa, azure, azure_fa, or gcp.
+      type: string
+    - contextPath: TenableIO.Connectors.human_type
+      description: The human-readable connector type.
+      type: string
+    - contextPath: TenableIO.Connectors.data_type
+      description: The data type imported by the connector. This value is always assets.
+      type: string
+    - contextPath: TenableIO.Connectors.name
+      description: The name of the connector. The name must be unique within a Tenable Vulnerability Management instance.
+      type: string
+    - contextPath: TenableIO.Connectors.status
+      description: 'The import status of the connector. Status values can include:  Completed—Tenable Vulnerability Management successfully used the connector to import assets (no imports scheduled) Scheduled—Imports using the connector are scheduled for future dates Saved—Tenable Vulnerability Management saved the connector configuration, but did not import assets at this time (no imports scheduled) Error—Tenable Vulnerability Management failed to import assets using the connector.'
+      type: string
+    - contextPath: TenableIO.Connectors.is_fa
+      description: For AWS keyless connectors, indicates whether Frictionless Assessment is enabled or not.
+      type: boolean
+    - contextPath: TenableIO.Connectors.status_message
+      description: 'Extended description of the connector status. If Frictionless Assessment is enabled, this property is set to FA Enabled. '
+      type: string
+    - contextPath: TenableIO.Connectors.schedule.units
+      description: The units of time for the import interval. Units can include days, hours, minutes.
+      type: string
+    - contextPath: TenableIO.Connectors.schedule.value
+      description: The number of units between import intervals.
+      type: number
+    - contextPath: TenableIO.Connectors.date_created
+      description: An ISO timestamp indicating the date and time on which the connector was created, for example, 2018-12-31T13:51:17.243Z.
+      type: string
+    - contextPath: TenableIO.Connectors.date_modified
+      description: An ISO timestamp indicating the date and time on which the connector was last modified or new records were imported, for example, 2018-12-31T13:51:17.243Z.
+      type: string
+    - contextPath: TenableIO.Connectors.id
+      description: The UUID of the connector.
+      type: string
+    - contextPath: TenableIO.Connectors.container_uuid
+      description: The UUID of the Tenable Vulnerability Management instance.
+      type: string
+    - contextPath: TenableIO.Connectors.expired
+      description: Indicates whether the Vulnerability Management license for the Tenable Vulnerability Management instance associated with the connector is expired.
+      type: boolean
+    - contextPath: TenableIO.Connectors.incremental_mode
+      description: Indicates whether a connector has completed the initial full import successfully. If the value is true, then the connector is in incremental mode where it imports assets based on on the service provider event stream instead of enumerating all assets in the account every single time.
+      type: boolean
+    - contextPath: TenableIO.Connectors.params.access_key
+      description: For AWS connectors, the AWS access key.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.account_id
+      description: The AWS account ID.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.role_arn
+      description: The Amazon Resource Name (ARN) of the role generated based on the associated account ID.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.external_id
+      description: 'The UUID of your Tenable Vulnerability Management instance used by AWS to identify it as a client application. '
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.trails.arn
+      description: The Amazon Resource Name (ARN) of the cloudtrail.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.trails.name
+      description: The name of the cloudtrail.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.trails.region.name
+      description: The AWS region code, for example, us-east-1. The value of All indicates that the cloudtrail is associated with all AWS available regions.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.trails.region.friendly_name
+      description: The AWS region name, for example, US East (N. Virginia). The value of All indicates that the cloudtrail is associated with all AWS available regions.
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.trails.availability
+      description: 'Indicates whether a cloudtrail is available to be used by a connector (logging is turned on in AWS, or it has at least one EventSelector with IncludeManagementEvents). Values include:  success—The cloudtrail is available. error—The cloudtrail is not available.'
+      type: string
+    - contextPath: TenableIO.Connectors.params.sub_accounts.incremental_mode
+      description: Indicates whether a connector has completed the initial full import successfully. If the value is true, then the connector is in incremental mode where it imports assets based on events instead of enumerating all assets in the account every single time.
+      type: boolean
+    - contextPath: TenableIO.Connectors.params.status.last_event_seen
+      description: An ISO timestamp indicating the last time the connector found new or changed records and successfully imported them.
+      type: string
+    - contextPath: TenableIO.Connectors.params.status.release_timestamp
+      description: An ISO timestamp indicating the last time the connector successfully completed an import (regardless of whether it found any changes).
+      type: string
+    - contextPath: TenableIO.Connectors.params.status.message
+      description: The extended import status message.
+      type: string
+    - contextPath: TenableIO.Connectors.params.targets.resource_group
+      description: The name of the resource group that Azure Frictionless Assessment scans VMs in.
+      type: string
+    - contextPath: TenableIO.Connectors.params.targets.tag_key
+      description: The tag name in Microsoft Azure.
+      type: string
+    - contextPath: TenableIO.Connectors.params.targets.tag_value
+      description: The tag value in Microsoft Azure.
+      type: string
+    - contextPath: TenableIO.Connectors.params.application_id
+      description: For Azure connectors, the Azure application ID.
+      type: string
+    - contextPath: TenableIO.Connectors.params.tenant_id
+      description: For Azure connectors, the Azure tenant ID (directory ID).
+      type: string
+    - contextPath: TenableIO.Connectors.params.subscription_id
+      description: For Azure connectors, the Azure subscription ID. If you do not provide subscription IDs, Tenable Vulnerability Management automatically discovers them.
+      type: string
+    - contextPath: TenableIO.Connectors.params.auto_discovery
+      description: Specifies whether Auto Discovery is enabled or not for AWS keyless connectors. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails.
+      type: boolean
+    - contextPath: TenableIO.Connectors.params.service
+      description: The service targeted by the connector. Values include aws, aws_keyless, aws_fa, azure, azure_fa, and gcp.
+      type: string
+    - contextPath: TenableIO.Connectors.last_sync_time
+      description: An ISO timestamp indicating the date and time of the last successful import, for example, 2018-12-31T13:51:17.243Z.
+      type: string
+    - contextPath: TenableIO.Connectors.network_uuid
+      description: The UUID of the network associated with the connector.
+      type: string
+    description: Returns a list of connectors.
+  - name: tenable-io-list-users
+    arguments: []
+    outputs:
+    - contextPath: TenableIO.Users.uuid
+      description: The UUID of the user.
+      type: string
+    - contextPath: TenableIO.Users.id
+      description: The unique ID of the user.
+      type: string
+    - contextPath: TenableIO.Users.user_name
+      description: The username for the user.
+      type: string
+    - contextPath: TenableIO.Users.username
+      description: The username for the user.
+      type: string
+    - contextPath: TenableIO.Users.email
+      description: The email address of the user. If this attribute is empty, Tenable Vulnerability Management uses the username value as the user's email address.
+      type: string
+    - contextPath: TenableIO.Users.name
+      description: The name of the user (for example, first and last name).
+      type: string
+    - contextPath: TenableIO.Users.type
+      description: The type of user. The only supported type is local.
+      type: string
+    - contextPath: TenableIO.Users.permissions
+      description: 'The user permissions.'
+      type: number
+    - contextPath: TenableIO.Users.last_login_attempt
+      description: The time (in Unix milliseconds) of the last time the user failed to log in to the Tenable Vulnerability Management user interface. This attribute is only present if the user has attempted unsuccessfully to log in to the Tenable Vulnerability Management user interface.
+      type: number
+    - contextPath: TenableIO.Users.login_fail_count
+      description: The number of failed login attempts since the user last successfully logged in to the Tenable Vulnerability Management user interface.  If this attribute is greater than 5, Tenable Vulnerability Management locks the user account (that is, updates the lockout attribute for the user to 1.)
+      type: number
+    - contextPath: TenableIO.Users.login_fail_total
+      description: The total number of failed login attempts for the user.
+      type: number
+    - contextPath: TenableIO.Users.enabled
+      description: Specifies whether the user account is enabled (true) or disabled (false).
+      type: boolean
+    - contextPath: TenableIO.Users.undeletable
+      description: Specifies whether the user account is undeletable (true) or deletable (false).
+      type: boolean
+    - contextPath: TenableIO.Users.two_factor.sms_phone
+      description: The phone number used for two-factor authentication. The phone number begins with the + character and the country code. This field is required when sms_enabled is set to true.
+      type: string
+    - contextPath: TenableIO.Users.two_factor.sms_enabled
+      description: Indicates whether two-factor authentication is enabled (1) or disabled (0).
+      type: number
+    - contextPath: TenableIO.Users.two_factor.email_enabled
+      description: Indicates whether backup notification for two-factor authentication is enabled (1) or disabled (0). If enabled, Tenable Vulnerability Management sends the two-factor verification code via e-mail, as well as via the default SMS message.
+      type: number
+    - contextPath: TenableIO.Users.lockout
+      description: Specifies whether the user can log into the Tenable Vulnerability Management user interface (0) or is locked out (1).
+      type: number
+    - contextPath: TenableIO.Users.container_uuid
+      description: The UUID of the Tenable Vulnerability Management instance to which the user belongs.
+      type: string
+    - contextPath: TenableIO.Users.lastlogin
+      description: The last time (in Unix milliseconds) that the user successfully logged in to the Tenable Vulnerability Management user interface. This attribute is only present if the user has logged in at least once successfully to the Tenable Vulnerability Management user interface.
+      type: number
+    - contextPath: TenableIO.Users.uuid_id
+      description: The UUID for the user.
+      type: string
+    description: Returns a list of users.
+  - name: tenable-io-delete-user
+    arguments:
+    - name: user_id
+      required: true
+      description: The UUID (uuid) or unique ID (id) of the user.
+    outputs:
+    - contextPath: TenableIO.Delete.User
+      description: User ID that was sent for removal.
+    - contextPath: TenableIO.Delete.Removed
+      description: Boolean to identify if the removal was successful.
+    description: Deletes a user.
   runonce: false
   script: '-'
   isfetchevents: true
   isfetchassets: true
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.90168
+  dockerimage: demisto/python3:3.10.14.95137
 tests:
 - Tenable.io test
 fromversion: 5.0.0

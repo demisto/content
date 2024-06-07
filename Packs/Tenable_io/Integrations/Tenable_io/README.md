@@ -1639,3 +1639,423 @@ There is no context output for this command.
 >|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
 >|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
 >| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |
+
+
+### tenable-io-list-templates
+
+***
+Lists Tenable-provided scan templates. 
+
+#### Base Command
+
+`tenable-io-list-templates`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The type of templates to retrieve (scan, policy, or remediation). Possible values are: scan, policy, remediation. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Templates.unsuported | boolean | If true, the template is not supported. | 
+| TenableIO.Templates.cloud_only | boolean | If true, the template is only available on the cloud. | 
+| TenableIO.Templates.desc | string | The description of the template. | 
+| TenableIO.Templates.subscription_only | boolean | If true, the template is only available for subscribers. | 
+| TenableIO.Templates.is_was | boolean | If true, the template can be used for Tenable Web App Scanning only. | 
+| TenableIO.Templates.title | string | The long name of the template. | 
+| TenableIO.Templates.is_agent | boolean | If true, the template can only be used for agent scans. | 
+| TenableIO.Templates.uuid | string | The UUID for the template. Use this value to specify the template when creating scans and policies. | 
+| TenableIO.Templates.manager_only | boolean | If true, can only be used by manager. | 
+| TenableIO.Templates.name | string | The short name of the template. | 
+
+### tenable-io-get-plugin-details
+
+***
+Gets the details of the plugin associated with the scan or policy.
+
+#### Base Command
+
+`tenable-io-get-plugin-details`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| plugin_id | The ID of the plugin to lookup within the family. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.PluginDetails.risk_factor | string | The severity level of the vulnerabilities targeted by the plugin. | 
+| TenableIO.PluginDetails.plugin_name | string | The name of the plugin. | 
+| TenableIO.PluginDetails.plugin_publication_date | date | The date the plugin was published. | 
+| TenableIO.PluginDetails.family_name | string | The name of the plugin family. | 
+| TenableIO.PluginDetails.id | number | The ID of the plugin. | 
+| TenableIO.PluginDetails.synopsis | string | A brief summary of the vulnerability. | 
+| TenableIO.PluginDetails.description | string | The description of the vulnerability. | 
+| TenableIO.PluginDetails.solution | string | Information on how to fix the vulnerability. | 
+| TenableIO.PluginDetails.script_version | string | The plugin version. | 
+| TenableIO.PluginDetails.fname | string | Name of impacted file. | 
+| TenableIO.PluginDetails.name | string | The name of the plugin. | 
+
+### tenable-io-list-policies
+
+***
+Returns a list of policies (scan templates).
+
+#### Base Command
+
+`tenable-io-list-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Policies.id | number | The unique ID of the policy. | 
+| TenableIO.Policies.template_uuid | string | The UUID for the Tenable-provided template used to create the policy. | 
+| TenableIO.Policies.name | string | The name of the policy. | 
+| TenableIO.Policies.description | string | The description of the policy. | 
+| TenableIO.Policies.owner_id | string | The unique ID of the owner of the policy. | 
+| TenableIO.Policies.owner | string | The username for the owner of the policy. | 
+| TenableIO.Policies.shared | number | The shared status of the policy \(1 if shared with users other than owner, 0 if not shared\). | 
+| TenableIO.Policies.user_permissions | number | The sharing permissions for the policy. | 
+| TenableIO.Policies.creation_date | number | The creation date of the policy in Unix time format. | 
+| TenableIO.Policies.last_modification_date | number | The last modification date for the policy in Unix time format. | 
+| TenableIO.Policies.visibility | number | The visibility of the target \(private or shared\). | 
+| TenableIO.Policies.no_target | boolean | If true, the policy configuration does not include targets. | 
+
+### tenable-io-list-folders
+
+***
+Lists both Tenable-provided folders and the current user's custom folders.
+
+#### Base Command
+
+`tenable-io-list-folders`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Folders.id | number | The unique ID of the folder. | 
+| TenableIO.Folders.name | string | The name of the folder. This value corresponds to the folder type as follows:  main—My Scans trash—Trash -custom—user-defined string. | 
+| TenableIO.Folders.type | string | The type of the folder:  main—Tenable-provided folder. Contains all scans that you create but do not assign to a custom folder, as well as any scans shared with you by other users. If you do not specify a scan folder when creating a scan, Tenable Vulnerability Management stores scans in this folder by default. This folder corresponds to the My Scans folder in the Tenable Vulnerability Management user interface. trash—Tenable-provided folder. This folder corresponds to the Trash folder in the Tenable Vulnerability Management user interface. It contains all scans that the current user has moved to the trash folder. After you move a scan to the trash folder, the scan remains in the trash folder until a user with at least Can Edit \[64\] scan permissions permanently deletes the scan. custom—User-created folder. Contains scans as assigned by the current user. You can create custom folders to meet your organizational needs. | 
+| TenableIO.Folders.default_tag | number | Indicates whether or not the folder is the default:  1—The folder is the default. 0—The folder is not the default. The main folder is the default folder. You cannot change the default folder. | 
+| TenableIO.Folders.custom | number | Indicates whether or not the folder is a custom folder:  1—User-created folder. You can rename or delete this folder. 0—System-created folder. You cannot rename or delete this folder. | 
+| TenableIO.Folders.unread_count | number | The number of scans in the folder that the current user has not yet viewed in the Tenable Vulnerability Management user interface. | 
+
+### tenable-io-list-plugins-by-family
+
+***
+Returns the list of plugins for the specified family ID.
+
+#### Base Command
+
+`tenable-io-list-plugins-by-family`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the plugin family you want to retrieve the list of plugins for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Family.plugins.id | number | The unique ID of the plugin. | 
+| TenableIO.Family.plugins.name | string | The name of the plugin. | 
+| TenableIO.Family.id | number | The name of the plugin family. | 
+| TenableIO.Family.name | string | The unique ID of the plugin family. | 
+
+### tenable-io-list-plugin-families
+
+***
+Returns the list of plugin families.
+
+#### Base Command
+
+`tenable-io-list-plugin-families`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| all | Specifies whether to return all plugin families. If true, the plugin families hidden in Tenable Vulnerability Management UI, for example, Port Scanners, are included in the list. Possible values are: true, false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Families.count | number | The number of plugins in the family. | 
+| TenableIO.Families.name | string | The name of the family. | 
+| TenableIO.Families.id | number | The unique ID of the family. | 
+
+### tenable-io-list-scanners
+
+***
+Returns the scanner list.
+
+#### Base Command
+
+`tenable-io-list-scanners`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Scanners.creation_date | number | The Unix timestamp when the scanner was created. This attribute specifies the original creation date if the scanner was migrated. | 
+| TenableIO.Scanners.distro | string | The scanner operating system distribution. | 
+| TenableIO.Scanners.group | boolean | Indicates whether the scanner belongs to a scanner group \('true'\) or not \('false'\). | 
+| TenableIO.Scanners.hostname | string | The hostname of the scanner. | 
+| TenableIO.Scanners.id | number | The unique ID of the scanner. | 
+| TenableIO.Scanners.ip_addresses | string | A list of IP addresses associated with the scanner. | 
+| TenableIO.Scanners.key | string | The linking key, that is, the alpha-numeric sequence of characters you use to link a scanner to Tenable Vulnerability Management. For more information about linking a scanner, see the Link a Sensor in the Tenable Vulnerability Management User Guide. | 
+| TenableIO.Scanners.last_connect | string | The Unix timestamp when any of the scanner's tasks have provided its last update. | 
+| TenableIO.Scanners.last_modification_date | number | The Unix timestamp when the scanner was last modified. | 
+| TenableIO.Scanners.engine_version | string | The version of the scanner. | 
+| TenableIO.Scanners.loaded_plugin_set | string | The current plugin set on the scanner. | 
+| TenableIO.Scanners.registration_code | string | The registration code of the scanner. | 
+| TenableIO.Scanners.license.type | string | The license type. | 
+| TenableIO.Scanners.license.ips | number | The number of hosts the scanner is licensed to use. | 
+| TenableIO.Scanners.license.agents | number | The number of agents the scanner is licensed to use. | 
+| TenableIO.Scanners.license.scanners | unknown | The number of scanners the scanner is licensed to use. | 
+| TenableIO.Scanners.license.apps.type | string | The Tenable products licensed on the scanner. | 
+| TenableIO.Scanners.license.apps.consec.type | string | Indicates that the scanner is licensed to perform Tenable Container Security scans. | 
+| TenableIO.Scanners.license.apps.consec.mode | number | Indicates whether the product license is an evaluation license \(eval\) or standard license \(standard\). | 
+| TenableIO.Scanners.license.apps.consec.expiration_date | number | The Unix timestamp when the license expires. | 
+| TenableIO.Scanners.license.apps.consec.activation_code | number | The activation code you used to enable the license. This value is present for standard licenses only. | 
+| TenableIO.Scanners.license.apps.consec.max_gb | number | The maximum memory \(in GB\) on the scanner allotted for the Tenable licensed application. | 
+| TenableIO.Scanners.license.apps.was.type | string | Indicates that the scanner is licensed to perform Tenable Web App Scanning scans. | 
+| TenableIO.Scanners.license.apps.was.mode | string | Indicates whether the product license is an evaluation license \(eval\) or standard license \(standard\). | 
+| TenableIO.Scanners.license.apps.was.expiration_date | number | The Unix timestamp when the license expires. | 
+| TenableIO.Scanners.license.apps.was.activation_code | number | The activation code you used to enable the license. This value is present for standard licenses only. | 
+| TenableIO.Scanners.license.apps.was. web_assets | number | The number of web assets which your license authorizes you to scan. | 
+| TenableIO.Scanners.linked | number | Specifies whether you disabled \(0\) or enabled \(1\) the scanner.  | 
+| TenableIO.Scanners.name | string | The user-defined name of the scanner. | 
+| TenableIO.Scanners.network_name | string | The name of the network object associated with the scanner. | 
+| TenableIO.Scanners.num_scans | number | The number of scans \(tasks\) the scanner is currently executing. | 
+| TenableIO.Scanners.owner | string | The owner of the scanner. | 
+| TenableIO.Scanners.owner_id | number | The ID of the owner of the scanner. | 
+| TenableIO.Scanners.owner_name | string | The username of the owner of the scanner. | 
+| TenableIO.Scanners.owner_uuid | string | The UUID of the owner of the scanner. | 
+| TenableIO.Scanners.platform | string | The platform of the scanner. | 
+| TenableIO.Scanners.pool | boolean | Indicates whether the scanner is part of a scanner group \('true'\) or not \('false'\). | 
+| TenableIO.Scanners.scan_count | number | The number of scans that the scanner is currently running. | 
+| TenableIO.Scanners.shared | boolean | Indicates whether anyone other than the scanner owner has explicit access to the scanner \(1\). | 
+| TenableIO.Scanners.source | string | Always set to service. | 
+| TenableIO.Scanners.status | string | The status of the scanner \(on or off\). | 
+| TenableIO.Scanners.timestamp | number | Equivalent to the last_modification_date attribute. | 
+| TenableIO.Scanners.type | string | The type of scanner \(local, managed, managed_pvs, pool, remote, or webapp\). | 
+| TenableIO.Scanners.ui_build | number | The backend build of Nessus that is running on the scanner. | 
+| TenableIO.Scanners.ui_version | string | The backend version of Nessus that is running on the scanner. | 
+| TenableIO.Scanners.user_permissions | number | The permissions you \(the current user\) have been assigned for the scanner.  | 
+| TenableIO.Scanners.uuid | string | The UUID of the scanner. | 
+| TenableIO.Scanners.remote_uuid | string | The UUID of the Nessus installation on the scanner. | 
+| TenableIO.Scanners.supports_remote_logs | boolean | Indicates if the scanner supports remote logging. | 
+| TenableIO.Scanners.supports_webapp | boolean | Indicates if the scanner supports Tenable Web App Scanning. | 
+| TenableIO.Scanners.aws_update_interval | number | Specifies how often, in minutes, the scanner checks in with Tenable Vulnerability Management \(Amazon Web Services scanners only\). | 
+
+### tenable-io-create-scan
+
+***
+Creates a scan configuration.
+
+#### Base Command
+
+`tenable-io-create-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_uuid | The UUID for the Tenable-provided scan template to use. | Required | 
+| credentials | An object that specifies credential parameters that enable a scanner to authenticate a connection to a target host.  See https://developer.tenable.com/reference/scans-create for example json. | Optional | 
+| plugins | A list of plugins to add to the non-remediation scans.  See https://developer.tenable.com/reference/scans-create for examples. | Optional | 
+| settings | JSON object containing settings for scan.  Must include name at a minimum.  See https://developer.tenable.com/reference/scans-create for example and other config options. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Scan.tag_type | string | The type of tag. | 
+| TenableIO.Scan.container_id | string | The unique ID of your Tenable Vulnerability Management instance. | 
+| TenableIO.Scan.owner_uuid | string | The unique ID of the scan owner. | 
+| TenableIO.Scan.uuid | string | The UUID of the schedule for the scan. | 
+| TenableIO.Scan.name | string | The user-defined scan name. | 
+| TenableIO.Scan.description | string | A brief user-defined description of the scan. | 
+| TenableIO.Scan.policy_id | number | The unique ID of the policy associated with the scan. | 
+| TenableIO.Scan.scanner_uuid | string | The UUID of the scanner that the scan is configured to use, if the scan is not configured for scan routing. | 
+| TenableIO.Scan.target_network_uuid | string | The UUID of the network object that Tenable Vulnerability Management associates with the scan results if the scan is configured for scan routing. | 
+| TenableIO.Scan.emails | string | A comma-separated list of accounts that receive the email summary report. | 
+| TenableIO.Scan.sms | string | A comma-separated list of mobile phone numbers that receive notification of the scan. | 
+| TenableIO.Scan.enabled | boolean | A value indicating whether the scan schedule is active \(true\) or inactive \(false\). | 
+| TenableIO.Scan.dashboard_file | string | The name of the dashboard file associated with the scan. | 
+| TenableIO.Scan.remediation | number | If 1, your vulnerability remediation actions on scan targets have been successful. | 
+| TenableIO.Scan.include_aggregate | boolean | A value indicating whether the scan results appear in dashboards. | 
+| TenableIO.Scan.scan_time_window | string | Depends on the type of scan:  For Nessus Agent scans, scan_time_window is the time frame, in minutes, during which agents must transmit scan results to Tenable Vulnerability Management in order to be included in dashboards and reports. If your request omits this parameter, the default value is 180 minutes. For Nessus scanner scans, scan_time_window is the time frame, in minutes, after which the scan will automatically stop. If your request omits this parameter, the default value is 0 and the scan will not stop after a certain time frame. | 
+| TenableIO.Scan.custom_targets | string | Targets specified in the alt_targets parameter of the POST /scans/\{scan_id\}/launch request body used to run the scan. | 
+| TenableIO.Scan.triggers.type | string | The type of scan launch trigger \(periodic or file-exists\). | 
+| TenableIO.Scan.triggers.options. periodic_hourly_interval | number | The number of hours between successive scan launches. This option is only applicable for scan trigger type periodic. | 
+| TenableIO.Scan.triggers.options. filename | string | The name of the file which, when created, will trigger a scan launch. This option is only applicable for scan trigger type file-exists. | 
+| TenableIO.Scan.reporting_mode | string | Indicates the reporting mode for Nessus Agent scans:  baseline—A scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans. differential—A scan that produces smaller results by removing plugin outputs that have not changed since the last scan. null—A normal Nessus Agent scan that does not support baseline or differential reporting modes. | 
+| TenableIO.Scan.interval_type | string | For Nessus Agent scans, indicates whether the info-level reporting setting \(refresh_reporting_type\) is set to scans or days. | 
+| TenableIO.Scan.interval_value | number | For Nessus Agent scans, indicates the interval value for info-level reporting. For the scans refresh reporting interval type, values range from 2 to 10. For the days refresh reporting interval type, values range from 1 to 7. | 
+| TenableIO.Scan.baseline_next_scan | string | Indicates whether or not the next Nessus Agent scan is a baseline scan. A baseline scan is a Nessus Agent scan that always reports all detected findings regardless of severity level. For baseline scans, the Nessus Agent creates a local cache of the plugin outputs generated by the scan. The cache is then used as the base for differential comparisons in subsequent scans. | 
+| TenableIO.Scan.agent_scan_launch_type | string | For Nessus Agent scans, indicates whether the agent scan should use the scan window \(scheduled\) or rule-based \(triggered\) method for scan launches. | 
+| TenableIO.Scan.starttime | string | For one-time scans, the starting time and date for the scan. For recurrent scans, the first date on which the scan schedule is active and the time that recurring scans launch based on the rrules parameter.  This attribute has the following format: YYYYMMDDTHHMMSS. | 
+| TenableIO.Scan.rrules | string | The interval at which the scan repeats. The interval is formatted as a string of three values delimited by semi-colons. These values are: the frequency \(FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY\), the interval \(INTERVAL=1 or 2 or 3 ... x\), and the days of the week \(BYDAY=SU,MO,TU,WE,TH,FR,SA\). For a scan that runs every three weeks on Monday Wednesday and Friday, the string would be FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR. If the scan is not scheduled to recur, this attribute is null.  | 
+| TenableIO.Scan.timezone | string | The timezone of the scheduled start time for the scan. | 
+| TenableIO.Scan.notification_filters.value | string | The attribute value Tenable Vulnerability Management filters on. For example, when filtering on severity, this attribute might specify Critical. | 
+| TenableIO.Scan.notification_filters.quality | string | The operator Tenable Vulnerability Management applies to the filter value, for example, eq. | 
+| TenableIO.Scan.notification_filters.filter | string | The attribute name. For example, use the risk_factor attribute if you want to filter on vulnerability severity. | 
+| TenableIO.Scan.tag_targets | string | The list of asset tag identifiers the scan uses to determine which assets it evaluates. | 
+| TenableIO.Scan.shared | boolean | If 1, the scan is shared with users other than the scan owner. The level of sharing is specified in the acls attribute of the scan details. | 
+| TenableIO.Scan.user_permissions | number | The sharing permissions for the scan. | 
+| TenableIO.Scan.default_permissions | string | The default permissions for the scan. | 
+| TenableIO.Scan.owner | string | The owner of the scan. | 
+| TenableIO.Scan.owner_id | number | The unique ID of the owner of the scan. | 
+| TenableIO.Scan.last_modification_date | date | For newly-created scans, the date on which the scan configuration was created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was last modified. Instead, it represents the date on which the scan was last launched, in Unix time format. Tenable Vulnerability Management updates this attribute each time the scan launches. | 
+| TenableIO.Scan.creation_date | date | For newly-created scans, the date on which the scan configuration was originally created. For scans that have been launched at least once, this attribute does not represent the date on which the scan configuration was originally created. Instead, it represents the date on which the scan was first launched, in Unix time format. | 
+| TenableIO.Scan.type | string | The type of scan. | 
+| TenableIO.Scan.id | number | The unique ID of the scan. | 
+
+### tenable-io-list-connectors
+
+***
+Returns a list of connectors.
+
+#### Base Command
+
+`tenable-io-list-connectors`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The number of records to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of 1000. Default is 1000. | Optional | 
+| offset | The starting record to retrieve. If this parameter is omitted, Tenable Vulnerability Management uses the default value of 0. Default is 0. | Optional | 
+| sort | The field you want to use to sort the results by along with the sort order. The field is specified first, followed by a colon, and the order is specified second (asc or desc). For example, name:desc would sort results by the name field in descending order.  If you specify multiple fields, the fields must be separated by commas. For example, name:desc,date_created:asc would first sort results by the name field in descending order and then by the date_created field in ascending order. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Connectors.type | string | The type of the connector. Types include aws, aws_keyless, aws_fa, azure, azure_fa, or gcp. | 
+| TenableIO.Connectors.human_type | string | The human-readable connector type. | 
+| TenableIO.Connectors.data_type | string | The data type imported by the connector. This value is always assets. | 
+| TenableIO.Connectors.name | string | The name of the connector. The name must be unique within a Tenable Vulnerability Management instance. | 
+| TenableIO.Connectors.status | string | The import status of the connector. Status values can include:  Completed—Tenable Vulnerability Management successfully used the connector to import assets \(no imports scheduled\) Scheduled—Imports using the connector are scheduled for future dates Saved—Tenable Vulnerability Management saved the connector configuration, but did not import assets at this time \(no imports scheduled\) Error—Tenable Vulnerability Management failed to import assets using the connector. | 
+| TenableIO.Connectors.is_fa | boolean | For AWS keyless connectors, indicates whether Frictionless Assessment is enabled or not. | 
+| TenableIO.Connectors.status_message | string | Extended description of the connector status. If Frictionless Assessment is enabled, this property is set to FA Enabled.  | 
+| TenableIO.Connectors.schedule.units | string | The units of time for the import interval. Units can include days, hours, minutes. | 
+| TenableIO.Connectors.schedule.value | number | The number of units between import intervals. | 
+| TenableIO.Connectors.date_created | string | An ISO timestamp indicating the date and time on which the connector was created, for example, 2018-12-31T13:51:17.243Z. | 
+| TenableIO.Connectors.date_modified | string | An ISO timestamp indicating the date and time on which the connector was last modified or new records were imported, for example, 2018-12-31T13:51:17.243Z. | 
+| TenableIO.Connectors.id | string | The UUID of the connector. | 
+| TenableIO.Connectors.container_uuid | string | The UUID of the Tenable Vulnerability Management instance. | 
+| TenableIO.Connectors.expired | boolean | Indicates whether the Vulnerability Management license for the Tenable Vulnerability Management instance associated with the connector is expired. | 
+| TenableIO.Connectors.incremental_mode | boolean | Indicates whether a connector has completed the initial full import successfully. If the value is true, then the connector is in incremental mode where it imports assets based on on the service provider event stream instead of enumerating all assets in the account every single time. | 
+| TenableIO.Connectors.params.access_key | string | For AWS connectors, the AWS access key. | 
+| TenableIO.Connectors.params.sub_accounts.account_id | string | The AWS account ID. | 
+| TenableIO.Connectors.params.sub_accounts.role_arn | string | The Amazon Resource Name \(ARN\) of the role generated based on the associated account ID. | 
+| TenableIO.Connectors.params.sub_accounts.external_id | string | The UUID of your Tenable Vulnerability Management instance used by AWS to identify it as a client application.  | 
+| TenableIO.Connectors.params.sub_accounts.trails.arn | string | The Amazon Resource Name \(ARN\) of the cloudtrail. | 
+| TenableIO.Connectors.params.sub_accounts.trails.name | string | The name of the cloudtrail. | 
+| TenableIO.Connectors.params.sub_accounts.trails.region.name | string | The AWS region code, for example, us-east-1. The value of All indicates that the cloudtrail is associated with all AWS available regions. | 
+| TenableIO.Connectors.params.sub_accounts.trails.region.friendly_name | string | The AWS region name, for example, US East \(N. Virginia\). The value of All indicates that the cloudtrail is associated with all AWS available regions. | 
+| TenableIO.Connectors.params.sub_accounts.trails.availability | string | Indicates whether a cloudtrail is available to be used by a connector \(logging is turned on in AWS, or it has at least one EventSelector with IncludeManagementEvents\). Values include:  success—The cloudtrail is available. error—The cloudtrail is not available. | 
+| TenableIO.Connectors.params.sub_accounts.incremental_mode | boolean | Indicates whether a connector has completed the initial full import successfully. If the value is true, then the connector is in incremental mode where it imports assets based on events instead of enumerating all assets in the account every single time. | 
+| TenableIO.Connectors.params.status.last_event_seen | string | An ISO timestamp indicating the last time the connector found new or changed records and successfully imported them. | 
+| TenableIO.Connectors.params.status.release_timestamp | string | An ISO timestamp indicating the last time the connector successfully completed an import \(regardless of whether it found any changes\). | 
+| TenableIO.Connectors.params.status.message | string | The extended import status message. | 
+| TenableIO.Connectors.params.targets.resource_group | string | The name of the resource group that Azure Frictionless Assessment scans VMs in. | 
+| TenableIO.Connectors.params.targets.tag_key | string | The tag name in Microsoft Azure. | 
+| TenableIO.Connectors.params.targets.tag_value | string | The tag value in Microsoft Azure. | 
+| TenableIO.Connectors.params.application_id | string | For Azure connectors, the Azure application ID. | 
+| TenableIO.Connectors.params.tenant_id | string | For Azure connectors, the Azure tenant ID \(directory ID\). | 
+| TenableIO.Connectors.params.subscription_id | string | For Azure connectors, the Azure subscription ID. If you do not provide subscription IDs, Tenable Vulnerability Management automatically discovers them. | 
+| TenableIO.Connectors.params.auto_discovery | boolean | Specifies whether Auto Discovery is enabled or not for AWS keyless connectors. If Auto Discovery is enabled, the connector will automatically discover linked accounts and CloudTrails. | 
+| TenableIO.Connectors.params.service | string | The service targeted by the connector. Values include aws, aws_keyless, aws_fa, azure, azure_fa, and gcp. | 
+| TenableIO.Connectors.last_sync_time | string | An ISO timestamp indicating the date and time of the last successful import, for example, 2018-12-31T13:51:17.243Z. | 
+| TenableIO.Connectors.network_uuid | string | The UUID of the network associated with the connector. | 
+
+### tenable-io-list-users
+
+***
+Returns a list of users.
+
+#### Base Command
+
+`tenable-io-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Users.uuid | string | The UUID of the user. | 
+| TenableIO.Users.id | string | The unique ID of the user. | 
+| TenableIO.Users.user_name | string | The username for the user. | 
+| TenableIO.Users.username | string | The username for the user. | 
+| TenableIO.Users.email | string | The email address of the user. If this attribute is empty, Tenable Vulnerability Management uses the username value as the user's email address. | 
+| TenableIO.Users.name | string | The name of the user \(for example, first and last name\). | 
+| TenableIO.Users.type | string | The type of user. The only supported type is local. | 
+| TenableIO.Users.permissions | number | The user permissions. | 
+| TenableIO.Users.last_login_attempt | number | The time \(in Unix milliseconds\) of the last time the user failed to log in to the Tenable Vulnerability Management user interface. This attribute is only present if the user has attempted unsuccessfully to log in to the Tenable Vulnerability Management user interface. | 
+| TenableIO.Users.login_fail_count | number | The number of failed login attempts since the user last successfully logged in to the Tenable Vulnerability Management user interface.  If this attribute is greater than 5, Tenable Vulnerability Management locks the user account \(that is, updates the lockout attribute for the user to 1.\) | 
+| TenableIO.Users.login_fail_total | number | The total number of failed login attempts for the user. | 
+| TenableIO.Users.enabled | boolean | Specifies whether the user account is enabled \(true\) or disabled \(false\). | 
+| TenableIO.Users.undeletable | boolean | Specifies whether the user account is undeletable \(true\) or deletable \(false\). | 
+| TenableIO.Users.two_factor.sms_phone | string | The phone number used for two-factor authentication. The phone number begins with the \+ character and the country code. This field is required when sms_enabled is set to true. | 
+| TenableIO.Users.two_factor.sms_enabled | number | Indicates whether two-factor authentication is enabled \(1\) or disabled \(0\). | 
+| TenableIO.Users.two_factor.email_enabled | number | Indicates whether backup notification for two-factor authentication is enabled \(1\) or disabled \(0\). If enabled, Tenable Vulnerability Management sends the two-factor verification code via e-mail, as well as via the default SMS message. | 
+| TenableIO.Users.lockout | number | Specifies whether the user can log into the Tenable Vulnerability Management user interface \(0\) or is locked out \(1\). | 
+| TenableIO.Users.container_uuid | string | The UUID of the Tenable Vulnerability Management instance to which the user belongs. | 
+| TenableIO.Users.lastlogin | number | The last time \(in Unix milliseconds\) that the user successfully logged in to the Tenable Vulnerability Management user interface. This attribute is only present if the user has logged in at least once successfully to the Tenable Vulnerability Management user interface. | 
+| TenableIO.Users.uuid_id | string | The UUID for the user. | 
+
+### tenable-io-delete-user
+
+***
+Deletes a user.
+
+#### Base Command
+
+`tenable-io-delete-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The UUID (uuid) or unique ID (id) of the user. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableIO.Delete.User | unknown | User ID that was sent for removal. | 
+| TenableIO.Delete.Removed | unknown | Boolean to identify if the removal was successful. | 
