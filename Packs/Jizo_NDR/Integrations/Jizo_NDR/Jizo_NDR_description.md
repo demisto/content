@@ -1,8 +1,6 @@
-## BaseIntegration Help
+To access the Jizo NDR service, you need to provide
 
-Markdown file for integration configuration  help snippet. In this file add:
+Your Jizo M server URL. For example: "http://172.30.0.38:9001/api/doc"
+The credentials (Username, Password) as parameters for the integration.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+To get access to Jizo M server URL, please contact Sesame IT.
