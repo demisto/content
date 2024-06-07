@@ -761,7 +761,7 @@ def init_rtr_single_session(host_id: str, queue_offline: bool = False) -> str:
     raise ValueError('No session id found in the response')
 
 
-def init_rtr_batch_session(host_ids: list, offline=False) -> str:
+def init_rtr_batch_session(host_ids: list, offline=False, timeout=None) -> str:
     """
         Start a session with one or more hosts
         :param host_ids: List of host agent ID’s to initialize a RTR session on.
@@ -772,7 +772,7 @@ def init_rtr_batch_session(host_ids: list, offline=False) -> str:
         'host_ids': host_ids,
         'queue_offline': offline
     })
-    response = http_request('POST', endpoint_url, data=body)
+    response = http_request('POST', endpoint_url, data=body, timeout=timeout)
     return response.get('batch_id')
 
 
@@ -905,7 +905,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list | Non
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids, offline, timeout)
 
     body = assign_params(batch_id=batch_id, file_path=f'"{file_path}"', optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
@@ -3996,7 +3996,7 @@ def run_command():
     output = []
 
     if target == 'batch':
-        batch_id = args.get('batch_id', None) if args.get('batch_id', None) else init_rtr_batch_session(host_ids, offline)
+        batch_id = args.get('batch_id', None) if args.get('batch_id', None) else init_rtr_batch_session(host_ids, offline, timeout)
         demisto.debug(f"{args.get('batch_id', None)=} , {batch_id=}")
         timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
         timer.start()
@@ -4300,7 +4300,7 @@ def run_script_command():
 
     command_type = 'runscript'
 
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids, offline, timeout)
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
@@ -4909,8 +4909,8 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     raw_response = []
     host_ids = [host_id]
     offline = argToBoolean(args.get('queue_offline', False))
-    batch_id = init_rtr_batch_session(host_ids, offline)
     timeout = arg_to_number(args.get('timeout'))
+    batch_id = init_rtr_batch_session(host_ids, offline, timeout)
     outputs = []
 
     for process_id in process_ids:
@@ -4983,7 +4983,7 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
     full_command = match_remove_command_for_os(operating_system, file_path)
     command_type = "rm"
 
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids, offline, timeout)
     response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids, timeout)
     outputs = parse_rtr_command_response(response, host_ids)
     human_readable = tableToMarkdown(
@@ -5024,7 +5024,7 @@ def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str
     """
     General function to run RTR commands depending on the given command.
     """
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids, offline, timeout=timeout)
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
                                     host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
@@ -5074,7 +5074,7 @@ def rtr_read_registry_keys_command(args: dict):
     timeout = arg_to_number(args.get('timeout'))
     command_type = "reg"
     raw_response = []
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids, offline, timeout)
     outputs = []
     files = []
     not_found_hosts = set()
