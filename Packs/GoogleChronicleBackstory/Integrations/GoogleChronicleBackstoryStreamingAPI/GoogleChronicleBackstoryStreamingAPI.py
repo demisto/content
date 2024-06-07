@@ -45,10 +45,6 @@ SEVERITY_MAP = {
 }
 
 MESSAGES = {
-    "NO_RECORDS": 'No Records Found',
-    "INVALID_DATE": 'Invalid {} time, supported formats are: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, '
-                    'N hours. E.g. 2022-05-15T12:24:36Z, 2021-18-19, 6 days, 20 hours, 01 Mar 2021,'
-                    ' 01 Feb 2021 04:45:33',
     "INVALID_DELTA_TIME_FOR_STREAMING_DETECTIONS": "First fetch time should not be greater than 7 days or 168 hours (in relative manner compared to current time).",  # noqa: E501
     "FUTURE_DATE": "First fetch time should not be in the future.",
     "INVALID_JSON_RESPONSE": 'Invalid response received from Chronicle API. Response not in JSON format.',
@@ -58,8 +54,6 @@ MESSAGES = {
     "INVALID_ARGUMENTS": "Connection refused due to invalid arguments"
 }
 
-RULE_DETECTION = 'RULE_DETECTION'
-GCTI_FINDING = 'GCTI_FINDING'
 CHRONICLE_STREAM_DETECTIONS = '[CHRONICLE STREAM DETECTIONS]'
 SKIPPING_CURRENT_DETECTION = f'{CHRONICLE_STREAM_DETECTIONS} Skipping insertion of current detection since it already exists.'
 
@@ -106,7 +100,7 @@ class Client:
         if self.proxy:
             proxies = handle_proxy()
             if not proxies.get('https', True):
-                raise DemistoException('https proxy value is empty. Check Demisto server configuration' + str(proxies))
+                raise DemistoException('https proxy value is empty. Check XSOAR server configuration' + str(proxies))
             https_proxy = proxies['https']
             if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
                 proxies['https'] = 'https://' + https_proxy
@@ -143,20 +137,20 @@ def validate_response(client: Client, url, method='GET', body=None):
 
     if 500 <= raw_response.status_code <= 599:
         raise ValueError(
-            'Internal server error occurred. Failed to execute request.\nMessage: {}'.format(
-                parse_error_message(raw_response.text, client.region)))
+            'Internal server error occurred. Failed to execute request.\n'
+            f'Message: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code == 429:
         raise ValueError(
-            'API rate limit exceeded. Failed to execute request.\nMessage: {}'.format(
-                parse_error_message(raw_response.text, client.region)))
+            'API rate limit exceeded. Failed to execute request.\n'
+            f'Message: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code == 400 or raw_response.status_code == 404:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response.status_code,
-                                                parse_error_message(raw_response.text, client.region)))
+            f'Status code: {raw_response.status_code}\n'
+            f'Error: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code != 200:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response.status_code,
-                                                parse_error_message(raw_response.text, client.region)))
+            f'Status code: {raw_response.status_code}\n'
+            f'Error: {parse_error_message(raw_response.text, client.region)}')
     if not raw_response.text:
         raise ValueError('Technical Error while making API call to Chronicle. '
                          f'Empty response received with the status code: {raw_response.status_code}.')
@@ -285,7 +279,7 @@ def deduplicate_detections(detection_context: list[dict[str, Any]],
         current_detection_identifier = {'id': detection.get('id', ''),
                                         'ruleVersion': detection.get('detection', [])[0].get('ruleVersion', '')}
         if detection_identifiers and current_detection_identifier in detection_identifiers:
-            demisto.info("{} Detection: {}".format(SKIPPING_CURRENT_DETECTION, current_detection_identifier))
+            demisto.info(f"{SKIPPING_CURRENT_DETECTION} Detection: {current_detection_identifier}")
             continue
         unique_detections.append(detection)
         detection_identifiers.append(current_detection_identifier)
@@ -309,7 +303,7 @@ def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]],
     for detection in detection_context:
         current_detection_identifier = {'id': detection.get('id', '')}
         if detection_identifiers and current_detection_identifier in detection_identifiers:
-            demisto.info("{} Curated Detection: {}".format(SKIPPING_CURRENT_DETECTION, current_detection_identifier))
+            demisto.info(f"{SKIPPING_CURRENT_DETECTION} Curated Detection: {current_detection_identifier}")
             continue
         detection_identifiers.append(current_detection_identifier)
         unique_detections.append(detection)
@@ -548,7 +542,7 @@ def parse_stream(response: requests.Response) -> Iterator[Mapping[str, Any]]:
                 "message": "Exception caught while reading stream response. This "
                            "python client is catching all errors and is returning "
                            "error code 503 as a catch-all. The original error "
-                           "message is as follows: {}".format(repr(e)),
+                           f"message is as follows: {repr(e)}",
             }
         }
 
@@ -569,18 +563,18 @@ def test_module(client_obj: Client, params: dict[str, Any]) -> str:
     :return: Raises ValueError if any error occurred during connection else returns 'ok'.
     :rtype: str
     """
-    demisto.debug('{} Running Test having Proxy {}'.format(CHRONICLE_STREAM_DETECTIONS, params.get('proxy')))
+    demisto.debug(f'{CHRONICLE_STREAM_DETECTIONS} Running Test having Proxy {params.get("proxy")}')
 
     response_code, disconnection_reason, _ = stream_detection_alerts(
         client_obj, {'detectionBatchSize': 1}, {}, True)
     if response_code == 200 and not disconnection_reason:
         return 'ok'
 
-    demisto.debug('{} Test Connection failed.\nMessage: {}'.format(CHRONICLE_STREAM_DETECTIONS, disconnection_reason))
+    demisto.debug(f'{CHRONICLE_STREAM_DETECTIONS} Test Connection failed.\nMessage: {disconnection_reason}')
     if 500 <= response_code <= 599:
-        return 'Internal server error occurred.\nMessage: {}'.format(disconnection_reason)
+        return f'Internal server error occurred.\nMessage: {disconnection_reason}'
     if response_code == 429:
-        return 'API rate limit exceeded.\nMessage: {}'.format(disconnection_reason)
+        return f'API rate limit exceeded.\nMessage: {disconnection_reason}'
 
     error_message = disconnection_reason
     if response_code in [400, 404, 403]:
@@ -593,7 +587,7 @@ def test_module(client_obj: Client, params: dict[str, Any]) -> str:
                 return error_message
         elif response_code == 403:
             error_message = MESSAGES['PERMISSION_DENIED']
-        return 'Status code: {}\nError: {}'.format(response_code, error_message)
+        return f'Status code: {response_code}\nError: {error_message}'
 
     return disconnection_reason
 
@@ -742,6 +736,7 @@ def stream_detection_alerts(
                     demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got a new continuationTime={continuation_time}, no detections.")
                     integration_context.update({'continuation_time': continuation_time})
                     set_integration_context(integration_context)
+                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
                     continue
                 else:
                     demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got detection batch with continuationTime={continuation_time}.")
@@ -752,6 +747,7 @@ def stream_detection_alerts(
                 if not detections:
                     integration_context.update({'continuation_time': continuation_time})
                     set_integration_context(integration_context)
+                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
                     continue
                 user_rule_detections = []
                 chronicle_rule_detections = []
@@ -760,9 +756,9 @@ def stream_detection_alerts(
 
                 for raw_detection in detections:
                     raw_detection_type = str(raw_detection.get('type', ''))
-                    if raw_detection_type.upper() == RULE_DETECTION:
+                    if raw_detection_type.upper() == 'RULE_DETECTION':
                         user_rule_detections.append(raw_detection)
-                    elif raw_detection_type.upper() == GCTI_FINDING:
+                    elif raw_detection_type.upper() == 'GCTI_FINDING':
                         chronicle_rule_detections.append(raw_detection)
 
                 user_rule_detections = deduplicate_detections(user_rule_detections, detection_identifiers)
@@ -780,11 +776,13 @@ def stream_detection_alerts(
                 if sample_events:
                     integration_context.update({'sample_events': json.dumps(sample_events)})
                     set_integration_context(integration_context)
+                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
                 incidents = detection_incidents
                 incidents.extend(curatedrule_incidents)
                 integration_context.update({'continuation_time': continuation_time})
                 if not incidents:
                     set_integration_context(integration_context)
+                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
                     continue
                 total_ingested_incidents = 0
                 length_of_incidents = len(incidents)
@@ -803,6 +801,7 @@ def stream_detection_alerts(
                     'curatedrule_detection_identifiers': curatedrule_detection_identifiers,
                 })
                 set_integration_context(integration_context)
+                demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
 
     return response_code, disconnection_reason, continuation_time
 
@@ -824,8 +823,8 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
 
     """
     integration_context: dict = get_integration_context()
-    continuation_time = initial_continuation_time.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    continuation_time = integration_context.get('continuation_time', continuation_time)
+    initial_continuation_time_str = initial_continuation_time.astimezone(timezone.utc).strftime(DATE_FORMAT)
+    continuation_time = integration_context.get('continuation_time', initial_continuation_time_str)
 
     # Our retry loop uses exponential backoff with a retry limit.
     # For simplicity, we retry for all types of errors.
@@ -857,6 +856,7 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
                 continuation_time = most_recent_continuation_time
                 integration_context.update({'continuation_time': most_recent_continuation_time or continuation_time})
                 set_integration_context(integration_context)
+                demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
                 if test_mode:
                     return integration_context
             else:
@@ -877,7 +877,16 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
                 # Retry with the same connection request as before.
         except RuntimeError as runtime_error:
             demisto.error(str(runtime_error))
-            if consecutive_failures <= MAX_CONSECUTIVE_FAILURES:
+            if response_code == 400 and initial_continuation_time_str != continuation_time:
+                # The continuation time coming from integration context is older than 7 days. Update it to a 7 days.
+                new_continuation_time = arg_to_datetime(MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS).astimezone(  # type: ignore
+                    timezone.utc) + timedelta(minutes=1)
+                new_continuation_time_str = new_continuation_time.strftime(DATE_FORMAT)
+                demisto.updateModuleHealth('Got the continuation time from the integration context which is '
+                                           f'older than {MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS}.\n'
+                                           f'Changing the continuation time to {new_continuation_time_str}.')
+                continuation_time = new_continuation_time_str
+            elif consecutive_failures <= MAX_CONSECUTIVE_FAILURES:
                 generic_sleep_function(IDEAL_SLEEP_TIME_BETWEEN_BATCHES, error_statement=str(runtime_error))
             else:
                 demisto.updateModuleHealth(str(runtime_error))
@@ -909,7 +918,7 @@ def main():
 
         # trigger command based on input
         if command == 'test-module':
-            demisto.results(test_module(client_obj, demisto.args()))
+            return_results(test_module(client_obj, demisto.args()))
         elif command == 'long-running-execution':
             stream_detection_alerts_in_retry_loop(client_obj, first_fetch_timestamp)  # type: ignore
         elif command == 'fetch-incidents':

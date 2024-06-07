@@ -9,11 +9,10 @@ from unittest import mock
 from CommonServerPython import arg_to_datetime
 import demistomock as demisto
 
-from GoogleChronicleBackstoryStreamingAPI import MAX_CONSECUTIVE_FAILURES, MESSAGES, Client, parse_error_message, \
+from GoogleChronicleBackstoryStreamingAPI import DATE_FORMAT, MAX_CONSECUTIVE_FAILURES, MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS, \
     fetch_samples, service_account, auth_requests, validate_configuration_parameters, stream_detection_alerts_in_retry_loop, \
-    validate_response, test_module as main_test_module
+    validate_response, test_module as main_test_module, timezone, timedelta, MESSAGES, Client, parse_error_message
 
-# Write the test cases here similar to the DataminrPulse integration.
 
 GENERIC_INTEGRATION_PARAMS = {
     'credentials': {
@@ -279,7 +278,7 @@ def test_stream_detection_alerts_in_retry_loop_with_error(mocker, mock_client, c
     When:
        - Calling `stream_detection_alerts_in_retry_loop` function.
     Then:
-       - Returns an ok message
+       - Assert exception value.
     """
     mock_response = MockResponse()
 
@@ -329,3 +328,40 @@ def test_stream_detection_alerts_in_retry_loop_with_empty_response(mocker, mock_
         with pytest.raises(Exception) as exc_info:
             stream_detection_alerts_in_retry_loop(mock_client, arg_to_datetime('now'), test_mode=True)
         assert str(exc_info.value) == str(KeyError('continuationTime'))
+
+
+def test_stream_detection_alerts_in_retry_loop_with_400(mocker, mock_client, capfd):
+    """
+    Test case scenario for execution of stream_detection_alerts_in_retry_loop when 400 status code comes.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `stream_detection_alerts_in_retry_loop` function.
+    Then:
+       - Assert exception value.
+    """
+    mock_response = MockResponse()
+    mock_response.status_code = 400
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           'test_data/stream_detections_error.txt'), 'r') as f:
+
+        mock_response.iter_lines = lambda **_: f.readlines()
+
+        stream_response = StreamResponse
+        stream_response.mock_response = mock_response
+        mock_response.post = StreamResponse
+        mock_response.encoding = None
+        mocker.patch.object(auth_requests, 'AuthorizedSession', return_value=mock_response)
+        mocker.patch.object(time, 'sleep', return_value=lambda **_: None)
+        new_continuation_time = arg_to_datetime(MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS).astimezone(
+            timezone.utc) + timedelta(minutes=1)  # type: ignore
+        new_continuation_time_str = new_continuation_time.strftime(DATE_FORMAT)
+        integration_context = {'continuation_time': new_continuation_time_str}
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+        capfd.close()
+        with pytest.raises(RuntimeError) as exc_info:
+            stream_detection_alerts_in_retry_loop(mock_client, arg_to_datetime('now'), test_mode=True)
+
+        assert str(exc_info.value) == MESSAGES['INVALID_ARGUMENTS'] + ' with status=400, error={}'
