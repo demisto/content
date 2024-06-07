@@ -39,7 +39,7 @@ There are no input arguments for this command.
 | Arcanna.Jobs.data_type | String | Arcanna Job type | 
 | Arcanna.Jobs.title | String | Arcanna Job title | 
 | Arcanna.Jobs.status | String | Arcanna job status | 
-
+| Arcanna.Jobs.last_processed_timestamp | date | Last processed time |
 
 #### Command Example
 ```!arcanna-get-jobs```
@@ -148,12 +148,13 @@ Retrieves Arcanna Inference result.
 | --- | --- | --- |
 | Arcanna.Event.event_id | String | Arcanna event id | 
 | Arcanna.Event.ingest_timestamp | String | Arcanna ingestion timestamp. | 
-| Arcanna.Event.confidence_level | Number | Arcanna ML confidence_level. | 
 | Arcanna.Event.result | String | Arcanna event  result | 
-| Arcanna.Event.is_duplicated | boolean | Arcanna signalling if event is duplicated by another alert. | 
 | Arcanna.Event.error_message | String | Arcanna error message if any. | 
 | Arcanna.Event.status | String | Arcanna event status. | 
-
+| Arcanna.Event.result_label | String | Arcanna event result label |
+| Arcanna.Event.confidence_score | Number | Arcanna ML confidence_score |
+| Arcanna.Event.bucket_state | String | Flag to indicate the current event's state in the AI Model |
+| Arcanna.Event.outlier | boolean | Arcanna signalling if event is an outlier based on historical data | 
 
 #### Command Example
 ```!arcanna-get-event-status job_id="1201" event_id="12011938471583"```
@@ -163,12 +164,13 @@ Retrieves Arcanna Inference result.
 {
     "Arcanna": {
         "Event": {
-            "confidence_level": 0.9999464750289917,
+            "confidence_score": 0.9999464750289917,
             "error_message": null,
             "event_id": "12011938471583",
             "ingest_timestamp": "2021-08-26T12:53:47.193847Z",
-            "is_duplicated": true,
             "result": "escalate_alert",
+            "result_label": "Escalate",
+            "outlier": False
             "status": "OK"
         }
     }
@@ -177,7 +179,7 @@ Retrieves Arcanna Inference result.
 
 #### Human Readable Output
 
->## {'event_id': '12011938471583', 'ingest_timestamp': '2021-08-26T12:53:47.193847Z', 'status': 'OK', 'confidence_level': 0.9999464750289917, 'result': 'escalate_alert', 'is_duplicated': True, 'error_message': None}
+>## {'event_id': '12011938471583', 'ingest_timestamp': '2021-08-26T12:53:47.193847Z', 'status': 'OK', 'confidence_score': 0.9999464750289917, 'result': 'escalate_alert', 'result_label': 'Escalate', 'outlier': False, 'error_message': None}
 
 ### arcanna-send-event-feedback
 ***

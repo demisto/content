@@ -54,6 +54,9 @@ script:
     - contextPath: Arcanna.Jobs.last_processed_timestamp
       description: Last time an event was processed by current Job
       type: Date
+    - contextPath: Arcanna.Jobs.data_type
+      description: Arcanna.ai Job type
+      type: String
     description: Get jobs list
   - name: arcanna-export-event
     arguments:
