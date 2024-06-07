@@ -1,6 +1,6 @@
 id: NGFW Internal Scan
 version: -1
-name: NGFW Internal Scan_2
+name: NGFW Internal Scan
 description: |
   This playbook investigates a scan where the source is an internal IP address.
 

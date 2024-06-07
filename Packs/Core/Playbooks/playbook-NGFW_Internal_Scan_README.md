@@ -27,9 +27,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Account Enrichment - Generic v2.1
 * Ticket Management - Generic
+* Containment Plan
 * Endpoint Investigation Plan
 * Endpoint Enrichment - Generic v2.1
-* Containment Plan
 
 ### Integrations
 
@@ -83,4 +83,4 @@ There are no outputs for this playbook.
 
 ---
 
-![NGFW Internal Scan_2](../doc_files/NGFW_Internal_Scan_2.png)
+![NGFW Internal Scan](../doc_files/NGFW_Internal_Scan.png)
