@@ -823,7 +823,7 @@ tasks:
       instance_id:
         simple: ${AWS.EC2.Instances.InstanceId}
       region:
-        simple: ${AWS.Regions.RegionName}
+        simple: ${AWS.EC2.Instances.Region}
       roleArn:
         simple: ${AssumeRoleArn}
       roleSessionName:
@@ -835,13 +835,13 @@ tasks:
     task:
       brand: AWS - System Manager
       description: A list of inventory items returned by the request.
-      id: f55eca3e-e2b4-4859-8adb-91a4ed5034c0
+      id: 47310a34-97d6-406b-884c-6c98a5855f45
       iscommand: true
       name: Get Instance ID information from SSM Inventory list.
       script: AWS - System Manager|||aws-ssm-inventory-entry-list
       type: regular
       version: -1
-    taskid: f55eca3e-e2b4-4859-8adb-91a4ed5034c0
+    taskid: 47310a34-97d6-406b-884c-6c98a5855f45
     timertriggers: []
     type: regular
     view: |-
@@ -871,37 +871,37 @@ view: |-
     }
   }
 inputs:
-- key: ""
+- key: "AwsIP"
+  value:
+    complex:
+      accessor: remoteip
+      root: alert
+  required: true
+  description: "AWS IP in alert"
+  playbookInputQuery:
+- key: AWSAssumeRoleName
   value: {}
   required: false
-  description: ""
+  description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
   playbookInputQuery:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue:
+        tovalue:
+      todate: "0001-01-01T00:00:00Z"
     query: ""
     queryEntity: indicators
     results:
-    daterange:
-      fromdate: "0001-01-01T00:00:00Z"
-      todate: "0001-01-01T00:00:00Z"
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: "0001-01-01T00:00:00Z"
     runFromLastJobTime: true
-- key: AwsIP
-  value:
-    complex:
-      root: alert
-      accessor: remoteip
-  required: true
-  description: AWS IP in alert
-  playbookInputQuery:
-- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
-  key: AWSAssumeRoleName
-  playbookInputQuery:
   required: false
   value: {}
 outputs:
@@ -914,9 +914,26 @@ outputs:
 - contextPath: AWSHierarchy
   description: AWS account hierarchy information.
   type: unknown
+- contextPath: AWS.SSM
+  description: AWS SSM information.
+  type: unknown
 quiet: true
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields: {}
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AwsIP
+  - AWSAssumeRoleName
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - AWS.EC2.Instances
+  - AWS.EC2.SecurityGroups
+  - AWSHierarchy
+  - AWS.SSM

@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any, Dict
 import traceback
+import json
 
 
 ROLE_SESSION_NAME = "xsoar-session"
@@ -88,11 +89,12 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
     if output_run_command_dict.get("run_command_flag"):
         # Check if Package upgrade is supported for the OS
         os = (
-            instance_info_dict.get("PlatformType")
+            instance_info_dict.get("PlatformType", "")
             + " "
-            + instance_info_dict.get("PlatformName")
+            + instance_info_dict.get("PlatformName", "")
         )
-        if os not in asm_rule_package_dict.get(asm_rule_id).keys():
+        # if os not in asm_rule_package_dict.get(asm_rule_id).keys():
+        if os not in asm_rule_package_dict.get(asm_rule_id, {}).keys():
             output_run_command_dict["run_command_flag"] = False
             output_run_command_dict["run_command_output"] = (
                 "Package upgrade is not supported for the OS."
@@ -101,10 +103,10 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
 
     if output_run_command_dict.get("run_command_flag"):
         # Determine Command for the OS
-        command = asm_rule_package_dict.get(asm_rule_id).get(
-            instance_info_dict.get("PlatformType")
+        command = asm_rule_package_dict.get(asm_rule_id, {}).get(
+            instance_info_dict.get("PlatformType", "")
             + " "
-            + instance_info_dict.get("PlatformName")
+            + instance_info_dict.get("PlatformName", "")
         )
 
         parameters = {
@@ -117,7 +119,7 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
             "document_name": "AWS-RunShellScript",
             "target_key": "Instance Ids",
             "target_values": instance_id,
-            "parameters": parameters,
+            "parameters": json.dumps(parameters),
             "region": region,
         }
         if assume_role:
@@ -157,10 +159,12 @@ def aws_ec2_package_upgrade(args: Dict[str, Any]) -> CommandResults:
     region = args.get("region", None)
     assume_role = args.get("assume_role", None)
 
+    instance_id = str(instance_id) if instance_id is not None else ""
+    asm_rule_id = str(asm_rule_id) if asm_rule_id is not None else ""
+
     results = upgrade_package_on_instance(
         instance_id, asm_rule_id, region, assume_role, ROLE_SESSION_NAME
     )
-
     command_results = CommandResults(
         outputs=results,
         outputs_prefix="awsec2packageupgrade",

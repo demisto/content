@@ -27,9 +27,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ASM Rule ID | ASM rule ID | InsecureOpenSSH | Required |
-| Instance ID | Instance ID of the EC2 | i-0e3097bd313c4b430 | Required |
-| Region | AWS Region of the EC2 instance. | us-east-1 | Optional |
+| ASM Rule ID | ASM rule ID | ${alert.asmattacksurfaceruleid} | Required |
+| Instance ID | Instance ID of the EC2 |  | Required |
+| Region | AWS Region of the EC2 instance. |  | Required |
 | Assume Role | AWS Role to be assumed. |  | Optional |
 
 ## Playbook Outputs
@@ -38,7 +38,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| packageUpgradeFlag | Boolean value if Package is upgraded or not. | unknown |
+| remediatedFlag | Boolean value if Package is upgraded or not. | unknown |
 
 ## Playbook Image
 
