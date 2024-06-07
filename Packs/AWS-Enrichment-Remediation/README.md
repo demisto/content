@@ -28,7 +28,7 @@ AWS - Enrichment playbook reports EC2 information given an IP address of an EC2 
 #### AWS - EC2 Package Upgrade
 AWS - EC2 Package Upgrade playbook upgrades supported package on an AWS EC2 instance.
 
-![AWS - EC2 Package Upgrade]()
+![AWS - EC2 Package Upgrade](https://raw.githubusercontent.com/demisto/content/56f3ae1b82b1320e0badc580713726034dd622b1/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_EC2_Package_Upgrade.png)
 
 #### AWS - Security Group Remediation
 AWS - Security Group Remediation playbook replaces current security groups associated to NIC with Remediation security group.
