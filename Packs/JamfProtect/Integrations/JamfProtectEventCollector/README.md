@@ -13,9 +13,12 @@ Use this integration to fetch audits and alerts from Jamf Protect as events in C
     | Use system proxy settings |  | False |
     | Client ID | The unique identifier for the client application, provided by Jamf when the application is registered. This is used to authenticate the client with the Jamf Protect server. | True |
     | Password | The password for the client application. This is used to authenticate the client with the Jamf Protect server. | True |
-    | Max events per fetch | Maximum number of events to fetch at a time. | False |
+    | Max alert events per fetch | Maximum number of alert events to fetch at a time. | False |
+    | Max audit events per fetch | Maximum number of audit events to fetch at a time. | False |
+    | Max computer events per fetch | Maximum number of computer events to fetch at a time. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
