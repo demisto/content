@@ -89,7 +89,7 @@ class Client(BaseClient):
 
         return token
 
-    def search_events(self, prev_id: str, from_date: str, limit: int) -> List[Dict]:
+    def search_events(self, prev_id: str| None, from_date: str, limit: int) -> List[Dict]:
         """
         Searches for events in SailPoint IdentityNow
         Args:
@@ -99,15 +99,25 @@ class Client(BaseClient):
         Returns:
             List of events
         """
-        query = {"indices": ["events"],
-                   "queryType": "SAILPOINT",
-                   "queryVersion": "5.2",
-                   "query":
-                   {"query": f"type:* AND created: [{from_date} TO now]"},
-                   "timeZone": "America/Los_Angeles",
-                   "sort": ["+id"],
-                   "searchAfter": [prev_id]
-                   }
+        if not prev_id:
+            demisto.debug("No ID provided, using timestamp" )
+            query = {"indices": ["events"],
+                    "queryType": "SAILPOINT",
+                    "queryVersion": "5.2",
+                    "query":
+                    {"query": f"type:* AND created: [{from_date} TO now]"},
+                    "timeZone": "America/Los_Angeles",
+                    "sort": ["+id"]
+                    }
+        else:
+             query = {"indices": ["events"],
+                    "queryType": "SAILPOINT",
+                    "queryVersion": "5.2",
+                    "query":
+                    {"query": "type:* "},
+                    "sort": ["+id"],
+                    "searchAfter": [prev_id]
+                    }
 
         url_suffix = f'/v3/search?limit={limit}'
         demisto.debug(f'Searching for events with query: {query}.')
@@ -139,7 +149,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, from_date: str, from_id: str = '0', limit: int = 50) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 50) -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
@@ -174,26 +184,28 @@ def fetch_events(client: Client,
     """
 
     all_events = []
-    formatted_now = datetime.now().strftime(DATE_FORMAT)
+    #formatted_now = datetime.now().strftime(DATE_FORMAT)
     # since we allow the user to set the max_events_per_fetch to 50,000, but the API only allows 10000 events per call
     # we need to make multiple calls to the API to fetch all the events
     while max_events_per_fetch > 0:
         current_batch_to_fetch = min(max_events_per_fetch, 10000)
         demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
         events = client.search_events(
-            prev_id=last_run.get('prev_id', "0"),
-            from_date=last_run.get('prev_date', formatted_now),
+            prev_id=last_run.get('prev_id'),
+            from_date= DEFAULT_LOOKBACK,      #TODO if prev_id is provided, we will ignore the time
             limit=current_batch_to_fetch,
         )
-        demisto.debug(f'Successfully fetched {len(events)} events.')
+        demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
         if not events:
             demisto.debug(f'No more events to fetch, return for next run: {last_run}.')
+            demisto.debug(f'Sum of all events: {len(all_events)}.')
             return last_run, all_events
         all_events.extend(events)
         last_fetched_event = events[-1]
         last_fetched_id = last_fetched_event['id']
         last_fetched_creation_date = last_fetched_event['created']
-        last_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
+        demisto.debug(f'creation time of last event per cycle: {last_fetched_creation_date} ')
+        last_run = {'prev_id': last_fetched_id}
         max_events_per_fetch -= len(events)
         demisto.debug(f'{max_events_per_fetch} events are left to fetch in the next calls.')
     return last_run, all_events
@@ -261,7 +273,8 @@ def main() -> None:
             should_push_events = argToBoolean(args.get('should_push_events', False))
             time_to_start = arg_to_datetime(args.get('from_date'))
             formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else DEFAULT_LOOKBACK
-            id_to_start = args.get('from_id', '0')
+            id_to_start = args.get('from_id')
+            #TODO handle a case the user entered both, id and date
             events, results = get_events(client,from_date=formatted_time_to_start,
                                          from_id=id_to_start, limit=limit)   # type:ignore
             return_results(results)
