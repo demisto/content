@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -178,10 +178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 58c51221-40de-486f-8f63-ed71ce50ab4b
+    taskid: d3816b97-2a2f-4539-83ee-af6592faad20
     type: condition
     task:
-      id: 58c51221-40de-486f-8f63-ed71ce50ab4b
+      id: d3816b97-2a2f-4539-83ee-af6592faad20
       version: -1
       name: Connection from unusual country?
       description: Check if the connection was made from an unusual country.
@@ -205,7 +205,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "false"
+              simple: "true"
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -267,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 00bcc57e-7e18-4bab-8356-a1ef5348e646
+    taskid: bc3eca1f-c99b-4630-884d-9e573739a061
     type: regular
     task:
-      id: 00bcc57e-7e18-4bab-8356-a1ef5348e646
+      id: bc3eca1f-c99b-4630-884d-9e573739a061
       version: -1
       name: Set related alerts
       description: Set a value in context under the key you entered.
@@ -301,7 +301,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: XDR Alert Search Results
+    - incidentfield: Alert Search Results
       output:
         complex:
           root: inputs.RelatedAlerts
@@ -516,7 +516,7 @@ tasks:
       id: 16c9bbda-5247-47c2-81d5-2909757ab287
       version: -1
       name: Risky user involved?
-      description: Checks if a risky user is involved in the incident.
+      description: Checks if a risky user is involved in the alert.
       type: condition
       iscommand: false
       brand: ""
@@ -558,7 +558,7 @@ tasks:
       id: 03fb3ebe-d5d6-4695-81d2-5ceab496655b
       version: -1
       name: Risky host involved?
-      description: Checks if a risky user is involved in the incident.
+      description: Checks if a risky user is involved in the alert.
       type: condition
       iscommand: false
       brand: ""
