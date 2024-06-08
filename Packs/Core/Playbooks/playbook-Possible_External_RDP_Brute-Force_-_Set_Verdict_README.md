@@ -5,8 +5,8 @@ This playbook creating an array called "Suspicious Elements", which is used to c
 -  Related to campaign - IP address is related to campaign, based on TIM module
 -  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results
 -  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access", were found.
-- Risky User - one or more risky users are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.
-- Risky Host - one or more risky hosts are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.
+- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.
+- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.
 
 The array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive."
 

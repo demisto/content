@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -516,7 +516,7 @@ tasks:
       id: 16c9bbda-5247-47c2-81d5-2909757ab287
       version: -1
       name: Risky user involved?
-      description: Checks if a risky user is involved in the alert.
+      description: Checks if a risky user is involved in the incident.
       type: condition
       iscommand: false
       brand: ""
@@ -558,7 +558,7 @@ tasks:
       id: 03fb3ebe-d5d6-4695-81d2-5ceab496655b
       version: -1
       name: Risky host involved?
-      description: Checks if a risky user is involved in the alert.
+      description: Checks if a risky user is involved in the incident.
       type: condition
       iscommand: false
       brand: ""
