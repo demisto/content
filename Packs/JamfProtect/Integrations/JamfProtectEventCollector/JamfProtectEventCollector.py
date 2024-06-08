@@ -2,10 +2,7 @@ from collections.abc import Callable
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 VENDOR = 'Jamf'
@@ -15,7 +12,7 @@ COMPUTER_PAGE_SIZE = 200
 AUDIT_PAGE_SIZE = 5000
 DEFAULT_MAX_FETCH_ALERT = 1000
 DEFAULT_MAX_FETCH_AUDIT = 20000
-DEFAULT_MAX_FETCH_COMPUTER = 1000 #TODO
+DEFAULT_MAX_FETCH_COMPUTER = 1000  # TODO
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -372,8 +369,8 @@ def parse_response(response: dict) -> tuple:
             - A list of items from the response.
              These items are either alerts or audit logs, depending on the API endpoint that was called.
     """
-    data = response.get("data", {})
-    parsed_data = data.get("listAlerts") or data.get("listAuditLogsByDate") or {}
+    data: dict = response.get("data", {})
+    parsed_data = data.get("listAlerts") or data.get("listAuditLogsByDate") or data.get("listComputers") or {}
     page_info = parsed_data.get("pageInfo", {})
     items = parsed_data.get("items")
     return page_info, items
@@ -467,6 +464,7 @@ def get_events_computer_type(client: Client, start_date: str, end_date: str, max
     demisto.debug(f"Jamf Protect- Fetched {len(events)} computers")
     return events, new_last_run_without_next_page
 
+
 def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict) -> tuple:
     """
      Fetches audit type events from the Jamf Protect API within a specified date range.
@@ -513,7 +511,12 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     return events, new_last_run_without_next_page
 
 
-def get_events(command_args: dict, client_event_type_func: Callable, max_fetch: int, next_page: str = "") -> tuple[list[dict], str]:
+def get_events(
+    command_args: dict,
+    client_event_type_func: Callable,
+    max_fetch: int,
+    next_page: str = ""
+) -> tuple[list[dict], str]:
     """
     Fetches events from the Jamf Protect API.
 
@@ -596,7 +599,6 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
     computer_next_page = last_run.get("computer", {}).get("next_page", "")
 
-
     if not (alert_next_page or audit_next_page or computer_next_page) or alert_next_page:
         # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.
         alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
@@ -605,7 +607,8 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
     if not (alert_next_page or audit_next_page or computer_next_page) or computer_next_page:
         # The only case we don't trigger the computer event type cycle is when have only the alert and audit next page token.
-       computer_events, computer_next_run = get_events_computer_type(client, start_date_arg, end_date_arg, max_fetch_computer, last_run)
+        computer_events, computer_next_run = get_events_computer_type(
+            client, start_date_arg, end_date_arg, max_fetch_computer, last_run)
     next_run: Dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
         # Will instantly re-trigger the fetch command.
@@ -643,7 +646,10 @@ def validate_start_and_end_dates(args):
     return start_date_str, end_date_str
 
 
-def get_events_command(client: Client, args: dict) -> tuple:
+def get_events_command(
+    client: Client,
+    args: dict[str, str]
+) -> tuple[list[dict], list[CommandResults]] | tuple[list, CommandResults]:
     """
      Fetches events from the Jamf Protect API within a specified date range and returns them along with the command results.
 
@@ -663,34 +669,43 @@ def get_events_command(client: Client, args: dict) -> tuple:
      """
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     results = []
-    alert_events_with_time, audit_events_with_time, computer_events_with_time= [], [], []
+    events_with_time: dict[str, list] = {
+        'Alert': [],
+        'Audit': [],
+        'Computer': []
+    }
     start_date, end_date = validate_start_and_end_dates(args)
 
-    alert_events, audit_events, computer_events, _ = fetch_events(client=client, max_fetch_alerts=limit, max_fetch_audits=limit, max_fetch_computer=limit,
-                                                 start_date_arg=start_date,
-                                                 end_date_arg=end_date)
+    alert_events, audit_events, computer_events, _ = fetch_events(
+        client=client,
+        max_fetch_alerts=limit,
+        max_fetch_audits=limit,
+        max_fetch_computer=limit,
+        start_date_arg=start_date,
+        end_date_arg=end_date
+    )
+    event_types = [
+        ('Alert', alert_events),
+        ('Audit', audit_events),
+        ('Computer', computer_events)
+    ]
+    for event_type, events in event_types:
+        if events:
+            events = events[:limit]
+            events_with_time[event_type] = add_time_field(events)
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(f"Jamf Protect {event_type} Events", events_with_time[event_type]),
+                    raw_response=events_with_time[event_type]
+                )
+            )
 
-    if alert_events:
-        alert_events = alert_events[:limit]
-        alert_events_with_time = add_time_field(alert_events)
-        results.append(
-            CommandResults(readable_output=tableToMarkdown("Jamf Protect Alert Events", alert_events_with_time),
-                           raw_response=alert_events_with_time))
-    if audit_events:
-        audit_events = audit_events[:limit]
-        audit_events_with_time = add_time_field(audit_events)
-        results.append(
-            CommandResults(readable_output=tableToMarkdown("Jamf Protect Audit Events", audit_events_with_time),
-                           raw_response=audit_events_with_time))
-    if computer_events:
-        computer_events = audit_events[:limit]
-        computer_events_with_time = add_time_field(computer_events)
-        results.append(
-            CommandResults(readable_output=tableToMarkdown("Jamf Protect Computer Events", computer_events_with_time),
-                           raw_response=computer_events_with_time))
-
-    events = alert_events_with_time + audit_events_with_time + computer_events_with_time
-    if events:
+    combined_events = (
+        events_with_time['Alert']
+        + events_with_time['Audit']
+        + events_with_time['Computer']
+    )
+    if combined_events:
         return events, results
     return [], CommandResults(readable_output='No events found')
 
@@ -726,7 +741,7 @@ def main() -> None:  # pragma: no cover
         client_password = params.get('client', {}).get('password', '')
         max_fetch_audits = arg_to_number(params.get('max_fetch_audits')) or DEFAULT_MAX_FETCH_AUDIT
         max_fetch_alerts = arg_to_number(params.get('max_fetch_alerts')) or DEFAULT_MAX_FETCH_ALERT
-        max_fetch_computer = arg_to_number(params.get('max_fetch_computer')) or DEFAULT_MAX_FETCH_COMPUTER  #TODO?
+        max_fetch_computer = arg_to_number(params.get('max_fetch_computer')) or DEFAULT_MAX_FETCH_COMPUTER  # TODO?
 
         demisto.debug(f'Command being called is {command}')
 
@@ -738,7 +753,7 @@ def main() -> None:  # pragma: no cover
             client_password=client_password
         )
 
-        if command== 'test-module':
+        if command == 'test-module':
             return_results(test_module(client))
         elif command == 'jamf-protect-get-events':
             events, results = get_events_command(client=client,
@@ -748,10 +763,10 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
         elif command == 'fetch-events':
             alert_events, audit_events, computer_events, new_last_run = fetch_events(client=client,
-                                                                    max_fetch_alerts=max_fetch_alerts,
-                                                                    max_fetch_audits=max_fetch_audits,
-                                                                    max_fetch_computer=max_fetch_computer
-                                                                    )
+                                                                                     max_fetch_alerts=max_fetch_alerts,
+                                                                                     max_fetch_audits=max_fetch_audits,
+                                                                                     max_fetch_computer=max_fetch_computer
+                                                                                     )
             events = alert_events + audit_events + computer_events
             if events:
                 add_time_field(events)
