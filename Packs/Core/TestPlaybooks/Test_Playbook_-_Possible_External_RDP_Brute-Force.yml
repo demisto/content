@@ -1,0 +1,1456 @@
+id: Test Playbook - Possible External RDP Brute-Force
+version: -1
+name: Test Playbook - Possible External RDP Brute-Force
+description: |-
+  This playbook tests the ‘Possible External RDP Brute-Force' playbook which is part of the ‘Core’ pack.
+
+  The following tests are conducted in the playbook:
+  1-Confirm that alert fields were populated correctly by the custom output mapping rules.
+  2- Ensure that the playbook outputs are correctly extracted.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
+    type: start
+    task:
+      id: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
+    type: regular
+    task:
+      id: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "311"
+      - "312"
+      - "331"
+      - "332"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 350e14ec-8eae-4ea7-8ce7-ce5890e6c63e
+    type: title
+    task:
+      id: 350e14ec-8eae-4ea7-8ce7-ce5890e6c63e
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "269"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0f8f5c47-12b5-4110-8fc4-753bf5477931
+    type: title
+    task:
+      id: 0f8f5c47-12b5-4110-8fc4-753bf5477931
+      version: -1
+      name: Check Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+      - "313"
+      - "315"
+      - "317"
+      - "319"
+      - "321"
+      - "323"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 9164dd25-39ea-47dd-8777-fb6815c46d4b
+    type: condition
+    task:
+      id: 9164dd25-39ea-47dd-8777-fb6815c46d4b
+      version: -1
+      name: Verify Risky Host
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''Risky Host'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: Risky Host
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 393727f6-a89f-42a1-8bd4-8ac2f96a414c
+    type: regular
+    task:
+      id: 393727f6-a89f-42a1-8bd4-8ac2f96a414c
+      version: -1
+      name: Verify Playbook Output Error - Risky Host
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'Risky Host' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Add risky host to suspicious elements' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Add risky host to suspicious elements' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Add risky host to suspicious elements' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Add risky host to suspicious elements' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "256":
+    id: "256"
+    taskid: f259a13c-f01f-4422-87a7-1997073a18f5
+    type: title
+    task:
+      id: f259a13c-f01f-4422-87a7-1997073a18f5
+      version: -1
+      name: Done Verifying Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "306"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: 5295d878-80fb-4513-849c-02efbef518cd
+    type: title
+    task:
+      id: 5295d878-80fb-4513-849c-02efbef518cd
+      version: -1
+      name: Check Check Alert Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "270"
+      - "325"
+      - "327"
+      - "329"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "270":
+    id: "270"
+    taskid: bb723ddc-ce81-425d-86c1-4e5bf2caade5
+    type: condition
+    task:
+      id: bb723ddc-ce81-425d-86c1-4e5bf2caade5
+      version: -1
+      name: Verify Source Geolocation
+      description: Verify that the ‘sourcegeolocation’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "271"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.sourcegeolocation
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "271":
+    id: "271"
+    taskid: 1a3acc74-1410-4222-824c-fbb2446bf1ea
+    type: regular
+    task:
+      id: 1a3acc74-1410-4222-824c-fbb2446bf1ea
+      version: -1
+      name: Verify Alert Field Error - Source Geolocation
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘sourcegeolocation’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set unusual country' task.
+          2- The mapping rule for the 'Source Geolocation' alert field configured within the 'Set unusual country' playbook task has been removed.
+          3- A change has been made to the output value of the 'Source Geolocation' alert field mapping rule within the 'Set unusual country' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "305":
+    id: "305"
+    taskid: ad6203d9-d2b1-4572-85d3-d18aaeafbc46
+    type: title
+    task:
+      id: ad6203d9-d2b1-4572-85d3-d18aaeafbc46
+      version: -1
+      name: Done Verifying Alert Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "306"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "306":
+    id: "306"
+    taskid: 277d4cdf-d375-490e-8974-bce285c77675
+    type: title
+    task:
+      id: 277d4cdf-d375-490e-8974-bce285c77675
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "309":
+    id: "309"
+    taskid: 3cfadab8-e9a6-4c3e-8e00-d3720f74ac2f
+    type: playbook
+    task:
+      id: 3cfadab8-e9a6-4c3e-8e00-d3720f74ac2f
+      version: -1
+      name: Possible External RDP Brute-Force - Set Verdict
+      description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the alert, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+      playbookName: Possible External RDP Brute-Force - Set Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      HuntResults:
+        simple: "True"
+      IpReputation:
+        simple: "2"
+      RelatedAlerts:
+        simple: "True"
+      RelatedCampaign:
+        simple: "True"
+      RiskyHost:
+        complex:
+          root: Core.RiskyHost
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: MED
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: id
+      RiskyUser:
+        complex:
+          root: Core.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: MED
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: id
+      UnusualGeoLocation:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "311":
+    id: "311"
+    taskid: 1ac28b39-0163-495b-8952-c1cfcc76c024
+    type: regular
+    task:
+      id: 1ac28b39-0163-495b-8952-c1cfcc76c024
+      version: -1
+      name: Set 'RiskyHost' To Context
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "309"
+    scriptarguments:
+      keys:
+        simple: risk_level,id
+      parent:
+        simple: Core.RiskyHost
+      values:
+        simple: MED,1111
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "312":
+    id: "312"
+    taskid: 9ee8e643-7645-42e1-873f-83bd706f4fa8
+    type: regular
+    task:
+      id: 9ee8e643-7645-42e1-873f-83bd706f4fa8
+      version: -1
+      name: Set 'RiskyHost' To Context
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "309"
+    scriptarguments:
+      keys:
+        simple: risk_level,id
+      parent:
+        simple: Core.RiskyUser
+      values:
+        simple: MED,1111
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "313":
+    id: "313"
+    taskid: 5bd7a006-4384-4ef1-8d45-ce36e61badf7
+    type: condition
+    task:
+      id: 5bd7a006-4384-4ef1-8d45-ce36e61badf7
+      version: -1
+      name: Verify Risky User
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''Risky User'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "314"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: Risky User
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "314":
+    id: "314"
+    taskid: 2fb33926-caf4-4b30-81eb-bd4c0e364901
+    type: regular
+    task:
+      id: 2fb33926-caf4-4b30-81eb-bd4c0e364901
+      version: -1
+      name: Verify Playbook Output Error - Risky User
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'Risky User' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Add risky user to suspicious elements' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Add risky user to suspicious elements' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Add risky user to suspicious elements' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Add risky user to suspicious elements' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "315":
+    id: "315"
+    taskid: c66e1e5f-9f0e-430b-8da8-3abf7c4aa93f
+    type: condition
+    task:
+      id: c66e1e5f-9f0e-430b-8da8-3abf7c4aa93f
+      version: -1
+      name: Verify IP Reputation
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''IP Reputation'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "316"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: IP Reputation
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1870,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "316":
+    id: "316"
+    taskid: 4c7c987c-2fea-48a8-849d-c0e9ceb49b90
+    type: regular
+    task:
+      id: 4c7c987c-2fea-48a8-849d-c0e9ceb49b90
+      version: -1
+      name: Verify Playbook Output Error - IP Reputation
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'IP Reputation' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set IP Reputation' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set IP Reputation' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Set IP Reputation' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Set IP Reputation' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1870,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "317":
+    id: "317"
+    taskid: db94d5da-4867-4641-848e-11c9c5890854
+    type: condition
+    task:
+      id: db94d5da-4867-4641-848e-11c9c5890854
+      version: -1
+      name: Verify Related Campaign
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''Related Campaign'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "318"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: Related Campaign
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "318":
+    id: "318"
+    taskid: 0581fb80-4611-41d0-89d1-e31f941911cd
+    type: regular
+    task:
+      id: 0581fb80-4611-41d0-89d1-e31f941911cd
+      version: -1
+      name: Verify Playbook Output Error - Related Campaign
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'Related Campaign' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set campaign' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set campaign' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Set campaign' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Set campaign' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "319":
+    id: "319"
+    taskid: 08542be7-9267-4590-86c8-4b5f5357cdcb
+    type: condition
+    task:
+      id: 08542be7-9267-4590-86c8-4b5f5357cdcb
+      version: -1
+      name: Verify Hunting Results
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''Hunting Results'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "320"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: Hunting Results
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "320":
+    id: "320"
+    taskid: c3f4e59c-2f98-4733-8ee4-46e7d19927a1
+    type: regular
+    task:
+      id: c3f4e59c-2f98-4733-8ee4-46e7d19927a1
+      version: -1
+      name: Verify Playbook Output Error - Hunting Results
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'Hunting Results' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set hunting results' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set hunting results' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Set hunting results' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Set hunting results' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "321":
+    id: "321"
+    taskid: c735bf1f-17f3-431c-8b09-b759c57d185a
+    type: condition
+    task:
+      id: c735bf1f-17f3-431c-8b09-b759c57d185a
+      version: -1
+      name: Verify Related Alerts
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''Related Alerts'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "322"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: Related Alerts
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3050,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "322":
+    id: "322"
+    taskid: 95719a43-fda7-4ca6-8cd0-78f19a27d99d
+    type: regular
+    task:
+      id: 95719a43-fda7-4ca6-8cd0-78f19a27d99d
+      version: -1
+      name: Verify Playbook Output Error - Related Alerts
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'Related Alerts' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set related alerts' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set related alerts' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Set related alerts' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Set related alerts' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3050,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "323":
+    id: "323"
+    taskid: f97b60d0-2863-4fed-8dd9-b685900e02b8
+    type: condition
+    task:
+      id: f97b60d0-2863-4fed-8dd9-b685900e02b8
+      version: -1
+      name: Verify Unusual Country
+      description: 'Verify that the ‘Suspicious_Elements’ playbook output contain ''Unusual Country'' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "324"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Suspicious_Elements
+            iscontext: true
+          right:
+            value:
+              simple: Unusual Country
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3440,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "324":
+    id: "324"
+    taskid: ea60761f-7aeb-4760-8129-2d395277efb9
+    type: regular
+    task:
+      id: ea60761f-7aeb-4760-8129-2d395277efb9
+      version: -1
+      name: Verify Playbook Output Error - Unusual Country
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Suspicious_Elements' playbook output does not contain 'Unusual Country' value. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set unusual country' task.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set unusual country' task.
+          3- The 'value' input configuration was changed for the 'Set' automation used in the 'Set unusual country' task.
+          4- The 'append' input configuration was changed for the 'Set' automation used in the 'Set unusual country' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3440,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "325":
+    id: "325"
+    taskid: 3eec7cbe-78e9-406e-87b4-8da1710b261c
+    type: condition
+    task:
+      id: 3eec7cbe-78e9-406e-87b4-8da1710b261c
+      version: -1
+      name: Verify Alert Search Results
+      description: Verify that the ‘alertsearchresults’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "326"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.alertsearchresults
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "326":
+    id: "326"
+    taskid: 2f5f3a00-97f6-4667-8084-03cbd99611f9
+    type: regular
+    task:
+      id: 2f5f3a00-97f6-4667-8084-03cbd99611f9
+      version: -1
+      name: Verify Alert Field Error - Alert Search Results
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘alertsearchresults’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set related alerts' task.
+          2- The mapping rule for the 'Alert Search Results' alert field configured within the 'Set related alerts' playbook task has been removed.
+          3- A change has been made to the output value of the 'Alert Search Results' alert field mapping rule within the 'Set related alerts' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "327":
+    id: "327"
+    taskid: 1df02d36-c3f6-417f-8dc9-da52a42062be
+    type: condition
+    task:
+      id: 1df02d36-c3f6-417f-8dc9-da52a42062be
+      version: -1
+      name: Verify Hunt Results Count
+      description: Verify that the ‘huntresultscount’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "328"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.huntresultscount
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "328":
+    id: "328"
+    taskid: fa4562d1-de37-4943-84b5-8dcaf490c266
+    type: regular
+    task:
+      id: fa4562d1-de37-4943-84b5-8dcaf490c266
+      version: -1
+      name: Verify Alert Field Error - Hunt Results Count
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘huntresultscount’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set hunting results' task.
+          2- The mapping rule for the 'Hunt Results Count' alert field configured within the 'Set hunting results' playbook task has been removed.
+          3- A change has been made to the output value of the 'Hunt Results Count' alert field mapping rule within the 'Set hunting results' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "329":
+    id: "329"
+    taskid: 7f2cb159-426c-4efc-81d9-16b23660e73e
+    type: condition
+    task:
+      id: 7f2cb159-426c-4efc-81d9-16b23660e73e
+      version: -1
+      name: Verify Part of Campaign
+      description: Verify that the ‘partofcampaign’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "330"
+      "yes":
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.partofcampaign
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "330":
+    id: "330"
+    taskid: 5ab074bb-d2c9-49f8-88d1-c31cca48cdef
+    type: regular
+    task:
+      id: 5ab074bb-d2c9-49f8-88d1-c31cca48cdef
+      version: -1
+      name: Verify Alert Field Error - Part of Campaign
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘partofcampaign’ alert field was populated correctly. One of the following may be the cause:
+          1- The 'Set' script failed to execute in the 'Set campaign' task.
+          2- The mapping rule for the 'Part of Campaign' alert field configured within the 'Set campaign' playbook task has been removed.
+          3- A change has been made to the output value of the 'Part of Campaign' alert field mapping rule within the 'Set campaign' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "331":
+    id: "331"
+    taskid: 0b3a713e-0ecb-4298-89d9-d80f10490036
+    type: regular
+    task:
+      id: 0b3a713e-0ecb-4298-89d9-d80f10490036
+      version: -1
+      name: Set 'Has campaign hunt results' To Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "309"
+    scriptarguments:
+      key:
+        simple: Has campaign hunt results
+      value:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "332":
+    id: "332"
+    taskid: 27d5e9cb-0842-43aa-81df-f09cbd246451
+    type: regular
+    task:
+      id: 27d5e9cb-0842-43aa-81df-f09cbd246451
+      version: -1
+      name: Set 'Connection from unusual country' To Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "309"
+    scriptarguments:
+      key:
+        simple: Connection from unusual country
+      value:
+        simple: Israel
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "270_305_yes": 0.31,
+      "313_256_yes": 0.2,
+      "315_256_yes": 0.11,
+      "317_256_yes": 0.1,
+      "319_256_yes": 0.11,
+      "321_256_yes": 0.1,
+      "323_256_yes": 0.1,
+      "325_305_yes": 0.15,
+      "327_305_yes": 0.12,
+      "329_305_yes": 0.11,
+      "70_256_yes": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1335,
+        "width": 5180,
+        "x": -1360,
+        "y": -140
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2
