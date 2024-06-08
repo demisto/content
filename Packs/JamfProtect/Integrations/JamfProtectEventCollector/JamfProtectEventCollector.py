@@ -209,7 +209,7 @@ class Client(BaseClient):
 
         Args:
             args (dict): The arguments to be used in the GraphQL query.
-             It should contain a key "created" with a value representing the creation date of the alerts.
+             It should contain a key "created" with a value representing the creation date of the computer.
             next_page (str): The next page token for pagination.
 
         Returns:
