@@ -11,10 +11,18 @@ configuration:
   options:
   - https://smart-api-production-1-us.avanan.net
   - https://smart-api-production-1-eu.avanan.net
+  - https://smart-api-production-5-ap.avanan.net
   - https://smart-api-production-1-ca.avanan.net
-  - https://cloudinfra-gw.portal.checkpoint.com
+  - https://smart-api-production-1-euw2.avanan.net
+  - https://smart-api-production-1-mec1.avanan.net
+  - https://smart-api-production-1-aps1.avanan.net
   - https://cloudinfra-gw-us.portal.checkpoint.com
+  - https://cloudinfra-gw.portal.checkpoint.com
+  - https://cloudinfra-gw.ca.portal.checkpoint.com
   - https://cloudinfra-gw.ap.portal.checkpoint.com
+  - https://cloudinfra-gw.uk.portal.checkpoint.com
+  - https://cloudinfra-gw.me.portal.checkpoint.com
+  - https://cloudinfra-gw.in.portal.checkpoint.com
   required: true
 - section: Collect
   display: Fetch incidents
