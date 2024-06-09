@@ -6,6 +6,12 @@ commonfields:
   id: CrowdstrikeFalcon
   version: -1
 configuration:
+- display: Post Raptor release
+  name: Raptor release
+  type: 8-
+  section: Collect
+  additionalinfo: Choose whether the users account was upgraded to the Raptor release or not.
+  defaultvalue: 'false'
 - defaultvalue: https://api.crowdstrike.com
   display: Server URL (e.g., https://api.crowdstrike.com)
   name: url
@@ -97,6 +103,12 @@ configuration:
   required: false
   advanced: true
   additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
+- display: Detections from On-Demand Scans fetch query
+  name: on_demand_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -163,6 +175,7 @@ configuration:
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
+  - On-Demand Scans Detection
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
