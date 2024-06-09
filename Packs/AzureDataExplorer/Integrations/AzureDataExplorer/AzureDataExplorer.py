@@ -552,12 +552,12 @@ def test_module(client: DataExplorerClient) -> str:
     """
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if "Device" in client.connection_type:
+    if "Device Code" in client.connection_type:
         raise DemistoException("Please enable the integration and run `!azure-data-explorer-auth-start`"
                                "and `!azure-data-explorer-auth-complete` to log in."
                                "You can validate the connection by running `!azure-data-explorer-auth-test`\n"
                                "For more details press the (?) button.")
-    elif client.connection_type == 'Client Credentials':
+    elif client.connection_type == 'Authorization Code' or client.connection_type == 'Client Credentials':
         client.ms_client.get_access_token()
         return 'ok'
 

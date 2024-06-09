@@ -852,7 +852,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f'Failed to parse json object from response: {response.content}', exception)
 
-    def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
+    def  get_access_token(self, resource: str = '', scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
