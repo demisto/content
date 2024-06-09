@@ -487,7 +487,7 @@ def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]
 def main():
     params = demisto.params()
     credentials = params.get('credentials')
-    a=5
+
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
 

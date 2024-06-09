@@ -1075,7 +1075,7 @@ tasks:
             value:
               complex:
                 root: GitHub
-                accessor: PR.File.Name
+                accessor: PR.File.Na
             iscontext: true
           right:
             value:
