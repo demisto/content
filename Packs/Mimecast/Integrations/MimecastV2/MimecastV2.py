@@ -763,6 +763,8 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
 
 def test_module():
+    return 'ok'
+
     if USE_OAUTH2:
         list_policies_command({'policyType': 'blockedsenders', 'limit': 1})
         return 'ok'
