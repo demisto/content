@@ -3428,7 +3428,7 @@ script:
     - description: The ID of the indicator to delete.
       name: indicator_id
       required: true
-    - description: 'Flag for the rate limit retry.'
+    - description: Flag for the rate limit retry.
       name: ran_once_flag
       deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
