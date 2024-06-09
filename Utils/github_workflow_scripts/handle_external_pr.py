@@ -256,6 +256,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def check_if_pack_or_integration_is_feed(content_object) -> bool:
+    print(f'check_if_pack_or_integration_is_feed - content object {content_object}')
     if isinstance(content_object, Integration):
         print(f'check_if_pack_or_integration_is_feed - content object {content_object}')
         if content_object.is_feed:
@@ -268,6 +269,7 @@ def check_if_pack_or_integration_is_feed(content_object) -> bool:
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
            return True
     except:
+        print("check_if_pack_or_integration_is_feed - try-except, return false")
         return False
     return False
 
@@ -351,10 +353,12 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
         if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
             continue
         content_object = BaseContent.from_path(CONTENT_PATH / file)
+        print(f'is_tim_content - content object {content_object}')
         if not content_object:
             # This means we were not able to find the file in content repo, and the contribution is new
+            print('is_tim_content - not content object')
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-
+        print('content object true')
         return check_if_pack_or_integration_is_feed(content_object)
         # if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
         #     continue
