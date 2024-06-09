@@ -333,7 +333,7 @@ script:
     description: Tests connectivity to Microsoft Defender for Endpoint.
     name: microsoft-atp-test
   - arguments:
-    - description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+    - description: A comma-separated list of machine IDs to be used for isolation, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
       name: machine_id
       required: true
