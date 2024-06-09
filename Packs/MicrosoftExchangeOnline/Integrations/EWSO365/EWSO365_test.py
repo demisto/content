@@ -1,6 +1,7 @@
 import json
 import unittest
 from unittest.mock import MagicMock, patch
+import uuid
 
 import pytest
 from EWSO365 import (
@@ -436,8 +437,7 @@ def test_handle_html(mocker, html_input, expected_output):
         - Clean the HTML string and add the relevant references to image files
 
     """
-    import EWSO365 as ewso365
-    mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
+    mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
     mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
     assert handle_html(html_input) == expected_output
 
@@ -891,7 +891,7 @@ class TestEmailModule(unittest.TestCase):
         to = ["recipient@example.com"]
         subject = "Test Subject"
         html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
-        original_html_body = '<p><img src="cid:image0@111111111_111111111"/></p>'
+        original_html_body = '<p><img src="cid:image0@11111111_11111111"/></p>'
         attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
 
         mock_message.return_value = MagicMock()
@@ -899,7 +899,7 @@ class TestEmailModule(unittest.TestCase):
         mock_file_attachment.return_value = MagicMock()
         with patch.object(EWSO365.demisto, 'uniqueFile', return_value="1234567"), \
                 patch.object(EWSO365.demisto, 'getFilePath', return_value={"path": "", "name": ""}), \
-                patch.object(EWSO365, 'random_word_generator', return_value="111111111"):
+                patch.object(uuid, 'uuid4', return_value="111111111"):  # noqa: F821
             # Call the function
             result = create_message(
                 to, subject, html_body=html_body, attachments=attachments
@@ -912,7 +912,7 @@ class TestEmailModule(unittest.TestCase):
             assert result[1] == [{'Contents': '',
                                   'ContentsFormat': 'text',
                                   'Type': 3, 'File':
-                                      'image0@111111111_111111111-imageName:image0',
+                                      'image0@11111111_11111111-imageName:image0',
                                       'FileID': '1234567'}]
 
 

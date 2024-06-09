@@ -1,4 +1,5 @@
 import json
+import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
@@ -431,11 +432,10 @@ def test_handle_html(mocker):
     Then:
         - Ensure attachments list contains 2 items with correct data, name and cid fields.
     """
-    import GmailSingleUser
     client = Client()
     mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
-    mocker.patch.object(GmailSingleUser, "random_word_generator", return_value="111111111")
+    mocker.patch.object(uuid, "uuid4", return_value="11111111")
     htmlBody = """<html>
                         <body>
                             <img src="data:image/png;base64,Aa=="/>
@@ -447,28 +447,28 @@ def test_handle_html(mocker):
         {'maintype': 'image',
          'subtype': 'png',
          'data': b'\x01',
-         'name': 'image0.png@111111111_111111111-imageName:image0.png',
-         'cid': 'image0.png@111111111_111111111'
+         'name': 'image0.png@11111111_11111111-imageName:image0.png',
+         'cid': 'image0.png@11111111_11111111'
          },
         {'maintype': 'image',
          'subtype': 'jpeg',
          'data': b'\x05',
-         'name': 'image1.jpeg@111111111_111111111-imageName:image1.jpeg',
-         'cid': 'image1.jpeg@111111111_111111111'
+         'name': 'image1.jpeg@11111111_11111111-imageName:image1.jpeg',
+         'cid': 'image1.jpeg@11111111_11111111'
          }
     ]
-    expected_cleanBody = """<html>\n                        <body>\n                            <img src="cid:image0.png@111111111_111111111"/>\n                            <img src="cid:image1.jpeg@111111111_111111111"/>\n                        </body>\n                      </html>"""  # noqa: E501
+    expected_cleanBody = '<html>\n                        <body>\n                            <img src="cid:image0.png@11111111_11111111"/>\n                            <img src="cid:image1.jpeg@11111111_11111111"/>\n                        </body>\n                      </html>'  # noqa: E501
     expected_file_results = [
         {'Contents': '',
          'ContentsFormat': 'text',
          'Type': 3,
-         'File': 'image0.png@111111111_111111111-imageName:image0.png',
+         'File': 'image0.png@11111111_11111111-imageName:image0.png',
          'FileID': '1234567'
          },
         {'Contents': '',
          'ContentsFormat': 'text',
          'Type': 3,
-         'File': 'image1.jpeg@111111111_111111111-imageName:image1.jpeg',
+         'File': 'image1.jpeg@11111111_11111111-imageName:image1.jpeg',
          'FileID': '1234567'
          }
     ]
@@ -488,11 +488,10 @@ def test_handle_html_image_with_new_line(mocker):
     Then:
         - Ensure attachments list contains correct data, name and cid fields.
     """
-    import GmailSingleUser
     client = Client()
     mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
-    mocker.patch.object(GmailSingleUser, "random_word_generator", return_value="111111111")
+    mocker.patch.object(uuid, "uuid4", return_value="11111111")
     htmlBody = """
 <html>
     <body>
@@ -504,15 +503,15 @@ def test_handle_html_image_with_new_line(mocker):
         {'maintype': 'image',
          'subtype': 'png',
          'data': b'\x01',
-         'name': 'image0.png@111111111_111111111-imageName:image0.png',
-         'cid': 'image0.png@111111111_111111111'}
+         'name': 'image0.png@11111111_11111111-imageName:image0.png',
+         'cid': 'image0.png@11111111_11111111'}
     ]
     expected_file_results = [{'Contents': '',
                               'ContentsFormat': 'text',
                               'Type': 3,
-                              'File': 'image0.png@111111111_111111111-imageName:image0.png',
+                              'File': 'image0.png@11111111_11111111-imageName:image0.png',
                               'FileID': '1234567'}]
-    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@111111111_111111111"/>\n    </body>\n</html>"""  # noqa: E501
+    expected_cleanBody = '\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>'  # noqa: E501
 
     cleanBody, attachments, file_results = client.handle_html(htmlBody)
 

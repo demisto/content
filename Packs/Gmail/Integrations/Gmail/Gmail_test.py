@@ -1,3 +1,4 @@
+import uuid
 from freezegun import freeze_time
 import demistomock as demisto
 import pytest
@@ -932,7 +933,7 @@ def test_handle_html_image_with_new_line(mocker):
     import Gmail
     mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
-    mocker.patch.object(Gmail, "random_word_generator", return_value="111111111")
+    mocker.patch.object(uuid, "uuid4", return_value="111111111")
     htmlBody = """
 <html>
     <body>
@@ -943,12 +944,12 @@ def test_handle_html_image_with_new_line(mocker):
     expected_attachments = [{'maintype': 'image',
                              'subtype': 'png',
                              'data': b'\x01',
-                             'name': 'image0.png@111111111_111111111-imageName:image0.png',
-                             'cid': 'image0.png@111111111_111111111'}]
-    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@111111111_111111111"/>\n    </body>\n</html>"""  # noqa: E501
+                             'name': 'image0.png@11111111_11111111-imageName:image0.png',
+                             'cid': 'image0.png@11111111_11111111'}]
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>"""  # noqa: E501
     expected_file = [{'Contents': '',
                       'ContentsFormat': 'text',
-                      'Type': 3, 'File': 'image0.png@111111111_111111111-imageName:image0.png',
+                      'Type': 3, 'File': 'image0.png@11111111_11111111-imageName:image0.png',
                       'FileID': '1234567'}]
 
     cleanBody, attachments, file_results = Gmail.handle_html(htmlBody)

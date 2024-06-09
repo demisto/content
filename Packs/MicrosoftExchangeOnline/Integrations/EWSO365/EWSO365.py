@@ -3,11 +3,10 @@ import hashlib
 import json
 import logging
 import os
-import random
-import string
 import subprocess
 import sys
 import traceback
+import uuid
 import warnings
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
@@ -1666,13 +1665,6 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
-def random_word_generator(length):
-    """Generate a random string of given length
-    """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
-
-
 def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
@@ -1686,7 +1678,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
         name = f'image{i}'
-        cid = (f'{name}@{random_word_generator(8)}_{random_word_generator(8)}')
+        cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
             'data': base64.b64decode(m.group(3)),
             'name': f'{cid}-imageName:{name}'

@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
@@ -785,8 +786,7 @@ def test_get_message_for_body_type_no_body_type_with_html_body():
 
 def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker):
     from exchangelib import FileAttachment
-    import EWSv2
-    mocker.patch.object(EWSv2, 'random_word_generator', return_value='123456')
+    mocker.patch.object(uuid, 'uuid4', return_value='123456')
     body = "This is a plain text body"
     html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
     result = get_message_for_body_type(body, None, html_body)

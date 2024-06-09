@@ -2,8 +2,7 @@ import email
 import hashlib
 import subprocess
 from multiprocessing import Process
-import random
-import string
+import uuid
 
 import dateparser  # type: ignore
 import exchangelib
@@ -770,13 +769,6 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m, file_results
 
 
-def random_word_generator(length):
-    """Generate a random string of given length
-    """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
-
-
 def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
@@ -790,7 +782,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
         name = f'image{i}'
-        cid = (f'{name}_{random_word_generator(8)}_{random_word_generator(8)}')
+        cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
             'data': base64.b64decode(m.group(3)),
             'name': name

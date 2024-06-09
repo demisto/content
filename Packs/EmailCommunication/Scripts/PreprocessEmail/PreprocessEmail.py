@@ -260,6 +260,8 @@ def find_attachments_to_download(attachments, email_html, email_related_incident
         previous_files = get_incident_related_files(email_related_incident)
         previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
         previous_file_names = [file.get("Name") for file in previous_files]
+        # the ews api remove : from the image name so in-order not to download the image twice we add this
+        # previous_file_names_for_reply checks
         previous_file_names_for_reply = [
             file_name.replace(":", "")
             if integration_name in ['EWS v2', 'EWSO365']

@@ -1,3 +1,4 @@
+import uuid
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -1916,13 +1917,6 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
     return attachments
 
 
-def random_word_generator(length):
-    """Generate a random string of given length
-    """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
-
-
 def handle_html(htmlBody):
     """
     Extract all data-url content from within the html and return as separate attachments.
@@ -1942,13 +1936,14 @@ def handle_html(htmlBody):
     ):
         maintype, subtype = m.group(2).split('/', 1)
         name = f"image{i}.{subtype}"
-        cid = (f'{name}@{random_word_generator(8)}_{random_word_generator(8)}')
+        cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
             'name': f'{cid}-imageName:{name}',
             'cid': cid,
+            'ID': cid
         }
         attachments.append(attachment)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
@@ -2077,6 +2072,8 @@ def attachment_handler(message, attachments):
             if att['cid'] is not None:
                 msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
                 msg_img.add_header('Content-ID', '<' + att['cid'] + '>')
+                if att.get('ID'):
+                    msg_img.add_header('X-Attachment-Id', att['ID'])
 
             else:
                 msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -2102,16 +2099,13 @@ def attachment_handler(message, attachments):
             message.attach(msg_app)
 
         else:
-            demisto.debug('55555555')
             msg_base = MIMEBase(att['maintype'], att['subtype'])
             msg_base.set_payload(att['data'])
             if att['cid'] is not None:
-                demisto.debug('in_the_if')
                 msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
                 msg_base.add_header('Content-ID', '<' + att['cid'] + '>')
 
             else:
-                demisto.debug('in_the_else')
                 msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_base)
 

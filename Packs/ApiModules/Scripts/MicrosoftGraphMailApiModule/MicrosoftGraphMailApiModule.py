@@ -1,7 +1,6 @@
-import random
-import string
 from urllib.parse import quote
 import binascii
+import uuid
 from MicrosoftApiModule import *  # noqa: E402
 
 
@@ -695,7 +694,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
         }
         if content_id:
             json_data['attachmentItem']['contentId'] = content_id
-        demisto.debug(f"{json_data=}")
         return self.http_request(
             'POST',
             f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
@@ -745,7 +743,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
             if response.status_code not in (201, 200):
                 raise Exception(f'{response.json()}')
-            
+
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
             end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
@@ -1142,13 +1140,6 @@ class GraphMailUtils:
         return mails_list
 
     @staticmethod
-    def random_word_generator(length):
-        """Generate a random string of given length
-        """
-        letters = string.ascii_lowercase
-        return ''.join(random.choice(letters) for i in range(length))
-
-    @staticmethod
     def handle_html(htmlBody):
         """
         Extract all data-url content from within the html and return as separate attachments.
@@ -1173,7 +1164,7 @@ class GraphMailUtils:
                     'subtype': subtype,
                     'data': base64.b64decode(m.group(3)),
                     'name': name,
-                    'cid': f'{name}@{GraphMailUtils.random_word_generator(8)}_{GraphMailUtils.random_word_generator(8)}',
+                    'cid': f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}',
                 }
                 attachments.append(att)
                 cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']

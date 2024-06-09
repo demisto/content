@@ -1033,6 +1033,6 @@ def test_format_body(mocker):
     open_mock = mocker.mock_open(read_data=b'some binary data')
     mocker.patch('builtins.open', open_mock)
     result = format_body(html_body)
-    expected_result = ('<p><img alt="image" src="/markdown/image/aljhgfghdjakldvygi" width="400" height="400" /></p>',
-                       '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" width="300" height="300" /></p>')
+    expected_result = ('<p><img alt="image" src="/markdown/image/aljhgfghdjakldvygi" /></p>',
+                       '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" /></p>')
     assert result == expected_result

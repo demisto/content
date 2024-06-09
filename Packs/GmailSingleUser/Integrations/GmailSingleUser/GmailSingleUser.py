@@ -1,3 +1,4 @@
+import uuid
 from CommonServerPython import *
 ''' IMPORTS '''
 import re
@@ -767,13 +768,14 @@ class Client:
                 re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I | re.S)):
             maintype, subtype = m.group(2).split('/', 1)
             name = f"image{i}.{subtype}"
-            cid = f'{name}@{random_word_generator(8)}_{random_word_generator(8)}'
+            cid = f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}'
             attachment = {
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
                 'name': f'{cid}-imageName:{name}',
-                'cid': cid
+                'cid': cid,
+                'ID': cid
             }
             attachments.append(attachment)
             cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
@@ -897,7 +899,8 @@ class Client:
                 if att['cid'] is not None:
                     msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
                     msg_img.add_header('Content-ID', '<' + att['cid'] + '>')
-
+                    if (att.get('ID')):
+                        msg_img.add_header('X-Attachment-Id', att['ID'])
                 else:
                     msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_img)
@@ -1073,13 +1076,6 @@ class Client:
         params = urllib.parse.urlencode(url_params)
         link = f"https://accounts.google.com/o/oauth2/v2/auth?{params}"  # noqa: E501
         return link
-
-
-def random_word_generator(length):
-    """Generate a random string of given length
-    """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
 
 
 def test_module(client):
