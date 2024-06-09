@@ -775,7 +775,7 @@ def test_module():
 
     raise Exception(
         "Cannot test a valid connection without the Client ID and Client Secret parameters for API 2.0\
-            or without the Access Key parameter for API 1.0."
+        or without the Access Key parameter for API 1.0."
     )
 
 
@@ -3416,7 +3416,8 @@ def list_account_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Mimecast.Account',
-        outputs=response[0]
+        outputs=response[0],
+        outputs_key_field='accountCode'
     )
 
 

@@ -771,10 +771,33 @@ def test_list_account_command(mocker):
     result = MimecastV2.list_account_command(args)
     assert result.outputs['data'] == mock_response[0].get('data')
     assert result.outputs_prefix == 'Mimecast.Account'
+    assert result.outputs_key_field == "accountCode"
 
 
-def test_list_policies_command(mocker):
-    """Unit test
+@pytest.mark.parametrize(
+    "args, mock_response, expected_outputs_prefix",
+    [
+        (
+            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'blockedsenders'},
+            (util_load_json('test_data/list_policies_response.json'), 1),
+            'Mimecast.BlockedSendersPolicy'
+        ),
+        (
+            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'antispoofing-bypass'},
+            (util_load_json('test_data/list_policies_response.json'), 1),
+            'Mimecast.AntispoofingBypassPolicy'
+        ),
+        (
+            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'address-alteration'},
+            (util_load_json('test_data/list_policies_response.json'), 1),
+            'Mimecast.AddressAlterationPolicy'
+        ),
+    ]
+)
+def test_list_policies_command(mocker, args, mock_response, expected_outputs_prefix):
+    """
+    Unit test for the list_policies_command function in MimecastV2 integration.
+
     Given
     - list_policies_command function from MimecastV2 integration.
     - command args including policyType set to "address-alteration".
@@ -788,12 +811,11 @@ def test_list_policies_command(mocker):
         mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
     """
 
-    args = {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'address-alteration'}
-    mock_response = (util_load_json('test_data/list_policies_response.json'), 1)
     mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
     result = MimecastV2.list_policies_command(args)
     assert result.outputs == mock_response[0]
-    assert result.outputs_prefix == 'Mimecast.AddressAlterationPolicy'
+    assert result.outputs_prefix == expected_outputs_prefix
+    assert result.outputs_key_field == 'id'
 
 
 def test_create_antispoofing_bypass_policy_command(mocker):
@@ -871,6 +893,7 @@ def test_update_antispoofing_bypass_policy_command(mocker):
     assert mock_response.get('data') == result.outputs
     assert f'Policy ID- {args["policy_id"]} has been updated successfully.' == result.readable_output
     assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
+    assert result.outputs_key_field == 'id'
 
 
 def test_update_address_alteration_policy_command(mocker):
