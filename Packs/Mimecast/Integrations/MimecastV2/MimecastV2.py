@@ -47,12 +47,10 @@ if isinstance(PASSWORD, dict):
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 
-CLIENT_ID = str(demisto.params().get('client_id'))
-CLIENT_SECRET = str(demisto.params().get('client_secret', {}).get("password"))
+CLIENT_ID = demisto.params().get('client_id')
+CLIENT_SECRET = demisto.params().get('client_secret', {}).get("password") if demisto.params().get('client_secret') else None
 USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
 demisto.info(f"{USE_OAUTH2=}")
-demisto.info(f"{len(CLIENT_ID)}")
-demisto.info(f"{len(CLIENT_SECRET)}")
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
