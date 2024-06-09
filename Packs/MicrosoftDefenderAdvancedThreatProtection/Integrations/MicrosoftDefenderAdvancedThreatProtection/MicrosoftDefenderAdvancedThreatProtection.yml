@@ -2763,7 +2763,7 @@ script:
       name: confidence
     - auto: PREDEFINED
       defaultValue: MediumHigh
-      description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
+      description: The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.
       name: severity
       predefined:
       - Informational
