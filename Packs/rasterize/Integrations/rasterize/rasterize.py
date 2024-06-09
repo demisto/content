@@ -222,7 +222,7 @@ class PychromeEventHandler:
     # def network_response_received(self, requestId, loaderId, timestamp, type, response, hasExtraInfo, frameId=None):
     #     demisto.debug(f'PychromeEventHandler.network_response_received, {requestId=}, {response=}')
     #     if 'url' in response:
-    #         demisto.debug(f'PychromeEventHandler.network_response_received, got URL, {requestId=}, {response=}, {response["url"]=}')
+    #         demisto.debug(f'PychromeEventHandler.network_response_received, got URL, {requestId=}, {response=}')
 
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
@@ -463,6 +463,10 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             demisto.error(message)
             return_error(message)
 
+        if wait_time > 0:
+            demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
+        else:
+            demisto.debug(f'Not sleeping before capturing screenshot, {wait_time=}')
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
