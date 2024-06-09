@@ -490,7 +490,7 @@
                 "prevName": "Email",
                 "dataType": "metrics",
                 "widgetType": "pie",
-                "query": "type:integration and category:\"Email\"",
+                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and category:\"Email\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
