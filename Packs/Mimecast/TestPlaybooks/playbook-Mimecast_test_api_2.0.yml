@@ -416,7 +416,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "21"
     scriptarguments:
       limit:
         simple: "1"
@@ -427,104 +427,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1300,
+          "x": -1310,
           "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 0446d45e-97f0-4739-847c-027f91a7d39a
-    type: regular
-    task:
-      id: 0446d45e-97f0-4739-847c-027f91a7d39a
-      version: -1
-      name: mimecast-create-address-alteration-policy
-      description: This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
-      script: '|||mimecast-create-address-alteration-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      bidirectional:
-        simple: "yes"
-      comment:
-        simple: test
-      conditions:
-        simple: 8.8.8.8/24
-      folder_id:
-        simple: ${Mimecast.AddressAlterationPolicy.addressAlterationSetId}
-      from_date:
-        simple: 2 day
-      from_part:
-        simple: header_from
-      from_type:
-        simple: email_domain
-      from_value:
-        simple: google.com
-      override:
-        simple: "yes"
-      policy_description:
-        simple: test_create
-      to_date:
-        simple: now
-      to_type:
-        simple: email_domain
-      to_value:
-        simple: google.com
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1300,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 2f0f48aa-1438-4299-8a76-de80b80ab8e8
-    type: regular
-    task:
-      id: 2f0f48aa-1438-4299-8a76-de80b80ab8e8
-      version: -1
-      name: mimecast-update-address-alteration-policy
-      description: Update an existing Address Alteration policy.
-      script: '|||mimecast-update-address-alteration-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      policy_description:
-        simple: test_update
-      policy_id:
-        simple: ${Mimecast.AddressAlterationPolicy.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1300,
-          "y": 750
         }
       }
     note: false
@@ -562,80 +466,6 @@ tasks:
         "position": {
           "x": -870,
           "y": 665
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 93685fc1-868a-467b-85f6-82f722bf6ea4
-    type: regular
-    task:
-      id: 93685fc1-868a-467b-85f6-82f722bf6ea4
-      version: -1
-      name: mimecast-delete-policy address-alteration
-      description: Delete a Blocked Sender Policy.
-      script: '|||mimecast-delete-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      policyID:
-        simple: ${Mimecast.AddressAlterationPolicy.id}
-      policyType:
-        simple: address-alteration
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1300,
-          "y": 1075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 5ca60230-fc27-4138-8461-2b6a422444d7
-    type: regular
-    task:
-      id: 5ca60230-fc27-4138-8461-2b6a422444d7
-      version: -1
-      name: mimecast-get-policy address-alteration
-      description: Get a policy by ID.
-      script: '|||mimecast-get-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      policyID:
-        simple: ${Mimecast.AddressAlterationPolicy.addressAlterationSetId}
-      policyType:
-        simple: address-alteration
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1300,
-          "y": 570
         }
       }
     note: false
@@ -743,7 +573,7 @@ tasks:
       {
         "position": {
           "x": -870,
-          "y": 1260
+          "y": 1130
         }
       }
     note: false
@@ -1066,55 +896,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: d86dcd4d-9632-452b-8f0e-0eae6517a26b
-    type: condition
-    task:
-      id: d86dcd4d-9632-452b-8f0e-0eae6517a26b
-      version: -1
-      name: check update
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Mimecast.AddressAlterationPolicy.policy.description
-            iscontext: true
-          right:
-            value:
-              simple: test_update
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1300,
-          "y": 915
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1565,
-        "width": 3030,
-        "x": -1300,
+        "height": 1435,
+        "width": 3040,
+        "x": -1310,
         "y": -240
       }
     }
