@@ -56,11 +56,11 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 MAX_INCIDENTS_TO_FETCH = 100
-FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'Url', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
 LOG_TYPE_TO_REQUEST = {
     'Traffic': 'traffic',
     'Threat': 'threat',
-    'URL': 'url',
+    'Url': 'url',
     'Data': 'data',
     'Correlation': 'corr',
     'System': 'system',
@@ -14354,7 +14354,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> QueryMap:
         for log_type in active_log_type_queries:
             log_type_query = params.get(f'{log_type.lower()}_query', "")
             if log_type_query:
-                queries_dict[log_type.capitalize()] = log_type_query
+                queries_dict[log_type] = log_type_query
 
     return queries_dict
 
