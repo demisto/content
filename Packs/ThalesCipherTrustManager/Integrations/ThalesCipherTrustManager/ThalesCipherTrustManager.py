@@ -339,7 +339,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-        tuple[int, int]:
+    tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
@@ -417,7 +417,7 @@ def load_content_from_file(entry_id: str) -> str:
 
 
 def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file_names: Optional[list[str] | str] = None) -> dict[
-        str, Any]:
+    str, Any]:
     new_outputs = outputs.copy()
     if isinstance(keys, list):
         if (file_names and not isinstance(file_names, list)) or (file_names and len(file_names) != len(keys)):
@@ -441,64 +441,22 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
     import pyminizip
-    pyminizip.compress(input_file_path, None, output_file_path, password, int(4))
+    pyminizip.compress(input_file_path, None, output_file_path, password, int(5))
 
 
-def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]:
-    """
-    Creates a password-protected ZIP file from the given data
-
-       :type filename: ``str``
-       :param filename: The name of the file to be created (required)
-
-       :type data: ``str``
-       :param data: The file data (required)
-
-       :type password: ``str``
-       :param password: The password for encrypting the ZIP file (required)
-
-       :return: A Demisto war room entry
-       :rtype: ``dict``
-    """
-
-    temp = demisto.uniqueFile()
-    # pylint: disable=undefined-variable
-    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
-        data = data.encode('utf-8')
-
-    # # Convert password to bytes, required by the zipfile library
-    # password_bytes = password.encode()
-    # create a file to zip, it will be deleted afterwords and only the zip will remain
-    file_to_zip_path = demisto.investigation()['id'] + '_' + temp
-    # pylint: enable=undefined-variable
-    with open('test' + '.pem', 'wb') as f:
-        f.write(data)
-
-    # Create a new ZIP file
-    zip_file_with_password('test' + '.pem', password, file_to_zip_path + '.zip')
-
-    # #delete the pem file
-    os.remove('test' + '.pem')
-
-    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
-    # xsoar returns empty files to war-rooms
-    if isinstance(filename, str):
-        replaced_filename = filename.replace("../", "")
-        if filename != replaced_filename:
-            filename = replaced_filename
-            demisto.debug(
-                "replaced {filename} with new file name {replaced_file_name}".format(
-                    filename=filename, replaced_file_name=replaced_filename
-                )
-            )
-
-    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': EntryType.ENTRY_INFO_FILE, 'File': filename,
-            'FileID': temp}
+def create_zip_protected_file(zip_filename: str, filename: str, data: str, password: str):
+    with open(filename, 'wb') as f:
+        f.write(data.encode('utf-8'))
+    zip_file_with_password(filename, password, zip_filename)
+    os.remove(filename)
 
 
-def return_password_protected_file_result(file_name: str, file_content: str, password: str) -> None:
-    file_result = zipProtectedFileResult(file_name, file_content, password)
-    return_results(file_result)
+def return_password_protected_zip_file_result(zip_filename: str, filename: str, data: str, password: str) -> None:
+    zip_filename = f'{zip_filename}.zip'
+    create_zip_protected_file(zip_filename, filename, data, password)
+    with open(zip_filename, 'rb') as f:
+        file_data = f.read()
+    return_results(fileResult(zip_filename, file_data, file_type=EntryType.ENTRY_INFO_FILE))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -725,7 +683,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+        LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
@@ -822,6 +780,10 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
     if args.get(NOT_AFTER) is None and args.get(DURATION) is None:
         raise ValueError('Either the "not_after" or "duration" argument must be provided.')
     csr = load_content_from_file(args.get(CSR_ENTRY_ID, ''))
+    # if csr_entry_id := args.get(CSR_ENTRY_ID, ''):
+    #     csr = load_content_from_file(csr_entry_id)
+    # else:
+    #     csr =
     request_data = assign_params(
         csr=csr,
         purpose=args.get(PURPOSE),
@@ -990,9 +952,10 @@ def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
     raw_response = client.create_csr(request_data=request_data)
     outputs = remove_key_from_outputs(raw_response, 'csr', 'CSR.pem')
     if private_key_file_password := args.get(PRIVATE_KEY_FILE_PASSWORD):
-        return_password_protected_file_result('privateKey', outputs.pop('key', ''), private_key_file_password)
+        return_password_protected_zip_file_result('privateKey', 'privateKey.pem', outputs.pop('key', ''),
+                                                  private_key_file_password)
     else:
-        outputs = remove_key_from_outputs(raw_response, 'key', 'privateKey.pem')
+        remove_key_from_outputs(raw_response, 'key', 'privateKey.pem')
     return CommandResults(
         outputs_prefix=CSR_CONTEXT_OUTPUT_PREFIX,
         readable_output=f'CSR and its corresponding private key have been generated successfully for {args.get(CN)}.',

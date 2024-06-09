@@ -529,10 +529,7 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
     assert request_data.get('login_flags') == expected_login_flags
 
 
-
-
 # todo: test file loads?
-
 ''' COMMAND FUNCTIONS TESTS '''
 
 
@@ -1072,16 +1069,14 @@ def test_external_ca_list_command(mock_get_external_ca_list, args):
 @pytest.mark.parametrize('args', CSR_GENERATE_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 def test_csr_generate_command(mock_create_csr, args):
-    from ThalesCipherTrustManager import CipherTrustClient, csr_generate_command, zip_file_with_password
+    from ThalesCipherTrustManager import CipherTrustClient, csr_generate_command
 
-    zip_file_with_password('/Users/mgoldman/dev/demisto/content/Packs/ThalesCipherTrustManager/Integrations'
-                           '/ThalesCipherTrustManager/test_data/mock_csr_generate_response.json' , '123')
-    # mock_create_csr.return_value = util_load_json('test_data/mock_csr_generate_response.json')
-    # client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
-    #                            proxy=False)
-    # result = csr_generate_command(client, args)
-    # assert isinstance(result, CommandResults)
-    # assert result.outputs_prefix == CSR_CONTEXT_OUTPUT_PREFIX
-    # assert result.outputs is None
-    # assert result.raw_response is None
-    # assert result.readable_output == f'CSR and its corresponding private key have been generated successfully for {args.get(CN)}.'
+    mock_create_csr.return_value = util_load_json('test_data/mock_csr_generate_response.json')
+    client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
+                               proxy=False)
+    result = csr_generate_command(client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == CSR_CONTEXT_OUTPUT_PREFIX
+    assert result.outputs is None
+    assert result.raw_response is None
+    assert result.readable_output == f'CSR and its corresponding private key have been generated successfully for {args.get(CN)}.'

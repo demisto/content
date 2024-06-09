@@ -2165,7 +2165,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/py3-tools:1.0.0.49703
   feed: false
   isfetch: false
   runonce: false
