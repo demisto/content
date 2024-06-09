@@ -271,7 +271,7 @@ tasks:
     task:
       id: 5295d878-80fb-4513-849c-02efbef518cd
       version: -1
-      name: Check Check Alert Fields
+      name: Check Alert Fields
       type: title
       iscommand: false
       brand: ""
