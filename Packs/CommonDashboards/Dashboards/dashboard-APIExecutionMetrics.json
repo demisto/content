@@ -64,18 +64,18 @@
                     "customGroupBy": [
                         null,
                         {
-                            "General Error": {
+                            "Quota Error": {
                                 "conditions": [
                                     [
                                         {
                                             "field": "apiResponseType",
                                             "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
+                                            "right": "QuotaError",
                                             "type": "string"
                                         }
                                     ]
                                 ],
-                                "name": "General Error"
+                                "name": "Quota Error"
                             },
                             "Success": {
                                 "conditions": [
@@ -116,6 +116,19 @@
                                 ],
                                 "name": "Connection Error"
                             },
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
                             "Other": {
                                 "name": "Other"
                             },
@@ -131,19 +144,6 @@
                                     ]
                                 ],
                                 "name": "Proxy Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
                             },
                             "Retry Error": {
                                 "conditions": [
