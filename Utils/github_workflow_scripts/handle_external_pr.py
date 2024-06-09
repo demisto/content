@@ -288,6 +288,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
     """
     # pack_dirs_to_check = packs_to_check_in_pr(pr_files)
     integrations_checked = []
+    is_tim_needed = False
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
@@ -310,7 +311,9 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 if 'CONTRIBUTORS.json' in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
-                return check_if_pack_or_integration_is_feed(content_object)
+                is_tim_needed=check_if_pack_or_integration_is_feed(content_object)
+                if is_tim_needed:
+                    return True
                 # if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
                 #     continue
                 # print(f'content object path is: {content_object.path}')
