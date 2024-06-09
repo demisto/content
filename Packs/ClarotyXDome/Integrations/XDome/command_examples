@@ -1,0 +1,12 @@
+
+!xdome-get-device-alert-relations fields=all limit=20
+!xdome-get-device-alert-relations fields=all limit=20 offset=20
+!xdome-get-device-alert-relations fields=alert_id,device_uid limit=20000
+!xdome-get-device-alert-relations fields=all filter_by="{\"field\": \"alert_type_name\", \"operation\": \"in\", \"value\": [\"Outdated Firmware\"]}"
+!xdome-get-device-alert-relations fields=all filter_by="{\"operation\": \"and\", \"operands\": [{\"field\": \"alert_id\", \"operation\": \"in\", \"value\": [4181]}, {\"field\": \"device_uid\", \"operation\": \"in\", \"value\": [\"a5921d65-2b08-4077-a347-578a7eff4929\"]}]}"
+!xdome-get-device-alert-relations fields=alert_id,device_uid filter_by="{\"field\": \"device_alert_updated_time\", \"operation\": \"greater_or_equal\", \"value\": \"2024-04-10T07:00:20.236776Z\"}" sort_by="[{\"field\": \"device_alert_updated_time\", \"order\": \"asc\"}, {\"field\": \"alert_id\", \"order\": \"desc\"}]"
+
+!xdome-get-device-vulnerability-relations fields=all limit=200
+
+!xdome-set-status-for-device-alert-relations status=resolved alert_id=123 device_uids=a5921d65-2b08-4077-a347-578a7eff4929,d5911d32-fb31-4027-ad4a-578a7efa4929
+!xdome-set-status-for-device-alert-relations status=unresolved alert_id=123 device_uids=a5921d65-2b08-4077-a347-578a7eff4929

@@ -163,6 +163,21 @@ configuration:
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
+- defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
+  display: Reopen Statuses
+  name: reopen_statuses
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination.
+  options:
+  - New
+  - In progress
+  - True positive
+  - False positive
+  - Reopened
+  - Ignored
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -5017,7 +5032,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.91908
+  dockerimage: demisto/py3-tools:1.0.0.97242
   isfetch: true
   ismappable: true
   isremotesyncin: true
