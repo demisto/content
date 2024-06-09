@@ -324,7 +324,7 @@ script:
       description: The machine IP address type.
       type: String
     - contextPath: MicrosoftATP.Machine.AgentVersion
-      description: The machine Agent version.
+      description: The machine agent version.
       type: String
   - arguments:
     - description: Flag for the rate limit retry.
