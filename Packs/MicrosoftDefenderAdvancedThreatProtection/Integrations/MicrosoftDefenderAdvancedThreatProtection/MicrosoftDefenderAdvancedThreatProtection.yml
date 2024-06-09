@@ -4103,7 +4103,7 @@ script:
       description: Number of exposed devices.
       type: Number
     - contextPath: MicrosoftATP.Software.installedMachines
-      description: 'The number of installed machines.'
+      description: The number of installed machines.
       type: Number
     - contextPath: MicrosoftATP.Software.impactScore
       description: Exposure score impact of this software.
