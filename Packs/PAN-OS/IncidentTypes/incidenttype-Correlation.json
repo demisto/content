@@ -12,7 +12,7 @@
     "hoursR": 0,
     "daysR": 0,
     "weeksR": 0,
-    "system": true,
+    "system": false,
     "readonly": false,
     "default": false,
     "autorun": false,
