@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: trigger_pipeline_on_dev_branch
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: trigger_pipeline_on_dev_branch
     project: "${CI_PROJECT_NAMESPACE}/infra"
