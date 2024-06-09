@@ -43,7 +43,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: CSCDomainManager
+description: CSCDomainManager is an integration that supports querying and enriching domains through CSCDomainManager API.
 display: CSCDomainManager
 name: CSCDomainManager
 script:
@@ -58,18 +58,13 @@ script:
     - description: Email to filter by. Can start with like=, in=.
       name: email
       required: false
-    - description: Organization to filter by. Can start with like=, in=.  
+    - description: Organization to filter by. Can start with like=, in=.
       name: organization
       required: false
     - description: Registry expiry date to filter by. Can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
       name: registry_expiry_date
       required: false
-    - description: 'Create a filter using selectors such as: 
-       accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
-       criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
-       lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
-       qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited,
-       stateProvince, street1, street2, urlForwarding, whoisPrivacy.'
+    - description: 'Create a filter using selectors such as: accountName, accountNumber, brandName, businessUnit, city, country, countryCode, criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy.'
       name: filter
       required: false
     - description: 'Sort the output by a selector and the direction to sort by (desc/asc). For example: propertyName,asc.'
@@ -78,10 +73,10 @@ script:
     - description: Page number.
       name: page
       required: false
-    - description: The number of rows in a page. 
+    - description: The number of rows in a page.
       name: page_size
       required: false
-    - description: The maximum number of rows. 
+    - description: The maximum number of rows.
       name: limit
       required: false
     description: Gets the domains by the applied filters.
@@ -260,12 +255,7 @@ script:
     - description: Email to filter by. Can start with like=, in=.
       name: domain_email
       required: false
-    - description: 'Create a filter using selectors such as:
-       accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
-       criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
-       lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
-       qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited,
-       stateProvince, street1, street2, urlForwarding, whoisPrivacy.'
+    - description: 'Create a filter using selectors such as: accountName, accountNumber, brandName, businessUnit, city, country, countryCode, criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy.'
       name: filter
       required: false
     - description: Page number.
@@ -410,14 +400,13 @@ script:
       description: Indicates if the root domain is URL forwarding enabled.
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.serverDeleteProhibited
-      description: Indicates if the domain is prohibited from deletion by the server.
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.serverTransferProhibited
       description: Indicates if the domain is prohibited from transfer by the server.
-      type: Unknown
+      type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.serverUpdateProhibited
       description: Indicates if the domain is prohibited from updates by the server.
-      type: Unknown
+      type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.techEmail
       description: The technical contact email address for the domain.
       type: String
@@ -435,35 +424,35 @@ script:
       type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.valueRootA
       description: The value of root A records for the domain.
-      type: Unknown
+      type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.valueRootMx
       description: The value of root MX records for the domain.
-      type: Unknown
+      type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.valueRootTxt
       description: The value of root TXT records for the domain.
-      type: Unknown
+      type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.valueWwwA
       description: The value of WWW A records for the domain.
-      type: Unknown
+      type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.valueWwwCname
       description: The value of WWW CNAME records for the domain.
-      type: Unknown
+      type: Number
     - contextPath: CSCDomainManager.Domain.Configuration.wwwHttpCode
       description: The HTTP response code for the WWW domain.
-      type: Number
+      type: String
     - contextPath: CSCDomainManager.Domain.Configuration.wwwHttpUrl
       description: The HTTP URL for the WWW domain.
-      type: Unknown
+      type: String
     - contextPath: CSCDomainManager.Domain.Configuration.wwwIsUrlf
       description: Indicates if the WWW domain is URL forwarding enabled.
       type: Boolean
   - arguments:
-    - description: Will contain the domain information.
+    - description: A comma-separated list of domains.
       name: domain
       isArray: true
       required: true
       default: true
-    description: The qualified domain name.
+    description: Will contain the domain information.
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
