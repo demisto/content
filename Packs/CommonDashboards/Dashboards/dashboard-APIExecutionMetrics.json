@@ -292,10 +292,26 @@
                     "keys": [
                         "sum|totalAPICalls"
                     ],
-                    "valuesFormat": "abbreviated"
+                    "valuesFormat": "abbreviated",
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#1DB846": {
+                                "value": 3
+                            },
+                            "#D13C3C": {
+                                "value": 0
+                            },
+                            "#EF9700": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    }
                 },
                 "category": "",
-                "sizeInBytes": 0
+                "sizeInBytes": 0,
+                "created": "0001-01-01T00:00:00Z"
             },
             "reflectDimensions": true
         },
@@ -474,7 +490,7 @@
                 "prevName": "Email",
                 "dataType": "metrics",
                 "widgetType": "pie",
-                "query": "type:integration and name: \"Gmail Single User\" or name: \"MicrosoftGraphMail\" or name: \"Microsoft Graph Mail Single User\" or name: \"Email Hippo\" or name: \"EWSO365\"",
+                "query": "type:integration and category:\"Email\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -534,7 +550,7 @@
                 "prevName": "API Metrics",
                 "dataType": "metrics",
                 "widgetType": "pie",
-                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and (-name: \"Gmail Single User\" and -name: \"MicrosoftGraphMail\" and -name: \"Microsoft Graph Mail Single User\" and -name: \"Email Hippo\" and -name: \"EWSO365\")",
+                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and -category:Email",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
