@@ -364,23 +364,12 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
 
-    # build request params
-    params = {
-        'onlyValueEditable': args.get('is_editable', False),
-        'orderByName': args.get('order_by_name', False),
-        'query': args.get('query'),
-        'includeValueExist': args.get('include_value_exist', False),
-        'excludeParentAttributes': args.get('exclude_parent_attributes', False),
-        'includeChildren': args.get('include_children', False),
-        'orderByRequired': args.get('order_by_required', False)
-    }
-
     # build outputs
     res = client.get_object_type_attributes(
         object_type_id=object_type_id,
         order_by_name=bool(args.get('order_by_name', False)),
         query=args.get('query'),
-        include_value_exist=bool(('include_value_exist', False)),
+        include_value_exist=bool(args.get('include_value_exist', False)),
         exclude_parent_attributes=bool(args.get('exclude_parent_attributes', False)),
         include_children=bool(args.get('include_children', False)),
         order_by_required=bool(args.get('order_by_required', False))

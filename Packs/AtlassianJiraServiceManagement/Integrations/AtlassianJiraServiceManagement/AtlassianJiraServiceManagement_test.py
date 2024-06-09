@@ -1,5 +1,17 @@
 import pytest
+from pytest_mock import MockerFixture
+from typing import Any
 import AtlassianJiraServiceManagement as JSM
+import json
+
+
+def util_load_json(path):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+command_test_data = util_load_json('./test_data/command_test_data.json')
+
+client = JSM.Client(base_url='https://url.com', verify=False, proxy=False, api_key='key123')
 
 @pytest.mark.parametrize(
     "objects, key_mapping, expected_result",
@@ -221,4 +233,58 @@ def test_parse_object_results_empty():
     assert JSM.parse_object_results(res) == expected_output
 
 
+@pytest.mark.parametrize("args, expected_len", [
+    ({'limit': '2'}, 2),
+    ({'all_results': 'true'}, 3),
+    ({'all_results': 'true', 'limit': 2}, 3),
+])
+def test_jira_asset_object_schema_list_command(mocker: MockerFixture, args: dict[str, Any], expected_len: int):
+    """
+    Given: An args dict with limit and/or all_results
+    When: Calling the jira_asset_object_schema_list_command with the args dict
+    Then: The command returns results, taking into account the limit, only if all_results is fault
+    """
+    mocked_return_value = command_test_data['object_schema_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_schema_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_schema_list_command(client, args)
+    mocked_client.assert_called()
+    assert len(command_results.outputs) == expected_len
+
+
+@pytest.mark.parametrize("args, expected_len", [
+    ({'limit': '2', 'schema_id': '1'}, 2),
+    ({'limit': '4', 'schema_id': '1'}, 4),
+    ({'all_results': 'true', 'schema_id': '1'}, 5),
+    ({'all_results': 'true', 'limit': 2, 'schema_id': '1'}, 5),
+])
+def test_jira_asset_object_type_list_command(mocker: MockerFixture, args: dict[str,Any], expected_len: int):
+    """
+    Given: An args dict with limit and/or all_results
+    When: Calling the jira_asset_object_type_list_command with the args dict
+    Then: The command returns results, taking into account the limit, only if all_results is fault
+    """
+    mocked_return_value = command_test_data['object_type_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_type_list_command(client, args)
+    mocked_client.assert_called_with(args['schema_id'], None, None)
+    assert len(command_results.outputs) == expected_len
+
+
+@pytest.mark.parametrize("args, expected_len", [
+    ({'limit': '2', 'object_type_id': '1'}, 2),
+    ({'limit': '4', 'object_type_id': '1'}, 4),
+    ({'all_results': 'true', 'object_type_id': '1'}, 6),
+    ({'all_results': 'true', 'limit': 2, 'object_type_id': '1'}, 6),
+])
+def test_jira_asset_object_type_attribute_list_command(mocker: MockerFixture, args: dict[str,Any], expected_len: int):
+    """
+    Given: An args dict with limit and/or all_results
+    When: Calling the jira_asset_object_type_list_command with the args dict
+    Then: The command returns results, taking into account the limit, only if all_results is fault
+    """
+    mocked_return_value = command_test_data['object_type_attributes']['response']
+    mocked_client = mocker.patch.object(client, 'get_object_type_attributes', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_type_attribute_list_command(client, args)
+    mocked_client.assert_called_with(object_type_id=args['object_type_id'], order_by_name=False, query=None, include_value_exist=False, exclude_parent_attributes=False, include_children=False, order_by_required=False)
+    assert len(command_results.outputs) == expected_len
 
