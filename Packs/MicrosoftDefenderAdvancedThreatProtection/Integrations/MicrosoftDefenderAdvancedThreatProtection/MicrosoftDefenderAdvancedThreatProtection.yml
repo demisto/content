@@ -2954,7 +2954,7 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Size
-      description: 'The size of the file in bytes.'
+      description: The size of the file in bytes.
       type: Number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
