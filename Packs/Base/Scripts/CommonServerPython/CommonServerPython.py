@@ -39,6 +39,7 @@ def __line__():
     return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
+TEST = 3
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
     'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
