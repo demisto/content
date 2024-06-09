@@ -207,7 +207,7 @@ class PychromeEventHandler:
             demisto.debug(f'Frame (reload) started loading: {frameId}, clearing {self.request_id=}')
             self.request_id = None
             self.response_received = False
-            self.start_frame = None
+            # self.start_frame = None
         else:
             demisto.debug(f'Frame started loading: {frameId}, no request_id')
 
@@ -219,9 +219,15 @@ class PychromeEventHandler:
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
+    # def network_response_received(self, requestId, loaderId, timestamp, type, response, hasExtraInfo, frameId):
+    #     demisto.debug(f'PychromeEventHandler.network_response_received, {requestId=}, {response=}')
+    #     if 'url' in response:
+    #         demisto.debug(f'PychromeEventHandler.network_response_received, got URL, {requestId=}, {response=}, {response["url"]=}')
+
     def page_frame_stopped_loading(self, frameId):
-        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {frameId=}')
+        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
         if self.start_frame == frameId:
+            demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
             self.tab_ready_event.set()
 
 # endregion
@@ -424,6 +430,7 @@ def setup_tab_event(browser, tab):
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
+    # tab.Network.responseReceived = tab_event_handler.network_response_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
@@ -447,7 +454,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         else:
             tab.Page.navigate(url=path)
 
+        demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
         success_flag = tab_ready_event.wait(navigation_timeout)
+        demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
 
         if not success_flag:
             message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
