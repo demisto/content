@@ -219,7 +219,7 @@ class PychromeEventHandler:
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
-    # def network_response_received(self, requestId, loaderId, timestamp, type, response, hasExtraInfo, frameId):
+    # def network_response_received(self, requestId, loaderId, timestamp, type, response, hasExtraInfo, frameId=None):
     #     demisto.debug(f'PychromeEventHandler.network_response_received, {requestId=}, {response=}')
     #     if 'url' in response:
     #         demisto.debug(f'PychromeEventHandler.network_response_received, got URL, {requestId=}, {response=}, {response["url"]=}')
