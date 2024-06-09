@@ -341,7 +341,7 @@ script:
     - description: A comment to associate with the action.
       name: comment
       required: true
-    - description: Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network).
+    - description: Full isolation or selective isolation. (Restrict only a limited set of applications from accessing the network).
       name: isolation_type
       auto: PREDEFINED
       predefined:
