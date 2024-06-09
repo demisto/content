@@ -4925,7 +4925,7 @@ script:
     - name: limit
       description: The maximum number of results to retrieve.
       defaultValue: '50'
-    - description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
+    - description: Time range to look back. Expected syntax is a human readable time range, e.g., 60 minutes, 6 hours, 1 day, etc.
       name: time_range
     - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
