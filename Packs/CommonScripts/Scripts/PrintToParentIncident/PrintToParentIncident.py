@@ -10,7 +10,7 @@ def print_to_parent_incident(alert_id: str, value: str, parent_incident_id: str)
         value (str): The value to print.
         parent_incident_id (str): The parent incident's ID of the alert.
     """
-    entry_note = json.dumps([{"Type": 1, "ContentsFormat": formats["markdown"], "Contents": f"Entry from {alert_id}\n{value}"}])
+    entry_note = json.dumps([{"Type": 1, "ContentsFormat": EntryFormat.MARKDOWN, "Contents": f"Entry from {alert_id}\n{value}"}])
     entry_tags_res: list[dict[str, Any]] = demisto.executeCommand(
         "addEntries", {"entries": entry_note, "id": parent_incident_id, "reputationCalcAsync": True}
     )

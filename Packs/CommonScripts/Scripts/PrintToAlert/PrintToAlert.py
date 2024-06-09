@@ -11,7 +11,7 @@ def print_to_alert_command(current_alert_id: str, value: str, alert_id: str) -> 
         alert_id (str): The alert ID to print to.
     """
     entry_note = json.dumps(
-        [{"Type": 1, "ContentsFormat": formats["markdown"], "Contents": f"Entry from {current_alert_id}\n{value}"}]
+        [{"Type": 1, "ContentsFormat": EntryFormat.MARKDOWN, "Contents": f"Entry from {current_alert_id}\n{value}"}]
     )
     entry_tags_res: list[dict[str, Any]] = demisto.executeCommand(
         "addEntries", {"entries": entry_note, "id": alert_id, "reputationCalcAsync": True}
