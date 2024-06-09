@@ -3588,7 +3588,7 @@ script:
     - description: The value of the indicator to update.
       name: indicator_value
       required: true
-    - description: Indicator Type.
+    - description: Indicator type.
       name: indicator_type
       auto: PREDEFINED
       required: true
