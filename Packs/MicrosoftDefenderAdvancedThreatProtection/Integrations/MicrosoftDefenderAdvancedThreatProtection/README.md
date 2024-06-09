@@ -7203,7 +7203,7 @@ Find machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
 | MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
 | MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP address on the machine. | 
 | MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP address to access the internet. | 
 | MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
 | MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
