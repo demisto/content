@@ -446,19 +446,19 @@ def get_events_computer_type(client: Client, start_date: str, end_date: str, max
     client_event_type_func = client.get_computer
     next_page = last_run.get("computer", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching computers from {created}")
+    demisto.debug(f"Fetching computers since {created}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "computers"
     if next_page:
         demisto.debug(
-            f"Jamf Protect- Fetched {len(events)} which is the maximum number of computers."
-            f" Will keep the fetching in the next fetch.")
+            f"Fetched the maximal number of computers ({len(events)} events). "
+            f"Fetching will continue using {next_page=} and last_fetch={created}, in the next iteration")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
     # If there is no next page, the last fetch date will be the max end date of the fetched events.
-    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("created"), DATE_FORMAT)
-                                             for event in events) if dt is not None]).strftime(
+    new_last_fetch_date = max(filter(None,(arg_to_datetime(event.get("created"), DATE_FORMAT)
+                                             for event in events)).strftime(
         DATE_FORMAT) if events else current_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
     demisto.debug(f"Jamf Protect- Fetched {len(events)} computers")

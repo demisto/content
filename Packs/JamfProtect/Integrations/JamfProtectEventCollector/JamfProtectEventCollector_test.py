@@ -124,25 +124,25 @@ def test_calculate_fetch_dates_without_arguments(client):
     "with_alert_next_page, with_audit_next_page, with_computer_next_page",
     [
         pytest.param(
-            False, False, False, id="Case 1: No next pages for alerts and audits and computers"
+            False, False, False, id="No next pages"
         ),
         pytest.param(
-            True, False, False, id="Case 2: Next page for alerts, no next page for audits and computers"
+            True, False, False, id="Next page only for alerts"
         ),
         pytest.param(
-            False, True, False, id="Case 3: No next page for alerts and computers, next page for audits"
+            False, True, False, id="Next page only for audits"
         ),
         pytest.param(
-            True, True, True, id="Case 4: Next pages for alerts and audits and computers"
+            True, True, True, id="Next pages for alerts, audits, computers"
         ),
         pytest.param(
-            False, False, True, id="Case 5: Next page for computers, no next page for alerts and audits"
+            False, False, True, id="Next page only for computers"
         ),
         pytest.param(
-            True, False, True, id="Case 6: Next pages for alerts and computers, no next page for audits"
+            True, False, True, id="Next pages only for alerts and computers"
         ),
         pytest.param(
-            False, True, True, id="Case 7: Next pages for audits and computers, no next page for alerts"
+            False, True, True, id="Next pages only for audits and computers"
         )
     ]
 )
