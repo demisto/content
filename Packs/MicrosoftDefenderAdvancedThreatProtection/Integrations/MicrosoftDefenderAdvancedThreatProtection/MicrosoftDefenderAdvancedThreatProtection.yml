@@ -5502,7 +5502,8 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
-  - description: Offboard a machine from defender.
+    polling: true
+  - description: Offboard a machine from Microsoft Defender for Endpoint.
     name: microsoft-atp-offboard-machine
     arguments:
     - default: true
