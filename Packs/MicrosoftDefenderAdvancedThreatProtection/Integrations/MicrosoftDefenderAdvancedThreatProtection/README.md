@@ -7188,7 +7188,7 @@ Find machines seen with the requested internal IP in the time range of 15 minute
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | The endpoint IP address. | Required | 
-| timestamp | The timestamp in witch the machines were seen with the internal ip address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required | 
+| timestamp | The timestamp in which the machines were seen with the internal IP address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional | 
 
