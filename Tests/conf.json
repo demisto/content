@@ -100,7 +100,10 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE - Retrieve File",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "timeout": 1200,
+            "is_mockable": false
+
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -123,12 +126,17 @@
             "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
+            "timeout": 1200,
+            "integrations": "Cortex XDR - IR"
         },
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
+            "timeout": 1200
         },
         {
             "integrations": "Twitter v2",
@@ -236,6 +244,9 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "MapRangeValuesTest"
+        },
+        {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
@@ -305,6 +316,16 @@
             "integrations": "AWS-WAF",
             "playbookID": "TEST_AWS_WAF",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "AWS - IAM Identity Center",
+            "playbookID": "AWS-IAMIdentityCenter-Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Exabeam Data Lake",
+            "playbookID": "ExabeamDataLake-test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "GoogleDrive",
@@ -444,7 +465,7 @@
         {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
-            "instance_names": "azure_nsg_prod",
+            "instance_names": ["azure_nsg_client_cred", "azure_nsg_prod"],
             "playbookID": "Azure NSG - Test"
         },
         {
@@ -864,7 +885,8 @@
         {
             "integrations": "AlienVault OTX v2",
             "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130
+            "memory_threshold": 130,
+            "timeout": 500
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -1041,7 +1063,8 @@
         },
         {
             "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned v2 test"
+            "playbookID": "Pwned v2 test",
+            "timeout": 1500
         },
         {
             "integrations": "Alexa Rank Indicator",
@@ -1600,7 +1623,7 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 400,
+            "timeout": 600,
             "memory_threshold": 150
         },
         {
@@ -1988,11 +2011,6 @@
             "timeout": 400
         },
         {
-            "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing",
-            "is_mockable": false
-        },
-        {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
             "timeout": 500,
@@ -2060,13 +2078,15 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2087,7 +2107,8 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_names": "no_sync"
+            "instance_names": "no_sync",
+            "timeout": 600
         },
         {
             "playbookID": "test-domain-indicator",
@@ -2877,7 +2898,8 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Have I Been Pwned? V2"
+            "integrations": "Have I Been Pwned? V2",
+            "timeout": 1500
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -3033,6 +3055,11 @@
         {
             "integrations": "Exabeam",
             "playbookID": "Exabeam - Test"
+        },
+        {
+            "integrations": "ExabeamSecOpsPlatform",
+            "playbookID": "ExabeamSecurityOperationsPlatform-test",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "Cisco Spark",
@@ -3286,7 +3313,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100,
+            "memory_threshold": 120,
             "timeout": 1200
         },
         {
@@ -3346,11 +3373,6 @@
             "playbookID": "Infoblox Test"
         },
         {
-            "integrations": "BPA",
-            "playbookID": "Test-BPA",
-            "fromversion": "4.5.0"
-        },
-        {
             "playbookID": "GetValuesOfMultipleFIelds Test",
             "fromversion": "4.5.0"
         },
@@ -3370,11 +3392,6 @@
             "memory_threshold": 500,
             "instance_names": "use_default_handler",
             "is_mockable": false
-        },
-        {
-            "integrations": "BPA",
-            "playbookID": "Test-BPA_Integration",
-            "fromversion": "4.5.0"
         },
         {
             "integrations": "AutoFocus Feed",
@@ -3788,8 +3805,8 @@
         },
         {
             "integrations": "Generic Webhook",
+            "instance_names": "Generic Webhook XSOAR on-prem",
             "playbookID": "Generic Webhook - Test",
-            "fromversion": "5.5.0",
             "has_api": false
         },
         {
@@ -3834,6 +3851,7 @@
         {
             "integrations": "Azure Storage",
             "playbookID": "Azure Storage - Test",
+            "instance_names": ["Azure_Storage", "azure_storage_client_cred"],
             "is_mockable": false
         },
         {
@@ -4225,6 +4243,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Venafi"
+            ]
+        },
+        {
+            "playbookID": "VenafiV2_Test",
+            "fromversion": "6.9.0",
+            "integrations": [
+                "VenafiTLSProtect"
             ]
         },
         {
@@ -5658,17 +5683,37 @@
             "playbookID": "Fortimail"
         },
         {
+            "integrations": "Zoom Mail",
+            "playbookID": "ZoomMailTest",
+            "instance_names": "zoom_mail_test"
+        },
+        {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener"
+            "instance_names": "AWS-SNS-Listener",
+            "is_mockable": false
         },
         {
             "integrations": "Redmine",
-            "playbookID": "Redmine-Test"
+            "playbookID": "Redmine_Test"
+        },
+        {
+            "integrations": "Palo Alto Networks AIOps",
+            "playbookID": "PaloAltoNetworksAIOps-Test"
+        },
+        {
+            "integrations": "MattermostV2",
+            "playbookID": "MattermostV2 - testplaybook"
+        },
+        {
+            "playbookID": "MattermostAskUser_testplaybook",
+            "scripts": [
+                "MattermostAskUser"
+            ]
         }
     ],
     "skipped_tests": {
@@ -5852,8 +5897,12 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP",
-        "VMWare Test": "CIAC-10276"
+        "VMWare Test": "CIAC-10276",
+        "AWS_DynamoDB-Test": "CIAC-10426",
+        "AWS - EC2 Test Playbook": "CIAC-10426",
+        "AWS SNS Listener - Test": "CIAC-10426",
+        "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
+        "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
@@ -6013,7 +6062,6 @@
         "CortexXDR",
         "PAN-OS",
         "QRadar",
-        "PhishTank",
         "OpenPhish",
         "AbuseDB",
         "CrowdStrikeFalcon",
@@ -6040,7 +6088,8 @@
         "PrismaCloudCompute",
         "ExpanseV2",
         "PrismaSaasSecurity",
-        "PaloAltoNetworks_IoT"
+        "PaloAltoNetworks_IoT",
+        "PaloAltoNetworksAIOps"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
@@ -6173,7 +6222,6 @@
         "DShield Feed",
         "Core REST API",
         "EDL",
-        "EWS v2",
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",

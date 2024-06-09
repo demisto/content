@@ -9,14 +9,16 @@ Please refer to ServiceNow documentation for additional information. We especial
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
 
 ## Required Permissions
-To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
- These roles are required to make API calls.
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *snc_platform_rest_api_access* role.
+ This role is required to make API calls.
  Also add to your user account the specific tables that you want to have access to.
  However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
  
