@@ -2,7 +2,7 @@ id: Test Playbook - Possible External RDP Brute-Force - Set Verdict
 version: -1
 name: Test Playbook - Possible External RDP Brute-Force - Set Verdict
 description: |-
-  This playbook tests the ‘Possible External RDP Brute-Force' playbook which is part of the ‘Core’ pack.
+  This playbook tests the ‘Possible External RDP Brute-Force - Set Verdict' playbook which is part of the ‘Core’ pack.
 
   The following tests are conducted in the playbook:
   1-Confirm that alert fields were populated correctly by the custom output mapping rules.
