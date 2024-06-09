@@ -822,6 +822,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     incidents: List[Dict[str, Any]] = []
 
     alerts = []
+    time_sort = 'created_time'
 
     # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
     # Otherwise will run without status.
@@ -834,13 +835,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
             query_params['status'] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
-            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
+            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort=time_sort)
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
         query = _add_to_current_query(query, query_params)
         demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
-        res = client.get_alerts(query=query, limit=max_results)
+        res = client.get_alerts(query=query, limit=max_results, sort=time_sort)
         alerts += res.get('results', [])
 
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')

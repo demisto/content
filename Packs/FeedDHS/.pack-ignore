@@ -6,4 +6,6 @@ ignore=PA129
 
 [known_words]
 dhs
-
+stixid
+firstseenbysource
+trafficlightprotocol

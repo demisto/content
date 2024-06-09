@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 ''' IMPORTS '''
 
 from google.cloud import storage
@@ -264,6 +263,17 @@ def upload_blob(client, file_path, bucket_name, object_name):
     return blob
 
 
+def copy_blob(client, source_bucket_name, destination_bucket_name, source_object_name, destination_object_name):
+    source_bucket = client.get_bucket(source_bucket_name)
+    destination_bucket = client.get_bucket(destination_bucket_name)
+    source_blob = source_bucket.blob(source_object_name)
+    destination_blob_name = destination_object_name
+
+    blob_copy = source_bucket.copy_blob(source_blob, destination_bucket, destination_blob_name)
+
+    return blob_copy
+
+
 def gcs_list_bucket_objects(client, default_bucket, args):
     bucket_name = get_bucket_name(args, default_bucket)
     prefix = args.get('prefix', None)
@@ -308,6 +318,21 @@ def gcs_upload_file(client, default_bucket, args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': f'File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}'
+    })
+
+
+def gcs_copy_file(client, default_bucket, args):
+    source_object_name = args['source_object_name']
+    source_bucket_name = args.get('source_bucket_name', default_bucket)
+    destination_bucket_name = args['destination_bucket_name']
+    destination_object_name = args.get('destination_object_name', source_object_name)
+
+    copy_blob(client, source_bucket_name, destination_bucket_name, source_object_name, destination_object_name)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': f'File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}'
     })
 
 
@@ -551,6 +576,9 @@ def main():
 
         elif command == 'gcs-upload-file':
             gcs_upload_file(client, default_bucket, args)
+
+        elif command == 'gcs-copy-file':
+            gcs_copy_file(client, default_bucket, args)
 
         #
         # Bucket policy (ACL)

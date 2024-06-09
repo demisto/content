@@ -1216,6 +1216,9 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     if file_info["malware"] == 'yes':
         dbot_score = 3
         tags = ['malware']
+    elif file_info["malware"] == 'grayware':
+        dbot_score = 2
+        tags = []
     else:
         dbot_score = 1
         tags = []
@@ -1563,11 +1566,8 @@ def main():  # pragma: no cover
         # get the source of the credentials to ensure the correct agent is set for all API calls
         # other = ngfw or wf api based keys that are 32 chars long and require no agent
         # pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
-        if not token and platform == 'x2':
-            # Note: We don't want to get the token from the license if we're on the standard XSOAR platform.
-            # The main reason is it has a strict API limit.
-            # Therefore, we only get the token from in X2 (from the config), even though it is
-            # available in the license from version 6.5 of XSOAR
+        if not token:
+            # Added support for all platforms from version 2.1.42.
             with contextlib.suppress(Exception):
                 token = demisto.getLicenseCustomField("WildFire-Reports.token")
 

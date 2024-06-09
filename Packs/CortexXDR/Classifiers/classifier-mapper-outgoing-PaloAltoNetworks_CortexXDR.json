@@ -127,11 +127,28 @@
 				}
 			}
 		},
+        "Malware Investigation and Response": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"close_reason": {
+					"simple": "closeReason"
+				},
+				"resolve_comment": {
+					"simple": "closeNotes"
+				},
+				"status": {
+					"simple": "externalstatus.[0]"
+				}
+			}
+		},
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"assigned_user_mail": {
 					"simple": "xdrassigneduseremail"
+				},
+				"close_reason": {
+					"simple": "closeReason"
 				},
 				"manual_severity": {
 					"complex": {
@@ -207,6 +224,9 @@
 				},
 				"resolve_comment": {
 					"simple": "closeNotes"
+				},
+				"status": {
+					"simple": "xdrstatusv2"
 				}
 			}
 		}

@@ -1,0 +1,1076 @@
+id: Endpoint Investigation Plan - Test
+version: -1
+name: Endpoint Investigation Plan - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6d9d6345-8a8c-4699-84a4-3b6fcd935541
+    type: start
+    task:
+      id: 6d9d6345-8a8c-4699-84a4-3b6fcd935541
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9d3ed560-5a57-4266-8a53-7c3f366fcd5c
+    type: playbook
+    task:
+      id: 9d3ed560-5a57-4266-8a53-7c3f366fcd5c
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7642a09f-40a8-4cec-84bc-5527301c33ba
+    type: playbook
+    task:
+      id: 7642a09f-40a8-4cec-84bc-5527301c33ba
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      HuntAttacker:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      attackerRemoteIP:
+        complex:
+          root: alert
+          accessor: hostip
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8b7a467c-49d7-4dc9-8612-6d28c09f0663
+    type: regular
+    task:
+      id: 8b7a467c-49d7-4dc9-8612-6d28c09f0663
+      version: -1
+      name: Clear Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 48987d43-8e32-463a-8f6e-ba3ec4a325d8
+    type: regular
+    task:
+      id: 48987d43-8e32-463a-8f6e-ba3ec4a325d8
+      version: -1
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 53250c44-c54e-4d35-8627-96c39ea971b0
+    type: condition
+    task:
+      id: 53250c44-c54e-4d35-8627-96c39ea971b0
+      version: -1
+      name: Is the EndpointID defined?
+      description: Checks if the EndpointID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.alias
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestPlaybook
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5f33ec12-8a2c-4506-810c-b7c8c44eca95
+    type: regular
+    task:
+      id: 5f33ec12-8a2c-4506-810c-b7c8c44eca95
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      message:
+        simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d6d73e4a-29f4-46c1-8fbb-ff6bed139b63
+    type: title
+    task:
+      id: d6d73e4a-29f4-46c1-8fbb-ff6bed139b63
+      version: -1
+      name: Test without inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4f801f45-a5d4-4208-80d0-b53b3bef3e85
+    type: title
+    task:
+      id: 4f801f45-a5d4-4208-80d0-b53b3bef3e85
+      version: -1
+      name: Test with inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 42e1da2b-de1b-4d63-89b0-3c788ffc9345
+    type: regular
+    task:
+      id: 42e1da2b-de1b-4d63-89b0-3c788ffc9345
+      version: -1
+      name: Set alert hostip
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      hostip:
+        simple: 1.1.1.1,2.2.2.2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 668483fc-2c36-417e-83e8-4876b6f40acb
+    type: regular
+    task:
+      id: 668483fc-2c36-417e-83e8-4876b6f40acb
+      version: -1
+      name: Set alert initiatorsha256
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      initiatorsha256:
+        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364,fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845365
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 244f6d3d-c8c3-4c96-8570-23871a0ba371
+    type: title
+    task:
+      id: 244f6d3d-c8c3-4c96-8570-23871a0ba371
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4330786a-98be-454b-8f16-0dc27909137a
+    type: regular
+    task:
+      id: 4330786a-98be-454b-8f16-0dc27909137a
+      version: -1
+      name: Clear Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7e9623f3-3c45-4cb4-8f66-da32403f7c8b
+    type: title
+    task:
+      id: 7e9623f3-3c45-4cb4-8f66-da32403f7c8b
+      version: -1
+      name: Test with ip
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 08b335c0-9ca9-4fd4-8bde-d6b87d277130
+    type: playbook
+    task:
+      id: 08b335c0-9ca9-4fd4-8bde-d6b87d277130
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      HuntByHost:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      agentID:
+        simple: ${Core.Endpoint.endpoint_id}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 7325afaa-96a6-4127-8415-a342a300f6b8
+    type: title
+    task:
+      id: 7325afaa-96a6-4127-8415-a342a300f6b8
+      version: -1
+      name: Test with agent ID
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: fa6f60da-58ce-4bc7-8746-f44a05399ff5
+    type: playbook
+    task:
+      id: fa6f60da-58ce-4bc7-8746-f44a05399ff5
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+          transformers:
+          - operator: FirstArrayElement
+      HuntByFile:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7b96b459-a1ff-4d83-83a1-8c99741c44c7
+    type: playbook
+    task:
+      id: 7b96b459-a1ff-4d83-83a1-8c99741c44c7
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      HuntAttacker:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      agentID:
+        simple: '*'
+      attackerExternalHost:
+        simple: ${Endpoint.Hostname}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: de69fd48-8a50-4817-85de-0f32db382c3f
+    type: title
+    task:
+      id: de69fd48-8a50-4817-85de-0f32db382c3f
+      version: -1
+      name: Test with hash
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 53b368f9-ee82-42c3-8cbe-45523662264a
+    type: title
+    task:
+      id: 53b368f9-ee82-42c3-8cbe-45523662264a
+      version: -1
+      name: Test with Hosname
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b252346f-4701-4348-80dd-fbb8802f1abc
+    type: title
+    task:
+      id: b252346f-4701-4348-80dd-fbb8802f1abc
+      version: -1
+      name: Test with all inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 2fab1c78-9e6a-4cd9-8f65-354b769aadc1
+    type: playbook
+    task:
+      id: 2fab1c78-9e6a-4cd9-8f65-354b769aadc1
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      FileSHA256:
+        simple: ${alert.initiatorsha256}
+      HuntAttacker:
+        simple: "True"
+      HuntByFile:
+        simple: "True"
+      HuntByHost:
+        simple: "True"
+      HuntByTechnique:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      agentID:
+        simple: '*'
+      attackerExternalHost:
+        simple: ${Endpoint.Hostname}
+      attackerRemoteIP:
+        simple: ${alert.hostip}
+      mitreTechniqueID:
+        simple: T1059.001
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d29c19d5-dc24-4572-80d5-8b0f2dc39d47
+    type: playbook
+    task:
+      id: d29c19d5-dc24-4572-80d5-8b0f2dc39d47
+      version: -1
+      name: Endpoint Investigation Plan
+      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      HuntByTechnique:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      agentID:
+        simple: '*'
+      mitreTechniqueID:
+        simple: T1059.001
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e99772d8-5e0b-42ab-8c6c-abed602dbfc3
+    type: title
+    task:
+      id: e99772d8-5e0b-42ab-8c6c-abed602dbfc3
+      version: -1
+      name: Test with mitreTechniqueID
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3665,
+        "width": 640,
+        "x": 10,
+        "y": -670
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+description: Test Playbook for Endpoint Investigation Plan.
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

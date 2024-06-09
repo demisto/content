@@ -3538,3 +3538,72 @@ Gets the public IP addresses that have been discovered by IPAM.
 >|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscoveryId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|SubnetId|Tags|VpcId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupName': 'example_sg', 'GroupId': 'sg-11111111111111111'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |
+
+### aws-ec2-create-vpc-endpoint
+
+***
+Creates a VPC endpoint.
+
+#### Base Command
+
+`aws-ec2-create-vpc-endpoint`
+
+#### Input
+
+| **Argument Name**   | **Description** | **Required** |
+|---------------------| --- | --- |
+| vpcId               | The ID of the VPC in which the endpoint will be used. | Required | 
+| serviceName         | The service name for the service that you want to create an endpoint. | Required | 
+| endpointType        | The type of endpoint. | Optional | 
+| subnetIds           | One or more subnet IDs in which to create the endpoint. | Optional | 
+| securityGroupIds    | One or more security group IDs to associate with the endpoint. | Optional | 
+| dryRun              | Checks whether you have the required permissions for the action, without actually making the request. Possible values are: true, false. | Optional | 
+| vpcEndpointType     | The type of endpoint. Possible values are: Interface, Gateway, GatewayLoadBalancer. | Optional | 
+| policyDocument      | A policy document to attach to the endpoint. A JSON policy document that controls access to the service from the endpoint. | Optional | 
+| routeTableIds       | One or more route table IDs. | Optional | 
+| clientToken         | Unique, case-sensitive identifier to ensure the idempotency of the request. | Optional | 
+| privateDnsEnabled   | Indicates whether to associate a private hosted zone with the specified VPC. Possible values are: true, false. | Optional | 
+| tagSpecifications   | One or more tags to associate with the endpoint. Should be Json string of key-value tags. | Optional |
+| region              | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn             | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName     | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Vpcs.VpcEndpoint.VpcEndpointId | String | The ID of the endpoint. | 
+| AWS.EC2.Vpcs.VpcEndpoint.State | String | The state of the VPC endpoint. | 
+| AWS.EC2.Vpcs.VpcEndpoint.ServiceName | String | The service name of the VPC endpoint. | 
+| AWS.EC2.Vpcs.VpcEndpoint.VpcId | String | The ID of the VPC to which the endpoint is associated. | 
+| AWS.EC2.Vpcs.VpcEndpoint.EndpointType | String | The type of the VPC endpoint. | 
+
+#### Command example
+```!aws-ec2-create-vpc-endpoint service-name=test_service_name vpc-id=test_id```
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "Vpcs": {
+                "VpcEndpoint":
+                {
+                    "ServiceName": "test_service_name",
+                    "State": "PendingAcceptance",
+                    "VpcEndpointId": "test_endpoint_id",
+                    "VpcEndpointType": "Interface",
+                    "VpcId": "test_id"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### VPC Endpoint
+>|Service Name|State|Vpc Endpoint Id|Vpc Endpoint Type|Vpc Id|
+>|---|---|---|---|---|
+>| test_service_name | PendingAcceptance | test_endpoint_id | Interface | test_id |

@@ -75,7 +75,7 @@ configuration:
   - any
   type: 15
   required: false
-description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development.
+description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 display: Trend Micro Vision One V3.
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
 name: Trend Micro Vision One V3
@@ -316,10 +316,10 @@ script:
       description: Count of total items present in suspicious object list.
       type: number
   - arguments:
-    - description: 'comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query.'
+    - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of endpoint information e.g. endpoint={"endpointName":"test-endpoint1", "ip":"52.72.139.96"}. Multiple endpoints can be queried but unique keys need to be supplied (e.g. `endpointName`, `ip`, etc.). For complete list of keys check (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get>).'
       name: endpoint
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. endpointName eq sample-host `or` macAddress eq 00:11:22:33:44:55.'
+    - description: "Conditional operator used to build request that allows user to retrieve a subset of collected endpoint(s). Possible values: and/or. Ex. `or`: the results retrieved will contain information for endpoint(s) matching endpointName OR ip. `and`: results retrieved will contain information for endpoint matching endpointName AND ip."
       name: query_op
       required: true
       auto: PREDEFINED
@@ -360,23 +360,23 @@ script:
       description: Product code of the Trend Micro product installed on the endpoint.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
+    - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of endpoint activity data e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
       required: true
-    - description: Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1.
+    - description: 'Conditional operator used to build request that allows user to retrieve a subset of collected endpoint activity data. Possible values: and/or. Ex. `or`: the results retrieved will contain activity data for endpoint(s) matching endpointName OR dpt. `and`: will contain activity data for endpoint matching endpointName AND dpt. Defaults to `and`.'
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
       default: true
-    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".'
       name: start
-    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".'
       name: end
-    - description: 'Number of records displayed on a page.'
+    - description: "Number of records displayed on a page. e.g. top=5."
       name: top
-    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".'
       name: select
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
@@ -511,21 +511,21 @@ script:
       description: Log unique identity.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
+    - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving endpoint activity count e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1..'
+    - description: "Conditional operator used to build request that allows user to retrieve a count of collected endpoint activity. Possible values: and/or. Ex. `or`: the results retrieved will contain activity count for endpoint(s) matching endpointName OR dpt. `and`: the results retrieved will contain activity count for endpoint matching endpointName AND dpt. Defaults to `and`."
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
       default: true
-    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".'
       name: start
-    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".'
       name: end
-    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".'
       name: select
     description: Displays total count of search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data-count
@@ -534,23 +534,23 @@ script:
       description: Total count for endpoint activity queried.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
+    - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of email activity data e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
       name: fields
       required: true
-    - description: Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'
+    - description: 'Conditional operator used to build request that allows user to retrieve a subset of email activity data. Possible values: and/or. Ex. `or`: the results retrieved will contain activity data for email(s) matching mailMsgSubject OR mailSenderIp. `and`: the results retrieved will contain activity data for email matching mailMsgSubject AND mailSenderIp. Defaults to `and`.'
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
       default: true
-    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".'
       name: start
-    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".'
       name: end
-    - description: 'Number of records displayed on a page.'
+    - description: "Number of records displayed on a page. e.g. top=5."
       name: top
-    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".'
       name: select
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
@@ -601,21 +601,21 @@ script:
       description: Real link in email message.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
+    - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving email activity count e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
       name: fields
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'
+    - description: "Conditional operator used to build request that allows user to retrieve a count of collected email activity. Possible values: and/or. Ex. `or`: the results retrieved will contain activity count for email(s) matching mailMsgSubject OR mailSenderIp. `and`: the results retrieved will contain activity count for email matching mailMsgSubject AND mailSenderIp. Defaults to `and`."
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
       default: true
-    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".'
       name: start
-    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".'
       name: end
-    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".'
       name: select
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data-count
@@ -638,7 +638,7 @@ script:
     description: Terminates a process that is running on an endpoint.
     name: trendmicro-visionone-terminate-process
   - arguments:
-    - description: 'task_id from the trendmicro-visionone-submit-file-to-sandbox command output.'
+    - description: 'task_id from the trendmicro-visionone-submit-file-to-sandbox command output. e.g. task_id="012e4eac-9bd9-4e89-95db-77e02f75a611".'
       name: task_id
       required: true
     outputs:
@@ -675,17 +675,17 @@ script:
     description: Retrieves the status of a sandbox analysis submission.
     name: trendmicro-visionone-get-file-analysis-status
   - arguments:
-    - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command.
+    - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command. e.g. report_id="012e4eac-9bd9-4e89-95db-77e02f75a611".
       name: report_id
       required: true
-    - description: If script should wait until the task is finished before returning the result, enabled by default.
+    - description: If script should wait until the task is finished before returning the result, enabled by default. poll=true.
       name: poll
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       default: true
-    - description: Maximum time to wait for the result to be available.
+    - description: Maximum time to wait for the result to be available. e.g. poll_time_sec=45.
       name: poll_time_sec
     outputs:
     - contextPath: VisionOne.File_Analysis_Result.id
@@ -741,17 +741,17 @@ script:
       description: Task ID generated after collecting file for forensic analysis.
       type: string
   - arguments:
-    - description: taskId output from the collect forensic file command.
+    - description: taskId output from the collect forensic file command. e.g. task_id="00000012".
       name: task_id
       required: true
-    - description: If script should wait until the task is finished before returning the result, enabled by default.
+    - description: If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true.
       name: poll
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       default: true
-    - description: Maximum time to wait for the result to be available.
+    - description: Maximum time to wait for the result to be available. e.g. poll_time_sec=45.
       name: poll_time_sec
     outputs:
     - contextPath: VisionOne.Download_Information_For_Collected_Forensic_File.status
@@ -808,17 +808,17 @@ script:
     description: Retrieves a URL and other information required to download a collected file via the trendmicro-visionone-collect-forensic-file command.
     name: trendmicro-visionone-download-information-for-collected-forensic-file
   - arguments:
-    - description: The submission ID for the object submitted to sandbox for analysis.
+    - description: The submission ID for the object submitted to sandbox for analysis. e.g. submission_id="012e4eac-9bd9-4e89-95db-77e02f75a611".
       name: submission_id
       required: true
-    - description: If script should wait until the task is finished before returning the result, enabled by default.
+    - description: If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true.
       name: poll
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       default: true
-    - description: Maximum time to wait for the result to be available.
+    - description: Maximum time to wait for the result to be available. e.g. poll_time_sec=45.
       name: poll_time_sec
     outputs:
     - contextPath: VisionOne.Download_Investigation_Package.submission_id
@@ -833,17 +833,17 @@ script:
     description: Downloads the investigation package based on submission ID.
     name: trendmicro-visionone-download-investigation-package
   - arguments:
-    - description: The submission ID for the object submitted to sandbox for analysis.
+    - description: The submission ID for the object submitted to sandbox for analysis. e.g. submission_id="012e4eac-9bd9-4e89-95db-77e02f75a611".
       name: submission_id
       required: true
-    - description: If script should wait until the task is finished before returning the result, enabled by default.
+    - description: If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true.
       name: poll
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       default: true
-    - description: Maximum time to wait for the result to be available.
+    - description: Maximum time to wait for the result to be available. e.g. poll_time_sec=45.
       name: poll_time_sec
     outputs:
     - contextPath: VisionOne.Download_Suspicious_Object_list.type
@@ -867,17 +867,17 @@ script:
     name: trendmicro-visionone-download-suspicious-object-list
     description: Downloads the suspicious object list associated to the specified object. Note ~ Suspicious Object Lists are only available for objects with a high risk level.
   - arguments:
-    - description: The submission ID for the object submitted to sandbox for analysis.
+    - description: The submission ID for the object submitted to sandbox for analysis. e.g. submission_id="012e4eac-9bd9-4e89-95db-77e02f75a611".
       name: submission_id
       required: true
-    - description: If script should wait until the task is finished before returning the result, enabled by default.
+    - description: If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true.
       name: poll
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       default: true
-    - description: Maximum time to wait for the result to be available.
+    - description: Maximum time to wait for the result to be available. e.g. poll_time_sec=45.
       name: poll_time_sec
     outputs:
     - contextPath: VisionOne.Download_Analysis_Report.submission_id
@@ -892,17 +892,17 @@ script:
     description: Downloads the analysis report for an object submitted to sandbox for analysis based on the submission ID.
     name: trendmicro-visionone-download-analysis-report
   - arguments:
-    - description: URL pointing to the location of the file to be submitted.
+    - description: URL pointing to the location of the file to be submitted. e.g. file_url="https://someurl.com/test.txt".
       name: file_url
       required: true
-    - description: Name of the file (including extension) to be analyzed.
+    - description: Name of the file (including extension) to be analyzed. e.g. file_name="some-file.txt".
       name: file_name
       required: true
-    - description: The Base64 encoded password for decrypting the submitted document. sample.
+    - description: The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".
       name: document_password
-    - description: The Base64 encoded password for decrypting the submitted archive.
+    - description: The Base64 encoded password for decrypting the submitted archive. e.g. archive_password="dGVzdA==".
       name: archive_password
-    - description: Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file.
+    - description: Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. e.g. arguments="LS10ZXN0IA==".
       name: arguments
     outputs:
     - contextPath: VisionOne.Submit_File_to_Sandbox.message
@@ -923,14 +923,14 @@ script:
     description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
     name: trendmicro-visionone-submit-file-to-sandbox
   - arguments:
-    - description: Entry ID of the file to be submitted.
+    - description: Entry ID of the file to be submitted. e.g. entry_id="104@49493d71".
       name: entry_id
       required: true
-    - description: The Base64 encoded password for decrypting the submitted document. sample.
+    - description: The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".
       name: document_password
-    - description: The Base64 encoded password for decrypting the submitted archive.
+    - description: The Base64 encoded password for decrypting the submitted archive. e.g. archive_password="dGVzdA==".
       name: archive_password
-    - description: Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file.
+    - description: Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. e.g. arguments="LS10ZXN0IA==".
       name: arguments
     outputs:
     - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.message
@@ -960,7 +960,7 @@ script:
     name: trendmicro-visionone-submit-file-entry-to-sandbox
     description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
   - arguments:
-    - description: List of URLs to be sent for analysis.
+    - description: List of URLs to be sent for analysis. e.g. urls="https://test.com,https://dummydomain.com".
       name: urls
       required: true
     outputs:
@@ -982,7 +982,7 @@ script:
     description: Sends URL(s) to sandbox for analysis.
     name: trendmicro-visionone-submit-urls-to-sandbox
   - arguments:
-    - description: Workbench ID for the alert to query.
+    - description: Workbench ID for the alert to query. e.g. workbench_id="WB-14-20190709-00003".
       name: workbench_id
       required: true
     outputs:
@@ -1034,11 +1034,11 @@ script:
     description: Fetches details for a specific alert.
     name: trendmicro-visionone-get-alert-details
   - arguments:
-    - description: polling the task for 30 seconds interval.
+    - description: polling the task for 30 seconds interval. e.g. polling=true.
       name: polling
       default: true
       defaultValue: 'true'
-    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output.
+    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output. e.g. task_id="012e4eac-9bd9-4e89-95db-77e02f75a611".
       name: task_id
       required: true
     outputs:
@@ -1094,11 +1094,11 @@ script:
     name: trendmicro-visionone-run-sandbox-submission-polling
     polling: true
   - arguments:
-    - description: polling the task for 30 seconds interval.
+    - description: polling the task for 30 seconds interval. e.g. polling=true.
       name: polling
       default: true
       defaultValue: 'true'
-    - description: Task id of the task you would like to check.
+    - description: Task id of the task you would like to check. e.g. task_id="00000012".
       name: task_id
       required: true
     outputs:
@@ -1142,10 +1142,10 @@ script:
     name: trendmicro-visionone-check-task-status
     polling: true
   - arguments:
-    - description: ID of the workbench you would like to attach the note to.
+    - description: ID of the workbench you would like to attach the note to. e.g. workbench_id="WB-14-20190709-00003".
       name: workbench_id
       required: true
-    - description: Contents of the note to be attached.
+    - description: Contents of the note to be attached. e.g. content="Some details for the workbench alert."
       name: content
       required: true
     outputs:
@@ -1161,13 +1161,13 @@ script:
     description: Attaches a note to a workbench alert.
     name: trendmicro-visionone-add-note
   - arguments:
-    - description: ID of the workbench you would like to update the status for.
+    - description: ID of the workbench you would like to update the status for. e.g. workbench_id="WB-14-20190709-00003".
       name: workbench_id
       required: true
-    - description: Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details.
+    - description: Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details. e.g. if_match="d41d8cd98f00b204e9800998ecf8427e".
       name: if_match
       required: true
-    - description: Status to assign to the workbench alert.
+    - description: Status to assign to the workbench alert. e.g. status="true_positive".
       name: status
       required: true
       auto: PREDEFINED
@@ -1190,7 +1190,118 @@ script:
       type: string
     description: Updates the status of a workbench alert.
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/pytmv1:0.6.2.83411
+  - arguments:
+    - description: 'A Json list of object(s) made up of `filename`, `endpoint` or `agent_guid` and optional `description` and optional `parameter`. e.g. [{"filename":"test.ps1","endpoint":"test-endpoint1","description":"Run custom script","parameter":"some-string"}].'
+      name: block_objects
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: VisionOne.Run_Custom_Script.status
+      description: Status of running custom script.
+      type: number
+    - contextPath: VisionOne.Run_Custom_Script.task_id
+      description: Task ID generated after running custom script.
+      type: string
+    description: Runs a custom script on the specified endpoint or agentGuid.
+    name: trendmicro-visionone-run-custom-script
+  - arguments:
+    - description: 'Name of the custom script.'
+      name: filename
+    - description: 'Type of script, either bash or powershell.'
+      name: filetype
+      auto: PREDEFINED
+      predefined:
+      - bash
+      - powershell
+    - description: 'Conditional operator used to build request that allows user to retrieve a subset of custom scripts. Possible values: and/or. Ex. `or`: the results retrieved will contain custom script(s) matching FileName OR FileType. `and`: the result retrieved will contain custom script matching FileName AND FileType. Defaults to `and`.'
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+    outputs:
+    - contextPath: VisionOne.Get_Custom_Script_List.id
+      description: The ID for custom script.
+      type: string
+    - contextPath: VisionOne.Get_Custom_Script_List.description
+      description: The script description.
+      type: string
+    - contextPath: VisionOne.Get_Custom_Script_List.filename
+      description: Name of the script.
+      type: string
+    - contextPath: VisionOne.Get_Custom_Script_List.filetype
+      description: File type for the script.
+      type: string
+    description: Fetches a list of all available custom scripts in V1 XDR Portal.
+    name: trendmicro-visionone-get-custom-script-list
+  - arguments:
+    - description: Name of the custom script. e.g. filename="hello.sh".
+      name: filename
+      required: true
+    - description: File type of custom script. e.g. filetype="bash".
+      name: filetype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - bash
+      - powershell
+    - description: The contents of custom script to be added. script_contents="#!/bin/sh echo 'Custom script to do something'".
+      name: script_contents
+      required: true
+    - description: Description of the custom script. e.g. description="This script does something."
+      name: description
+    outputs:
+    - contextPath: VisionOne.Add_Custom_Script.id
+      description: ID generated for the added custom script.
+      type: string
+    description: Adds a custom script to V1 portal in Response management under custom scripts.
+    name: trendmicro-visionone-add-custom-script
+  - arguments:
+    - description: ID for the custom script to download. e.g. script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1".
+      name: script_id
+      required: true
+    outputs:
+    - contextPath: VisionOne.Download_Custom_Script.text
+      description: Contents of the custom script.
+      type: string
+    description: Downloads the contents of a custom script based on script ID.
+    name: trendmicro-visionone-download-custom-script
+  - arguments:
+    - description: ID of custom script to be deleted. e.g. script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1".
+      name: script_id
+      required: true
+    outputs:
+    - contextPath: VisionOne.Delete_Custom_Script.status
+      description: Success or Failure status code.
+      type: string
+    description: Delete a custom script based on script ID.
+    name: trendmicro-visionone-delete-custom-script
+  - arguments:
+    - description: Name of the custom script. e.g. filename="hello.sh".
+      name: filename
+      required: true
+    - description: The filetype of custom script. e.g. filetype="bash".
+      name: filetype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - bash
+      - powershell
+    - description: ID of custom script to be updated. e.g. script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1".
+      name: script_id
+      required: true
+    - description: The updated contents of custom script. e.g. script_contents="#!/bin/sh echo 'Hello World'".
+      name: script_contents
+      required: true
+    - description: Description of the custom script. e.g. description="Updating script to print Hello World."
+      name: description
+    outputs:
+    - contextPath: VisionOne.Update_Custom_Script.status
+      description: The Success or Error status.
+      type: string
+    description: Updates the contents of a custom script based on script ID.
+    name: trendmicro-visionone-update-custom-script
+  dockerimage: demisto/pytmv1:0.8.2.89444
   isFetchSamples: true
   isfetch: true
   script: ''

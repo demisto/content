@@ -4115,23 +4115,24 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| collections | A comma-separated list of collection names that you have defined in Prisma Cloud Compute. | Optional | 
-| account_ids | A comma-separated list of cloud account IDs. | Optional | 
-| clusters | A comma-separated list of clusters to filter by. | Optional | 
-| namespaces | A comma-separated list of namespaces to filter by. | Optional | 
-| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional | 
-| region | A comma-separated list of regions to scope the query by. | Optional | 
-| container_ids | A comma-separated list of container IDs to retrieve details for. | Optional | 
-| profile_id | A comma-separated list of runtime profile IDs to filter by. | Optional | 
-| image_name | A comma-separated list of image names to filter by. | Optional | 
-| image_id | A comma-separated list of image IDs to filter by. | Optional | 
-| hostname | A comma-separated list of hostnames to filter by. | Optional | 
-| compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional | 
-| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional | 
-| search | Term to search for. | Optional | 
-| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
-| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
+|-------------------| --- | --- |
+| collections       | A comma-separated list of collection names that you have defined in Prisma Cloud Compute. | Optional | 
+| account_ids       | A comma-separated list of cloud account IDs. | Optional | 
+| clusters          | A comma-separated list of clusters to filter by. | Optional | 
+| namespaces        | A comma-separated list of namespaces to filter by. | Optional | 
+| resource_ids      | A comma-separated list of resource IDs to scope the query by. | Optional | 
+| region            | A comma-separated list of regions to scope the query by. | Optional | 
+| container_ids     | A comma-separated list of container IDs to retrieve details for. | Optional | 
+| profile_id        | A comma-separated list of runtime profile IDs to filter by. | Optional | 
+| image_name        | A comma-separated list of image names to filter by. | Optional | 
+| image_id          | A comma-separated list of image IDs to filter by. | Optional | 
+| hostname          | A comma-separated list of hostnames to filter by. | Optional | 
+| compliance_ids    | A comma-separated list of compliance IDs to filter by. | Optional | 
+| agentless         | Whether to filter by agentless scans. Possible values are: true, false. | Optional | 
+| search            | Term to search for. | Optional | 
+| limit             | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
+| offset            | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
+| all_results       | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -4738,6 +4739,303 @@ Retrieves all container audit events when a runtime sensor such as process, netw
 >|---|---|---|---|---|---|---|---|
 >| a9 | hostname4 | python-server-app | r6 | block | filesystem | malwareFileFeed | high |
 >| b5 | n7 | na6 | img6 | block | filesystem | malwareFileFeed | high |
+
+
+### prisma-cloud-compute-archive-audit-incident
+
+***
+Acknowledges an incident and moves it to an archived state.
+
+#### Base Command
+
+`prisma-cloud-compute-archive-audit-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID. | Required | 
+| action | Action for the command. archive - incident will be archived, unarchive - incident will be unarchived. Possible values are: archive, unarchive. Default is archive. | Optional | 
+
+#### Command example
+```!prisma-cloud-compute-archive-audit-incident incident_id="1111"```
+#### Human Readable Output
+
+>Incident 1111 was successfully archived
+
+### prisma-cloud-compute-runtime-host-audit-events-list
+
+***
+Retrieves the runtime host audit events.
+
+#### Base Command
+
+`prisma-cloud-compute-runtime-host-audit-events-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| clusters | A comma-separated list of cluster names. | Optional | 
+| namespaces | A comma-separated list of namespace names. | Optional | 
+| audit_id | A comma-separated list of audit event IDs. | Optional | 
+| profile_id | A comma-separated list of runtime profile IDs. | Optional | 
+| image_name | A comma-separated list of image names. | Optional | 
+| container | A comma-separated list of container names. | Optional | 
+| container_id | A comma-separated list of container IDs. | Optional | 
+| type | A comma-separated list of audit event types. | Optional | 
+| effect | A comma-separated list of audit event effects. | Optional | 
+| user | A comma-separated list of users. | Optional | 
+| os | A comma-separated list of operating systems. | Optional | 
+| app | A comma-separated list of applications. | Optional | 
+| hostname | A comma-separated list of hostnames. | Optional | 
+| time | Time is used to filter by audit time. | Optional | 
+| attack_type | AttackTypes is used to filter by runtime audit attack type. | Optional | 
+| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
+| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.RuntimeHostAuditEvents._id | String | The audit event ID. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.accountID | String | The account ID of the container. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.app | String | The app. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.attackType | String | The attack type. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.attackTechniques | Unknown | Attack technique of the event | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.collections | Unknown | The collections. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.command | String | The command of the audit event. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.count | Number | The count of audit events. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.effect | String | The audit event effect. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.filepath | String | The file path of the audit event. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.fqdn | String | The fully qualified domain name used in the audit event. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.events.hostname | String | The hostname on which the command was invoked. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.md5 | String | The MD5 hash of the file. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.msg | String | The audit event message. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.pid | Number | The process ID. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.processPath | String | The process path. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.profileId | String | The profile ID. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.provider | String | The provider of the container. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.region | String | The region of the container. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.resourceID | String | The resource ID of the event. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.ruleName | String | The rule name. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.severity | String | The severity of the audit event. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.time | Date | The audit event time. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.type | String | The audit event type. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.user | String | The audited event user. | 
+
+#### Command example
+```!prisma-cloud-compute-runtime-host-audit-events-list limit=1```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "RuntimeHostAuditEvents": {
+            "_id": "2222",
+            "accountID": "3333",
+            "app": "test.amazon-test-agent.amazon-test-agent",
+            "attackType": "unknownOriginBinary",
+            "collections": [
+                "BDausses_Collection",
+                "3333",
+                "testk"
+            ],
+            "command": "/usr/bin/python3.6",
+            "count": 1,
+            "effect": "alert",
+            "filepath": "/var/log/amazon/test/patch-baseline-operations/simplejson/_speedups.so",
+            "fqdn": "",
+            "hostname": "test.ec2.internal",
+            "md5": "1aaaaa",
+            "msg": "/usr/bin/python3.6, which is not a known OS distribution package manager wrote the binary /var/log/amazon/test/patch-baseline-operations/simplejson/_speedups.so. MD5: 1aaaaa. Command: python3",
+            "pid": 4808,
+            "processPath": "/usr/bin/python3.6",
+            "profileId": "test.ec2.internal",
+            "provider": "aws",
+            "region": "us-east-1",
+            "resourceID": "i-test",
+            "ruleName": "Windows File System Check",
+            "severity": "high",
+            "time": "2024-01-17T09:42:56.679Z",
+            "type": "filesystem",
+            "user": "root"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Runtime Host Audit Events Information
+>|ID|Hostname|User|Type|AttackType|Message|Severity|Effect|
+>|---|---|---|---|---|---|---|---|
+>| 2222 | ip-10-10-10-76.ec2.internal | root | filesystem | unknownOriginBinary | /usr/bin/python3.6, which is not a known OS distribution package manager wrote the binary /var/log/amazon/ssm/patch-baseline-operations/simplejson/_speedups.so. MD5: 038ebdb3fb23a04fc288b2eb01a7da70. Command: python3 | high | alert |
+
+
+### prisma-cloud-compute-runtime-container-policy-list
+
+***
+Retrieves the runtime policy for containers protected by Defender. A policy consists of ordered rules.
+
+#### Base Command
+
+`prisma-cloud-compute-runtime-container-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
+| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.Policies.RuntimeContainerPolicy.name | Date | The audit event time. | 
+| PrismaCloudCompute.Policies.RuntimeContainerPolicy.owner | String | The audit event type. | 
+| PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified | Date | The audited event modified time. | 
+
+#### Command example
+```!prisma-cloud-compute-runtime-container-policy-list limit=1```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "Policies": {
+            "RuntimeContainerPolicy": {
+                "advancedProtectionEffect": "alert",
+                "cloudMetadataEnforcementEffect": "alert",
+                "collections": [
+                    {
+                        "accountIDs": [
+                            "*"
+                        ],
+                        "appIDs": [
+                            "*"
+                        ],
+                        "clusters": [
+                            "*"
+                        ],
+                        "codeRepos": [
+                            "*"
+                        ],
+                        "color": "#53EB1C",
+                        "containers": [
+                            "*"
+                        ],
+                        "functions": [
+                            "*"
+                        ],
+                        "hosts": [
+                            "test-worker01",
+                            "test-master02",
+                            "test-worker02",
+                            "test-worker03"
+                        ],
+                        "images": [
+                            "test/mirrored*",
+                            "test/hyperkube*"
+                        ],
+                        "labels": [
+                            "*"
+                        ],
+                        "modified": "2024-01-12T16:35:54.402Z",
+                        "name": "test-collection-test",
+                        "namespaces": [
+                            "*"
+                        ],
+                        "owner": "test1@paloaltonetworks.com",
+                        "prisma": false,
+                        "system": false
+                    }
+                ],
+                "dns": {
+                    "defaultEffect": "alert",
+                    "disabled": true,
+                    "domainList": {
+                        "allowed": [],
+                        "denied": [],
+                        "effect": "disable"
+                    }
+                },
+                "filesystem": {
+                    "allowedList": [],
+                    "backdoorFilesEffect": "alert",
+                    "defaultEffect": "alert",
+                    "deniedList": {
+                        "effect": "disable",
+                        "paths": []
+                    },
+                    "disabled": false,
+                    "encryptedBinariesEffect": "alert",
+                    "newFilesEffect": "alert",
+                    "suspiciousELFHeadersEffect": "alert"
+                },
+                "kubernetesEnforcementEffect": "alert",
+                "modified": "2024-01-12T16:52:25.358Z",
+                "name": "test-monitor-test",
+                "network": {
+                    "allowedIPs": [
+                        "127.0.0.1"
+                    ],
+                    "defaultEffect": "alert",
+                    "deniedIPs": [],
+                    "deniedIPsEffect": "disable",
+                    "disabled": false,
+                    "listeningPorts": {
+                        "allowed": [],
+                        "denied": [],
+                        "effect": "disable"
+                    },
+                    "modifiedProcEffect": "alert",
+                    "outboundPorts": {
+                        "allowed": [
+                            {
+                                "deny": false,
+                                "end": 6443,
+                                "start": 6443
+                            }
+                        ],
+                        "denied": [],
+                        "effect": "disable"
+                    },
+                    "portScanEffect": "alert",
+                    "rawSocketsEffect": "alert"
+                },
+                "owner": "test2@paloaltonetworks.com",
+                "previousName": "",
+                "processes": {
+                    "allowedList": [],
+                    "checkParentChild": true,
+                    "cryptoMinersEffect": "alert",
+                    "defaultEffect": "alert",
+                    "deniedList": {
+                        "effect": "disable",
+                        "paths": []
+                    },
+                    "disabled": false,
+                    "lateralMovementEffect": "alert",
+                    "modifiedProcessEffect": "alert",
+                    "reverseShellEffect": "alert",
+                    "suidBinariesEffect": "disable"
+                },
+                "skipExecSessions": true,
+                "wildFireAnalysis": "alert"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Runtime Container Policy Events Information
+>|Name|Owner|Modified|
+>|---|---|---|
+>| rke-monitor-rule | avega@paloaltonetworks.com | 2024-01-12T16:52:25.358Z |
 
 
 ## General Note:

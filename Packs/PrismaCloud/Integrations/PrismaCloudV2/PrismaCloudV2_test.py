@@ -18,7 +18,8 @@ def prisma_cloud_v2_client(mocker):
     headers[REQUEST_CSPM_AUTH_HEADER] = AUTH_HEADER
 
     return Client(server_url='https://api.prismacloud.io/', verify=True, proxy=False, headers=headers,
-                  username='username', password='password', mirror_direction=None, close_incident=False, close_alert=False)
+                  username='username', password='password', mirror_direction=None, close_incident=False, close_alert=False,
+                  is_test_module=False)
 
 
 ''' COMMAND FUNCTIONS TESTS '''
@@ -1118,7 +1119,7 @@ def prisma_cloud_v2_mirroring_client(mocker):
 
     return Client(server_url='https://api.prismacloud.io/', verify=True, proxy=False, headers=headers,
                   username='username', password='password', mirror_direction="Incoming And Outgoing",
-                  close_incident=True, close_alert=True)
+                  close_incident=True, close_alert=True, is_test_module=False)
 
 
 def test_get_modified_remote_data_command(mocker, prisma_cloud_v2_mirroring_client):
@@ -1534,23 +1535,29 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
             - Verify that remove_additional_resource_fields removes only the required fields.
     """
     from PrismaCloudV2 import remove_additional_resource_fields
+
     input = {
-        'a': 'a_val',
-        'b': {
-            'c': 'c_val',
-            'd': 'd_val',
-            'e': 'e_val'
-        },
-        'items': {'data': {'metadata': {'items': {'configure-sh': 'c_val', 'not-removed': 'n_val'}},
-                           'disks': {'shieldedInstanceInitialState': 's_val'}}}
+        'data': {
+            'items': [{
+                'data': {
+                    'disks': [{"mode": "READ_WRITE", 'shieldedInstanceInitialState': 's_val'}],
+                    'metadata': {'items': [{'key': 'configure-sh', 'value': 'configure_sh_val'},
+                                           {'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
+            ]
+        }
     }
     expected = {
-        'a': 'a_val',
-        'b': {
-            'e': 'e_val'
-        },
-        'items': {'data': {'metadata': {'items': {'not-removed': 'n_val'}},
-                           'disks': {'shieldedInstanceInitialState': 's_val'}}}
+        'data': {
+            'items': [{
+                'data': {
+                    'disks': [{"mode": "READ_WRITE"}],
+                    'metadata': {'items': [{'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
+            ]
+        }
     }
-    output = remove_additional_resource_fields(input_dict=input, keys=['c', 'd', 'configure-sh'])
-    assert output == expected
+
+    remove_additional_resource_fields(input_dict=input)
+
+    assert input == expected

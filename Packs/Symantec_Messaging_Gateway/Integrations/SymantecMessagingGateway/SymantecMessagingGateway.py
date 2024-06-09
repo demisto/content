@@ -1,38 +1,32 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import os
 import urllib3
-import requests
 from bs4 import BeautifulSoup
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+SERVER = demisto.params()['server'].rstrip('/')
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 BASE_URL = SERVER + '/brightmail/'
 USE_SSL = not demisto.params().get('insecure', False)
 COOKIES = {}  # type: ignore
-
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+TOKEN: str
 
 BAD_DOMAINS_EMAILS_GROUP = 'Local Bad Sender Domains'
 BAD_IPS_GROUP = 'Local Bad Sender IPs'
 
+client = BaseClient(base_url=BASE_URL, verify=USE_SSL)
 ''' HELPER FUNCTIONS '''
 
 
 def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
-    LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
-                                                              data, headers))
+    LOG('running request with url={}\tdata={}\theaders={}'.format(BASE_URL + url_suffix,
+                                                                  data, headers))
     try:
-        res = requests.request(
+        res = client._session.request(
             method,
             BASE_URL + url_suffix,
             verify=USE_SSL,
@@ -90,6 +84,7 @@ def login():
         if name == 'symantec.brightmail.key.TOKEN':
             token = tag.attrs['value']
             return token
+    return None
 
 
 def get_selected_sender_groups(group):
@@ -113,6 +108,7 @@ def get_selected_sender_groups(group):
                 if input_tag:
                     group_number = input_tag['value']
                     return group_number
+    return None
 
 
 def block_request(ioc, selected_sender_groups):
@@ -132,6 +128,7 @@ def block_request(ioc, selected_sender_groups):
     if error:  # Error occured
         error_message = ' '.join(error.text.split())  # Removes whitespaces from string
         return error_message
+    return None
 
 
 def unblock_request(selected_group_member, selected_sender_groups):
@@ -182,7 +179,7 @@ def get_blocked_domains():
     soup = BeautifulSoup(blocked_domains.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked IP address
+    for _i in range(len(pages)):  # Loop through all pages of blocked IP address
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -210,7 +207,7 @@ def get_blocked_ips():
     soup = BeautifulSoup(blocked_emails.text, 'lxml')
     # Handles pagination of Local Bad Sender IPs
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked IP address
+    for _i in range(len(pages)):  # Loop through all pages of blocked IP address
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -262,7 +259,7 @@ def unblock_email(email):
     soup = BeautifulSoup(blocked_emails.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked email addresses
+    for _i in range(len(pages)):  # Loop through all pages of blocked email addresses
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -332,7 +329,7 @@ def unblock_domain(domain):
     soup = BeautifulSoup(blocked_domains.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked domains
+    for _i in range(len(pages)):  # Loop through all pages of blocked domains
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -402,7 +399,7 @@ def unblock_ip(ip):
     soup = BeautifulSoup(blocked_ips.text, 'lxml')
     # Handles pagination of Local Bad Sender IPs
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked IP address
+    for _i in range(len(pages)):  # Loop through all pages of blocked IP address
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -440,32 +437,36 @@ def unblock_ip(ip):
     return entry
 
 
-''' EXECUTION CODE '''
-TOKEN = login()
+def main():
+    global TOKEN
+    handle_proxy()
+    TOKEN = login()
 
-LOG('command is %s' % (demisto.command(), ))
-try:
-    if demisto.command() == 'test-module':
-        # Checks authentication and connectivity in login() function
-        demisto.results('ok')
-    elif demisto.command() == 'smg-block-email':
-        # demisto.results(get_selected_sender_groups())
-        demisto.results(block_email(demisto.args()['email']))
-    elif demisto.command() == 'smg-unblock-email':
-        demisto.results(unblock_email(demisto.args()['email']))
-    elif demisto.command() == 'smg-block-domain':
-        demisto.results(block_domain(demisto.args()['domain']))
-    elif demisto.command() == 'smg-block-ip':
-        demisto.results(block_ip(demisto.args()['ip']))
-    elif demisto.command() == 'smg-unblock-ip':
-        demisto.results(unblock_ip(demisto.args()['ip']))
-    elif demisto.command() == 'smg-unblock-domain':
-        demisto.results(unblock_domain(demisto.args()['domain']))
-    elif demisto.command() == 'smg-get-blocked-domains':
-        demisto.results(get_blocked_domains())
-    elif demisto.command() == 'smg-get-blocked-ips':
-        demisto.results(get_blocked_ips())
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    raise
+    try:
+        if demisto.command() == 'test-module':
+            # Checks authentication and connectivity in login() function
+            demisto.results('ok')
+        elif demisto.command() == 'smg-block-email':
+            # demisto.results(get_selected_sender_groups())
+            demisto.results(block_email(demisto.args()['email']))
+        elif demisto.command() == 'smg-unblock-email':
+            demisto.results(unblock_email(demisto.args()['email']))
+        elif demisto.command() == 'smg-block-domain':
+            demisto.results(block_domain(demisto.args()['domain']))
+        elif demisto.command() == 'smg-block-ip':
+            demisto.results(block_ip(demisto.args()['ip']))
+        elif demisto.command() == 'smg-unblock-ip':
+            demisto.results(unblock_ip(demisto.args()['ip']))
+        elif demisto.command() == 'smg-unblock-domain':
+            demisto.results(unblock_domain(demisto.args()['domain']))
+        elif demisto.command() == 'smg-get-blocked-domains':
+            demisto.results(get_blocked_domains())
+        elif demisto.command() == 'smg-get-blocked-ips':
+            demisto.results(get_blocked_ips())
+
+    except Exception as e:
+        return_error(str(e))
+
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

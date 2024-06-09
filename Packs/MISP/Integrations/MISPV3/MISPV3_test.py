@@ -721,6 +721,41 @@ def test_add_msg_email_object(mocker):
     assert 'misp-add-email-object command does not support *.msg files' in str(exception_info.value)
 
 
+def test_add_custom_object(mocker):
+    """
+    Given:
+    - A custom template name.
+    When:
+    - Running add_custom_object command.
+    Then:
+    - Ensure that the readable output is valid.
+    """
+    from MISPV3 import add_custom_object_command
+    event_id = 1572
+
+    result_object_templates = util_load_json('test_data/response_object_templates.json')
+    mocker.patch('MISPV3.PYMISP.object_templates', return_value=result_object_templates)
+
+    response_raw_obj_tempalte = util_load_json('test_data/response_raw_object_template.json')
+    mocker.patch('MISPV3.PYMISP.get_raw_object_template', return_value=response_raw_obj_tempalte)
+
+    response_add_obj = util_load_json('test_data/response_add_object.json')
+    mocker.patch('MISPV3.PYMISP.add_object', return_value=response_add_obj)
+
+    demisto_args = {
+        "event_id": event_id,
+        "template": "corporate-asset",
+        "attributes": "{'asset-type': 'Server','asset-id': '1','text': 'test text'}"
+    }
+
+    result = add_custom_object_command(demisto_args)
+    expected_output = {
+        'readable_output': 'Object has been added to MISP event ID {}'.format(event_id),
+        'outputs': response_add_obj
+    }
+    assert result.readable_output == expected_output['readable_output']
+
+
 @pytest.mark.parametrize(
     'demisto_args, is_attribute, expected_result',
     [

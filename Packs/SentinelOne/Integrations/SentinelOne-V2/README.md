@@ -150,7 +150,7 @@ Lists all exclusion items that match the specified input filter.
 ### sentinelone-get-hash
 
 ***
-Gets the file reputation by a SHA1 hash.
+Gets the file reputation verdict by a SHA1 hash.
 
 #### Base Command
 
@@ -167,6 +167,7 @@ Gets the file reputation by a SHA1 hash.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Hash.Rank | Number | The hash reputation \(1-10\). | 
+| SentinelOne.Hash.Verdict | String | The hash reputation verdict. | 
 | SentinelOne.Hash.Hash | String | The content hash. | 
 
 ### sentinelone-get-threats
@@ -609,7 +610,8 @@ Connects agents to the network.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Agent.AgentsAffected | Number | The number of affected agents. | 
-| SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
+| SentinelOne.Agent.NetworkStatus | String | Agent network status. | 
+| SentinelOne.Agent.ID | String | Input agents' IDs. | 
 
 ### sentinelone-disconnect-agent
 
@@ -631,7 +633,7 @@ Disconnects agents from the network.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Agent.NetworkStatus | String | Agent network status. | 
-| SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
+| SentinelOne.Agent.ID | String | Input agents' IDs. | 
 
 ### sentinelone-broadcast-message
 

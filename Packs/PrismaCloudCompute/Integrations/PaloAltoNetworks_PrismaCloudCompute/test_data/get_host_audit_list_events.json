@@ -1,0 +1,31 @@
+[
+    {
+  "_id": "1111",
+  "time": "2024-01-16T09:42:41.566Z",
+  "hostname": "test",
+  "fqdn": "",
+  "app": "test.amazon-test-agent.amazon-test-agent",
+  "user": "root",
+  "type": "filesystem",
+  "effect": "alert",
+  "ruleName": "Windows File System Check",
+  "msg": "/usr/bin/python3.6, which is not a known OS distribution package manager wrote the binary /var/log/amazon/ssm/patch-baseline-operations/simplejson/_speedups.so. MD5: 038ebdb3fb23a04fc288b2eb01a7da70. Command: python3",
+  "profileId": "test.ec2.internal",
+  "pid": 1492,
+  "processPath": "/usr/bin/python3.6",
+  "collections": [
+    "499040555397",
+    "testk"
+  ],
+  "attackType": "test",
+  "count": 1,
+  "severity": "high",
+  "region": "us-east-1",
+  "accountID": "499040555397",
+  "filepath": "/var/log/amazon/test/test/simplejson/test.so",
+  "md5": "taaaaaaa",
+  "command": "/usr/bin/python3.6",
+  "provider": "aws",
+  "resourceID": "i-1111"
+}
+]

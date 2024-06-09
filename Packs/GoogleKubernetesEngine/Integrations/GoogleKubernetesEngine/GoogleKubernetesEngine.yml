@@ -406,7 +406,7 @@ script:
     name: gcloud-clusters-set-muster-auth
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -458,7 +458,7 @@ script:
     name: gcloud-clusters-set-addons
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -947,7 +947,7 @@ script:
       required: true
     description: Cancel operation by operation name.
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.64696
+  dockerimage: demisto/google-k8s-engine:1.0.0.91030
   runonce: false
   script: '-'
   subtype: python3

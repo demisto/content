@@ -1,3 +1,4 @@
+import json
 import dateparser
 import demistomock as demisto
 from Claroty import Client, fetch_incidents
@@ -137,15 +138,40 @@ def test_claroty_authentication(mocker, requests_mock):
 
 
 def test_claroty_fetch_incidents(mocker, requests_mock):
+    """
+    GIVEN a mock-client configured to return an Alert
+    WHEN the 'fetch_incidents' method is called multiple times
+    THEN the configured alert is returned exactly once. (no duplicate alerts should be received)
+    """
+    def get_rids_from_incidents(incidents: list[dict[str, str]]) -> set[int]:
+        raw_jsons_incidents = [json.loads(item["rawJSON"]) for item in incidents]
+        rids_from_incidents = {item["ResourceID"] for item in raw_jsons_incidents}
+
+        return rids_from_incidents
+
     client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/alerts", GET_ALERTS_RESPONSE, "GET")
     first_fetch_time = demisto.params().get('fetch_time', '7 days').strip()
     mocker.patch.object(demisto, 'incidents')
-    nextcheck, incidents = fetch_incidents(client, {'lastRun': dateparser.parse("2018-10-24T14:13:20+00:00")}, first_fetch_time)
+    next_check, incidents = fetch_incidents(client, {'lastRun': dateparser.parse("2018-10-24T14:13:20+00:00")}, first_fetch_time)
 
-    assert nextcheck['last_fetch']
+    assert next_check['last_fetch']
     assert isinstance(incidents, list)
     assert incidents[0]['severity'] == 4  # Demisto severity is higher by one (doesn't start at 0)
     assert isinstance(incidents[0]['name'], str)
+
+    rids_from_incidents = get_rids_from_incidents(incidents)
+
+    next_check, second_batch_incidents = fetch_incidents(client, next_check, first_fetch_time)
+    rids_from_second_batch_incidents = get_rids_from_incidents(second_batch_incidents)
+    assert next_check['last_fetch']
+    assert isinstance(second_batch_incidents, list)
+    assert rids_from_second_batch_incidents & rids_from_incidents == set(), "Fetching the same incident multiple times!"
+
+    next_check, third_batch_incidents = fetch_incidents(client, next_check, first_fetch_time)
+    rids_from_third_batch_incidents = get_rids_from_incidents(third_batch_incidents)
+    assert next_check['last_fetch']
+    assert isinstance(third_batch_incidents, list)
+    assert rids_from_third_batch_incidents & rids_from_incidents == set(), "Fetching the same incident multiple times!"
 
 
 def test_claroty_query_alerts(mocker, requests_mock):

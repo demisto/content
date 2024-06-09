@@ -1,0 +1,6 @@
+id: AWS_ELB_ParsingRule
+name: AWS ELB Parsing Rule
+fromversion: 8.4.0   # Will be updated with XSIAM version updates 
+tags: []
+rules: ''
+samples: ''

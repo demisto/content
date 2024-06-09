@@ -37,7 +37,7 @@ script:
     - name: title
       description: The title of the incident.
     - name: description
-      description: The description of the incident
+      description: The description of the incident.
     - name: service
       description: 'The service. For example: "CI1001060", "CI1001030".'
     - name: impact
@@ -624,12 +624,12 @@ script:
       description: 'The resource name (API URI) that will be used. For example: "incidents".'
     outputs:
     - contextPath: HPSM.ServiceRequest.ContactName
-      description: Who created/opened the service request
+      description: Who created/opened the service request.
     - contextPath: HPSM.ServiceRequest.ID
-      description: The id of the service request
+      description: The id of the service request.
     - contextPath: HPSM.ServiceRequest.CallbackContactName
-      description: Incident contact details
+      description: Incident contact details.
     - contextPath: HPSM.ServiceRequest.Title
-      description: Incident title
-    description: Creates a new service request
+      description: Incident title.
+    description: Creates a new service request.
 fromversion: 5.0.0

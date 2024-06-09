@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, List, Optional
 
 import urllib3
 
@@ -82,7 +81,7 @@ class Client(BaseClient):
 
         add_sensitive_log_strs(api_key)
 
-    def get_tags(self, data: Dict[str, Any]):  # pragma: no cover
+    def get_tags(self, data: dict[str, Any]):  # pragma: no cover
         res = self._http_request('POST',
                                  url_suffix='tags',
                                  headers=self.headers,
@@ -137,9 +136,8 @@ class Client(BaseClient):
             return incremental_level_fetch(self)
         # this is the "first level fetch" logic. Every fetch returns at most PAGE_SIZE indicators from the feed.
         for tag in tags:
-            if is_get_command and limit > 0:
-                if len(results) >= limit:
-                    return results
+            if is_get_command and limit > 0 and len(results) >= limit:
+                return results
             public_tag_name = tag.get('public_tag_name', '')
             tag_details_response = self.get_tag_details(public_tag_name)
             results.append(tag_details_response)
@@ -169,6 +167,11 @@ def incremental_level_fetch(client: Client) -> list:
     # This field saves tags that have been updated since the last fetch time and need to be updated in demisto
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', ''))
     time_from_last_update = integration_context.get('time_of_first_fetch')
+    if time_from_last_update is None:
+        demisto.info("time_from_last_update is None during incremental_level_fetch. "
+                     "Using current time instead.")
+        time_from_last_update = date_to_timestamp(datetime.now(), DATE_FORMAT)
+
     index_to_delete = 0
     for tag in list_of_all_updated_tags:  # pragma: no cover
         # if there are such tags, we first get all of them, so we wont miss any tags
@@ -249,7 +252,7 @@ def get_all_updated_tags_since_last_fetch(client: Client,
     return list_of_all_updated_tags
 
 
-def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[str]:
+def get_tag_class(tag_class: str | None, source: str | None) -> str | None:
     """
     Returns the tag class as demisto indicator type.
     Args:
@@ -319,7 +322,7 @@ def create_publications(refs: list) -> list:
     return publications
 
 
-def create_indicators_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
+def create_indicators_fields(tag_details: dict[str, Any]) -> dict[str, Any]:
     """
     Returns the indicator fields
     Args:
@@ -328,7 +331,7 @@ def create_indicators_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
         A dictionary represents the indicator fields.
     """
 
-    fields: Dict[str, Any] = {}
+    fields: dict[str, Any] = {}
     tag = tag_details.get('tag', {})
     refs = json.loads(tag.get('refs', '[]'))
     fields['publications'] = create_publications(refs)
@@ -361,7 +364,7 @@ def update_integration_context_with_indicator_data(public_tag_name: str, tag_nam
     set_integration_context(integration_context)
 
 
-def create_relationships_for_tag(client: Client, name: str, tag_type: str, related_tags: List[str]):
+def create_relationships_for_tag(client: Client, name: str, tag_type: str, related_tags: list[str]):
     """
     Creates all the relationships of an indicator.
     Args:
@@ -377,7 +380,7 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
     integration_context = get_integration_context()
     seen_tags = integration_context.get('seen_tags', {})
     for related_tag_public_name in related_tags:
-        if related_tag_public_name in seen_tags.keys():
+        if related_tag_public_name in seen_tags:
             related_tag_name = seen_tags.get(related_tag_public_name, {}).get('tag_name', '')
             related_tag_type = seen_tags.get(related_tag_public_name, {}).get('tag_type', '')
         else:
@@ -443,11 +446,11 @@ def test_module(client: Client) -> str:  # pragma: no cover
 
 def fetch_indicators(client: Client,
                      is_get_command: bool,
-                     tlp_color: Optional[str] = None,
-                     feed_tags: List = None,
+                     tlp_color: str | None = None,
+                     feed_tags: list | None = None,
                      limit: int = -1,
                      create_relationships: bool = True,
-                     ) -> List[Dict]:
+                     ) -> list[dict]:
     """
     Retrieves indicators from the feed
     Args:
@@ -466,7 +469,7 @@ def fetch_indicators(client: Client,
     for tag_details in iterator:
         tag_dict = tag_details.get('tag', {})
         public_tag_name = tag_dict.get('public_tag_name', '')
-        tag_name = tag_dict.get('tag_name' '')
+        tag_name = tag_dict.get('tag_name', '')
         tag_class = tag_dict.get('tag_class', '')
         source = tag_dict.get('source', '')
         tag_type = get_tag_class(tag_class, source)
@@ -503,8 +506,8 @@ def fetch_indicators(client: Client,
 
 
 def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
+                           params: dict[str, str],
+                           args: dict[str, str]
                            ) -> CommandResults:  # pragma: no cover
     """
     Wrapper for retrieving indicators from the feed to the war-room.
@@ -540,7 +543,7 @@ def get_indicators_command(client: Client,
     )
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, Any]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, Any]) -> list[dict]:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:

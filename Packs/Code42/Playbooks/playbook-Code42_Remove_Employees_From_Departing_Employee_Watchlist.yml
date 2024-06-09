@@ -690,3 +690,5 @@ inputs:
     post-departure activity (e.g. "30", "7", etc.). Default is 30.
   playbookInputQuery: null
 outputs: []
+tests:
+- No tests

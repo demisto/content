@@ -1,0 +1,14 @@
+[
+    {
+        "id": "44c99cb0-8c5f-4182-af55-62135dbe32f1",
+        "fileName": "string",
+        "fileType": "powershell",
+        "description": "Script to delete duplicate values"
+    },
+    {
+        "id": "cb044c99-8fc5-2418-f5a5-2f15dbe62133",
+        "fileName": "string",
+        "fileType": "bash",
+        "description": "Script to update some values"
+    }
+]

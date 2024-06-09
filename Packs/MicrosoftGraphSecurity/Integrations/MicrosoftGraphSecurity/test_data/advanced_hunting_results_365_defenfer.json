@@ -1,0 +1,31 @@
+{
+    "outputs_prefix": "Microsoft365Defender.Hunt",
+    "outputs_key_field": "query",
+    "readable_output": "See Results Above",
+    "outputs": {
+        "query": "AlertInfo | limit 2",
+        "results": [
+            {
+                "Timestamp": "2024-02-28T04:45:11Z",
+                "AlertId": "",
+                "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)",
+                "Category": "Exfiltration",
+                "Severity": "Medium",
+                "ServiceSource": "Microsoft Data Loss Prevention",
+                "DetectionSource": "Microsoft Data Loss Prevention",
+                "AttackTechniques": ""
+            },
+            {
+                "Timestamp": "2024-02-28T06:30:12Z",
+                "AlertId": "",
+                "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)",
+                "Category": "Exfiltration",
+                "Severity": "Medium",
+                "ServiceSource": "Microsoft Data Loss Prevention",
+                "DetectionSource": "Microsoft Data Loss Prevention",
+                "AttackTechniques": ""
+            }
+        ]
+    }
+    
+}

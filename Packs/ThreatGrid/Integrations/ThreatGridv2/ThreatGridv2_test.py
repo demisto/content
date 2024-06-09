@@ -3,6 +3,7 @@ import json
 import os
 from unittest import mock
 import pytest
+from pytest_mock import MockerFixture
 from ThreatGridv2 import Client
 from datetime import datetime
 from CommonServerPython import *  # noqa: F401
@@ -12,7 +13,7 @@ API_TOKEN = "api_token"
 BASE_URL = 'https://panacea.threatgrid.com'
 API_VERSION2_URL = 'api/v2'
 API_VERSION3_URL = 'api/v3'
-URL_SHA256 = hashlib.sha256('http://test.com:80/'.encode('utf-8')).hexdigest()
+URL_SHA256 = hashlib.sha256(b'http://test.com:80/').hexdigest()
 
 DBOT_SCORE = Common.DBotScore(indicator='url_value',
                               indicator_type='url',
@@ -30,7 +31,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
 
-    with open(os.path.join('test_data', file_name), mode='r',
+    with open(os.path.join('test_data', file_name),
               encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
@@ -234,6 +235,30 @@ def test_analysis_sample_command(requests_mock, mock_client, url, args,
         'ts'] == 'data_items_network_ip2_ts'
     assert result.outputs['items']['network']['ip3'][
         'ts'] == 'data_items_network_ip3_ts'
+
+
+def test_analysis_sample_command_no_response(requests_mock, mock_client):
+    """
+    Given:
+     - threat-grid-analysis-iocs-get called with sample_id
+    When:
+     - API call is made to get sample analysis data, but no response is returned.
+    Then:
+     - Ensure CommandResults contains a readable output indicating no results were found.
+    """
+    from ThreatGridv2 import analysis_sample_command
+
+    url = f'/{API_VERSION2_URL}/samples/sample_id/analysis/annotations'
+    args = {
+        'sample_id': 'sample_id',
+        'command_name': 'threat-grid-analysis-annotations-get'
+    }
+
+    requests_mock.get(url=url, json={})
+
+    result = analysis_sample_command(mock_client, args)
+
+    assert result.readable_output == '### No results were found for sample_id sample_id'
 
 
 def test_get_rate_limit_command(requests_mock, mock_client):
@@ -696,3 +721,68 @@ def test_validate_url_template(url):
     result = validate_url_template(url)
 
     assert result == 'http://test.com:80/'
+
+
+@pytest.mark.parametrize(
+    "mock_raw_response, expected_exception",
+    [
+        ({"state": "fail"}, "Uploading test to ThreatGrid failed"),
+    ],
+)
+def test_schedule_command_sample_upload_when_state_is_fail(
+    mocker,
+    mock_client,
+    mock_raw_response: dict[str, str],
+    expected_exception: str,
+):
+    """
+    Given:
+        - sample_id
+    When:
+        - run schedule_command function
+    Then:
+        - Ensure that when returned from the api the state is fail, an error is raised.
+    """
+    from ThreatGridv2 import schedule_command
+    mocker.patch(
+        "ThreatGridv2.sample_state_get_command",
+        return_value=CommandResults(
+            raw_response=mock_raw_response
+        )
+    )
+    with pytest.raises(DemistoException, match=expected_exception):
+        schedule_command({"sample_id": "test"}, mock_client)
+
+
+@pytest.mark.parametrize(
+    "files, payload, expected_call",
+    [
+        (None, {"url": "test"}, {"files": None, "data": {"url": "test"}, "params": {}}),
+        (
+            "test",
+            None,
+            {"files": "test", "data": {"api_key": "api_key_test", 'classify': True}, "params": {}},
+        ),
+    ],
+)
+def test_upload_sample_method(
+    mocker: MockerFixture,
+    mock_client,
+    files,
+    payload: dict[str, str],
+    expected_call: dict[str, str],
+):
+    """
+    Given:
+        - files or urls
+    When:
+        - run `upload_sample` method
+    Then:
+        - Ensure that when the sample is a file, the data request contains the `api_key`
+        - Ensure that when the sample is a file the `Authorization` header not in `client._headers`
+    """
+    mock_func = mocker.patch.object(mock_client, "_http_request")
+    mock_client.api_key = "api_key_test"
+    mock_client.upload_sample(files=files, payload=payload)
+    assert mock_func.call_args[1] == expected_call
+    assert "Authorization" not in mock_client._headers if files else True

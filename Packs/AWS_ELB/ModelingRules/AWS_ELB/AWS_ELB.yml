@@ -1,0 +1,6 @@
+fromversion: 8.4.0  # Will be updated with XSIAM version updates
+id: AWS_ELB_ModelingRule
+name: AWS ELB Modeling Rule
+rules: ''
+schema: ''
+tags: ''

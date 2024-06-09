@@ -24040,3 +24040,163 @@ Reset the value of a certain default policy setting
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | true |
 
+### trendmicro-list-scheduled-task
+
+***
+Get information on all scheduled tasks.
+
+#### Base Command
+
+`trendmicro-list-scheduled-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | The ID of the task to retrieve. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. | 
+| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. | 
+| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. | 
+| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. | 
+| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
+
+#### Command example
+```!trendmicro-list-scheduled-task task_id=1```
+#### Context Example
+```json
+{
+    "TrendMicro": {
+        "ScheduledTask": {
+            "ID": 1,
+            "checkForSecurityUpdatesTaskParameters": {
+                "computerFilter": {
+                    "type": "type"
+                },
+                "timeout": "never"
+            },
+            "enabled": true,
+            "lastRunTime": 1687185043521,
+            "name": "Daily check for Security Updates",
+            "nextRunTime": 1687271400000,
+            "scheduleDetails": {
+                "dailyScheduleParameters": {
+                    "frequencyType": "everyday",
+                    "startTime": 1676993400000
+                },
+                "recurrenceType": "daily",
+                "timeZone": "some time zone"
+            },
+            "type": "check-for-security-updates"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scheduled Tasks
+>|ID|Name|Type|Enabled|Last Run Time|
+>|---|---|---|---|---|
+>| 1 | Daily check for Security Updates | check-for-security-updates | true | 2023-06-19 14:30:43 |
+
+### trendmicro-create-onceonly-scheduled-task
+
+***
+Creates a once-only scheduled task with a specific computer ID and runs it.
+
+#### Base Command
+
+`trendmicro-create-onceonly-scan-scheduled-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the scheduled task. | Required | 
+| type | The type of the scheduled task. Possible values are: scan-for-open-ports, send-alert-summary, discover-computers, run-script, send-policy, generate-report, synchronize-directory, synchronize-users, scan-for-recommendations, synchronize-vcenter, scan-for-integrity-changes, scan-for-malware, check-for-security-updates, synchronize-cloud-account, check-for-software-updates, update-suspicious-objects-list. | Required | 
+| computer_id | The computer ID to create the task on. Can be retrieved from the trendmicro-list-computers command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. | 
+| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. | 
+| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. | 
+| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. | 
+| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
+
+#### Command example
+```!trendmicro-create-onceonly-scheduled-task name=test computer_id=1 type="scan-for-malware"```
+#### Context Example
+```json
+{
+    "TrendMicro": {
+        "ScheduledTask": {
+            "ID": 26,
+            "enabled": true,
+            "name": "test",
+            "nextRunTime": 1708620132041,
+            "scanForMalwareTaskParameters": {
+                "computerFilter": {
+                    "computerID": 1,
+                    "type": "some type"
+                },
+                "timeout": "never"
+            },
+            "scheduleDetails": {
+                "onceOnlyScheduleParameters": {
+                    "startTime": 0
+                },
+                "recurrenceType": "none",
+                "timeZone": "some time zone"
+            },
+            "type": "scan-for-malware"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Once-only scheduled task, named test for the computer ID 1 has been successfully created and run.
+### trendmicro-delete-scheduled-task
+
+***
+Deletes a scheduled task.
+
+#### Base Command
+
+`trendmicro-delete-scheduled-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_ids | A comma seperated of task-IDs to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!trendmicro-delete-scheduled-task task_id=1```
+#### Human Readable Output
+
+>Scheduled task with ID 1 has been successfully deleted.

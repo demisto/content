@@ -1,0 +1,14 @@
+{
+    "values": {
+        "Request ID": "000000000000701",
+        "WorkOrder_ID": "WO0000000001001",
+        "Create Date": "2024-02-05T09:11:09.000+0000"
+    },
+    "_links": {
+        "self": [
+            {
+                "href": "https://isvpartners-dev-restapi.onbmc.com/api/arsys/v1/entry/WOI:WorkOrderInterface_Create"
+            }
+        ]
+    }
+}

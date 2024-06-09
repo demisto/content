@@ -5,7 +5,7 @@ import ssl
 import email
 from datetime import timezone
 from typing import Any
-
+from email.message import Message
 from dateparser import parse
 from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
@@ -31,8 +31,12 @@ class Email:
                          '\nWill replace backslash and try to parse again')
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-        except Exception:
-            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
+        except TypeError as e:
+            demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
+                         '\nWill try to parse from string')
+            message_string = message_bytes.decode('ISO-8859-1')
+            email_object = parse_from_string(message_string)
+
         eml_attachments = self.get_eml_attachments(message_bytes)
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
@@ -56,23 +60,39 @@ class Email:
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
+
+        def get_attachment_payload(part: Message) -> bytes:
+            """Returns the payload of the email attachment as bytes object"""
+            payload = part.get_payload(decode=False)
+            if isinstance(payload, list) and isinstance(payload[0], Message):
+                payload = payload[0].as_bytes()
+            elif isinstance(payload, str):
+                payload = payload.encode('utf-8')
+            else:
+                raise DemistoException(f'Could not parse the email attachment: {part.get_filename()}')
+
+            return payload
+
         eml_attachments = []
         msg = email.message_from_bytes(message_bytes)
+
         if msg:
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
+
                 filename = part.get_filename()
                 if filename and filename.endswith('.eml'):
                     eml_attachments.append({
                         "filename": filename,
-                        "payload": part.get_payload(decode=False)[0].as_bytes(),
+                        "payload": get_attachment_payload(part),
                         "binary": False,
                         "mail_content_type": part.get_content_subtype(),
                         "content-id": part.get('content-id'),
                         "content-disposition": part.get('content-disposition'),
                         "charset": part.get_content_charset(),
                         "content_transfer_encoding": part.get_content_charset()})
+
         return eml_attachments
 
     @staticmethod
@@ -232,7 +252,7 @@ def fetch_incidents(client: IMAPClient,
                     delete_processed: bool,
                     limit: int,
                     save_file: bool
-                    ) -> tuple[dict, list]:
+                    ) -> tuple[dict | None, list]:
     """
     This function will execute each interval (default is 1 minute).
     The search is based on the criteria of the SINCE time and the UID.
@@ -272,7 +292,7 @@ def fetch_incidents(client: IMAPClient,
         demisto.debug(f"no last_run, using {time_to_fetch_from=}")
 
     # Otherwise use the mail UID
-    uid_to_fetch_from = last_run.get('last_uid', 0)
+    uid_to_fetch_from = arg_to_number(last_run.get('last_uid', 0))
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
@@ -282,13 +302,15 @@ def fetch_incidents(client: IMAPClient,
         permitted_from_addresses=permitted_from_addresses,
         permitted_from_domains=permitted_from_domains,
         save_file=save_file,
-        uid_to_fetch_from=uid_to_fetch_from
+        uid_to_fetch_from=uid_to_fetch_from     # type: ignore[arg-type]
     )
-    incidents = []
+    incidents: list = []
+    demisto.debug(f'fetched {len(incidents)} incidents')
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
-    next_run = {'last_uid': uid_to_fetch_from}
+    next_run = {'last_uid': str(uid_to_fetch_from)} if uid_to_fetch_from != 0 else None
+    demisto.debug(f"{next_run=}")
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
@@ -352,6 +374,7 @@ def fetch_mails(client: IMAPClient,
     demisto.debug(f'Messages to fetch: {messages_uids}')
 
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
+        demisto.debug(f"Starting to parse the mail with {mail_id=}")
         message_bytes = message_data.get(b'RFC822')
         # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
         try:
@@ -360,16 +383,18 @@ def fetch_mails(client: IMAPClient,
             demisto.debug(f"{mail_id=}: Converting to bytest failed. {message_data=}. Error: {e}")
 
         if not message_bytes:
-            demisto.debug(f"{mail_id=}: {message_bytes=}, skipping")
+            demisto.debug(f"{mail_id=}: Skipping because did not managed to convert to bytes")
             continue
 
         try:
+            demisto.debug("Creating email object")
             email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
             demisto.debug(f"{mail_id=}: Created email object.")
         except Exception as e:
             demisto.debug(f"{mail_id=}: Failed creating Email object, skipping. {message_data=}. Error: {e}")
             continue
 
+        demisto.debug(f"{mail_id=}: Created email object successfully.")
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):
             fetched_email_objects.append(email_message_object)
@@ -378,15 +403,15 @@ def fetch_mails(client: IMAPClient,
             demisto.debug(f"{mail_id=}: Skipping {email_message_object.id=} since it's <= {uid_to_fetch_from=}."
                           f"{email_message_object.date=}")
     if messages_uids:
-        demisto.debug(f"messages_uids NOT empty, setting last_message_in_current_batch={messages_uids[-1]=}")
-        last_message_in_current_batch = messages_uids[-1]
+        next_uid_to_fetch_from = max(messages_uids[-1], uid_to_fetch_from)
+        demisto.debug(f"messages_uids NOT empty, setting {next_uid_to_fetch_from=}")
     else:
-        demisto.debug(f"messages_uids empty, setting last_message_in_current_batch={uid_to_fetch_from=}")
-        last_message_in_current_batch = uid_to_fetch_from
+        next_uid_to_fetch_from = uid_to_fetch_from
+        demisto.debug(f"messages_uids IS empty, setting {next_uid_to_fetch_from=}")
 
     ids_fetched = [mail.id for mail in fetched_email_objects]
     demisto.debug(f"fetched {len(fetched_email_objects)} emails, {ids_fetched=}")
-    return fetched_email_objects, ids_fetched, last_message_in_current_batch
+    return fetched_email_objects, ids_fetched, next_uid_to_fetch_from
 
 
 def generate_search_query(time_to_fetch_from: datetime | None,
@@ -570,20 +595,21 @@ def load_client_cert_and_key(ssl_context: ssl.SSLContext, params: dict[str, Any]
 def main():     # pragma: no cover
     params = demisto.params()
     mail_server_url = params.get('MailServerURL')
-    port = int(params.get('port'))
+    port = arg_to_number(params.get('port'))
     folder = params.get('folder')
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
     verify_ssl = not params.get('insecure', False)
     tls_connection = params.get('TLS_connection', True)
-    include_raw_body = demisto.params().get('Include_raw_body', False)
-    permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
-    permitted_from_domains = demisto.params().get('permittedFromDomain', '')
+    include_raw_body = params.get('Include_raw_body', False)
+    permitted_from_addresses = params.get('permittedFromAdd', '')
+    permitted_from_domains = params.get('permittedFromDomain', '')
     with_headers = params.get('with_headers')
-    delete_processed = demisto.params().get("delete_processed", False)
-    limit = min(int(demisto.params().get('limit', '50')), 200)
-    save_file = params.get('save_file', False)
-    first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+    delete_processed = params.get("delete_processed") or False
+    limit = arg_to_number(params.get('limit')) or 50
+    demisto.debug(f"{limit=}")
+    save_file = params.get('save_file') or False
+    first_fetch_time = (params.get('first_fetch') or '3 days').strip()
     ssl_context = ssl.create_default_context()
 
     args = demisto.args()
@@ -623,7 +649,9 @@ def main():     # pragma: no cover
                                                       delete_processed=delete_processed, limit=limit,
                                                       save_file=save_file)
                 demisto.debug(f"{next_run=}")
-                demisto.setLastRun(next_run)
+                # if next_run is None, we will not update last_run
+                if next_run:
+                    demisto.setLastRun(next_run)
                 demisto.incidents(incidents)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

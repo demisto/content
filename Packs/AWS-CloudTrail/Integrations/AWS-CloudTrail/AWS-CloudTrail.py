@@ -1,30 +1,35 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 import boto3
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
-from datetime import datetime, date
+from datetime import datetime
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_ROLE_ARN = demisto.params()['roleArn']
-AWS_ROLE_SESSION_NAME = demisto.params()['roleSessionName']
-AWS_ROLE_SESSION_DURATION = demisto.params()['sessionDuration']
+PARAMS = demisto.params()
+AWS_DEFAULT_REGION = PARAMS['defaultRegion']
+AWS_ROLE_ARN = PARAMS['roleArn']
+AWS_ROLE_SESSION_NAME = PARAMS['roleSessionName']
+AWS_ROLE_SESSION_DURATION = PARAMS['sessionDuration']
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+AWS_ACCESS_KEY_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
+AWS_SECRET_ACCESS_KEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
+VERIFY_CERTIFICATE = not PARAMS.get('insecure', True)
+AWS_STS_REGIONAL_ENDPOINTS = PARAMS.get('sts_regional_endpoint') or None
+if AWS_STS_REGIONAL_ENDPOINTS:
+    demisto.debug(f"Sets the environment variable AWS_STS_REGIONAL_ENDPOINTS={AWS_STS_REGIONAL_ENDPOINTS}")
+    os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = AWS_STS_REGIONAL_ENDPOINTS.lower()
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
+    retries={"max_attempts": 5},
+    proxies=proxies,
 )
 
 """HELPER FUNCTIONS"""
@@ -55,31 +60,18 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
     if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
-                                      region_name=AWS_DEFAULT_REGION)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
+        sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                  region_name=AWS_DEFAULT_REGION)
+        sts_response = sts_client.assume_role(**kwargs)
+        client = boto3.client(
+            service_name=service,
+            region_name=region or AWS_DEFAULT_REGION,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
     elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
         sts_client = boto3.client(
             service_name='sts',
@@ -103,57 +95,37 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
             config=config
         )
     else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
+        client = boto3.client(
+            service_name=service,
+            region_name=region or AWS_DEFAULT_REGION,
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
 
     return client
 
 
-def handle_returning_date_to_string(date_obj):
+def handle_returning_date_to_string(date_obj: datetime | str) -> str:
     """Gets date object to string"""
-    # if the returning date is a string leave it as is.
-    if isinstance(date_obj, str):
+    # if the returning date is a string or None, leave it as is.
+    if date_obj is None or isinstance(date_obj, str):
         return date_obj
 
     # if event time is datetime object - convert it to string.
-    else:
-        return date_obj.isoformat()
+    return date_obj.isoformat()
 
 
-class DatetimeEncoder(json.JSONEncoder):
-    # pylint: disable=method-hidden
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):
-            return obj.strftime('%Y-%m-%d')
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
-
-
-def parse_resource_ids(resource_id):
+def parse_resource_ids(resource_id: str | None) -> list[str]:
+    if resource_id is None:
+        raise ValueError("Resource ID cannot be empty")
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
     return resource_ids
 
 
-def create_trail(args):
+def create_trail(args: dict) -> CommandResults:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -171,14 +143,12 @@ def create_trail(args):
     if args.get('snsTopicName') is not None:
         kwargs.update({'SnsTopicName': args.get('snsTopicName')})
     if args.get('includeGlobalServiceEvents') is not None:
-        kwargs.update({'IncludeGlobalServiceEvents': True if args.get(
-            'includeGlobalServiceEvents') == 'True' else False})
+        kwargs.update({'IncludeGlobalServiceEvents': args.get('includeGlobalServiceEvents') == 'True'})
     if args.get('isMultiRegionTrail') is not None:
         kwargs.update(
-            {'IsMultiRegionTrail': True if args.get('isMultiRegionTrail') == 'True' else False})
+            {'IsMultiRegionTrail': args.get('isMultiRegionTrail') == 'True'})
     if args.get('enableLogFileValidation') is not None:
-        kwargs.update({'EnableLogFileValidation': True if args.get(
-            'enableLogFileValidation') == 'True' else False})
+        kwargs.update({'EnableLogFileValidation': args.get('enableLogFileValidation') == 'True'})
     if args.get('cloudWatchLogsLogGroupArn') is not None:
         kwargs.update({'CloudWatchLogsLogGroupArn': args.get('cloudWatchLogsLogGroupArn')})
     if args.get('cloudWatchLogsRoleArn') is not None:
@@ -210,12 +180,15 @@ def create_trail(args):
     if 'KmsKeyId' in response:
         data.update({'KmsKeyId': response['KmsKeyId']})
 
-    ec = {'AWS.CloudTrail.Trails(val.Name == obj.Name)': data}
-    human_readable = tableToMarkdown('AWS CloudTrail Trails', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.Trails",
+        outputs_key_field="Name",
+        outputs=data,
+        readable_output=tableToMarkdown('AWS CloudTrail Trails', data),
+    )
 
 
-def delete_trail(args):
+def delete_trail(args: dict) -> str:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -227,11 +200,12 @@ def delete_trail(args):
 
     response = client.delete_trail(**kwargs)
 
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Trail {0} was deleted".format(args.get('name')))
+    if (response_code := response['ResponseMetadata']['HTTPStatusCode']) == 200:
+        return f"The Trail {args.get('name')} was deleted"
+    raise DemistoException(f"Unexpected status code: {response_code}")
 
 
-def describe_trails(args):
+def describe_trails(args: dict) -> CommandResults:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -239,14 +213,13 @@ def describe_trails(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
 
-    kwargs = {}
+    kwargs: dict[str, Any] = {}
     data = []
     output = []
     if args.get('trailNameList') is not None:
         kwargs.update({'trailNameList': parse_resource_ids(args.get('trailNameList'))})
     if args.get('includeShadowTrails') is not None:
-        kwargs.update({'includeShadowTrails': True if args.get(
-            'includeShadowTrails') == 'True' else False})
+        kwargs.update({'includeShadowTrails': args.get('includeShadowTrails') == 'True'})
 
     response = client.describe_trails(**kwargs)
     for trail in response['trailList']:
@@ -262,12 +235,49 @@ def describe_trails(args):
         output.append(trail)
 
     raw = json.loads(json.dumps(output))
-    ec = {'AWS.CloudTrail.Trails(val.Name == obj.Name)': raw}
-    human_readable = tableToMarkdown('AWS CloudTrail Trails', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.Trails",
+        outputs_key_field="Name",
+        outputs=raw,
+        readable_output=tableToMarkdown('AWS CloudTrail Trails', data),
+    )
 
 
-def update_trail(args):
+def get_trail_status(args: dict) -> CommandResults:
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {'Name': args.get('name')}
+
+    response = client.get_trail_status(**kwargs)
+
+    data = {
+        'IsLogging': response.get('IsLogging'),
+        'LatestDeliveryTime': handle_returning_date_to_string(response.get('LatestDeliveryTime')),
+        'LatestCloudWatchLogsDeliveryError': response.get('LatestCloudWatchLogsDeliveryError'),
+        'LatestDeliveryErrorDetails': response.get('LatestDeliveryErrorDetails'),
+        'LatestNotificationError': response.get('LatestNotificationError'),
+        'LatestNotificationTime': handle_returning_date_to_string(response.get('LatestNotificationTime')),
+        'StartLoggingTime': handle_returning_date_to_string(response.get('StartLoggingTime')),
+        'StopLoggingTime': handle_returning_date_to_string(response.get('StopLoggingTime')),
+        'LatestCloudWatchLogsDeliveryTime': handle_returning_date_to_string(response.get('LatestCloudWatchLogsDeliveryTime')),
+        'LatestDigestDeliveryTime': handle_returning_date_to_string(response.get('LatestDigestDeliveryTime')),
+        'LatestDigestDeliveryError': response.get('LatestDigestDeliveryError')
+    }
+
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.TrailStatus",
+        outputs_key_field="Name",
+        outputs=data,
+        readable_output=tableToMarkdown('AWS CloudTrail TrailStatus', data),
+    )
+
+
+def update_trail(args: dict) -> CommandResults:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -286,14 +296,11 @@ def update_trail(args):
     if args.get('snsTopicName') is not None:
         kwargs.update({'SnsTopicName': args.get('snsTopicName')})
     if args.get('includeGlobalServiceEvents') is not None:
-        kwargs.update({'IncludeGlobalServiceEvents': True if args.get(
-            'includeGlobalServiceEvents') == 'True' else False})
+        kwargs.update({'IncludeGlobalServiceEvents': args.get('includeGlobalServiceEvents') == 'True'})
     if args.get('isMultiRegionTrail') is not None:
-        kwargs.update(
-            {'IsMultiRegionTrail': True if args.get('isMultiRegionTrail') == 'True' else False})
+        kwargs.update({'IsMultiRegionTrail': args.get('isMultiRegionTrail') == 'True'})
     if args.get('enableLogFileValidation') is not None:
-        kwargs.update({'EnableLogFileValidation': True if args.get(
-            'enableLogFileValidation') == 'True' else False})
+        kwargs.update({'EnableLogFileValidation': args.get('enableLogFileValidation') == 'True'})
     if args.get('cloudWatchLogsLogGroupArn') is not None:
         kwargs.update({'CloudWatchLogsLogGroupArn': args.get('cloudWatchLogsLogGroupArn')})
     if args.get('cloudWatchLogsRoleArn') is not None:
@@ -325,12 +332,15 @@ def update_trail(args):
     if 'KmsKeyId' in response:
         data.update({'KmsKeyId': response['KmsKeyId']})
 
-    ec = {'AWS.CloudTrail.Trails(val.Name == obj.Name)': data}
-    human_readable = tableToMarkdown('AWS CloudTrail Trails', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.Trails",
+        outputs_key_field="Name",
+        outputs=data,
+        readable_output=tableToMarkdown('AWS CloudTrail Trails', data),
+    )
 
 
-def start_logging(args):
+def start_logging(args: dict) -> str:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -342,11 +352,12 @@ def start_logging(args):
 
     response = client.start_logging(**kwargs)
 
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Trail {0} started logging".format(args.get('name')))
+    if (response_code := response['ResponseMetadata']['HTTPStatusCode']) == 200:
+        return f"The Trail {args.get('name')} started logging"
+    raise DemistoException(f"Unexpected status code: {response_code}")
 
 
-def stop_logging(args):
+def stop_logging(args: dict) -> str:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -358,11 +369,12 @@ def stop_logging(args):
 
     response = client.stop_logging(**kwargs)
 
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Trail {0} stopped logging".format(args.get('name')))
+    if (response_code := response['ResponseMetadata']['HTTPStatusCode']) == 200:
+        return f"The Trail {args.get('name')} stopped logging"
+    raise DemistoException(f"Unexpected status code: {response_code}")
 
 
-def lookup_events(args):
+def lookup_events(args: dict) -> CommandResults:
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -400,41 +412,51 @@ def lookup_events(args):
             if 'Username' in event:
                 data[i].update({'Username': event['Username']})
 
-    ec = {'AWS.CloudTrail.Events(val.EventId == obj.EventId)': data}
-    human_readable = tableToMarkdown('AWS CloudTrail Trails', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.Events",
+        outputs_key_field="EventId",
+        outputs=data,
+        readable_output=tableToMarkdown('AWS CloudTrail Trails', data),
+    )
 
 
-def test_function():
+def test_function() -> str:
     client = aws_session()
     response = client.describe_trails()
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('ok')
+    if (response_code := response['ResponseMetadata']['HTTPStatusCode']) == 200:
+        return "ok"
+    raise DemistoException(f"Unexpected status code: {response_code}")
 
 
-'''EXECUTION BLOCK'''
-try:
-    if demisto.command() == 'test-module':
-        test_function()
-    if demisto.command() == 'aws-cloudtrail-create-trail':
-        create_trail(demisto.args())
-    if demisto.command() == 'aws-cloudtrail-delete-trail':
-        delete_trail(demisto.args())
-    if demisto.command() == 'aws-cloudtrail-describe-trails':
-        describe_trails(demisto.args())
-    if demisto.command() == 'aws-cloudtrail-update-trail':
-        update_trail(demisto.args())
-    if demisto.command() == 'aws-cloudtrail-start-logging':
-        start_logging(demisto.args())
-    if demisto.command() == 'aws-cloudtrail-stop-logging':
-        stop_logging(demisto.args())
-    if demisto.command() == 'aws-cloudtrail-lookup-events':
-        lookup_events(demisto.args())
+def main():
+    command = demisto.command()
+    args = demisto.args()
+    try:
+        if command == 'test-module':
+            return_results(test_function())
+        if command == 'aws-cloudtrail-create-trail':
+            return_results(create_trail(args))
+        if command == 'aws-cloudtrail-delete-trail':
+            return_results(delete_trail(args))
+        if command == 'aws-cloudtrail-describe-trails':
+            return_results(describe_trails(args))
+        if command == 'aws-cloudtrail-update-trail':
+            return_results(update_trail(args))
+        if command == 'aws-cloudtrail-start-logging':
+            return_results(start_logging(args))
+        if command == 'aws-cloudtrail-stop-logging':
+            return_results(stop_logging(args))
+        if command == 'aws-cloudtrail-lookup-events':
+            return_results(lookup_events(args))
+        if command == 'aws-cloudtrail-get-trail-status':
+            return_results(get_trail_status(args))
 
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
+    except Exception as e:
+        err = "Error has occurred in the AWS CloudTrail Integration."
+        if isinstance(e, ResponseParserError):
+            err += " Could not connect to the AWS endpoint. Please check that the region is valid."
+        return_error(f"{err}\nError: {e}")
 
-except Exception as e:
-    return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
-        code=type(e), message=str(e)))
+
+if __name__ in ["__builtin__", "builtins", "__main__"]:
+    main()

@@ -3,14 +3,13 @@ from CommonServerPython import *  # noqa: F401
 import logging
 
 
-from typing import List, Dict, Set, Optional
 import json
 import urllib3
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
-MITRE_TYPE_TO_DEMISTO_TYPE = {
+MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
@@ -19,7 +18,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "relationship": "Relationship"
 }
-INDICATOR_TYPE_TO_SCORE = {
+INDICATOR_TYPE_TO_SCORE = {  # pragma: no cover
     "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,
     "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
     "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
@@ -27,7 +26,7 @@ INDICATOR_TYPE_TO_SCORE = {
     "Tool": ThreatIntel.ObjectsScore.TOOL,
     "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN
 }
-MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
+MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
     'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
@@ -47,7 +46,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
-FILTER_OBJS = {
+FILTER_OBJS = {  # pragma: no cover
     "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
     "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
     "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
@@ -56,11 +55,11 @@ FILTER_OBJS = {
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
     "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
 }
-RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
-ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"
-SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-DEFAULT_YEAR = datetime(1970, 1, 1)
+RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()   # pragma: no cover
+ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'                  # pragma: no cover
+EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"   # pragma: no cover
+SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"    # pragma: no cover
+DEFAULT_YEAR = datetime(1970, 1, 1)         # pragma: no cover
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
@@ -72,15 +71,15 @@ urllib3.disable_warnings()
 class Client:
 
     def __init__(self, url, proxies, verify, tags: list = None,
-                 tlp_color: Optional[str] = None):
+                 tlp_color: str | None = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.tags = [] if not tags else tags
+        self.tags = tags if tags else []
         self.tlp_color = tlp_color
         self.server: Server
-        self.api_root: List[ApiRoot]
-        self.collections: List[Collection]
+        self.api_root: list[ApiRoot]
+        self.collections: list[Collection]
 
     def get_server(self):
         server_url = urljoin(self.base_url, '/taxii/')
@@ -90,7 +89,7 @@ class Client:
         self.api_root = self.server.api_roots[0]
 
     def get_collections(self):
-        self.collections = [x for x in self.api_root.collections]  # type: ignore[attr-defined]
+        self.collections = list(self.api_root.collections)  # type: ignore[attr-defined]
 
     def initialise(self):
         self.get_server()
@@ -123,11 +122,11 @@ class Client:
         Returns:
             A list of objects, containing the indicators.
         """
-        indicators: List[Dict] = list()
-        mitre_id_list: Set[str] = set()
+        indicators: list[dict] = []
+        mitre_id_list: set[str] = set()
         mitre_relationships_list = []
-        id_to_name: Dict = {}
-        mitre_id_to_mitre_name: Dict = {}
+        id_to_name: dict = {}
+        mitre_id_to_mitre_name: dict = {}
         counter = 0
 
         # For each collection
@@ -234,7 +233,7 @@ def get_item_type(mitre_type, is_up_to_6_2):
 
 
 def is_indicator_deprecated_or_revoked(indicator_json):
-    return True if indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked") else False
+    return bool(indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked"))
 
 
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
@@ -262,7 +261,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
-    tlp = get_tlp(indicator_json)
+    tlp = STIX2XSOARParser.get_tlp(indicator_json)
     indicator_json['description'] = remove_citations(indicator_json.get('description', ''))
 
     generic_mapping_fields = {
@@ -273,51 +272,29 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         'mitreid': mitre_id,
         'tags': tags,
         'tlp': tlp,
+        'description': indicator_json['description'],
     }
 
     mapping_by_type = {
         "Attack Pattern": {
             'killchainphases': kill_chain_phases,
-            'description': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Intrusion Set": {
-            'description': indicator_json.get('description'),
+            'aliases': indicator_json.get('aliases')
+        },
+        "Threat Actor": {
             'aliases': indicator_json.get('aliases')
         },
         "Malware": {
             'aliases': indicator_json.get('x_mitre_aliases'),
-            'description': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
-
         },
         "Tool": {
             'aliases': indicator_json.get('x_mitre_aliases'),
-            'description': indicator_json.get('description'),
-            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
-        },
-        "Course of Action": {
-            'description': indicator_json.get('description')
-        },
-
-        "STIX Attack Pattern": {
-            'stixkillchainphases': kill_chain_phases,
-            'stixdescription': indicator_json.get('description'),
-            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
-        },
-        "STIX Malware": {
-            'stixaliases': indicator_json.get('x_mitre_aliases'),
-            'stixdescription': indicator_json.get('description'),
-            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
-
-        },
-        "STIX Tool": {
-            'stixaliases': indicator_json.get('x_mitre_aliases'),
-            'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Campaign": {
-            'description': indicator_json.get('description'),
             'aliases': indicator_json.get('aliases')
         }
     }
@@ -362,16 +339,6 @@ def extract_date_time_from_description(description: str) -> str:
             date_time_result = datetime.strftime(date_time_parsed, SERVER_DATE_FORMAT)
             break
     return date_time_result
-
-
-def get_tlp(indicator_json: dict) -> str:
-    object_marking_definition_list = indicator_json.get('object_marking_refs', '')
-    tlp_color: str = ''
-    for object_marking_definition in object_marking_definition_list:
-        if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
-            tlp_color = MARKING_DEFINITION_TO_TLP.get(object_marking_definition, '')
-            break
-    return tlp_color
 
 
 def create_relationship_list(mitre_relationships_list, id_to_name):
@@ -462,7 +429,7 @@ def fetch_indicators(client, create_relationships):
 
 def get_indicators_command(client, args):
     limit = int(args.get('limit', 10))
-    raw = True if args.get('raw') == "True" else False
+    raw = args.get("raw") == "True"
 
     indicators = client.build_iterator(limit=limit)
 
@@ -486,7 +453,7 @@ def get_indicators_command(client, args):
 
 
 def show_feeds_command(client):
-    feeds = list()
+    feeds = []
     for collection in client.collections:
         feeds.append({"Name": collection.title, "ID": collection.id})
     md = tableToMarkdown('MITRE ATT&CK Feeds:', feeds, ['Name', 'ID'])
@@ -540,7 +507,7 @@ def build_command_result(value, score, md, attack_obj):
 
 
 def attack_pattern_reputation_command(client, args):
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
@@ -622,11 +589,7 @@ def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_obj
         True if the external_id matches the attack_id, else False
     """
     external_references_list = attack_pattern_object.get('external_references', [])
-    for external_reference in external_references_list:
-        if external_reference.get('external_id', '') == attack_id:
-            return True
-
-    return False
+    return any(external_reference.get("external_id", "") == attack_id for external_reference in external_references_list)
 
 
 def get_mitre_value_from_id(client, args):
@@ -686,6 +649,8 @@ def main():
     create_relationships = argToBoolean(params.get('create_relationships'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
+    if params.get('switch_intrusion_set_to_threat_actor', ''):
+        MITRE_TYPE_TO_DEMISTO_TYPE['intrusion-set'] = ThreatIntel.ObjectsNames.THREAT_ACTOR
 
     try:
         client = Client(url, proxies, verify_certificate, tags, tlp_color)

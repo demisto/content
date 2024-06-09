@@ -25,24 +25,6 @@ The **Cloud Token Theft Response Playbook** provides a structured and comprehens
 - Handles false positives identified during the investigation
 - Handles true positives by initiating appropriate response actions
 
-### Supported Alerts
-
-| Alert Name                                          | CSP   |
-|----------------------------------------------------|-------|
-| Suspicious usage of AWS Lambda’s token              | AWS   |
-| Suspicious usage of AWS Lambda’s role               | AWS   |
-| Suspicious usage of EC2 token                       | AWS   |
-| Remote usage of an AWS service token                | AWS   |
-| Remote usage of an AWS EKS token                    | AWS   |
-| Suspicious usage of an AWS EKS token                | AWS   |
-| Suspicious usage of an AWS ECS token                | AWS   |
-| Remote usage of an AWS ECS token                    | AWS   |
-| Suspicious usage of AWS service token               | AWS   |
-| Remote usage of an App engine Service Account token | GCP   |
-| Suspicious usage of App engine Service Account token| GCP   |
-| Remote usage of VM Service Account token            | GCP   |
-| Suspicious usage of VM Service Account toke         | GCP   |
-
 ---
 
 ## Dependencies
@@ -51,15 +33,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Threat Hunting - Persistence
-* IP Enrichment - Generic v2
 * Handle False Positive Alerts
-* Cloud Response - Generic
-* Cloud Credentials Rotation - Generic
 * Cloud Token Theft - Set Verdict
-* Entity Enrichment - Generic v3
-* TIM - Indicator Relationships Analysis
+* Cloud Threat Hunting - Persistence
 * Cloud Enrichment - Generic
+* Cloud Credentials Rotation - Generic
+* Entity Enrichment - Generic v3
+* IP Enrichment - Generic v2
+* TIM - Indicator Relationships Analysis
+* Cloud Response - Generic
 
 ### Integrations
 
@@ -82,7 +64,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | alert_id | The alert ID. | alert.investigationId | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. | lists.PrivateIPs | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 | earlyContainment | Whether to execute early containment.<br/>This action allows you to respond rapidly but have higher probability for false positives. | False | Optional |
 | VPNIPList | This input can process to types of data:<br/>1. A comma separated list of IP addresses assigned by the VPN provider. \(using a XSIAM list or an hardcoded array\)<br/>2. A comma separated list of CIDRs.<br/>3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.<br/> |  | Optional |

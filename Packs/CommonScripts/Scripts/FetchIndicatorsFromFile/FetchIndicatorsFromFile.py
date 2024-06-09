@@ -15,7 +15,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     # TODO: add run on all columns functionality
 
     line_index = 0
-    with open(file_path, 'r') as csv_file:
+    with open(file_path) as csv_file:
         # csv reader can fail when encountering a NULL byte (\0) - so we go through the file and take out the NUL bytes.
         file_reader = csv.reader(line.replace('\0', '') for line in csv_file)
         for row in file_reader:
@@ -47,6 +47,9 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
 
     # TODO: add run on all columns functionality
 
+    # Ensure that the has_iter will not be reseted after opening the workbook.
+    xlrd.xlsx.ensure_elementtree_imported(False, None)
+    xlrd.xlsx.Element_has_iter = True
     xl_woorkbook = xlrd.open_workbook(file_path)
     if sheet_name and sheet_name != 'None':
         xl_sheet = xl_woorkbook.sheet_by_name(sheet_name)
@@ -75,7 +78,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
 
 
 def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offset):
-    with open(file_path, "r") as fp:
+    with open(file_path) as fp:
         file_data = fp.read()
 
     indicator_list = []
@@ -208,7 +211,7 @@ def fetch_indicators_from_file(args):
     file = demisto.getFilePath(args.get('entry_id'))
     file_path = file['path']
     file_name = file['name']
-    auto_detect = True if args.get('auto_detect') == 'True' else False
+    auto_detect = args.get('auto_detect') == 'True'
     default_type = args.get('default_type')
     limit = args.get("limit")
 
@@ -226,7 +229,7 @@ def fetch_indicators_from_file(args):
     # from which row should I start reading the indicators, it is used to avoid table headers.
     starting_row = args.get('starting_row')
 
-    if file_name.endswith('xls') or file_name.endswith('xlsx'):
+    if file_name.endswith(('xls', 'xlsx')):
         indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
                                                     int(starting_row) - 1, auto_detect, default_type,
                                                     indicator_type_col_num, limit, offset)
@@ -262,7 +265,7 @@ def main():
     try:
         return_outputs(*fetch_indicators_from_file(demisto.args()))
     except Exception as ex:
-        return_error('Failed to execute Fetch Indicators From File. Error: {}'.format(str(ex)),
+        return_error(f'Failed to execute Fetch Indicators From File. Error: {str(ex)}',
                      error=traceback.format_exc())
 
 

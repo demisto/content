@@ -1,19 +1,24 @@
 A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 This integration was integrated and tested with January 2023 release of Tenable.io.
 
-## Configure Tenable.io on Cortex XSOAR
+## Configure Tenable Vulnerability Management on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Tenable.io.
-3. Click **Add instance** to create and configure a new integration instance.
+2. Search for Tenable Vulnerability Management.
+ Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL | True |
-    | Access key | True |
-    | Secret key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | URL | Tenable URL. | True |
+    | Access Key | Tenable API access key. | True |
+    | Secret Key | Tenable API secret key. | True |
+    | Events Fetch Interval | Fetch interval in minutes for events. | False |
+    | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | False |
+    | Severity | The severity of the vulnerabilities to include in the export. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -45,6 +50,9 @@ This integration was integrated and tested with January 2023 release of Tenable.
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Three concurrent requests per Tenable.io customer instance.<br>Note: This limit is subject to change.                                                                     | tenable-io-list-scans<br>tenable-io-launch-scan<br>tenable-io-get-scan-report<br>tenable-io-get-vulnerability-details<br>tenable-io-get-vulnerabilities-by-asset <br>tenable-io-get-scan-status<br>tenable-io-resume-scan<br>tenable-io-pause-scan<br>tenable-io-get-asset-details |
 | Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. <br>For example, export requests with the same filters. | tenable-io-export-assets<br>tenable-io-export-vulnerabilities                                                                                                                                                                                                                      |
+
+## Notes:
+- ***Fetch assets and vulnerabilities (Beta)*** command fetches assets and vulnerabilities from the last 90 days only.
 
 ## Commands
 
@@ -1079,6 +1087,7 @@ When inserting invalid arguments, an error message could be returned.
 | vprScoreValue | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. | Optional | 
 | vprScoreRange | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5. | Optional | 
 | exportUuid | The export UUID. | Optional | 
+| should_push_events | Set this argument to True in order to create vulnerabilities, otherwise the command will only display the vulnerabilities. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -1595,3 +1604,38 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 >Preparing scan report:
 
 >Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://www.paloaltonetworks.com/cortex)
+
+### tenable-io-get-audit-logs
+***
+Returns audit logs extracted from Tenable io.
+
+
+#### Base Command
+
+`tenable-io-get-audit-logs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
+| limit | The maximum number of alerts to return (maximum value - 5000). | Optional | 
+| from_date | Return events that occurred after the specified date.  | Optional | 
+| to_date | Return events that occurred before the specified date. | Optional | 
+| actor_id | Return events that contain the specified actor UUID. | Optional | 
+| target_id | Return events matching the specified target UUID. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!tenable-io-get-audit-logs limit=1```
+
+
+#### Human Readable Output
+
+>### Audit Logs List:
+>|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
+>|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
+>| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |

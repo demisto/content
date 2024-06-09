@@ -12,8 +12,7 @@ description: This rule alerts on any installation of a browser extension
 drilldown_query_timeframe: ALERT
 execution_mode: REAL_TIME
 global_rule_id: 6530cad5-856d-4d38-b305-63b9567d4c48
-investigation_query_link: "datamodel \n| filter xdm.observer.vendor = \"Google\"\
-  \ and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.event.type in\
+investigation_query_link: "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.event.type in\
   \ (\"BROWSER_EXTENSION_INSTALL\")\n| filter xdm.intermediate.user.username = $xdm.intermediate.user.username\
   \ and xdm.source.host.hostname = $xdm.source.host.hostname and xdm.target.resource.name\
   \ = $xdm.target.resource.name"
@@ -29,8 +28,7 @@ suppression_enabled: true
 suppression_fields: xdm.intermediate.user.username|xdm.target.resource.name|xdm.source.host.hostname|xdm.source.user.username
 user_defined_category: null
 user_defined_severity: null
-xql_query: "datamodel \n| filter xdm.observer.vendor = \"Google\" and xdm.observer.product\
-  \ = \"Workspace Chrome\"\n| filter xdm.event.type in (\"BROWSER_EXTENSION_INSTALL\"\
+xql_query: "datamodel dataset = google_workspace_chrome_raw\n| filter xdm.event.type in (\"BROWSER_EXTENSION_INSTALL\"\
   )\n| fields xdm.event.type, xdm.observer.action, xdm.event.description, xdm.event.outcome_reason,\
   \ xdm.source.user.username, xdm.intermediate.user.username, xdm.source.host.hostname,\
   \ xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser, xdm.source.user_agent,\
