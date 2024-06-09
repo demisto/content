@@ -470,11 +470,11 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "Email",
+                "name": "API Call Results for Email Category",
                 "prevName": "Email",
                 "dataType": "metrics",
                 "widgetType": "pie",
-                "query": "type:integration and name: \"Gmail Single User\" or name: \"MicrosoftGraphMail\" or name: \"Microsoft Graph Mail Single User\" or name: \"Email Hippo\"",
+                "query": "type:integration and name: \"Gmail Single User\" or name: \"MicrosoftGraphMail\" or name: \"Microsoft Graph Mail Single User\" or name: \"Email Hippo\" or name: \"EWSO365\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -534,7 +534,7 @@
                 "prevName": "API Metrics",
                 "dataType": "metrics",
                 "widgetType": "pie",
-                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and (-name: \"Gmail Single User\" and -name: \"MicrosoftGraphMail\" and -name: \"Microsoft Graph Mail Single User\" and -name: \"Email Hippo\")",
+                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and (-name: \"Gmail Single User\" and -name: \"MicrosoftGraphMail\" and -name: \"Microsoft Graph Mail Single User\" and -name: \"Email Hippo\" and -name: \"EWSO365\")",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
