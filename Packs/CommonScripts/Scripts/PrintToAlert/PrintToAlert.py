@@ -3,6 +3,13 @@ from CommonServerPython import *  # noqa: F401
 
 
 def print_to_alert_command(current_alert_id: str, value: str, alert_id: str) -> None:
+    """Prints a value to the specified alert ID.
+
+    Args:
+        current_alert_id (str): The alert ID running the script.
+        value (str): The value to print.
+        alert_id (str): The alert ID to print to.
+    """
     entry_note = json.dumps(
         [{"Type": 1, "ContentsFormat": formats["markdown"], "Contents": f"Entry from {current_alert_id}\n{value}"}]
     )
