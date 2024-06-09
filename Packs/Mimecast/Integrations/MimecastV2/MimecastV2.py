@@ -769,10 +769,14 @@ def test_module():
         list_policies_command({'policyType': 'blockedsenders', 'limit': 1})
         return 'ok'
 
-    if not ACCESS_KEY:
-        raise Exception('Cannot test valid connection without the Access Key parameter.')
-    list_managed_url()
-    return 'ok'
+    if ACCESS_KEY:
+        list_managed_url()
+        return 'ok'
+
+    raise Exception(
+        "Cannot test a valid connection without the Client ID and Client Secret parameters for API 2.0\
+            or without the Access Key parameter for API 1.0."
+    )
 
 
 def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
