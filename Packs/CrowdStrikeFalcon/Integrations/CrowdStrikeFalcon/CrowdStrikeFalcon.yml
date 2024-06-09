@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - display: Post Raptor release
   name: Raptor release
-  type: 8-
+  type: 8
   section: Collect
   additionalinfo: Choose whether the users account was upgraded to the Raptor release or not.
   defaultvalue: 'false'
@@ -302,6 +302,7 @@ script:
       name: behavior_id
       required: true
     description: Searches for and fetches the behavior that matches the query.
+    deprecated: true
     name: cs-falcon-get-behavior
     outputs:
     - contextPath: CrowdStrike.Behavior.FileName
