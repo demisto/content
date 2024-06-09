@@ -2328,7 +2328,7 @@ script:
       description: The machine RBAC group ID.
       type: Number
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: 'The machine RBAC group name.'
+      description: The machine RBAC group name.
       type: String
     - contextPath: MicrosoftATP.Machine.RiskScore
       description: The machine risk score.
