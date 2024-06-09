@@ -4491,7 +4491,7 @@ script:
       description: Whether the update failed.
       type: Boolean
   - name: microsoft-atp-get-alert-by-id
-    description: 'Retrieves a specific alert by the given alert ID.'
+    description: Retrieves a specific alert by the given alert ID.
     arguments:
     - name: alert_ids
       description: A comma-separated list of alert IDs.
