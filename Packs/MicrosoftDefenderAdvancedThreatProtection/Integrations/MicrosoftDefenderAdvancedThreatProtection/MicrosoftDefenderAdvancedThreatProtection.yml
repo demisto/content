@@ -2310,7 +2310,7 @@ script:
       description: The operating system version.
       type: String
     - contextPath: MicrosoftATP.Machine.OSProcessor
-      description: 'The operating system processor.'
+      description: The operating system processor.
       type: String
     - contextPath: MicrosoftATP.Machine.LastIPAddress
       description: The last IP on the machine.
