@@ -2,11 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from enum import Enum
-from typing import Any, Callable, cast
+from typing import Any
 from requests import Response
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any
+from datetime import datetime
 
 
 DEFAULT_OFFSET = 0
@@ -143,7 +142,7 @@ class Client(BaseClient):
             api_token = self.authenticate(
                 username=username,
                 password=password,
-            )["api_key"]
+            ).json()["api_key"]
             super().__init__(
                 base_url=base_url,
                 headers={"Authorization": f"Token {api_token}"},
@@ -191,7 +190,7 @@ class Client(BaseClient):
         self,
         username: str,
         password: str,
-    ) -> dict[str, Any]:
+    ) -> Response:
         """Get API token with username and password.
 
         Args:
@@ -404,7 +403,11 @@ def build_full_query(search_type: SearchTypes, args: dict[str, Any]) -> str:
     return (" and ").join(query)
 
 
-def get_pagination_args(page: str, limit: str, page_size: str) -> tuple[int, int]:
+def get_pagination_args(
+    page: str,
+    limit: str,
+    page_size: str | None,
+) -> tuple[int, int]:
     """
     Get XSOAR pagination in DataBee format.
 
@@ -416,14 +419,16 @@ def get_pagination_args(page: str, limit: str, page_size: str) -> tuple[int, int
     Returns:
         tuple[int, int]: DataBee limit and offset.
     """
-    limit = arg_to_number(limit if not page_size else page_size) or DEFAULT_LIMIT
-    offset = (
-        arg_to_number(
-            DEFAULT_OFFSET if not page_size else arg_to_number(page) * arg_to_number(page_size)
-        )
-        or DEFAULT_OFFSET
-    )
-    return (limit, offset)
+    xsoar_limit = arg_to_number(limit if not page_size else page_size)
+    xsoar_offset = DEFAULT_OFFSET
+    if (
+        page_size
+        and (new_page := arg_to_number(page))
+        and (new_page_size := arg_to_number(page_size))
+    ):
+        xsoar_offset = new_page * new_page_size
+
+    return (xsoar_limit or DEFAULT_LIMIT, xsoar_offset or DEFAULT_OFFSET)
 
 
 def search_command(
@@ -522,7 +527,9 @@ def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalC
         },
         "duration": data.get("duration"),
         "end_time": data.get("end_time"),
-        "Evidence": data.get("evidence", {}) if AdditionalContext.evidence in additional_context else {},
+        "Evidence": (
+            data.get("evidence", {}) if AdditionalContext.evidence in additional_context else {}
+        ),
         "Finding": {
             "created_time": dict_safe_get(data, ["finding", "created_time"]),
             "desc": dict_safe_get(data, ["finding", "desc"]),
@@ -554,15 +561,19 @@ def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalC
         "Metadata": (
             data.get("metadata") if AdditionalContext.metadata in additional_context else {}
         ),
-        "Observable": [
-            {
-                "name": ob.get("name"),
-                "Reputation": ob.get("reputation"),
-                "type": ob.get("type"),
-                "value": ob.get("value"),
-            }
-            for ob in data.get("observables", [])
-        ] if AdditionalContext.observable not in additional_context else None,
+        "Observable": (
+            [
+                {
+                    "name": ob.get("name"),
+                    "Reputation": ob.get("reputation"),
+                    "type": ob.get("type"),
+                    "value": ob.get("value"),
+                }
+                for ob in data.get("observables", [])
+            ]
+            if AdditionalContext.observable not in additional_context
+            else None
+        ),
         "Process": (
             {
                 "cmd_line": process.get("cmd_line"),
@@ -668,6 +679,8 @@ def fetch_incidents(
     end_time = current_time.strftime(DATE_FORMAT)
     incidents = []
     first_fetch = arg_to_datetime(params.get("first_fetch"))
+    if not first_fetch:
+        raise ValueError("First fetch time must be specified.")
     max_fetch = arg_to_number(params["max_fetch"])
     last_run = arg_to_datetime(demisto.getLastRun().get("time"))
 
@@ -688,7 +701,10 @@ def fetch_incidents(
     offset = 0
     while data is None or len(data) > 0:
         response = client.search(
-            table=SearchTypes.FINDING, limit=max_fetch, query=query, offset=offset or DEFAULT_OFFSET
+            table=SearchTypes.FINDING,
+            limit=(max_fetch or DEFAULT_LIMIT),
+            query=query,
+            offset=(offset or DEFAULT_OFFSET),
         ).json()
 
         count = response["count"]
@@ -704,11 +720,11 @@ def fetch_incidents(
             incidents.append(
                 {
                     "name": str(finding["id"]),
-                    "occurred": time.strftime(XSOAR_DATE_FORMAT),
+                    "occurred": time.strftime(XSOAR_DATE_FORMAT) if time else None,
                     "rawJSON": json.dumps(finding),
                 }
             )
-            if time > next_run:
+            if time and time > next_run:
                 next_run = time
 
     new_last_run = (current_time).strftime(XSOAR_DATE_FORMAT)
