@@ -342,6 +342,21 @@ class CipherTrustClient(BaseClient):
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
         tuple[int, int]:
+    """
+    Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
+    If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
+    Otherwise, the skip value is 0 and the limit value is the provided limit or the default limit if not provided.
+    Args:
+        limit_str: The limit argument string.
+        page_str: The page argument string.
+        page_size_str: The page_size argument string.
+
+    Returns:
+        A tuple of the skip and limit values.
+
+    Raises:
+        ValueError: If the provided page number is invalid or if the page size exceeds the maximum page size.
+    """
     if page_str:
         page_from_arg = arg_to_number(page_str)
         if page_from_arg is None:
@@ -426,6 +441,14 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
     return new_outputs
 
 
+def zip_file_with_password(input_file_path: str,  password: str, output_file_path: str) -> bytes:
+    with zipfile.ZipFile(output_file_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        zf.setpassword(password.encode())
+        zf.write(input_file_path, Path(input_file_path).name)
+    with open(output_file_path, 'rb') as f:
+        return f.read()
+
+
 def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]:
     """
     Creates a password-protected ZIP file from the given data
@@ -453,17 +476,17 @@ def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]
     # create a file to zip, it will be deleted afterwords and only the zip will remain
     file_to_zip_path = demisto.investigation()['id'] + '_' + temp
     # pylint: enable=undefined-variable
-    with open(file_to_zip_path, 'wb') as f:
+    with open(file_to_zip_path + '.pem', 'wb') as f:
         f.write(data)
 
     # Create a new ZIP file
-    with zipfile.ZipFile(demisto.investigation()['id'] + '_' + temp + 'password_protected', 'w') as zf:
+    with zipfile.ZipFile(demisto.investigation()['id'] + '_' + temp + 'password_protected.zip', 'w') as zf:
         # Add the file to the ZIP file
-        zf.write(file_to_zip_path, arcname=Path(file_to_zip_path).name, compress_type=zipfile.ZIP_DEFLATED)
+        zf.write(file_to_zip_path + '.pem', arcname=Path(file_to_zip_path).name, compress_type=zipfile.ZIP_DEFLATED)
         # Set the password
         zf.setpassword(password_bytes)
     # Remove the original file
-    os.remove(file_to_zip_path)
+    # os.remove(file_to_zip_path)
 
     # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
     # xsoar returns empty files to war-rooms
@@ -975,7 +998,7 @@ def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
     raw_response = client.create_csr(request_data=request_data)
     outputs = remove_key_from_outputs(raw_response, 'csr', 'CSR.pem')
     if private_key_file_password := args.get(PRIVATE_KEY_FILE_PASSWORD):
-        return_password_protected_file_result('privateKey.pem', outputs.pop('key', ''), private_key_file_password)
+        return_password_protected_file_result('privateKey', outputs.pop('key', ''), private_key_file_password)
     else:
         outputs = remove_key_from_outputs(raw_response, 'key', 'privateKey.pem')
     return CommandResults(

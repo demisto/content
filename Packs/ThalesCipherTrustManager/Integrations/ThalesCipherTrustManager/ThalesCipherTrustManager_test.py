@@ -26,7 +26,7 @@ CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
 CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
 CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
 EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCA"
-
+CSR_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CSR"
 
 PAGE = 'page'
 PAGE_SIZE = 'page_size'
@@ -90,7 +90,11 @@ CERT_ENTRY_ID = 'cert_entry_id'
 NEW_GROUP_NAME = 'new_group_name'
 CSR_ENTRY_ID = 'csr_entry_id'
 EXTERNAL_CERT_ID = 'external_cert_id'
-
+ENCRYPTION_ALGO = 'encryption_algo'
+KEY_SIZE = 'key_size'
+PRIVATE_KEY_BYTES = 'private_key_bytes'
+ENCRYPTION_PASSWORD = 'encryption_password'
+PRIVATE_KEY_FILE_PASSWORD = 'private_key_file_password'
 
 '''
 Mock Data
@@ -298,7 +302,7 @@ LOCAL_CA_CREATE_TEST_ARGS = [
         IP: "192.168.1.1,10.0.0.1",
         NAME: "example-localca",
         NAME_FIELDS_RAW_JSON: '[{"O": "ExampleOrg", "OU": "IT", "C": "US", "ST": "CA", "L": "San Francisco"}, '
-        '{"OU": "ExampleOrg Inc."}]',
+                              '{"OU": "ExampleOrg Inc."}]',
         SIZE: "2048"
     },
 ]
@@ -342,7 +346,7 @@ LOCAL_CA_SELF_SIGN_TEST_ARGS = [
       'not_after': '2024-01-01T00:00:00Z'}),
 
     ({LOCAL_CA_ID: '123e4567-e89b-12d3-a456-426614174000', 'duration': '365', 'not_before': '2023-01-01T00:00'
-      ':00Z',
+                                                                                            ':00Z',
       'not_after': 'two weeks'})
 ]
 
@@ -448,6 +452,11 @@ EXTERNAL_CA_LIST_TEST_ARGS = [
      LIMIT: 10},
 ]
 
+CSR_GENERATE_TEST_ARGS = [
+    {CN: "test.example.com", PRIVATE_KEY_FILE_PASSWORD: '123'},
+
+]
+
 ''' HELPER FUNCTIONS TESTS'''
 
 
@@ -518,6 +527,8 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
     from ThalesCipherTrustManager import add_login_flags
     add_login_flags(request_data, argument_value, flag_name)
     assert request_data.get('login_flags') == expected_login_flags
+
+
 
 
 # todo: test file loads?
@@ -1056,3 +1067,21 @@ def test_external_ca_list_command(mock_get_external_ca_list, args):
     assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
     assert result.outputs == mock_get_external_ca_list.return_value.get('resources')
     assert result.raw_response == mock_get_external_ca_list.return_value
+
+
+@pytest.mark.parametrize('args', CSR_GENERATE_TEST_ARGS)
+@patch(MOCKER_HTTP_METHOD)
+def test_csr_generate_command(mock_create_csr, args):
+    from ThalesCipherTrustManager import CipherTrustClient, csr_generate_command, zip_file_with_password
+
+    zip_file_with_password('/Users/mgoldman/dev/demisto/content/Packs/ThalesCipherTrustManager/Integrations'
+                           '/ThalesCipherTrustManager/test_data/mock_csr_generate_response.json' , '123')
+    # mock_create_csr.return_value = util_load_json('test_data/mock_csr_generate_response.json')
+    # client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
+    #                            proxy=False)
+    # result = csr_generate_command(client, args)
+    # assert isinstance(result, CommandResults)
+    # assert result.outputs_prefix == CSR_CONTEXT_OUTPUT_PREFIX
+    # assert result.outputs is None
+    # assert result.raw_response is None
+    # assert result.readable_output == f'CSR and its corresponding private key have been generated successfully for {args.get(CN)}.'
