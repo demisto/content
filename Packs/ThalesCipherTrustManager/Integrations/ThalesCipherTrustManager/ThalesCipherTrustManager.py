@@ -1,6 +1,4 @@
 """ IMPORTS """
-import zipfile
-from pathlib import Path
 
 import urllib3
 from urllib.parse import quote
@@ -441,12 +439,9 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
     return new_outputs
 
 
-def zip_file_with_password(input_file_path: str,  password: str, output_file_path: str) -> bytes:
-    with zipfile.ZipFile(output_file_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-        zf.setpassword(password.encode())
-        zf.write(input_file_path, Path(input_file_path).name)
-    with open(output_file_path, 'rb') as f:
-        return f.read()
+def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
+    import pyminizip
+    pyminizip.compress(input_file_path, None, output_file_path, password, int(4))
 
 
 def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]:
@@ -471,22 +466,19 @@ def zipProtectedFileResult(filename: str, data, password: str) -> dict[str, Any]
     if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
 
-    # Convert password to bytes, required by the zipfile library
-    password_bytes = password.encode()
+    # # Convert password to bytes, required by the zipfile library
+    # password_bytes = password.encode()
     # create a file to zip, it will be deleted afterwords and only the zip will remain
     file_to_zip_path = demisto.investigation()['id'] + '_' + temp
     # pylint: enable=undefined-variable
-    with open(file_to_zip_path + '.pem', 'wb') as f:
+    with open('test' + '.pem', 'wb') as f:
         f.write(data)
 
     # Create a new ZIP file
-    with zipfile.ZipFile(demisto.investigation()['id'] + '_' + temp + 'password_protected.zip', 'w') as zf:
-        # Add the file to the ZIP file
-        zf.write(file_to_zip_path + '.pem', arcname=Path(file_to_zip_path).name, compress_type=zipfile.ZIP_DEFLATED)
-        # Set the password
-        zf.setpassword(password_bytes)
-    # Remove the original file
-    # os.remove(file_to_zip_path)
+    zip_file_with_password('test' + '.pem', password, file_to_zip_path + '.zip')
+
+    # #delete the pem file
+    os.remove('test' + '.pem')
 
     # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
     # xsoar returns empty files to war-rooms
