@@ -2452,8 +2452,8 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - static
-      - dynamic
+      - Static
+      - Dynamic
       description: The asset group type.
     - name: description
       required: true
@@ -2484,7 +2484,7 @@ script:
       description: Additional queries to use as a filter, following the Search Criteria API standard.
         The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
         For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
-    description: 'Create an asset group. Note: All filters are relevant only for dynamic asset groups.'
+    description: 'Create an asset group. Note: All filters are relevant only for Dynamic asset groups.'
     outputs:
     - contextPath: Nexpose.AssetGroup.id
       description: The asset group ID.
@@ -2498,8 +2498,8 @@ script:
     - name: type
       auto: PREDEFINED
       predefined:
-      - static
-      - dynamic
+      - Static
+      - Dynamic
       description: Filters the returned asset groups to only those of this type.
     - name: page_size
       description: Number of records to retrieve in each API call when pagination is used.

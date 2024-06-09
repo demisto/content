@@ -16,6 +16,9 @@ REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
+VALID_TAG_TYPES = ["Custom", "Location", "Owner"]
+VALID_ASSET_GROUP_TYPES = ["Dynamic", "Static"]
+VALID_TAG_COLORS = ["Blue", "Green", "Orange", "Red", "Purple", "Default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -2949,6 +2952,29 @@ def parse_asset_filters(client, **kwargs):
     return filters_data
 
 
+def validate_input(input_value: str | None, valid_options: list[str], arg_name: str, is_required: bool = True):
+    """
+    Validates the input value against a list of valid options.
+
+    Args:
+        input_value (str | None): The input value to validate.
+        valid_options (list[str]): The list of valid options.
+        parameter_name (str): The name of the parameter being validated (used in the error message).
+        is_required (bool): Whether the input value is required. Defaults to True.
+
+    Raises:
+        DemistoException: If the input value is invalid or not in the list of valid options.
+
+    Returns:
+        bool: True if the input value is valid or not required and None is provided.
+    """
+    if input_value is None and not is_required:
+        return True
+    elif input_value not in valid_options:
+        raise DemistoException(f"{input_value} is an invalid {arg_name} the only options are: {', '.join(valid_options)}")
+    return True
+
+
 # --- Command Functions --- #
 def create_asset_command(client: Client, date: str, site_id: str | None = None, site_name: str | None = None,
                          ip: str | None = None, host_name: str | None = None,
@@ -5608,6 +5634,9 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
     Returns:
         CommandResults: Results of the tag creation.
     """
+    validate_input(type, VALID_TAG_TYPES, "type", True)
+    validate_input(color, VALID_TAG_COLORS, "color", False)
+
     if type != "Custom" and color != "Default":
         raise DemistoException("color argument is only relevant for “Custom” type.")
 
@@ -5668,6 +5697,8 @@ def get_list_tag_command(client: Client, id: str | None = None, name: str | None
     Returns:
         CommandResults: Results of the tags retrieval.
     """
+    validate_input(type, VALID_TAG_TYPES, "type", False)
+
     if id_int := arg_to_number(id, required=False):
         tags = client.get_tag_by_id(id=id_int)
     else:
@@ -5970,7 +6001,7 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         client (Client): Client to use for API requests.
         name (str): The name of the asset group.
         description (str): The description of the asset group.
-        type (str): The type of the asset group, valid values: "dynamic" or "static".
+        type (str): The type of the asset group, valid values: "Dynamic" or "Static".
         match (str, optional): The match criteria for the asset group.
         ip_address_is (str, optional): Filter by IP address.
         host_name_is (str, optional): Filter by host name.
@@ -5994,8 +6025,10 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         vulnerability_title_contains=vulnerability_title_contains,
         query=query)
 
-    if type == "dynamic" and not filters_data:
-        raise DemistoException("You must add filters to create a dynamic asset group")
+    validate_input(type, VALID_ASSET_GROUP_TYPES, "type", False)
+
+    if type == "Dynamic" and not filters_data:
+        raise DemistoException("You must add filters to create a Dynamic asset group.")
 
     filters = convert_asset_search_filters(filters_data)
 
@@ -6029,6 +6062,8 @@ def get_list_asset_group_command(client: Client, group_id: str | None = None, gr
     Returns:
         CommandResults: Results of the asset groups retrieval.
     """
+    validate_input(type, VALID_ASSET_GROUP_TYPES, "type", False)
+
     if id_int := arg_to_number(group_id, required=False):
         asset_groups = client.get_asset_group_by_id(id=id_int)
     else:

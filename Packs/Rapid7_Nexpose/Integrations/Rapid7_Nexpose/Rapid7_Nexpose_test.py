@@ -2006,10 +2006,10 @@ def test_parse_filters(mocker, mock_client, kwargs, expected_output):
 @pytest.mark.parametrize(
     "name, type, description, ip_address_is, match, expected_post_data",
     [
-        ("test", "dynamic", "description test", "1.1.1.1", "Any",
+        ("test", "Dynamic", "description test", "1.1.1.1", "Any",
             {
                 "name": "test",
-                "type": "dynamic",
+                "type": "Dynamic",
                 "description": "description test",
                 "searchCriteria": {
                     "filters": [
@@ -2043,7 +2043,7 @@ def test_create_asset_group_command(mocker, mock_client, name, type, description
 
 
 @pytest.mark.parametrize("name, type, group_id, limit, api_mock_file", [
-    ("test", "dynamic", None, "2", "client_get_asset_groups"),
+    ("test", "Dynamic", None, "2", "client_get_asset_groups"),
     (None, None, "1", None, "client_get_asset_groups")
 ])
 def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limit, api_mock_file):
@@ -2057,7 +2057,7 @@ def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limi
             url_suffix="/asset_groups",
             method="GET",
             resp_type="json",
-            params={"name": "test", "type": "dynamic"},
+            params={"name": "test", "type": "Dynamic"},
             page_size=None,
             page=None,
             limit=2,
