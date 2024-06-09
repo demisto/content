@@ -12,7 +12,10 @@ The client API administrator then logs into the CSCDomainManagerSM at https://we
 Tokens expire after 30 consecutive days of no activity and will need to be refreshed.
 Refresh token example:
 
-curl --location --request PUT '<URL>/dbs/api/v2/token/refresh' \
+The API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
+
+# Refresh token example:
+curl --location --request PUT '<YOUR_URL>/dbs/api/v2/token/refresh' \
 --header 'apikey:XXXXXXXXXXXXXXXX' \
 --header 'Authorization: XXXXXXXXXXXXXXXXX'
 
