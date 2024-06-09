@@ -4005,7 +4005,7 @@ script:
       description: The operating system build number.
       type: Number
     - contextPath: MicMicrosoftATP.SoftwareKB.productsNames
-      description: 'Product names.'
+      description: Product names.
       type: String
     - contextPath: MicMicrosoftATP.SoftwareKB.url
       description: URL.
