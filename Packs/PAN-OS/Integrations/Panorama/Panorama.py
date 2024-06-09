@@ -230,6 +230,7 @@ RULE_TYPES_MAP = {
     "PBF Rule": "pbf"
 }
 
+
 class QueryMap(TypedDict):
     '''Contains the log types mapped to the query
        used to fetch them from PAN-OS.
@@ -243,9 +244,11 @@ class QueryMap(TypedDict):
     Wildfire: NotRequired[str]
     Decryption: NotRequired[str]
 
+
 class LastFetchTimes(QueryMap):
     '''Maps log types to the latest log already fetched.
     '''
+
 
 class LastIDs(TypedDict):
     '''dict[str, dict[str, str] | int]
@@ -261,6 +264,7 @@ class LastIDs(TypedDict):
     Wildfire: NotRequired[dict[str, str]]
     Decryption: NotRequired[dict[str, str]]
 
+
 class MaxFetch(TypedDict):
     '''dict[str, int]
     Contains the log types mapped to the max fetch.
@@ -273,6 +277,7 @@ class MaxFetch(TypedDict):
     System: NotRequired[int]
     Wildfire: NotRequired[int]
     Decryption: NotRequired[int]
+
 
 class LastRun(TypedDict):
     last_fetch_dict: LastFetchTimes
@@ -14060,7 +14065,8 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
-    params = assign_params(key=API_KEY, type='log', log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
+    params = assign_params(key=API_KEY, type='log',
+                           log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
     demisto.debug(f'{params=}')
     response = http_request(URL, 'GET', params=params)
     return dict_safe_get(response, ('response', 'result', 'job'))  # type: ignore
@@ -14182,7 +14188,7 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
             demisto.debug(f'{last_log_id=}')
             first_new_log_index = next(
                 (i for i, log in enumerate(entries_dict['Correlation'])
-                if int(log.get("@logid")) > last_log_id),  # type: ignore
+                 if int(log.get("@logid")) > last_log_id),  # type: ignore
                 len(entries_dict['Correlation'])
             )
             demisto.debug(f'{first_new_log_index=}')
@@ -14384,14 +14390,16 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
             else:
                 if updated_last_id := find_largest_id_per_device(incident_entries):
                     # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
-                    last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(log_type) else last_id_dict.update({log_type: updated_last_id})
+                    last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(
+                        log_type) else last_id_dict.update({log_type: updated_last_id})
                 parsed_incident_entries += list(map(incident_entry_to_incident_context, incident_entries))
                 last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
 
             updated_last_fetch = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
             if updated_last_fetch:
                 last_fetch_dict[log_type] = str(updated_last_fetch)
-            demisto.debug(f'{log_type} log type: {len(incident_entries)} incidents with unique ID list: {[incident.get("name", "") for incident in incident_entries]}')
+            demisto.debug(
+                f'{log_type} log type: {len(incident_entries)} incidents with unique ID list: {[incident.get("name", "") for incident in incident_entries]}')
     demisto.debug(f'Updated last run is: {last_fetch_dict}. Updated last ID is: {last_id_dict}')
     return parsed_incident_entries
 
@@ -14437,7 +14445,8 @@ def test_fetch_incidents_parameters(fetch_params):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         if 'match_time' in fetch_params.get('correlation_query', ''):
-            raise DemistoException("Correlation Log Type Query parameter cannot contain 'match_time' filter. Please remove it from the query.")
+            raise DemistoException(
+                "Correlation Log Type Query parameter cannot contain 'match_time' filter. Please remove it from the query.")
         for log_type in active_log_type_queries:
             log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
             if not log_type_query:
@@ -14482,7 +14491,8 @@ def main():  # pragma: no cover
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
             max_fetch: MaxFetch = last_run.get('max_fetch_dict') or dict.fromkeys(queries, configured_max_fetch)  # type: ignore
 
-            last_fetch, last_ids, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)
+            last_fetch, last_ids, incident_entries = fetch_incidents(
+                last_run, first_fetch, queries, max_fetch, fetch_max_attempts)
             next_max_fetch = update_max_fetch_dict(configured_max_fetch, max_fetch, last_fetch)
 
             demisto.setLastRun(LastRun(last_fetch_dict=last_fetch, last_id_dict=last_ids, max_fetch_dict=next_max_fetch))
