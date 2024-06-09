@@ -37,6 +37,7 @@
             "supported_docker_images":[
                 "python3",
                 "python3-deb",
+                "yarapy",
                 "python3-ubi",
                 "py3-tools",
                 "py3-tools-ubi",
@@ -176,9 +177,17 @@
             ]
         },
         {
-            "id":"ZipFile",
-            "reason":"see CIAC-10361",
-            "ignored_native_images":[
+            "id": "Github Feed",
+            "reason": "update docker image",
+            "ignored_native_images": [
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
+        {
+            "id": "ZipFile",
+            "reason": "see CIAC-10361",
+            "ignored_native_images": [
                 "native:8.6",
                 "native:candidate"
             ]
