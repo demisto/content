@@ -30,8 +30,9 @@ This section describes the configuration that needs to be done on a Huawei S Ser
     ```bash
     info-center loghost <IP address> facility <local>
     ```
-    **<IP address>** is the IP address of the Broker-VM.
-    **<local>** is the syslog facility, for example, local0.  
+    *\<IP address\>* is the IP address of the Broker-VM.
+
+    *\<local\>* is the syslog facility, for example, local0.  
     <br>
 7. Type the following command to exit the configuration:
     ```bash
