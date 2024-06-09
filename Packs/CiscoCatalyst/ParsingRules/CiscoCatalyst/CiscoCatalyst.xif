@@ -1,16 +1,26 @@
-[INGEST:vendor="cisco", product="catalyst", target_dataset="cisco_catalyst_raw", no_hit = keep]
-filter _raw_log ~= "[A-Za-z]+\s+\d+\s+\d{4}\s+\d+\:\d+\:\d+\sUTC" or _raw_log ~= "[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+\.\d+\sUTC"
+/*------------------------------------
+   CONSTANTS - COMMON REGEX PATTERNS
+  -----------------------------------*/
+[CONST]
+TIMESTAMP_FORMAT1 = "[A-Za-z]+\s+\d+\s+\d{4}\s+\d+\:\d+\:\d+\sUTC"; // supported format May 16 2023 14:30:00 UTC
+TIMESTAMP_FORMAT2 = "[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+\.\d+\sUTC"; // supported format May  2 09:47:18.714 UTC
+SYSTEM_LOG_MESSAGE_FORMAT = "%[\w\-]+\-\d\-[\w\-]+:"; // %facility-severity-MNEMONIC:description (see https://www.cisco.com/c/en/us/td/docs/routers/access/wireless/software/guide/SysMsgLogging.html#wp1054470)
+SYSTEM_LOG_MESSAGE_FORMAT_REGEX_CAPTURE = "^\<\d+\>(?P<sequence_number>\d+):\s+.+?%(?P<facility>[\w\-]+)\-(?P<severity>\d)\-(?P<mnemonic>[\w\-]+):\s*(?P<description>.+)";
+SYSTEM_LOG_NON_STANDARD_MESSAGE_FORMAT_REGEX_CAPTURE = "^.+?(?P<device_ip>(?:\d{1,3}\.){3}\d{1,3})\s+(?P<event_id>\d+)\s+(?P<facility>[\w\-\.]+):\s+(?P<description>.+)";
+
+/*---------
+   RULES 
+ --------*/
+[RULE: CISCO_CATALYST_PARSE_TIMESTAMP]
 // supported format May 16 2023 14:30:00 UTC
-| alter tmp_time_string1 = arrayindex(regextract(_raw_log ,"(\w+\s\d+\s\d+\s\d+\:\d+\:\d+)\sUTC"),0)
+alter tmp_time_string1 = arrayindex(regextract(_raw_log ,"(\w+\s\d+\s\d+\s\d+\:\d+\:\d+)\sUTC"),0)
 | alter tmp_time_with_year = parse_timestamp("%b %d %Y %H:%M:%S",tmp_time_string1 )
 // supported format May  2 09:47:18.714 UTC
 | alter
         tmp_time_without_year = arraystring(regextract( _raw_log, "(\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2}\.\d+\s)UTC"), ""),
         tmp_year = to_string(format_timestamp("%Y",current_time()))
-| alter
-        tmp_time_format2 = if(tmp_time_without_year != null and tmp_time_without_year != "", concat(tmp_year, " ", tmp_time_without_year), null)
-| alter
-    tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%E*S", tmp_time_format2 )
+| alter tmp_time_format2 = if(tmp_time_without_year != null and tmp_time_without_year != "", concat(tmp_year, " ", tmp_time_without_year), null)
+| alter tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%E*S", tmp_time_format2 )
 | alter tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "MILLISECOND")
 // Check if the date is a future date
 | alter tmp_year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_year),1)),null)
@@ -20,3 +30,35 @@ filter _raw_log ~= "[A-Za-z]+\s+\d+\s+\d{4}\s+\d+\:\d+\:\d+\sUTC" or _raw_log ~=
 | alter tmp_time_without_year = coalesce(tmp_time1_2, tmp_time1_1)
 | alter _time = coalesce(tmp_time_with_year, tmp_time_without_year)
 | fields -tmp_time_string1, tmp_time_with_year, tmp_time2 , tmp_time_concat2 , tmp_year, tmp_year2, tmp_time_without_year, tmp_time_format2, tmp_timeDiff, tmp_time1_1, tmp_time1_2;
+
+[RULE: CISCO_CATALYST_PARSE_STANDARD_LOG_MESSAGE_FORMAT]
+alter parsed_fields = regexcapture(_raw_log, $SYSTEM_LOG_MESSAGE_FORMAT_REGEX_CAPTURE);
+
+[RULE: CISCO_CATALYST_PARSE_NON_STANDARD_LOG_MESSAGE_FORMAT]
+alter parsed_fields = regexcapture(_raw_log, $SYSTEM_LOG_NON_STANDARD_MESSAGE_FORMAT_REGEX_CAPTURE)
+| alter tmp_syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"), 0))
+| alter tmp_syslog_severity =  to_string(subtract(tmp_syslog_priority, multiply(floor(divide(tmp_syslog_priority, 8)), 8)))
+| alter parsed_fields = object_merge(parsed_fields, object_create("severity", tmp_syslog_severity))
+| fields - tmp*;
+
+/*---------
+   INGEST 
+ --------*/
+[INGEST:vendor="cisco", product="catalyst", target_dataset="cisco_catalyst_raw", no_hit = keep]
+// use case 1: log in standard format with a valid timestamp
+filter _raw_log ~= $SYSTEM_LOG_MESSAGE_FORMAT and (_raw_log ~= $TIMESTAMP_FORMAT1 or _raw_log ~= $TIMESTAMP_FORMAT2)
+| call CISCO_CATALYST_PARSE_TIMESTAMP
+| call CISCO_CATALYST_PARSE_STANDARD_LOG_MESSAGE_FORMAT;
+
+// use case 2: log in standard format without a valid timestamp
+filter _raw_log ~= $SYSTEM_LOG_MESSAGE_FORMAT and (_raw_log !~= $TIMESTAMP_FORMAT1 and _raw_log !~= $TIMESTAMP_FORMAT2)
+| call CISCO_CATALYST_PARSE_STANDARD_LOG_MESSAGE_FORMAT;
+
+// use case 3: log in non-standard format with a valid timestamp
+filter _raw_log !~= $SYSTEM_LOG_MESSAGE_FORMAT and (_raw_log ~= $TIMESTAMP_FORMAT1 or _raw_log ~= $TIMESTAMP_FORMAT2)
+| call CISCO_CATALYST_PARSE_TIMESTAMP
+| call CISCO_CATALYST_PARSE_NON_STANDARD_LOG_MESSAGE_FORMAT;
+
+// use case 4: log in non-standard format without a valid timestamp
+filter _raw_log !~= $SYSTEM_LOG_MESSAGE_FORMAT and (_raw_log !~= $TIMESTAMP_FORMAT1 and _raw_log !~= $TIMESTAMP_FORMAT2)
+| call CISCO_CATALYST_PARSE_NON_STANDARD_LOG_MESSAGE_FORMAT;
