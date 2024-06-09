@@ -32,6 +32,17 @@ def run_command(
         "octoxlabs-get-queries": get_queries,
         "octoxlabs-get-query-by-id": get_query_by_id,
         "octoxlabs-get-query-by-name": get_query_by_name,
+        "octoxlabs-get-companies": get_companies,
+        "octoxlabs-get-company-by-id": get_company_by_id,
+        "octoxlabs-get-company-by-name": get_company_by_name,
+        "octoxlabs-get-domains": get_domains,
+        "octoxlabs-get-domain-by-id": get_domain_by_id,
+        "octoxlabs-get-domain-by-domain-name": get_domain_by_domain_name,
+        "octoxlabs-get-users": get_users,
+        "octoxlabs-get-user-by-id": get_user_by_id,
+        "octoxlabs-get-user-by-username": get_user_by_username,
+        "octoxlabs-get-groups": get_groups,
+        "octoxlabs-get-permissions": get_permissions,
     }
     command_function: Optional[Callable] = commands.get(command_name, None)
     if command_function:
@@ -253,6 +264,246 @@ def get_query_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
                 "is_temporary",
             ],
         ),
+    )
+
+
+def get_companies(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, companies = octox.get_companies(
+        page=args.get("page", 1),
+        search=args.get("search", ""),
+        size=args.get("size", 20),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Companies",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    c,
+                    keys=[
+                        "id",
+                        "name",
+                        "domain",
+                        "is_active",
+                    ],
+                )
+                for c in companies
+            ],
+        },
+    )
+
+
+def get_company_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    company = octox.get_company_by_id(company_id=args.get("company_id"))
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Company",
+        outputs=convert_to_json(
+            obj=company,
+            keys=[
+                "id",
+                "name",
+                "domain",
+                "is_active",
+            ],
+        ),
+    )
+
+
+def get_company_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    company = octox.get_company_by_name(company_name=args.get("company_name"))
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Company",
+        outputs=convert_to_json(
+            obj=company,
+            keys=[
+                "id",
+                "name",
+                "domain",
+                "is_active",
+            ],
+        ),
+    )
+
+
+def get_domains(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, domains = octox.get_domains(
+        page=args.get("page", 1),
+        search=args.get("search", ""),
+        size=args.get("size", 20),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Domains",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    d,
+                    keys=[
+                        "id",
+                        "domain",
+                        "tenant_name",
+                        "tenant",
+                    ],
+                )
+                for d in domains
+            ],
+        },
+    )
+
+
+def get_domain_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    domain = octox.get_domain_by_id(domain_id=args.get("domain_id"))
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Domain",
+        outputs=convert_to_json(
+            obj=domain,
+            keys=[
+                "id",
+                "domain",
+                "tenant_name",
+                "tenant",
+            ],
+        ),
+    )
+
+
+def get_domain_by_domain_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    domain = octox.get_domains_by_domain_name(domain_name=args.get("domain_name"))
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Domain",
+        outputs=convert_to_json(
+            obj=domain,
+            keys=[
+                "id",
+                "domain",
+                "tenant_name",
+                "tenant" "is_primary",
+            ],
+        ),
+    )
+
+
+def get_users(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, users = octox.get_users(
+        page=args.get("page", 1),
+        search=args.get("search", ""),
+        size=args.get("size", 20),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Users",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    u,
+                    keys=[
+                        "id",
+                        "name",
+                        "email",
+                        "username",
+                        "first_name",
+                        "last_name",
+                        "is_active",
+                        "is_ldap",
+                        "groups",
+                    ],
+                )
+                for u in users
+            ],
+        },
+    )
+
+
+def get_user_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    user = octox.get_user_by_id(user_id=args.get("user_id"))
+    return CommandResults(
+        outputs_prefix="OctoxLabs.User",
+        outputs=convert_to_json(
+            obj=user,
+            keys=[
+                "id",
+                "name",
+                "email",
+                "username",
+                "first_name",
+                "last_name",
+                "is_active",
+                "is_ldap",
+                "groups",
+            ],
+        ),
+    )
+
+
+def get_user_by_username(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    user = octox.get_user_by_username(username=args.get("username"))
+    return CommandResults(
+        outputs_prefix="OctoxLabs.User",
+        outputs=convert_to_json(
+            obj=user,
+            keys=[
+                "id",
+                "name",
+                "email",
+                "username",
+                "first_name",
+                "last_name",
+                "is_active",
+                "is_ldap",
+                "groups",
+            ],
+        ),
+    )
+
+
+def get_groups(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, groups = octox.get_groups(
+        page=args.get("page", 1),
+        search=args.get("search", ""),
+        size=args.get("size", 20),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Groups",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    g,
+                    keys=["id", "name", "users_count"],
+                )
+                for g in groups
+            ],
+        },
+    )
+
+
+def get_permissions(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, permissions = octox.get_permissions(
+        page=args.get("page", 1),
+        search=args.get("search", ""),
+        size=args.get("size", 20),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Permissions",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    p,
+                    keys=["id", "name", "app"],
+                )
+                for p in permissions
+            ],
+        },
     )
 
 
