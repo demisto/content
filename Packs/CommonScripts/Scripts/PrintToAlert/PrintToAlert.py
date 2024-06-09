@@ -15,7 +15,7 @@ def print_to_alert_command(current_alert_id: str, value: str, alert_id: str) -> 
         return_results(CommandResults(readable_output=f"Successfully printed to alert {alert_id}."))
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     try:
         current_alert: dict[str, Any] = demisto.incident()
         current_alert_id: str = current_alert["id"]
