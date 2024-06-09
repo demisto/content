@@ -1040,3 +1040,61 @@ def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
     set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
     set_new_iocs_to_keep_time()
     set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})
+
+
+def test_parse_demisto_comments_url_xsoar_6_default(mocker):
+    """
+    Given:
+        -  xsoar version 6, a custom field name, and comma-separated comments in it
+    When:
+        -  parsing a comment of the url indicator field
+    Then:
+        - check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    inc_id = '111111'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    assert _parse_demisto_comments(
+        ioc={'id': inc_id},
+        comment_field_name='indicator_link',
+        comments_as_tags=False
+    ) == [f'url/#/indicator/{inc_id}']
+
+
+def test_parse_demisto_comments_url_xsoar_8_default(mocker):
+    """
+    Given:
+        -  xsoar version that is greater than 8, a custom field name, and comma-separated comments in it
+    When:
+        -  parsing a comment of the url indicator field
+    Then:
+        - check the output values
+    """
+    import XDR_iocs
+    os.environ['CRTX_HTTP_PROXY'] = 'xsoar_8_proxy'
+    inc_id = '111111'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=True)
+    assert XDR_iocs._parse_demisto_comments(
+        ioc={'id': inc_id},
+        comment_field_name='indicator_link',
+        comments_as_tags=False
+    ) == [f'url/indicator/{inc_id}']
+
+
+def test_parse_demisto_list_of_comments_default(mocker):
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the url indicator field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    inc_id = '111111'
+    comment_value = 'here be comment'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    assert _parse_demisto_comments(
+        ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}],
+             'id': inc_id},
+        comment_field_name=['indicator_link', Client.xsoar_comments_field],
+        comments_as_tags=False
+    ) == [f'url/#/indicator/{inc_id}, {comment_value}']

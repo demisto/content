@@ -6,7 +6,8 @@ import sys
 
 import boto3
 
-if not demisto.params()['proxy']:
+params = demisto.params()
+if not params['proxy']:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
     del os.environ['HTTP_PROXY']
@@ -18,13 +19,17 @@ def invoke_enpoint(runtime, endpoint_name, payload):
                                    Body=json.dumps(payload, ensure_ascii=False).encode('utf-8', 'ignore'))
 
 
-aws_access_key_id = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('AWSAccessKey')
-aws_secret_access_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('AWSSecretKey')
+aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('AWSAccessKey')
+aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('AWSSecretKey')
+sts_regional_endpoint = params.get('sts_regional_endpoint') or None
+if sts_regional_endpoint:
+    demisto.debug(f"Sets the environment variable AWS_STS_REGIONAL_ENDPOINTS={sts_regional_endpoint}")
+    os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = sts_regional_endpoint.lower()
 
 runtime = boto3.Session(aws_access_key_id=aws_access_key_id,
                         aws_secret_access_key=aws_secret_access_key,
-                        region_name=demisto.params()['AWSRegion']).client('runtime.sagemaker')  # type: ignore[call-overload]
-endpoint_name = demisto.params()['EndpointName']
+                        region_name=params['AWSRegion']).client('runtime.sagemaker')  # type: ignore[call-overload]
+endpoint_name = params['EndpointName']
 
 
 def parse_results(result):

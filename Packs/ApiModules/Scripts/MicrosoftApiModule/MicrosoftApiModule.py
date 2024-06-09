@@ -20,6 +20,7 @@ class Scopes:
 class Resources:
     graph = 'https://graph.microsoft.com/'
     security_center = 'https://api.securitycenter.microsoft.com/'
+    security = 'https://api.security.microsoft.com/'
     management_azure = 'https://management.azure.com/'  # resource_manager
     manage_office = 'https://manage.office.com/'
 
@@ -40,7 +41,7 @@ SESSION_STATE = 'session_state'
 # Deprecated, prefer using AZURE_CLOUDS
 TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
@@ -99,7 +100,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
     'geo-us': 'https://login.microsoftonline.com',
     'geo-eu': 'https://login.microsoftonline.com',
     'geo-uk': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
 }
@@ -120,7 +121,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
     'geo-us': 'https://securitycenter.onmicrosoft.com',
     'geo-eu': 'https://securitycenter.onmicrosoft.com',
     'geo-uk': 'https://securitycenter.onmicrosoft.com',
-    'gcc': 'https://securitycenter.onmicrosoft.us',
+    'gcc': 'https://securitycenter.onmicrosoft.com',
     'gcc-high': 'https://securitycenter.onmicrosoft.us',
     'dod': 'https://securitycenter.onmicrosoft.us',
 }
@@ -140,7 +141,7 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
 
 MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
 }
 
@@ -329,7 +330,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         sql_management='https://management.core.usgovcloudapi.net:8443/',
         batch_resource_id='https://batch.core.usgovcloudapi.net/',
         gallery='https://gallery.usgovcloudapi.net/',
-        active_directory='https://login.microsoftonline.us',
+        active_directory='https://login.microsoftonline.com',
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
@@ -1224,7 +1225,7 @@ class MicrosoftClient(BaseClient):
     def run_retry_on_rate_limit(args_for_next_run: dict):
         return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
                               scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
-                                                                 args=args_for_next_run))
+                                                                 args=args_for_next_run, timeout_in_seconds=900))
 
     def handle_error_with_metrics(self, res):
         MicrosoftClient.create_api_metrics(res.status_code)
@@ -1496,7 +1497,7 @@ def generate_login_url(client: MicrosoftClient,
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
                                    f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
-                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}&prompt=consent')
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

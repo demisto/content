@@ -2,9 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Playbook used to retrieve the verdict for a specific job id for a sample
+description: Playbook used to retrieve the verdict for a specific job id for a sample. Deprecated. Use `fortisandbox-submission-file-upload` instead.
   submitted to FortiSandbox
 id: FortiSandbox - Loop For Job Verdict
+deprecated: true
 inputs:
 - description: Job ID to get verdicts on
   key: JobIds

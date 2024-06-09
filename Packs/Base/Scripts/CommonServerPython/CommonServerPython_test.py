@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import urllib
+import uuid
 import warnings
 
 import dateparser
@@ -28,7 +29,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs, safe_sleep
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -1272,9 +1273,10 @@ def test_get_error_need_raise_error_on_non_error_input():
     (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected, filename):
-    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
-    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
-    file_name = "1_test_file_result"
+    file_id = str(uuid.uuid4())
+    mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+    file_name = "{}_fileresult".format(file_id)
 
     def cleanup():
         try:
@@ -1452,7 +1454,7 @@ def test_build_curl_post_noproxy():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"data": "value"}\''
     ]
 
@@ -1479,7 +1481,7 @@ def test_build_curl_post_xml():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'<?xml version=\"1.0\" encoding=\"utf-8\"?>'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'<?xml version="1.0" encoding="utf-8"?>\''
     ]
 
@@ -1511,7 +1513,7 @@ def test_build_curl_get_withproxy(mocker):
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X GET https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--proxy http://proxy -k -d \'{"data": "value"}\''
     ]
 
@@ -1548,9 +1550,9 @@ def test_build_curl_multiple_queries():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api/post -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"postdata": "value"}\'',
-        'curl -X GET https://demisto.com/api/get -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"getdata": "value"}\''
     ]
 
@@ -2974,10 +2976,19 @@ class TestBaseClient:
         with raises(DemistoException, match="Proxy Error"):
             self.client._http_request('get', 'event', resp_type='response')
 
-    def test_http_request_connection_error(self, requests_mock):
+    def test_http_request_connection_error_with_errno(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
-        with raises(DemistoException, match="Verify that the server URL parameter"):
+        err = requests.exceptions.ConnectionError()
+        err.errno = 104
+        err.strerror = "Connection reset by peer test"
+        requests_mock.get('http://example.com/api/v2/event', exc=err)
+        with raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_connection_error_without_errno(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError("Generic error"))
+        with raises(DemistoException, match="Generic error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_text_exception_parsing(self, requests_mock):
@@ -6895,13 +6906,13 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {'Address': 'user@example.com',
+            {"Email": {'Address': 'user@example.com'},
              'Domain': 'example.com',
-                'Description': 'test',
-                'Internal': True,
-                'STIXID': 'stix_id_test',
-                'Tags': ['tag1', 'tag2'],
-                'TrafficLightProtocol': 'traffic_light_protocol_test'}
+             'Description': 'test',
+             'Internal': True,
+             'STIXID': 'stix_id_test',
+             'Tags': ['tag1', 'tag2'],
+             'TrafficLightProtocol': 'traffic_light_protocol_test'}
 
     @pytest.mark.parametrize('item', [
         'CommunityNotes', 'Publications', 'ThreatTypes'
@@ -7974,7 +7985,8 @@ class TestFetchWithLookBack:
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                    look_back=look_back, timezone=time_zone, date_format=date_format)
+                                                                    look_back=look_back, timezone=time_zone,
+                                                                    date_format=date_format)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
         incidents_res = self.get_incidents_request(query, date_format)
@@ -8024,14 +8036,17 @@ class TestFetchWithLookBack:
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]], {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created'],
                                      'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
-        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+         [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'],
+          'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
          {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'],
+          'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
     ])
     @freeze_time("2022-11-03 13:40:00 UTC")
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
@@ -8955,8 +8970,8 @@ class TestSendEventsToXSIAMTest:
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
-                DemistoException,
-                match=re.escape(expected_error_header + expected_error_msg),
+            DemistoException,
+            match=re.escape(expected_error_header + expected_error_msg),
         ):
             send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
 
@@ -9407,6 +9422,7 @@ class TestIsIntegrationCommandExecution:
     def test_with_integration_exec(self, mocker):
         mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
         assert is_integration_command_execution() == True
+
     data_test_problematic_cases = [
         None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
         {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
@@ -9458,8 +9474,12 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
     ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
     ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
-    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069", "sha512"),
-    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211", "sha512"),
+    (
+        "eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069",
+        "sha512"),
+    (
+        "a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211",
+        "sha512"),
     ("@", None)
 ])
 def test_detect_file_indicator_type(indicator, expected_result):
@@ -9554,3 +9574,156 @@ def test_create_clickable_test_wrong_text_value():
 
     assert e.type == AssertionError
     assert 'The URL list and the text list must be the same length.' in e.value.args
+
+
+@pytest.mark.parametrize("request_log, expected_output", [
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer token123\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: session_id=123\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: token123\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer token123\\r\\n",
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer <XX_REPLACED>\\r\\n"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
+        str("send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'")
+    ),
+])
+def test_censor_request_logs(request_log, expected_output):
+    """
+    Given:
+        A request log.
+        case 1: A request log with a sensitive data under the 'Authorization' header, but the 'Authorization' is not capitalized and within a string.
+        case 2: A request log with a sensitive data under the 'Cookie' header, but with a 'Set_Cookie' prefix.
+        case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
+        case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
+        case 5: A request log with no sensitive data.
+    When:
+        Running censor_request_logs function.
+    Then:
+        Assert the function returns the exactly same log with the sensitive data masked. 
+    """
+    assert censor_request_logs(request_log) == expected_output
+
+
+@pytest.mark.parametrize("request_log", [
+    ('send: hello\n'),
+    ('header: Authorization\n')
+])
+def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
+    """
+    Given:
+        A request log that starts with 'send' or 'header' that may contains sensitive data.
+    When:
+        Running logger.write function when using debug-mode.
+    Then:
+        Assert the censor_request_logs function has been called.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write(request_log)
+    assert mock_censor.call_count == 1
+
+
+def test_replace_send_preffix(mocker):
+    """
+    Given:
+        - A string that contains 'send: b"' in it.
+    When:
+        - The write function is called to add this string to the logs.
+    Then:
+        - Verify that the text 'send: b"' has been replaced with "send: b'" to standardize the log format for easier log handling.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write('send: b"hello\n')
+    assert mock_censor.call_args[0][0] == "send: b\'hello"
+
+
+@freeze_time(datetime(2024, 4, 10, 10, 0, 10))
+def test_sleep_exceeds_ttl(mocker):
+    """
+   Given: a sleep duration exceeding the remaining TTL.
+
+    When: The `sleep` method is called with that duration.
+
+   Then:
+    - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+  """
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+
+    with pytest.raises(ValueError) as excinfo:
+        safe_sleep(duration_seconds=350)
+    assert str(excinfo.value) == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
+
+
+def test_sleep_not_supported(mocker):
+    """
+       Given: a sleep duration in not supported server version.
+
+        When: The `sleep` method is called with that duration.
+
+       Then:
+        - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+        - Sleep the requested time.
+      """
+    mocker.patch.object(demisto, 'callingContext', {"context": {}})
+    logger_mocker = mocker.patch.object(demisto, 'info')
+
+    sleep_mocker = mocker.patch('time.sleep')
+
+    safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 1
+    assert logger_mocker.call_args[0][0] == "Safe sleep is not supported in this server version, sleeping for the requested time."
+
+
+def test_sleep_mocked_time(mocker):
+    """
+    Given:  a method using sleep.
+
+   When:  The `sleep` method is called with a specific duration.
+
+   Then:
+    - The sleep duration should be based on the difference between the mocked time calls.
+    - No exception should be raised if the sleep duration is within the remaining TTL based on mocked time.
+    """
+
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+    sleep_mocker = mocker.patch('time.sleep')
+
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 10)):
+        safe_sleep(duration_seconds=5)  # Sleep for 5 seconds
+
+    # Advance mocked time by the sleep duration
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 25)):
+        safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 2

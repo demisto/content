@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### varonis-get-threat-models
 
 ***
-Get Varonis threat models
+Get Varonis threat models  
 
 #### Base Command
 
@@ -37,27 +37,21 @@ Get Varonis threat models
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | List of requested threat model ids. | Optional | 
-| name | List of requested threat model names. | Optional | 
-| category | List of requested threat model categories. | Optional | 
-| severity | List of requested threat model severities. | Optional | 
-| source | List of requested threat model sources. | Optional | 
+| **Argument Name** | **Description**                                                                            | **Required** |
+| --- |--------------------------------------------------------------------------------------------|--------------|
+| name | List of requested threat model names. Pipe (`\|`) separated and wildcards (`*`) supported. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description**                                                                                                                                                                                                                      |
-| --- |----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ID | Number   | ID of the threat model                                                                                                                                                                                                              | 
-| Name | String   | Name of the threat model                                                                                                                                                                                                     | 
-| Category | String   | Category of the threat model                                                                                                                                                                                                              | 
-| Severity | String   | Severity of the threat model                                                                                                                                                                                                              | 
-| Source | String   | Predefined/User-defined                                                                                                                                                                                                     | 
-
+| **Path** | **Type** | **Description** |
+| --- |----------|----------------------|
+| ID | Number    | ID of the threat model | 
+| Name | String  | Name of the threat model | 
 
 #### Command example
-```!varonis-get-threat-models id="1" name="Abnormal service behavior: access to atypical folders" category="Exfiltration" severity="Error"```
+```!varonis-get-threat-models```  
+```!varonis-get-threat-models name="*access to*|Domain controller*"```
+
 #### Context Example
 ```json
 [
@@ -122,7 +116,7 @@ Get alerts from Varonis DA
 | Varonis.Alert.Location.CountryName | String | Name of the country from which the event occurred                                                                                                                                                                                    | 
 | Varonis.Alert.Location.SubdivisionName | String | Name of the state or regional subdivision from which the event occurred                                                                                                                                                              | 
 | Varonis.Alert.Status.Name | String | Alert state. Options are:<br/>- New<br/>- Under investigation<br/>- Closed<br/>- Action Required<br/>- Auto-Resolved                                                                                                                 |
-| Varonis.Alert.CloseReason.Name | String | Reason the alert was closed. Options are:<br/>- Resolved<br/>- Misconfiguration<br/>- Threat model disabled or deleted<br/>- Account misclassification<br/>- Legitimate activity<br/>- Other                                         |
+| Varonis.Alert.CloseReason.Name | String | Reason the alert was closed. Options are:<br/>- Other<br/>- Benign activity<br/>- True positive<br/>- Environment misconfiguration<br/>- Alert recently customized<br/>- Inaccurate alert logic<br/>- Authorized activity                                        |
 | Varonis.Alert.Location.BlacklistedLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred                                                                                           | 
 | Varonis.Alert.Location.AbnormalLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user                                                                     | 
 | Varonis.Alert.EventsCount | Number | Number of events with alerts                                                                                                                                                                                                         | 
@@ -367,7 +361,7 @@ Close the alert
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Requested alerts. | Required | 
-| close_reason | The reason the alert was closed. Possible values are: Resolved, Misconfiguration, Threat model disabled or deleted, Account misclassification, Legitimate activity, Other. | Required | 
+| close_reason | The reason the alert was closed. Possible values are: Other, Benign activity, True positive, Environment misconfiguration, Alert recently customized, Inaccurate alert logic, Authorized activity. | Required | 
 | note | Note. | Optional | 
 
 #### Context Output
@@ -375,7 +369,47 @@ Close the alert
 There is no context output for this command.
 
 #### Command example
-```!varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Account misclassification"  note="Alert is irrelevant. Closed" ```
+```!varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Inaccurate alert logic"  note="Alert is irrelevant. Closed" ```
 
 
+### get-mapping-fields
+***
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
 
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+## Incident Mirroring
+
+You can enable outgoing incident mirroring between Cortex XSOAR incidents and Varonis alerts (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored (currently only outgoing mirroring is available):
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Varonis SaaS service (outgoing mirrored fields). |
+
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+### Mirroring Out Notes
+The supported fields in the mirroring out process are:
+- Varonis Alert Status.
+- Varonis Close Reason
+- Incident Close Notes
+
+**Important Note:**
+You have two options how to close Varonis Alert:
+ - The first option is to change the Varonis Alert Status field in the XSOAR incident. In this case, the status of the alert in Varonis SaaS service will be change by the mirroring functionality, but the Incident in XSOAR won't be closed.
+ - The second one is to close the incident in XSOAR. In this case, the Varonis Alert will be closed on the Varonis side by the post-processing script.

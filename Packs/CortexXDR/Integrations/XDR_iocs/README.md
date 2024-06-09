@@ -165,7 +165,10 @@ Creates the sync file for the manual process. Run this command when instructed b
 `xdr-iocs-create-sync-file`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| zip | Whether to zip the output file. | Required | 
+| set_time | Whether to modify the sync time locally. | Required | 
 
 #### Context Output
 

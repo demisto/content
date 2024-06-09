@@ -1,0 +1,6 @@
+fromversion: 8.4.0
+id: Microsoft_Windows_Sysmon_ModelingRule
+name: Microsoft Windows Sysmon Modeling Rule
+rules: ''
+schema: ''
+tags: ''

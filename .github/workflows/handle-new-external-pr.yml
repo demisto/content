@@ -17,11 +17,11 @@ jobs:
           fetch-depth: 2
 
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
@@ -43,6 +43,16 @@ jobs:
           cd Utils/github_workflow_scripts
           poetry run ./handle_external_pr.py
           echo "Finished Handling External PR"
+
+      - name: Add Contribution Form Filled for Marketplace Contributions
+        if: contains(github.event.pull_request.title, '[Marketplace Contribution]')
+        run: gh pr edit "$PR_NUMBER" --add-label "$LABEL"
+        env:
+          GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LABEL: "Contribution Form Filled"
+
       - name: Send Notification
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}

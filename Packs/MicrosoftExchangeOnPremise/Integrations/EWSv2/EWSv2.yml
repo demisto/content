@@ -348,6 +348,12 @@ script:
       name: selected-fields
       predefined:
       - ''
+    - auto: PREDEFINED
+      description: Whether to surround the message ID with angle brackets (<>) if it does not exist. Default is 'True'.
+      name: surround_id_with_angle_brackets
+      predefined:
+      - 'True'
+      - 'False'
     description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
     name: ews-search-mailbox
     outputs:
@@ -1036,9 +1042,9 @@ script:
     - name: replyTo
       description: The email address specified in the 'reply to' field.
     - name: body
-      description: The contents (body) of the email to send.
+      description: The contents (body) of the email to send. This argument overrides the "htmlBody" argument if the "bodyType" argument is Text.
     - name: htmlBody
-      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument if the "bodyType" argument is HTML.
     - name: bodyType
       description: Whether message response body type is Text, or HTML.
       auto: PREDEFINED
@@ -1097,7 +1103,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.0.3.84262
+  dockerimage: demisto/py-ews:5.0.3.92093
   isfetch: true
   runonce: false
   script: '-'
