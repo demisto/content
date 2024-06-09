@@ -7,16 +7,16 @@ configuration:
   display: Base URL
   name: base_url
   required: true
-  additionalinfo: The endpoint URL
+  additionalinfo: The endpoint URL.
   type: 0
 - displaypassword: Token
-  additionalinfo: The token to use for connection
+  additionalinfo: The token to use for connection.
   name: token
   required: true
   hiddenusername: true
   type: 9
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: credentials
   required: true
   hiddenusername: true
@@ -49,22 +49,22 @@ name: CSCDomainManager
 script:
   commands:
   - arguments:
-    - description: Domain name to filter by, can start with like=, in=.
+    - description: Domain name to filter by. Can start with like=, in=.
       name: domain_name
       required: false
-    - description: Registration date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
+    - description: Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
       name: registration_date
       required: false
-    - description: Email to filter by, can start with like=, in=.
+    - description: Email to filter by. Can start with like=, in=.
       name: email
       required: false
-    - description: Organization to filter by, can start with like=, in=.
+    - description: Organization to filter by. Can start with like=, in=.  
       name: organization
       required: false
-    - description: Registry expiry date to filter by, can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
+    - description: Registry expiry date to filter by. Can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
       name: registry_expiry_date
       required: false
-    - description: 'Writing your own filter by using selectors such as:
+    - description: 'Create a filter using selectors such as: 
        accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
        criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
        lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
@@ -72,16 +72,16 @@ script:
        stateProvince, street1, street2, urlForwarding, whoisPrivacy.'
       name: filter
       required: false
-    - description: 'Sorting the output by a selector and desc/asc, for example: propertyName,asc'
+    - description: 'Sort the output by a selector and the direction to sort by (desc/asc). For example: propertyName,asc.'
       name: sort
       required: false
     - description: Page number.
       name: page
       required: false
-    - description: The size of rows in a page.
+    - description: The number of rows in a page. 
       name: page_size
       required: false
-    - description: The limit of rows.
+    - description: The maximum number of rows. 
       name: limit
       required: false
     description: Gets the domains by the applied filters.
@@ -106,10 +106,10 @@ script:
       description: Paid through date.
       type: String
     - contextPath: CSCDomainManager.Domain.nameServers
-      description: Servers names.
+      description: "Server's names."
       type: String
     - contextPath: CSCDomainManager.Domain.dnsType
-      description: Dns type.
+      description: DNS type.
       type: String
     - contextPath: CSCDomainManager.Domain.account.accountName
       description: The name of the account associated with the domain.
@@ -193,7 +193,7 @@ script:
       description: The fax number of the WHOIS contact.
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.firstName
-      description: 'The first name of the WHOIS contact.'
+      description: The first name of the WHOIS contact.
       type: String
     - contextPath: CSCDomainManager.Domain.whoisContacts.lastName
       description: The last name of the WHOIS contact.
@@ -251,16 +251,16 @@ script:
       description: The terms available for the domain registration.
       type: Unknown
   - arguments:
-    - description: Domain name to filter by, can start with like=, in=.
+    - description: Domain name to filter by. Can start with like=, in=.
       name: domain_name
       required: false
-    - description: 'Registration date to filter by, can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024.'
+    - description: 'Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024.'
       name: registration_date
       required: false
-    - description: Email to filter by, can start with like=, in=.
+    - description: Email to filter by. Can start with like=, in=.
       name: domain_email
       required: false
-    - description: 'Can write your own filter by using selectors such as:
+    - description: 'Create a filter using selectors such as:
        accountName, accountNumber, brandName, businessUnit, city, country, countryCode, 
        criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, 
        lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode,
@@ -271,13 +271,13 @@ script:
     - description: Page number.
       name: page
       required: false
-    - description: The size of rows in a page.
+    - description: The number of rows in a page.
       name: page_size
       required: false
-    - description: The limit of rows to present.
+    - description: The maximum number of rows to present.
       name: limit
       required: false
-    description: Get domains configuration information for owned domains with optional filtering.
+    description: Get configuration information for owned domains with optional filtering.
     name: csc-domains-configuration-list
     outputs:
     - contextPath: CSCDomainManager.Domain.Configuration.domain
@@ -290,22 +290,22 @@ script:
       description: The domain status code.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.domainExtension
-      description: Extension.
+      description: The domain extension.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.country
-      description: Country.
+      description: Country associated with the domain.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.adminEmail
       description: Domain email.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.adminName
-      description: Admin name.
+      description: Admin name associated with the domain.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.accountNumber
-      description: The account number.
+      description: The account number associated with the domain.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.accountName
-      description: The account name.
+      description: The account name associated with the domain.
       type: String
     - contextPath: CSCDomainManager.Domain.Configuration.account.accountName
       description: The name of the account associated with the domain.
@@ -463,7 +463,7 @@ script:
       isArray: true
       required: true
       default: true
-    description: Get domain data by qualified domain name
+    description: The qualified domain name.
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -482,7 +482,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: Domain.CreationDate
-      description: Creation dare.
+      description: Creation date.
       type: String
     - contextPath: Domain.DomainIDNName
       description: Domain ID name.
@@ -494,7 +494,7 @@ script:
       description: Updated date.
       type: String
     - contextPath: Domain.NameServers
-      description: Servers Name.
+      description: "Server's name."
       type: String
     - contextPath: Domain.Registrant.Name
       description: Registrant name.
@@ -590,7 +590,7 @@ script:
       description: The managed status of the domain.
       type: String
     - contextPath: CSCDomainManager.Domain.nameServers
-      description: The name servers associated with the domain.
+      description: The name of the servers associated with the domain.
       type: String
     - contextPath: CSCDomainManager.Domain.newGtld
       description: Indicates if the domain is a new gTLD (Generic Top-Level Domain).
@@ -647,7 +647,7 @@ script:
       description: The expiration date of the domain in the WHOIS record.
       type: Date
     - contextPath: Domain.WHOIS.NameServers
-      description: The name servers listed in the WHOIS record.
+      description: The name of the servers listed in the WHOIS record.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Country
       description: The country of the registrant in the WHOIS record.
@@ -665,7 +665,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.10.14.97100
 fromversion: 5.0.0
 tests:
 - CSCDomainManager_test
