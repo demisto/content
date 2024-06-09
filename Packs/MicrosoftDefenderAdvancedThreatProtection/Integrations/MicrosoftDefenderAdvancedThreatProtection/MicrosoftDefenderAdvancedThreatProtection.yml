@@ -2984,7 +2984,7 @@ script:
       - allow
       - block
       - alert
-    - description: 'Brief description (100 characters or less) of the threat represented by the indicator.'
+    - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: description
       required: true
     - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
