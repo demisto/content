@@ -120,36 +120,13 @@ def test_calculate_fetch_dates_without_arguments(client):
     assert end_date == MOCK_TIME_UTC_NOW
 
 
-@pytest.mark.parametrize(
-    "with_alert_next_page, with_audit_next_page, with_computer_next_page",
-    [
-        pytest.param(
-            False, False, False, id="No next pages"
-        ),
-        pytest.param(
-            True, False, False, id="Next page only for alerts"
-        ),
-        pytest.param(
-            False, True, False, id="Next page only for audits"
-        ),
-        pytest.param(
-            True, True, True, id="Next pages for alerts, audits, computers"
-        ),
-        pytest.param(
-            False, False, True, id="Next page only for computers"
-        ),
-        pytest.param(
-            True, False, True, id="Next pages only for alerts and computers"
-        ),
-        pytest.param(
-            False, True, True, id="Next pages only for audits and computers"
-        )
-    ]
-)
+@pytest.mark.parametrize("with_alert_next_page", [True, False])
+@pytest.mark.parametrize("with_audit_next_page", [True, False])
+@pytest.mark.parametrize("with_computer_next_page", [True, False])
 def test_nextTrigger(with_alert_next_page, with_audit_next_page, with_computer_next_page, mocker: MockerFixture):
     """
     Given: A mock JamfProtect client.
-    When: Running fetch_events with different next pages for alerts and audits.
+    When: Running fetch_events with different next pages for alerts, audits and computers.
     Then: Ensure the nextTrigger is set to 0 when there are no next pages, and the next page is set when there are next pages.
     """
     from JamfProtectEventCollector import fetch_events, Client
