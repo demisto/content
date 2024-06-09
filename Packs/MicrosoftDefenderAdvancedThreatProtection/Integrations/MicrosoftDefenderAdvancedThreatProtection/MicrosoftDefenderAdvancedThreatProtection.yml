@@ -2322,7 +2322,7 @@ script:
       description: The operating system build number.
       type: Number
     - contextPath: MicrosoftATP.Machine.HealthStatus
-      description: "The machine health status."
+      description: The machine health status.
       type: String
     - contextPath: MicrosoftATP.Machine.RBACGroupID
       description: "The machine RBAC group ID."
