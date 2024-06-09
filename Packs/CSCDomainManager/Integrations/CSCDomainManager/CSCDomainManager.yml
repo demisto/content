@@ -657,4 +657,4 @@ script:
   dockerimage: demisto/python3:3.10.14.97100
 fromversion: 5.0.0
 tests:
-- CSCDomainManager_test
+- CSCDomainManager_Test
