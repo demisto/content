@@ -306,7 +306,7 @@ script:
       description: True if the machine is AAD joined, false otherwise.
       type: Boolean
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: The AAD Device ID.
+      description: The AAD device ID.
       type: String
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
