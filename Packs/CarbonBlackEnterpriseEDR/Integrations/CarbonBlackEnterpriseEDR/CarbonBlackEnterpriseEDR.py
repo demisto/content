@@ -495,11 +495,11 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     for alert in alerts:
         contents.append({
             'AlertID': alert.get('id'),
-            'CreateTime': alert.get('create_time'),
+            'CreateTime': alert.get('create_timestamp'),
             'DeviceID': alert.get('device_id'),
             'DeviceName': alert.get('device_name'),
             'DeviceOS': alert.get('device_os'),
-            'PolicyName': alert.get('policy_name'),
+            'PolicyName': alert.get('device_policy'),
             'ProcessName': alert.get('process_name'),
             'Type': alert.get('type'),
             'WorkflowState': alert.get('workflow', {}).get('state')
@@ -1217,7 +1217,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             # got an alert we already fetched, skipping it
             continue
 
-        alert_create_date = alert.get('create_time')
+        alert_create_date = alert.get('create_timestamp')
         incident = {
             'name': f'Carbon Black Enterprise EDR alert {alert_id}',
             'occurred': alert_create_date,
