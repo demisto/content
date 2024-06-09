@@ -4158,7 +4158,7 @@ script:
       description: Machine ID.
       type: String
     - contextPath: MicrosoftATP.MachineCVE.fixingKbId
-      description: 'Fixing Kb ID.'
+      description: Fixing Kb ID.
       type: Unknown
     - contextPath: MicrosoftATP.MachineCVE.productName
       description: Product name.
