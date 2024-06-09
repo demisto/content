@@ -1,1 +1,1 @@
-This folder is used by contributors.
+This folder is used for contributions related scripts.
