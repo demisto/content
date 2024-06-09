@@ -17,7 +17,6 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorIrresolvableConflict, ErrorItemNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
-                                ErrorAccessDenied,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
@@ -336,10 +335,10 @@ def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-            Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-            exchangelib.items.DistributionList,
-            exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-            exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+                exchangelib.items.DistributionList,
+                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -1101,7 +1100,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                        and header.name != 'Content-Type':
+                                            and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
