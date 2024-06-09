@@ -454,7 +454,8 @@ def test_handle_html(mocker):
          'subtype': 'jpeg',
          'data': b'\x05',
          'name': 'image1.jpeg@11111111_11111111-imageName:image1.jpeg',
-         'cid': 'image1.jpeg@11111111_11111111'
+         'cid': 'image1.jpeg@11111111_11111111',
+         'ID': 'image1.jpeg@11111111_11111111'
          }
     ]
     expected_cleanBody = '<html>\n                        <body>\n                            <img src="cid:image0.png@11111111_11111111"/>\n                            <img src="cid:image1.jpeg@11111111_11111111"/>\n                        </body>\n                      </html>'  # noqa: E501
@@ -504,7 +505,8 @@ def test_handle_html_image_with_new_line(mocker):
          'subtype': 'png',
          'data': b'\x01',
          'name': 'image0.png@11111111_11111111-imageName:image0.png',
-         'cid': 'image0.png@11111111_11111111'}
+         'cid': 'image0.png@11111111_11111111',
+         'ID': 'image0.png@11111111_11111111'}
     ]
     expected_file_results = [{'Contents': '',
                               'ContentsFormat': 'text',

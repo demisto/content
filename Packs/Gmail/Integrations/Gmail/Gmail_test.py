@@ -945,7 +945,8 @@ def test_handle_html_image_with_new_line(mocker):
                              'subtype': 'png',
                              'data': b'\x01',
                              'name': 'image0.png@11111111_11111111-imageName:image0.png',
-                             'cid': 'image0.png@11111111_11111111'}]
+                             'cid': 'image0.png@11111111_11111111',
+                             'ID': 'image0.png@11111111_11111111'}]
     expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>"""  # noqa: E501
     expected_file = [{'Contents': '',
                       'ContentsFormat': 'text',
