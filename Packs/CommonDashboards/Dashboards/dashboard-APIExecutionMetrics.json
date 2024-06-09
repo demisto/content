@@ -489,7 +489,7 @@
                 "name": "API Call Results for Email Category",
                 "prevName": "Email",
                 "dataType": "metrics",
-                "widgetType": "pie",
+                "widgetType": "line",
                 "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and category:\"Email\"",
                 "isPredefined": false,
                 "dateRange": {
@@ -507,11 +507,14 @@
                 },
                 "params": {
                     "groupBy": [
+                        "modified(d)",
                         "name"
                     ],
                     "keys": [
                         "sum|executionCount"
-                    ]
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
                 },
                 "category": "",
                 "sizeInBytes": 0,
@@ -546,10 +549,10 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "API Metrics",
+                "name": "API Call Metrics",
                 "prevName": "API Metrics",
                 "dataType": "metrics",
-                "widgetType": "pie",
+                "widgetType": "line",
                 "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and -category:Email",
                 "isPredefined": false,
                 "dateRange": {
@@ -567,6 +570,7 @@
                 },
                 "params": {
                     "groupBy": [
+                        "modified(d)",
                         "name"
                     ],
                     "keys": [
@@ -574,7 +578,8 @@
                     ],
                     "showGraphValues": true,
                     "valuesFormat": "abbreviated",
-                    "hideLegend": false
+                    "hideLegend": false,
+                    "timeFrame": "days"
                 },
                 "category": "",
                 "sizeInBytes": 0,
