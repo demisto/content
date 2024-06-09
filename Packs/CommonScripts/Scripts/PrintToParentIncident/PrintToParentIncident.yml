@@ -1,5 +1,5 @@
 args:
-- description: 'The value to print to the parent incident's warroom.'
+- description: The value to print to the parent incident's warroom.
   name: value
   required: true
 comment: Prints a value to the parent incident's warroom of the current alert.

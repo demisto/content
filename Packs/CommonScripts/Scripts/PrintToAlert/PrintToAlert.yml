@@ -1,8 +1,8 @@
 args:
-- description: 'The value to print to the warroom of specified alert.'
+- description: The value to print to the warroom of specified alert.
   name: value
   required: true
-- description: 'The alert ID to print to.'
+- description: The alert ID to print to.
   name: alert_id
   required: true
 comment: Prints a value to the specified alert's warroom.
