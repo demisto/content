@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: jb_fix_secret_handler
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: jb_fix_secret_handler
     project: "${CI_PROJECT_NAMESPACE}/infra"
