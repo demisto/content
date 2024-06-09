@@ -176,6 +176,7 @@ cv
 unescape_url
 unescape
 hyperlinks
+warroom
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
