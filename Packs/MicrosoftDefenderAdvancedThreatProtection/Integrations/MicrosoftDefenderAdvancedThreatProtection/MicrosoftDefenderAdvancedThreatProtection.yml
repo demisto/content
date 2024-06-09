@@ -4075,7 +4075,7 @@ script:
     - description: Maximum number of results to retrieve.
       name: limit
       defaultValue: '50'
-    - description: The number of items in the queried collection that are to be skipped and not included in the result..
+    - description: The number of items in the queried collection that are to be skipped and not included in the result.
       name: offset
       defaultValue: '0'
     description: Retrieves the organization software inventory.
