@@ -32,6 +32,7 @@ SERVER = PARAMS['url'].removesuffix('/')
 USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+PROXY = PARAMS.get('proxy', False)
 BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
 HEADERS = {
@@ -45,8 +46,6 @@ INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
-# Remove proxy if not set to true in params
-handle_proxy()
 
 ''' KEY DICTIONARY '''
 
@@ -386,6 +385,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             data=data,
             files=files,
             params=params,
+            proxy=PROXY,
             resp_type='response',
             verify=USE_SSL,
             error_handler=error_handler,
@@ -416,6 +416,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     data=data,
                     files=files,
                     params=params,
+                    proxy=PROXY,
                     retries=5,
                     status_list_to_retry=[429],
                     resp_type='response',
@@ -6293,13 +6294,12 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     kwargs = {
         'url': f"{SERVER}/{url_suffix}",
         'verify': USE_SSL,
-        'retries': 3,
+        'retries': 10,
         'headers': {'Authorization': f'Bearer {get_token()}',
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
     }
     transport = RequestsHTTPTransport(**kwargs)
-    handle_proxy()
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,
