@@ -21,18 +21,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Credentials Rotation - Azure
-* Get entity alerts by MITRE tactics
-* Azure - User Investigation
-* Okta - User Investigation
-* Containment Plan
 * Cloud IAM Enrichment - Generic
+* Azure - User Investigation
+* Cloud Credentials Rotation - Azure
+* Containment Plan
+* Okta - User Investigation
 * Account Enrichment - Generic v2.1
+* Get entity alerts by MITRE tactics
 
 ### Integrations
 
-* CoreIOCs
 * CortexCoreIR
+* CoreIOCs
 
 ### Scripts
 
@@ -41,9 +41,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* closeInvestigation
 * ip
 * core-get-cloud-original-alerts
-* closeInvestigation
 
 ## Playbook Inputs
 
