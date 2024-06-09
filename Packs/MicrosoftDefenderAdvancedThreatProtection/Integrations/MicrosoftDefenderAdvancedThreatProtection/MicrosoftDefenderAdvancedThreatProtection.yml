@@ -2752,7 +2752,7 @@ script:
       - WatchList
       required: true
     - auto: PREDEFINED
-      description: 'Traffic Light Protocol value for the indicator.'
+      description: Traffic Light Protocol value for the indicator.
       name: tlp_level
       predefined:
       - unknown
