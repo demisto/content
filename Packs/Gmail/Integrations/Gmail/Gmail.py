@@ -2063,7 +2063,6 @@ def attachment_handler(message, attachments):
     """
     for att in attachments:
         if att['maintype'] == 'text':
-            demisto.debug('11111')
             msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
             if att['cid'] is not None:
                 msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
@@ -2074,7 +2073,6 @@ def attachment_handler(message, attachments):
             message.attach(msg_txt)
 
         elif att['maintype'] == 'image':
-            demisto.debug('222222')
             msg_img = MIMEImage(att['data'], att['subtype'])
             if att['cid'] is not None:
                 msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
@@ -2085,7 +2083,6 @@ def attachment_handler(message, attachments):
             message.attach(msg_img)
 
         elif att['maintype'] == 'audio':
-            demisto.debug('33333')
             msg_aud = MIMEAudio(att['data'], att['subtype'])
             if att['cid'] is not None:
                 msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
@@ -2096,7 +2093,6 @@ def attachment_handler(message, attachments):
             message.attach(msg_aud)
 
         elif att['maintype'] == 'application':
-            demisto.debug('444444')
             msg_app = MIMEApplication(att['data'], att['subtype'])
             if att['cid'] is not None:
                 msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
@@ -2239,7 +2235,6 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     result, file_results = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                                      attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
                                      additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
-    demisto.debug(f"i_have_file_results {file_results=}")
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,

@@ -670,6 +670,15 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
 
 
 def handle_image_type(base64_string):
+    """
+    Analyze the type of the image by its first 8 characters in order to insert it into the src attribute in the HTML.
+
+    Args:
+        base64_string (str): The image converted to base64 format.
+
+    Returns:
+        str: The image type.
+    """
     first_chars = base64_string[:8]
     decoded_data = base64.b64decode(first_chars)
     image_types = {
@@ -688,12 +697,22 @@ def handle_image_type(base64_string):
 
 
 def convert_internal_url_to_base64(match):
+    """
+    - When an inline image is attached through the Email layout, we need to download the image data.
+    - Then, we replace the URL inside XSOAR with the base64-encoded version of the image.
+
+    Args:
+        match (str): The URL inside XSOAR where the image is tentatively stored.
+
+    Returns:
+        str: The src attribute with the base64-encoded image.
+    """
     original_src = match.group(1)
     result = demisto.executeCommand("core-api-download", {"uri": original_src})
     with open(demisto.investigation()['id'] + '_' + result[0]['FileID'], 'rb') as f:
         base64_data_image = base64.b64encode(f.read()).decode('utf-8')
     image_type = handle_image_type(base64_data_image)
-    return f'src="data:image/{image_type};base64,{base64_data_image}" width="300" height="300"'
+    return f'src="data:image/{image_type};base64,{base64_data_image}"'
 
 
 def format_body(new_email_body):
@@ -703,18 +722,17 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    body_to_html = markdown(new_email_body,
-                            extensions=[
-                                'tables',
-                                'fenced_code',
-                                'legacy_em',
-                                'sane_lists',
-                                'nl2br',
-                                DemistoExtension(),
-                            ])
+    context_html_body = markdown(new_email_body,
+                                 extensions=[
+                                     'tables',
+                                     'fenced_code',
+                                     'legacy_em',
+                                     'sane_lists',
+                                     'nl2br',
+                                     DemistoExtension(),
+                                 ])
     # Separated the context so it will be shown properly in xsoar
-    context_html_body = re.sub(r'(<img[^>]+src="/markdown[^"]*")', r'\1 width="400" height="400"', body_to_html)
-    html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, body_to_html)
+    html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     return context_html_body, html_body
 
 
