@@ -21,7 +21,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure SilverFort Unified Identity Protection to forward Syslog messages in CEF format.
  
-Go to Setting -> General -> Syslog Servers, and follow the instructions under "Add Server IP" to set up the connection using the following guidelines:
+Go to **Setting** > **General** > **Syslog Servers**, and follow the instructions under **Add Server IP** to set up the connection using the following guidelines:
 1. Set the **Server IP** with your syslog server IP.
 2. Set the Syslog port to **514** or your agent port.
 3. Set the Protocol to **TCP**
@@ -41,7 +41,7 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the new syslog data source, set the following values:
    | Parameter     | Value   
    | :---          | :---        
-   | `Vendor`      | Enter **SilverFort**.
-   | `Product`     | Enter **Admin_console**.
+   | `Vendor`      | Enter **Silverfort**.
+   | `Product`     | Enter **Admin_Console**.
 
 </~XSIAM>
