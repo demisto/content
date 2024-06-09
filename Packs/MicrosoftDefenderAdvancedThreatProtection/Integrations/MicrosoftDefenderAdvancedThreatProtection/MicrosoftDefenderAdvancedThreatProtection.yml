@@ -3006,7 +3006,7 @@ script:
       - PUA
       - WatchList
       required: true
-    - description: 'Traffic Light Protocol value for the indicator.'
+    - description: Traffic Light Protocol value for the indicator.
       name: tlp_level
       auto: PREDEFINED
       predefined:
