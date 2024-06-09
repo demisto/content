@@ -5702,6 +5702,16 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test"
+        },
+        {
+            "integrations": "MattermostV2",
+            "playbookID": "MattermostV2 - testplaybook"
+        },
+        {
+            "playbookID": "MattermostAskUser_testplaybook",
+            "scripts": [
+                "MattermostAskUser"
+            ]
         }
     ],
     "skipped_tests": {
@@ -5888,7 +5898,9 @@
         "VMWare Test": "CIAC-10276",
         "AWS_DynamoDB-Test": "CIAC-10426",
         "AWS - EC2 Test Playbook": "CIAC-10426",
-        "AWS SNS Listener - Test": "CIAC-10426"
+        "AWS SNS Listener - Test": "CIAC-10426",
+        "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
+        "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
