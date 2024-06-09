@@ -68,6 +68,8 @@
           "PrivilegedAccountType": "Admin",
           "Department": ""
         }
-      ]
+      ],
+      "mirror_direction": null, 
+      "mirror_instance": ""
     }
   ]

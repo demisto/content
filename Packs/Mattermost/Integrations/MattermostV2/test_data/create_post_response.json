@@ -1,0 +1,21 @@
+{
+    "id": "id",
+    "create_at": 1712503619042,
+    "update_at": 1712503619042,
+    "edit_at": 0,
+    "delete_at": 0,
+    "is_pinned": false,
+    "user_id": "user_id",
+    "channel_id": "channel_id",
+    "root_id": "",
+    "original_id": "",
+    "message": "message",
+    "type": "",
+    "props": {},
+    "hashtags": "",
+    "pending_post_id": "",
+    "reply_count": 0,
+    "last_reply_at": 0,
+    "participants": null,
+    "metadata": {}
+}
