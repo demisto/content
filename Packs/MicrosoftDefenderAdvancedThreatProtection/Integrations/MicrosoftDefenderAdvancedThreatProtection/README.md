@@ -7177,7 +7177,7 @@ There is no context output for this command.
 ### microsoft-atp-list-machines-by-ip
 
 ***
-Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+Find machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
 
 #### Base Command
 
