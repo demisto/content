@@ -1,6 +1,6 @@
-id: Test Playbook - Possible External RDP Brute-Force
+id: Test Playbook - Possible External RDP Brute-Force - Set Verdict
 version: -1
-name: Test Playbook - Possible External RDP Brute-Force
+name: Test Playbook - Possible External RDP Brute-Force - Set Verdict
 description: |-
   This playbook tests the ‘Possible External RDP Brute-Force' playbook which is part of the ‘Core’ pack.
 

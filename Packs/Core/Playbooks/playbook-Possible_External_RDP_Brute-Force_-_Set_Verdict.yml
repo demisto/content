@@ -771,7 +771,7 @@ outputs:
   description: Array that contains all the suspicious elements.
   type: unknown
 tests:
-- Test Playbook - Possible External RDP Brute-Force
+- Test Playbook - Possible External RDP Brute-Force - Set Verdict
 marketplaces: ["marketplacev2"]
 fromversion: 6.8.0
 system: true

@@ -22,7 +22,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "  Test Playbook - Possible External RDP Brute-Force",
+            "playbookID": "Test Playbook - Possible External RDP Brute-Force - Set Verdict",
             "timeout": 600
         },
         {
