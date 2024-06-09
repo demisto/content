@@ -4884,7 +4884,7 @@ script:
     polling: true
     execution: true
   - arguments:
-    - description: When you select a “query_purpose” argument, a designated query template is used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts.
+    - description: 'When you select a “query_purpose” argument, a designated query template is used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts.'
       name: query_purpose
       required: true
       auto: PREDEFINED
