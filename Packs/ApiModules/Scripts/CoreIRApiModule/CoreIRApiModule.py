@@ -4,7 +4,7 @@ import urllib3
 import copy
 import re
 from operator import itemgetter
-
+import json
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -142,6 +142,10 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+RBAC_VALIDATIONS_VERSION = '8.6.0'
+RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
+FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
 
 
 class CoreClient(BaseClient):
@@ -149,6 +153,79 @@ class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+                      params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
+                      error_handler=None, with_metrics=False, resp_type='json'):
+        '''
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+
+            :type raise_on_status ``bool``
+                :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                    whether we should raise an exception, or return a response,
+                    if status falls in ``status_forcelist`` range and retries have
+                    been exhausted.
+
+
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+        '''
+        if not FORWARD_USER_RUN_RBAC:
+            return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
+                                            method=method,
+                                            url_suffix=url_suffix,
+                                            full_url=full_url,
+                                            headers=headers,
+                                            json_data=json_data, params=params, data=data,
+                                            timeout=timeout,
+                                            raise_on_status=raise_on_status,
+                                            ok_codes=ok_codes,
+                                            error_handler=error_handler,
+                                            with_metrics=with_metrics,
+                                            resp_type=resp_type)
+        headers = headers if headers else self._headers
+        data = json.dumps(json_data) if json_data else data
+        address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        response = demisto._apiCall(
+            method=method,
+            path=address,
+            data=data,
+            headers=headers,
+            timeout=timeout
+        )
+        if ok_codes and response.get('status') not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        return json.loads(response['data'])
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
@@ -349,15 +426,13 @@ class CoreClient(BaseClient):
 
         request_data['filters'] = filters
 
-        reply = self._http_request(
+        response = self._http_request(
             method='POST',
             url_suffix='/endpoints/get_endpoint/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-        demisto.debug(f"get_endpoints response = {reply}")
-
-        endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = response.get('reply', {}).get('endpoints', [])
         return endpoints
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
@@ -470,7 +545,6 @@ class CoreClient(BaseClient):
             json_data={},
             timeout=self.timeout
         )
-
         return reply.get('reply')
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
@@ -659,7 +733,7 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201, 500,),
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -676,9 +750,13 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/remove/',
             json_data={'request_data': request_data},
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
-        return reply.get('reply')
+        res = reply.get('reply')
+        if isinstance(res, dict) and res.get('err_code') == 500:
+            raise DemistoException(f"{res.get('err_msg')}\nThe requested hash might not be in the blocklist.")
+        return res
 
     def allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
@@ -2312,8 +2390,15 @@ def restore_file_command(client, args):
     )
 
 
+def validate_sha256_hashes(hash_list):
+    for hash_value in hash_list:
+        if detect_file_indicator_type(hash_value) != 'sha256':
+            raise DemistoException(f'The provided hash {hash_value} is not a valid sha256.')
+
+
 def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
@@ -2346,6 +2431,7 @@ def blocklist_files_command(client, args):
 
 def remove_blocklist_files_command(client: CoreClient, args: Dict) -> CommandResults:
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
