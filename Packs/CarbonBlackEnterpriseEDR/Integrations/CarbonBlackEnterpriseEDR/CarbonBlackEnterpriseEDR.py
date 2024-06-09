@@ -1201,7 +1201,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     incidents = []
 
     response = client.search_alerts_request(
-        sort_field='first_event_time',
+        sort_field='first_event_timestamp',
         sort_order='ASC',
         create_time=assign_params(
             start=last_fetched_alert_create_time,
@@ -1224,7 +1224,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        parsed_date = dateparser.parse(alert_create_date)
+        parsed_date = dateparser.parse(alert_create_date)    #This is where the code falls
         assert parsed_date is not None, f'failed parsing {alert_create_date}'
         latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
