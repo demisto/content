@@ -3,7 +3,7 @@ if (( $# < 1 )); then
     echo "please run ${0} <USER NAME>:<BRANCH NAME> [true]"
     echo by passing true as third argument this will update branch with origin/master
     echo for example:
-    echo "${0} yaakovi:NewIntegrationBranch true"
+    echo "${0} username:NewIntegrationBranch true"
     exit
 fi
 
