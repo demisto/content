@@ -3228,7 +3228,7 @@ script:
     - description: The ID of the indicator to update.
       name: indicator_id
       required: true
-    - description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
+    - description: The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.
       name: severity
       defaultValue: MediumHigh
       auto: PREDEFINED
