@@ -2208,7 +2208,7 @@ def get_remote_data_command(args: dict[str, Any]):
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
     reopen_statuses_list = argToList(demisto.params().get('reopen_statuses', ''))
-    demisto.debug(f'{reopen_statuses_list=}')
+    demisto.debug(f'In get_remote_data_command {reopen_statuses_list=}')
 
     mirrored_data = {}
     entries: list = []
@@ -2336,6 +2336,7 @@ def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, re
                                reopen_statuses_list: list):
     reopen_statuses_set = {str(status).strip() for status in reopen_statuses_list} \
         if reopen_statuses_list else set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}
+    demisto.debug(f'In set_xsoar_incident_entries {reopen_statuses_set=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
@@ -2350,6 +2351,7 @@ def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, r
                                 reopen_statuses_list: list):
     reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
         if reopen_statuses_list else (set(DETECTION_STATUS) - {'closed'})
+    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
@@ -2379,6 +2381,7 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
     """
     reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
         if reopen_statuses_list else (set(IDP_AND_MOBILE_DETECTION_STATUS) - {'closed'})
+    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
