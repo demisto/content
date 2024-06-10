@@ -385,6 +385,8 @@ tasks:
     scriptarguments:
       RelatedAlertsThreshold:
         simple: "5"
+      ShouldCloseAutomatically:
+        simple: "False"
       UserContainment:
         simple: "True"
       UserVerification:
