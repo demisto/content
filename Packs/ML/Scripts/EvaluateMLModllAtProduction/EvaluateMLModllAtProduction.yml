@@ -42,7 +42,7 @@ outputs:
 script: '-'
 subtype: python3
 type: python
-ockerimage: demisto/ml:1.0.0.96958
+dockerimage: demisto/ml:1.0.0.96958
 runas: DBotWeakRole
 fromversion: 5.0.0
 tags:
