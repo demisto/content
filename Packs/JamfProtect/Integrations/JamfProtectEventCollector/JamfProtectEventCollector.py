@@ -1,8 +1,8 @@
 from collections.abc import Callable
 from typing import NamedTuple
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 
 ''' CONSTANTS '''
@@ -19,13 +19,32 @@ MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
-
-
 class EventResult(NamedTuple):
+    """
+    A named tuple representing the result of fetching events.
+
+    Attributes:
+    - alert_events: A list of dictionaries, where each dictionary represents an alert event.
+    - audit_events: A list of dictionaries, where each dictionary represents an audit event.
+    - computer_events: A list of dictionaries, where each dictionary represents a computer event.
+    - next_run: A dictionary containing the details for the next run of each event type.
+                The keys are 'alert', 'audit', 'computer', and optionally 'nextTrigger'.
+                Each key (except 'nextTrigger') maps to a dictionary representing the next run details for that event type.
+
+    Methods:
+    - as_dict: Returns a dictionary where the keys are the event types ('Alert', 'Audit', 'Computer')
+    """
     alert_events: list[dict]
     audit_events: list[dict]
     computer_events: list[dict]
-    next_run: dict[str, Any]
+    next_run: dict[str, dict[str, str]]
+
+    def as_dict(self):
+        return {
+            'Alert': self.alert_events,
+            'Audit': self.audit_events,
+            'Computer': self.computer_events
+        }
 
 
 ''' CLIENT CLASS '''
@@ -557,7 +576,7 @@ def get_events(
     return events, ""
 
 
-def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, end_date: str = "") -> tuple:
+def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, end_date: str = "") -> tuple[str, str]:
     """
     Calculates the start and end dates for fetching events.
 
@@ -598,12 +617,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         end_date_arg (str, optional): The end date for fetching events.
 
     Returns:
-        EventResult: A NamedTuple containing four elements:
-            - alert_events: A list of dictionaries. Each dictionary represents an alert event.
-            - audit_events: A list of dictionaries. Each dictionary represents an audit event.
-            - computer_events: A list of dictionaries. Each dictionary represents a computer event.
-            - next_run: A dictionary with the keys 'alert', 'audit', 'computer', and optionally 'nextTrigger'.
-                    Each key (except 'nextTrigger') maps to a dictionary representing the next run details for that event type.
+        EventResult: A NamedTuple containing four elements
     """
     last_run = demisto.getLastRun()
     alert_events, alert_next_run = [], {}
@@ -612,7 +626,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
     computer_next_page = last_run.get("computer", {}).get("next_page", "")
 
-    no_next_pages = not(any((alert_next_page, audit_next_page,computer_next_page)))
+    no_next_pages = not (any((alert_next_page, audit_next_page, computer_next_page)))
 
     if no_next_pages or alert_next_page:
         # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.
@@ -682,15 +696,10 @@ def get_events_command(
              - A list of CommandResults objects. Each CommandResults object represents the command results for a type of event.
      """
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    results = []
-    events_with_time: dict[str, list] = {
-        'Alert': [],
-        'Audit': [],
-        'Computer': []
-    }
+
     start_date, end_date = validate_start_and_end_dates(args)
 
-    alert_events, audit_events, computer_events, _ = fetch_events(
+    event_result = fetch_events(
         client=client,
         max_fetch_alerts=limit,
         max_fetch_audits=limit,
@@ -698,29 +707,22 @@ def get_events_command(
         start_date_arg=start_date,
         end_date_arg=end_date
     )
-    event_types = [
-        ('Alert', alert_events),
-        ('Audit', audit_events),
-        ('Computer', computer_events)
-    ]
-    for event_type, events in event_types:
-        if events:
-            events = events[:limit]
-            events_with_time[event_type] = add_time_field(events)
-            results.append(
-                CommandResults(
-                    readable_output=tableToMarkdown(f"Jamf Protect {event_type} Events", events_with_time[event_type]),
-                    raw_response=events_with_time[event_type]
-                )
-            )
+    events_with_time = {event_type: add_time_field(events) for event_type, events in event_result.as_dict().items() if events}
 
+    results = [
+        CommandResults(
+            readable_output=tableToMarkdown(f"Jamf Protect {event_type} Events", events),
+            raw_response=events[:limit]
+        )
+        for event_type, events in events_with_time.items()
+    ]
     combined_events = (
         events_with_time['Alert']
         + events_with_time['Audit']
         + events_with_time['Computer']
     )
     if combined_events:
-        return events, results
+        return combined_events, results
     return [], CommandResults(readable_output='No events found')
 
 
@@ -760,7 +762,7 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f'Command being called is {command}')
 
         client = Client(
-            base_url=params.get('base_url'),
+            base_url=params.get('base_url', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             client_id=client_id,
@@ -774,7 +776,7 @@ def main() -> None:  # pragma: no cover
                                                  args=args)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif command == 'fetch-events':
             alert_events, audit_events, computer_events, new_last_run = fetch_events(client=client,
                                                                                      max_fetch_alerts=max_fetch_alerts,
