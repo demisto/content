@@ -219,5 +219,4 @@ def test_escape_special_characters(input, expected_res):
         Ensure a backslash is added for the chars \n, \t, \r.
     """
     from GetIndicatorDBotScoreFromCache import escape_special_characters
-    a = escape_special_characters(input)
-    assert a == expected_res
+    assert expected_res == escape_special_characters(input)
