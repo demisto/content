@@ -2209,8 +2209,7 @@ def main():
     global PULLS_SUFFIX
     global FILE_SUFFIX
     global HEADERS
-    a = 5
-    demisto.info(f"test {a}")
+
     params = demisto.params()
     BASE_URL = params.get('url', 'https://api.github.com')
     USER = params.get('user')

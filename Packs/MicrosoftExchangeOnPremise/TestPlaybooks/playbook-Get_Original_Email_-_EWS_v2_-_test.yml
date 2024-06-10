@@ -201,7 +201,7 @@ view: |-
 inputs:
 - key: UserID
   value:
-    simple: demistoadmin@demisto.int
+    simple: demistoad111min@demisto.int
   required: false
   description: ""
   playbookInputQuery:
