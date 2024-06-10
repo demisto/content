@@ -267,7 +267,7 @@ script:
        lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers,
        newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName,
        redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited,
-       serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy. For example: filter=lastName==Administrator'
+       serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy. For example: filter=lastName==Administrator.'
       name: filter
       required: false
     - description: Page number.
