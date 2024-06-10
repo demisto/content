@@ -28,9 +28,9 @@ MAPPING_EVENT_TYPES = {'Alerts': 'alerts',
                        'Login activities': 'activities_login'
                        }
 FILTERS_EVENT_TYPES = {'alerts': {'type': 'alerts', 'filters': {}},
-                'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
-                'activities_login': {'type': 'activities', 'filters': {
-                    "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
+                       'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
+                       'activities_login': {'type': 'activities', 'filters': {
+                           "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
