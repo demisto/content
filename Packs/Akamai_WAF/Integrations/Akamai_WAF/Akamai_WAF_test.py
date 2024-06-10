@@ -196,3 +196,57 @@ def test_try_parsing_date():
     with pytest.raises(ValueError) as e:
         try_parsing_date(date4, arr_fmt)
         assert value_error == str(e.value)
+
+
+def test_list_siteshield_maps_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_siteshield_maps_command.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import list_siteshield_maps_command
+
+    test_data = util_load_json('test_data/list_siteshild_maps_test.json')
+    expected_raw_response = test_data.get('raw_response')
+    expected_human_readable = test_data.get('human_readable')
+    expected_context_entry = test_data.get('context_entry')
+
+    mocker.patch.object(akamai_waf_client, 'list_siteshield_maps', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_siteshield_maps_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_acknowledge_warning_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - An enrollment_path.
+    When:
+        - running the command get_cps_change_status.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import acknowledge_warning_command
+
+    change_path = "/cps/v2/enrollments/10002/changes/10002"
+    expected_raw_response = {
+        "change": "/cps/v2/enrollments/10002/changes/10002"
+    }
+    expected_human_readable = "Akamai WAF - Acknowledge_warning"
+    expected_context_entry = {
+        'Akamai.Acknowledge':
+            {
+                'change': '/cps/v2/enrollments/10002/changes/10002'
+            }
+    }
+
+    mocker.patch.object(akamai_waf_client, 'acknowledge_warning', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = acknowledge_warning_command(client=akamai_waf_client,
+                                                                              change_path=change_path)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
