@@ -106,9 +106,9 @@ def test_list_machines_by_ip_with_limit(mocker, params, expected):
     Then:
         -The number of machines returned is not grater than the limit and http request is called with the right args.
     """
-    from MicrosoftApiModule import MicrosoftClient
+    from MicrosoftDefenderAdvancedThreatProtection import MsClient
     raw_response = {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}
-    mock_get_machines_v2 = mocker.patch.object(MicrosoftClient, 'get_machines_v2', return_value=raw_response)
+    mock_get_machines_v2 = mocker.patch.object(MsClient, 'get_machines_v2', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     list_machines_by_ip_command(client_mocker, params)
     assert mock_get_machines_v2.call_args == {'filter': f"machines/findbyip(ip='{params['ip']}',timestamp={params['timestamp']})"}
