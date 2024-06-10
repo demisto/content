@@ -126,7 +126,25 @@ script:
         required: false
         secret: false
         default: false
-    outputs: []
+    outputs:
+      - contextPath: InfoFile.Name
+        description: FileName
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report
+        type: string
+      - contextPath: InfoFile.Size
+        description: File Size
+        type: number
+      - contextPath: InfoFile.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: InfoFile.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: InfoFile.Extension
+        description: File extension
+        type: string
   - deprecated: false
     description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
     name: ciphertrust-certificate-issue
@@ -180,6 +198,24 @@ script:
       secret: false
       default: false
     outputs:
+      - contextPath: InfoFile.Name
+        description: FileName
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report
+        type: string
+      - contextPath: InfoFile.Size
+        description: File Size
+        type: number
+      - contextPath: InfoFile.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: InfoFile.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: InfoFile.Extension
+        description: File extension
+        type: string
       - contextPath: CipherTrust.CACertificate.id
         description: A unique identifier for the certificate authority (CA).
         type: String
@@ -362,6 +398,24 @@ script:
         secret: false
         default: false
     outputs:
+      - contextPath: InfoFile.Name
+        description: FileName
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report
+        type: string
+      - contextPath: InfoFile.Size
+        description: File Size
+        type: number
+      - contextPath: InfoFile.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: InfoFile.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: InfoFile.Extension
+        description: File extension
+        type: string
       - contextPath: CipherTrust.CACertificate.name
         description: The name of the certificate.
         type: String
@@ -454,6 +508,24 @@ script:
       - aACompromise
       auto: PREDEFINED
     outputs:
+      - contextPath: InfoFile.Name
+        description: FileName
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report
+        type: string
+      - contextPath: InfoFile.Size
+        description: File Size
+        type: number
+      - contextPath: InfoFile.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: InfoFile.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: InfoFile.Extension
+        description: File extension
+        type: string
       - contextPath: CipherTrust.CACertificate.name
         description: The name of the certificate.
         type: String
@@ -579,6 +651,24 @@ script:
       default: false
       defaultValue: 50
     outputs:
+      - contextPath: InfoFile.Name
+        description: FileName
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report
+        type: string
+      - contextPath: InfoFile.Size
+        description: File Size
+        type: number
+      - contextPath: InfoFile.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: InfoFile.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: InfoFile.Extension
+        description: File extension
+        type: string
       - contextPath: CipherTrust.ExternalCA.id
         description: A unique identifier for the certificate authority (CA) certificate.
         type: String
@@ -664,6 +754,24 @@ script:
       - 'false'
       auto: PREDEFINED
     outputs:
+      - contextPath: InfoFile.Name
+        description: FileName
+        type: string
+      - contextPath: InfoFile.EntryID
+        description: The EntryID of the report
+        type: string
+      - contextPath: InfoFile.Size
+        description: File Size
+        type: number
+      - contextPath: InfoFile.Type
+        description: File type e.g. "PE"
+        type: string
+      - contextPath: InfoFile.Info
+        description: Basic information of the file
+        type: string
+      - contextPath: InfoFile.Extension
+        description: File extension
+        type: string
       - contextPath: CipherTrust.ExternalCA.id
         description: A unique identifier for the certificate authority (CA) certificate.
         type: String
@@ -741,6 +849,24 @@ script:
       secret: false
       default: false
     outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
     - contextPath: CipherTrust.ExternalCA.id
       description: A unique identifier for the certificate authority (CA) certificate.
       type: String
@@ -1050,6 +1176,24 @@ script:
         - 4096
       auto: PREDEFINED
     outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
     - contextPath: CipherTrust.LocalCA.id
       description: Unique identifier for the CA.
       type: String
@@ -1129,6 +1273,24 @@ script:
       secret: false
       default: false
     outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
     - contextPath: CipherTrust.CAInstall.id
       description: A unique identifier for the certificate authority (CA).
       type: String
@@ -1254,6 +1416,24 @@ script:
       default: false
       defaultValue: 50
     outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
     - contextPath: CipherTrust.LocalCA.id
       description: A unique identifier for the certificate authority (CA).
       type: String
@@ -1335,6 +1515,24 @@ script:
       secret: false
       default: false
     outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
     - contextPath: CipherTrust.CASelfSign.id
       description: A unique identifier for the certificate authority (CA).
       type: String
@@ -1423,6 +1621,24 @@ script:
       - 'false'
       auto: PREDEFINED
     outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
     - contextPath: CipherTrust.LocalCA.id
       description: A unique identifier for the certificate authority (CA).
       type: String

@@ -5,7 +5,7 @@ from urllib.parse import quote
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Any
+from typing import Any, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -416,29 +416,26 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
-def return_file_results(data: list[str] | str, filenames: list[str] | str):
+def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
     if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
         return_results(
             [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data)])
-    else:
+    elif isinstance(data, str) or isinstance(data,bytes) and isinstance(filenames, str):
         return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
+    else:
+        raise ValueError('filenames and data should be of the same type and length.')
 
 
-def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file_names: Optional[list[str] | str] = None) -> dict[
-        str, Any]:
+def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> Tuple[dict[str, Any], list[str] | str]:
     new_outputs = outputs.copy()
     if isinstance(keys, list):
-        values = []
-        if (file_names and not isinstance(file_names, list)) or (file_names and len(file_names) != len(keys)):
-            raise ValueError('file_names argument must be a list of the same length if keys argument is a list')
+        removed_values = []
         for _idx, key in enumerate(keys):
-            values.append(new_outputs.pop(key, ''))
+            removed_values.append(new_outputs.pop(key, ''))
     else:
-        values = new_outputs.pop(keys, None)
-    if file_names:
-        return_file_results(values, file_names)
+        removed_values = new_outputs.pop(keys, None)
 
-    return new_outputs
+    return new_outputs, removed_values
 
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
@@ -458,7 +455,7 @@ def return_password_protected_zip_file_result(zip_filename: str, filename: str, 
     create_zip_protected_file(zip_filename, filename, data, password)
     with open(zip_filename, 'rb') as f:
         file_data = f.read()
-    return_results(fileResult(zip_filename, file_data, EntryType.ENTRY_INFO_FILE))
+    return_file_results(file_data, zip_filename)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -671,7 +668,8 @@ def local_ca_create_command(client: CipherTrustClient, args: dict[str, Any]) -> 
         size=arg_to_number(args.get(SIZE)),
     )
     raw_response = client.create_local_ca(request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, 'csr', 'CSR.pem')
+    outputs, csr = remove_key_from_outputs(raw_response, 'csr')
+    return_file_results(csr, 'CSR.pem')
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
@@ -690,8 +688,8 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-        outputs: object = remove_key_from_outputs(raw_response, ['csr', 'cert'], ['CSR.pem', 'Certificate.pem'])
-
+        outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
+        return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
     else:  # get a list of local CAs with optional filtering
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
                                                            args.get(PAGE),
@@ -705,7 +703,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             cert=args.get(CERT),
         )
         raw_response = client.get_local_ca_list(params=params)
-        outputs = [remove_key_from_outputs(local_ca_entry, ['csr', 'cert']) for local_ca_entry in
+        outputs = [remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
                    raw_response.get('resources', [])]
 
     return CommandResults(
@@ -723,7 +721,8 @@ def local_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) -> 
     )
     raw_response = client.update_local_ca(local_ca_id=args.get(LOCAL_CA_ID, ''),
                                           params=params)
-    outputs = remove_key_from_outputs(raw_response, ['csr', 'cert'], ['CSR.pem', 'Certificate.pem'])
+    outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
+    return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
@@ -751,7 +750,8 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
     )
     raw_response = client.self_sign_local_ca(local_ca_id=args.get(LOCAL_CA_ID, ''),
                                              request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, ['csr', 'cert'], ['CSR.pem', 'Certificate.pem'])
+    outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
+    return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
 
     return CommandResults(
         outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX,
@@ -769,7 +769,8 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
     raw_response = client.install_local_ca(
         local_ca_id=args.get(LOCAL_CA_ID, ''),
         request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, ['csr', 'cert'], ['CSR.pem', 'Certificate.pem'])
+    outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
+    return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
 
     return CommandResults(
         outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
@@ -792,7 +793,8 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
     )
     raw_response = client.issue_certificate(ca_id=args.get(CA_ID, ''),
                                             request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
+    outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+    return_file_results(cert, 'Certificate.pem')
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -814,7 +816,7 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     )
     raw_response = client.get_certificates_list(ca_id=args.get(CA_ID, ''),
                                                 params=params)
-    outputs = [remove_key_from_outputs(certificate, ['csr', 'cert']) for certificate in
+    outputs = [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
                raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
@@ -840,7 +842,8 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
     raw_response = client.revoke_certificate(ca_id=args.get(CA_ID, ''),
                                              cert_id=args.get(CERT_ID, ''),
                                              request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
+    outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+    return_file_results(cert, 'Certificate.pem')
 
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
@@ -853,7 +856,8 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
 def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     raw_response = client.resume_certificate(ca_id=args.get(CA_ID, ''),
                                              cert_id=args.get(CERT_ID, ''))
-    outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
+    outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+    return_file_results(cert, 'Certificate.pem')
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -870,7 +874,8 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
         parent=args.get(PARENT),
     )
     raw_response = client.upload_external_ca(request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
+    outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+    return_file_results(cert, 'Certificate.pem')
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -892,7 +897,8 @@ def external_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) 
     )
     raw_response = client.update_external_ca(external_ca_id=args.get(EXTERNAL_CA_ID, ''),
                                              request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, 'cert', 'Certificate.pem')
+    outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+    return_file_results(cert, 'Certificate.pem')
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -903,7 +909,8 @@ def external_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) 
 def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if external_ca_id := args.get(EXTERNAL_CA_ID):
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
-        outputs: object = remove_key_from_outputs(raw_response, ['cert'], ['Certificate.pem'])
+        outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+        return_file_results(cert, 'Certificate.pem')
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
                                                            args.get(PAGE),
@@ -919,7 +926,7 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
 
         raw_response = client.get_external_ca_list(params=params)
 
-        outputs = [remove_key_from_outputs(external_ca_entry, ['cert']) for external_ca_entry in
+        outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0] for external_ca_entry in
                    raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
@@ -949,12 +956,15 @@ def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
         size=arg_to_number(args.get(KEY_SIZE)),
     )
     raw_response = client.create_csr(request_data=request_data)
-    outputs = remove_key_from_outputs(raw_response, 'csr', 'CSR.pem')
+    outputs, csr = remove_key_from_outputs(raw_response, 'csr')
+    return_file_results(csr, 'CSR.pem')
     if private_key_file_password := args.get(PRIVATE_KEY_FILE_PASSWORD):
         return_password_protected_zip_file_result('privateKey', 'privateKey.pem', outputs.pop('key', ''),
                                                   private_key_file_password)
     else:
-        remove_key_from_outputs(raw_response, 'key', 'privateKey.pem')
+        _, private_key = remove_key_from_outputs(raw_response, 'key')
+        return_file_results(private_key, 'privateKey.pem')
+
     return CommandResults(
         outputs_prefix=CSR_CONTEXT_OUTPUT_PREFIX,
         readable_output=f'CSR and its corresponding private key have been generated successfully for {args.get(CN)}.',
