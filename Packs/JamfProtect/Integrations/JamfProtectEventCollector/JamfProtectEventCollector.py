@@ -490,7 +490,7 @@ def get_events_computer_type(client: Client, start_date: str, max_fetch: int, la
                                             for event in events))).strftime(DATE_FORMAT) if events else current_date
     # If there is no next page, the last fetch date will be the max end date of the fetched events.
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} computers")
+    demisto.debug(f"Fetched {len(events)} computers")
     return events, new_last_run_without_next_page
 
 
