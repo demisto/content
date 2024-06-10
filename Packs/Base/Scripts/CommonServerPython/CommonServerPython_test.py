@@ -1586,6 +1586,7 @@ def test_return_error_truncated_message(mocker):
     assert len(results.call_args[0][0]["Contents"]) == 20000 + len("... This error body was truncated...")
     assert "This error body was truncated" in results.call_args[0][0]["Contents"]
 
+
 def test_return_error_valid_message(mocker):
     """
     Given
