@@ -1343,8 +1343,6 @@ class SecurityAndComplianceClient {
       if ($remove_public_locations) { $cmd_params.RemovePublicFolderLocation = $remove_public_locations }
       if ($comment) { $cmd_params.Comment = $comment }
 
-        #Write-Output @cmd_params
-
         Set-CaseHoldPolicy @cmd_params
         $this.DisconnectSession()
     }
