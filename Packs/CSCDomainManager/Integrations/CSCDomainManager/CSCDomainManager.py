@@ -106,7 +106,8 @@ class Client(BaseClient):
         return [self.send_get_request(f"/domains/{qualified_domain_name}", "")]
 
     def get_domains(self, params):
-        return self.send_get_request("/domains", params)
+        results = self.send_get_request("/domains", params)
+        return results
 
     def get_available_domains(self, params):
         return self.send_get_request("/availability", params)
@@ -463,7 +464,8 @@ def domain(client: Client, args, reliability) -> CommandResults:
        the domain information
     """
     qualified_domain_name = args.get('domain')
-    domain_json = client.get_domains(qualified_domain_name)
+    
+    domain_json = client.get_qualified_domain_name(qualified_domain_name).pop()
 
     dbot_score = Common.DBotScore(
         indicator=qualified_domain_name,
@@ -540,8 +542,7 @@ def main():
         )
 
         if demisto.command() == 'test-module':
-            results = test_module(client)
-            return_results(results)
+            return_results(test_module(client))
 
         elif demisto.command() == 'csc-domains-search':
             return_results(csc_domains_search_command(client, args))
