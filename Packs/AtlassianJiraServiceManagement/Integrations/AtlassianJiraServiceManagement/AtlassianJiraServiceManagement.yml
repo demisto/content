@@ -14,12 +14,6 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Workspace ID
-  additionalinfo: Provide if you are a cloud user. You can get your workspace id by running the `jira-asset-get-workspace` command with your site name.
-  name: workspace_id
-  required: false
-  type: 0
-  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -33,16 +27,6 @@ display: Atlassian Jira Service Management
 name: AtlassianJiraServiceManagement
 script:
   commands:
-  - arguments:
-    - description: To get this value, log in to your Atlassian cloud account and go to your Service Management app. Your site name is the first expression of your URL. e.g https://{{site_name}}.atlassian.net/.
-      name: jira_site_name
-      required: true
-    description: Relevant for cloud users only. Retrieve the workspace id from your Atlassian cloud account
-    name: jira-asset-get-workspace
-    outputs:
-    - contextPath: JiraAsset.Workspace.ID
-      description: The id of the workspace.
-      type: String
   - arguments:
       - description: The amount of schemas to retrieve. Cannot be used alongside the page and page_size arguments.
         name: limit
