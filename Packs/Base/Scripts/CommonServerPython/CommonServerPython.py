@@ -33,6 +33,9 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
+MAX_MSG_LENGTH = 60000
+MAX_CHARS_PREFIX_SUFFIX = 10000  # for shortening a long message
+
 
 def __line__():
     cf = currentframe()
@@ -7297,10 +7300,12 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
+        truncated_message = f'{message[:MAX_CHARS_PREFIX_SUFFIX]}... This error body was truncated...' \
+                            f'{message[-MAX_CHARS_PREFIX_SUFFIX:]}' if len(message) > MAX_MSG_LENGTH else message
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': message,
+            'Contents': truncated_message,
             'EntryContext': outputs,
         })
         sys.exit(0)
