@@ -38,5 +38,3 @@ def main():  # pragma: no cover
         return_error(f"Failed to execute PrintToAlert. Error: {str(ex)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
