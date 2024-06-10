@@ -1359,7 +1359,7 @@ def list_containers_command(a1000: A1000):
 
 
 def list_containers_output(resp_json):
-    markdown = f"""## ReversingLabs A1000 List containers for hashes"""
+    markdown = "## ReversingLabs A1000 List containers for hashes"
     resp_table = tableToMarkdown("", resp_json)
     markdown = markdown + f"""\n{resp_table}"""
 
