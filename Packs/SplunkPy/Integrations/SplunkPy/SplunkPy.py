@@ -963,6 +963,7 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """
     searchable_search: list = []
     start = 0
+    add_backslash = False
 
     for match in re.finditer(DRILLDOWN_REGEX, search):
         groups = match.groups()
@@ -973,21 +974,23 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
             if not is_query_name:
                 demisto.error(f'Failed building drilldown search query. Field {raw_field} was not found in the notable.')
             return ""
-        
+
         if prefix:
             if field in USER_RELATED_FIELDS:
                 add_backslash = True
             replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash)
-            
+
         elif field in USER_RELATED_FIELDS and not is_query_name:
+            # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
+            # the backslash by using the double-slash ( \\ ) string
             replacement = replacement.replace('\\', '\\\\')
             replacement = f""""{replacement.strip('"')}\""""
-            
+
         end = match.start()
         searchable_search.extend((search[start:end], str(replacement)))
         start = match.end()
     searchable_search.append(search[start:])  # Handling the tail of the query
-    
+
     parsed_query = ''.join(searchable_search)
     demisto.debug(f"Parsed query is: {parsed_query}")
 
