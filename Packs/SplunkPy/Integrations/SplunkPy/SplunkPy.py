@@ -86,6 +86,7 @@ ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     IDENTITY_ENRICHMENT: 'successful_identity_enrichment'
 }
 COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
+USER_RELATED_FIELDS = ['user', 'src_user']
 
 # =========== Not Missing Events Mechanism Globals ===========
 CUSTOM_ID = 'custom_id'
@@ -972,14 +973,25 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
             if not is_query_name:
                 demisto.error(f'Failed building drilldown search query. Field {raw_field} was not found in the notable.')
             return ""
+        
         if prefix:
-            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+            if field in USER_RELATED_FIELDS:
+                add_backslash = True
+            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash)
+            
+        elif field in USER_RELATED_FIELDS and not is_query_name:
+            replacement = replacement.replace('\\', '\\\\')
+            replacement = f""""{replacement.strip('"')}\""""
+            
         end = match.start()
         searchable_search.extend((search[start:end], str(replacement)))
         start = match.end()
     searchable_search.append(search[start:])  # Handling the tail of the query
+    
+    parsed_query = ''.join(searchable_search)
+    demisto.debug(f"Parsed query is: {parsed_query}")
 
-    return ''.join(searchable_search)
+    return parsed_query
 
 
 def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
@@ -1146,7 +1158,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
     if users := get_fields_query_part(
         notable_data=notable_data,
         prefix="identity",
-        fields=["user", "src_user"],
+        fields=USER_RELATED_FIELDS,
         add_backslash=True,
     ):
         tables = argToList(demisto.params().get('identity_enrich_lookup_tables', DEFAULT_IDENTITY_ENRICH_TABLE))
