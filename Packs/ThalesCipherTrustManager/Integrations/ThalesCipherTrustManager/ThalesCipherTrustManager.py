@@ -379,18 +379,18 @@ def optional_arg_to_datetime_string(arg: Optional[str], date_format: str = DATE_
 
 
 def add_empty_date_param(request_data: dict, argument_value: Optional[str], param_name: str,
-                         empty_arg_value: str = "empty") -> None:
+                         empty_arg_value: str = "empty"):
     if argument_value is not None:
         request_data[param_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
 
 
 def add_empty_list_param(request_data: dict, argument_value: Optional[str], param_name: str,
-                         empty_arg_value: str = "empty") -> None:
+                         empty_arg_value: str = "empty"):
     if argument_value is not None:
         request_data[param_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
 
 
-def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_name: str) -> None:
+def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_name: str):
     if argument_value is None:
         return
     if 'login_flags' not in request_data:
@@ -416,31 +416,29 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
+def return_file_results(data: list[str] | str, filenames: list[str] | str):
+    if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
+        return_results(
+            [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data)])
+    else:
+        return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
+
+
 def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file_names: Optional[list[str] | str] = None) -> dict[
     str, Any]:
     new_outputs = outputs.copy()
     if isinstance(keys, list):
+        values = []
         if (file_names and not isinstance(file_names, list)) or (file_names and len(file_names) != len(keys)):
             raise ValueError('file_names argument must be a list of the same length if keys argument is a list')
-        files_results = []
         for idx, key in enumerate(keys):
-            value = new_outputs.pop(key, '')
-            if file_names and value:
-                files_results.append(fileResult(file_names[idx], value, EntryType.ENTRY_INFO_FILE))
-        if file_names:
-            return_file_result(files_results)
+            values.append(new_outputs.pop(key, ''))
     else:
-        value = new_outputs.pop(keys, None)
-        if file_names:
-            if not isinstance(file_names, str):
-                raise ValueError('file_names argument must be a string if keys argument is a string')
-            if value:
-                return_file_result(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
+        values = new_outputs.pop(keys, None)
+    if file_names:
+        return_file_results(values, file_names)
+
     return new_outputs
-
-
-def return_file_result(file_results: list[dict] | dict):
-    return_results(file_results)
 
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
@@ -460,7 +458,7 @@ def return_password_protected_zip_file_result(zip_filename: str, filename: str, 
     create_zip_protected_file(zip_filename, filename, data, password)
     with open(zip_filename, 'rb') as f:
         file_data = f.read()
-    return_file_result(fileResult(zip_filename, file_data, EntryType.ENTRY_INFO_FILE))
+    return_results(fileResult(zip_filename, file_data, EntryType.ENTRY_INFO_FILE))
 
 
 ''' COMMAND FUNCTIONS '''

@@ -6,7 +6,7 @@ import json
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCKER_CREATE_AUTH_TOKEN = "ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
 MOCKER_LOAD_CONTENT_FROM_FILE = 'ThalesCipherTrustManager.load_content_from_file'
-MOCKER_RETURN_FILE_RESULT = 'ThalesCipherTrustManager.return_file_result'
+MOCKER_RETURN_FILE_RESULT = 'ThalesCipherTrustManager.return_file_results'
 MOCKER_RETURN_PASSWORD_PROTECTED_ZIP_FILE_RESULT = 'ThalesCipherTrustManager.return_password_protected_zip_file_result'
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
