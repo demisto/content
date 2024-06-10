@@ -27,6 +27,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
     | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
     | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
+    | Reopen Statuses | Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination. | False |
     | Incidents Fetch Interval |  | False |
     | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
