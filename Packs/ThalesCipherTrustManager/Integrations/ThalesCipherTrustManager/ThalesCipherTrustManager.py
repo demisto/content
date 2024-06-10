@@ -428,15 +428,19 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str, file
             if file_names and value:
                 files_results.append(fileResult(file_names[idx], value, EntryType.ENTRY_INFO_FILE))
         if file_names:
-            return_results(files_results)
+            return_file_result(files_results)
     else:
         value = new_outputs.pop(keys, None)
         if file_names:
             if not isinstance(file_names, str):
                 raise ValueError('file_names argument must be a string if keys argument is a string')
             if value:
-                return_results(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
+                return_file_result(fileResult(file_names, value, EntryType.ENTRY_INFO_FILE))
     return new_outputs
+
+
+def return_file_result(file_results: list[dict] | dict):
+    return_results(file_results)
 
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
@@ -456,7 +460,7 @@ def return_password_protected_zip_file_result(zip_filename: str, filename: str, 
     create_zip_protected_file(zip_filename, filename, data, password)
     with open(zip_filename, 'rb') as f:
         file_data = f.read()
-    return_results(fileResult(zip_filename, file_data, file_type=EntryType.ENTRY_INFO_FILE))
+    return_file_result(fileResult(zip_filename, file_data, EntryType.ENTRY_INFO_FILE))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -812,9 +816,11 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     )
     raw_response = client.get_certificates_list(ca_id=args.get(CA_ID, ''),
                                                 params=params)
+    outputs = [remove_key_from_outputs(certificate, ['csr', 'cert']) for certificate in
+               raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=raw_response.get('resources'),
+        outputs=outputs,
         raw_response=raw_response,
         readable_output=tableToMarkdown('certificates',
                                         raw_response.get('resources')),
@@ -870,14 +876,14 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=outputs
+        raw_response=raw_response
     )
 
 
 def external_ca_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     client.delete_external_ca(external_ca_id=args.get(EXTERNAL_CA_ID, ''))
     return CommandResults(
-        readable_output=f'{args.get(EXTERNAL_CERT_ID)} has been deleted successfully!'
+        readable_output=f'{args.get(EXTERNAL_CA_ID)} has been deleted successfully!'
     )
 
 

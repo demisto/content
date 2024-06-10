@@ -2,7 +2,7 @@
     "skip": 0,
     "limit": 10,
     "total": 1,
-    "resources": {
+    "resources":[ {
         "name": "fake-cert",
         "id": "abcd1234-ef56-7890-gh12-ijkl34567890",
         "uri": "kylo:kylo:naboo:certs:abcd1234-ef56-7890-gh12-ijkl34567890",
@@ -22,5 +22,5 @@
         "issuer": "/CN=fake issuer",
         "notBefore": "2024-01-01T00:00:00.000Z",
         "notAfter": "2025-01-01T00:00:00.000Z"
-    }
+    } ]
 }

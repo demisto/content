@@ -6,6 +6,8 @@ import json
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCKER_CREATE_AUTH_TOKEN = "ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
 MOCKER_LOAD_CONTENT_FROM_FILE = 'ThalesCipherTrustManager.load_content_from_file'
+MOCKER_RETURN_FILE_RESULT = 'ThalesCipherTrustManager.return_file_result'
+MOCKER_RETURN_PASSWORD_PROTECTED_ZIP_FILE_RESULT = 'ThalesCipherTrustManager.return_password_protected_zip_file_result'
 MOCK_USERNAME = 'user'
 MOCK_PASSWORD = 'password123'
 MOCK_SERVER_URL = 'https://example.com'
@@ -14,6 +16,13 @@ MOCK_SERVER_URL = 'https://example.com'
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def remove_keys_from_dict(d, keys):
+    copy_d = d.copy()
+    for key in keys:
+        copy_d.pop(key, '')
+    return copy_d
 
 
 ''' CONSTANTS '''
@@ -172,7 +181,7 @@ USERS_LIST_TEST_ARGS = [
 USER_CREATE_TEST_ARGS = [
     {
         NAME: "Test User",
-        "user_id": "root|12345678-1234-1234-1234-123456789012",
+        USER_ID: "root|12345678-1234-1234-1234-123456789012",
         "username": "testuser",
         "password": "TestPassword!123",
         "email": "testuser@example.com",
@@ -529,16 +538,22 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
     assert request_data.get('login_flags') == expected_login_flags
 
 
-# todo: test file loads?
 ''' COMMAND FUNCTIONS TESTS '''
 
 
 @pytest.fixture(autouse=True)
 def patch_create_auth_token(monkeypatch):
+    empty_lambda = lambda: None
+
     def mock_create_auth_token(*args, **kwargs):
         return util_load_json('test_data/mock_create_auth_token_response.json')
 
+    def empty_func(*args, **kwargs):
+        return None
+
     monkeypatch.setattr(MOCKER_CREATE_AUTH_TOKEN, mock_create_auth_token)
+    monkeypatch.setattr(MOCKER_RETURN_FILE_RESULT, empty_func)
+    monkeypatch.setattr(MOCKER_RETURN_PASSWORD_PROTECTED_ZIP_FILE_RESULT, empty_func)
 
 
 @pytest.mark.parametrize('args', GROUPS_LIST_TEST_ARGS)
@@ -755,8 +770,7 @@ def test_user_password_change_command(mock_change_current_user_password, args):
 def test_local_ca_create_command(mock_create_local_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_create_command
     mock_create_local_ca.return_value = util_load_json('test_data/mock_local_ca_create_response.json')
-    mock_outputs = mock_create_local_ca.return_value.copy()
-    mock_outputs.pop('csr')
+    mock_outputs = remove_keys_from_dict(mock_create_local_ca.return_value, ['csr'])
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -774,6 +788,8 @@ def test_local_ca_create_command(mock_create_local_ca, args):
 def test_local_ca_list_command(mock_get_local_ca_list, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_list_command
     mock_get_local_ca_list.return_value = util_load_json('test_data/mock_local_ca_list_response.json')
+    mock_outputs = [remove_keys_from_dict(output, ['csr', 'cert']) for output in
+                    mock_get_local_ca_list.return_value.get('resources')]
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -782,7 +798,7 @@ def test_local_ca_list_command(mock_get_local_ca_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_local_ca_list.return_value.get('resources')
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_get_local_ca_list.return_value
 
 
@@ -790,16 +806,15 @@ def test_local_ca_list_command(mock_get_local_ca_list, args):
 def test_local_ca_list_command_id_provided(mock_get_local_ca):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_list_command
     mock_get_local_ca.return_value = util_load_json('test_data/mock_local_ca_list_id_provided_response.json')
-
+    mock_outputs = remove_keys_from_dict(mock_get_local_ca.return_value, ['csr', 'cert'])
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
-    # todo: pass id
     args = {"local_ca_id": "123e4567-e89b-12d3-a456-426614174000", "chained": "true"}
     result = local_ca_list_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_local_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_get_local_ca.return_value
 
     args = {"chained": "true"}
@@ -812,7 +827,7 @@ def test_local_ca_list_command_id_provided(mock_get_local_ca):
 def test_local_ca_update_command(mock_update_local_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_update_command
     mock_update_local_ca.return_value = util_load_json('test_data/mock_local_ca_update_response.json')
-
+    mock_outputs = remove_keys_from_dict(mock_update_local_ca.return_value, ['csr', 'cert'])
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
@@ -820,7 +835,7 @@ def test_local_ca_update_command(mock_update_local_ca, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_update_local_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_update_local_ca.return_value
 
 
@@ -847,7 +862,7 @@ def test_local_ca_delete_command(mock_delete_local_ca, args):
 def test_local_ca_self_sign_command(mock_self_sign_local_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_self_sign_command
     mock_self_sign_local_ca.return_value = util_load_json('test_data/mock_local_ca_self_sign_response.json')
-
+    mock_outputs = remove_keys_from_dict(mock_self_sign_local_ca.return_value, ['csr', 'cert'])
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
@@ -855,7 +870,7 @@ def test_local_ca_self_sign_command(mock_self_sign_local_ca, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_self_sign_local_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_self_sign_local_ca.return_value
 
 
@@ -879,6 +894,7 @@ def test_local_ca_install_command(mock_install_local_ca, mock_load_content_from_
     from ThalesCipherTrustManager import CipherTrustClient, local_ca_install_command
     mock_install_local_ca.return_value = util_load_json('test_data/mock_local_ca_install_response.json')
     mock_load_content_from_file.return_value = FAKE_CERT
+    mock_outputs = remove_keys_from_dict(mock_install_local_ca.return_value, ['csr', 'cert'])
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -887,7 +903,7 @@ def test_local_ca_install_command(mock_install_local_ca, mock_load_content_from_
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_INSTALL_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_install_local_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_install_local_ca.return_value
 
 
@@ -898,6 +914,7 @@ def test_certificate_issue_command(mock_load_content_from_file, mock_issue_certi
     from ThalesCipherTrustManager import CipherTrustClient, certificate_issue_command
     mock_issue_certificate.return_value = util_load_json('test_data/mock_certificate_issue_response.json')
     mock_load_content_from_file.return_value = FAKE_CSR
+    mock_outputs = remove_keys_from_dict(mock_issue_certificate.return_value, ['cert'])
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -906,7 +923,7 @@ def test_certificate_issue_command(mock_load_content_from_file, mock_issue_certi
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_issue_certificate.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_issue_certificate.return_value
 
 
@@ -928,7 +945,8 @@ def test_certificate_issue_command_missing_args(mock_load_content_from_file, moc
 def test_certificate_list_command(mock_get_certificates_list, args):
     from ThalesCipherTrustManager import CipherTrustClient, certificate_list_command
     mock_get_certificates_list.return_value = util_load_json('test_data/mock_certificate_list_response.json')
-
+    mock_outputs = [remove_keys_from_dict(output, ['csr', 'cert']) for output in
+                    mock_get_certificates_list.return_value.get('resources')]
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
@@ -936,7 +954,7 @@ def test_certificate_list_command(mock_get_certificates_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_certificates_list.return_value.get('resources')
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_get_certificates_list.return_value
 
 
@@ -963,7 +981,7 @@ def test_local_certificate_delete_command(mock_delete_certificate, args):
 def test_certificate_revoke_command(mock_revoke_certificate, args):
     from ThalesCipherTrustManager import CipherTrustClient, certificate_revoke_command
     mock_revoke_certificate.return_value = util_load_json('test_data/mock_certificate_revoke_response.json')
-
+    mock_outputs = remove_keys_from_dict(mock_revoke_certificate.return_value, ['cert'])
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
 
@@ -971,7 +989,7 @@ def test_certificate_revoke_command(mock_revoke_certificate, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_revoke_certificate.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_revoke_certificate.return_value
     assert result.readable_output == f'{args[CERT_ID]} has been revoked'
 
@@ -981,6 +999,7 @@ def test_certificate_revoke_command(mock_revoke_certificate, args):
 def test_certificate_resume_command(mock_resume_certificate, args):
     from ThalesCipherTrustManager import CipherTrustClient, certificate_resume_command
     mock_resume_certificate.return_value = util_load_json('test_data/mock_certificate_resume_response.json')
+    mock_outputs = remove_keys_from_dict(mock_resume_certificate.return_value, ['cert'])
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -989,7 +1008,7 @@ def test_certificate_resume_command(mock_resume_certificate, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_resume_certificate.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_resume_certificate.return_value
     assert result.readable_output == f'{args[CERT_ID]} has been resumed'
 
@@ -1000,6 +1019,7 @@ def test_certificate_resume_command(mock_resume_certificate, args):
 def test_external_ca_upload_command(mock_load_content_from_file, mock_upload_external_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_ca_upload_command
     mock_upload_external_ca.return_value = util_load_json('test_data/mock_external_ca_upload_response.json')
+    mock_outputs = remove_keys_from_dict(mock_upload_external_ca.return_value, ['cert'])
     mock_load_content_from_file.return_value = FAKE_CERT
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
@@ -1009,7 +1029,7 @@ def test_external_ca_upload_command(mock_load_content_from_file, mock_upload_ext
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_upload_external_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_upload_external_ca.return_value
 
 
@@ -1036,6 +1056,7 @@ def test_external_ca_delete_command(mock_delete_external_ca, args):
 def test_external_ca_update_command(mock_update_external_ca, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_ca_update_command
     mock_update_external_ca.return_value = util_load_json('test_data/mock_external_ca_update_response.json')
+    mock_outputs = remove_keys_from_dict(mock_update_external_ca.return_value, ['cert'])
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -1044,16 +1065,17 @@ def test_external_ca_update_command(mock_update_external_ca, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_update_external_ca.return_value
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_update_external_ca.return_value
 
 
-@pytest.mark.parametrize('args', EXTERNAL_CA_UPDATE_TEST_ARGS)
+@pytest.mark.parametrize('args', EXTERNAL_CA_LIST_TEST_ARGS)
 @patch(MOCKER_HTTP_METHOD)
 def test_external_ca_list_command(mock_get_external_ca_list, args):
     from ThalesCipherTrustManager import CipherTrustClient, external_ca_list_command
     mock_get_external_ca_list.return_value = util_load_json(
         'test_data/mock_external_ca_list_response.json')
+    mock_outputs = [remove_keys_from_dict(output, ['cert']) for output in mock_get_external_ca_list.return_value.get('resources')]
 
     client = CipherTrustClient(username=MOCK_USERNAME, password=MOCK_PASSWORD, server_url=MOCK_SERVER_URL, verify=False,
                                proxy=False)
@@ -1062,7 +1084,7 @@ def test_external_ca_list_command(mock_get_external_ca_list, args):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_get_external_ca_list.return_value.get('resources')
+    assert result.outputs == mock_outputs
     assert result.raw_response == mock_get_external_ca_list.return_value
 
 
