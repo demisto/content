@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-payload = {'query': demisto.args().get('query', 'system:T')}
+payload = {'query': 'system:T'}
 res = demisto.executeCommand("core-api-post", {"uri": "playbook/search", "body": json.dumps(payload)})[0]["Contents"]["response"]
 
 if not res['playbooks']:
@@ -11,7 +11,7 @@ playbooksList = []
 for item in res["playbooks"]:
     playbook = {}
     if not (item.get('detached') is None):
-        if item['detached'] == True:
+        if item['detached'] is True:
             playbook['name'] = item['name']
             playbooksList.append(playbook)
 
