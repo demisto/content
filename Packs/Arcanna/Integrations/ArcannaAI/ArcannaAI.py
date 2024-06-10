@@ -95,7 +95,7 @@ def get_jobs(client: Client) -> CommandResults:
 
     headers = ["job_id", "title", "status", "last_processed_timestamp"]
 
-    readable_output = tableToMarkdown(name="Arcanna Jobs", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Jobs", headers=headers, t=result, removeNull=True)
 
     outputs = {
         'Arcanna.Jobs(val.job_id && val.job_id === obj.job_id)': createContext(result)
@@ -111,7 +111,7 @@ def export_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> C
     event_id = args.get("event_id")
     result = client.export_event(job_id=job_id, event_id=event_id)
     headers = ["arcanna_event", "status", "ingest_timestamp","event_id", "error_message"]
-    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result, removeNull=True)
     
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
@@ -130,8 +130,8 @@ def trigger_training(client: Client, default_job_id: int, args: Dict[str, Any]) 
     job_id = args.get("job_id", default_job_id)
     username = args.get("username", None)
     result = client.trigger_training(job_id=job_id, username=username)
-    headers = ["result", "error_message"]
-    readable_output = tableToMarkdown(name="Arcanna Training", headers=headers, t=result)
+    headers = ["status", "error_message"]
+    readable_output = tableToMarkdown(name="Arcanna.ai training outcome", headers=headers, t=result, removeNull=True)
     outputs = {
         'Arcanna.Training(val.job_id && val.job_id === obj.job_id)': createContext(result)
     }
@@ -147,7 +147,7 @@ def get_decision_set(client: Client, default_job_id: int, args: Dict[str, Any]) 
     job_id = args.get("job_id", default_job_id)
     result = client.get_decision_set(job_id=job_id)
     headers = ["decision_set", "error_message"]
-    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result, removeNull=True)
     outcome = {
         "decision_set": result
     }
@@ -185,7 +185,7 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
 
     
     headers = ["event_id", "ingest_timestamp", "status", "error_message","job_id"]
-    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result, removeNull=True)
 
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
@@ -206,7 +206,7 @@ def get_event_status(client: Client, default_job_id: int, args: Dict[str, Any]) 
     
     headers = ["event_id", "ingest_timestamp", "status", "error_message","bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
     
-    readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result, removeNull=True)
 
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
@@ -240,7 +240,7 @@ def send_event_feedback(client: Client, default_job_id: int, args: Dict[str, Any
     result = client.send_feedback(job_id, event_id, payload)
     
     headers = ["feedback_status", "status", "details"]
-    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result, removeNull=True)
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
     }

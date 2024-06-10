@@ -29,6 +29,19 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: A closing reason to Arcanna labels.
+  name: feature_mapping
+  type: 12
+  required: false
+  hidden: true
+  defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
+- display: Alert closing reason
+  name: closing_reason_field
+  type: 0
+  required: false
+  hidden: false
+  defaultValue: closeReason
+  additionalinfo: This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
 - display: Default Arcanna Job Id
   name: default_job_id
   defaultvalue: "1201"
