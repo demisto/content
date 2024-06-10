@@ -206,7 +206,9 @@ def test_no_iocs_returned_from_search_indicators(mocker):
                                                  ('', ''),
                                                  ('\t\r\n', '\\t\\r\\n'),
                                                  ('([', '\(\['),
-                                                 ('^ASDF:', '\^ASDF\:')])
+                                                 ('^ASDF:', '\^ASDF\:'),
+                                                 ('aaa\gg123:', r'aaa\\gg123\:'),
+                                                 ('"', '\\"')])
 def test_escape_special_characters(input, expected_res):
     """
     Given:
@@ -217,4 +219,5 @@ def test_escape_special_characters(input, expected_res):
         Ensure a backslash is added for the chars \n, \t, \r.
     """
     from GetIndicatorDBotScoreFromCache import escape_special_characters
-    assert expected_res == escape_special_characters(input)
+    a = escape_special_characters(input)
+    assert a == expected_res

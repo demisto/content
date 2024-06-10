@@ -14,7 +14,6 @@ def escape_special_characters(text: str) -> str:
     """
     return (
         text.replace("\\", r"\\")
-        .replace("\\", r"\\")
         .replace("\n", r"\n")
         .replace("\t", r"\t")
         .replace("\r", r"\r")
