@@ -6,6 +6,7 @@ on:
 env:
   DAY_BEFORE_STALE: 30
   DAY_BEFORE_CLOSE: 15
+  OPERATION_PER_RUN: 1000
   EXEMPT_LABELS: "Ignore Stale,External PR"
 
 jobs:
@@ -23,6 +24,7 @@ jobs:
           days-before-issue-close: -1
           days-before-pr-stale: ${{env.DAY_BEFORE_STALE}}
           days-before-pr-close: ${{env.DAY_BEFORE_CLOSE}}
+          operations-per-run: ${{env.OPERATION_PER_RUN}}
           stale-pr-message: "This PR is marked as 'Stale' because it has been open for ${{env.DAY_BEFORE_STALE}} days with no activity, it will be automatically closed in ${{env.DAY_BEFORE_CLOSE}} days if no activity will be done. To reset the counter just remove the 'Stale' label or make changes to update this PR. If you wish this PR will never be marked as 'Stale' add the 'Ignore Stale'"
           delete-branch: true
           remove-pr-stale-when-updated: true

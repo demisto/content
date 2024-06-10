@@ -15,101 +15,6 @@
     "name": "API Execution Metrics",
     "layout": [
         {
-            "id": "e7377a00-e12b-11ee-8377-d592a71a5531",
-            "forceRange": false,
-            "x": 8,
-            "y": 0,
-            "i": "e7377a00-e12b-11ee-8377-d592a71a5531",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "0821903b-1099-4f3d-8c30-27decd8c5c06",
-                "version": 3,
-                "cacheVersn": 0,
-                "modified": "2024-03-13T11:21:27.174372329Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for FortiSandbox2",
-                "prevName": "API Call Results for FortiSandbox2",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and name:FortiSandboxv2",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
             "id": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
             "forceRange": false,
             "x": 0,
@@ -136,11 +41,11 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "Successful vs. Rate Limited API Calls by Integration",
+                "name": "API Call Status by Integration",
                 "prevName": "Successful vs. Rate Limited API Calls by Integration",
                 "dataType": "metrics",
                 "widgetType": "bar",
-                "query": "type:integration and metricType:",
+                "query": "type:integration and apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -184,6 +89,113 @@
                                     ]
                                 ],
                                 "name": "Success"
+                            },
+                            "Auth Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "AuthError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Auth Error"
+                            },
+                            "Connection Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ConnectionError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Connection Error"
+                            },
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Other": {
+                                "name": "Other"
+                            },
+                            "Proxy Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ProxyError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Proxy Error"
+                            },
+                            "Retry Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "RetryError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Retry Error"
+                            },
+                            "SSL Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "SSLError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "SSL Error"
+                            },
+                            "Service Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "ServiceError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Service Error"
+                            },
+                            "Timeout Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "TimeoutError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Timeout Error"
                             }
                         }
                     ],
@@ -194,34 +206,39 @@
                     "keys": [
                         "sum|totalAPICalls"
                     ],
+                    "valuesFormat": "abbreviated",
+                    "hideLegend": false,
                     "legend": [
                         {
-                            "color": "#01A2EC",
-                            "name": "urlscan.io"
+                            "color": "#F50057",
+                            "name": "General Error"
                         },
                         {
                             "color": "#229D80",
-                            "name": "VirusTotal (API v3)"
+                            "name": "Success"
                         },
                         {
-                            "color": "#F50057",
-                            "name": "Rasterize"
-                        },
-                        {
-                            "color": "#ce5050",
+                            "color": "#FD5BDE",
                             "name": "Quota Error"
                         },
                         {
-                            "color": "#4fa327",
-                            "name": "Success"
+                            "color": "#FFC4C6",
+                            "name": "Service Error"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "Auth Error"
+                        },
+                        {
+                            "color": "#01A2EC",
+                            "name": "Other"
                         }
                     ],
-                    "limitType": "top",
-                    "valuesFormat": "abbreviated"
+                    "limitType": "top"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "sizeInBytes": 0,
+                "created": "0001-01-01T00:00:00Z"
             },
             "reflectDimensions": true
         },
@@ -275,123 +292,26 @@
                     "keys": [
                         "sum|totalAPICalls"
                     ],
-                    "valuesFormat": "abbreviated"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
-            "forceRange": false,
-            "x": 8,
-            "y": 3,
-            "i": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
-                "version": 4,
-                "cacheVersn": 0,
-                "sequenceNumber": 409396,
-                "primaryTerm": 2,
-                "modified": "2022-04-27T15:34:53.64268093Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for VirusTotal",
-                "prevName": "API Call Results for VirusTotal",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"VirusTotal (API v3)_instance_1\" or \"VirusTotal (API v3)_instance_1_copy\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
                     "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#1DB846": {
+                                "value": 3
+                            },
+                            "#D13C3C": {
+                                "value": 0
+                            },
+                            "#EF9700": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    }
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
+                "sizeInBytes": 0,
+                "created": "0001-01-01T00:00:00Z"
             },
             "reflectDimensions": true
         },
@@ -421,7 +341,6 @@
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "Widget imported",
                 "shouldCommit": true,
-                "size": 5,
                 "Cache": null,
                 "name": "API Execution Metrics For Enrichment Commands",
                 "prevName": "API Execution Metrics For Enrichment Commands",
@@ -429,7 +348,6 @@
                 "widgetType": "column",
                 "query": "type:integration and command:domain or command:url or command:ip or command:file",
                 "isPredefined": false,
-                "description": "Errors by Incident Type per Command (top 5)",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -444,6 +362,10 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": {
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "valuesFormat": "regular",
                     "customGroupBy": [
                         null,
                         {
@@ -492,9 +414,6 @@
                         "command",
                         "apiResponseType"
                     ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
                     "referenceLine": {},
                     "showGraphValues": true,
                     "tableColumns": [
@@ -529,852 +448,30 @@
                             "position": 5
                         }
                     ],
-                    "valuesFormat": "regular",
-                    "xAxisLabel": "Enrichment Command name ",
+                    "xAxisLabel": "Enrichment Command Name ",
                     "yAxisLabel": "Error count"
                 },
                 "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "63de01c0-e0e1-11ec-a7f6-39e12e3bcb7a",
-            "forceRange": false,
-            "x": 8,
-            "y": 6,
-            "i": "63de01c0-e0e1-11ec-a7f6-39e12e3bcb7a",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
-                "version": 5,
-                "cacheVersn": 0,
-                "sequenceNumber": 409396,
-                "primaryTerm": 2,
-                "modified": "2022-05-31T12:58:36.448784342Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "Widget imported",
-                "shouldCommit": true,
-                "Cache": null,
-                "name": "API Call Results for UrlScan",
-                "prevName": "API Call Results for UrlScan",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"urlscan.io_instance_1\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "",
-                        "byFrom": "days",
-                        "toValue": null,
-                        "fromValue": 0,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Retry Timeout": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "RetryTimeout",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Retry Timeout"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {
-                        "type": "max"
-                    },
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "8caf2770-583a-11ed-b0d6-31717adfe334",
-            "forceRange": false,
-            "x": 8,
-            "y": 9,
-            "i": "8caf2770-583a-11ed-b0d6-31717adfe334",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "API Call Results for Microsoft Defender for Endpoint",
-                "version": 1,
-                "cacheVersn": 0,
-                "modified": "2022-10-30T10:01:15.237569307Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for Microsoft Defender for Endpoint",
-                "prevName": "API Call Results for Microsoft Defender for Endpoint",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"Microsoft Defender Advanced Threat Protection_instance_1\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "8d4f5f10-583a-11ed-b0d6-31717adfe334",
-            "forceRange": false,
-            "x": 4,
-            "y": 8,
-            "i": "8d4f5f10-583a-11ed-b0d6-31717adfe334",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "API Call Results for Microsoft Graph Mail",
-                "version": 1,
-                "cacheVersn": 0,
-                "modified": "2022-10-30T10:05:03.146716149Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for Microsoft Graph Mail",
-                "prevName": "API Call Results for Microsoft Graph Mail",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"MicrosoftGraphMail_instance_1\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
-            "forceRange": false,
-            "x": 8,
-            "y": 12,
-            "i": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
-            "w": 4,
-            "h": 2,
-            "widget": {
-                "id": "c63390c0-0c5e-4906-8b44-a748e6a639ee",
-                "version": 1,
-                "cacheVersn": 0,
-                "modified": "2023-07-16T11:10:20.740319Z",
-                "packID": "JoeSecurity",
-                "packName": "Joe Security",
-                "itemVersion": "1.1.9",
-                "fromServerVersion": "6.5.0",
-                "toServerVersion": "",
-                "propagationLabels": [],
-                "packPropagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for Joe Security",
-                "prevName": "API Call Results for Joe Security",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"JoeSecurityV2_instance_1\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "",
-                        "byFrom": "days",
-                        "toValue": null,
-                        "fromValue": 0,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "Auth Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "AuthError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Auth Error"
-                            },
-                            "Connection Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "ConnectionError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Connection Error"
-                            },
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(d)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {
-                        "type": "max"
-                    },
-                    "showOthers": false,
-                    "timeFrame": "days",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "forceRange": false,
-            "h": 3,
-            "i": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
-            "id": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
-            "reflectDimensions": true,
-            "w": 4,
-            "widget": {
-                "Cache": null,
-                "cacheVersn": 0,
-                "category": "",
-                "commitMessage": "",
-                "dataType": "metrics",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 0,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "definitionId": "",
-                "fromServerVersion": "6.5.0",
-                "id": "c63390c0-0c5e-4906-8b44-a748e6a639ea",
-                "isPredefined": true,
-                "itemVersion": "3.0.0",
-                "modified": "2023-05-10T12:54:41.634649071Z",
-                "name": "API Call Results for Rapid7 Threat Command",
-                "packID": "IntSight",
-                "packName": "Rapid7 - Threat Command (IntSights)",
-                "packPropagationLabels": [
-                    "all"
-                ],
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(d)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {
-                        "type": "max"
-                    },
-                    "showOthers": false,
-                    "timeFrame": "days",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "prevName": "API Call Results for Rapid7 Threat Command",
-                "propagationLabels": [],
-                "query": "type:integration and instance:\"rapid7_threat_command_instance_1\" or \"rapid7_threat_command_instance_1_copy\"",
-                "shouldCommit": false,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 3,
-                "widgetType": "line",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "x": 0,
-            "y": 8
-        },
-        {
-            "id": "9e8acc20-8d3a-11ee-a736-df621984533b",
-            "forceRange": false,
-            "x": 4,
-            "y": 11,
-            "i": "9e8acc20-8d3a-11ee-a736-df621984533b",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "API Call Results for Email Hippo",
-                "version": 1,
-                "cacheVersn": 0,
-                "modified": "2022-10-30T10:01:15.237569307Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for Email Hippo",
-                "prevName": "API Call Results for Email Hippo",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration and instance:\"Email Hippo_instance_1\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            " Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": " Success"
-                            },
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "c4d4f820-b9fd-11ee-9dd7-37fe5ed8a2cc",
-            "forceRange": false,
-            "x": 0,
-            "y": 11,
-            "i": "c4d4f820-b9fd-11ee-9dd7-37fe5ed8a2cc",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
-                "version": 1,
-                "cacheVersn": 0,
-                "modified": "2024-01-14T16:57:28.451017133Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
-                "toServerVersion": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "definitionId": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
-                "Cache": null,
-                "name": "API Call Results for Autofocus",
-                "prevName": "API Call Results for Autofocus",
-                "dataType": "metrics",
-                "widgetType": "line",
-                "query": "type:integration  and name:\"AutoFocus V2\"",
-                "isPredefined": false,
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byTo": "days",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
-                        "field": ""
-                    },
-                    "fromDateLicense": "0001-01-01T00:00:00Z"
-                },
-                "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
-                    "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
-                    ],
-                    "keys": [
-                        "sum|totalAPICalls"
-                    ],
-                    "referenceLine": {},
-                    "timeFrame": "hours",
-                    "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
-                },
-                "category": "",
-                "created": "0001-01-01T00:00:00Z",
-                "sizeInBytes": 0
-            },
-            "reflectDimensions": true
-        },
-        {
-            "id": "adcecad0-17a8-11ef-b89d-b728009392bd",
-            "forceRange": false,
-            "x": 0,
-            "y": 14,
-            "i": "adcecad0-17a8-11ef-b89d-b728009392bd",
-            "w": 4,
-            "h": 3,
-            "widget": {
-                "id": "eff19897-4635-44c4-889c-f106373be355",
-                "version": 5,
-                "cacheVersn": 0,
-                "modified": "2024-05-21T19:31:05.883188536Z",
-                "created": "2024-05-21T10:22:20.546514077Z",
                 "sizeInBytes": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "size": 5,
+                "description": "Errors by Incident Type per Command (top 5)"
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "5b389a70-21b8-11ef-86d3-29ed4c950ba8",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "5b389a70-21b8-11ef-86d3-29ed4c950ba8",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "b42d7e6f-fe25-4963-8dc2-c2ca9cae8f1e",
+                "version": 2,
+                "cacheVersn": 0,
+                "modified": "2024-06-03T14:48:31.630201802Z",
                 "packID": "",
                 "packName": "",
                 "itemVersion": "",
@@ -1389,96 +486,104 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "API Call Results For Gmail Single User",
-                "prevName": "API Call Results For Gmail Single User",
+                "name": "API Call Results for Email Category",
+                "prevName": "Email",
                 "dataType": "metrics",
                 "widgetType": "line",
-                "query": "type:integration and name:\"Gmail Single User\"",
+                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and category:\"Email\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byTo": "hours",
-                        "byFrom": "hours",
-                        "toValue": 0,
-                        "fromValue": 3,
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
                         "field": ""
                     },
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": {
-                    "customGroupBy": [
-                        null,
-                        {
-                            "ConnectionError": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "ConnectionError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "ConnectionError"
-                            },
-                            "General Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "GeneralError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "General Error"
-                            },
-                            "Quota Error": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "QuotaError",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Quota Error"
-                            },
-                            "Success": {
-                                "conditions": [
-                                    [
-                                        {
-                                            "field": "apiResponseType",
-                                            "operator": "isEqualCaseString",
-                                            "right": "Successful",
-                                            "type": "string"
-                                        }
-                                    ]
-                                ],
-                                "name": "Success"
-                            }
-                        }
-                    ],
                     "groupBy": [
-                        "modified(h)",
-                        "apiResponseType"
+                        "modified(d)",
+                        "name"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "category": "",
+                "sizeInBytes": 0,
+                "created": "2024-06-03T14:48:11.173825958Z"
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "e6c4a200-21b8-11ef-86d3-29ed4c950ba8",
+            "forceRange": false,
+            "x": 8,
+            "y": 3,
+            "i": "e6c4a200-21b8-11ef-86d3-29ed4c950ba8",
+            "w": 4,
+            "h": 5,
+            "widget": {
+                "id": "f99ff2ec-6e20-4b5e-8d59-664d6f80b3c0",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2024-06-03T14:52:28.706525616Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "API Call Metrics",
+                "prevName": "API Metrics",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and (apiResponseType:Successful or apiResponseType:QuotaError or apiResponseType:ConnectionError or apiResponseType:TimeoutError or apiResponseType: GeneralError or apiResponseType:AuthError or apiResponseType:RetryError or apiResponseType:SSLError or apiResponseType:ProxyError or apiResponseType:ServiceError) and -category:Email",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "modified(d)",
+                        "name"
                     ],
                     "keys": [
                         "sum|totalAPICalls"
                     ],
-                    "timeFrame": "hours",
+                    "showGraphValues": true,
                     "valuesFormat": "abbreviated",
-                    "xAxisLabel": "Time",
-                    "yAxisLabel": "Request Counts"
+                    "hideLegend": false,
+                    "timeFrame": "days"
                 },
-                "category": ""
+                "category": "",
+                "sizeInBytes": 0,
+                "created": "2024-06-03T14:52:28.705817022Z"
             },
             "reflectDimensions": true
         }
