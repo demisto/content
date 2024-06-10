@@ -340,13 +340,11 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 is_tim_needed = check_if_pack_or_integration_is_feed(content_object)
                 if is_tim_needed:
                     return True
-                else:
-                    return False
     except Exception as er:
         print(f"couldn't checkout branch to get metadata, error is {er}")
         # if the checkout didn't work for any reason, will try to go over files manually
         return check_files_of_pr_manually(pr_files)
-
+    return False
 
 def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
