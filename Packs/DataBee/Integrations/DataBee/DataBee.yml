@@ -659,6 +659,7 @@ script:
   dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   script: ""
+defaultmapperin: DataBee - Incoming Mapper
 fromversion: 6.10.0
 tests:
   - No tests (auto formatted)
