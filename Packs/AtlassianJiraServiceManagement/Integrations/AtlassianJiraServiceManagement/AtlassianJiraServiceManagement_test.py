@@ -247,7 +247,7 @@ def test_jira_asset_object_schema_list_command(mocker: MockerFixture, args: dict
     """
     Given: An args dict with limit and/or all_results
     When: Calling the jira_asset_object_schema_list_command with the args dict
-    Then: The command returns results, taking into account the limit, only if all_results is fault
+    Then: The command returns results, taking into account the limit, only if all_results is false
     """
     mocked_return_value = command_test_data['object_schema_list']['response']
     mocked_client = mocker.patch.object(client, 'get_schema_list', return_value=mocked_return_value)
@@ -266,7 +266,7 @@ def test_jira_asset_object_type_list_command(mocker: MockerFixture, args: dict[s
     """
     Given: An args dict with limit and/or all_results
     When: Calling the jira_asset_object_type_list_command with the args dict
-    Then: The command returns results, taking into account the limit, only if all_results is fault
+    Then: The command returns results, taking into account the limit, only if all_results is false
     """
     mocked_return_value = command_test_data['object_type_list']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
@@ -285,7 +285,7 @@ def test_jira_asset_object_type_attribute_list_command(mocker: MockerFixture, ar
     """
     Given: An args dict with limit and/or all_results
     When: Calling the jira_asset_object_type_list_command with the args dict
-    Then: The command returns results, taking into account the limit, only if all_results is fault
+    Then: The command returns results, taking into account the limit, only if all_results is false
     """
     mocked_return_value = command_test_data['object_type_attributes']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_attributes', return_value=mocked_return_value)
@@ -396,5 +396,83 @@ def test_jira_asset_object_get_non_exising_object(mocker: MockerFixture):
     assert command_result.readable_output == f'Object with id: {object_id} does not exist'
 
 
-# def test_jira_asset_object_search_command(mocker: MockerFixture):
+def test_jira_asset_object_search_command(mocker: MockerFixture):
+    """
+    Given: A ql_query
+    When: The jira_asset_object_search_command function is called
+    Then: The client's search_objects function is called with said ql_query, with the default values for the rest of the arguments
+    """
+    ql_query = 'objectType = SW_engineer'
+    mocked_client = mocker.patch.object(
+        client,
+        'search_objects',
+        return_value=command_test_data['search_objects']['response']
+    )
+    JSM.jira_asset_object_search_command(client, {'ql_query': ql_query})
+    mocked_client.assert_called_with(ql_query, False, 1, 50, None)
+
+
+@pytest.mark.parametrize("args, expected_len", [
+    ({'object_type_id': '1'}, 6),
+    ({'object_type_id': '1', 'is_required': 'true'}, 4)
+])
+def test_jira_asset_attribute_json_create_command(mocker: MockerFixture, args, expected_len):
+    """
+    Given: An args dictionary with the object_type_id and an optional is_required argument
+    When: The jira_asset_attribute_json_create_command function is called
+    Then: The client's get_object_type_attributes function is called with the right parameters and returns only required objects
+            if the is_required argument is set to true
+    """
+    object_type_id = '1'
+    mocked_attributes_response = command_test_data['object_type_attributes']['response']
+    mock_attributes_call = mocker.patch.object(client, 'get_object_type_attributes', return_value=mocked_attributes_response)
+    command_results = JSM.jira_asset_attribute_json_create_command(client, args)
+    mock_attributes_call.assert_called_with(object_type_id=object_type_id, is_editable=False)
+    _, command_results = command_results
+    attributes = json.loads(command_results.readable_output).get('attributes')
+    assert len(attributes) == expected_len
+
+
+def test_jira_asset_comment_create_command(mocker: MockerFixture):
+    """
+    Given: An object id and a comment
+    When: The jira_asset_comment_create_command function is called
+    Then: The client's create_comment function is called with the object_id and the comment
+    """
+    object_id = '1'
+    comment = 'comment body'
+    mocked_client = mocker.patch.object(client, 'create_comment', return_value={'id': 1})
+    JSM.jira_asset_comment_create_command(client, {'object_id': object_id, 'comment': comment})
+    mocked_client.assert_called_with(object_id, comment)
+
+
+def test_jira_asset_comment_list_command(mocker: MockerFixture):
+    """
+    Given: An object id
+    When: The jira_asset_comment_list_command function is called
+    Then: The client's get_comment_list function is called with the object_id
+    """
+    object_id = '1'
+    mocked_client = mocker.patch.object(client, 'get_comment_list', return_value=[{'id': 1}])
+    JSM.jira_asset_comment_list_command(client, {'object_id': object_id})
+    mocked_client.assert_called_with(object_id)
+
+
+def test_jira_asset_connected_ticket_list_command(mocker: MockerFixture):
+    """
+    Given: An object id
+    When: The jira_asset_connected_ticket_list_command function is called
+    Then: The client's get_object_connected_tickets function is called with the object_id
+    """
+    object_id = '1'
+    mocked_client = mocker.patch.object(client, 'get_object_connected_tickets', return_value={'id': 1})
+    JSM.jira_asset_connected_ticket_list_command(client, {'object_id': object_id})
+    mocked_client.assert_called_with(object_id)
+
+
+def test_jira_asset_attachment_add_command(mocker: MockerFixture):
+    object_id = '1'
+    entry_id = None
+    JSM.jira_asset_attachment_add_command(client, {'object_id': object_id, 'entry_id': entry_id})
+
 

@@ -114,7 +114,12 @@ class Client(BaseClient):
             json_data=json_data
         )
 
-    def http_post(self, url_suffix, json_data):
+    def create_comment(self, object_id, comment):
+        url_suffix = '/comment/create'
+        json_data = {
+            'object_id': object_id,
+            'comment': comment
+        }
         return self._http_request(
             method='POST',
             url_suffix=url_suffix,
@@ -501,7 +506,7 @@ def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any
 def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     object_id = args.get('object_id')
     comment = args.get('comment')
-    res = client.http_post('/comment/create', {'objectId': object_id, 'comment': comment})
+    res = client.create_comment(object_id, comment)
     outputs = convert_keys_to_pascal([res], {'id': 'ID'})
 
     return CommandResults(

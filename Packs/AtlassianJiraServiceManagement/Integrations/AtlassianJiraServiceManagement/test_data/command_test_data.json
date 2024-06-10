@@ -448,5 +448,132 @@
             },
             "name": "Israel Israeli"
         }
+    },
+    "search_objects": {
+        "response": {
+            "objectEntries": [
+                {
+                    "id": 1,
+                    "label": "Israel Israeli",
+                    "objectKey": "TFZ-1",
+                    "avatar": {
+                        "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=16&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=48&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url72": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=72&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url144": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=144&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url288": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=288&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "objectId": 1
+                    },
+                    "objectType": {
+                        "id": "3",
+                        "name": "SW_Engineer",
+                        "type": 0,
+                        "icon": {
+                            "id": 10,
+                            "name": "Users",
+                            "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=16",
+                            "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=48"
+                        },
+                        "position": 0,
+                        "created": "2024-05-26T11:55:46.000Z",
+                        "updated": "2024-05-26T13:32:32.000Z",
+                        "objectCount": 0,
+                        "parentObjectTypeId": 2,
+                        "objectSchemaId": 1,
+                        "inherited": false,
+                        "abstractObjectType": false,
+                        "parentObjectTypeInherited": false
+                    },
+                    "created": "2024-05-26T11:58:38.000Z",
+                    "updated": "2024-05-26T11:58:38.000Z",
+                    "hasAvatar": false,
+                    "timestamp": 1716724718000,
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "objectTypeAttributeId": 13,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "TFZ-1",
+                                    "searchValue": "TFZ-1",
+                                    "displayValue": "TFZ-1",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 4,
+                            "objectTypeAttributeId": 14,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "Israel Israeli",
+                                    "searchValue": "Israel Israeli",
+                                    "displayValue": "Israel Israeli",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 2,
+                            "objectTypeAttributeId": 15,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "2024-05-26T11:58:38.000Z",
+                                    "searchValue": "2024-05-26T11:58:38.000Z",
+                                    "displayValue": "26/May/24 2:58 PM",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 3,
+                            "objectTypeAttributeId": 16,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "2024-05-26T11:58:38.000Z",
+                                    "searchValue": "2024-05-26T11:58:38.000Z",
+                                    "displayValue": "26/May/24 2:58 PM",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 5,
+                            "objectTypeAttributeId": 26,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "100000",
+                                    "searchValue": "100000",
+                                    "displayValue": "100000",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 6,
+                            "objectTypeAttributeId": 31,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "Python",
+                                    "searchValue": "Python",
+                                    "displayValue": "Python",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        }
+                    ],
+                    "_links": {
+                        "self": "https://jira-dc-qa.paloaltonetworks.com/secure/ShowObject.jspa?id=1"
+                    },
+                    "name": "Israel Israeli"
+                }
+            ]
+        }
     }
 }
