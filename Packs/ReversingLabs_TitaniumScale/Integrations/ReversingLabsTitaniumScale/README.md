@@ -1,4 +1,23 @@
-ReversingLabs advanced file decomposition appliance.
+## Overview
+This integration supports using ReversingLabs Advanced File Analysis to 'detonate file' on the TitaniumScale Advanced Malware
+Analysis Appliance.
+
+The ReversingLabs TitaniumScale Appliance is powered by TitaniumCore, the malware analysis engine that performs 
+automated static analysis using the Active File Decomposition technology.
+
+TitaniumCore unpacks and recursively analyzes files without executing them, and extracts internal threat indicators to 
+classify files and determine their threat level. TitaniumCore is capable of identifying thousands of file format 
+families. It recursively unpacks hundreds of file format families, and fully repairs extracted files to enable further 
+analysis.
+
+* * *
+## Prerequisites
+
+You need to obtain the following:
+
+*   TitaniumScale instance
+*   TitaniumScale API Token
+
 
 ## Configure ReversingLabs TitaniumScale on Cortex XSOAR
 
