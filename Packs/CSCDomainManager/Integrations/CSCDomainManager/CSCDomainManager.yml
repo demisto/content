@@ -400,6 +400,7 @@ script:
       description: Indicates if the root domain is URL forwarding enabled.
       type: Boolean
     - contextPath: CSCDomainManager.Domain.Configuration.serverDeleteProhibited
+      description: Indicates if the domain is prohibited from deletion by the server.
       type: Unknown
     - contextPath: CSCDomainManager.Domain.Configuration.serverTransferProhibited
       description: Indicates if the domain is prohibited from transfer by the server.
