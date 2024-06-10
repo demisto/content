@@ -1874,7 +1874,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
     Returns:
         Message. Message object ready to be sent.
     """
-    file_results = []
+    file_results: list = []
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)

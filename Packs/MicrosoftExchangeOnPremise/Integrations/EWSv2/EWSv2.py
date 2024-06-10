@@ -812,8 +812,8 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
-    attachments = []
-    file_results = []
+    attachments: list = []
+    file_results: list = []
     if html_body:
         html_body, attachments, file_results = handle_html(html_body)
     if body_type is None:  # When called from a data collection task.
