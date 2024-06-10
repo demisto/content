@@ -880,11 +880,11 @@ def user_tags_command(a1000: A1000):
             resp = a1000.delete_user_tags(sample_hash=sample_hash, tags=tags_list)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -915,7 +915,7 @@ def file_analysis_status_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -957,11 +957,11 @@ def pdf_report_command(a1000: A1000):
             resp = a1000.download_pdf_report(sample_hash=sample_hash)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1008,7 +1008,7 @@ def static_analysis_report_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1077,11 +1077,11 @@ def dynamic_analysis_report_command(a1000: A1000):
             resp = a1000.download_dynamic_analysis_report(sample_hash=sample_hash, report_format=report_format)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1166,11 +1166,11 @@ def sample_classification_command(a1000: A1000):
             resp = a1000.delete_classification(sample_hash=sample_hash, system=system)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1281,7 +1281,7 @@ def yara_command(a1000: A1000):
         resp = a1000.update_yara_ruleset_synchronization_time(sync_time=sync_time)
 
     else:
-        return_error("This action is not supported.")
+        raise Exception("This action is not supported.")
 
     results = yara_output(resp_json=resp.json(), action=action)
     return results
@@ -1319,7 +1319,7 @@ def yara_retro_command(a1000: A1000):
         resp = a1000.get_yara_cloud_retro_scan_status(ruleset_name=ruleset_name)
 
     else:
-        return_error("This action is not supported.")
+        raise Exception("This action is not supported.")
 
     results = yara_retro_output(resp_json=resp.json(), action=action)
     return results
@@ -1344,15 +1344,15 @@ def list_containers_command(a1000: A1000):
     hash_list = sample_hashes.split(",")
 
     if not len(hash_list) > 0:
-        return_error("Please enter at least one sample hash or check the formatting. "
-                     "The hashes should be comma-separated with no whitespaces")
+        raise Exception("Please enter at least one sample hash or check the formatting. "
+                        "The hashes should be comma-separated with no whitespaces")
 
     try:
         resp = a1000.list_containers_for_hashes(sample_hashes=hash_list)
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1409,7 +1409,7 @@ def upload_from_url_command(a1000: A1000):
         resp = a1000.check_submitted_url_status(task_id=task_id)
 
     else:
-        return_error("This action is not supported.")
+        raise Exception("This action is not supported.")
 
     results = upload_from_url_output(resp_json=resp.json(), action=action)
     return results
