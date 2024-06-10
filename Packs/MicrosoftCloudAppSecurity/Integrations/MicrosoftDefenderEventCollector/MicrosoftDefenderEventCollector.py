@@ -27,7 +27,7 @@ MAPPING_EVENT_TYPES = {'Alerts': 'alerts',
                        'Admin activities': 'activities_admin',
                        'Login activities': 'activities_login'
                        }
-TYPES_SYNTAX = {'alerts': {'type': 'alerts', 'filters': {}},
+FILTERS_EVENT_TYPES = {'alerts': {'type': 'alerts', 'filters': {}},
                 'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
                 'activities_login': {'type': 'activities', 'filters': {
                     "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
@@ -163,9 +163,8 @@ class IntegrationGetEvents(ABC):
         self.client = client
         self.options = options
         self.event_types_to_fetch = {
-            MAPPING_EVENT_TYPES[event_type]: TYPES_SYNTAX[MAPPING_EVENT_TYPES[event_type]]
+            MAPPING_EVENT_TYPES[event_type]: FILTERS_EVENT_TYPES[MAPPING_EVENT_TYPES[event_type]]
             for event_type in event_types_to_fetch
-            if event_type in MAPPING_EVENT_TYPES
         }
 
     def run(self):
