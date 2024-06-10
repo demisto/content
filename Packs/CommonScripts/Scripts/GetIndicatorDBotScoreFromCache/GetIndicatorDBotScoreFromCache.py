@@ -26,6 +26,7 @@ def escape_special_characters(text: str) -> str:
         .replace('"', r"\"")
     )
 
+
 def main():
     values: list[str] = argToList(demisto.args().get("value", None))
     unique_values: set[str] = {v.lower() for v in values}  # search query is case insensitive
