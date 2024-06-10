@@ -2,8 +2,9 @@ import pytest
 import demistomock  # noqa # pylint: disable=unused-wildcard-import
 from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
-from MimecastEventCollector import *
-from test_data.data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
+
+from Packs.Mimecast.Integrations.MimecastEventCollector.MimecastEventCollector import *
+from Packs.Mimecast.Integrations.MimecastEventCollector.test_data.data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
     AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, SIEM_LOG_PROCESS_EVENT, SIEM_RESULT_MULTIPLE_EVENTS_PROCESS, \
     SIEM_RESPONSE_MULTIPLE_EVENTS
 
@@ -304,3 +305,70 @@ def test_prepare_siem_request_body():
     siem_event_handler.token = '1234'
     post_body = {'data': [{'type': 'MTA', 'compress': True, 'fileFormat': 'json', 'token': '1234'}]}
     assert json.dumps(post_body) == siem_event_handler.prepare_siem_request_body()
+
+
+def test_audit_events_next_run_with_new_events():
+    """
+    Given:
+        - Audit event with new events
+    When:
+        - handling the new events and preparing data for next run.
+    Then:
+        - Verify De dup event list, next run time, potential duplicate events list.
+    """
+    last_run_object = {
+        SIEM_LAST_RUN: "",
+        SIEM_EVENTS_FROM_LAST_RUN: [],
+        AUDIT_EVENT_DEDUP_LIST: ["1"],
+        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    }
+    audit_events = [
+        {"eventTime": "2011-12-03T10:15:32+0000", "id": "4"},
+        {"eventTime": "2011-12-03T10:15:31+0000", "id": "3"},
+        {"eventTime": "2011-12-03T10:15:30+0000", "id": "1"},
+    ]
+    res_audit_events = [
+        {"eventTime": "2011-12-03T10:15:32+0000", "id": "4"},
+        {"eventTime": "2011-12-03T10:15:31+0000", "id": "3"},
+    ]
+
+    res_potential_duplicate_events = ['4']
+    audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
+
+    audit_events, audit_next_run, duplicates_audit = audit_events_last_run(
+        audit_event_handler, audit_events, last_run_object
+    )
+    assert duplicates_audit == res_potential_duplicate_events
+    assert audit_events == res_audit_events
+    assert audit_next_run == "2011-12-03T10:15:32+0000"
+    
+
+def test_audit_events_next_run_without_new_events():
+    """
+    Given:
+        - Audit event with no new events.
+    When:
+        - handling the audit events.
+    Then:
+        - Verify De dup event list, next run time, potential duplicate events list.
+    """
+    last_run_object = {
+        SIEM_LAST_RUN: "",
+        SIEM_EVENTS_FROM_LAST_RUN: [],
+        AUDIT_EVENT_DEDUP_LIST: ["1"],
+        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    }
+    audit_events = [
+        {"eventTime": "2011-12-03T10:15:30+0000", "id": "1"},
+    ]
+    res_audit_events = []
+    res_potential_duplicate_events = []
+    audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
+    audit_event_handler.end_time='2024-24-24T00:00:00+0000'
+
+    audit_events, audit_next_run, duplicates_audit = audit_events_last_run(
+        audit_event_handler, audit_events, last_run_object
+    )
+    assert duplicates_audit == res_potential_duplicate_events
+    assert audit_events == res_audit_events
+    assert audit_next_run == '2024-24-24T00:00:00+0000'
