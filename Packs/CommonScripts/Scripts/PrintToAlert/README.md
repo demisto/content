@@ -1,4 +1,4 @@
-Prints a value to the specified alert's warroom.
+Prints a value to the specified alert's warroom. The alert must be in status "Under Investigation".
 
 ## Script Data
 ---
@@ -7,7 +7,7 @@ Prints a value to the specified alert's warroom.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 8.7.0 |
 
 ## Inputs
 ---

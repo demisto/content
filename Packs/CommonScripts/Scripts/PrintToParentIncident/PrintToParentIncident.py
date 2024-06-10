@@ -10,7 +10,9 @@ def print_to_parent_incident(alert_id: str, value: str, parent_incident_id: str)
         value (str): The value to print.
         parent_incident_id (str): The parent incident's ID of the alert.
     """
-    entry_note = json.dumps([{"Type": 1, "ContentsFormat": EntryFormat.MARKDOWN, "Contents": f"Entry from alert #{alert_id}:\n{value}"}])
+    entry_note = json.dumps(
+        [{"Type": 1, "ContentsFormat": EntryFormat.MARKDOWN, "Contents": f"Entry from alert #{alert_id}:\n{value}"}]
+    )
     entry_tags_res: list[dict[str, Any]] = demisto.executeCommand(
         "addEntries", {"entries": entry_note, "id": parent_incident_id, "reputationCalcAsync": True}
     )
@@ -20,15 +22,34 @@ def print_to_parent_incident(alert_id: str, value: str, parent_incident_id: str)
         return_results(CommandResults(readable_output=f"Successfully printed to parent incident {parent_incident_id}."))
 
 
-def main():
+def validate_parent_incident_id(parent_incident_id: str, alert_id: str) -> str:
+    """Validates if the parent incident ID of the alert is not empty, and return it.
+
+    Args:
+        parent_incident_id (str): The parent incident ID of the alert.
+        alert_id (str): The alert ID running the script.
+
+    Raises:
+        DemistoException: If the parent incident ID is an empty string, meaning it couldn't be found.
+
+    Returns:
+        str: The parent incident ID if not empty.
+    """
+    if not parent_incident_id:
+        raise DemistoException(f"No parent incident was found for {alert_id =}")
+    return parent_incident_id
+
+
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         value: str = args["value"]
         current_alert: dict[str, Any] = demisto.incident()
         alert_id: str = current_alert["id"]
-        parent_incident_id: str | None = current_alert.get("parentXDRIncident")
-        if not parent_incident_id:
-            raise DemistoException(f"No parent incident was found for {alert_id =}")
+        parent_incident_id: str = validate_parent_incident_id(
+            parent_incident_id=current_alert.get("parentXDRIncident", ""),
+            alert_id=alert_id,
+        )
         print_to_parent_incident(
             alert_id=alert_id,
             value=value,

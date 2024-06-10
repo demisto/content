@@ -1,7 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-from CommonServerPython import EntryType
+from CommonServerPython import EntryType, DemistoException
 
 
 def test_print_to_parent_incident(mocker: MockerFixture):
@@ -33,7 +33,7 @@ def test_print_to_parent_incident(mocker: MockerFixture):
     assert execute_command_mocker.call_args[0][0] == "addEntries"
     # Right arguments are given
     assert execute_command_mocker.call_args[0][1] == {
-        "entries": '[{"Type": 1, "ContentsFormat": "markdown", "Contents": "Entry from aler #4:\\nHello"}]',
+        "entries": '[{"Type": 1, "ContentsFormat": "markdown", "Contents": "Entry from alert #4:\\nHello"}]',
         "id": "INCIDENT-5",
         "reputationCalcAsync": True,
     }
@@ -75,12 +75,9 @@ def test_print_to_alert_error(mocker: MockerFixture):
     }
 
 
-def test_no_parent_incident_error(mocker: MockerFixture):
+def test_no_parent_incident_error():
     """Check that we return an error when no parent incident is found"""
-    from PrintToParentIncident import main
+    from PrintToParentIncident import validate_parent_incident_id
 
-    mocker.patch.object(demisto, "args", return_value={"value": "dummy value"})
-    # parentXDRIncident is not part of the alert's data
-    mocker.patch.object(demisto, "incident", return_value={"id": "alert_id"})
-    with pytest.raises(SystemExit):
-        main()
+    with pytest.raises(DemistoException):
+        validate_parent_incident_id(parent_incident_id="", alert_id=4)

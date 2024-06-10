@@ -5,7 +5,7 @@ args:
 - description: The alert ID to print to.
   name: alert_id
   required: true
-comment: Prints a value to the specified alert's warroom.
+comment: Prints a value to the specified alert's warroom. The alert must be in status "Under Investigation".
 commonfields:
   id: PrintToAlert
   version: -1

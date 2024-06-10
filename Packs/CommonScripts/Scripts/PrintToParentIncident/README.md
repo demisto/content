@@ -7,7 +7,7 @@ Prints a value to the parent incident's warroom of the current alert.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 8.7.0 |
 
 ## Inputs
 ---
