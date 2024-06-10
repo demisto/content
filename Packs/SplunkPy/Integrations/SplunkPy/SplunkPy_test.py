@@ -1524,7 +1524,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = \'test_user\'')]),
+       'search index="test"\n| where user = "\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with multiple (two) drilldown searches to enrich"
