@@ -111,7 +111,9 @@ class Client(BaseClient):
             resp_type='text',
         )
         events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
-        offset = events.pop().get("offset")
+        last_item = events.pop()
+        demisto.debug(f"[test] popped last_item: {last_item=}")
+        offset = last_item.get("offset")
         return events, offset
 
 
@@ -397,9 +399,11 @@ def fetch_events_command(
 
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
+    demisto.debug(f"[test] Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
     while total_events_count < int(fetch_limit):
         events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
         if not events:
+            demisto.debug("[test] Didn't receive any events, breaking.")
             break
         for event in events:
             try:
@@ -418,9 +422,9 @@ def fetch_events_command(
             except Exception as e:
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
-                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.debug(f"Got {len(events)} events, and {offset=}")
+                demisto.debug(f"[test] Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         total_events_count += len(events)
+        demisto.debug(f"[test] Got {len(events)} events, and {offset=}, the new total_events_count is: {total_events_count}")
         yield events, offset, total_events_count
 
 
