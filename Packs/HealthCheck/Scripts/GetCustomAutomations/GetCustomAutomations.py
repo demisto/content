@@ -6,7 +6,7 @@ import dateutil.parser
 import pytz
 
 
-payload = {'query': demisto.args().get('query', 'system:F')}
+payload = {'query': 'system:F'}
 res = demisto.executeCommand("core-api-post", {"uri": "automation/search",
                              "body": json.dumps(payload)})[0]["Contents"]["response"]
 
