@@ -7,5 +7,5 @@ wList = []
 wList.append({"Web Socket Disconnects(last 12hrs)": res["checkRuns"]["diagnostic.websocket.disconnects"]["result"]
              ["metrics"]["totalDisconnects"], "Slow Searches": res["checkRuns"]["diagnostic.slow.searches"]["result"]["metrics"]})
 
-return_results(tableToMarkdown(
-    "To get more context and guidance around the below table listings, you can go to System Diagnostics page under the Settings and take actions accordingly", wList))
+return_results(tableToMarkdown("To get more context and guidance around the below table listings, \
+    you can go to System Diagnostics page under the Settings and take actions accordingly", wList))
