@@ -306,7 +306,7 @@ def invoke(args, aws_client):
         outputs=data,
         readable_output=human_readable,
         outputs_prefix="AWS.Lambda.InvokedFunctions",
-        outputs_key_field=["FunctionName", "Payload"]
+        outputs_key_field=["FunctionName", "payload"]
     )
 
 
