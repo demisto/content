@@ -1,6 +1,7 @@
 import json
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
-    classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy
+    classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy, \
+    file_analysis_status_output, pdf_report_output, static_analysis_report_output
 import demistomock as demisto
 import pytest
 
@@ -64,6 +65,36 @@ def test_ip_report_output():
     result = ip_report_output(ip="8.8.4.4", response_json=test_response)
 
     assert result.to_context() == test_context
+
+
+def test_file_analysis_status_output():
+    test_response = util_load_json("test_data/a1000_analysis_status.json")
+
+    result = file_analysis_status_output(resp_json=test_response)
+
+    for k, v in result.to_context().items():
+        if k == "hash_value":
+            assert v == "d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5"
+
+
+def test_pdf_report_output():
+    test_response = util_load_json("test_data/a1000_pdf_report.json")
+
+    result = pdf_report_output(resp=test_response, sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5", action="CHECK STATUS")
+
+    for k, v in result[0].to_context().items():
+        if k == "status":
+            assert v == 2
+
+
+def test_static_analysis_report_output():
+    test_response = util_load_json("test_data/a1000_static_analysis.json")
+
+    result = static_analysis_report_output(resp_json=test_response, sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+
+    for k, v in result.to_context().items():
+        if k == "Contents":
+            assert "a1000_static_analysis_report" in v
 
 
 def test_classification_to_score():
