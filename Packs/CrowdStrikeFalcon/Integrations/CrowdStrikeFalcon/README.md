@@ -251,6 +251,7 @@ Searches for a device that matches the query.
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
 
 ### 2. Get a behavior
+Deprecated. 
 
 ---
 Searches for and fetches the behavior that matches the query.
