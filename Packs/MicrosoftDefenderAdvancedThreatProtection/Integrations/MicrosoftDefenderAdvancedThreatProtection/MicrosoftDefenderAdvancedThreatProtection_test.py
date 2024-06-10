@@ -90,14 +90,15 @@ def test_third_fetch_incidents(mocker):
 
 test_list_machines_by_ip_data = [
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
-     3),  # expected two machines
+     {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}),  # expected two machines
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
-     1)  # expected only 1 machine
+     [{'a':'b'}])  # expected only 1 machine
 ]
 
 
-@pytest.mark.parametrize('params, expected_len', test_list_machines_by_ip_data)
-def test_list_machines_by_ip_with_limit(mocker, params, expected_len):
+@pytest.mark.parametrize('params, expected_len', [pytest.param(), 
+                                                  pytest.param()])
+def test_list_machines_by_ip_with_limit(mocker, params, expected):
     """
     Given:
         -A limit argument.
@@ -107,13 +108,13 @@ def test_list_machines_by_ip_with_limit(mocker, params, expected_len):
         -The number of machines returned is not grater than the limit and http request is called with the right args.
     """
     from MicrosoftApiModule import MicrosoftClient
-    raw_response = {'value': [{}, {}, {}]}
+    raw_response = {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}
     mock_http_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     list_machines_by_ip_command(client_mocker, params)
     assert mock_http_request.call_args.kwargs == {'method': 'GET',
                                                  'url_suffix': "machines/findbyip(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)"}
-    assert len(mock_handle_machines.call_args.args[0]) == expected_len
+    assert mock_handle_machines.call_args.args[0] == expected
     
 
 def test_get_alert_related_ips_command(mocker):

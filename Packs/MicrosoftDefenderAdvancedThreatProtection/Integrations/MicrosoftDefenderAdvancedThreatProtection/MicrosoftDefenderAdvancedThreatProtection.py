@@ -5081,7 +5081,7 @@ def validate_args_endpoint_command(hostnames, ips, ids):
 
 
 def handle_machines(machines_response: list) ->list[CommandResults]:
-    """Converts the raw response of the API to a CommandResults list with all data needed.
+    """Converts the raw response of the API to a CommandResults list with relevant keys.
     Args:
         The raw API response, a list of machines.
     Returns:
@@ -5117,8 +5117,8 @@ def handle_machines(machines_response: list) ->list[CommandResults]:
 
 
 def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
-    """Retreives Machines that were seen with the requested internal IP in the time range of 15 minutes prior and after a given
-    timestamp.
+    """Retreives Machines that were seen with the requested internal IP
+    in the time range of 15 minutes prior and aftera given timestamp.
     Args:
         client: MsClient
         args: dict
@@ -5128,14 +5128,16 @@ def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandRes
     ip = args['ip']
     timestamp = args['timestamp']
     limit = arg_to_number(args.get('limit', 50))
-    all_results = argToBoolean(args.get('all_results', False))
+    should_limit_result = not argToBoolean(args.get('all_results', False))
 
-    machines_response = client.ms_client.http_request(
-        method='GET', url_suffix=f"machines/findbyip(ip='{ip}',timestamp={timestamp})")
+    filter = f"(ip='{ip}',timestamp={timestamp})"
 
-    machines_response = machines_response.get('value', [])[:limit] if not all_results else machines_response.get('value', [])
+    machines_response = client.ms_client.http_request(method='GET', url_suffix=f"machines/findbyip{filter}")
+    machines_response = machines_response.get('value', [])
+    
+    limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
 
-    return handle_machines(machines_response)
+    return handle_machines(limited_machines_response)
 
 
 def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
@@ -5149,9 +5151,8 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     ids = argToList(args.get('id', ''))
     validate_args_endpoint_command(hostnames, ips, ids)
     machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
-    machines_response = machines_response.get('value', [])
 
-    return handle_machines(machines_response)
+    return handle_machines(machines_response.get('value', []))
 
 
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
