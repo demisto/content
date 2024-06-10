@@ -17,7 +17,7 @@ CONTEXT_OUTPUT_BASE_PATH = 'Venafi.Certificate'
 
 class Client(BaseClient):
     """
-    Client class to interact with the service API
+    Client class to interact with tssshe service API
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
