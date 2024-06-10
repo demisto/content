@@ -1248,9 +1248,7 @@ def yara_command(a1000: A1000):
     action = demisto.getArg("action")
     ruleset_name = demisto.getArg("ruleset_name")
     ruleset_content = demisto.getArg("ruleset_content")
-    publish = demisto.getArg("publish")
-    if publish:
-        publish = argToBoolean(publish)
+    publish = argToBoolean(demisto.args().get("publish", False))
     sync_time = demisto.getArg("sync_time")
 
     if action == "GET RULESETS":
@@ -1381,9 +1379,7 @@ def upload_from_url_command(a1000: A1000):
     archive_password = demisto.getArg("archive_password")
     sandbox_platform = demisto.getArg("sandbox_platform")
     task_id = demisto.getArg("task_id")
-    retry = demisto.getArg("retry")
-    if retry:
-        retry = argToBoolean(retry)
+    retry = argToBoolean(demisto.args().get("retry", False))
 
     if action == "UPLOAD":
         resp = a1000.upload_sample_from_url(
