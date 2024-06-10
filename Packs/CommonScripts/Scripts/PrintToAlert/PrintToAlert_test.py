@@ -33,7 +33,7 @@ def test_print_to_alert(mocker: MockerFixture):
     assert execute_command_mocker.call_args[0][0] == "addEntries"
     # Right arguments are given
     assert execute_command_mocker.call_args[0][1] == {
-        "entries": '[{"Type": 1, "ContentsFormat": "markdown", "Contents": "Entry from 5\\nHello"}]',
+        "entries": '[{"Type": 1, "ContentsFormat": "markdown", "Contents": "Entry from alert #5:\\nHello"}]',
         "id": "4",
         "reputationCalcAsync": True,
     }
