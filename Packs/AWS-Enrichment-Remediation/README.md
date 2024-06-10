@@ -1,12 +1,12 @@
 ##### What does this pack do?
 
 The pack contains AWS playbooks that conduct enrichment and/or remediation and can use multiple other AWS content packs:
-- Enrichment: Give an IP address, see if there is a EC2 instance associated and if so pull information on the security group associated. If an SSM agent is installed on the instance, then pull information from SSM agent.
-- Remediation: Give the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved. If there is a matching ASM rule ID that is supported, then upgrade the package associated to latest available version.
+- Enrichment: Give an IP address, see if there is an associated EC2 instance and if so pull information on the associated security group. If an SSM agent is installed on the instance, pull information from the SSM agent.
+- Remediation: Give the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved. If there is a matching ASM rule ID that is supported, upgrade the associated package to the latest available version.
 - Unclaimed S3 Bucket Validation: The playbook sends a HTTP get response to the domain and validates the missing bucket information.
 - Unclaimed S3 Bucket Remediation: The playbook will create the unclaimed S3 bucket.
 
-There are multiple AWS content packs for multiple AWS products (EC2, IAM, Route53, S3, SSM etc).  The intent was that users can install and use only the packs they need.  However, if an AWS playbook uses multiple pack integrations (such as EC2, S3, SSM and IAM), the integrations can't reside in one of the current packs because they include content from multiple pack integrations.  This pack was created as a place to put AWS playbooks that use AWS integrations from multiple packs with a focus on enrichment and remediation.
+There are multiple AWS content packs for multiple AWS products (EC2, IAM, Route53, S3, SSM, etc.).  The intent was that users can install and use only the packs they need. However, if an AWS playbook uses multiple pack integrations (such as EC2, S3, SSM, and IAM), the integrations can't reside in one of the current packs because they include content from multiple pack integrations. This pack was created as a place to put AWS playbooks that use AWS integrations from multiple packs with a focus on enrichment and remediation.
 
 ### Playbooks
 
@@ -26,7 +26,7 @@ AWS - Enrichment playbook reports EC2 information given an IP address of an EC2 
 ![AWS - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Enrichment.png)
 
 #### AWS - EC2 Package Upgrade
-AWS - EC2 Package Upgrade playbook upgrades supported package on an AWS EC2 instance.
+AWS - EC2 Package Upgrade playbook upgrades supported packages on an AWS EC2 instance.
 
 ![AWS - EC2 Package Upgrade](https://raw.githubusercontent.com/demisto/content/56f3ae1b82b1320e0badc580713726034dd622b1/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_EC2_Package_Upgrade.png)
 

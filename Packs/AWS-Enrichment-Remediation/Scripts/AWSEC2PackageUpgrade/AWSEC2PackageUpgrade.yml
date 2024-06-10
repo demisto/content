@@ -37,10 +37,12 @@ commonfields:
 dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 engineinfo: {}
+mainengineinfo: {}
 name: AWSEC2PackageUpgrade
 outputs:
 - contextPath: awsec2packageupgrade
-  description: This is the command Id of the command initiated by AWS SSM command.
+  description: The command ID of the command initiated by AWS SSM command.
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -48,6 +50,3 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)

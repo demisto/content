@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from typing import Any, Dict
 import traceback
 import json
@@ -12,8 +14,7 @@ def upgrade_package_on_instance(
     instance_id: str,
     asm_rule_id: str,
     region: str,
-    assume_role: str,
-    ROLE_SESSION_NAME: str,
+    assume_role: str
 ) -> dict:
     """
     Upgrade a specified package on an AWS EC2 instance using AWS SSM.
@@ -23,11 +24,10 @@ def upgrade_package_on_instance(
         asm_rule_id (str): The ID of the ASM rule that specifies the package to be upgraded.
         region (str): The AWS region where the instance is located.
         assume_role (str): The AWS IAM role that will be assumed.
-        ROLE_SESSION_NAME (str): The Session role name.
 
     Returns:
-        dict: A dictionary with the keys 'runcommandflag' indicating if the command
-        was run successfully, and 'runcommandoutput' containing the output of the command or error message.
+        dict: A dictionary with the keys 'run_command_flag' indicating if the command
+        was run successfully, and 'run_command_output' containing the output of the command or error message.
     """
 
     output_run_command_dict = {"run_command_flag": True, "run_command_output": ""}
@@ -128,6 +128,9 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
             )
         output = demisto.executeCommand("aws-ssm-command-run", cmd_args)
         output_run_command_dict["run_command_output"] = (
+            "AWS SSM Command run initiated successfully."
+        )
+        output_run_command_dict["run_command_id"] = (
             output[0].get("Contents").get("CommandId")
         )
 
@@ -163,7 +166,7 @@ def aws_ec2_package_upgrade(args: Dict[str, Any]) -> CommandResults:
     asm_rule_id = str(asm_rule_id) if asm_rule_id is not None else ""
 
     results = upgrade_package_on_instance(
-        instance_id, asm_rule_id, region, assume_role, ROLE_SESSION_NAME
+        instance_id, asm_rule_id, region, assume_role
     )
     command_results = CommandResults(
         outputs=results,

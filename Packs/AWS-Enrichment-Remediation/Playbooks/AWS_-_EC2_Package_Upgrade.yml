@@ -1,7 +1,7 @@
 description: This playbook upgrades supported package on an AWS EC2 instance.
 id: 'AWS - EC2 Package Upgrade'
 inputSections:
-- description: Generic group for inputs
+- description: Generic group for inputs.
   inputs:
   - ASM Rule ID
   - Instance ID
@@ -9,36 +9,36 @@ inputSections:
   - Assume Role
   name: General (Inputs group)
 inputs:
-- description: ASM rule ID
+- description: ASM rule ID.
   key: ASM Rule ID
   playbookInputQuery:
   required: true
   value:
     simple: ${alert.asmattacksurfaceruleid}
-- description: Instance ID of the EC2
+- description: Instance ID of the EC2.
   key: Instance ID
   playbookInputQuery:
   required: true
   value: {}
-- description: AWS Region of the EC2 instance.
+- description: AWS region of the EC2 instance.
   key: Region
   playbookInputQuery:
   required: true
   value: {}
-- description: AWS Role to be assumed.
+- description: AWS role to be assumed.
   key: Assume Role
   playbookInputQuery:
   required: false
   value: {}
 name: AWS - EC2 Package Upgrade
 outputSections:
-- description: Generic group for outputs
+- description: Generic group for outputs.
   name: General (Outputs group)
   outputs:
   - remediatedFlag
 outputs:
 - contextPath: remediatedFlag
-  description: Boolean value if Package is upgraded or not.
+  description: Whether package is upgraded.
 starttaskid: "0"
 tasks:
   "0":
@@ -131,7 +131,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the AWS - Systems Manager integration instance is configured and Input values are defined.
+      description: Determines if the AWS - Systems Manager integration instance is configured and input values are defined.
       id: 143d4a82-9911-415a-8eba-2be0767d93a0
       iscommand: false
       name: Is AWS - Systems Manager enabled and are Input values defined?
@@ -236,7 +236,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Ids:
-        simple: ${awsec2packageupgrade.run_command_output}
+        simple: ${awsec2packageupgrade.run_command_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -259,13 +259,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: b4ebf62b-d20b-41a5-8667-fffe72c5f47b
+      id: d0bbf925-63cc-482e-8982-9b721af06623
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: b4ebf62b-d20b-41a5-8667-fffe72c5f47b
+    taskid: d0bbf925-63cc-482e-8982-9b721af06623
     timertriggers: []
     type: playbook
     view: |-
@@ -288,7 +288,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       command_id:
-        simple: ${awsec2packageupgrade.runcommandoutput}
+        simple: ${awsec2packageupgrade.run_command_id}
       roleArn:
         simple: ${inputs.Assume Role}
       roleSessionName:
@@ -298,13 +298,13 @@ tasks:
     task:
       brand: AWS - System Manager
       description: Lists the commands requested by users of the Amazon Web Services account.
-      id: 765cdf6a-526d-4468-80e7-0aeb3c16eba1
+      id: 04e9d00d-0a88-4525-8b9e-89f65f858f3f
       iscommand: true
       name: Get status of command
       script: AWS - System Manager|||aws-ssm-command-list
       type: regular
       version: -1
-    taskid: 765cdf6a-526d-4468-80e7-0aeb3c16eba1
+    taskid: 04e9d00d-0a88-4525-8b9e-89f65f858f3f
     timertriggers: []
     type: regular
     view: |-
@@ -385,7 +385,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if Package upgrade command run is initiated via AWS SSM.
+      description: Checks if the package upgrade command run is initiated via AWS SSM.
       id: b7d3aee8-7836-4104-8141-dbc0e67fab17
       iscommand: false
       name: AWS SSM Command Run Initiated?

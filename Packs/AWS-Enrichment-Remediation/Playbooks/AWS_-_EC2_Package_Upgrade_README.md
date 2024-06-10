@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+* GenericPolling to poll AWS SSM Command status
 
 ### Integrations
 
@@ -27,10 +27,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ASM Rule ID | ASM rule ID | ${alert.asmattacksurfaceruleid} | Required |
-| Instance ID | Instance ID of the EC2 |  | Required |
-| Region | AWS Region of the EC2 instance. |  | Required |
-| Assume Role | AWS Role to be assumed. |  | Optional |
+| ASM Rule ID | ASM rule ID. | ${alert.asmattacksurfaceruleid} | Required |
+| Instance ID | Instance ID of the EC2. |  | Required |
+| Region | AWS region of the EC2 instance. |  | Required |
+| Assume Role | AWS role to be assumed. |  | Optional |
 
 ## Playbook Outputs
 

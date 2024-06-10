@@ -13,16 +13,16 @@ This is an AWS script that upgrades a package on the AWS EC2 instance.
 ---
 This script uses the following commands and scripts.
 
+* aws-ssm-command-run
 * AWS - System Manager
 * aws-ssm-inventory-entry-list
-* aws-ssm-command-run
 
 ## Used In
 
 ---
 This script is used in the following playbooks and scripts.
 
-* AWS - EC2 Package Upgrade
+AWS - EC2 Package Upgrade
 
 ## Inputs
 
@@ -41,4 +41,4 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| awsec2packageupgrade | This is the command Id of the command initiated by AWS SSM command | Unknown |
+| awsec2packageupgrade | The command ID of the command initiated by AWS SSM command. | Unknown |

@@ -877,7 +877,7 @@ inputs:
       accessor: remoteip
       root: alert
   required: true
-  description: "AWS IP in alert"
+  description: AWS IP address in the alert.
   playbookInputQuery:
 - key: AWSAssumeRoleName
   value: {}
@@ -917,20 +917,19 @@ outputs:
 - contextPath: AWS.SSM
   description: AWS SSM information.
   type: unknown
-quiet: true
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields: {}
 inputSections:
-- description: Generic group for inputs
+- description: Generic group for inputs.
   inputs:
   - AwsIP
   - AWSAssumeRoleName
   name: General (Inputs group)
 outputSections:
-- description: Generic group for outputs
+- description: Generic group for outputs.
   name: General (Outputs group)
   outputs:
   - AWS.EC2.Instances

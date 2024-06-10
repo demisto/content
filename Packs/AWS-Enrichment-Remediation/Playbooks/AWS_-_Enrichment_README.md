@@ -10,8 +10,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* AWS - System Manager
 * AWS - EC2
+* AWS - System Manager
 
 ### Scripts
 
@@ -20,12 +20,12 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* aws-ec2-get-ipam-discovered-public-addresses
-* aws-ec2-describe-ipam-resource-discoveries
-* aws-ssm-inventory-entry-list
-* aws-ec2-describe-regions
 * aws-ec2-describe-instances
 * aws-ec2-describe-security-groups
+* aws-ec2-describe-regions
+* aws-ec2-get-ipam-discovered-public-addresses
+* aws-ssm-inventory-entry-list
+* aws-ec2-describe-ipam-resource-discoveries
 
 ## Playbook Inputs
 
@@ -35,7 +35,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | AwsIP | AWS IP in alert | alert.remoteip | Required |
 | AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\). |  | Optional |
-| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input. |  | Optional |
 
 ## Playbook Outputs
 
