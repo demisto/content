@@ -116,27 +116,27 @@ def test_disable_engine(mocker):
 
 
 def test_generate_role_secret_command(mocker):
-        mock_demisto = mocker.patch('HashiCorpVault.demisto')
-        response = {'secret_id':'123'}
-        mock_send_request = mocker.patch('HashiCorpVault.send_request', return_value=response)
-        mock_demisto.args.return_value = {
-            'role_name': 'test_role',
-            'meta_data': 'test_metadata',
-            'num_uses': '5',
-            'ttl_seconds': '3600'
+    mock_demisto = mocker.patch('HashiCorpVault.demisto')
+    response = {'secret_id': '123'}
+    mock_send_request = mocker.patch('HashiCorpVault.send_request', return_value=response)
+    mock_demisto.args.return_value = {
+        'role_name': 'test_role',
+        'meta_data': 'test_metadata',
+        'num_uses': '5',
+        'ttl_seconds': '3600'
+    }
+
+    result = generate_role_secret_command()
+
+    mock_send_request.assert_called_once_with(
+        path='/auth/approle/role/test_role/secret-id',
+        method='post',
+        body={
+            "role_name": 'test_role',
+            "metadata": 'test_metadata',
+            "ttl": 3600,
+            "num_uses": 5
         }
+    )
 
-        result = generate_role_secret_command()
-
-        mock_send_request.assert_called_once_with(
-            path='/auth/approle/role/test_role/secret-id',
-            method='post',
-            body={
-                "role_name": 'test_role',
-                "metadata": 'test_metadata',
-                "ttl": 3600,
-                "num_uses": 5
-            }
-        )
-
-        assert result.readable_output == response
+    assert result.readable_output == response
