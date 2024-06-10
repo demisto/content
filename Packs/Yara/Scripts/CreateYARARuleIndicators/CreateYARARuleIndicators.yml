@@ -7,7 +7,7 @@ args:
   description: An entry ID for a file containing YARA signatures.
 - name: create_relationships
   required: false
-  defaultValue: False
+  defaultValue: 'false'
   description: Create relationships with CVEs, Attack Patterns and APTs.
 commonfields:
   id: 'CreateYARARuleIndicators'
