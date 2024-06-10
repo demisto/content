@@ -129,6 +129,14 @@ Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
 
 
+### API Call Metrics
+
+This feature provides support for tracking the  QRadar API calls.
+
+Please note that this feature does not include metrics for long-running commands such as `fetch incidents`.
+
+To view the API Call Metrics, navigate to the **Dashboard & Reports** section in the side-bar and than to the **API Execution Metrics** dashboard.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
