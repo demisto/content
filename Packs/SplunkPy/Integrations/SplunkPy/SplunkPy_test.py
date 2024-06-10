@@ -1100,15 +1100,15 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     assert value == expected_value
 
 
-@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
-    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
-    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
-    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, ''),
-    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"},
+@pytest.mark.parametrize('notable_data, search, raw, is_query_name, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, False, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, False, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, False, ''),
+    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"}, True,
      "View related 'Backdoor.test' events for ACME-test-005"),
-    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"},
+    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"}, True,
      'View all wineventlogs involving user="test"'),
-    ({}, 'Test query name', {}, 'Test query name')
+    ({}, 'Test query name', {}, True, 'Test query name')
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
@@ -1117,7 +1117,7 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name fields in raw data",
     "query name without fields to replace"
 ])
-def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
+def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
     Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
      corresponding query part (key & value).
@@ -1138,7 +1138,7 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
-    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
+    assert splunk.build_drilldown_search(notable_data, search, raw, is_query_name) == expected_search
 
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [

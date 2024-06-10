@@ -983,6 +983,7 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
         elif field in USER_RELATED_FIELDS and not is_query_name:
             # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
             # the backslash by using the double-slash ( \\ ) string
+            # No need to edit query names cause they aren't submitted to Splunk
             replacement = replacement.replace('\\', '\\\\')
             replacement = f""""{replacement.strip('"')}\""""
 
