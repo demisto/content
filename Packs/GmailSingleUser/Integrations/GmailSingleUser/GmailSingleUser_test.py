@@ -448,7 +448,8 @@ def test_handle_html(mocker):
          'subtype': 'png',
          'data': b'\x01',
          'name': 'image0.png@11111111_11111111-imageName:image0.png',
-         'cid': 'image0.png@11111111_11111111'
+         'cid': 'image0.png@11111111_11111111',
+         'ID': 'image0.png@11111111_11111111'
          },
         {'maintype': 'image',
          'subtype': 'jpeg',
