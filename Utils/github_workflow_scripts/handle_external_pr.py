@@ -270,12 +270,12 @@ def check_if_pack_or_integration_is_feed(content_object: dict) -> bool:
         if content_object.is_feed:
             return True
     try:
-        pack = content_object.in_pack
+        pack = content_object.in_pack  # type: ignore
         print(f' check_if_pack_or_integration_is_feed the pack is: {pack} ')
         tags = pack.tags
         categories = pack.categories
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-           return True
+            return True
     except Exception as er:
         print(f"The pack is not TIM: {er}")
         return False
@@ -346,6 +346,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
         return check_files_of_pr_manually(pr_files)
     return False
 
+
 def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
     This is where the actual search for feed:True or relevant tags or categories are being searched
@@ -368,6 +369,7 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
             print(f'for file {file}, the pack doesn\'t exist in Master and going to be searched in the remote branch')
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
         return check_if_pack_or_integration_is_feed(content_object)
+    return False
 
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
