@@ -288,7 +288,6 @@ def get_protocols_command(client: Client,args:Dict[str,Any]) -> CommandResults:
         readable_output=tableToMarkdown(name="Jizo Protocols", t=result),
         outputs_prefix='JizoNDR.Protocols',
         outputs=result,
-        replace_existing=True,
 
     )
 
@@ -300,7 +299,6 @@ def get_peers_command(client: Client, args:Dict[str,Any]) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Peers", t=result),
         outputs_prefix='JizoNDR.Peers',
-        outputs_key_field='',
         outputs=result,
 
     )
@@ -313,7 +311,6 @@ def get_query_records_command(client: Client, args:Dict[str,Any]) -> CommandResu
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Query Records", t=result),
         outputs_prefix='JizoNDR.QueryRecords',
-        outputs_key_field='',
         outputs=result,
 
     )
@@ -326,7 +323,6 @@ def get_alert_rules_command(client: Client,args:Dict[str,Any]) -> CommandResults
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Alert Rules", t=result),
         outputs_prefix='JizoNDR.AlertRules',
-        outputs_key_field='',
         outputs=result,
 
     )
@@ -339,7 +335,6 @@ def get_device_records_command(client: Client, args:Dict[str,Any]) -> CommandRes
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Device Records", t=result),
         outputs_prefix='JizoNDR.Device.Records',
-        outputs_key_field='',
         outputs=result,
 
     )
@@ -352,12 +347,9 @@ def get_device_alerts_command(client: Client,args:Dict[str,Any]) -> CommandResul
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Device Alerts", t=result),
         outputs_prefix='JizoNDR.Device.Alerts',
-        outputs_key_field='',
         outputs=result,
 
     )
-
-
 
 
 def fetch_incidents(client: Client, max_results: int, last_run:Dict[str, Any], 
