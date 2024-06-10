@@ -255,7 +255,15 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def check_if_pack_or_integration_is_feed(content_object) -> bool:
+def check_if_pack_or_integration_is_feed(content_object: dict) -> bool:
+    """
+    Checks whether a given object (graph object) is a feed or related to TIM
+
+    Arguments:
+        - `content_object`: ``dict``: Content object from the graph
+
+    Returns: `bool` whether the content object is a feed or has the relevant tags/categories
+    """
     print(f'check_if_pack_or_integration_is_feed - content object {content_object}')
     if isinstance(content_object, Integration):
         print(f'check_if_pack_or_integration_is_feed - content object {content_object}')
@@ -268,15 +276,45 @@ def check_if_pack_or_integration_is_feed(content_object) -> bool:
         categories = pack.categories
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
            return True
-    except:
-        print("check_if_pack_or_integration_is_feed - try-except, return false")
+    except Exception as er:
+        print(f"The pack is not TIM: {er}")
         return False
+    return False
+
+
+def check_files_of_pr_manually(pr_files: list[str]) -> bool:
+    """
+    If the checkout of the branch has failed, this function will go over the files and check whether the contribution
+    need to be reviewed by TIM owner
+
+    Arguments:
+        - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
+        whether a security engineer is required for the review.
+
+    Returns: `bool` whether a security engineer should be assigned
+    """
+    pack_dirs_to_check = packs_to_check_in_pr(pr_files)
+    pack_metadata_list = get_metadata(pack_dirs_to_check)
+    for file in pr_files:
+        if "yml" in file and "Integrations" in file:
+            content_yml = get_yaml(file_path=file)
+            is_feed = content_yml.get("script").get("feed", "False")
+            print(f'Is it a feed: {is_feed}')
+            if is_feed:
+                return True
+    for pack_metadata in pack_metadata_list:
+        print(f'the metadata is: {pack_metadata}')
+        tags = pack_metadata.get("tags")
+        categories = pack_metadata.get("categories")
+        if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
+            return True
     return False
 
 
 def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
-    Checks if tim reviewer needed, if the pack is new and not part of Master
+    Checks if tim reviewer needed, if the pack is new and not part of Master.
+    First the remote branch is going to be checked out and then verified for the data
 
     Arguments:
         - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
@@ -286,9 +324,6 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
 
     Returns: `bool` whether a security engineer should be assigned
     """
-    # pack_dirs_to_check = packs_to_check_in_pr(pr_files)
-    integrations_checked = []
-    is_tim_needed = False
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
@@ -298,50 +333,27 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
             repo_name=repo_name
         ):
-            # pack_metadata_list = get_metadata(pack_dirs_to_check)
-            # print(f'pack metadata list: {pack_metadata_list}')
             for file in pr_files:
-                # if "yml" in file and "Integrations" in file:
-                #     content_yml = get_yaml(file_path=file)
-                #     is_feed = content_yml.get("script").get("feed", "False")
-                #     print(f'Is it a feed: {is_feed}')
-                #     if is_feed:
-                #         return True
                 print(f'check_new_pack_metadata - file name: {file}')
-                if 'CONTRIBUTORS.json' in file:
+                if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
-                is_tim_needed=check_if_pack_or_integration_is_feed(content_object)
+                is_tim_needed = check_if_pack_or_integration_is_feed(content_object)
                 if is_tim_needed:
                     return True
-                # if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
-                #     continue
-                # print(f'content object path is: {content_object.path}')
-                # integrations_checked.append(content_object.path)
-                # if content_object.is_feed:
-                #     return True
-                # pack = content_object.in_pack
-                # print(f'pack is: {pack}')
-                # tags = pack.tags
-                # categories = pack.categories
-                # if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-                #     return True
+                else:
+                    return False
     except Exception as er:
         print(f"couldn't checkout branch to get metadata, error is {er}")
-        return False
-    # for pack_metadata in pack_metadata_list:
-    #     print(f'the metadata is: {pack_metadata}')
-    #     tags = pack_metadata.get("tags")
-    #     categories = pack_metadata.get("categories")
-    #     if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
-    #         return True
-    return False
+        # if the checkout didn't work for any reason, will try to go over files manually
+        return check_files_of_pr_manually(pr_files)
 
 
 def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
     This is where the actual search for feed:True or relevant tags or categories are being searched
-    according to the login in is_tim_reviewer_needed
+    according to the login in is_tim_reviewer_needed.
+    It also taking into account if the pack exist in Master or it is new and need to checkout remote branch
 
     Arguments:
     - pr_files: List[str] The list of files changed in the Pull Request.
@@ -350,31 +362,15 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
 
     Returns: returns True or False if tim reviewer needed
     """
-    integrations_checked = []
     for file in pr_files:
-        print(f'is_tim_content - file name: {file}')
         if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
             continue
         content_object = BaseContent.from_path(CONTENT_PATH / file)
-        print(f'is_tim_content - content object {content_object}')
         if not content_object:
             # This means we were not able to find the file in content repo, and the contribution is new
-            print('is_tim_content - not content object')
+            print(f'for file {file}, the pack doesn\'t exist in Master and going to be searched in the remote branch')
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-        print('content object true')
         return check_if_pack_or_integration_is_feed(content_object)
-        # if not isinstance(content_object, Integration) or content_object.path in integrations_checked:
-        #     continue
-        # integrations_checked.append(content_object.path)
-        # if content_object.is_feed:
-        #     return True
-        # pack = content_object.in_pack
-        # tags = pack.tags
-        # categories = pack.categories
-        # if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-        #     return True
-    # return False
-
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
     """
