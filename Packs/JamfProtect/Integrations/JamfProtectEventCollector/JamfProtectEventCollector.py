@@ -39,7 +39,7 @@ class EventResult(NamedTuple):
     computer_events: list[dict]
     next_run: dict[str, dict[str, str]]
 
-    def as_dict(self):
+    def as_dict(self) -> dict[str, list[dict]]:
         return {
             'Alert': self.alert_events,
             'Audit': self.audit_events,
