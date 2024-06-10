@@ -31,7 +31,7 @@ if [[ $(git diff origin/master -G"." -- ${FILE_TO_CHECK}) ]]; then
         fi
 
         if [[ $BRANCH =~ pull/[0-9]+ ]]; then
-          echo "Run ./.circleci/git_pull_master_into_fork.sh or merge manually from upstream demisto content"
+          echo "Run ./contribution/utils/git_pull_master_into_fork.sh or merge manually from upstream demisto content"
         fi
 
         exit 1
