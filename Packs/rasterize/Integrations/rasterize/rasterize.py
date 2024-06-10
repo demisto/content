@@ -389,12 +389,15 @@ def terminate_chrome(chrome_port='', killall=False):
                 demisto.debug(f'terminate_chrome, {process=}')
                 process.kill()
             except Exception as e:
-                demisto.info(f"Exception when trying to kiil chrome with {pid=}, {e}")
+                demisto.info(f"Exception when trying to kill chrome with {pid=}, {e}")
 
     demisto.debug('terminate_chrome, Finish')
 
 
 def chrome_manager():
+    # Check if chrome_instances.tsv contains the instance id and chrome options.
+    # If we have open port matches for it - Try to use it.
+    # If no, or we cannot use it - Find a free port
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID')
     chrome_options = demisto.params().get('chrome_options')
 
@@ -434,7 +437,7 @@ def chrome_manager():
         """
 
         if not chrome_instances_contents:
-            demisto.debug("case 1: file is empty, that means no chrome open on the machine")
+            demisto.debug("case 1: file is empty, meaning no chrome running on the machine")
         else:
             if chrome_options in chromes_options and instance_id not in instances_id:
                 demisto.debug("case 2: new instance with the same existing chrome configuration as another instance")
@@ -448,7 +451,7 @@ def chrome_manager():
         When:
             case 4: instance updated the chrome configuration to different configuration
         Then:
-            should kill the old browser and create new one
+            should kill the old browser and create a new one
         """
 
         demisto.debug(f"case 4: found {instance_id=} but with different {chrome_options=}")
@@ -460,7 +463,7 @@ def chrome_manager():
     elif instance_id in instances_id and chrome_options == instance_id_to_chrome_options.get(instance_id):
         """
         When:
-            case 5: The instance exists in the file and the chrome configuration match to it
+            case 5: The instance exists in the file and the chrome configuration matches it
         Then:
             use the existing browser
         """
@@ -474,6 +477,7 @@ def chrome_manager():
         message = f"ERROR: Cannot connect to Chrome with parameters: {instance_id=}, {chrome_options=}"
         demisto.info(message)
         demisto.error(message)
+        return None
 
 
 def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
@@ -514,7 +518,8 @@ def generate_chrome_port():
             demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
             return chrome_port
 
-    # There's already a Chrome listening on that port, Don't use it
+        # There's already a Chrome listening on that port, Don't use it
+
     demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
     return None
 
