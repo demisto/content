@@ -1,7 +1,10 @@
+1. Name: Give a name to the integration instance.
+2. Base URL: Enter the endpoint URL.
+3. Token: Enter the token.
+4. API Key: Enter the API key.
+
 ## Access and Security
-You request access through the CSC service team.  The service team will gather the details for
-the service account that will be used to access the API, and
-the API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
+You request access through the CSC service team.  The service team will gather the details for the service account that will be used to access the API, and the API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
  
 Please see attached API guide for reference.
  
@@ -14,11 +17,11 @@ Refresh token example:
 
 The API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
 
-# Refresh token example:
+### Refresh token example:
 curl --location --request PUT '<YOUR_URL>/dbs/api/v2/token/refresh' \
 --header 'apikey:XXXXXXXXXXXXXXXX' \
 --header 'Authorization: XXXXXXXXXXXXXXXXX'
 
-# For more information
+### For more information
 - [Visit the CSC website](https://www.cscdbs.com/)
 - [See the api page](https://www.cscglobal.com/cscglobal/docs/dbs/domainmanager/api-v2/#/)
