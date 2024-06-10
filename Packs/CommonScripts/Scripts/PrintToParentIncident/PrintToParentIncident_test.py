@@ -33,7 +33,7 @@ def test_print_to_parent_incident(mocker: MockerFixture):
     assert execute_command_mocker.call_args[0][0] == "addEntries"
     # Right arguments are given
     assert execute_command_mocker.call_args[0][1] == {
-        "entries": '[{"Type": 1, "ContentsFormat": "markdown", "Contents": "Entry from 4\\nHello"}]',
+        "entries": '[{"Type": 1, "ContentsFormat": "markdown", "Contents": "Entry from aler #4:\\nHello"}]',
         "id": "INCIDENT-5",
         "reputationCalcAsync": True,
     }
