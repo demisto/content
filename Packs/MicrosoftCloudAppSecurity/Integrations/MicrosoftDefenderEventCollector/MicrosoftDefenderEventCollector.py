@@ -298,7 +298,6 @@ class DefenderGetEvents(IntegrationGetEvents):
         # - activities with filter to get the admin events
         # - activities with different filter to get the login events
         # - alerts with no filter
-        # filter_name_to_attributes, a dictionary contains the filters and the endpoint according to the event type.
         for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
             self.client.request.params.pop('filters', None)
             self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
