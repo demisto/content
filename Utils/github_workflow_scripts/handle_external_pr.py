@@ -334,7 +334,6 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
             repo_name=repo_name
         ):
             for file in pr_files:
-                print(f'check_new_pack_metadata - file name: {file}')
                 if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
@@ -371,6 +370,7 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
             print(f'for file {file}, the pack doesn\'t exist in Master and going to be searched in the remote branch')
             return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
         return check_if_pack_or_integration_is_feed(content_object)
+
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
     """
