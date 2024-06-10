@@ -28,7 +28,15 @@ class Client(BaseClient):
 
     """
 
-
+    def __init__(self, base_url: str, auth:tuple, headers: dict = {}, verify:bool=False, proxy: bool = False) -> None:
+        
+        self.base_url = base_url
+        self.auth=auth
+        self.headers = headers
+        self.verify=verify
+        self.proxy=proxy
+         
+        
     def test_module(self)-> bool:
         """Check if the API is active
 
@@ -36,13 +44,13 @@ class Client(BaseClient):
             dict: response body of the ping endpoint
         """
 
-        url = f"{self._base_url}/ping"
+        url = f"{self.base_url}/ping"
         # Define headers
         headers = {"Content-Type": "application/json"}
 
         # Sending POST request to the API endpoint with the specified headers and request body
         response = requests.get(
-            url, headers=headers, verify=False
+            url, headers=headers, verify=self.verify
         )  # Setting verify=False ignores SSL certificate verification. Be cautious about using it in a production environment.
         # Checking if the request was successful (status code 200)
         return response.status_code == 200
@@ -54,10 +62,10 @@ class Client(BaseClient):
         You can filter also by timestamp or probe name
         """
 
-        url = f'{self._base_url}/jizo_get_protocols'
+        url = f'{self.base_url}/jizo_get_protocols'
 
         response = requests.get(
-            url, params=args,headers=self._headers, verify=False
+            url, params=args,headers=self.headers, verify=self.verify
         )
         if response.status_code==200:
             return response.json()
@@ -71,10 +79,10 @@ class Client(BaseClient):
 
         """
 
-        url = f'{self._base_url}/jizo_get_peers'
+        url = f'{self.base_url}/jizo_get_peers'
 
         response = requests.get(
-            url, params=args,headers=self._headers, verify=False
+            url, params=args,headers=self.headers, verify=self.verify
         )
         if response.status_code==200:
             return response.json()
@@ -89,10 +97,10 @@ class Client(BaseClient):
         You can filter also by timestamp or probe name
 
         """
-        url = f'{self._base_url}/jizo_query_records'
+        url = f'{self.base_url}/jizo_query_records'
 
         response = requests.get(
-            url, params=args,headers=self._headers, verify=False
+            url, params=args,headers=self.headers, verify=self.verify
         )
         if response.status_code==200:
             return response.json()
@@ -105,10 +113,10 @@ class Client(BaseClient):
         Get jizo alert rules
 
         """
-        url = f'{self._base_url}/jizo_get_alert_rules'
+        url = f'{self.base_url}/jizo_get_alert_rules'
 
         response = requests.get(
-            url, params=args,headers=self._headers, verify=False
+            url, params=args,headers=self.headers, verify=False
         )
 
         if response.status_code==200:
@@ -123,10 +131,10 @@ class Client(BaseClient):
         One of this params is mandatory. You can filter also by timestamp or probe name
 
         """
-        url = f'{self._base_url}/jizo_device_records'
+        url = f'{self.base_url}/jizo_device_records'
 
         response = requests.get(
-            url, params=args,headers=self._headers, verify=False
+            url, params=args,headers=self.headers, verify=False
         )
         if response.status_code==200:
             return response.json()
@@ -139,10 +147,10 @@ class Client(BaseClient):
         One of this params is mandatory. You can filter also by timestamp or probe name
 
         """
-        url = f'{self._base_url}/jizo_get_devicealerts'
+        url = f'{self.base_url}/jizo_get_devicealerts'
 
         response = requests.get(
-            url, params=args,headers=self._headers, verify=False
+            url, params=args,headers=self.headers, verify=False
         )
         if response.status_code==200:
             return response.json()
@@ -236,12 +244,12 @@ def test_module( client: Client)->str:
 def get_token(client: Client):
 
     try:
-        url = f"{client._base_url}/login"
+        url = f"{client.base_url}/login"
 
         # Include username and password as JSON in the request body
         data = {
-            "username": client._auth[0],
-            "password": client._auth[1],
+            "username": client.auth[0],
+            "password": client.auth[1],
         }
 
         # Define headers
@@ -452,7 +460,7 @@ def main() -> None:  # pragma: no cover
         connect = get_token(client)
         token = connect["token"]
         # add token to headers
-        client._headers={
+        client.headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
         }
