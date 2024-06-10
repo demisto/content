@@ -5913,23 +5913,33 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
 
 class TestCSFalconResolveIdentityDetectionCommand:
-    def test_http_request_arguments(self, mocker: MockerFixture):
+    @pytest.mark.parametrize('Post_Raptor_release, url_suffix, ids_request_key', [
+        (True,'/alerts/entities/alerts/v3', 'composite_ids'),
+         (False, '/alerts/entities/alerts/v2', 'ids')])
+    def test_http_request_arguments(self, mocker: MockerFixture, Post_Raptor_release, url_suffix, ids_request_key):
         """
         Given:
             - Arguments for the cs-falcon-resolve-identity-detection command.
+            case 1: Post_Raptor_release is True
+            case 2: Post_Raptor_release is False
         When
             - Making a http request.
         Then
             - Validate that the arguments are mapped correctly to the json body.
+            - Validate the url_suffix and the ids_request_key according to the Post_Raptor_release value:
+                case 1: url_suffix should be '/alerts/entities/alerts/v3' and the ids_request_key should be 'composite_ids'
+                case 2: url_suffix should be '/alerts/entities/alerts/v2' and the ids_request_key should be 'ids'
         """
         from CrowdStrikeFalcon import resolve_detections_request
+        mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
         ids = ['1,2']
         action_param_values = {'update_status': 'new', 'assign_to_name': 'bot'}
         action_params_http_body = [{'name': 'update_status', 'value': 'new'}, {'name': 'assign_to_name', 'value': 'bot'}]
         resolve_detections_request(ids=ids, **action_param_values)
+        assert http_request_mocker.call_args_list[0][1].get('url_suffix') == url_suffix
         assert http_request_mocker.call_args_list[0][1].get('json') == {'action_parameters': action_params_http_body,
-                                                                        'ids': ids}
+                                                                        ids_request_key: ids}
 
     def test_resolve_identity_detection(self, mocker: MockerFixture):
         """
