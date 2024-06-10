@@ -780,10 +780,6 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
     if args.get(NOT_AFTER) is None and args.get(DURATION) is None:
         raise ValueError('Either the "not_after" or "duration" argument must be provided.')
     csr = load_content_from_file(args.get(CSR_ENTRY_ID, ''))
-    # if csr_entry_id := args.get(CSR_ENTRY_ID, ''):
-    #     csr = load_content_from_file(csr_entry_id)
-    # else:
-    #     csr =
     request_data = assign_params(
         csr=csr,
         purpose=args.get(PURPOSE),
@@ -947,7 +943,6 @@ def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
         password=args.get(ENCRYPTION_PASSWORD),
         privateKeyBytes=args.get(PRIVATE_KEY_BYTES),
         size=arg_to_number(args.get(KEY_SIZE)),
-
     )
     raw_response = client.create_csr(request_data=request_data)
     outputs = remove_key_from_outputs(raw_response, 'csr', 'CSR.pem')
