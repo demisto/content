@@ -169,11 +169,15 @@ def main():
             input_file = tmpdir + '/input.json'
             output_file = tmpdir + '/output.pdf'
             dist_dir = tmpdir + '/dist'
+            header_left_image_path = tmpdir + "/customer_logo"
 
             shutil.copytree(WORKING_DIR / 'dist', dist_dir)
 
             with open(input_file, 'wb') as f:
                 f.write(base64.b64decode(sane_json_b64))
+
+            # with open(header_left_image_path, "wb") as f:
+            #     f.write(base64.b64decode(headerLeftImage))
 
             cmd = ['./reportsServer', input_file, output_file, dist_dir] + shlex.split(
                 extra_cmd)
@@ -181,7 +185,7 @@ def main():
             # Logging things for debugging
             params = f'[orientation="{orientation}",' \
                 f' resourceTimeout="{resourceTimeout}",' \
-                f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
+                f' reportType="{reportType}", headerLeftImage="{header_left_image_path}",' \
                 f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
                 f' disableHeaders="{disableHeaders}", forceServerFormattedTimeString="{forceServerFormattedTimeString}",' \
                 f' addUtf8Bom="{addUtf8Bom}"'
