@@ -131,7 +131,7 @@ If the command takes too long to finish executing, try setting the `interval_in_
 
 ### API Call Metrics
 
-This feature provides support for tracking the  QRadar API calls.
+This feature provides support for tracking the QRadar API calls.
 
 Please note that this feature does not include metrics for long-running commands such as `fetch incidents`.
 
