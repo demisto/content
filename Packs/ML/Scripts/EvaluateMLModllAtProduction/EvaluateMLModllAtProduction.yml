@@ -42,12 +42,12 @@ outputs:
 script: '-'
 subtype: python3
 type: python
-dockerimage: demisto/ml:1.0.0.45981
+dockerimage: demisto/ml:1.0.0.96958
 runas: DBotWeakRole
 fromversion: 5.0.0
 tags:
 - ml
-timeout: 120µs
+timeout: "120\xB5s"
 tests:
 - EvaluateMLModllAtProduction-Test
 comment: Evaluates an ML model in production.

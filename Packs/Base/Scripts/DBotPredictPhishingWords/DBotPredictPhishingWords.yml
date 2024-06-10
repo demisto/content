@@ -96,9 +96,9 @@ subtype: python3
 tags:
 - ml
 - phishing
-timeout: 60µs
+timeout: "60\xB5s"
 type: python
-dockerimage: demisto/ml:1.0.0.32340
+dockerimage: demisto/ml:1.0.0.96958
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test

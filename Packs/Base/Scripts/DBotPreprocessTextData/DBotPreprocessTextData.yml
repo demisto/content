@@ -102,9 +102,9 @@ script: '-'
 subtype: python3
 tags:
 - ml
-timeout: 120µs
+timeout: "120\xB5s"
 type: python
-dockerimage: demisto/ml:1.0.0.30541
+dockerimage: demisto/ml:1.0.0.96958
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
