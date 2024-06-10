@@ -880,11 +880,11 @@ def user_tags_command(a1000: A1000):
             resp = a1000.delete_user_tags(sample_hash=sample_hash, tags=tags_list)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -915,7 +915,7 @@ def file_analysis_status_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -957,11 +957,11 @@ def pdf_report_command(a1000: A1000):
             resp = a1000.download_pdf_report(sample_hash=sample_hash)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -978,7 +978,8 @@ def pdf_report_output(resp, action, sample_hash):
     file_result = None
 
     if action == "CREATE REPORT":
-        markdown = markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n **Download endpoint**: {resp.get("download_endpoint")}"""
+        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n""" +
+                    f"""**Download endpoint**: {resp.get("download_endpoint")}""")
         context = resp
 
     elif action == "CHECK STATUS":
@@ -1007,7 +1008,7 @@ def static_analysis_report_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1020,7 +1021,9 @@ def static_analysis_report_output(resp_json, sample_hash):
     indicators_table = tableToMarkdown("Indicators", resp_json.get("indicators"))
     tags_table = tableToMarkdown("Tags", resp_json.get("tags"))
 
-    markdown = f"""## ReversingLabs A1000 static analysis report for {sample_hash}\n **Classification**: {classification_obj.get("classification")}
+    markdown = f"## ReversingLabs A1000 static analysis report for {sample_hash}\n"
+
+    fields = f"""**Classification**: {classification_obj.get("classification")}
     **Factor**: {classification_obj.get("factor")}
     **Result**: {classification_obj.get("result")}
     **SHA-1**: {resp_json.get("sha1")}
@@ -1029,6 +1032,8 @@ def static_analysis_report_output(resp_json, sample_hash):
     **SHA-512**: {resp_json.get("sha512")}
     **Story**: {resp_json.get("story")}\n {indicators_table} {tags_table}
     """
+
+    markdown = markdown + fields
 
     dbot_score = Common.DBotScore(
         indicator=sample_hash,
@@ -1072,11 +1077,11 @@ def dynamic_analysis_report_command(a1000: A1000):
             resp = a1000.download_dynamic_analysis_report(sample_hash=sample_hash, report_format=report_format)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1098,7 +1103,8 @@ def dynamic_analysis_report_output(resp, action, sample_hash, report_format):
     file_result = None
 
     if action == "CREATE REPORT":
-        markdown = markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n **Download endpoint**: {resp.get("download_endpoint")}"""
+        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n""" +
+                    f"""**Download endpoint**: {resp.get("download_endpoint")}""")
         context = resp
 
     elif action == "CHECK STATUS":
@@ -1160,11 +1166,11 @@ def sample_classification_command(a1000: A1000):
             resp = a1000.delete_classification(sample_hash=sample_hash, system=system)
 
         else:
-            return_error("This action is not supported.")
+            raise Exception("This action is not supported.")
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1242,9 +1248,7 @@ def yara_command(a1000: A1000):
     action = demisto.getArg("action")
     ruleset_name = demisto.getArg("ruleset_name")
     ruleset_content = demisto.getArg("ruleset_content")
-    publish = demisto.getArg("publish")
-    if publish:
-        publish = argToBoolean(publish)
+    publish = argToBoolean(demisto.args().get("publish", False))
     sync_time = demisto.getArg("sync_time")
 
     if action == "GET RULESETS":
@@ -1275,7 +1279,7 @@ def yara_command(a1000: A1000):
         resp = a1000.update_yara_ruleset_synchronization_time(sync_time=sync_time)
 
     else:
-        return_error("This action is not supported.")
+        raise Exception("This action is not supported.")
 
     results = yara_output(resp_json=resp.json(), action=action)
     return results
@@ -1313,7 +1317,7 @@ def yara_retro_command(a1000: A1000):
         resp = a1000.get_yara_cloud_retro_scan_status(ruleset_name=ruleset_name)
 
     else:
-        return_error("This action is not supported.")
+        raise Exception("This action is not supported.")
 
     results = yara_retro_output(resp_json=resp.json(), action=action)
     return results
@@ -1338,15 +1342,15 @@ def list_containers_command(a1000: A1000):
     hash_list = sample_hashes.split(",")
 
     if not len(hash_list) > 0:
-        return_error("Please enter at least one sample hash or check the formatting. "
-                     "The hashes should be comma-separated with no whitespaces")
+        raise Exception("Please enter at least one sample hash or check the formatting. "
+                        "The hashes should be comma-separated with no whitespaces")
 
     try:
         resp = a1000.list_containers_for_hashes(sample_hashes=hash_list)
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.content)
+            raise Exception(e.response_object.content)
         else:
             raise
 
@@ -1375,9 +1379,7 @@ def upload_from_url_command(a1000: A1000):
     archive_password = demisto.getArg("archive_password")
     sandbox_platform = demisto.getArg("sandbox_platform")
     task_id = demisto.getArg("task_id")
-    retry = demisto.getArg("retry")
-    if retry:
-        retry = argToBoolean(retry)
+    retry = argToBoolean(demisto.args().get("retry", False))
 
     if action == "UPLOAD":
         resp = a1000.upload_sample_from_url(
@@ -1403,7 +1405,7 @@ def upload_from_url_command(a1000: A1000):
         resp = a1000.check_submitted_url_status(task_id=task_id)
 
     else:
-        return_error("This action is not supported.")
+        raise Exception("This action is not supported.")
 
     results = upload_from_url_output(resp_json=resp.json(), action=action)
     return results
