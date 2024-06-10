@@ -458,6 +458,30 @@ script:
         default: true
         required: true
     outputs:
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Reliability
+        description: Reliability of the source providing the intelligence data.
+        type: String
       - contextPath: ReversingLabs.a1000_static_analysis_report
         description: The static analysis report.
         type: Unknown
@@ -537,6 +561,30 @@ script:
       - name: threat_name
         description: If specified, must be an alphanumeric string not longer than 32 characters. If not specified, the default value is 'Generic'.
     outputs:
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Reliability
+        description: Reliability of the source providing the intelligence data.
+        type: String
       - contextPath: ReversingLabs.a1000_sample_classification
         description: Sample classification actions.
         type: Unknown
@@ -638,6 +686,30 @@ script:
       - name: retry
         description: Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT.
     outputs:
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Reliability
+        description: Reliability of the source providing the intelligence data.
+        type: String
       - contextPath: ReversingLabs.a1000_upload_from_url_actions
         description: Actions for uploading a sample from a URL and fetching the analysis results.
         type: Unknown
