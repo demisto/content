@@ -248,15 +248,15 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: st
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
-        params.pop("timestamp", None)
         if 'page' not in params:
             params["page"] = page
         params["limit"] = params.get("limit") or LIMIT
-        if from_timestamp:
-            params['from'] = from_timestamp
+        if not params.get("timestamp") and from_timestamp:
+            params['timestamp'] = from_timestamp
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
+    demisto.debug(f"{params=}")
     return params
 
 
@@ -536,6 +536,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
+        demisto.debug(f'page:{params_dict["page"]} | {last_run=}')
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
