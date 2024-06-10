@@ -401,7 +401,7 @@ script:
     description: Perform user tag actions for a sample - Get existing tags, create new tags or delete existing tags.
     arguments:
       - name: action
-        description: Which tag action to perform - GET, CREATE or DELETE
+        description: Which tag action to perform - GET, CREATE or DELETE.
         required: true
         auto: PREDEFINED
         predefined:
@@ -439,7 +439,7 @@ script:
         default: true
         required: true
       - name: action
-        description: Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT
+        description: Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT.
         required: true
         auto: PREDEFINED
         predefined:
@@ -493,7 +493,7 @@ script:
         default: true
         required: true
       - name: action
-        description: Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT
+        description: Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT.
         required: true
         auto: PREDEFINED
         predefined:
@@ -520,7 +520,7 @@ script:
         default: true
         required: true
       - name: action
-        description: Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION
+        description: Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION.
         required: true
         auto: PREDEFINED
         predefined:
@@ -553,7 +553,7 @@ script:
           - 'suspicious'
           - 'malicious'
       - name: risk_score
-        description: If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10
+        description: If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10.
       - name: threat_platform
         description: If specified, it must be on the supported list (platforms and subplatforms - see official API docs). If not specified, the default value is 'Win32'.
       - name: threat_type
