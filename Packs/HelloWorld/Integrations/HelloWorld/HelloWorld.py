@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 """HelloWorld Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
@@ -232,8 +233,6 @@ import json
 from typing import Any
 
 import dateparser
-
-from CommonServerUserPython import *
 
 
 ''' CONSTANTS '''

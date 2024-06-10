@@ -1,7 +1,4 @@
 category: Utilities
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: HelloWorld
   version: -1
@@ -49,6 +46,7 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
+  display: ''
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
@@ -86,6 +84,16 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- defaultvalue: '2'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- defaultvalue: '60'
+  display: Some test configuration
+  name: added_conf
+  required: false
+  type: 0
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
@@ -157,7 +165,7 @@ script:
       isArray: true
     - description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
       name: threshold
-      defaultValue: 65
+      defaultValue: '65'
     description: Return IP information and reputation.
     name: ip
     outputs:
@@ -290,14 +298,12 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.10.14.97374
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
