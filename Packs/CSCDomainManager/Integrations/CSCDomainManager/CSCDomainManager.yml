@@ -52,7 +52,7 @@ script:
     - description: Domain name to filter by. Can start with like=, in=.
       name: domain_name
       required: false
-    - description: Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
+    - description: 'Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024, 22/4/24, 22-4-24.'
       name: registration_date
       required: false
     - description: Email to filter by. Can start with like=, in=.
@@ -61,7 +61,7 @@ script:
     - description: Organization to filter by. Can start with like=, in=.
       name: organization
       required: false
-    - description: Registry expiry date to filter by. Can start with gt=, ge=, lt=, le=. Date example 22-Apr-2024.
+    - description: 'Registry expiry date to filter by. Can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024, 22/4/24, 22-4-24.''
       name: registry_expiry_date
       required: false
     - description: 'Create a filter using selectors such as: accountName, accountNumber, brandName, businessUnit, city, country, countryCode, criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy.'
@@ -249,7 +249,7 @@ script:
     - description: Domain name to filter by. Can start with like=, in=.
       name: domain_name
       required: false
-    - description: 'Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024.'
+    - description: 'Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024, 22/4/24, 22-4-24.'
       name: registration_date
       required: false
     - description: Email to filter by. Can start with like=, in=.
