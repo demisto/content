@@ -5,7 +5,7 @@ from urllib.parse import quote
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Any, Tuple
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -339,7 +339,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-        tuple[int, int]:
+    tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
@@ -420,13 +420,13 @@ def return_file_results(data: list[str] | str | bytes, filenames: list[str] | st
     if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
         return_results(
             [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data)])
-    elif isinstance(data, str) or isinstance(data,bytes) and isinstance(filenames, str):
+    elif isinstance(data, str) or isinstance(data, bytes) and isinstance(filenames, str):
         return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
     else:
         raise ValueError('filenames and data should be of the same type and length.')
 
 
-def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> Tuple[dict[str, Any], list[str] | str]:
+def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> tuple[dict[str, Any], list[str] | str]:
     new_outputs = outputs.copy()
     if isinstance(keys, list):
         removed_values = []
@@ -683,7 +683,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+        LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
