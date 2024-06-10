@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Post Raptor release
-  name: Raptor release
+  name: raptor_release
   type: 8
   section: Collect
   additionalinfo: Choose whether the users account was upgraded to the Raptor release or not.
