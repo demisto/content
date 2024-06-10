@@ -22,6 +22,17 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "A successful SSO sign-in from TOR_Test",
+            "timeout": 600,
+            "integrations": [
+                "Microsoft Graph User",
+                "Okta v2"
+            ],
+            "instance_names": [
+                "ms_graph_user_dev"
+            ]
+        },
+        {
             "playbookID": "Endpoint Investigation Plan - Test",
             "timeout": 600
         },

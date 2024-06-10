@@ -14,15 +14,17 @@ Check for related XDR alerts using MITRE tactics to identify any malicious activ
 Remediation:
 Based on the user's risk score and related alerts, the playbook will disable the account if any malicious parameters are found. By default, account disabling requires analyst approval.
 
+Note: Please configure the 'Okta v2' integration or the 'Azure Active Directory Users' integration to enable the automatic clearing of users' active sessions.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Get entity alerts by MITRE tactics
 * Containment Plan - Disable Account
 * Containment Plan - Clear User Sessions
-* Get entity alerts by MITRE tactics
 
 ### Integrations
 
@@ -34,8 +36,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* closeInvestigation
 * core-get-cloud-original-alerts
+* closeInvestigation
 * core-list-risky-users
 
 ## Playbook Inputs
@@ -44,7 +46,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RelatedAlertsThreshold | This is the minimum threshold for XSIAM related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 6 hours.<br/>Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.<br/>The default value is '5'. | 5 | Optional |
+| ShouldCloseAutomatically | Whether to close the alert automatically or manually, after an analyst's review. | True | Optional |
+| RelatedAlertsThreshold | This is the minimum threshold for XSIAM related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 2 hours.<br/>Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.<br/>The default value is '5'. | 5 | Optional |
 | UserContainment | Whether to disable the user account using the 'Containment Plan - Disable Account' sub-playbook.<br/>Possible values:True/False. Default:True.<br/> | True | Optional |
 | UserVerification | Specify if analyst verification is required to disable user accounts.<br/>Possible values:True/False. Default:True. | True | Optional |
 

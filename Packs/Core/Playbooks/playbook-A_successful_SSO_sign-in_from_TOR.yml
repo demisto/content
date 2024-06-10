@@ -17,6 +17,8 @@ description: |-
 
   Remediation:
   Based on the user's risk score and related alerts, the playbook will disable the account if any malicious parameters are found. By default, account disabling requires analyst approval.
+
+  Note: Please configure the 'Okta v2' integration or the 'Azure Active Directory Users' integration to enable the automatic clearing of users' active sessions.
 tags:
 - T1090
 - Proxy
@@ -138,6 +140,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -243,7 +246,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "36"
       "yes":
       - "11"
     separatecontext: false
@@ -303,7 +306,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1330
+          "y": 1520
         }
       }
     note: false
@@ -680,7 +683,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1490
+          "y": 1690
         }
       }
     note: false
@@ -709,7 +712,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "36"
     scriptarguments:
       UserContainment:
         simple: ${inputs.UserContainment}
@@ -775,12 +778,59 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 82ffb12e-d474-469a-883f-48ae9c32b6a9
+    type: condition
+    task:
+      id: 82ffb12e-d474-469a-883f-48ae9c32b6a9
+      version: -1
+      name: Should the alert close automatically?
+      description: Determines whether the alert should close automatically based on the 'ShouldCloseAutomatically' input value.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldCloseAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "36_22_yes": 0.37
+    },
     "paper": {
       "dimensions": {
-        "height": 2125,
+        "height": 2325,
         "width": 750,
         "x": 450,
         "y": -570
@@ -788,6 +838,12 @@ view: |-
     }
   }
 inputs:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "True"
+  required: false
+  description: Whether to close the alert automatically or manually, after an analyst's review.
+  playbookInputQuery:
 - key: RelatedAlertsThreshold
   value:
     simple: "5"
@@ -815,6 +871,10 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
+  - ShouldCloseAutomatically
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
+- inputs:
   - RelatedAlertsThreshold
   name: Investigation
   description: |
@@ -830,6 +890,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- A successful SSO sign-in from TOR_Test
 fromversion: 6.10.0
 marketplaces: ["marketplacev2"]
