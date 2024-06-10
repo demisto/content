@@ -3698,6 +3698,7 @@ def prettify_rule(rule: dict):
 
         'DeviceGroup': DEVICE_GROUP,
         'Location': rule.get('@loc', ''),
+        'UUID': rule.get('@uuid', ''),
         'NegateDestination': rule.get('negate-destination', ''),
         'Disabled': rule.get('disabled', ''),
         'ICMPUnreachable': rule.get('icmp-unreachable', ''),
