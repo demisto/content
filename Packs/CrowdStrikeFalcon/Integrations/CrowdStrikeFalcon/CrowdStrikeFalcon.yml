@@ -175,6 +175,7 @@ configuration:
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
+  - On-Demand Scans Detection
 - defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
   display: Reopen Statuses
   name: reopen_statuses
