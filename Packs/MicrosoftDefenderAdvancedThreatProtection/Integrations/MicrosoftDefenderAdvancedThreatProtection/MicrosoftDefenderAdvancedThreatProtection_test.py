@@ -96,8 +96,7 @@ test_list_machines_by_ip_data = [
 ]
 
 
-@pytest.mark.parametrize('params, expected_len', [pytest.param(), 
-                                                  pytest.param()])
+@pytest.mark.parametrize('params, expected', test_list_machines_by_ip_data, ids=['no_limit', 'with_limit'])
 def test_list_machines_by_ip_with_limit(mocker, params, expected):
     """
     Given:
@@ -109,11 +108,10 @@ def test_list_machines_by_ip_with_limit(mocker, params, expected):
     """
     from MicrosoftApiModule import MicrosoftClient
     raw_response = {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}
-    mock_http_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=raw_response)
+    mock_get_machines_v2 = mocker.patch.object(MicrosoftClient, 'get_machines_v2', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     list_machines_by_ip_command(client_mocker, params)
-    assert mock_http_request.call_args.kwargs == {'method': 'GET',
-                                                 'url_suffix': "machines/findbyip(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)"}
+    assert mock_get_machines_v2.call_args == {'filter': f"machines/findbyip(ip='{params['ip']}',timestamp={params['timestamp']})"}
     assert mock_handle_machines.call_args.args[0] == expected
     
 

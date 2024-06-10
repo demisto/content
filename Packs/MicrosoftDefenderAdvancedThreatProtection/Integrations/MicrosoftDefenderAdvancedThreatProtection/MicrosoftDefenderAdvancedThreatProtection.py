@@ -1262,6 +1262,19 @@ class MsClient:
             params['$top'] = str(page_size)
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+    
+    def get_machines_v2(self, filter_req):
+        """
+
+        Args:
+            filter_req string
+        Returns:
+            dict: Machines info
+        """
+        cmd_url = 'machines/findbyip'
+        params = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        
 
     def get_file_related_machines(self, file):
         """Retrieves a collection of Machines related to a given file hash.
@@ -5132,7 +5145,7 @@ def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandRes
 
     filter = f"(ip='{ip}',timestamp={timestamp})"
 
-    machines_response = client.ms_client.http_request(method='GET', url_suffix=f"machines/findbyip{filter}")
+    machines_response = client.get_machines_v2(filter)
     machines_response = machines_response.get('value', [])
     
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
