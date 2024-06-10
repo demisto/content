@@ -1108,14 +1108,17 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
      "View related 'Backdoor.test' events for ACME-test-005"),
     ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"}, True,
      'View all wineventlogs involving user="test"'),
-    ({}, 'Test query name', {}, True, 'Test query name')
+    ({}, 'Test query name', {}, True, 'Test query name'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
+     'index="test" | where user = "test\\\\crusher"')
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
     "search query fields don't exist in notable data and raw data",
     "query name fields in notables data and raw data",
     "query name fields in raw data",
-    "query name without fields to replace"
+    "query name without fields to replace",
+    "search query with a user field that contains a backslash"
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
@@ -1129,6 +1132,7 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - A raw query name with fields both in the notable's data and in the notable's raw data
     - A raw query name with fields in the notable's raw data
     - A raw query name without any fields to replace.
+    - A raw query search with a user field that contains a backslash
 
 
     When:
@@ -1138,7 +1142,8 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
-    assert splunk.build_drilldown_search(notable_data, search, raw, is_query_name) == expected_search
+    parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
+    assert parsed_query == expected_search
 
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
