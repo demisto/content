@@ -19,7 +19,6 @@ MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
-'''Helper Class'''
 
 
 class EventResult(NamedTuple):
@@ -432,7 +431,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     return events, new_last_run_without_next_page
 
 
-def get_events_computer_type(client: Client, start_date: str, max_fetch: int, last_run: dict) -> tuple:
+def get_events_computer_type(client: Client, start_date: str, max_fetch: int, last_run: dict) -> tuple[list[dict], dict]:
     """
     Fetches computer type events from the Jamf Protect API within a specified date range.
 
@@ -613,7 +612,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
     computer_next_page = last_run.get("computer", {}).get("next_page", "")
 
-    no_next_pages = not (alert_next_page or audit_next_page or computer_next_page)
+    no_next_pages = not(any((alert_next_page, audit_next_page,computer_next_page)))
 
     if no_next_pages or alert_next_page:
         # The only case we don't trigger the alert event type cycle is when have only the audit and computer next page token.

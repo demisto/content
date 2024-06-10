@@ -123,7 +123,7 @@ def test_calculate_fetch_dates_without_arguments(client):
 @pytest.mark.parametrize("with_alert_next_page", [True, False])
 @pytest.mark.parametrize("with_audit_next_page", [True, False])
 @pytest.mark.parametrize("with_computer_next_page", [True, False])
-def test_nextTrigger(with_alert_next_page, with_audit_next_page, with_computer_next_page, mocker: MockerFixture):
+def test_nextTrigger(with_alert_next_page :bool, with_audit_next_page :bool, with_computer_next_page:bool, mocker: MockerFixture):
     """
     Given: A mock JamfProtect client.
     When: Running fetch_events with different next pages for alerts, audits and computers.
