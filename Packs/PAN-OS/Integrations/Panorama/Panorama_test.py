@@ -6495,7 +6495,6 @@ class TestFetchIncidentsHelperFunctions:
         from Panorama import add_time_filter_to_query_parameter
         assert add_time_filter_to_query_parameter(query, last_fetch, 'time_generated') == expected_result
 
-
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
         """
@@ -7447,7 +7446,6 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
 
     assert entries[0]["name"] == "Correlation 1"
     assert entries[0]["type"] == "CORRELATION"
-
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
     )  # asserting that "match_time" is used instead of "time_generated".
