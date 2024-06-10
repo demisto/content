@@ -46,6 +46,7 @@ INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
+POST_RAPTOR_RELEASE = PARAMS.get('raptor_release', False)
 
 ''' KEY DICTIONARY '''
 
@@ -6512,7 +6513,8 @@ def resolve_detections_prepare_body_request(ids: list[str],
         if value:
             param = {"name": key, "value": value}
             action_params.append(param)
-    return {'action_parameters': action_params, 'ids': ids}
+    ids_request_key =  'composite_ids' if POST_RAPTOR_RELEASE else 'ids'
+    return {'action_parameters': action_params, ids_request_key: ids}
 
 
 def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
@@ -6524,8 +6526,9 @@ def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The raw response of the API.
     """
+    url_suffix = '/alerts/entities/alerts/v3' if POST_RAPTOR_RELEASE else '/alerts/entities/alerts/v2'
     body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
-    return http_request(method='PATCH', url_suffix='/alerts/entities/alerts/v2', json=body_payload)
+    return http_request(method='PATCH', url_suffix=url_suffix, json=body_payload)
 
 
 def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults:
