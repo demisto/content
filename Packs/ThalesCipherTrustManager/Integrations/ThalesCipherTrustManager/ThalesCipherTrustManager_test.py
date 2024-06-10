@@ -543,7 +543,6 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
 
 @pytest.fixture(autouse=True)
 def patch_create_auth_token(monkeypatch):
-    empty_lambda = lambda: None
 
     def mock_create_auth_token(*args, **kwargs):
         return util_load_json('test_data/mock_create_auth_token_response.json')
