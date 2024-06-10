@@ -1,4 +1,4 @@
-Prints a value to the specified alert's warroom. The alert must be in status "Under Investigation".
+Prints a value to the specified alert's war-room. The alert must be in status "Under Investigation".
 
 ## Script Data
 ---
@@ -14,7 +14,7 @@ Prints a value to the specified alert's warroom. The alert must be in status "Un
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The value to print to the warroom of specified alert. |
+| value | The value to print to the war-room of specified alert. |
 | alert_id | The alert ID to print to. |
 
 ## Outputs

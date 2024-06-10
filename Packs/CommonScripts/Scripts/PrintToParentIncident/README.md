@@ -1,4 +1,4 @@
-Prints a value to the parent incident's warroom of the current alert.
+Prints a value to the parent incident's war-room of the current alert.
 
 ## Script Data
 ---
@@ -14,7 +14,7 @@ Prints a value to the parent incident's warroom of the current alert.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The value to print to the parent incident's warroom. |
+| value | The value to print to the parent incident's war-room. |
 
 ## Outputs
 ---

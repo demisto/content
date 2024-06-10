@@ -1,8 +1,8 @@
 args:
-- description: The value to print to the parent incident's warroom.
+- description: The value to print to the parent incident's war-room.
   name: value
   required: true
-comment: Prints a value to the parent incident's warroom of the current alert.
+comment: Prints a value to the parent incident's war-room of the current alert.
 commonfields:
   id: PrintToParentIncident
   version: -1
@@ -17,5 +17,7 @@ type: python
 subtype: python3
 dockerimage: demisto/python3:3.10.14.97374
 fromversion: 8.7.0
+marketplaces:
+- marketplacev2
 tests:
 - No test - unit test
