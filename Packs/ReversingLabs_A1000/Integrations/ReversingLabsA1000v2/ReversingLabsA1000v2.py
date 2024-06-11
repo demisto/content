@@ -247,6 +247,11 @@ def delete_sample(a1000):
     except Exception as e:
         return_error(str(e))
 
+    results, file_result = delete_sample_output(response_json=response_json)
+    return [results, file_result]
+
+
+def delete_sample_output(response_json):
     res = response_json.get('results')
     markdown = f'''## ReversingLabs A1000 delete sample\n **Message:** {res.get('message')}
     **MD5:** {demisto.get(res, 'detail.md5')}
@@ -262,7 +267,7 @@ def delete_sample(a1000):
     file_result = fileResult('Delete sample report file', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
 
-    return [command_result, file_result]
+    return command_result, file_result
 
 
 def reanalyze(a1000):
@@ -283,6 +288,11 @@ def reanalyze(a1000):
     except Exception as e:
         return_error(str(e))
 
+    results, file_result = reanalyze_output(response_json=response_json)
+    return [results, file_result]
+
+
+def reanalyze_output(response_json):
     try:
         result = response_json.get("results")[0]
     except Exception as e:
@@ -302,7 +312,7 @@ def reanalyze(a1000):
     file_result = fileResult('ReAnalyze sample report file', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
 
-    return [command_result, file_result]
+    return command_result, file_result
 
 
 def list_extracted_files(a1000):
