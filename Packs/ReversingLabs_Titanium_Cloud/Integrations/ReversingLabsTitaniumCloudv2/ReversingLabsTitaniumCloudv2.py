@@ -2475,8 +2475,8 @@ def customer_usage_data_command():
         )
 
     else:
-        return_error("Unknown data type request. Precisely one of the following values needs to be set as data_type: "
-                     "DAILY USAGE, MONTHLY USAGE, DATE RANGE USAGE, QUOTA LIMITS")
+        raise Exception("Unknown data type request. Precisely one of the following values needs to be set as data_type: "
+                        "DAILY USAGE, MONTHLY USAGE, DATE RANGE USAGE, QUOTA LIMITS")
 
     response_json = response.json()
     results = customer_usage_data_output(
