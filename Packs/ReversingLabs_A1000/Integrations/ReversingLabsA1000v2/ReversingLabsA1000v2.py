@@ -1,3 +1,5 @@
+import json
+
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
@@ -220,6 +222,11 @@ def upload_sample(a1000):
     except Exception as e:
         return_error(str(e))
 
+    results, file_result = upload_sample_output(response_json=response_json)
+    return [results, file_result]
+
+
+def upload_sample_output(response_json):
     markdown = f'''## ReversingLabs A1000 upload sample\n **Message:** {response_json.get('message')}
     **ID:** {demisto.get(response_json, 'detail.id')}
     **SHA1:** {demisto.get(response_json, 'detail.sha1')}
@@ -234,7 +241,7 @@ def upload_sample(a1000):
     file_result = fileResult('Upload sample report file', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
 
-    return [command_result, file_result]
+    return command_result, file_result
 
 
 def delete_sample(a1000):
