@@ -493,6 +493,11 @@ def advanced_search(a1000):
     except Exception as e:
         return_error(str(e))
 
+    results, file_result = advanced_search_output(result_list=result_list)
+    return [results, file_result]
+
+
+def advanced_search_output(result_list):
     command_result = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'a1000_advanced_search_report': result_list},
@@ -502,7 +507,7 @@ def advanced_search(a1000):
     file_result = fileResult('Advanced search report file', json.dumps(result_list, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
 
-    return [command_result, file_result]
+    return command_result, file_result
 
 
 def get_url_report(a1000):
