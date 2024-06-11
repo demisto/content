@@ -6856,10 +6856,11 @@ def test_update_max_fetch_dict(mocker):
         - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
     """
     from Panorama import update_max_fetch_dict
-    mocker.patch('demistomock.getLastRun', return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08"}})
+    mocker.patch('demistomock.getLastRun',
+                 return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:00"}})
     res = update_max_fetch_dict(configured_max_fetch=5, max_fetch_dict={"log_type1": 10, "log_type2": 15},
                                 last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
-    assert res == {'log_type1': 15, 'log_type2': 5}
+    assert res == {'log_type1': 15}
 
 
 def test_find_largest_id_per_device(mocker):

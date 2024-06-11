@@ -13,9 +13,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
 else:
-    class TypedDict:
-        def __new__(cls, **kwargs):
-            return kwargs
+    TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
     NotRequired = list
 
 import panos.errors
@@ -54,7 +52,6 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
-MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'Url', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
 LOG_TYPE_TO_REQUEST = {
     'Traffic': 'traffic',
@@ -14173,7 +14170,7 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     return new_largest_id
 
 
-def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dict: LastIDs):
+def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dict: LastIDs):
     """
     This function removes entries that have already been fetched in the previous fetch cycle.
     Args:
@@ -14182,22 +14179,22 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
     Returns:
         new_entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle
     """
-    new_entries_dict: Dict = {}
-    for log_type in entries_dict:
-        demisto.debug(f'Filtering {log_type} type enties, recived {len(entries_dict[log_type])} to filter.')
+    new_entries_dict: dict = {}
+    for log_type, logs in entries_dict.items():
+        demisto.debug(f'Filtering {log_type} type enties, recived {len(logs)} to filter.')
         if log_type == 'Correlation':
             # use dict_safe_get because 'Correlation' can have a dict from older versions
             last_log_id = dict_safe_get(id_dict, ['Correlation'], 0, int, False)
             demisto.debug(f'{last_log_id=}')
             first_new_log_index = next(
-                (i for i, log in enumerate(entries_dict['Correlation'])
+                (i for i, log in enumerate(logs)
                  if int(log.get("@logid")) > last_log_id),  # type: ignore
-                len(entries_dict['Correlation'])
+                len(logs)
             )
             demisto.debug(f'{first_new_log_index=}')
-            new_entries_dict['Correlation'] = entries_dict['Correlation'][first_new_log_index:]
+            new_entries_dict['Correlation'] = logs[first_new_log_index:]
         else:
-            for log in entries_dict[log_type]:
+            for log in logs:
                 device_name = log.get("device_name", '')
                 current_log_id = arg_to_number(log.get("seqno"))
                 # get the latest id for that device, if that device is not in the dict, set the id to 0
@@ -14222,18 +14219,16 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: MaxFetch, l
     Returns:
         max_fetch_dict (MaxFetch): a dictionary of log type and its updated max fetch value
     """
-    previous_last_fetch: LastFetchTimes = demisto.getLastRun().get("last_fetch_dict", {})  # type: ignore
-    for log_type in last_fetch_dict:
-        previous_fetch_timestamp = previous_last_fetch.get(log_type)
-        # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
-        # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
-        demisto.debug(f"{previous_fetch_timestamp=}, {last_fetch_dict.get(log_type)=}")
-        if previous_fetch_timestamp and previous_fetch_timestamp == last_fetch_dict.get(log_type):
-            max_fetch_dict[log_type] += configured_max_fetch  # type: ignore
-        else:
-            max_fetch_dict[log_type] = configured_max_fetch  # type: ignore
-    demisto.debug(f"{max_fetch_dict=}")
-    return max_fetch_dict
+    previous_last_fetch = demisto.getLastRun().get("last_fetch_dict", {})
+    # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
+    # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
+    new_max_fetch = {
+        log_type: max_fetch_dict[log_type] + configured_max_fetch
+        for log_type, last_fetch in last_fetch_dict.items()
+        if previous_last_fetch.get(log_type) == last_fetch
+    }
+    demisto.debug(f"{new_max_fetch=}")
+    return cast(MaxFetch, new_max_fetch)
 
 
 def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
@@ -14254,13 +14249,12 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
         return {'Correlation': 'match_time'}.get(log_type, 'time_generated')
 
     entries = {}
-    if queries_dict:
-        for log_type, query in queries_dict.items():
-            max_fetch = max_fetch_dict.get(log_type, MAX_INCIDENTS_TO_FETCH)
-            fetch_start_time = fetch_start_datetime_dict.get(log_type)
-            if fetch_start_time:
-                query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))  # type: ignore
-            entries[log_type] = get_query_entries(log_type, query, max_fetch, fetch_job_polling_max_num_attempts)  # type: ignore
+    for log_type, query in queries_dict.items():
+        max_fetch = max_fetch_dict[log_type]
+        fetch_start_time = fetch_start_datetime_dict.get(log_type)
+        if fetch_start_time:
+            query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))  # type: ignore
+        entries[log_type] = get_query_entries(log_type, query, max_fetch, fetch_job_polling_max_num_attempts)  # type: ignore
     return entries
 
 
@@ -14327,9 +14321,11 @@ def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
 
     # add new log types to last_fetch_dict
     if queries_dict:
-        for log_type in queries_dict:
-            if log_type not in last_fetch_dict:
-                last_fetch_dict[log_type] = ''  # type: ignore[literal-required]
+        last_fetch_dict |= {
+            log_type: ''
+            for log_type in queries_dict
+            if log_type not in last_fetch_dict
+        }  # type: ignore[literal-required] 
 
     # update fetch_start_datetime_dict with relevant last fetch time per log type in datetime UTC format
     # if there is no prior last fetch time available for a log type - it will be set it to first_fetch
@@ -14346,28 +14342,29 @@ def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
     return fetch_start_datetime_dict
 
 
-def log_types_queries_to_dict(params: Dict[str, str]) -> QueryMap:
+def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
     """converts chosen log type queries from parameters to a queries dictionary.
     Example:
     for parameters: log_types=['X_log_type'], X_log_type_query='(example query for X_log_type)'
     the dictionary returned is: {'X_log_type':'(example query for X_log_type)'}
 
     Args:
-        params (Dict[str, str]): instance configuration parameters
+        params (dict[str, str]): instance configuration parameters
 
     Returns:
-        Dict[str, str]: queries per log type dictionary
+        QueryMap: queries per log type dictionary
     """
-    queries_dict = QueryMap()  # type: ignore[typeddict-item]
     if log_types := params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
-        for log_type in active_log_type_queries:
-            log_type_query = params.get(f'{log_type.lower()}_query', "")
-            if log_type_query:
-                queries_dict[log_type] = log_type_query
-
-    return queries_dict
+        queries_dict = {
+            log_type: log_type_query
+            for log_type in active_log_type_queries
+            if (log_type_query := params.get(f'{log_type.lower()}_query', ""))
+        }
+        if no_query_log := next():
+            raise 
+    return cast(QueryMap, queries_dict)
 
 
 def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, Any]]],
@@ -14494,7 +14491,7 @@ def main():  # pragma: no cover
             configured_max_fetch = arg_to_number(params['max_fetch'])
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
-            max_fetch: MaxFetch = last_run.get('max_fetch_dict') or dict.fromkeys(queries, configured_max_fetch)  # type: ignore
+            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch) | last_run.get('max_fetch_dict', {}))
 
             last_fetch, last_ids, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
