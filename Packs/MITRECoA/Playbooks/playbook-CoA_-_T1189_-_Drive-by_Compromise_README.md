@@ -55,4 +55,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1189 - Drive-by Compromise](../doc_files/MITRE_ATT&CK_CoA_-_T1189_-_Drive-by_Compromise.png)
+![MITRE ATT&CK CoA - T1189 - Drive-by Compromise](../doc_files/MITRE_ATTandCK_CoA_-_T1189_-_Drive-by_Compromise.png)

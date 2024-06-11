@@ -13,7 +13,6 @@ import urllib
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
-IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
 
 # flake8: noqa
 
@@ -7254,7 +7253,7 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         demisto.debug(f"Attempt {attempt}/{attempts} to get response for whois '{domain}' from '{target_server}'...")
         response = whois_request_get_response(request_domain, target_server)
         response_size = len(response.encode('utf-8'))
-        demisto.debug(f"Response byte size: {response_size}")
+        demisto.debug(f"Response of attempt {attempt}/{attempts} to get whois {domain=} from {target_server=}, {response_size=}")
 
         if response_size > 0:
             demisto.debug(f"Response received for domain '{domain}' after {attempt} attempt(s)")
@@ -7336,6 +7335,9 @@ def whois_request_get_response(domain: str, server: str) -> str:
     """
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        if is_time_sensitive():
+            # Default short timeout
+            sock.settimeout(10)
         sock.connect((server, 43))
         sock.send(("%s\r\n" % domain).encode("utf-8"))
         buff = b""
@@ -8501,7 +8503,11 @@ def get_whois_ip(ip: str,
         ip_obj = ipwhois.IPWhois(ip)
 
     try:
-        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+        rate_limit_timeout_actual = rate_limit_timeout
+        if retry_count > 0:
+            rate_limit_timeout_actual = 0
+        ret_value = ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout_actual)
+        return ret_value
     except urllib.error.HTTPError as e:
         if rate_limit_errors_suppressed:
             demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
@@ -8530,7 +8536,7 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
     ips = demisto.args().get('ip', '1.1.1.1')
     rate_limit_retry_count: int = (
         RATE_LIMIT_RETRY_COUNT_DEFAULT
-        if IS_SYNC_MODE
+        if is_time_sensitive()
         else int(
             get_param_or_arg('rate_limit_retry_count', 'rate_limit_retry_count')
             or RATE_LIMIT_RETRY_COUNT_DEFAULT
@@ -8646,10 +8652,12 @@ def whois_command(reliability: str) -> List[CommandResults]:
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
     for query in argToList(query):
+        demisto.debug(f'Getting whois for a single {query=}')
         domain = get_domain_from_query(query)
 
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
+            demisto.debug(f'Got whois for a single {query=}')
             execution_metrics.success += 1
             md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
             context_res = {}
@@ -8728,9 +8736,11 @@ def domain_command(reliability: str) -> List[CommandResults]:
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
     for domain in argToList(domains):
+        demisto.debug(f'Getting domain for a single {domain=}')
 
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
+            demisto.debug(f'Got domain for a single {domain=}')
             execution_metrics.success += 1
             md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
             context_res = {}
@@ -8859,6 +8869,7 @@ def main():  # pragma: no cover
             else:
                 raise NotImplementedError()
 
+        demisto.debug(f"Returning results for command {demisto.command()}")
         return_results(results)
     except Exception as e:
         msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"

@@ -1,0 +1,85 @@
+id: ExabeamSecurityOperationsPlatform-test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: ExabeamSecurityOperationsPlatform-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d0b4cdf-ef28-4058-8f4b-94000ee7db23
+    type: start
+    task:
+      id: 9d0b4cdf-ef28-4058-8f4b-94000ee7db23
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c378fe50-d7c3-4110-8633-a209d575f171
+    type: regular
+    task:
+      id: c378fe50-d7c3-4110-8633-a209d575f171
+      version: -1
+      name: exabeam-platform-event-search
+      description: Get events from Exabeam Security Operations Platform.
+      script: ExabeamSecOpsPlatform|||exabeam-platform-event-search
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    scriptarguments:
+      end_time:
+        simple: 05.20.2024
+      start_time:
+        simple: 05.01.2024
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 305,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0

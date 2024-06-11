@@ -1,0 +1,6 @@
+name: F5 BIG-IP Advanced WAF Parsing Rule
+id: F5_BIG-IP_Advanced_WAF_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''

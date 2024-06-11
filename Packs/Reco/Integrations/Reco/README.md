@@ -251,9 +251,8 @@ Get 3rd parties accessible to sensitive assets
 | --- | --- | --- |
 | Reco.Domains.domain | String | The domain of the 3rd party | 
 | Reco.Domains.last_activity | String | The last interaction time with the 3rd party | 
-| Reco.Domains.num_files | Number | The number of files the 3rd party has access to | 
-| Reco.Domains.num_users | Number | The number of users the 3rd party has access to | 
-| Reco.Domains.data_category | String | The data category of the assets the 3rd party has access to | 
+| Reco.Domains.files_num | Number | The number of files the 3rd party has access to | 
+| Reco.Domains.users_with_access_num | Number | The number of users the 3rd party has access to |
 
 ### reco-get-sensitive-assets-with-public-link
 
@@ -299,15 +298,16 @@ Get files shared with 3rd parties
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Reco.Assets.asset_id | String | The asset id of the file | 
-| Reco.Assets.location | String | The location of the file | 
-| Reco.Assets.users | String | Users the file is shared with | 
-| Reco.Assets.asset | Unknown | The asset metadata | 
-| Reco.Assets.data_category | String | The data category of the assets the 3rd party has access to | 
-| Reco.Assets.last_access_date | String | The last access date of the asset | 
-| Reco.Assets.domain | String | The domain of the 3rd party | 
+| **Path**                     | **Type** | **Description**                                             |
+|------------------------------|----------|-------------------------------------------------------------|
+| Reco.Assets.asset_id         | String   | The asset id of the file                                    | 
+| Reco.Assets.location         | String   | The location of the file                                    | 
+| Reco.Assets.users            | String   | Users the file is shared with                               | 
+| Reco.Assets.file_owner       | String   | File Owner                                                  |
+| Reco.Assets.asset            | Unknown  | The asset metadata                                          | 
+| Reco.Assets.data_category    | String   | The data category of the assets the 3rd party has access to | 
+| Reco.Assets.last_access_date | String   | The last access date of the asset                           | 
+| Reco.Assets.domain           | String   | The domain of the 3rd party                                 | 
 
 ### reco-change-alert-status
 
@@ -355,3 +355,86 @@ Get user context by email address from Reco.
 | Reco.User.groups | String | The groups user is member of. | 
 | Reco.User.full_name | String | The user full name. | 
 | Reco.User.labels | Unknown | User Labels. | 
+
+
+### reco-get-files-exposed-to-email-address
+
+***
+Get files exposed to a specific email address
+
+#### Base Command
+
+`reco-get-files-exposed-to-email-address`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id | 
+| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
+| Reco.Assets.data_category | String | The data category of the asset | 
+| Reco.Assets.data_categories | String | The data categories of the asset |
+| Reco.Assets.location | String | The path of the asset. |
+| Reco.Assets.source | String | SaaS tool source of the asset. |
+| Reco.Assets.last_access_date | String | The last access date of the asset |
+| Reco.Assets.email_account | String | The last access date of the asset |
+| Reco.Assets.file_owner | String | SaaS tool source of the asset | 
+
+
+### reco-get-assets-shared-externally
+
+***
+Get files exposed to a specific email address
+
+#### Base Command
+
+`reco-get-assets-shared-externally`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id | 
+| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
+| Reco.Assets.data_category | String | The data category of the asset | 
+| Reco.Assets.data_categories | String | The data categories of the asset | 
+| Reco.SensitiveAssets.location | String | The path of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
+| Reco.Assets.last_access_date | String | The last access date of the asset |
+| Reco.Assets.file_owner | String | SaaS tool source of the asset |
+
+
+### reco-get-private-email-list-with-access
+
+***
+Get private email list with access
+
+#### Base Command
+
+`reco-get-private-email-list-with-access`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description**           |
+| --- |----------|---------------------------|
+| Reco.privateEmails.email_account | String   | The email account         | 
+| Reco.privateEmails.primary_email | String   | The primary email account | 
+| Reco.privateEmails.files_num | String   | Number of files           | 
+| Reco.privateEmails.user_category | String   | The category of the user  | 
+
+

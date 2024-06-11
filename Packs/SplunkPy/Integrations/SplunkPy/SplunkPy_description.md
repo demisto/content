@@ -44,7 +44,7 @@ You do not need to specify the classifier as all Splunk incidents are ingested a
 Outgoing mirroring is recommended for Cortex XSOAR version 6.2 and above. If you enable mirroring, you need to add the timezone of the Splunk server (in minutes). For example, if using GMT and the timezone is GMT +3 hours, set the timezone to +180. For UTC, set the timezone to 0. Set this only if the Splunk server is different than the Cortex XSOAR server. This is relevant only for fetching notable events.
 13. Select *Close Mirrored XSOAR Incident* and *Close Mirrored Splunk Notable Event*, so when closing in one environment, it closes in the other.
 14. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
-This enrichment provides additional information about assets, drilldown, and identities that are related to the notable events you ingest. For more information, see [Enriching Notable Events](#enriching-notable-events).
+This enrichment provides additional information about assets, drilldown, and identities that are related to the notable events you ingest. Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more information, see [Enriching Notable Events](#enriching-notable-events).
 15. Fetch backwards window - this backward window is for cases where there is a gap between the event occurrence time and the event index time on the server.
 In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
 This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g., if some endpoints / machines that generate Splunk events are usually offline.
@@ -65,7 +65,8 @@ Use this parameter with careful consideration.
 This integration allows 3 types of enrichments for fetched notables: Drilldown, Asset, and Identity.
 
 #### Enrichment types
-1. **Drilldown search enrichment**: Fetches the drilldown search configured by the user in the rule name that triggered the notable event and performs this search. The results are stored in the context of the incident under the **Drilldown** field.
+1. **Drilldown search enrichment**: Fetches the drilldown search configured by the user in the rule name that triggered the notable event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follow: [{result1}, {result2}, {result3}].
+Getting results from multiple drilldown searches is supported from Enterprise Security v7.2.0. In that case, the results are stored in the context of the incident under the **Drilldown** field as follow: [{'query_name':<query_name>, 'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}], 'enrichment_status': <enrichment_status>}].
 2. **Asset search enrichment**: Runs the following query:
 *| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as * by asset_id*
 where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** and **dst_ip** from the fetched notable. The results are stored in the context of the incident under the **Asset** field.
@@ -78,11 +79,11 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch notable events ES query*: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
+5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. (default to 20).
 
 #### Troubleshooting enrichment status
 Each enriched incident contains the following fields in the incident context:
-- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful.
+- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful. In a case of multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful.
 - **successful_asset_enrichment**: whether the asset enrichment was successful.
 - **successful_identity_enrichment**: whether the identity enrichment was successful.
 
