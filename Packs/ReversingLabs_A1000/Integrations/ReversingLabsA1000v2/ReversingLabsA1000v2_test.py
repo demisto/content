@@ -3,7 +3,7 @@ from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_outpu
     classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy, \
     file_analysis_status_output, pdf_report_output, static_analysis_report_output, dynamic_analysis_report_output, \
     sample_classification_output, yara_output, yara_retro_output, list_containers_output, upload_from_url_output, \
-    delete_sample_output, reanalyze_output, advanced_search_output, VERSION, USER_AGENT, RELIABILITY, return_proxies
+    delete_sample_output, reanalyze_output, advanced_search_output, VERSION, USER_AGENT, RELIABILITY, upload_sample_output
 import demistomock as demisto
 import pytest
 
@@ -212,6 +212,13 @@ def test_format_proxy():
 def test_vars():
     assert USER_AGENT == "ReversingLabs XSOAR A1000 " + VERSION
     assert RELIABILITY is not None
+
+
+def test_upload_sample_output():
+    report = util_load_json("test_data/a1000_upload_sample.json")
+    result = upload_sample_output(response_json=report)
+
+    assert result[0].to_context().get("Contents").get("a1000_upload_report").get("message") == "Done."
 
 
 def util_load_json(path):
