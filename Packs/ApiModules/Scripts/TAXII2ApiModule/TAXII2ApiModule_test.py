@@ -1922,6 +1922,25 @@ def test_create_stix_object(xsoar_indicator, xsoar_type, expected_stix_object, e
     assert extensions_dict == {}
 
 
+def test_create_stix_object_unknown_file_hash():
+    """
+    Given:
+        - A XSOAR indicator of type 'File' and the value is an invalid hash.
+    When:
+        - Creating a stix object.
+    Then:
+        - Ensure the stix object is empty.
+    """
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'}, types_for_indicator_sdo=[],
+                              namespace_uuid=PAWN_UUID)
+    xsoar_indicator = {"value": "invalidhash"}
+    xsoar_type = FeedIndicatorType.File
+    stix_object, extension_definition, extensions_dict = cilent.create_stix_object(xsoar_indicator, xsoar_type)
+    assert stix_object == {}
+    assert extension_definition == {}
+    assert extensions_dict == {}
+
+
 def test_init_client_with_wrong_version():
     """
     Given:

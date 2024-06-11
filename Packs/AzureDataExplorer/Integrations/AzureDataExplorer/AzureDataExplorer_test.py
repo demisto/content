@@ -322,6 +322,6 @@ def test_generate_login_url(mocker):
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code' \
                    f'&scope=offline_access%20{cluster_url}/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureDataExplorer.return_results.call_args[0][0].readable_output
     assert expected_url in res

@@ -423,6 +423,7 @@ Creates a new content record in the given application.
 Note: When creating a new record, make sure the values are sent through the *fieldsToValues* argument properly.
 
 - Example for the *Values List* field type: {"Type": ["Switch"], fieldname: [value1, value2]}
+- Example for the *Values List* field type with *OtherText* property: {"Patch Type": {"ValuesList": ["Custom Type"], "OtherText": "actuall text"}, field_name_without_other: [value1, value2]}
 - Example for the *External Links* field type: {"Patch URL": [{"value":"github", "link": "https://github.com"}]}
 - Example for the *Users/Groups List* field type: {"Policy Owner":{"users": [20],"groups": [30]}}
 - Example for the *Cross- Reference* field type: {"Area Reference(s)": [20]}
