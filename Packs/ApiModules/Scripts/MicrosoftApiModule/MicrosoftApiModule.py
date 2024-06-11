@@ -41,7 +41,7 @@ SESSION_STATE = 'session_state'
 # Deprecated, prefer using AZURE_CLOUDS
 TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
@@ -121,7 +121,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
     'geo-us': 'https://securitycenter.onmicrosoft.com',
     'geo-eu': 'https://securitycenter.onmicrosoft.com',
     'geo-uk': 'https://securitycenter.onmicrosoft.com',
-    'gcc': 'https://securitycenter.onmicrosoft.us',
+    'gcc': 'https://securitycenter.onmicrosoft.com',
     'gcc-high': 'https://securitycenter.onmicrosoft.us',
     'dod': 'https://securitycenter.onmicrosoft.us',
 }
@@ -141,7 +141,7 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
 
 MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
 }
 
@@ -330,7 +330,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         sql_management='https://management.core.usgovcloudapi.net:8443/',
         batch_resource_id='https://batch.core.usgovcloudapi.net/',
         gallery='https://gallery.usgovcloudapi.net/',
-        active_directory='https://login.microsoftonline.us',
+        active_directory='https://login.microsoftonline.com',
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
