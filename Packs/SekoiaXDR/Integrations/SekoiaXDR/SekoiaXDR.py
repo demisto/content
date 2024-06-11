@@ -5,7 +5,6 @@ from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 import dateparser
-import time
 from typing import Any, Dict, Tuple, List, Optional, cast
 from datetime import datetime
 import re
@@ -18,8 +17,6 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-MAX_INCIDENTS_TO_FETCH = 50  # Default value to be used if the parameter is not set on the integration config.
-MAX_EVENTS = 250  # Default value to limit the amount of events retrieved.
 INTERVAL_SECONDS_EVENTS = 1
 TIMEOUT_EVENTS = 30
 INCIDENT_TYPE_NAME = "Sekoia XDR"
@@ -68,8 +65,8 @@ class Client(BaseClient):
         self,
         alerts_limit: Optional[int],
         alerts_status: Optional[str],
-        alerts_createdAt: Optional[str],
-        alerts_updatedAt: Optional[str],
+        alerts_created_at: Optional[str],
+        alerts_updated_at: Optional[str],
         alerts_urgency: Optional[str],
         alerts_type: Optional[str],
         sort_by: Optional[str],
@@ -83,10 +80,10 @@ class Client(BaseClient):
         """ Matching parameters"""
         if alerts_status:
             request_params["match[status_name]"] = alerts_status
-        if alerts_createdAt:
-            request_params["date[created_at]"] = alerts_createdAt
-        if alerts_updatedAt:
-            request_params["date[updated_at]"] = alerts_updatedAt
+        if alerts_created_at:
+            request_params["date[created_at]"] = alerts_created_at
+        if alerts_updated_at:
+            request_params["date[updated_at]"] = alerts_updated_at
         if alerts_urgency:
             request_params["range[urgency]"] = alerts_urgency
         if alerts_type:
@@ -102,53 +99,49 @@ class Client(BaseClient):
 
     def get_alert(self, alert_uuid: str) -> Dict[str, Any]:
         return self._http_request(
-            method="GET", url_suffix="/v1/sic/alerts/" + alert_uuid
+            method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}"
         )
 
     def update_status_alert(
         self, alert_uuid: str, action_uuid: str, comment: Optional[str]
     ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
+        request_params: Dict[str, Any] = {"action_uuid": action_uuid}
 
         """ Normal parameters"""
-        if action_uuid:
-            request_params["action_uuid"] = action_uuid
         if comment:
             request_params["comment"] = comment
 
         return self._http_request(
             method="PATCH",
-            url_suffix="/v1/sic/alerts/" + alert_uuid + "/workflow",
+            url_suffix=f"/v1/sic/alerts/{alert_uuid}/workflow",
             json_data=request_params,
         )
 
     def post_comment_alert(
-        self, alert_uuid: str, content: str, author: str
+        self, alert_uuid: str, content: str, author: Optional[str]
     ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
+        request_params: Dict[str, Any] = {"content": content}
 
         """ Normal parameters"""
-        if content:
-            request_params["content"] = content
         if author:
             request_params["author"] = author
 
         return self._http_request(
             method="POST",
-            url_suffix="/v1/sic/alerts/" + alert_uuid + "/comments",
+            url_suffix=f"/v1/sic/alerts/{alert_uuid}/comments",
             json_data=request_params,
         )
 
     def get_comments_alert(self, alert_uuid: str) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
-            url_suffix="/v1/sic/alerts/" + alert_uuid + "/comments",
+            url_suffix=f"/v1/sic/alerts/{alert_uuid}/comments",
         )
 
     def get_workflow_alert(self, alert_uuid: str) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
-            url_suffix="/v1/sic/alerts/" + alert_uuid + "/workflow",
+            url_suffix=f"/v1/sic/alerts/{alert_uuid}/workflow",
         )
 
     def query_events(
@@ -156,17 +149,15 @@ class Client(BaseClient):
         events_earliest_time: str,
         events_latest_time: str,
         events_term: str,
-        max_last_events: str,
+        max_last_events: Optional[str],
     ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
+        request_params: Dict[str, Any] = {
+            "earliest_time": events_earliest_time,
+            "latest_time": events_latest_time,
+            "term": events_term,
+        }
 
         """ Normal parameters"""
-        if events_earliest_time:
-            request_params["earliest_time"] = events_earliest_time
-        if events_latest_time:
-            request_params["latest_time"] = events_latest_time
-        if events_term:
-            request_params["term"] = events_term
         if max_last_events:
             request_params["max_last_events"] = max_last_events
 
@@ -179,23 +170,21 @@ class Client(BaseClient):
     def query_events_status(self, event_search_job_uuid: str) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
-            url_suffix="/v1/sic/conf/events/search/jobs/" + event_search_job_uuid,
+            url_suffix=f"/v1/sic/conf/events/search/jobs/{event_search_job_uuid}",
         )
 
     def retrieve_events(self, event_search_job_uuid: str) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
-            url_suffix="/v1/sic/conf/events/search/jobs/"
-            + event_search_job_uuid
-            + "/events",
+            url_suffix=f"/v1/sic/conf/events/search/jobs/{event_search_job_uuid}/events",
         )
 
-    def get_cases_alert(self, alert_uuid: str, case_id: str) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
+    def get_cases_alert(
+        self, alert_uuid: str, case_id: Optional[str]
+    ) -> Dict[str, Any]:
+        request_params: Dict[str, Any] = {"match[alert_uuid]": alert_uuid}
 
         """ Matching parameters"""
-        if alert_uuid:
-            request_params["match[alert_uuid]"] = alert_uuid
         if case_id:
             request_params["match[short_id]"] = case_id
 
@@ -206,10 +195,12 @@ class Client(BaseClient):
     def get_asset(self, asset_uuid: str) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
-            url_suffix="/v1/asset-management/assets/" + asset_uuid,
+            url_suffix=f"/v1/asset-management/assets/{asset_uuid}",
         )
 
-    def list_asset(self, limit: str, assets_type: str) -> Dict[str, Any]:
+    def list_asset(
+        self, limit: Optional[str], assets_type: Optional[str]
+    ) -> Dict[str, Any]:
         request_params: Dict[str, Any] = {}
 
         """ Normal parameters"""
@@ -229,32 +220,20 @@ class Client(BaseClient):
     def add_attributes_asset(
         self, asset_uuid: str, name: str, value: str
     ) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
-
-        """ Normal parameters"""
-        if name:
-            request_params["name"] = name
-        if value:
-            request_params["value"] = value
+        request_params: Dict[str, Any] = {"name": name, "value": value}
 
         return self._http_request(
             method="POST",
-            url_suffix="/v1/asset-management/assets/" + asset_uuid + "/attr",
+            url_suffix=f"/v1/asset-management/assets/{asset_uuid}/attr",
             params=request_params,
         )
 
     def add_keys_asset(self, asset_uuid: str, name: str, value: str) -> Dict[str, Any]:
-        request_params: Dict[str, Any] = {}
-
-        """ Normal parameters"""
-        if name:
-            request_params["name"] = name
-        if value:
-            request_params["value"] = value
+        request_params: Dict[str, Any] = {"name": name, "value": value}
 
         return self._http_request(
             method="POST",
-            url_suffix="/v1/asset-management/assets/" + asset_uuid + "/keys",
+            url_suffix=f"/v1/asset-management/assets/{asset_uuid}/keys",
             params=request_params,
         )
 
@@ -263,29 +242,23 @@ class Client(BaseClient):
     ) -> List[Dict[str, Any]]:
         return self._http_request(
             method="DELETE",
-            url_suffix="/v1/asset-management/assets/"
-            + asset_uuid
-            + "/attr/"
-            + attribute_uuid,
+            url_suffix=f"/v1/asset-management/assets/{asset_uuid}/attr/{attribute_uuid}",
             resp_type="text",
         )
 
     def remove_key_asset(self, asset_uuid: str, key_uuid: str) -> Dict[str, Any]:
         return self._http_request(
             method="DELETE",
-            url_suffix="/v1/asset-management/assets/"
-            + asset_uuid
-            + "/keys/"
-            + key_uuid,
+            url_suffix=f"/v1/asset-management/assets/{asset_uuid}/keys/{key_uuid}",
             resp_type="text",
         )
 
     def get_user(self, user_uuid: str) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/v1/users/" + user_uuid)
+        return self._http_request(method="GET", url_suffix=f"/v1/users/{user_uuid}")
 
     def get_kill_chain(self, kill_chain_uuid: str) -> Dict[str, Any]:
         return self._http_request(
-            method="GET", url_suffix="/v1/sic/kill-chains/" + kill_chain_uuid
+            method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}"
         )
 
     def http_request(
@@ -358,6 +331,18 @@ def timezone_format(epoch: int) -> str:
 
 
 def time_converter(time):
+    """
+    Converts a given time string to a datetime object.
+
+    Args:
+        time (str): The time string to be converted.
+
+    Returns:
+        datetime: The converted datetime object.
+
+    Raises:
+        ValueError: If the time string is in an invalid format.
+    """
 
     # Regular expression patterns
     iso_8601_pattern = re.compile(
@@ -457,7 +442,7 @@ def undot(json_data: dict) -> str:
 
 def fetch_incidents(
     client: Client,
-    max_results: int,
+    max_results: Optional[int],
     last_run: Dict[str, int],
     first_fetch_time: Optional[int],
     alert_status: Optional[str],
@@ -511,7 +496,7 @@ def fetch_incidents(
         last_fetch = int(last_fetch)
 
     # Convert time from epoch to ISO8601 in the correct format and add the ,now also
-    alerts_createdAt = time_converter(str(last_fetch)) + ",now"
+    alerts_created_at = f"{time_converter(str(last_fetch))},now"
 
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
@@ -522,8 +507,8 @@ def fetch_incidents(
     alerts = client.list_alerts(
         alerts_limit=max_results,
         alerts_status=alert_status,
-        alerts_createdAt=alerts_createdAt,
-        alerts_updatedAt=None,
+        alerts_created_at=alerts_created_at,
+        alerts_updated_at=None,
         alerts_urgency=alert_urgency,
         alerts_type=alert_type,
         sort_by="created_at",
@@ -547,10 +532,9 @@ def fetch_incidents(
             # Add the events to the alert
             earliest_time = alert["first_seen_at"]
             lastest_time = "now"
-            term = "alert_short_ids:" + alert["short_id"]
+            term = f"alert_short_ids:{alert['short_id']}"
             interval_in_seconds = INTERVAL_SECONDS_EVENTS
             timeout_in_seconds = TIMEOUT_EVENTS
-            max_last_events = MAX_EVENTS
 
             # Add the events to the alert
             args = {
@@ -559,9 +543,8 @@ def fetch_incidents(
                 "query": term,
                 "interval_in_seconds": interval_in_seconds,
                 "timeout_in_seconds": timeout_in_seconds,
-                "max_last_events": max_last_events,
             }
-            events = search_events_command(client, args)
+            events = search_events_command(args=args, client=client)
             alert["events"] = events.outputs
 
         if fetch_with_assets:
@@ -652,7 +635,7 @@ def get_remote_data_command(
 
     alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
     last_update = arg_to_timestamp(
-        arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True
+        arg=parsed_args.last_update, arg_name="lastUpdate", required=True
     )
     alert_last_update = arg_to_timestamp(
         arg=alert.get("updated_at"), arg_name="updated_at", required=False
@@ -668,10 +651,9 @@ def get_remote_data_command(
     if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
         earliest_time = alert["first_seen_at"]
         lastest_time = "now"
-        term = "alert_short_ids:" + alert["short_id"]
+        term = f"alert_short_ids:{alert['short_id']}"
         interval_in_seconds = INTERVAL_SECONDS_EVENTS
         timeout_in_seconds = TIMEOUT_EVENTS
-        max_last_events = MAX_EVENTS
 
         args = {
             "earliest_time": earliest_time,
@@ -679,9 +661,8 @@ def get_remote_data_command(
             "query": term,
             "interval_in_seconds": interval_in_seconds,
             "timeout_in_seconds": timeout_in_seconds,
-            "max_last_events": max_last_events,
         }
-        events = search_events_command(client, args)
+        events = search_events_command(args=args, client=client)
         alert["events"] = events.outputs
 
     # Add the kill chain information to the alert
@@ -770,23 +751,20 @@ def get_modified_remote_data_command(client: Client, args):
         last_update, settings={"TIMEZONE": "UTC"}
     )  # converts to a UTC timestamp
     formatted_last_update = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")  # type: ignore
-
-    demisto.debug(formatted_last_update)
     converted_time = time_converter(formatted_last_update)
-    last_update_time = converted_time + ",now"
+    last_update_time = f"{converted_time},now"
 
     raw_alerts = client.list_alerts(
-        alerts_updatedAt=last_update_time,
+        alerts_updated_at=last_update_time,
         alerts_limit=100,
         alerts_status=None,
-        alerts_createdAt=None,
+        alerts_created_at=None,
         alerts_urgency=None,
         alerts_type=None,
         sort_by="updated_at",
     )
 
-    for item in raw_alerts["items"]:
-        modified_alert_ids.append(item["short_id"])
+    modified_alert_ids = [item["short_id"] for item in raw_alerts["items"]]
 
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
 
@@ -827,7 +805,8 @@ def update_remote_system_command(client: Client, args):
             sekoia_status = delta.get("status", None)
             if sekoia_status:
                 demisto.debug(
-                    f"The incident #{xsoar_incident} had the sekoia status of the alert {remote_incident_id} changed to: {sekoia_status}. Sending changes to Sekoia."  # noqa: E501
+                    f"The incident #{xsoar_incident} had the sekoia status of the alert \
+                    {remote_incident_id} changed to: {sekoia_status}. Sending changes to Sekoia."
                 )
                 sekoia_transition = STATUS_TRANSITIONS.get(sekoia_status)
 
@@ -878,8 +857,8 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
-        alerts_createdAt=args.get("created_at"),
-        alerts_updatedAt=args.get("updated_at"),
+        alerts_created_at=args.get("created_at"),
+        alerts_updated_at=args.get("updated_at"),
         alerts_urgency=args.get("urgency"),
         alerts_type=args.get("alerts_type"),
         sort_by=args.get("sort_by"),
@@ -894,7 +873,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    alert_uuid = str(args.get("id"))
+    alert_uuid = args["id"]
 
     alert = client.get_alert(alert_uuid=alert_uuid)
     readable_output = tableToMarkdown(f"Alert {alert_uuid}:", alert)
@@ -909,10 +888,10 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def query_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    earliest_time = str(args.get("earliest_time"))
-    lastest_time = str(args.get("lastest_time"))
-    term = str(args.get("query"))
-    max_last_events = str(args.get("max_last_events"))
+    earliest_time = args["earliest_time"]
+    lastest_time = args["lastest_time"]
+    term = args["query"]
+    max_last_events = args.get("max_last_events")
 
     jobQuery = client.query_events(
         events_earliest_time=earliest_time,
@@ -934,7 +913,7 @@ def query_events_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def query_events_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    search_job_uuid = str(args.get("uuid"))
+    search_job_uuid = args["uuid"]
 
     status = client.query_events_status(event_search_job_uuid=search_job_uuid)
     readable_output = tableToMarkdown(f"Status of the job {search_job_uuid}:", status)
@@ -949,7 +928,7 @@ def query_events_status_command(client: Client, args: Dict[str, Any]) -> Command
 
 def retrieve_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    search_job_uuid = str(args.get("uuid"))
+    search_job_uuid = args["uuid"]
 
     events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
     readable_output = tableToMarkdown(
@@ -966,11 +945,12 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    earliest_time = str(args.get("earliest_time"))
-    lastest_time = str(args.get("lastest_time"))
-    term = str(args.get("query"))
-    max_last_events = str(args.get("max_last_events"))
-    timeout_in_seconds = int(args.get("timeout_in_seconds") or 0)
+    earliest_time = args["earliest_time"]
+    lastest_time = args["lastest_time"]
+    term = args["query"]
+    max_last_events = args.get("max_last_events")
+    exclude_info_arg = args.get("exclude_info")
+    timeout_in_seconds = int(args["timeout_in_seconds"])
     exclude_info_arg = args.get("exclude_info")
     exclude_info_param = demisto.params().get("exclude_info_events")
     replace_symbol = demisto.params().get("replace_dots_event")
@@ -994,76 +974,55 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
             break
         query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
         status = query_status["status"]
+
         if status == 2:
             events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
             total = max_last_events or events["total"]
 
-            # If there is event info to exclude sent on arguments
-            if exclude_info_arg and len(events["items"]) > 0:
-                """Collect the headers with the removed info and replace the dots"""
-                headers = exclude_info_events(
-                    event_info=events, exclude_info=exclude_info_arg
-                )
-                headers = [header.replace(".", replace_symbol) for header in headers]
-                """ Remove dots from events key names"""
-                events_undot = undot(json_data=events)
-                readable_output = tableToMarkdown(
-                    f"{total} events out of "
-                    + str(events["total"])
-                    + f" retrieved for the {term}:",
-                    events_undot,
-                    headers=headers,
-                )
-
-            # If there is event info to exclude in the parameters but not sent in the arguments
-            elif (
-                exclude_info_param
-                and len(events["items"]) > 0
-                and exclude_info_arg is None
-            ):
-                """Collect the headers with the removed info and replace the dots"""
-                headers = exclude_info_events(
-                    event_info=events, exclude_info=",".join(exclude_info_param)
-                )
-                headers = [header.replace(".", replace_symbol) for header in headers]
-                """ Remove dots from events key names"""
-                events_undot = undot(json_data=events)
-                readable_output = tableToMarkdown(
-                    f"{total} events out of "
-                    + str(events["total"])
-                    + f" retrieved for the {term}:",
-                    events_undot,
-                    headers=headers,
-                )
-
-            # If there is no event info to exclude in the parameters nor in the arguments
-            elif (
-                (exclude_info_arg is None)
-                and (not exclude_info_param)
-                and (len(events["items"]) > 0)
-            ):
-                events_undot = undot(json_data=events)
-                readable_output = tableToMarkdown(
-                    f"{total} events out of "
-                    + str(events["total"])
-                    + f" retrieved for the {term}:",
-                    events_undot,
-                )
-
-            # ELSE
+            if len(events["items"]) > 0:
+                if exclude_info_arg:
+                    headers = exclude_info_events(
+                        event_info=events, exclude_info=exclude_info_arg
+                    )
+                    headers = [
+                        header.replace(".", replace_symbol) for header in headers
+                    ]
+                    events_undot = undot(json_data=events)
+                    readable_output = tableToMarkdown(
+                        f"{total} events out of {str(events['total'])} retrieved for the {term}",
+                        events_undot,
+                        headers=headers,
+                    )
+                elif exclude_info_param:
+                    headers = exclude_info_events(
+                        event_info=events, exclude_info=",".join(exclude_info_param)
+                    )
+                    headers = [
+                        header.replace(".", replace_symbol) for header in headers
+                    ]
+                    events_undot = undot(json_data=events)
+                    readable_output = tableToMarkdown(
+                        f"{total} events out of {events['total']} retrieved for the {term}",
+                        events_undot,
+                        headers=headers,
+                    )
+                else:
+                    events_undot = undot(json_data=events)
+                    readable_output = tableToMarkdown(
+                        f"{total} events out of {events['total']} retrieved for the {term}",
+                        events_undot,
+                    )
             else:
                 readable_output = tableToMarkdown(
-                    f"{total} events out of "
-                    + str(events["total"])
-                    + f" retrieved for the {term}:",
+                    f"{total} events out of {events['total']} retrieved for the {term}",
                     events["items"],
                 )
-
             bool_flag = False
+
         else:
             demisto.debug(f"The query is still running with the status {status}")
 
-        time.sleep(int(args.get("interval_in_seconds") or 0))
+        time.sleep(int(args["interval_in_seconds"]))
 
     return CommandResults(
         readable_output=readable_output,
@@ -1076,8 +1035,8 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
 def update_status_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid, updated_status, comment = (
-        str(args.get("id")),
-        str(args.get("status")),
+        args["id"],
+        args["status"],
         args.get("comment"),
     )
     sekoia_transition = STATUS_TRANSITIONS.get(updated_status)
@@ -1092,12 +1051,12 @@ def update_status_alert_command(client: Client, args: Dict[str, Any]) -> Command
             )
             if update or update == {}:
                 readable_output = (
-                    "### Alert " + alert_uuid + " updated to status: " + updated_status
+                    f"### Alert {alert_uuid} updated to status: {updated_status}"
                 )
             else:
                 raise DemistoException(
                     "Failure to update the status of the alert. \
-                    Run the command !sekoia-get-workflow-alert to see the possible\
+                    Run the command !sekoia-xdr-get-workflow-alert to see the possible\
                     transitions and review the code."
                 )
 
@@ -1107,9 +1066,9 @@ def update_status_alert_command(client: Client, args: Dict[str, Any]) -> Command
 def post_comment_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid, comment, author = (
-        str(args.get("id")),
-        str(args.get("comment")),
-        str(args.get("author")),
+        args["id"],
+        args["comment"],
+        args.get("author"),
     )
 
     response = client.post_comment_alert(
@@ -1124,15 +1083,14 @@ def post_comment_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def get_comments_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    alert_uuid = str(args.get("id"))
+    alert_uuid = args["id"]
 
     response = client.get_comments_alert(alert_uuid=alert_uuid)
 
     for item in response["items"]:
         # Add author of the comment
         if item["author"].startswith("user"):
-            user = client.get_user(user_uuid=item["created_by"])
-            item["user"] = f"{user.get('firstname')} {user.get('lastname')}"
+            item["user"] = f"User with id {item['created_by']}"
         elif item["author"].startswith("apikey"):
             item["user"] = "Commented via API"
         elif item["author"].startswith("application"):
@@ -1156,7 +1114,7 @@ def get_comments_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def get_workflow_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    alert_uuid = str(args.get("id"))
+    alert_uuid = args["id"]
 
     response = client.get_workflow_alert(alert_uuid=alert_uuid)
     readable_output = tableToMarkdown(
@@ -1174,7 +1132,7 @@ def get_workflow_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def get_cases_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    alert_uuid, case_id = str(args.get("alert_id")), str(args.get("case_id"))
+    alert_uuid, case_id = args["alert_id"], args.get("case_id")
 
     response = client.get_cases_alert(alert_uuid=alert_uuid, case_id=case_id)
     readable_output = tableToMarkdown(
@@ -1191,7 +1149,7 @@ def get_cases_alert_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    asset_uuid = str(args.get("asset_uuid"))
+    asset_uuid = args["asset_uuid"]
 
     asset = client.get_asset(asset_uuid=asset_uuid)
     readable_output = tableToMarkdown(
@@ -1208,7 +1166,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def list_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    limit, assets_type = str(args.get("limit")), str(args.get("assets_type"))
+    limit, assets_type = args.get("limit"), args.get("assets_type")
 
     assets = client.list_asset(limit=limit, assets_type=assets_type)
     readable_output = tableToMarkdown(
@@ -1225,7 +1183,7 @@ def list_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    user_uuid = str(args.get("user_uuid"))
+    user_uuid = args["user_uuid"]
 
     user = client.get_user(user_uuid=user_uuid)
     readable_output = tableToMarkdown(
@@ -1245,9 +1203,9 @@ def add_attributes_asset_command(
 ) -> CommandResults:
     """Parameters"""
     asset_uuid, name, value = (
-        str(args.get("asset_uuid")),
-        str(args.get("name")),
-        str(args.get("value")),
+        args["asset_uuid"],
+        args["name"],
+        args["value"],
     )
 
     asset_attributes = client.add_attributes_asset(
@@ -1267,9 +1225,9 @@ def add_attributes_asset_command(
 def add_keys_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
     asset_uuid, name, value = (
-        str(args.get("asset_uuid")),
-        str(args.get("name")),
-        str(args.get("value")),
+        args["asset_uuid"],
+        args["name"],
+        args["value"],
     )
 
     asset_keys = client.add_keys_asset(asset_uuid=asset_uuid, name=name, value=value)
@@ -1288,9 +1246,7 @@ def remove_attribute_asset_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """Parameters"""
-    asset_uuid, attribute_uuid = str(args.get("asset_uuid")), str(
-        args.get("attribute_uuid")
-    )
+    asset_uuid, attribute_uuid = args["asset_uuid"], args["attribute_uuid"]
 
     client.remove_attribute_asset(asset_uuid=asset_uuid, attribute_uuid=attribute_uuid)
     readable_output = (
@@ -1302,7 +1258,7 @@ def remove_attribute_asset_command(
 
 def remove_key_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    asset_uuid, key_uuid = str(args.get("asset_uuid")), str(args.get("key_uuid"))
+    asset_uuid, key_uuid = args["asset_uuid"], args["key_uuid"]
 
     client.remove_key_asset(asset_uuid=asset_uuid, key_uuid=key_uuid)
     readable_output = f"Asset {asset_uuid} had the following key removed:\n{key_uuid}"
@@ -1312,7 +1268,7 @@ def remove_key_asset_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 def get_kill_chain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
-    kill_chain_uuid = str(args.get("kill_chain_uuid"))
+    kill_chain_uuid = args["kill_chain_uuid"]
 
     kill_chain = client.get_kill_chain(kill_chain_uuid=kill_chain_uuid)
     readable_output = tableToMarkdown(
@@ -1330,9 +1286,9 @@ def get_kill_chain_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def http_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
     method, url_sufix, params = (
-        str(args.get("method")),
-        str(args.get("url_sufix")),
-        dict(args.get("parameters") or {}),
+        args["method"],
+        args["url_sufix"],
+        args.get("parameters", {}),
     )
     request = client.http_request(method=method, params=params, url_suffix=url_sufix)
     readable_output = tableToMarkdown(
@@ -1399,7 +1355,7 @@ def main() -> None:
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
-        arg=params.get("first_fetch", "3 days"),
+        arg=params["first_fetch"],
         arg_name="First fetch time",
         required=True,
     )
@@ -1430,7 +1386,7 @@ def main() -> None:
             mirror_direction = params.get("mirror_direction")
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            max_results = params.get("max_fetch", MAX_INCIDENTS_TO_FETCH)
+            max_results = arg_to_number(params["max_fetch"])
             last_run: Dict[str, Any] = (
                 demisto.getLastRun()
             )  # getLastRun() gets the last run dict
@@ -1454,45 +1410,45 @@ def main() -> None:
             # fetch-incidents calls ``demisto.incidents()`` to provide the list of incidents to create
             demisto.incidents(incidents)
 
-        elif command == "sekoia-list-alerts":
+        elif command == "sekoia-xdr-list-alerts":
             return_results(list_alerts_command(client, args))
-        elif command == "sekoia-get-alert":
+        elif command == "sekoia-xdr-get-alert":
             return_results(get_alert_command(client, args))
-        elif command == "sekoia-events-execute-query":
+        elif command == "sekoia-xdr-events-execute-query":
             return_results(query_events_command(client, args))
-        elif command == "sekoia-events-status-query":
+        elif command == "sekoia-xdr-events-status-query":
             return_results(query_events_status_command(client, args))
-        elif command == "sekoia-events-results-query":
+        elif command == "sekoia-xdr-events-results-query":
             return_results(retrieve_events_command(client, args))
-        elif command == "sekoia-search-events":
+        elif command == "sekoia-xdr-search-events":
             return_results(search_events_command(client, args))
-        elif command == "sekoia-update-status-alert":
+        elif command == "sekoia-xdr-update-status-alert":
             return_results(update_status_alert_command(client, args))
-        elif command == "sekoia-post-comment-alert":
+        elif command == "sekoia-xdr-post-comment-alert":
             return_results(post_comment_alert_command(client, args))
-        elif command == "sekoia-get-comments":
+        elif command == "sekoia-xdr-get-comments":
             return_results(get_comments_alert_command(client, args))
-        elif command == "sekoia-get-workflow-alert":
+        elif command == "sekoia-xdr-get-workflow-alert":
             return_results(get_workflow_alert_command(client, args))
-        elif command == "sekoia-get-cases-alert":
+        elif command == "sekoia-xdr-get-cases-alert":
             return_results(get_cases_alert_command(client, args))
-        elif command == "sekoia-get-asset":
+        elif command == "sekoia-xdr-get-asset":
             return_results(get_asset_command(client, args))
-        elif command == "sekoia-list-assets":
+        elif command == "sekoia-xdr-list-assets":
             return_results(list_asset_command(client, args))
-        elif command == "sekoia-get-user":
+        elif command == "sekoia-xdr-get-user":
             return_results(get_user_command(client, args))
-        elif command == "sekoia-add-attributes-asset":
+        elif command == "sekoia-xdr-add-attributes-asset":
             return_results(add_attributes_asset_command(client, args))
-        elif command == "sekoia-add-keys-asset":
+        elif command == "sekoia-xdr-add-keys-asset":
             return_results(add_keys_asset_command(client, args))
-        elif command == "sekoia-remove-attribute-asset":
+        elif command == "sekoia-xdr-remove-attribute-asset":
             return_results(remove_attribute_asset_command(client, args))
-        elif command == "sekoia-remove-key-asset":
+        elif command == "sekoia-xdr-remove-key-asset":
             return_results(remove_key_asset_command(client, args))
-        elif command == "sekoia-get-kill-chain":
+        elif command == "sekoia-xdr-get-kill-chain":
             return_results(get_kill_chain_command(client, args))
-        elif command == "sekoia-http-request":
+        elif command == "sekoia-xdr-http-request":
             return_results(http_request_command(client, args))
         elif command == "get-remote-data":
             return_results(
@@ -1507,9 +1463,9 @@ def main() -> None:
                 )
             )
         elif command == "get-modified-remote-data":
-            get_modified_remote_data_command(client, args)
+            return_results(get_modified_remote_data_command(client, args))
         elif command == "update-remote-system":
-            update_remote_system_command(client, args)
+            return_results(update_remote_system_command(client, args))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
         else:

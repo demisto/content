@@ -1,6 +1,6 @@
 Fetch alerts and events from SEKOIA.IO XDR.
-To use this integration, please create an API Key with the appropiate permissions. 
-This integration was integrated and tested with version 1.0 of Sekoia XDR.
+To use this integration, please create an API Key with the appropriate permissions.
+This integration was integrated and tested with version xx of Sekoia XDR.
 
 ## Configure Sekoia XDR on Cortex XSOAR
 
@@ -10,29 +10,30 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Server URL (i.e. <https://api.sekoia.io>) |  | True |
+    | API key |  | True |
     | API Key |  | True |
-    | First fetch time - Filter their creation dates, starting date followed by ending date, i.e:  "-3d,now" , "-1w,now" or "2023-01-15,2023-01-17" |  | True |
+    | Server URL (i.e. https://api.sekoia.io) |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | True |
     | Fetch alerts with the selected status. |  | False |
     | List of types of alerts to fetch. (Write and press enter to insert types that are not in the list) |  | False |
-    | Filter alerts by their urgencies range in the following format: "MIN_urgency,MAX_urgency". i.e: 80,100. |  | False |
+    | Filter alerts by their urgencies range in the following format: "MINurgency,MAXurgency". i.e: 80,100. |  | False |
     | Maximum incidents to fetch per interval (By default set to 10). |  | True |
-    | Fetch mode |  | True |
-    | Include assets information in the alerts when fetching. | When seleted, it includes the assets information in the when an alert is fetched in Sekoia. | False |
-    | Include kill chain information in the alerts when fetching. | When seleted, it includes the kill chain information in the when an alert is fetched in Sekoia. | False |
+    | Fetch mode | If there's no max_fetch it will fetch 10 incidents by default. | True |
+    | Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
+    | Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
     | Replace the "dots" from the event field names for a different character easier to reference in XSOAR. |  | True |
-    | Indicate if there is any information you want to exclude from the results of the events search.  i.e:  original.message, message,  agent.name, etc.  | This is the names of  the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
+    | Indicate if there is any information you want to exclude from the results of the events search.  i.e:  original.message, message,  agent.name, etc.  | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). | True |
-    | Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, reopening the Sekoia XDR  alert will reopen the Cortex XSOAR incident. | False |
-    | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR  alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. | False |
-    | Notes to add when the incident it automatically closed by mirroring: | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
-    | Include events in the mirroring of the alerts. | When seleted, it includes the events in the mirroring when an alert is updated in Sekoia. | False |
-    | Include kill chain information in the mirroring of the alerts. | When seleted, it includes the kill chain information of the alert in the mirroring when an alert is updated in Sekoia. | False |
-    | Input your timezone, use the following formats from <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> (i.e. 'UTC', 'Europe/Madrid', 'US/Eastern', 'Etc/Greenwich', 'Canada/Eastern')  | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
+    | Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident. | False |
+    | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. | False |
+    | Close notes. | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
+    | Include events in the mirroring of the alerts. | When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia. | False |
+    | Include kill chain information in the mirroring of the alerts. | When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia. | False |
+    | Input your timezone, use formats from the list of tz database time zones (i.e. 'UTC', 'Europe/Madrid', 'US/Eastern', 'Etc/Greenwich', 'Canada/Eastern')  | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
     | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -42,25 +43,25 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### sekoia-list-alerts
+### sekoia-xdr-list-alerts
 
 ***
 Command to retrieve a list of Alerts from Sekoia XDR.
 
 #### Base Command
 
-`sekoia-list-alerts`
+`sekoia-xdr-list-alerts`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Limit a number of items (allowed range is 1-100), default is 20. Default is 20. | Optional | 
+| limit | The number of alerts to return. The allowed range is 1-100, default is 20. Default is 20. | Optional | 
 | status | Match alerts by their status name (separated by commas). Possible values are: Pending, Acknowledged, Ongoing, Rejected, Closed. | Optional | 
 | created_at | Filter alerts by their creation dates, starting date followed by ending date, i.e:  "-3d,now" , "-1w,now" or "2023-01-15,2023-01-17". | Optional | 
 | updated_at | Filter alerts by their update dates starting date followed by ending date, i.e:  "-3d,now" , "-1w,now" or "2023-01-15,2023-01-17". | Optional | 
-| urgency | Filter alerts by their urgencies range in the following format: "MIN_urgency,MAX_urgency". i.e: 80,100. | Optional | 
-| alerts_type | Match alerts by their type categories (separated by commas). Possible values are: spam, ddos, outage, phishing, unauthorized-use-of-resources, unauthorised-information-access, appscan, scanner, brute-force, exploit. | Optional | 
+| urgency | Filter alerts by their urgencies range in the following format: "MINurgency,MAXurgency". i.e: 80,100. | Optional | 
+| Alerts type | Match alerts by their categories (separated by commas). Possible values are: spam, ddos, outage, phishing, unauthorized-use-of-resources, unauthorised-information-access, appscan, scanner, brute-force, exploit. | Optional | 
 | sort_by | Sort the alerts by any information. Possible values are: created_at, updated_at, target, urgency, status. Default is created_at. | Optional | 
 
 #### Context Output
@@ -120,14 +121,14 @@ Command to retrieve a list of Alerts from Sekoia XDR.
 | SekoiaXDR.ListAlerts.created_by_type | unknown | The type of user who created the alert. | 
 | SekoiaXDR.ListAlerts.details | unknown | The details of the alert. | 
 
-### sekoia-get-alert
+### sekoia-xdr-get-alert
 
 ***
 Command to retrieve a specific Alert by uuid or short_id from Sekoia XDR.
 
 #### Base Command
 
-`sekoia-get-alert`
+`sekoia-xdr-get-alert`
 
 #### Input
 
@@ -143,14 +144,14 @@ Command to retrieve a specific Alert by uuid or short_id from Sekoia XDR.
 | SekoiaXDR.Alert.title | string | Title of the alert. | 
 | SekoiaXDR.Alert.urgency | string | urgency of the alert. | 
 
-### sekoia-events-execute-query
+### sekoia-xdr-events-execute-query
 
 ***
-Command to create an event search job on Sekoia XDR, after this execute "sekoia-status-events-query" to see the status of the query job and "sekoia-results-events-query" to retrieve the results..
+Command to create an event search job on Sekoia XDR, after this execute "sekoia-xdr-status-events-query" to see the status of the query job and "sekoia-xdr-results-events-query" to retrieve the results..
 
 #### Base Command
 
-`sekoia-events-execute-query`
+`sekoia-xdr-events-execute-query`
 
 #### Input
 
@@ -198,20 +199,20 @@ Command to create an event search job on Sekoia XDR, after this execute "sekoia-
 | SekoiaXDR.Events.Query.filters.excluded | unknown | Indicates whether the filter is excluded or not. | 
 | SekoiaXDR.Events.Query.filters.disabled | unknown | Indicates whether the filter is disabled or not. | 
 
-### sekoia-events-status-query
+### sekoia-xdr-events-status-query
 
 ***
-Command to query the status of the search job "sekoia-execute-events-query" previously executed on Sekoia XDR.
+Command to query the status of the search job "sekoia-xdr-execute-events-query" previously executed on Sekoia XDR.
 
 #### Base Command
 
-`sekoia-events-status-query`
+`sekoia-xdr-events-status-query`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the query excuted previously with the "sekoia-query-events" command. | Required | 
+| uuid | UUID of the query excuted previously with the "sekoia-xdr-query-events" command. | Required | 
 
 #### Context Output
 
@@ -251,20 +252,20 @@ Command to query the status of the search job "sekoia-execute-events-query" prev
 | SekoiaXDR.Events.Status.filters.excluded | unknown | A boolean indicating whether the filter is excluded or not. | 
 | SekoiaXDR.Events.Status.filters.disabled | unknown | A boolean indicating whether the filter is disabled or not. | 
 
-### sekoia-events-results-query
+### sekoia-xdr-events-results-query
 
 ***
-Command to retrieve the events from the search job "sekoia-execute-events-query" previously done on Sekoia XDR.
+Command to retrieve the events from the search job "sekoia-xdr-execute-events-query" previously done on Sekoia XDR.
 
 #### Base Command
 
-`sekoia-events-results-query`
+`sekoia-xdr-events-results-query`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the query excuted previously with the "sekoia-query-events" command. | Required | 
+| uuid | UUID of the query excuted previously with the "sekoia-xdr-query-events" command. | Required | 
 
 #### Context Output
 
@@ -272,14 +273,14 @@ Command to retrieve the events from the search job "sekoia-execute-events-query"
 | --- | --- | --- |
 | SekoiaXDR.Events.Results | unknown | The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results. | 
 
-### sekoia-search-events
+### sekoia-xdr-search-events
 
 ***
 Command to search and retrieve the events from an alert. This is a combination of 3 commands: jobquery-events, jobquery-events-status and jobquery-retrieve events.
 
 #### Base Command
 
-`sekoia-search-events`
+`sekoia-xdr-search-events`
 
 #### Input
 
@@ -289,7 +290,7 @@ Command to search and retrieve the events from an alert. This is a combination o
 | lastest_time | Valid expressions: +3d: three days in the future, +2w: two weeks in the future, now: current time. | Required | 
 | query | The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga". | Required | 
 | max_last_events | Maximum number of listed events. | Optional | 
-| exclude_info | Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. This are the names of  the headers presented in the table. If is not in the list write it and press enter. Possible values are: original.message, message, __event_id, agent.name, alert_short_ids, client.address, client.ip, client.user.id, customer.community_name, customer.community_uuid, customer.id, customer.intake_key, customer.intake_name, customer.intake_uuid, ecs.version, entity.id, entity.name, entity.uuid, event.created, event.dialect, event.dialect_uuid, event.id, event.outcome, http.request.method, http.request.referrer, related.ip, sekoiaio.activity.client.id, sekoiaio.activity.client.type, sekoiaio.customer.community_name, sekoiaio.customer.community_uuid, sekoiaio.customer.id, sekoiaio.entity.id, sekoiaio.entity.name, sekoiaio.entity.uuid, sekoiaio.intake.dialect, sekoiaio.intake.dialect_uuid, sekoiaio.intake.key, sekoiaio.intake.name, sekoiaio.intake.parsing_status, sekoiaio.intake.uuid, timestamp, url.domain, url.original, url.path, url.port, url.query, url.registered_domain, url.scheme, url.subdomain, url.top_level_domain, user_agent.original. | Optional | 
+| exclude_info | Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter. Possible values are: original.message, message, __event_id, agent.name, alert_short_ids, client.address, client.ip, client.user.id, customer.community_name, customer.community_uuid, customer.id, customer.intake_key, customer.intake_name, customer.intake_uuid, ecs.version, entity.id, entity.name, entity.uuid, event.created, event.dialect, event.dialect_uuid, event.id, event.outcome, http.request.method, http.request.referrer, related.ip, sekoiaio.activity.client.id, sekoiaio.activity.client.type, sekoiaio.customer.community_name, sekoiaio.customer.community_uuid, sekoiaio.customer.id, sekoiaio.entity.id, sekoiaio.entity.name, sekoiaio.entity.uuid, sekoiaio.intake.dialect, sekoiaio.intake.dialect_uuid, sekoiaio.intake.key, sekoiaio.intake.name, sekoiaio.intake.parsing_status, sekoiaio.intake.uuid, timestamp, url.domain, url.original, url.path, url.port, url.query, url.registered_domain, url.scheme, url.subdomain, url.top_level_domain, user_agent.original. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. Default is 2. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. Default is 60. | Optional | 
 
@@ -299,35 +300,34 @@ Command to search and retrieve the events from an alert. This is a combination o
 | --- | --- | --- |
 | SekoiaXDR.Events.Results | unknown | The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results. | 
 
-### sekoia-update-status-alert
+### sekoia-xdr-update-status-alert
 
 ***
 Command to update the status of a specific Alert by uuid or short_id.
 
 #### Base Command
 
-`sekoia-update-status-alert`
+`sekoia-xdr-update-status-alert`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
-| status | The status you want to apply. (Acknowledged, Rejected, Ongoing, Closed)). Possible values are: Acknowledged, Rejected, Ongoing, Closed. | Optional | 
+| status | The status you want to apply. (Acknowledged, Rejected, Ongoing, Closed)). Possible values are: Acknowledged, Rejected, Ongoing, Closed. | Required | 
 | comment | A comment to describe why the alert status has changed. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-post-comment-alert
+### sekoia-xdr-post-comment-alert
 
 ***
 Command to post comments to alerts in Sekoia XDR.
 
 #### Base Command
 
-`sekoia-post-comment-alert`
+`sekoia-xdr-post-comment-alert`
 
 #### Input
 
@@ -340,15 +340,14 @@ Command to post comments to alerts in Sekoia XDR.
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-get-comments
+### sekoia-xdr-get-comments
 
 ***
 Command to get all the comments from an alert in Sekoia XDR.
 
 #### Base Command
 
-`sekoia-get-comments`
+`sekoia-xdr-get-comments`
 
 #### Input
 
@@ -369,14 +368,14 @@ Command to get all the comments from an alert in Sekoia XDR.
 | SekoiaXDR.Comments.items.unseen | unknown | Indicates whether the comment has been seen by the user. | 
 | SekoiaXDR.Comments.items.author | unknown | The author of the comment. | 
 
-### sekoia-get-workflow-alert
+### sekoia-xdr-get-workflow-alert
 
 ***
 Command to get the possible transitions of status on the alert.
 
 #### Base Command
 
-`sekoia-get-workflow-alert`
+`sekoia-xdr-get-workflow-alert`
 
 #### Input
 
@@ -392,20 +391,20 @@ Command to get the possible transitions of status on the alert.
 | SekoiaXDR.StatusTransitions.actions.description | unknown | The description of the action. | 
 | SekoiaXDR.StatusTransitions.actions.id | unknown | The ID of the action. | 
 
-### sekoia-get-cases-alert
+### sekoia-xdr-get-cases-alert
 
 ***
-Command to retrieve the case related to an Alert from Sekoia XDR.
+Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id is given, returns the information about it.
 
 #### Base Command
 
-`sekoia-get-cases-alert`
+`sekoia-xdr-get-cases-alert`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Optional | 
+| alert_id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
 | case_id | The short_id of the case to retrieve. i.e: "CAQNurTJM8q2". | Optional | 
 
 #### Context Output
@@ -486,20 +485,20 @@ Command to retrieve the case related to an Alert from Sekoia XDR.
 | SekoiaXDR.Cases.subscribers.avatar_uuid | unknown | The unique identifier of the avatar of the subscriber. | 
 | SekoiaXDR.Cases.subscribers.type | unknown | The type of subscriber. | 
 
-### sekoia-get-asset
+### sekoia-xdr-get-asset
 
 ***
 Get an asset by its UUID from Sekoia XDR.
 
 #### Base Command
 
-`sekoia-get-asset`
+`sekoia-xdr-get-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_uuid | UUID of the asset to get, the UUID should appear with "sekoia-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
+| asset_uuid | UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
 
 #### Context Output
 
@@ -549,7 +548,6 @@ This command gets new information about the incidents in the remote system and u
 #### Context Output
 
 There is no context output for this command.
-
 ### get-modified-remote-data
 
 ***
@@ -568,15 +566,14 @@ available from Cortex XSOAR version 6.1.0. This command queries for incidents th
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-list-assets
+### sekoia-xdr-list-assets
 
 ***
 Command to retrieve a list of Assets from Sekoia XDR.
 
 #### Base Command
 
-`sekoia-list-assets`
+`sekoia-xdr-list-assets`
 
 #### Input
 
@@ -615,14 +612,14 @@ Command to retrieve a list of Assets from Sekoia XDR.
 | SekoiaXDR.Assets.items.0.name | unknown | The name of the asset. | 
 | SekoiaXDR.Assets.items.0.uuid | unknown | The UUID of the asset. | 
 
-### sekoia-get-user
+### sekoia-xdr-get-user
 
 ***
-Command to get information about a user in Sekoia XDR. Used also in the command !sekoia-get-comments to have the name of the persons who made the comments.
+Command to get information about a user in Sekoia XDR. Used also in the command !sekoia-xdr-get-comments to have the name of the persons who made the comments.
 
 #### Base Command
 
-`sekoia-get-user`
+`sekoia-xdr-get-user`
 
 #### Input
 
@@ -675,56 +672,54 @@ Command to get information about a user in Sekoia XDR. Used also in the command 
 | SekoiaXDR.User.disable_inactive_avatars | unknown | Whether inactive avatars are disabled for the community. | 
 | SekoiaXDR.User.description | unknown | The description of the community. | 
 
-### sekoia-add-attributes-asset
+### sekoia-xdr-add-attributes-asset
 
 ***
 Command to add attributes to an asset in Sekoia XDR.
 
 #### Base Command
 
-`sekoia-add-attributes-asset`
+`sekoia-xdr-add-attributes-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_uuid | UUID of the asset to get, the UUID should appear with "sekoia-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
+| asset_uuid | UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
 | name | The name of attributes. | Required | 
 | value | The value of attributes. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-add-keys-asset
+### sekoia-xdr-add-keys-asset
 
 ***
 Command to add keys to an asset in Sekoia XDR.
 
 #### Base Command
 
-`sekoia-add-keys-asset`
+`sekoia-xdr-add-keys-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_uuid | UUID of the asset to get, the UUID should appear with "sekoia-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
+| asset_uuid | UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
 | name | The name of the key to be added. | Required | 
 | value | The value of the key to be added. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-get-kill-chain
+### sekoia-xdr-get-kill-chain
 
 ***
 Command to retrieve the definition of a Cyber Kill Chain Step.
 
 #### Base Command
 
-`sekoia-get-kill-chain`
+`sekoia-xdr-get-kill-chain`
 
 #### Input
 
@@ -760,7 +755,6 @@ Pushes local changes to the remote system.
 #### Context Output
 
 There is no context output for this command.
-
 ### get-mapping-fields
 
 ***
@@ -778,73 +772,68 @@ This command pulls the remote schema for the different incident types,  and thei
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-remove-attribute-asset
+### sekoia-xdr-remove-attribute-asset
 
 ***
-Command to remove an attribute from an asset in Sekoia XDR. Note: use !sekoia-get-asset to find the attribute_uuid to delete.
+Command to remove an attribute from an asset in Sekoia XDR. Note: use !sekoia-xdr-get-asset to find the attribute_uuid to delete.
 
 #### Base Command
 
-`sekoia-remove-attribute-asset`
+`sekoia-xdr-remove-attribute-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_uuid | UUID of the asset, the UUID should appear with "sekoia-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
-| attribute_uuid | UUID of the attribute to delete. Note: use !sekoia-get-asset to find the attribute_uuid to delete. | Required | 
+| asset_uuid | UUID of the asset, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
+| attribute_uuid | UUID of the attribute to delete. Note: use !sekoia-xdr-get-asset to find the attribute_uuid to delete. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-remove-key-asset
+### sekoia-xdr-remove-key-asset
 
 ***
-Command to remove an attribute from an asset in Sekoia XDR. Note: use !sekoia-get-asset to find the key_uuid to delete.
+Command to remove a key from an asset in Sekoia XDR. Note: use !sekoia-xdr-get-asset to find the key_uuid to delete.
 
 #### Base Command
 
-`sekoia-remove-key-asset`
+`sekoia-xdr-remove-key-asset`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_uuid | UUID of the asset, the UUID should appear with "sekoia-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
-| key_uuid | UUID of the key to remove. Note: use !sekoia-get-asset to find the key_uuid to delete. | Required | 
+| asset_uuid | UUID of the asset, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a". | Required | 
+| key_uuid | UUID of the key to remove. Note: use !sekoia-xdr-get-asset to find the key_uuid to delete. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### sekoia-http-request
+### sekoia-xdr-http-request
 
 ***
 Command that performs a HTTP request to Sekoia using the integration authentication configured.
 
 #### Base Command
 
-`sekoia-http-request`
+`sekoia-xdr-http-request`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | method | Method to use with the http request (GET,POST,etc). Default is GET. | Required | 
-| url_sufix | The URL sufix after <https://api.sekoia.io/v1>, i.e. /sic/alerts/ or /asset-management/assets/. | Required | 
+| url_sufix | The URL sufix after https://api.sekoia.io/v1, i.e. /sic/alerts/ or /asset-management/assets/. | Required | 
 | parameters | Query parameters, i.e. limit -&gt; 10 , match['status_name'] -&gt; Ongoing. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Sekoia XDR corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
-
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -859,3 +848,36 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Sekoia XDR.
+
+## Troubleshooting
+
+To troubleshoot possible issues with the integration:
+- **Debug mode:** In the integration instance select the option Debug and download the logs under Settings>About>Troubleshooting>Download logs.
+- **Mirror values:** To troubleshoot mirroring issues apart from debug mode is possible to check under context that the dbot fields are set.
+- This fields under context are: dbotMirrorInstance, dbotMirrorDirection and dbotMirrorId. If they are not set please review the mappers.
+- The field dbotMirrorLastSync under context will be updated when the mirroring updates something on the incident, this can be also observed under War Room.
+
+## Best practices
+
+- When mirroring is enable please allow at least 1 minute to see the changes reflected, the mirroring process is executed every 1 minute.
+- When reopening option is marked the XSOAR incident will be reopened under 2 conditions:
+    - The alert is reopened from Sekoia which will reopen the incident in XSOAR.
+    - The XSOAR incident is reopened: when this is done from XSOAR after reopen the incident please quickly change the status of the Sekoia alert or the mirroring will close it automatically due to the mirroring.
+
+    
+## Contact Information
+
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- Email: team-integration@sekoia.io
+- URL: [https://www.sekoia.io/en/contact/](https://www.sekoia.io/en/contact/)
+
+## Additional documentation
+
+The following documentation can be useful to understand the integration:
+
+| Information | Description |
+| --- | --- |
+| [Mirroring](https://xsoar.pan.dev/docs/integrations/mirroring_integration) | Adittional information for mirroring |
+| [Post process scripts](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.5/Cortex-XSOAR-Administrator-Guide/Post-Processing-for-Incidents) | Adittional information for post process scripts |
+| [Sekoia XDR documentation](https://docs.sekoia.io/xdr/) | Sekoia XDR Documentation |
+| [Rest API Documentation](https://docs.sekoia.io/xdr/develop/rest_api/alert/) | Sekoia XDR API Documentation |

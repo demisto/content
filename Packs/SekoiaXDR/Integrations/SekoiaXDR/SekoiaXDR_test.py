@@ -4,7 +4,6 @@ import SekoiaXDR
 
 from datetime import datetime
 import pytest
-import os
 import json
 
 
@@ -18,7 +17,7 @@ def util_load_json(path):
 
 @pytest.fixture(scope="session")
 def client():
-    api_key = os.environ.get("SEKOIAIO_APIKEY", "aa")
+    api_key = "test_api_key"
     headers = {"Authorization": f"Bearer {api_key}"}
     client = SekoiaXDR.Client(
         base_url=MOCK_URL,
@@ -128,14 +127,6 @@ def test_test_module_nok(client, requests_mock, api_response, expected):
     assert expected in SekoiaXDR.test_module(client)
 
 
-# Skipped if there's no SEKOIA.IO API_KEY
-@pytest.mark.skipif("{'SEKOIAIO_APIKEY'}.issubset(os.environ.keys()) == False")
-def test_get_validate_resource_with_credentials(client):
-    result = client.get_validate_resource()
-
-    assert result == "ok"
-
-
 @pytest.mark.parametrize(
     "method, url_suffix, params, json_test_file",
     [
@@ -160,15 +151,6 @@ def test_http_request_list(
     assert result.outputs["items"] == mock_response["items"]
 
 
-# Skipped if there's no SEKOIA.IO API_KEY
-@pytest.mark.skipif("{'SEKOIAIO_APIKEY'}.issubset(os.environ.keys()) == False")
-def test_http_request_list_with_credentials(client):
-    args = {"url_sufix": "/v1/sic/conf/alerts", "method": "GET", "params": {}}
-    result = SekoiaXDR.http_request_command(client=client, args=args)
-
-    assert result.outputs["items"] != []
-
-
 def test_list_alerts(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
     requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
@@ -177,14 +159,6 @@ def test_list_alerts(client, requests_mock):
     result = SekoiaXDR.list_alerts_command(client=client, args=args)
 
     assert result.outputs == mock_response["items"]
-
-
-# Skipped if there's no SEKOIA.IO API_KEY
-@pytest.mark.skipif("{'SEKOIAIO_APIKEY'}.issubset(os.environ.keys()) == False")
-def test_list_alerts_with_credentials(client):
-    result = SekoiaXDR.list_alerts_command(client=client, args={})
-
-    assert result.outputs != []
 
 
 def test_get_alert(client, requests_mock):
@@ -243,13 +217,9 @@ def test_comments_alert_command(client, requests_mock):
     mock_response_alert_comments = util_load_json(
         "test_data/SekoiaXDR_get_alert_comments.json"
     )
-    mock_response_user = util_load_json("test_data/SekoiaXDR_get_user.json")
     requests_mock.get(
         MOCK_URL + "/v1/sic/alerts/ALL1A4SKUiU2/comments",
         json=mock_response_alert_comments,
-    )
-    requests_mock.get(
-        MOCK_URL + "/v1/users/7114c307-d86c-4c55", json=mock_response_user
     )
 
     args = {"id": "ALL1A4SKUiU2"}
@@ -257,7 +227,7 @@ def test_comments_alert_command(client, requests_mock):
 
     for item in result.outputs:
         if item["author"].startswith("user"):
-            assert item["user"] == "Joe done"
+            assert item["user"] == "User with id 7114c307-d86c-4c55"
         if item["author"].startswith("apikey"):
             assert item["user"] == "Commented via API"
         if item["author"].startswith("application"):
@@ -360,6 +330,7 @@ def test_search_events(client, requests_mock, mocker):
         "max_last_events": "100",
         "timeout_in_seconds": "5",
         "exclude_info": "False",
+        "interval_in_seconds": "3",
     }
     result = SekoiaXDR.search_events_command(client=client, args=args)
 
@@ -487,7 +458,7 @@ def test_get_mapping_fields():
     assert schema_result.extract_mapping() == expected_mapping
 
 
-def test_update_remote_system(client, requests_mock):
+def test_modified_remote_data(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
     requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
 
