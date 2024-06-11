@@ -1148,7 +1148,7 @@ def sample_classification_command(a1000: A1000):
 
         elif action == "SET CLASSIFICATION":
             classification = demisto.getArg("classification")
-            risk_score = demisto.getArg("risk_score")
+            risk_score = arg_to_number(demisto.getArg("risk_score"))
             threat_platform = demisto.getArg("threat_platform")
             threat_name = demisto.getArg("threat_name")
             threat_type = demisto.getArg("threat_type")
