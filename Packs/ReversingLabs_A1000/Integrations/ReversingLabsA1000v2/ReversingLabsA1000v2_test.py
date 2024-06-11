@@ -2,7 +2,8 @@ import json
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
     classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy, \
     file_analysis_status_output, pdf_report_output, static_analysis_report_output, dynamic_analysis_report_output, \
-    sample_classification_output, yara_output, yara_retro_output
+    sample_classification_output, yara_output, yara_retro_output, list_containers_output, upload_from_url_output, \
+    delete_sample_output, reanalyze_output
 import demistomock as demisto
 import pytest
 
@@ -140,6 +141,42 @@ def test_yara_retro_output():
 
     assert result_local.to_context().get("Contents").get("a1000_yara_retro").get("status").get("state") == "COMPLETED"
     assert result_cloud.to_context().get("Contents").get("a1000_yara_retro").get("status").get("cloud_status") == "ACTIVE"
+
+
+def test_list_containers_output():
+    containers = util_load_json("test_data/a1000_list_containers.json")
+    result = list_containers_output(resp_json=containers)
+
+    assert result.to_context().get("Contents").get("a1000_list_containers").get("count") == 0
+
+
+def test_upload_from_url_output():
+    upload = util_load_json("test_data/a1000_upload_from_url.json")
+    report = util_load_json("test_data/a1000_report_from_url.json")
+    check = util_load_json("test_data/a1000_check_from_url.json")
+
+    result_upload = upload_from_url_output(resp_json=upload, action="UPLOAD")
+    result_report = upload_from_url_output(resp_json=report, action="GET REPORT")
+    result_check = upload_from_url_output(resp_json=check, action="CHECK ANALYSIS STATUS")
+
+    assert result_upload.to_context().get("Contents").get("a1000_upload_from_url_actions").get("message") == "Done."
+    assert result_report.to_context().get("Contents").get("a1000_upload_from_url_actions").get("processing_status") == "complete"
+    assert result_check.to_context().get("Contents").get("a1000_upload_from_url_actions").get("processing_status") == "complete"
+
+
+def test_delete_sample_output():
+    report = util_load_json("test_data/a1000_delete_sample.json")
+    result = delete_sample_output(response_json=report)
+
+    assert result[0].to_context().get("Contents").get("a1000_delete_report").get("results").get("code") == 200
+
+
+def test_reanalyze_output():
+    report = util_load_json("test_data/a1000_reanalyze.json")
+    result = reanalyze_output(response_json=report)
+
+    assert (result[0].to_context().get("Contents").get("a1000_reanalyze_report").get("results")[0].get("detail").get("sha1") ==
+            "d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
 
 
 def test_classification_to_score():
