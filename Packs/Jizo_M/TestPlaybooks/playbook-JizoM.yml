@@ -1,6 +1,5 @@
-id: JizoM-Test
-version: 16
-vcShouldKeepItemLegacyProdMachine: false
+id: JizoM
+version: -1
 name: JizoM
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -83,3 +83,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 5.0.0
+description: This playbook aims to retrieve all available incidents

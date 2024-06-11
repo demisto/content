@@ -1,34 +1,25 @@
 {
-	"feed": false,
-	"id": "Jizo M - Incoming Mapper",
-	"locked": false,
-	"logicalVersion": 14,
-	"mapping": {
-		"Jizo Alert": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Category": {
-					"simple": "category"
-				},
-				"Alert ID": {
-					"simple": "id"
-				},
-				"Name": {
-					"simple": "name"
-				},
-				"Alert Type ": {
-					"simple": "alert_type"
-				}
-			}
-		}
-	},
-	"name": "Jizo M - Incoming Mapper",
-	"nameRaw": "Jizo M - Incoming Mapper",
-	"propagationLabels": [
-		"all"
-	],
-	"system": false,
-	"transformer": {},
-	"type": "mapping-incoming",
-	"version": -1
+    "feed": false,
+    "id": "Jizo M - Incoming Mapper",
+    "mapping": {
+        "Jizo Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Category": {
+                    "simple": "category"
+                },
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Name": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Jizo M - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": ""
 }

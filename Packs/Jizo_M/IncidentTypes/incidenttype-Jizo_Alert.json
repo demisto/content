@@ -1,23 +1,12 @@
 {
     "id": "Jizo Alert",
-    "version": 3,
-    "cacheVersn": 0,
-    "sizeInBytes": 0,
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "Jizo Alert",
     "prevName": "Jizo Alert",
     "color": "#ffe703",
-    "playbookId": "JizoM-Test",
+    "playbookId": "JizoM",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -28,8 +17,6 @@
     "readonly": false,
     "default": false,
     "autorun": true,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
@@ -38,5 +25,6 @@
     "extractSettings": {
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "5.0.0"
 }

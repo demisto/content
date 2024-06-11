@@ -5,20 +5,19 @@ sectionOrder:
 commonfields:
   id: JizoM
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: JizoM
 display: JizoM (Partner Contribution)
 description: This integration ensures interaction with the JizoM API.
 configuration:
 - section: Collect
-  display: Username  
-  displaypassword: Password  
+  display: Username
+  displaypassword: Password
   name: credentials
   type: 9
   required: true
   additionalinfo: Reliability of the source providing the intelligence data.
 - section: Connect
-  display: Server URL 
+  display: Server URL
   name: url
   type: 0
   required: true
@@ -32,7 +31,7 @@ configuration:
   name: incidentType
   defaultvalue: Jizo Alert
   type: 13
-  required: false 
+  required: false
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
@@ -56,7 +55,7 @@ configuration:
   defaultvalue: 3 days
   type: 0
   required: false
-- display: Maximum number of alerts per fetch 
+- display: Maximum number of alerts per fetch
   name: max_fetch
   defaultvalue: "10"
   type: 0
@@ -73,16 +72,16 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago. 
+      description: The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.  
+      description: The default is now.
       type: textArea
     - name: probe_name
       description: The name of the jizo probe.
       type: textArea
     - name: page
-      description: A page number for pagination. 
+      description: A page number for pagination.
       type: keyValue
     - name: limit
       description: The maximum number of protocols to display per alert.
@@ -115,14 +114,14 @@ script:
     - contextPath: JizoM.Protocols.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo protocols
+    description: Get jizo protocols.
   - name: jizo-peers-get
     arguments:
     - name: ip_src
       description: Ipv4 or Ipv6 of the source.
       type: textArea
     - name: ip_dest
-      description: Ipv4 or Ipv6 of the destination. 
+      description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
       description: The default value is 7 days ago.
@@ -134,7 +133,7 @@ script:
       description: The name of the jizo probe.
       type: textArea
     - name: page
-      description: A page number for pagination. 
+      description: A page number for pagination.
       type: keyValue
     - name: limit
       description: The maximum number of samples to display per alert.
@@ -167,7 +166,7 @@ script:
     - contextPath: JizoM.Peers.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo peers
+    description: Get jizo peers.
   - name: jizo-query-records-get
     arguments:
     - name: ip_src
@@ -183,13 +182,13 @@ script:
       description: The application protocol(e.g., FTP, HTTP, DNS, DHCP, SMB).
       type: textArea
     - name: port_src
-      description: The source port.  
+      description: The source port.
       type: textArea
     - name: port_dest
-      description: The destination port. 
+      description: The destination port.
       type: textArea
     - name: flow_id
-      description: The id of the flow. 
+      description: The id of the flow.
       type: textArea
     - name: sid
       description: The id if the rule.
@@ -240,11 +239,11 @@ script:
     - contextPath: JizoM.QueryRecords.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo query records
+    description: Get jizo query records.
   - name: jizo-alert-rules-get
     arguments:
     - name: flow_id
-      description: The id of the flow. 
+      description: The id of the flow.
       type: textArea
     - name: sid
       description: The id if the rule.
@@ -262,7 +261,7 @@ script:
       description: The default is now.
       type: textArea
     - name: severity
-      description: Relevance/importance of alert varies from 1-4. 
+      description: Relevance/importance of alert varies from 1-4.
       type: textArea
     - name: category
       description: The alert category (e.g., Fraud, Abusive Content).
@@ -304,11 +303,11 @@ script:
     - contextPath: JizoM.AlertRules.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo alerts rules
+    description: Get jizo alerts rules.
   - name: jizo-device-records-get
     arguments:
     - name: flow_id
-      description: The id of the flow. 
+      description: The id of the flow.
       type: textArea
     - name: mac
       description: The mac address.
@@ -362,7 +361,7 @@ script:
     - contextPath: JizoM.Device.Records.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo device records
+    description: Get jizo device records.
   - name: jizo-device-alerts-get
     arguments:
     - name: ip_src
@@ -423,10 +422,13 @@ script:
     - contextPath: JizoM.Device.Alerts.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo device alerts
+    description: Get jizo device alerts.
   dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
   runonce: false
   subtype: python3
   isFetchSamples: true
 defaultmapperin: "Jizo M - Incoming Mapper"
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
