@@ -302,13 +302,15 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
 
     if args.get('updated_before'):
         fmt_updated_before = dateparser.parse(str(args.get('updated_before')), settings={'TIMEZONE': 'UTC'})
-        updated_before = datetime.strftime(fmt_updated_before, '%Y-%m-%dT%H:%M:%S.%f') + '0Z'
+        if fmt_updated_before is not None:
+            updated_before = datetime.strftime(fmt_updated_before, '%Y-%m-%dT%H:%M:%S.%f') + '0Z'
     else:
         updated_before = None
 
     if args.get('updated_after'):
         fmt_updated_after = dateparser.parse(str(args.get('updated_after')), settings={'TIMEZONE': 'UTC'})
-        updated_after = datetime.strftime(fmt_updated_after, '%Y-%m-%dT%H:%M:%S.%f') + '0Z'
+        if fmt_updated_after is not None:
+            updated_after = datetime.strftime(fmt_updated_after, '%Y-%m-%dT%H:%M:%S.%f') + '0Z'
     else:
         updated_after = None
 
