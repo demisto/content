@@ -287,6 +287,33 @@ class Client(BaseClient):
         response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_external_websites/', json_data=data)
 
         return response
+    
+    def add_note_to_asset(self, asm_asset_id: str, entity_type: str, annotation_note: str) -> dict[str, Any]:
+        """Adds an annotation (also called a note) to an asset or IP range
+        using the /assets/assets_internet_exposure/annotation endpoint.
+
+        Args:
+            asm_asset_id (str): The Xpanse asset ID.
+            entity_type (str): The type of Xpanse asset, Allowed values: 'asset' or 'ip_range'.
+            annotation_note (str): The custom note to be added to the notes section of the asset in Xpanse
+
+        Returns:
+            dict[str, Any]: a response that indicates if adding the note succeeded.
+        """
+        data = {
+            "request_data":
+                { "assets":
+                    [{ "entity_id": asm_asset_id,
+                        "entity_type": entity_type,
+                        "annotation": annotation_note
+                        }],
+                    "should_append": True
+                    }
+                }
+
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/assets_internet_exposure/annotation', json_data=data)
+
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -1209,6 +1236,26 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
+def add_note_to_asset_command (client: Client, args: dict[str, Any]) -> CommandResults:
+    asset_id = str(args.get('asset_id'))
+    entity_type = str(args.get('entity_type'))
+    note_to_add = str(args.get('note_to_add'))
+
+    response = client.add_note_to_asset(asm_asset_id=asset_id, entity_type=entity_type, annotation_note=note_to_add)
+    response_message = {"status": response.get('reply', {})}
+    response_message['asset'] = asset_id
+    markdown = tableToMarkdown('Add Note to Asset Command Results:', response_message.get('status'), removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='ASM.Annotation',
+        outputs_key_field='',
+        outputs=response_message,
+        raw_response=response,
+        readable_output=markdown
+    )
+
+    return command_results
+
+
 def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
     ip command returns enrichment for an IP address.
@@ -1516,6 +1563,7 @@ def main() -> None:
             'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command,
             'asm-list-external-websites': list_external_websites_command,
+            'asm-add-note-to-asset': add_note_to_asset_command,
             'ip': ip_command,
             'domain': domain_command
         }
