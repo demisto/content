@@ -1,5 +1,4 @@
 import pytest  # noqa: N999
-import demistomock  # noqa # pylint: disable=unused-wildcard-import
 from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
 

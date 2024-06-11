@@ -1,5 +1,4 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *  # noqa: F401, N999
 from SiemApiModule import *  # noqa: E402
 import urllib3
 import json
@@ -12,6 +11,7 @@ from zipfile import ZipFile
 import io
 import tempfile
 import re
+from requests import Response
 
 urllib3.disable_warnings()
 
@@ -95,7 +95,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         self.events_from_prev_run: list = []
 
     @staticmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(events: list):
         pass
 
     def run(self):
@@ -158,7 +158,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             if not events:
                 break
 
-    def process_siem_response(self, response):  # ignore: type
+    def process_siem_response(self, response: Response):  # ignore: type
         """
         Args:
             response (Request.Response) - The response from the mimecast API
@@ -176,7 +176,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             json_response = json.loads(decoded_response)
 
             if fail_reason := json_response.get('fail', []):
-                return_error(f'There was an error with siem events call {fail_reason}')
+                raise DemistoException(f'There was an error with siem events call {fail_reason}')
             demisto.info('No more logs siem available')
             return []
         # Process log file
@@ -287,11 +287,10 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     return extracted_logs_list
 
             except Exception as e:
-                return_error('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
+                raise DemistoException('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
 
         else:
-            return_error(f'Only compressed siem log files are supported. file_name: {file_name}')
-            return None
+            raise DemistoException(f'Only compressed siem log files are supported. file_name: {file_name}')
 
 
 class MimecastGetAuditEvents(IntegrationGetEvents):
@@ -305,7 +304,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         self.uri: str = '/api/audit/get-audit-events'
 
     @staticmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(events: list):
         pass
 
     def run(self):
@@ -337,7 +336,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             event_list (list) - The processed Audit events
         """
         if res.get('fail', []):
-            return_error(f'There was an error with audit events call {res.get("fail")}')
+            raise DemistoException(f'There was an error with audit events call {res.get("fail")}')
 
         data = res.get('data', [])
         pagination = res.get('meta', {}).get('pagination', {})
@@ -540,7 +539,7 @@ def main():  # pragma: no cover
     demisto_params['app_key'] = demisto_params.get('credentials_app', {}).get('password')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
-    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://dummy.com', headers={})
+    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='https://dummy.com', headers={})
     client = MimecastClient(empty_first_request, options)
     siem_event_handler = MimecastGetSiemEvents(client, options)
     audit_event_handler = MimecastGetAuditEvents(client, options)
