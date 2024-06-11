@@ -1,7 +1,8 @@
 import json
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
     classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy, \
-    file_analysis_status_output, pdf_report_output, static_analysis_report_output
+    file_analysis_status_output, pdf_report_output, static_analysis_report_output, dynamic_analysis_report_output, \
+    sample_classification_output
 import demistomock as demisto
 import pytest
 
@@ -95,6 +96,28 @@ def test_static_analysis_report_output():
     for k, v in result.to_context().items():
         if k == "Contents":
             assert "a1000_static_analysis_report" in v
+
+
+def test_dynamic_analysis_report_output():
+    test_response = util_load_json("test_data/a1000_dynamic_analysis.json")
+
+    result = dynamic_analysis_report_output(resp=test_response, action="CHECK STATUS", report_format="pdf",
+                                            sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+
+    for k, v in result[0].to_context().items():
+        if k == "status":
+            assert v == 1
+
+
+def test_sample_classification_output():
+    test_response = util_load_json("test_data/a1000_sample_classification.json")
+
+    result = sample_classification_output(resp_json=test_response, action="GET CLASSIFICATION", av_scanners=False,
+                                          sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+
+    for k, v in result.to_context().items():
+        if k == "Contents":
+            assert "a1000_sample_classification" in v
 
 
 def test_classification_to_score():
