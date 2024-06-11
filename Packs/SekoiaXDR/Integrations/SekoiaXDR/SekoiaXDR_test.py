@@ -296,7 +296,6 @@ def test_post_comment_alert(client, requests_mock):
 def kill_chain_command(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_killchain.json")
     requests_mock.get(
-    requests_mock.get(
         MOCK_URL + "/v1/sic/kill-chains/73708d4f-419f-44aa", json=mock_response
     )
 
@@ -502,7 +501,7 @@ def test_get_mapping_fields():
     assert schema_result.extract_mapping() == expected_mapping
 
 
-def test_update_remote_system(client, requests_mock):
+def test_modified_remote_data(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
     requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
 

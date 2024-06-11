@@ -71,6 +71,8 @@ configuration:
   defaultvalue: Pending,Acknowledged,Ongoing
   type: 16
   required: false
+  section: Collect
+  advanced: true
   options:
   - Pending
   - Acknowledged
@@ -84,6 +86,8 @@ configuration:
   name: alerts_type
   type: 16
   required: false
+  section: Collect
+  advanced: true
   options:
   - spam
   - ddos
@@ -131,6 +135,7 @@ configuration:
   defaultvalue: Fetch Without Events
   type: 15
   required: true
+  section: Collect
   options:
   - Fetch Without Events
   - Fetch With All Events
@@ -141,6 +146,7 @@ configuration:
   defaultvalue: _
   type: 15
   required: true
+  section: Collect
   options:
   - _
   - '-'
@@ -151,6 +157,8 @@ configuration:
   name: exclude_info_events
   type: 16
   required: false
+  section: Collect
+  advanced: true
   options:
   - original.message
   - message
@@ -204,6 +212,7 @@ configuration:
   defaultvalue: Europe/Paris
   type: 0
   required: true
+  section: Collect
   additionalinfo: This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc.
 script:
   script: "-"

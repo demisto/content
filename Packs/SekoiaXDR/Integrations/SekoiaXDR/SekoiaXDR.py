@@ -645,7 +645,7 @@ def get_remote_data_command(
 
     alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
     last_update = arg_to_timestamp(
-        arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True
+        arg=parsed_args.last_update, arg_name="lastUpdate", required=True
     )
     alert_last_update = arg_to_timestamp(
         arg=alert.get("updated_at"), arg_name="updated_at", required=False
@@ -661,10 +661,9 @@ def get_remote_data_command(
     if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
         earliest_time = alert["first_seen_at"]
         lastest_time = "now"
-        term = "alert_short_ids:" + alert["short_id"]
+        term = f"alert_short_ids:{alert['short_id']}"
         interval_in_seconds = INTERVAL_SECONDS_EVENTS
         timeout_in_seconds = TIMEOUT_EVENTS
-        max_last_events = MAX_EVENTS
 
         args = {
             "earliest_time": earliest_time,
@@ -672,9 +671,8 @@ def get_remote_data_command(
             "query": term,
             "interval_in_seconds": interval_in_seconds,
             "timeout_in_seconds": timeout_in_seconds,
-            "max_last_events": max_last_events,
         }
-        events = search_events_command(client, args)
+        events = search_events_command(args=args, client=client)
         alert["events"] = events.outputs
 
     # Add the kill chain information to the alert
@@ -763,23 +761,20 @@ def get_modified_remote_data_command(client: Client, args):
         last_update, settings={"TIMEZONE": "UTC"}
     )  # converts to a UTC timestamp
     formatted_last_update = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")  # type: ignore
-
-    demisto.debug(formatted_last_update)
     converted_time = time_converter(formatted_last_update)
-    last_update_time = converted_time + ",now"
+    last_update_time = f"{converted_time},now"
 
     raw_alerts = client.list_alerts(
-        alerts_updatedAt=last_update_time,
+        alerts_updated_at=last_update_time,
         alerts_limit=100,
         alerts_status=None,
-        alerts_createdAt=None,
+        alerts_created_at=None,
         alerts_urgency=None,
         alerts_type=None,
         sort_by="updated_at",
     )
 
-    for item in raw_alerts["items"]:
-        modified_alert_ids.append(item["short_id"])
+    modified_alert_ids = [item["short_id"] for item in raw_alerts["items"]]
 
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
 
@@ -820,7 +815,8 @@ def update_remote_system_command(client: Client, args):
             sekoia_status = delta.get("status", None)
             if sekoia_status:
                 demisto.debug(
-                    f"The incident #{xsoar_incident} had the sekoia status of the alert {remote_incident_id} changed to: {sekoia_status}. Sending changes to Sekoia."  # noqa: E501
+                    f"The incident #{xsoar_incident} had the sekoia status of the alert \
+                    {remote_incident_id} changed to: {sekoia_status}. Sending changes to Sekoia."
                 )
                 sekoia_transition = STATUS_TRANSITIONS.get(sekoia_status)
 
