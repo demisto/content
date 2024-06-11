@@ -111,6 +111,8 @@ class Client:
             risk_level (str): Specify to get only results with the same Risk Level.
             limit (int): Limit of results to retrieve.
             order_by (str): Order results by this attribute.
+            update_before (str): Filter events by updated before.
+            updated_after (str): Filter events by updated after.
             skip_token (str): Skip token.
 
         Returns:
@@ -213,6 +215,8 @@ def build_query_filter(risk_state=None, risk_level=None,
         risk_level (str): Wanted risk level for filter.
         detected_date_time_before (str): Filter events by created before.
         detected_date_time_after (str): Filter events by created after.
+        updated_date_time_before (str): Filter events by updated before.
+        updated_date_time_after (str): Filter events by updated after.
 
     Returns:
         str: Query filter string for API call.
