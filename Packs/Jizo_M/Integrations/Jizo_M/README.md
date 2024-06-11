@@ -1,10 +1,10 @@
 This integration ensures interaction with the JizoM API.
-This integration was integrated and tested with version xx of JizoNDR.
+This integration was integrated and tested with version 12.3.6.1 of JizoM.
 
-## Configure JizoNDR (Partner Contribution) on Cortex XSOAR
+## Configure JizoM (Partner Contribution) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for JizoNDR (Partner Contribution).
+2. Search for JizoM (Partner Contribution).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -52,15 +52,15 @@ Get jizo protocols
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JizoNDR.Protocols.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoNDR.Protocols.alerts_flows.data | String | The details of alerts. | 
-| JizoNDR.Protocols.alerts_flows.total | Number | The total number of alerts. | 
-| JizoNDR.Protocols.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoNDR.Protocols.alerts_files.data | String | The details of alerts. | 
-| JizoNDR.Protocols.alerts_files.total | Number | The total number of alerts. | 
-| JizoNDR.Protocols.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoNDR.Protocols.alerts_usecase.data | String | The details of alerts. | 
-| JizoNDR.Protocols.alerts_usecase.total | Number | The total number of alerts. | 
+| JizoM.Protocols.alerts_flows.count | Number | The number of displayed alerts. | 
+| JizoM.Protocols.alerts_flows.data | String | The details of alerts. | 
+| JizoM.Protocols.alerts_flows.total | Number | The total number of alerts. | 
+| JizoM.Protocols.alerts_files.count | Number | The number of displayed alerts. | 
+| JizoM.Protocols.alerts_files.data | String | The details of alerts. | 
+| JizoM.Protocols.alerts_files.total | Number | The total number of alerts. | 
+| JizoM.Protocols.alerts_usecase.count | Number | The number of displayed alerts. | 
+| JizoM.Protocols.alerts_usecase.data | String | The details of alerts. | 
+| JizoM.Protocols.alerts_usecase.total | Number | The total number of alerts. | 
 
 ### jizo-peers-get
 
@@ -87,15 +87,15 @@ Get jizo peers
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JizoNDR.Peers.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoNDR.Peers.alerts_flows.data | String | The details of alerts. | 
-| JizoNDR.Peers.alerts_flows.total | Number | The total number of alerts. | 
-| JizoNDR.Peers.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoNDR.Peers.alerts_files.data | String | The details of alerts. | 
-| JizoNDR.Peers.alerts_files.total | Number | The total number of alerts. | 
-| JizoNDR.Peers.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoNDR.Peers.alerts_usecase.data | String | The details of alerts. | 
-| JizoNDR.Peers.alerts_usecase.total | Number | The total number of alerts. | 
+| JizoM.Peers.alerts_flows.count | Number | The number of displayed alerts. | 
+| JizoM.Peers.alerts_flows.data | String | The details of alerts. | 
+| JizoM.Peers.alerts_flows.total | Number | The total number of alerts. | 
+| JizoM.Peers.alerts_files.count | Number | The number of displayed alerts. | 
+| JizoM.Peers.alerts_files.data | String | The details of alerts. | 
+| JizoM.Peers.alerts_files.total | Number | The total number of alerts. | 
+| JizoM.Peers.alerts_usecase.count | Number | The number of displayed alerts. | 
+| JizoM.Peers.alerts_usecase.data | String | The details of alerts. | 
+| JizoM.Peers.alerts_usecase.total | Number | The total number of alerts. | 
 
 ### jizo-query-records-get
 
@@ -129,15 +129,15 @@ Get jizo query records
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JizoNDR.QueryRecords.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoNDR.QueryRecords.alerts_flows.data | String | The details of alerts. | 
-| JizoNDR.QueryRecords.alerts_flows.total | Number | The total number of alerts. | 
-| JizoNDR.QueryRecords.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoNDR.QueryRecords.alerts_files.data | String | The details of alerts. | 
-| JizoNDR.QueryRecords.alerts_files.total | Number | The total number of alerts. | 
-| JizoNDR.QueryRecords.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoNDR.QueryRecords.alerts_usecase.data | String | The details of alerts. | 
-| JizoNDR.QueryRecords.alerts_usecase.total | Number | The total number of alerts. | 
+| JizoM.QueryRecords.alerts_flows.count | Number | The number of displayed alerts. | 
+| JizoM.QueryRecords.alerts_flows.data | String | The details of alerts. | 
+| JizoM.QueryRecords.alerts_flows.total | Number | The total number of alerts. | 
+| JizoM.QueryRecords.alerts_files.count | Number | The number of displayed alerts. | 
+| JizoM.QueryRecords.alerts_files.data | String | The details of alerts. | 
+| JizoM.QueryRecords.alerts_files.total | Number | The total number of alerts. | 
+| JizoM.QueryRecords.alerts_usecase.count | Number | The number of displayed alerts. | 
+| JizoM.QueryRecords.alerts_usecase.data | String | The details of alerts. | 
+| JizoM.QueryRecords.alerts_usecase.total | Number | The total number of alerts. | 
 
 ### jizo-alert-rules-get
 
@@ -168,15 +168,15 @@ Get jizo alerts rules
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JizoNDR.AlertRules.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoNDR.AlertRules.alerts_flows.data | String | The details of alerts. | 
-| JizoNDR.AlertRules.alerts_flows.total | Number | The total number of alerts. | 
-| JizoNDR.AlertRules.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoNDR.AlertRules.alerts_files.data | String | The details of alerts. | 
-| JizoNDR.AlertRules.alerts_files.total | Number | The total number of alerts. | 
-| JizoNDR.AlertRules.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoNDR.AlertRules.alerts_usecase.data | String | The details of alerts. | 
-| JizoNDR.AlertRules.alerts_usecase.total | Number | The total number of alerts. | 
+| JizoM.AlertRules.alerts_flows.count | Number | The number of displayed alerts. | 
+| JizoM.AlertRules.alerts_flows.data | String | The details of alerts. | 
+| JizoM.AlertRules.alerts_flows.total | Number | The total number of alerts. | 
+| JizoM.AlertRules.alerts_files.count | Number | The number of displayed alerts. | 
+| JizoM.AlertRules.alerts_files.data | String | The details of alerts. | 
+| JizoM.AlertRules.alerts_files.total | Number | The total number of alerts. | 
+| JizoM.AlertRules.alerts_usecase.count | Number | The number of displayed alerts. | 
+| JizoM.AlertRules.alerts_usecase.data | String | The details of alerts. | 
+| JizoM.AlertRules.alerts_usecase.total | Number | The total number of alerts. | 
 
 ### jizo-device-records-get
 
@@ -205,15 +205,15 @@ Get jizo device records
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JizoNDR.Device.Records.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoNDR.Device.Records.alerts_flows.data | String | The details of alerts. | 
-| JizoNDR.Device.Records.alerts_flows.total | Number | The total number of alerts. | 
-| JizoNDR.Device.Records.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoNDR.Device.Records.alerts_files.data | String | The details of alerts. | 
-| JizoNDR.Device.Records.alerts_files.total | Number | The total number of alerts. | 
-| JizoNDR.Device.Records.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoNDR.Device.Records.alerts_usecase.data | String | The details of alerts. | 
-| JizoNDR.Device.Records.alerts_usecase.total | Number | The total number of alerts. | 
+| JizoM.Device.Records.alerts_flows.count | Number | The number of displayed alerts. | 
+| JizoM.Device.Records.alerts_flows.data | String | The details of alerts. | 
+| JizoM.Device.Records.alerts_flows.total | Number | The total number of alerts. | 
+| JizoM.Device.Records.alerts_files.count | Number | The number of displayed alerts. | 
+| JizoM.Device.Records.alerts_files.data | String | The details of alerts. | 
+| JizoM.Device.Records.alerts_files.total | Number | The total number of alerts. | 
+| JizoM.Device.Records.alerts_usecase.count | Number | The number of displayed alerts. | 
+| JizoM.Device.Records.alerts_usecase.data | String | The details of alerts. | 
+| JizoM.Device.Records.alerts_usecase.total | Number | The total number of alerts. | 
 
 ### jizo-device-alerts-get
 
@@ -243,12 +243,12 @@ Get jizo device alerts
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JizoNDR.Device.Alerts.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoNDR.Device.Alerts.alerts_flows.data | String | The details of alerts. | 
-| JizoNDR.Device.Alerts.alerts_flows.total | Number | The total number of alerts. | 
-| JizoNDR.Device.Alerts.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoNDR.Device.Alerts.alerts_files.data | String | The details of alerts. | 
-| JizoNDR.Device.Alerts.alerts_files.total | Number | The total number of alerts. | 
-| JizoNDR.Device.Alerts.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoNDR.Device.Alerts.alerts_usecase.data | String | The details of alerts. | 
-| JizoNDR.Device.Alerts.alerts_usecase.total | Number | The total number of alerts. | 
+| JizoM.Device.Alerts.alerts_flows.count | Number | The number of displayed alerts. | 
+| JizoM.Device.Alerts.alerts_flows.data | String | The details of alerts. | 
+| JizoM.Device.Alerts.alerts_flows.total | Number | The total number of alerts. | 
+| JizoM.Device.Alerts.alerts_files.count | Number | The number of displayed alerts. | 
+| JizoM.Device.Alerts.alerts_files.data | String | The details of alerts. | 
+| JizoM.Device.Alerts.alerts_files.total | Number | The total number of alerts. | 
+| JizoM.Device.Alerts.alerts_usecase.count | Number | The number of displayed alerts. | 
+| JizoM.Device.Alerts.alerts_usecase.data | String | The details of alerts. | 
+| JizoM.Device.Alerts.alerts_usecase.total | Number | The total number of alerts. | 

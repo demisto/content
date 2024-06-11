@@ -1,6 +1,3 @@
-register_module_line('JizoNDR', 'start', __line__())
-### pack version: 1.0.0
-
 import demistomock as demisto
 from CommonServerPython import *
 import json
@@ -291,7 +288,7 @@ def get_protocols_command(client: Client,args:Dict[str,Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Protocols", t=result),
-        outputs_prefix='JizoNDR.Protocols',
+        outputs_prefix='JizoM.Protocols',
         outputs=result,
 
     )
@@ -303,7 +300,7 @@ def get_peers_command(client: Client, args:Dict[str,Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Peers", t=result),
-        outputs_prefix='JizoNDR.Peers',
+        outputs_prefix='JizoM.Peers',
         outputs=result,
 
     )
@@ -315,7 +312,7 @@ def get_query_records_command(client: Client, args:Dict[str,Any]) -> CommandResu
 
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Query Records", t=result),
-        outputs_prefix='JizoNDR.QueryRecords',
+        outputs_prefix='JizoM.QueryRecords',
         outputs=result,
 
     )
@@ -327,7 +324,7 @@ def get_alert_rules_command(client: Client,args:Dict[str,Any]) -> CommandResults
 
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Alert Rules", t=result),
-        outputs_prefix='JizoNDR.AlertRules',
+        outputs_prefix='JizoM.AlertRules',
         outputs=result,
 
     )
@@ -339,7 +336,7 @@ def get_device_records_command(client: Client, args:Dict[str,Any]) -> CommandRes
 
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Device Records", t=result),
-        outputs_prefix='JizoNDR.Device.Records',
+        outputs_prefix='JizoM.Device.Records',
         outputs=result,
 
     )
@@ -351,7 +348,7 @@ def get_device_alerts_command(client: Client,args:Dict[str,Any]) -> CommandResul
 
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Device Alerts", t=result),
-        outputs_prefix='JizoNDR.Device.Alerts',
+        outputs_prefix='JizoM.Device.Alerts',
         outputs=result,
 
     )
@@ -514,7 +511,7 @@ def main() -> None:  # pragma: no cover
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-register_module_line('JizoNDR', 'end', __line__())
+
 
 
 

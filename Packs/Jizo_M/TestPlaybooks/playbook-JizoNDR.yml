@@ -1,7 +1,7 @@
-id: JizoNDR-Test
+id: JizoM-Test
 version: 16
 vcShouldKeepItemLegacyProdMachine: false
-name: JizoNDR
+name: JizoM
 starttaskid: "0"
 tasks:
   "0":
@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: jizo-query-records-get
       description: Get jizo query records
-      script: JizoNDR|||jizo-query-records-get
+      script: JizoM|||jizo-query-records-get
       type: regular
       iscommand: true
-      brand: JizoNDR
+      brand: JizoM
     scriptarguments:
       datetime_from:
         simple: first_fetch

@@ -3,11 +3,11 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: JizoNDR
+  id: JizoM
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: JizoNDR
-display: JizoNDR (Partner Contribution)
+name: JizoM
+display: JizoM (Partner Contribution)
 description: This integration ensures interaction with the JizoM API.
 configuration:
 - section: Collect
@@ -88,31 +88,31 @@ script:
       description: The maximum number of protocols to display per alert.
       type: keyValue
     outputs:
-    - contextPath: JizoNDR.Protocols.alerts_flows.count
+    - contextPath: JizoM.Protocols.alerts_flows.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Protocols.alerts_flows.data
+    - contextPath: JizoM.Protocols.alerts_flows.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Protocols.alerts_flows.total
+    - contextPath: JizoM.Protocols.alerts_flows.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Protocols.alerts_files.count
+    - contextPath: JizoM.Protocols.alerts_files.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Protocols.alerts_files.data
+    - contextPath: JizoM.Protocols.alerts_files.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Protocols.alerts_files.total
+    - contextPath: JizoM.Protocols.alerts_files.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Protocols.alerts_usecase.count
+    - contextPath: JizoM.Protocols.alerts_usecase.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Protocols.alerts_usecase.data
+    - contextPath: JizoM.Protocols.alerts_usecase.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Protocols.alerts_usecase.total
+    - contextPath: JizoM.Protocols.alerts_usecase.total
       description: The total number of alerts.
       type: Number
     description: Get jizo protocols
@@ -140,31 +140,31 @@ script:
       description: The maximum number of samples to display per alert.
       type: keyValue
     outputs:
-    - contextPath: JizoNDR.Peers.alerts_flows.count
+    - contextPath: JizoM.Peers.alerts_flows.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Peers.alerts_flows.data
+    - contextPath: JizoM.Peers.alerts_flows.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Peers.alerts_flows.total
+    - contextPath: JizoM.Peers.alerts_flows.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Peers.alerts_files.count
+    - contextPath: JizoM.Peers.alerts_files.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Peers.alerts_files.data
+    - contextPath: JizoM.Peers.alerts_files.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Peers.alerts_files.total
+    - contextPath: JizoM.Peers.alerts_files.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Peers.alerts_usecase.count
+    - contextPath: JizoM.Peers.alerts_usecase.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Peers.alerts_usecase.data
+    - contextPath: JizoM.Peers.alerts_usecase.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Peers.alerts_usecase.total
+    - contextPath: JizoM.Peers.alerts_usecase.total
       description: The total number of alerts.
       type: Number
     description: Get jizo peers
@@ -213,31 +213,31 @@ script:
       description: The maximum number of samples to display per alert.
       type: keyValue
     outputs:
-    - contextPath: JizoNDR.QueryRecords.alerts_flows.count
+    - contextPath: JizoM.QueryRecords.alerts_flows.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.QueryRecords.alerts_flows.data
+    - contextPath: JizoM.QueryRecords.alerts_flows.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.QueryRecords.alerts_flows.total
+    - contextPath: JizoM.QueryRecords.alerts_flows.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.QueryRecords.alerts_files.count
+    - contextPath: JizoM.QueryRecords.alerts_files.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.QueryRecords.alerts_files.data
+    - contextPath: JizoM.QueryRecords.alerts_files.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.QueryRecords.alerts_files.total
+    - contextPath: JizoM.QueryRecords.alerts_files.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.QueryRecords.alerts_usecase.count
+    - contextPath: JizoM.QueryRecords.alerts_usecase.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.QueryRecords.alerts_usecase.data
+    - contextPath: JizoM.QueryRecords.alerts_usecase.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.QueryRecords.alerts_usecase.total
+    - contextPath: JizoM.QueryRecords.alerts_usecase.total
       description: The total number of alerts.
       type: Number
     description: Get jizo query records
@@ -277,31 +277,31 @@ script:
       description: The maximum number of samples to display per alert.
       type: keyValue
     outputs:
-    - contextPath: JizoNDR.AlertRules.alerts_flows.count
+    - contextPath: JizoM.AlertRules.alerts_flows.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.AlertRules.alerts_flows.data
+    - contextPath: JizoM.AlertRules.alerts_flows.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.AlertRules.alerts_flows.total
+    - contextPath: JizoM.AlertRules.alerts_flows.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.AlertRules.alerts_files.count
+    - contextPath: JizoM.AlertRules.alerts_files.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.AlertRules.alerts_files.data
+    - contextPath: JizoM.AlertRules.alerts_files.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.AlertRules.alerts_files.total
+    - contextPath: JizoM.AlertRules.alerts_files.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.AlertRules.alerts_usecase.count
+    - contextPath: JizoM.AlertRules.alerts_usecase.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.AlertRules.alerts_usecase.data
+    - contextPath: JizoM.AlertRules.alerts_usecase.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.AlertRules.alerts_usecase.total
+    - contextPath: JizoM.AlertRules.alerts_usecase.total
       description: The total number of alerts.
       type: Number
     description: Get jizo alerts rules
@@ -335,31 +335,31 @@ script:
       description: The maximum number of samples to display per alert.
       type: keyValue
     outputs:
-    - contextPath: JizoNDR.Device.Records.alerts_flows.count
+    - contextPath: JizoM.Device.Records.alerts_flows.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Records.alerts_flows.data
+    - contextPath: JizoM.Device.Records.alerts_flows.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Device.Records.alerts_flows.total
+    - contextPath: JizoM.Device.Records.alerts_flows.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Records.alerts_files.count
+    - contextPath: JizoM.Device.Records.alerts_files.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Records.alerts_files.data
+    - contextPath: JizoM.Device.Records.alerts_files.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Device.Records.alerts_files.total
+    - contextPath: JizoM.Device.Records.alerts_files.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Records.alerts_usecase.count
+    - contextPath: JizoM.Device.Records.alerts_usecase.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Records.alerts_usecase.data
+    - contextPath: JizoM.Device.Records.alerts_usecase.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Device.Records.alerts_usecase.total
+    - contextPath: JizoM.Device.Records.alerts_usecase.total
       description: The total number of alerts.
       type: Number
     description: Get jizo device records
@@ -396,31 +396,31 @@ script:
       description: The maximum number of samples to display per alert.
       type: keyValue
     outputs:
-    - contextPath: JizoNDR.Device.Alerts.alerts_flows.count
+    - contextPath: JizoM.Device.Alerts.alerts_flows.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Alerts.alerts_flows.data
+    - contextPath: JizoM.Device.Alerts.alerts_flows.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Device.Alerts.alerts_flows.total
+    - contextPath: JizoM.Device.Alerts.alerts_flows.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Alerts.alerts_files.count
+    - contextPath: JizoM.Device.Alerts.alerts_files.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Alerts.alerts_files.data
+    - contextPath: JizoM.Device.Alerts.alerts_files.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Device.Alerts.alerts_files.total
+    - contextPath: JizoM.Device.Alerts.alerts_files.total
       description: The total number of alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Alerts.alerts_usecase.count
+    - contextPath: JizoM.Device.Alerts.alerts_usecase.count
       description: The number of displayed alerts.
       type: Number
-    - contextPath: JizoNDR.Device.Alerts.alerts_usecase.data
+    - contextPath: JizoM.Device.Alerts.alerts_usecase.data
       description: The details of alerts.
       type: String
-    - contextPath: JizoNDR.Device.Alerts.alerts_usecase.total
+    - contextPath: JizoM.Device.Alerts.alerts_usecase.total
       description: The total number of alerts.
       type: Number
     description: Get jizo device alerts
@@ -429,4 +429,4 @@ script:
   runonce: false
   subtype: python3
   isFetchSamples: true
-defaultmapperin: "Jizo NDR - Incoming Mapper"
+defaultmapperin: "Jizo M - Incoming Mapper"

@@ -1,6 +1,6 @@
 {
 	"feed": false,
-	"id": "Jizo NDR - Incoming Mapper",
+	"id": "Jizo M - Incoming Mapper",
 	"locked": false,
 	"logicalVersion": 14,
 	"mapping": {
@@ -22,8 +22,8 @@
 			}
 		}
 	},
-	"name": "Jizo NDR - Incoming Mapper",
-	"nameRaw": "Jizo NDR - Incoming Mapper",
+	"name": "Jizo M - Incoming Mapper",
+	"nameRaw": "Jizo M - Incoming Mapper",
 	"propagationLabels": [
 		"all"
 	],
