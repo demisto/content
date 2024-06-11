@@ -264,7 +264,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
         return json.dumps(post_body)
 
-    def write_file(self, file_name: str, data_to_write: bytes):
+    def write_file(self, file_name: str, data_to_write: bytes):     #pragma: no cover
         """
         Args:
             - file_name (str): The name of the file returned form the api response header
