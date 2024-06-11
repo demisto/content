@@ -1,6 +1,6 @@
 Fetch alerts and events from SEKOIA.IO XDR.
 To use this integration, please create an API Key with the appropriate permissions.
-This integration was integrated and tested with version xx of Sekoia XDR.
+This integration was integrated and tested with version 1.0 of Sekoia XDR.
 
 ## Configure Sekoia XDR on Cortex XSOAR
 

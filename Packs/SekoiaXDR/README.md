@@ -1,6 +1,4 @@
-# SEKOIA Operation Center
-
-Request assets, alerts and events from SEKOIA.IO Operation Center.
+# SEKOIA XDR (Operation Center)
 
 ## What does this pack do ?
 

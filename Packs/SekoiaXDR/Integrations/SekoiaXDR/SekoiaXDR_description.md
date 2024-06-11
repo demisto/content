@@ -1,5 +1,4 @@
-## SEKOIA.IO XDR ( Operation Center )
-This section explains how to configure the instance of SEKOIA.IO XDR in Cortex XSOAR.
+## Advanced SEKOIA.IO Configuration
 
 ### API Key
 Much like any other API, Sekoio's API relies on an authentication mechanism, utilizing an API key for authentication. Obtaining one requires following a series of simple steps :
