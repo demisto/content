@@ -15,7 +15,7 @@ import pytz
 import requests
 import urllib3
 from google.api_core.exceptions import PreconditionFailed
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 from Tests.test_dependencies import get_used_integrations
 from demisto_sdk.commands.common.constants import FILTER_CONF
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ParallelLoggingManager

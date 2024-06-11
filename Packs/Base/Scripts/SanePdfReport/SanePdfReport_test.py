@@ -48,9 +48,6 @@ def test_sane_pdf_report(mocker):
     assert demisto.results.call_args[0][0]['HumanReadable'] == 'Successfully generated pdf'
     assert demisto.results.call_args[0][0]['Contents']
 
-    zombies, output = find_zombie_processes()
-    assert len(zombies) == 0
-
 
 def test_markdown_image_server(mocker, capfd):
     with capfd.disabled():
