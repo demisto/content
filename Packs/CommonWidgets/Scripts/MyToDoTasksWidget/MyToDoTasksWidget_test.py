@@ -1,7 +1,8 @@
 import json
 
 import demistomock as demisto
-from MyToDoTasksWidget import get_open_to_do_tasks_of_current_user
+from MyToDoTasksWidget import get_open_to_do_tasks_of_current_user, get_clickable_incident_id
+import pytest
 
 
 def test_open_to_do_tasks_of_current_user(mocker):
@@ -91,3 +92,18 @@ def test_no_open_to_do_tasks(mocker):
     table = get_open_to_do_tasks_of_current_user()
 
     assert len(table) == 0
+
+
+@pytest.mark.parametrize('is_xsoar_8_or_xsiam', [True, False])
+def test_clickable_incident_id(mocker, is_xsoar_8_or_xsiam):
+    '''
+    Given:
+        - incident id to create clickable_incident_id
+    When:
+        - Running clickable_incident_id in XSIAM/XSOAR 8 and XSOAR 6
+    Then:
+        - Ensure '#/' is in the created link only in XSOAR 6.
+    '''
+    import MyToDoTasksWidget
+    mocker.patch.object(MyToDoTasksWidget, 'is_xsiam_or_xsoar_saas', return_value=is_xsoar_8_or_xsiam)
+    assert ('#/' in get_clickable_incident_id('1234')) == (not is_xsoar_8_or_xsiam)

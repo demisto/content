@@ -3,7 +3,7 @@ VirusTotal V3 - Premium API
 Difference: https://developers.virustotal.com/v3.0/reference#public-vs-premium-api
 """
 import copy
-from typing import Tuple, Iterable
+from collections.abc import Iterable
 
 import urllib3
 from dateparser import parse
@@ -38,9 +38,8 @@ def convert_epoch_to_readable(
         epoch time in readable output
     """
     for date_ in keys:
-        if creation_date := readable_inputs.get(date_):
-            if creation_date := parse(str(creation_date)):
-                readable_inputs[date_] = creation_date.replace(microsecond=0).isoformat()
+        if (creation_date := readable_inputs.get(date_)) and (creation_date := parse(str(creation_date))):
+            readable_inputs[date_] = creation_date.replace(microsecond=0).isoformat()
     return readable_inputs
 
 
@@ -185,7 +184,7 @@ def raise_if_hash_not_valid(
         >>> raise_if_hash_not_valid('7e641f6b9706d860baf09fe418b6cc87')
     """
     if isinstance(valid_hashes, str):
-        valid_hashes = tuple([valid_hashes])
+        valid_hashes = (valid_hashes,)
     if get_hash_type(file_hash) not in valid_hashes:
         raise ValueError(f'Hash "{file_hash}" is not of type {", ".join(valid_hashes)}')
 
@@ -649,7 +648,7 @@ def get_pcap_behaviour(client: Client, args: dict) -> dict:
     """Extracted PCAP from a sandbox analysis"""
     report_id = args['report_id']
     content = client.get_pcap_beaviour(report_id)
-    assert isinstance(content, (bytes, str)), 'Response from PCAP Behavior is not a bytes-like object.'
+    assert isinstance(content, bytes | str), 'Response from PCAP Behavior is not a bytes-like object.'
     return fileResult(f'{report_id}.pcap', content)
 
 
@@ -786,9 +785,8 @@ def list_notifications(client: Client, args: dict) -> CommandResults:
         to_time = parse(to_time)
     if from_time := args.get('from_time'):
         from_time = parse(from_time)
-    if from_time and to_time:
-        if from_time > to_time:
-            raise DemistoException(f'The from_time argument is later then to_time. {from_time} > {to_time}')
+    if from_time and to_time and from_time > to_time:
+        raise DemistoException(f'The from_time argument is later then to_time. {from_time} > {to_time}')
     cursor = args.get('cursor')
     tag = args.get('tag')
     outputs = raw_response = client.list_notifications(from_time, to_time, tag, cursor, limit)
@@ -836,7 +834,7 @@ def list_notifications_files_list_by_hash(client: Client, args: dict) -> List[Co
     """Retrieve file objects for VT Hunting Livehunt notifications by hash."""
     hashes_only = [hash_ for hash_ in argToList(args.get('hash')) if get_hash_type(hash_) != 'Unknown']
     cursor = args.get('cursor')
-    results = list()
+    results = []
     for hash_ in hashes_only:
         try:
             outputs = raw_response = client.list_notifications_files(hash_, cursor, limit=1)
@@ -998,11 +996,11 @@ def get_quota_limits(client: Client, args: dict) -> CommandResults:
     )
 
 
-def fetch_incidents(client: Client, params: dict, last_run_date: datetime) -> Tuple[List[dict], datetime]:
+def fetch_incidents(client: Client, params: dict, last_run_date: datetime) -> tuple[List[dict], datetime]:
     tag = params.get('tag')
     max_fetch = arg_to_number_must_int(params.get('max_fetch', 10))
     raw_response = client.list_notifications(from_time=last_run_date, tag=tag, limit=max_fetch)
-    incidents = list()
+    incidents = []
     for notification in raw_response.get('data', []):
         attributes = notification.get('attributes', {})
         date = parse(str(attributes.get('date')))  # epoch int to str

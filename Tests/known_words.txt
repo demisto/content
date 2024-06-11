@@ -284,3 +284,5 @@ STS
 DB
 WAF
 VPC
+GPT
+chatgpt

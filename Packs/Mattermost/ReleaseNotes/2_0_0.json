@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The script 'MattermostAskUser' now only supported by Mattermost V2, as Mattermost integration is deprecated."
+}

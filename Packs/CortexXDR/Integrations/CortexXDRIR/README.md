@@ -29,6 +29,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Prevent Only Mode                                                                | Whether the XDR tenant Mode is prevent only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | False        |
     | Incident Statuses to Fetch                                                       | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
     | Incidents Fetch Interval                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
+    | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -3839,3 +3840,33 @@ There is no context output for this command.
 
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
+
+### xdr-update-alert
+
+***
+Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+
+#### Base Command
+
+`xdr-update-alert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | Comma-separated list of alert IDs. | Required | 
+| severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| comment | Comment to append to updated alerts. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!xdr-update-alert alert_ids=35326 severity=low```
+
+#### Human Readable Output
+
+>Alerts with IDs 35326 have been updated successfully.
+
+

@@ -366,8 +366,8 @@ tasks:
     task:
       id: 571fff3d-701c-4697-87b4-5645267da22c
       version: -1
-      name: GetServerInfo_copy
-      scriptName: GetServerInfo_copy
+      name: GetServerInfo
+      scriptName: GetServerInfo
       type: regular
       iscommand: false
       brand: ""
