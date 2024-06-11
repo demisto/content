@@ -171,28 +171,33 @@ class Client(BaseClient):
         """
 
         context_data= self.get_query_records(args={'datetime_from': start_time,'limit':limit})
-
+        # Types of alerts are the keys of the json response
         alert_types = list(context_data.keys())
 
         alerts: list[dict] = []
-        j=0
-        c=0
-        alert_data=context_data[alert_types[j]]['data']
+        index_type=0
+        count=0
+        # Get alert details 
+        alert_data=context_data[alert_types[index_type]]['data']
 
         for i in range(limit):
-            while i-c==len(alert_data) and j< len(alert_types)-1:
-                j+=1
-                c+= len(alert_data)
-                alert_data=context_data[alert_types[j]]['data']
+            # Check if the specified alert type does not contain alerts, 
+            # Or if the final item was reached
+            # In that case, increment index_type to check the content of the next alert type
+            while i-count==len(alert_data) and index_type< len(alert_types)-1:
+                index_type+=1
+                count+= len(alert_data)
+                alert_data=context_data[alert_types[index_type]]['data']
     
             if bool(alert_data):
-                severity= alert_data[i-c].get('severity', '4')
-                category= alert_data[i-c].get('alert_category', '')
+                severity= alert_data[i-count].get('severity', '4')
+                category= alert_data[i-count].get('alert_category', '')
+                # Fill in the alert item
                 item = ITEM_TEMPLATE.format(id=last_id + i + 1,
-                                            alert_type=alert_types[j],
+                                            alert_type=alert_types[index_type],
                                             category=category,
                                             severity=severity,
-                                            date= formatting_date(alert_data[i-c]['date']['date'])
+                                            date= formatting_date(alert_data[i-count]['date']['date'])
                                         )
                 dict_item = json.loads("{" + item + "}")
                 alerts.append(dict_item)
@@ -389,7 +394,6 @@ def fetch_incidents(client: Client, max_results: int, last_run:Dict[str, Any],
     last_fetched_time = alerts[-1]['date'] if alerts else last_fetch
     last_ids = []
     for alert in alerts:
-        # Otherwise, we might need to add the alert ID to the last_ids so it will be avoided in the next run.
         if alert['date'] == last_fetched_time:
             last_ids.append(alert['id'])
 
