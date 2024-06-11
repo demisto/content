@@ -426,6 +426,7 @@ script:
   dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
   runonce: false
+  script: '-'
   subtype: python3
   isFetchSamples: true
 defaultmapperin: "Jizo M - Incoming Mapper"
