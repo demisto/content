@@ -472,7 +472,7 @@ def siem_events_last_run(siem_event_handler: MimecastGetSiemEvents, demisto_last
         siem_event_handler (MimecastGetSiemEvents): the siem event handler.
         audit_events (list): the audit events of this run.
     Returns:
-        siem_next_run (str): The token to continue fetch on the next run. 
+        siem_next_run (str): The token to continue fetch on the next run.
         siem_fetched_events_for_next_run (list): list of events for next run.
     """
     siem_next_run = siem_event_handler.token if siem_event_handler.token else demisto_last_run.get(SIEM_LAST_RUN, '')

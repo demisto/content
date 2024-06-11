@@ -329,12 +329,13 @@ def test_siem_events_last_run_with_new_events():
     siem_event_handler.events_from_prev_run = ['evnet1', 'event2']
     siem_next_run, siem_fetched_events_for_next_run = \
         siem_events_last_run(siem_event_handler, last_run_object)
-    
+
     # When the token is set on the current run, use the new token.
     assert siem_next_run == 'token99'
     # Verify that events for next run are passed.
     assert siem_fetched_events_for_next_run == ['evnet1', 'event2']
-    
+
+
 def test_siem_events_last_run_without_new_events():
     last_run_object = {
         SIEM_LAST_RUN: "token2",
@@ -346,7 +347,7 @@ def test_siem_events_last_run_without_new_events():
     siem_event_handler.events_from_prev_run = []
     siem_next_run, siem_fetched_events_for_next_run = \
         siem_events_last_run(siem_event_handler, last_run_object)
-    
+
     # When no new events arrive use the previous token set on the past run.
     assert siem_next_run == 'token2'
     # Verify that events for next run are passed.
