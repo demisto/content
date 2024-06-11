@@ -2,7 +2,7 @@ import json
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
     classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy, \
     file_analysis_status_output, pdf_report_output, static_analysis_report_output, dynamic_analysis_report_output, \
-    sample_classification_output
+    sample_classification_output, yara_output, yara_retro_output
 import demistomock as demisto
 import pytest
 
@@ -118,6 +118,28 @@ def test_sample_classification_output():
     for k, v in result.to_context().items():
         if k == "Contents":
             assert "a1000_sample_classification" in v
+
+
+def test_yara_output():
+    rulesets = util_load_json("test_data/a1000_yara_get_rulesets.json")
+    contents = util_load_json("test_data/a1000_yara_get_contents.json")
+
+    result_rulesets = yara_output(resp_json=rulesets, action="GET RULESETS")
+    result_contents = yara_output(resp_json=contents, action="GET CONTENTS")
+
+    assert result_rulesets.to_context().get("Contents").get("a1000_yara").get("count") == 4
+    assert result_contents.to_context().get("Contents").get("a1000_yara").get("detail").get("name") == "test_yara_rule"
+
+
+def test_yara_retro_output():
+    local = util_load_json("test_data/a1000_yara_retro_local.json")
+    cloud = util_load_json("test_data/a1000_yara_retro_cloud.json")
+
+    result_local = yara_retro_output(resp_json=local, action="LOCAL SCAN STATUS")
+    result_cloud = yara_retro_output(resp_json=cloud, action="CLOUD SCAN STATUS")
+
+    assert result_local.to_context().get("Contents").get("a1000_yara_retro").get("status").get("state") == "COMPLETED"
+    assert result_cloud.to_context().get("Contents").get("a1000_yara_retro").get("status").get("cloud_status") == "ACTIVE"
 
 
 def test_classification_to_score():
