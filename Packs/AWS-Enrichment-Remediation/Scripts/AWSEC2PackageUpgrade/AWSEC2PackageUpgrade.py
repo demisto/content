@@ -14,7 +14,7 @@ def upgrade_package_on_instance(
     instance_id: str,
     asm_rule_id: str,
     region: str,
-    assume_role: str
+    assume_role_arn: str
 ) -> dict:
     """
     Upgrade a specified package on an AWS EC2 instance using AWS SSM.
@@ -23,7 +23,7 @@ def upgrade_package_on_instance(
         instance_id (str): The ID of the instance where the package will be upgraded.
         asm_rule_id (str): The ID of the ASM rule that specifies the package to be upgraded.
         region (str): The AWS region where the instance is located.
-        assume_role (str): The AWS IAM role that will be assumed.
+        assume_role_arn (str): The AWS IAM role arn that will be assumed.
 
     Returns:
         dict: A dictionary with the keys 'run_command_flag' indicating if the command
@@ -55,8 +55,8 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
 
     # Get the instance information
     cmd_args = {"instance_id": instance_id, "type_name": "Instance Information"}
-    if assume_role:
-        cmd_args.update({"roleArn": assume_role, "roleSessionName": ROLE_SESSION_NAME})
+    if len(assume_role_arn) > 0:
+        cmd_args.update({"roleArn": assume_role_arn, "roleSessionName": ROLE_SESSION_NAME})
     instance_info = demisto.executeCommand("aws-ssm-inventory-entry-list", cmd_args)
 
     if "Invalid instance id" in instance_info[0].get(
@@ -122,9 +122,9 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
             "parameters": json.dumps(parameters),
             "region": region,
         }
-        if assume_role:
+        if len(assume_role_arn) > 0:
             cmd_args.update(
-                {"roleArn": assume_role, "roleSessionName": ROLE_SESSION_NAME}
+                {"roleArn": assume_role_arn, "roleSessionName": ROLE_SESSION_NAME}
             )
         output = demisto.executeCommand("aws-ssm-command-run", cmd_args)
         output_run_command_dict["run_command_output"] = (
@@ -161,12 +161,18 @@ def aws_ec2_package_upgrade(args: Dict[str, Any]) -> CommandResults:
     asm_rule_id = args.get("asm_rule_id")
     region = args.get("region", None)
     assume_role = args.get("assume_role", None)
+    account_id = args.get("account_id", None)
 
     instance_id = str(instance_id) if instance_id is not None else ""
     asm_rule_id = str(asm_rule_id) if asm_rule_id is not None else ""
 
+    assume_role_arn = ''
+
+    if assume_role and account_id:
+        assume_role_arn = "arn:aws:iam::" + str(account_id) + ":role/" + str(assume_role)
+
     results = upgrade_package_on_instance(
-        instance_id, asm_rule_id, region, assume_role
+        instance_id, asm_rule_id, region, assume_role_arn
     )
     command_results = CommandResults(
         outputs=results,

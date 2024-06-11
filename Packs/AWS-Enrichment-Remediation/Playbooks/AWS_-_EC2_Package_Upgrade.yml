@@ -1,5 +1,5 @@
 description: This playbook upgrades supported package on an AWS EC2 instance.
-id: 'AWS - EC2 Package Upgrade'
+id: AWS - EC2 Package Upgrade
 inputSections:
 - description: Generic group for inputs.
   inputs:
@@ -7,6 +7,7 @@ inputSections:
   - Instance ID
   - Region
   - Assume Role
+  - Account ID
   name: General (Inputs group)
 inputs:
 - description: ASM rule ID.
@@ -27,6 +28,11 @@ inputs:
   value: {}
 - description: AWS role to be assumed.
   key: Assume Role
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: AWS account ID.
+  key: Account ID
   playbookInputQuery:
   required: false
   value: {}
@@ -56,12 +62,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a7db9bd9-d081-4e5a-8ec1-5597f2dbfd9e
+      id: e1adf28a-3a47-4044-8483-806ea1c3c75c
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: a7db9bd9-d081-4e5a-8ec1-5597f2dbfd9e
+    taskid: e1adf28a-3a47-4044-8483-806ea1c3c75c
     timertriggers: []
     type: start
     view: |-
@@ -132,12 +138,12 @@ tasks:
     task:
       brand: ""
       description: Determines if the AWS - Systems Manager integration instance is configured and input values are defined.
-      id: 143d4a82-9911-415a-8eba-2be0767d93a0
+      id: 75306cbe-5048-4052-8a48-ac85290e53e4
       iscommand: false
       name: Is AWS - Systems Manager enabled and are Input values defined?
       type: condition
       version: -1
-    taskid: 143d4a82-9911-415a-8eba-2be0767d93a0
+    taskid: 75306cbe-5048-4052-8a48-ac85290e53e4
     timertriggers: []
     type: condition
     view: |-
@@ -159,13 +165,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9c47212d-dc9a-4e75-8c10-cebe121b9a86
+      id: 7277ea02-f5b1-4734-8334-c57417ab3da3
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 9c47212d-dc9a-4e75-8c10-cebe121b9a86
+    taskid: 7277ea02-f5b1-4734-8334-c57417ab3da3
     timertriggers: []
     type: title
     view: |-
@@ -173,49 +179,6 @@ tasks:
         "position": {
           "x": -120,
           "y": 2200
-        }
-      }
-  "4":
-    continueonerrortype: ""
-    id: "4"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      asm_rule_id:
-        simple: ${inputs.ASM Rule ID}
-      assume_role:
-        simple: ${inputs.Assume Role}
-      instance_id:
-        simple: ${inputs.Instance ID}
-      region:
-        simple: ${inputs.Region}
-      version:
-        simple: ${inputs.Version}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This is an AWS script that upgrades a package on the AWS EC2 instance.
-      id: 6be26195-bb94-4dbe-8d57-65b5a2795a4d
-      iscommand: false
-      name: 'AWS EC2 Package Upgrade '
-      script: AWSEC2PackageUpgrade
-      type: regular
-      version: -1
-    taskid: 6be26195-bb94-4dbe-8d57-65b5a2795a4d
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 800
         }
       }
   "5":
@@ -259,13 +222,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: d0bbf925-63cc-482e-8982-9b721af06623
+      id: 05965785-d679-4fb5-8244-415f5cd4f3ee
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: d0bbf925-63cc-482e-8982-9b721af06623
+    taskid: 05965785-d679-4fb5-8244-415f5cd4f3ee
     timertriggers: []
     type: playbook
     view: |-
@@ -298,13 +261,13 @@ tasks:
     task:
       brand: AWS - System Manager
       description: Lists the commands requested by users of the Amazon Web Services account.
-      id: 04e9d00d-0a88-4525-8b9e-89f65f858f3f
+      id: bbc0487e-ac4e-4a4c-8884-103f47b0a7e6
       iscommand: true
       name: Get status of command
       script: AWS - System Manager|||aws-ssm-command-list
       type: regular
       version: -1
-    taskid: 04e9d00d-0a88-4525-8b9e-89f65f858f3f
+    taskid: bbc0487e-ac4e-4a4c-8884-103f47b0a7e6
     timertriggers: []
     type: regular
     view: |-
@@ -335,7 +298,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "4"
+      - "12"
     note: false
     quietmode: 0
     separatecontext: false
@@ -343,12 +306,12 @@ tasks:
     task:
       brand: ""
       description: Does the provided ASM Rule ID exist in the list?
-      id: ef75d92c-2289-4eb5-8252-b9610dea40c4
+      id: dd2287f1-8cb5-4412-89e1-0ff7ba55be31
       iscommand: false
       name: Does this ASM Rule ID support AWS EC2 Patching?
       type: condition
       version: -1
-    taskid: ef75d92c-2289-4eb5-8252-b9610dea40c4
+    taskid: dd2287f1-8cb5-4412-89e1-0ff7ba55be31
     timertriggers: []
     type: condition
     view: |-
@@ -386,12 +349,12 @@ tasks:
     task:
       brand: ""
       description: Checks if the package upgrade command run is initiated via AWS SSM.
-      id: b7d3aee8-7836-4104-8141-dbc0e67fab17
+      id: c85a3184-b257-42f0-837d-6125bfdc3c36
       iscommand: false
       name: AWS SSM Command Run Initiated?
       type: condition
       version: -1
-    taskid: b7d3aee8-7836-4104-8141-dbc0e67fab17
+    taskid: c85a3184-b257-42f0-837d-6125bfdc3c36
     timertriggers: []
     type: condition
     view: |-
@@ -424,13 +387,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: ce37dfb4-2343-454c-8b9f-359603b5cedb
+      id: e349260f-0203-4617-8600-7c97f300b1e2
       iscommand: false
       name: Set remediatedFlag to true
       script: Set
       type: regular
       version: -1
-    taskid: ce37dfb4-2343-454c-8b9f-359603b5cedb
+    taskid: e349260f-0203-4617-8600-7c97f300b1e2
     timertriggers: []
     type: regular
     view: |-
@@ -463,13 +426,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 11283910-296e-4999-8415-0c0c6d9b42d5
+      id: 6583c277-ea33-40be-8353-b335e722fb56
       iscommand: false
       name: Set remediatedFlag to false
       script: Set
       type: regular
       version: -1
-    taskid: 11283910-296e-4999-8415-0c0c6d9b42d5
+    taskid: 6583c277-ea33-40be-8353-b335e722fb56
     timertriggers: []
     type: regular
     view: |-
@@ -508,12 +471,12 @@ tasks:
     task:
       brand: ""
       description: Was the command run successful?
-      id: 7e6574e6-6381-4b3b-8a69-5f69de432ae8
+      id: c39b855b-3b09-446f-872c-222527b80a61
       iscommand: false
       name: AWS EC2 Package Upgrade success?
       type: condition
       version: -1
-    taskid: 7e6574e6-6381-4b3b-8a69-5f69de432ae8
+    taskid: c39b855b-3b09-446f-872c-222527b80a61
     timertriggers: []
     type: condition
     view: |-
@@ -521,6 +484,51 @@ tasks:
         "position": {
           "x": 450,
           "y": 1670
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      account_id:
+        simple: ${inputs.Account ID}
+      asm_rule_id:
+        simple: ${inputs.ASM Rule ID}
+      assume_role:
+        simple: ${inputs.Assume Role}
+      instance_id:
+        simple: ${inputs.Instance ID}
+      region:
+        simple: ${inputs.Region}
+      version:
+        simple: ${inputs.Version}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This is an AWS script that upgrades a package on the AWS EC2 instance.
+      id: b4657cee-60e8-4566-8095-dd07661e1792
+      iscommand: false
+      name: 'AWS EC2 Package Upgrade '
+      script: AWSEC2PackageUpgrade
+      type: regular
+      version: -1
+    taskid: b4657cee-60e8-4566-8095-dd07661e1792
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
         }
       }
 version: -1

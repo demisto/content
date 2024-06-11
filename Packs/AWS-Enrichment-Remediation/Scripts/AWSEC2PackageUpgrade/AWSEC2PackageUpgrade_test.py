@@ -13,7 +13,7 @@ def test_upgrade_package_on_instance_invalid_asmruleid(mocker):
         "instance_id": "ou-2222-22222222",
         "asm_rule_id": "fake",
         "region": "region",
-        "assume_role": "None"
+        "assume_role_arn": "None"
     }
     result = upgrade_package_on_instance(**args)
     assert result == {
@@ -40,7 +40,7 @@ def test_upgrade_package_on_instance_invalid_instanceid(mocker):
         "instance_id": "ou-2222-22222222",
         "asm_rule_id": "InsecureOpenSSH",
         "region": "region",
-        "assume_role": "None"
+        "assume_role_arn": "None"
     }
     result = upgrade_package_on_instance(**args)
     assert result == {
@@ -66,7 +66,7 @@ def test_upgrade_package_on_instance_no_instance(mocker):
         "instance_id": "ou-2222-22222222",
         "asm_rule_id": "InsecureOpenSSH",
         "region": "region",
-        "assume_role": "None"
+        "assume_role_arn": "None"
     }
     result = upgrade_package_on_instance(**args)
     assert result == {
@@ -92,7 +92,7 @@ def test_upgrade_package_on_instance_inactive(mocker):
         "instance_id": "ou-2222-22222222",
         "asm_rule_id": "InsecureOpenSSH",
         "region": "region",
-        "assume_role": "None"
+        "assume_role_arn": "None"
     }
     result = upgrade_package_on_instance(**args)
     assert result == {
@@ -130,7 +130,7 @@ def test_upgrade_package_on_instance_no_package(mocker):
         "instance_id": "ou-2222-22222222",
         "asm_rule_id": "InsecureOpenSSH",
         "region": "region",
-        "assume_role": "None"
+        "assume_role_arn": "None"
     }
     result = upgrade_package_on_instance(**args)
     assert result == {
@@ -170,7 +170,7 @@ def test_upgrade_package_on_instance_package(mocker):
         "instance_id": "ou-2222-22222222",
         "asm_rule_id": "InsecureOpenSSH",
         "region": "region",
-        "assume_role": "None"
+        "assume_role_arn": "None"
     }
     result = upgrade_package_on_instance(**args)
     assert result == {

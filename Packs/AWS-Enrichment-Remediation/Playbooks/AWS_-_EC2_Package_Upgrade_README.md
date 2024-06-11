@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling to poll AWS SSM Command status
+* GenericPolling
 
 ### Integrations
 
@@ -31,6 +31,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Instance ID | Instance ID of the EC2. |  | Required |
 | Region | AWS region of the EC2 instance. |  | Required |
 | Assume Role | AWS role to be assumed. |  | Optional |
+| Account ID | AWS account ID. |  | Optional |
 
 ## Playbook Outputs
 
@@ -38,7 +39,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| remediatedFlag | Boolean value if Package is upgraded or not. | unknown |
+| remediatedFlag | Whether package is upgraded. | unknown |
 
 ## Playbook Image
 

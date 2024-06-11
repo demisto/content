@@ -13,16 +13,16 @@ This is an AWS script that upgrades a package on the AWS EC2 instance.
 ---
 This script uses the following commands and scripts.
 
+* aws-ssm-inventory-entry-list
 * aws-ssm-command-run
 * AWS - System Manager
-* aws-ssm-inventory-entry-list
 
 ## Used In
 
 ---
 This script is used in the following playbooks and scripts.
 
-AWS - EC2 Package Upgrade
+* AWS - EC2 Package Upgrade
 
 ## Inputs
 
@@ -34,6 +34,7 @@ AWS - EC2 Package Upgrade
 | asm_rule_id | ASM alert rule ID. |
 | region | Region of the EC2 instance. |
 | assume_role | Name of an AWS role to assume \(should be the same for all organizations\). |
+| account_id | AWS account ID. |
 
 ## Outputs
 

@@ -30,6 +30,8 @@ args:
   required: true
 - description: Name of an AWS role to assume (should be the same for all organizations).
   name: assume_role
+- description: AWS account ID.
+  name: account_id
 comment: This is an AWS script that upgrades a package on the AWS EC2 instance.
 commonfields:
   id: AWSEC2PackageUpgrade
