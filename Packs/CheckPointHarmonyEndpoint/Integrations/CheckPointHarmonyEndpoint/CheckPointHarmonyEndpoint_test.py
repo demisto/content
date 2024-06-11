@@ -724,7 +724,7 @@ def test_schedule_command(
         (
             "harmony-ep-agent-computer-restart",
             "POST",
-            CheckPointHarmonyEndpoint.computer_reset_command,
+            CheckPointHarmonyEndpoint.computer_restart_command,
             {
                 "computer_ids": ["3"],
                 "inform_user": True,

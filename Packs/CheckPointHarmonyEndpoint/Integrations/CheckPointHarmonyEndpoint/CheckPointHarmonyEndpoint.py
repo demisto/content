@@ -410,6 +410,7 @@ class Client(BaseClient):
         self.token: str
         self.client_id = client_id
         self.client_secret = client_secret
+        self.base_url = base_url
 
         super().__init__(
             base_url=base_url,
@@ -419,7 +420,8 @@ class Client(BaseClient):
         )
 
     def get_token(self):
-        """Get temporary authentication token from CheckPoint."""
+        """Get temporary authentication token from CheckPoint.
+        This token will expire 30 minutes from its generation time."""
         self._headers = {}
         self._session.cookies.clear()
 
@@ -428,26 +430,35 @@ class Client(BaseClient):
             url_suffix="auth/external",
             json_data={"clientId": self.client_id, "accessKey": self.client_secret},
         )
-        self.token = response["data"]["token"]
+        try:
+            self.token = response["data"]["token"]
+        except DemistoException as exc:
+            raise DemistoException(f"Authentication failed: token not found. {exc}")
 
     def login(self):
         """Login to Harmony with the generated temporary token and get new token for HarmonyEP."""
         self._session.cookies.clear()
         self._headers["Authorization"] = f"Bearer {self.token}"
-
+        self._base_url = urljoin(self.base_url, self.URL_PREFIX)
+    
         try:
             response = self._http_request(
                 method="POST",
-                url_suffix=f"{self.URL_PREFIX}/session/login/cloud",
+                url_suffix=f"/session/login/cloud",
             )
-            self._headers["x-mgmt-api-token"] = response["apiToken"]
+            self._headers["x-mgmt-api-token"] = response["apiToken"]          
 
         except DemistoException as exc:
-            if exc.res is not None and exc.res.status_code == http.HTTPStatus.BAD_REQUEST:
-                raise DemistoException(f"Authentication failed: cookie not found. {exc}")
+            if (
+                exc.res is not None
+                and exc.res.status_code == http.HTTPStatus.BAD_REQUEST
+            ):
+                raise DemistoException(
+                    f"Authentication failed: cookie not found. {exc}"
+                )
 
     def job_status_get(self, job_id: str) -> dict[str, Any]:
-        """Get jon status and data by ID.
+        """Get job status and data by ID.
 
         Args:
             job_id (str): The job ID.
@@ -458,7 +469,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"{self.URL_PREFIX}/jobs/{job_id}",
+            url_suffix=f"/jobs/{job_id}",
         )
 
     def ioc_list(
@@ -490,7 +501,7 @@ class Client(BaseClient):
                 "sort": [{"field": field, "direction": sort_direction}],
             }
         )
-        return self._http_request(method="POST", url_suffix=f"{self.URL_PREFIX}/ioc/get", json_data=data)
+        return self._http_request(method="POST", url_suffix="/ioc/get", json_data=data)
 
     def ioc_update(
         self,
@@ -513,8 +524,10 @@ class Client(BaseClient):
         self._headers["x-mgmt-run-as-job"] = "off"
         return self._http_request(
             method="PUT",
-            url_suffix=f"{self.URL_PREFIX}/ioc/edit",
-            json_data=[{"comment": comment, "id": ioc_id, "type": ioc_type, "value": value}],
+            url_suffix="/ioc/edit",
+            json_data=[
+                {"comment": comment, "id": ioc_id, "type": ioc_type, "value": value}
+            ],
         )
 
     def ioc_create(
@@ -537,7 +550,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="POST",
-            url_suffix=f"{self.URL_PREFIX}/ioc/create",
+            url_suffix="/ioc/create",
             json_data=[{"comment": comment, "type": ioc_type, "value": value}],
         )
 
@@ -556,7 +569,7 @@ class Client(BaseClient):
             dict[str, Any]: API response.
         """
         self._headers["x-mgmt-run-as-job"] = "off"
-        url = f"{self.URL_PREFIX}/ioc/delete/all" if delete_all else f"{self.URL_PREFIX}/ioc/delete?ids={ioc_ids}"
+        url = "/ioc/delete/all" if delete_all else f"/ioc/delete?ids={ioc_ids}"
         return self._http_request(
             method="DELETE",
             url_suffix=url,
@@ -579,10 +592,12 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            f"{self.URL_PREFIX}/policy/{rule_id}/assignments",
+            f"/policy/{rule_id}/assignments",
         )
 
-    def rule_assignments_add(self, rule_id: str, entities_ids: list[str]) -> dict[str, Any]:
+    def rule_assignments_add(
+        self, rule_id: str, entities_ids: list[str]
+    ) -> dict[str, Any]:
         """Assigns the specified entities to the given rule.
             Specified IDs that are already assigned to the rule are ignored.
 
@@ -598,11 +613,13 @@ class Client(BaseClient):
 
         return self._http_request(
             "PUT",
-            f"{self.URL_PREFIX}/policy/{rule_id}/assignments/add",
+            f"/policy/{rule_id}/assignments/add",
             json_data=entities_ids,
         )
 
-    def rule_assignments_remove(self, rule_id: str, entities_ids: list[str]) -> dict[str, Any]:
+    def rule_assignments_remove(
+        self, rule_id: str, entities_ids: list[str]
+    ) -> dict[str, Any]:
         """Removes the specified entities from the given rule's assignments.
             Specified IDs that are not assigned to the rule are ignored.
 
@@ -618,7 +635,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "PUT",
-            f"{self.URL_PREFIX}/policy/{rule_id}/assignments/remove",
+            f"/policy/{rule_id}/assignments/remove",
             json_data=entities_ids,
         )
 
@@ -636,7 +653,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/policy/{rule_id}/install" if rule_id else f"{self.URL_PREFIX}/policy/install",
+            (f"/policy/{rule_id}/install" if rule_id else f"/policy/install"),
         )
 
     def rule_modifications_get(
@@ -655,7 +672,7 @@ class Client(BaseClient):
         self._headers["x-mgmt-run-as-job"] = "on"
         return self._http_request(
             "GET",
-            f"{self.URL_PREFIX}/policy/{rule_id}/modifications",
+            f"/policy/{rule_id}/modifications",
         )
 
     def rule_metadata_list(
@@ -682,11 +699,13 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            f"{self.URL_PREFIX}/policy/{rule_id}/metadata" if rule_id else f"{self.URL_PREFIX}/policy/metadata",
+            (f"/policy/{rule_id}/metadata" if rule_id else f"/policy/metadata"),
             params=params,
         )
 
-    def push_operation_status_list(self, remediation_operation_id: str | None) -> dict[str, Any]:
+    def push_operation_status_list(
+        self, remediation_operation_id: str | None
+    ) -> dict[str, Any]:
         """Gets the current statuses of all remediation operations or if a specific ID is specified,
         retrieve the current status of the given remediation operation.
 
@@ -701,9 +720,9 @@ class Client(BaseClient):
         return self._http_request(
             "GET",
             (
-                f"{self.URL_PREFIX}/remediation/{remediation_operation_id}/status"
+                f"/remediation/{remediation_operation_id}/status"
                 if remediation_operation_id
-                else f"{self.URL_PREFIX}/remediation/status"
+                else "/remediation/status"
             ),
         )
 
@@ -713,7 +732,7 @@ class Client(BaseClient):
         filter_text: str | None = None,
         new_page: int | None = None,
         new_page_size: int | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Gets the results of a given Remediation Operation. Remediation Operations may produce results
         such a Forensics Report or yield status updates such as an Anti-Malware scan progress.
 
@@ -721,13 +740,13 @@ class Client(BaseClient):
             remediation_operation_id (str): Remediation operation ID.
 
         Returns:
-            Dict[str, Any]: API response.
+            dict[str, Any]: API response.
         """
         self._headers["x-mgmt-run-as-job"] = "on"
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/{remediation_operation_id}/results/slim",
+            f"/remediation/{remediation_operation_id}/results/slim",
             json_data=remove_empty_elements(
                 {
                     "filters": {"freeText": filter_text},
@@ -751,7 +770,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/{remediation_operation_id}/abort",
+            f"/remediation/{remediation_operation_id}/abort",
         )
 
     def anti_malware_scan(self, request_body: dict[str, Any]) -> dict[str, Any]:
@@ -766,7 +785,7 @@ class Client(BaseClient):
         self._headers["x-mgmt-run-as-job"] = "on"
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/anti-malware/scan",
+            "/remediation/anti-malware/scan",
             json_data=request_body,
         )
 
@@ -782,7 +801,7 @@ class Client(BaseClient):
         self._headers["x-mgmt-run-as-job"] = "on"
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/anti-malware/update",
+            "/remediation/anti-malware/update",
             json_data=request_body,
         )
 
@@ -800,7 +819,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/anti-malware/restore",
+            "/remediation/anti-malware/restore",
             json_data=request_body,
         )
 
@@ -822,7 +841,7 @@ class Client(BaseClient):
         self._headers["x-mgmt-run-as-job"] = "on"
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/forensics/analyze-by-indicator/{indicator_type.lower()}",
+            f"/remediation/forensics/analyze-by-indicator/{indicator_type.lower()}",
             json_data=request_body,
         )
 
@@ -842,7 +861,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/forensics/file/quarantine",
+            "/remediation/forensics/file/quarantine",
             json_data=request_body,
         )
 
@@ -862,11 +881,13 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/forensics/file/restore",
+            "/remediation/forensics/file/restore",
             json_data=request_body,
         )
 
-    def remediation_computer_isolate(self, request_body: dict[str, Any]) -> dict[str, Any]:
+    def remediation_computer_isolate(
+        self, request_body: dict[str, Any]
+    ) -> dict[str, Any]:
         """Isolates the computers matching the given query. Isolation is the act of denying all
         network access from a given computer.
 
@@ -880,11 +901,13 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/isolate",
+            "/remediation/isolate",
             json_data=request_body,
         )
 
-    def remediation_computer_deisolate(self, request_body: dict[str, Any]) -> dict[str, Any]:
+    def remediation_computer_deisolate(
+        self, request_body: dict[str, Any]
+    ) -> dict[str, Any]:
         """De-Isolates the computers matching the given query. De-isolating a computer restores
             its access to network resources.
 
@@ -898,11 +921,11 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/de-isolate",
+            "/remediation/de-isolate",
             json_data=request_body,
         )
 
-    def computer_reset(
+    def computer_restart(
         self,
         request_body: dict[str, Any],
     ) -> dict[str, Any]:
@@ -918,7 +941,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/reset-computer",
+            "/remediation/agent/reset-computer",
             json_data=request_body,
         )
 
@@ -938,7 +961,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/shutdown-computer",
+            "/remediation/agent/shutdown-computer",
             json_data=request_body,
         )
 
@@ -955,7 +978,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/repair-computer",
+            "/remediation/agent/repair-computer",
             json_data=request_body,
         )
 
@@ -972,7 +995,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/asset-management/computers/filtered",
+            "/asset-management/computers/filtered",
             json_data=request_body,
         )
 
@@ -989,7 +1012,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/process/information",
+            "/remediation/agent/process/information",
             json_data=request_body,
         )
 
@@ -1009,7 +1032,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/process/terminate",
+            "/remediation/agent/process/terminate",
             json_data=request_body,
         )
 
@@ -1029,7 +1052,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/registry/key/add",
+            "/remediation/agent/registry/key/add",
             json_data=request_body,
         )
 
@@ -1046,10 +1069,9 @@ class Client(BaseClient):
             dict[str, Any]: API response.
         """
         self._headers["x-mgmt-run-as-job"] = "on"
-
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/registry/key/delete",
+            "/remediation/agent/registry/key/delete",
             json_data=request_body,
         )
 
@@ -1069,7 +1091,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/file/copy",
+            "/remediation/agent/file/copy",
             json_data=request_body,
         )
 
@@ -1089,7 +1111,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/file/move",
+            "/remediation/agent/file/move",
             json_data=request_body,
         )
 
@@ -1111,7 +1133,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/file/delete",
+            "/remediation/agent/file/delete",
             json_data=request_body,
         )
 
@@ -1132,7 +1154,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/vpn/site/add",
+            "/remediation/agent/vpn/site/add",
             json_data=request_body,
         )
 
@@ -1152,12 +1174,12 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            f"{self.URL_PREFIX}/remediation/agent/vpn/site/remove",
+            "/remediation/agent/vpn/site/remove",
             json_data=request_body,
         )
 
 
-def job_status_get_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def job_status_get_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Get job status and data by ID.
 
     Args:
@@ -1178,7 +1200,7 @@ def job_status_get_command(args: Dict[str, Any], client: Client) -> CommandResul
     )
 
 
-def ioc_list_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def ioc_list_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Fetch IOCs list.
 
     Args:
@@ -1200,7 +1222,7 @@ def ioc_list_command(args: Dict[str, Any], client: Client) -> CommandResults:
 
     for ioc in response["content"]:
         ioc["modifiedOn"] = convert_unix_to_date_string(ioc["modifiedOn"])
-        
+
     readable_output = tableToMarkdown(
         name="IOC List:",
         metadata=pagination_message,
@@ -1217,7 +1239,7 @@ def ioc_list_command(args: Dict[str, Any], client: Client) -> CommandResults:
     )
 
 
-def ioc_update_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def ioc_update_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Update IOC by ID.
 
     Args:
@@ -1250,7 +1272,7 @@ def ioc_update_command(args: Dict[str, Any], client: Client) -> CommandResults:
     )
 
 
-def ioc_create_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def ioc_create_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Create new IOC.
 
     Args:
@@ -1268,7 +1290,7 @@ def ioc_create_command(args: Dict[str, Any], client: Client) -> CommandResults:
     return CommandResults(readable_output="IOC was created successfully.")
 
 
-def ioc_delete_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def ioc_delete_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Delete IOCs by IDs or delete all IOCs.
 
     Args:
@@ -1286,12 +1308,16 @@ def ioc_delete_command(args: Dict[str, Any], client: Client) -> CommandResults:
 
     return CommandResults(
         readable_output=(
-            "All IOCs was deleted successfully." if delete_all else f"IOCs {ioc_ids} was deleted successfully."
+            "All IOCs were deleted successfully."
+            if delete_all
+            else f"IOCs {ioc_ids} was deleted successfully."
         )
     )
 
 
-def rule_assignments_get_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def rule_assignments_get_command(
+    args: dict[str, Any], client: Client
+) -> CommandResults:
     """Gets all entities directly assigned to the given rule.
 
     Args:
@@ -1323,7 +1349,9 @@ def rule_assignments_get_command(args: Dict[str, Any], client: Client) -> Comman
     )
 
 
-def rule_assignments_add_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def rule_assignments_add_command(
+    args: dict[str, Any], client: Client
+) -> CommandResults:
     """Assigns the specified entities to the given rule. Specified IDs that are already assigned to the rule are ignored.
 
     Args:
@@ -1337,10 +1365,14 @@ def rule_assignments_add_command(args: Dict[str, Any], client: Client) -> Comman
     entities_ids = argToList(args.get("entities_ids"))
 
     client.rule_assignments_add(rule_id=rule_id, entities_ids=entities_ids)
-    return CommandResults(readable_output=f"Entities {entities_ids} were assigned to rule {rule_id} successfully.")
+    return CommandResults(
+        readable_output=f"Entities {entities_ids} were assigned to rule {rule_id} successfully."
+    )
 
 
-def rule_assignments_remove_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def rule_assignments_remove_command(
+    args: dict[str, Any], client: Client
+) -> CommandResults:
     """Removes the specified entities from the given rule's assignments.
 
     Args:
@@ -1354,7 +1386,9 @@ def rule_assignments_remove_command(args: Dict[str, Any], client: Client) -> Com
     entities_ids = argToList(args.get("entities_ids"))
 
     client.rule_assignments_remove(rule_id=rule_id, entities_ids=entities_ids)
-    return CommandResults(readable_output=f"Entities {entities_ids} were removed from rule {rule_id} successfully.")
+    return CommandResults(
+        readable_output=f"Entities {entities_ids} were removed from rule {rule_id} successfully."
+    )
 
 
 @polling_function(
@@ -1364,7 +1398,7 @@ def rule_assignments_remove_command(args: Dict[str, Any], client: Client) -> Com
     poll_message="Policy installation request is executing",
     requires_polling_arg=False,
 )
-def rule_policy_install_command(args: Dict[str, Any], client: Client) -> PollResult:
+def rule_policy_install_command(args: dict[str, Any], client: Client) -> PollResult:
     """Installs all policies. If a rule ID is specified, only the policies associated with that rule will be installed.
 
     Args:
@@ -1389,8 +1423,8 @@ def rule_policy_install_command(args: Dict[str, Any], client: Client) -> PollRes
     poll_message="Fetch rule modifications request is executing",
     requires_polling_arg=False,
 )
-def rule_modifications_get_command(args: Dict[str, Any], client: Client) -> PollResult:
-    """ Gets information on modifications to a given rule (modifications are the addition or
+def rule_modifications_get_command(args: dict[str, Any], client: Client) -> PollResult:
+    """Gets information on modifications to a given rule (modifications are the addition or
         removal of assignments on a rule since it was last installed).
 
     Args:
@@ -1409,7 +1443,7 @@ def rule_modifications_get_command(args: Dict[str, Any], client: Client) -> Poll
     return schedule_command(args, client, demisto.command())
 
 
-def rule_metadata_list_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def rule_metadata_list_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Gets the metadata of all rules or the given rule's metadata
         (Metadata refers to all information relating to the rule except it's actual settings).
 
@@ -1434,9 +1468,17 @@ def rule_metadata_list_command(args: Dict[str, Any], client: Client) -> CommandR
 
     readable_output = tableToMarkdown(
         name="Rule metadata List:" if not rule_id else f"Rule {rule_id} metadata:",
-        metadata=f"Showing {limit} items." if not rule_id else None,
+        metadata=f"Showing {len(response)} items." if not rule_id else None,
         t=response,
-        headers=["id", "name", "family", "comment", "orientation", "connectionState", "assignments"],
+        headers=[
+            "id",
+            "name",
+            "family",
+            "comment",
+            "orientation",
+            "connectionState",
+            "assignments",
+        ],
         headerTransform=string_to_table_header,
     )
     return CommandResults(
@@ -1455,7 +1497,9 @@ def rule_metadata_list_command(args: Dict[str, Any], client: Client) -> CommandR
     poll_message="Fetch remediation status list request is executing",
     requires_polling_arg=False,
 )
-def push_operation_status_list_command(args: Dict[str, Any], client: Client) -> PollResult:
+def push_operation_status_list_command(
+    args: dict[str, Any], client: Client
+) -> PollResult:
     """Gets the current statuses of all remediation operations or if a specific ID is specified,
         retrieve the current status of the given remediation operation.
 
@@ -1469,7 +1513,9 @@ def push_operation_status_list_command(args: Dict[str, Any], client: Client) -> 
 
     if not args.get("job_id"):
         remediation_operation_id = args.get("remediation_operation_id")
-        response = client.push_operation_status_list(remediation_operation_id=remediation_operation_id)
+        response = client.push_operation_status_list(
+            remediation_operation_id=remediation_operation_id
+        )
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, demisto.command())
@@ -1482,7 +1528,7 @@ def push_operation_status_list_command(args: Dict[str, Any], client: Client) -> 
     poll_message="Fetch remediation request is executing",
     requires_polling_arg=False,
 )
-def push_operation_get_command(args: Dict[str, Any], client: Client) -> PollResult:
+def push_operation_get_command(args: dict[str, Any], client: Client) -> PollResult:
     """Gets the results of a given Remediation Operation.
     Remediation Operations may produce results such a Forensics Report or yield status
     updates such as an Anti-Malware scan progress.
@@ -1516,7 +1562,7 @@ def push_operation_get_command(args: Dict[str, Any], client: Client) -> PollResu
     poll_message="Remediation operation abort request is executing",
     requires_polling_arg=False,
 )
-def push_operation_abort_command(args: Dict[str, Any], client: Client) -> PollResult:
+def push_operation_abort_command(args: dict[str, Any], client: Client) -> PollResult:
     """Aborts the given Remediation Operation.
        Aborting an operation prevents it from being sent to further Harmony Endpoint Clients.
        Clients that have already received the operation are not affected.
@@ -1534,7 +1580,9 @@ def push_operation_abort_command(args: Dict[str, Any], client: Client) -> PollRe
             f"Remediation operation {remediation_operation_id} was aborted successfully."
         )
 
-        response = client.push_operation_abort(remediation_operation_id=remediation_operation_id)
+        response = client.push_operation_abort(
+            remediation_operation_id=remediation_operation_id
+        )
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, demisto.command())
@@ -1547,7 +1595,7 @@ def push_operation_abort_command(args: Dict[str, Any], client: Client) -> PollRe
     poll_message="Anti malware scan request is executing",
     requires_polling_arg=False,
 )
-def anti_malware_scan_command(args: Dict[str, Any], client: Client) -> PollResult:
+def anti_malware_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     """Performs an Anti-Malware scan on computers matching the given query.
 
     Args:
@@ -1573,7 +1621,7 @@ def anti_malware_scan_command(args: Dict[str, Any], client: Client) -> PollResul
     poll_message="Anti malware update request is executing",
     requires_polling_arg=False,
 )
-def anti_malware_update_command(args: Dict[str, Any], client: Client) -> PollResult:
+def anti_malware_update_command(args: dict[str, Any], client: Client) -> PollResult:
     """Updates the Anti-Malware Signature Database on computers matching the given query.
 
     Args:
@@ -1603,7 +1651,7 @@ def anti_malware_update_command(args: Dict[str, Any], client: Client) -> PollRes
     poll_message="Anti malware restore request is executing",
     requires_polling_arg=False,
 )
-def anti_malware_restore_command(args: Dict[str, Any], client: Client) -> PollResult:
+def anti_malware_restore_command(args: dict[str, Any], client: Client) -> PollResult:
     """Restores a file that was previously quarantined by the Harmony Endpoint Client's Anti-Malware capability.
 
     Args:
@@ -1630,7 +1678,7 @@ def anti_malware_restore_command(args: Dict[str, Any], client: Client) -> PollRe
     poll_message="Indicator analyze request is executing",
     requires_polling_arg=False,
 )
-def indicator_analyze_command(args: Dict[str, Any], client: Client) -> PollResult:
+def indicator_analyze_command(args: dict[str, Any], client: Client) -> PollResult:
     """Collects forensics data whenever a computer that matches the given query accesses
         or executes the given IP, URL, file name, MD5, or path.
 
@@ -1665,7 +1713,7 @@ def indicator_analyze_command(args: Dict[str, Any], client: Client) -> PollResul
     poll_message="File quarantine request is executing",
     requires_polling_arg=False,
 )
-def file_quarantine_command(args: Dict[str, Any], client: Client) -> PollResult:
+def file_quarantine_command(args: dict[str, Any], client: Client) -> PollResult:
     """Quarantines files given by path or MD5 or detections relating to a forensic incident.
 
     Args:
@@ -1697,7 +1745,7 @@ def file_quarantine_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="File restore request is executing",
     requires_polling_arg=False,
 )
-def file_restore_command(args: Dict[str, Any], client: Client) -> PollResult:
+def file_restore_command(args: dict[str, Any], client: Client) -> PollResult:
     """Restores previously quarantined files given by path or MD5 or detections relating to a forensic incident.
 
     Args:
@@ -1729,7 +1777,9 @@ def file_restore_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="Computer isolate request is executing",
     requires_polling_arg=False,
 )
-def remediation_computer_isolate_command(args: Dict[str, Any], client: Client) -> PollResult:
+def remediation_computer_isolate_command(
+    args: dict[str, Any], client: Client
+) -> PollResult:
     """Isolates the computers matching the given query. Isolation is the act of denying all network access from a given computer.
 
     Args:
@@ -1754,7 +1804,9 @@ def remediation_computer_isolate_command(args: Dict[str, Any], client: Client) -
     poll_message="Computer de-isolate request is executing",
     requires_polling_arg=False,
 )
-def remediation_computer_deisolate_command(args: Dict[str, Any], client: Client) -> PollResult:
+def remediation_computer_deisolate_command(
+    args: dict[str, Any], client: Client
+) -> PollResult:
     """De-Isolates the computers matching the given query. De-isolating a computer restores its access to network resources.
 
     Args:
@@ -1776,10 +1828,10 @@ def remediation_computer_deisolate_command(args: Dict[str, Any], client: Client)
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
-    poll_message="Computer reset request is executing",
+    poll_message="Computer restart request is executing",
     requires_polling_arg=False,
 )
-def computer_reset_command(args: Dict[str, Any], client: Client) -> PollResult:
+def computer_restart_command(args: dict[str, Any], client: Client) -> PollResult:
     """Restarts computers matching the given query.
 
     Args:
@@ -1794,7 +1846,7 @@ def computer_reset_command(args: Dict[str, Any], client: Client) -> PollResult:
         request_body["operationParameters"] |= {
             "forceAppsShutdown": args.get("force_apps_shutdown"),
         }
-        response = client.computer_reset(request_body)
+        response = client.computer_restart(request_body)
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, demisto.command())
@@ -1807,7 +1859,7 @@ def computer_reset_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="Computer shutdown request is executing",
     requires_polling_arg=False,
 )
-def computer_shutdown_command(args: Dict[str, Any], client: Client) -> PollResult:
+def computer_shutdown_command(args: dict[str, Any], client: Client) -> PollResult:
     """Shuts-down computers match the given query.
 
     Args:
@@ -1835,7 +1887,7 @@ def computer_shutdown_command(args: Dict[str, Any], client: Client) -> PollResul
     poll_message="Computer repair request is executing",
     requires_polling_arg=False,
 )
-def computer_repair_command(args: Dict[str, Any], client: Client) -> PollResult:
+def computer_repair_command(args: dict[str, Any], client: Client) -> PollResult:
     """Repairs the Harmony Endpoint Client installation on computers matching the given query.
 
     Args:
@@ -1860,7 +1912,7 @@ def computer_repair_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="Computer list fetch request is executing",
     requires_polling_arg=False,
 )
-def computer_list_command(args: Dict[str, Any], client: Client) -> PollResult:
+def computer_list_command(args: dict[str, Any], client: Client) -> PollResult:
     """Gets a list of computers matching the given filters.
 
     Args:
@@ -1891,7 +1943,7 @@ def computer_list_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="Process information fetch request is executing",
     requires_polling_arg=False,
 )
-def process_information_get_command(args: Dict[str, Any], client: Client) -> PollResult:
+def process_information_get_command(args: dict[str, Any], client: Client) -> PollResult:
     """Collects information about processes on computers matching the given query.
 
     Args:
@@ -1920,7 +1972,7 @@ def process_information_get_command(args: Dict[str, Any], client: Client) -> Pol
     poll_message="Process terminate request is executing",
     requires_polling_arg=False,
 )
-def process_terminate_command(args: Dict[str, Any], client: Client) -> PollResult:
+def process_terminate_command(args: dict[str, Any], client: Client) -> PollResult:
     """Terminates the given process on computers matching the given query.
 
     Args:
@@ -1950,7 +2002,7 @@ def process_terminate_command(args: Dict[str, Any], client: Client) -> PollResul
     poll_message="Registry key add request is executing",
     requires_polling_arg=False,
 )
-def agent_registry_key_add_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_registry_key_add_command(args: dict[str, Any], client: Client) -> PollResult:
     """Adds a given registry key and/or value to the registry of computers matching the given query.
 
     Args:
@@ -1983,7 +2035,9 @@ def agent_registry_key_add_command(args: Dict[str, Any], client: Client) -> Poll
     poll_message="Registry key remove request is executing",
     requires_polling_arg=False,
 )
-def agent_registry_key_delete_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_registry_key_delete_command(
+    args: dict[str, Any], client: Client
+) -> PollResult:
     """Removes the given registry key or value to the registry of computers matching the given query.
 
     Args:
@@ -2014,7 +2068,7 @@ def agent_registry_key_delete_command(args: Dict[str, Any], client: Client) -> P
     poll_message="File copy request is executing",
     requires_polling_arg=False,
 )
-def agent_file_copy_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_file_copy_command(args: dict[str, Any], client: Client) -> PollResult:
     """Copies the given file from the given source to the given destination on computers matching the given query.
 
     Args:
@@ -2044,7 +2098,7 @@ def agent_file_copy_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="File move request is executing",
     requires_polling_arg=False,
 )
-def agent_file_move_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_file_move_command(args: dict[str, Any], client: Client) -> PollResult:
     """Moves the given file from the given source to the given destination on computers matching the given query.
 
     Args:
@@ -2060,7 +2114,7 @@ def agent_file_move_command(args: Dict[str, Any], client: Client) -> PollResult:
             "sourceAbsolutePath": args.get("destination_absolute_path"),
             "destinationAbsolutePath": args.get("source_absolute_path"),
         }
-        response = client.agent_file_move(remove_empty_elements(request_body))
+        response = client.agent_file_move(request_body)
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, demisto.command())
@@ -2073,7 +2127,7 @@ def agent_file_move_command(args: Dict[str, Any], client: Client) -> PollResult:
     poll_message="File delete request is executing",
     requires_polling_arg=False,
 )
-def agent_file_delete_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_file_delete_command(args: dict[str, Any], client: Client) -> PollResult:
     """Deletes the given file from the given source on computers matching the given query.
         This operation is risky! Use with caution as it allows you to change Harmony Endpoint protected
         files or registry entries that are in use by your operating system.
@@ -2090,7 +2144,7 @@ def agent_file_delete_command(args: Dict[str, Any], client: Client) -> PollResul
         request_body["operationParameters"] |= {
             "targetAbsolutePath": args.get("target_absolute_path"),
         }
-        response = client.agent_file_delete(remove_empty_elements(request_body))
+        response = client.agent_file_delete(request_body)
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, demisto.command())
@@ -2103,7 +2157,7 @@ def agent_file_delete_command(args: Dict[str, Any], client: Client) -> PollResul
     poll_message="Add VPN Site's configuration request is executing",
     requires_polling_arg=False,
 )
-def agent_vpn_site_add_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_vpn_site_add_command(args: dict[str, Any], client: Client) -> PollResult:
     """Adds the given VPN Site's configuration to computers matching the given query.
         Adding a VPN Site allows Harmony Endpoint Clients to connect to it.
 
@@ -2136,7 +2190,7 @@ def agent_vpn_site_add_command(args: Dict[str, Any], client: Client) -> PollResu
     poll_message="Remove VPN Site's configuration request is executing",
     requires_polling_arg=False,
 )
-def agent_vpn_site_remove_command(args: Dict[str, Any], client: Client) -> PollResult:
+def agent_vpn_site_remove_command(args: dict[str, Any], client: Client) -> PollResult:
     """Removes the given VPN Site's configuration to computers matching the given query.
 
     Args:
@@ -2171,9 +2225,10 @@ def test_module(client: Client) -> str:
         client.ioc_list(0, 1)
     except DemistoException as exc:
         if exc.res is not None and (
-            exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN
+            exc.res.status_code == http.HTTPStatus.UNAUTHORIZED
+            or exc.res.status_code == http.HTTPStatus.FORBIDDEN
         ):
-            return "Authorization Error: invalid credentials"
+            return "Authorization Error: Invalid URL or credentials."
         raise exc
 
     return "ok"
@@ -2182,14 +2237,16 @@ def test_module(client: Client) -> str:
 # Helper Commands #
 
 
-def schedule_command(args: Dict[str, Any], client: Client, command_name: str) -> PollResult:
+def schedule_command(
+    args: dict[str, Any], client: Client, command_name: str
+) -> PollResult:
     """Build scheduled command in case:
         - Job state is not 'DONE'
         - Job state is 'DONE' but the API response data is a remediation operation ID.
 
     Args:
         client (Client): Harmony Endpoint API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         PollResult: Command, args, timeout and interval for CommandResults.
@@ -2199,7 +2256,6 @@ def schedule_command(args: Dict[str, Any], client: Client, command_name: str) ->
 
     command_results: CommandResults = job_status_get_command(args, client)
     sample_state = dict_safe_get(command_results.raw_response, ["status"])
-    args_for_next_run = args
 
     if sample_state == "DONE":
         command_data = dict_safe_get(command_results.raw_response, ["data"])
@@ -2211,18 +2267,22 @@ def schedule_command(args: Dict[str, Any], client: Client, command_name: str) ->
 
             # Save new schedule arguments in integration context
             # (cause for the second run there are new arguments or/and values)
-            set_integration_context({"job_id": response["jobId"], "remediation_operation_id": command_data})
+            set_integration_context(
+                {"job_id": response["jobId"], "remediation_operation_id": command_data}
+            )
             return PollResult(
                 response=command_results,
                 continue_to_poll=True,
-                args_for_next_run=args_for_next_run,
+                args_for_next_run=args,
             )
         else:
 
-            updated_command_readable_output, updated_command_response = prepare_command_output_and_readable_output(
-                command_data=command_data,
-                command_name=command_name,
-                job_id=args["job_id"],
+            updated_command_readable_output, updated_command_response = (
+                prepare_command_output_and_readable_output(
+                    command_data=command_data,
+                    command_name=command_name,
+                    job_id=args["job_id"],
+                )
             )
 
             command_results.readable_output = get_readable_output(
@@ -2245,17 +2305,14 @@ def schedule_command(args: Dict[str, Any], client: Client, command_name: str) ->
     if sample_state == "FAILED":
         clear_integration_context()
         # In case the job not succeeded raise the error
-        raise DemistoException(f"Executing {args['job_id']} for Harmony Endpoint failed. Error: {command_results.raw_response}")
-
-    # if sample_state == "NOT_FOUND":
-    #     set_integration_context({"job_id": None, "remediation_operation_id": None})
-    #     # In case the job not succeeded raise the error
-    #     raise DemistoException(f"Executing {args['job_id']} for Harmony Endpoint failed")
+        raise DemistoException(
+            f"Executing {args['job_id']} for Harmony Endpoint failed. Error: {command_results.raw_response}"
+        )
 
     return PollResult(
         response=command_results,
         continue_to_poll=True,
-        args_for_next_run=args_for_next_run,
+        args_for_next_run=args,
     )
 
 
@@ -2277,8 +2334,10 @@ def update_command_results(
     command_results.raw_response = updated_command_response
     command_results.outputs = updated_command_response
     command_results.outputs_key_field = "job_id"
-    command_results.outputs_prefix = f"HarmonyEP.{SCHEDULED_COMMANDS_MAPPER[command_name].outputs_prefix}"
-   
+    command_results.outputs_prefix = (
+        f"HarmonyEP.{SCHEDULED_COMMANDS_MAPPER[command_name].outputs_prefix}"
+    )
+
     return command_results
 
 
@@ -2306,6 +2365,7 @@ def get_readable_output(
         t=remove_empty_elements(updated_command_data),
         headers=SCHEDULED_COMMANDS_MAPPER[command_name].headers,
         headerTransform=string_to_table_header,
+        removeNull=True,
     )
 
 
@@ -2340,7 +2400,11 @@ def prepare_command_output_and_readable_output(
     # check if API return data is push operation list
     if SCHEDULED_COMMANDS_MAPPER[command_name].headers == DEFAULT_HEADERS:
         return prepare_push_operation_output_and_readable_output(
-            command_data=dict_safe_get(command_data, ["data"], command_data),
+            command_data=dict_safe_get(
+                dict_object=command_data,
+                keys=["data"],
+                default_return_value=command_data,
+            ),
             job_id=job_id,
         )
 
@@ -2410,20 +2474,19 @@ def prepare_push_operation_output_and_readable_output(
                 "machine_id": dict_safe_get(data, ["machine", "id"]),
                 "machine_name": dict_safe_get(data, ["machine", "name"]),
                 "operation_status": dict_safe_get(data, ["operation", "status"]),
-                "operation_response_status": dict_safe_get(data, ["operation", "response", "status"]),
-                "operation_response_output": dict_safe_get(data, ["operation", "response", "output"]),
+                "operation_response_status": dict_safe_get(
+                    data, ["operation", "response", "status"]
+                ),
+                "operation_response_output": dict_safe_get(
+                    data, ["operation", "response", "output"]
+                ),
             }
         )
-        data["operation"] |= {"id": dict_safe_get(get_integration_context(), ["remediation_operation_id"])}
+        data["operation"] |= {
+            "id": dict_safe_get(get_integration_context(), ["remediation_operation_id"])
+        }
         data["job_id"] = job_id
 
-        # data.update(
-        #     {
-        #         SCHEDULED_COMMANDS_MAPPER[command_name].outputs_prefix: {
-        #             "job_id": job_id,
-        #         }
-        #     }
-        # )
     return updated_command_readable_output, command_data
 
 
@@ -2443,10 +2506,12 @@ def validate_pagination_arguments(
         ValueError: Appropriate error message.
     """
     if page_size and (page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE):
-        raise ValueError(f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.")
-    if page is not None and page < MIN_PAGE_NUM:
+        raise ValueError(
+            f"page_size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
+        )
+    if page and page < MIN_PAGE_NUM:
         raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM - 1}.")
-    if limit is not None and limit <= MIN_LIMIT:
+    if limit and limit <= MIN_LIMIT:
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
@@ -2455,7 +2520,7 @@ def get_pagination_args(args: dict[str, Any]) -> tuple:
         based on the user arguments page, page_size and limit.
 
     Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         Tuple: new_limit, offset, pagination_message.
@@ -2473,7 +2538,9 @@ def get_pagination_args(args: dict[str, Any]) -> tuple:
         new_page_size = page_size
         new_page = page - 1
 
-    pagination_message = f"Showing page {new_page+1}.\nCurrent page size: {new_page_size}."
+    pagination_message = (
+        f"Showing page {new_page+1}.\nCurrent page size: {new_page_size}."
+    )
 
     return new_page, new_page_size, pagination_message
 
@@ -2489,10 +2556,14 @@ def validate_filter_arguments(column_name: str | None = None, filter_type: str =
         ValueError: Raise error in case column_name or filter_type values are not allowed.
     """
     if column_name and column_name not in COLUMN_NAMES:
-        raise ValueError(f"'column_name' must be one of the followings: {COLUMN_NAMES}.")
+        raise ValueError(
+            f"'column_name' must be one of the followings: {COLUMN_NAMES}."
+        )
 
     if filter_type and filter_type not in FILTER_TYPES:
-        raise ValueError(f"'filter_type' must be one of the followings: {FILTER_TYPES}.")
+        raise ValueError(
+            f"'filter_type' must be one of the followings: {FILTER_TYPES}."
+        )
 
 
 def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
@@ -2511,6 +2582,12 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
 
         for query in queries:
             query_parts = query.split(" ")
+
+            if len(query_parts) < 3:
+                raise ValueError(
+                    "'filter_by_query' must be in the following format: 'column_name filter_type filter_value'."
+                )
+
             column_name = query_parts[0]
             filter_type = query_parts[1]
             filter_values = query_parts[2].replace("'", "")
@@ -2536,6 +2613,12 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
 
     if computer_last_connection := args.get("computer_last_connection"):
         computer_last_connection_times = argToList(computer_last_connection)
+
+        if len(computer_last_connection_times) != 2:
+            raise ValueError(
+                "'computer_last_connection' must be in the following format: 'YYYY-MM-DD HH:MM, YYYY-MM-DD HH:MM'."
+            )
+
         query_filter += [
             {
                 "columnName": "computerLastConnection",
@@ -2551,8 +2634,8 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
 
     if not query_filter:
         raise DemistoException(
-            '''At least one of the following query arguments are required: computer_ids, computer_names, computer_ips,
-            computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter.'''
+            """At least one of the following query arguments are required: computer_ids, computer_names, computer_ips,
+            computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter."""
         )
 
     return query_filter
@@ -2623,10 +2706,11 @@ def convert_unix_to_date_string(unix_timestamp):
     date_time = datetime.fromtimestamp(timestamp_in_seconds, tz=timezone.utc)
     return date_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
+
 def main() -> None:
 
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     base_url = params.get("base_url", "")
     client_id = dict_safe_get(params, ["credentials", "identifier"])
     secret_key = dict_safe_get(params, ["credentials", "password"])
@@ -2673,7 +2757,7 @@ def main() -> None:
             "harmony-ep-remediation-computer-isolate": remediation_computer_isolate_command,
             "harmony-ep-remediation-computer-deisolate": remediation_computer_deisolate_command,
             "harmony-ep-computer-list": computer_list_command,
-            "harmony-ep-agent-computer-restart": computer_reset_command,
+            "harmony-ep-agent-computer-restart": computer_restart_command,
             "harmony-ep-agent-computer-shutdown": computer_shutdown_command,
             "harmony-ep-agent-computer-repair": computer_repair_command,
             "harmony-ep-agent-process-information-get": process_information_get_command,
