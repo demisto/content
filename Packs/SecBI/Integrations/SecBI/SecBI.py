@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import urllib3
-from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -58,7 +57,7 @@ class SecBIClient(BaseClient):
         """
         params = assign_params(fields=SECBI_INCIDENT_FIELDS)
         return self._http_request(method='GET',
-                                  url_suffix='{}/{}'.format(SECBI_API_ENDPOINT_INCIDENT, incident_id),
+                                  url_suffix=f'{SECBI_API_ENDPOINT_INCIDENT}/{incident_id}',
                                   params=params)
 
     def secbi_get_incident_by_host(self, host):
@@ -91,7 +90,7 @@ def test_module_command(client: SecBIClient):
         raise DemistoException("Failed connection test of SecBI. Please check your SECBI_API_URL and SECBI_API_KEY", e.args[0])
 
 
-def secbi_get_incidents_list_command(client: SecBIClient, args: Dict) -> Tuple[str, Dict, Dict]:
+def secbi_get_incidents_list_command(client: SecBIClient, args: dict) -> tuple[str, dict, dict]:
     """
     SecBI Get All Incident IDs command
     :param client: The SecBI client to use
@@ -102,7 +101,7 @@ def secbi_get_incidents_list_command(client: SecBIClient, args: Dict) -> Tuple[s
     limit = args.get('limit', 100)
     incidents_list = client.secbi_get_incidents_list(query, limit)
 
-    formatted = [dict(ID=s) for s in incidents_list]
+    formatted = [{'ID': s} for s in incidents_list]
     human_readable = tableToMarkdown('List of SecBI Incidents', formatted)
     entry_context = {
         'SecBI.IncidentsList': incidents_list
@@ -110,7 +109,7 @@ def secbi_get_incidents_list_command(client: SecBIClient, args: Dict) -> Tuple[s
     return human_readable, entry_context, incidents_list
 
 
-def secbi_get_incident_command(client: SecBIClient, args: Dict) -> Tuple[str, Dict, Dict]:
+def secbi_get_incident_command(client: SecBIClient, args: dict) -> tuple[str, dict, dict]:
     """
     SecBI Get Incident command
     :param client: The SecBI client to use
@@ -121,14 +120,14 @@ def secbi_get_incident_command(client: SecBIClient, args: Dict) -> Tuple[str, Di
     raw_incident = client.secbi_get_incident(incident_id)
     incident_data = as_secbi_incident(raw_incident)
 
-    human_readable = tableToMarkdown('SecBI incident ID "{}"'.format(incident_id), incident_data)
+    human_readable = tableToMarkdown(f'SecBI incident ID "{incident_id}"', incident_data)
     entry_context = {
         'SecBI.Incident(val.ID === obj.ID)': incident_data
     }
     return human_readable, entry_context, raw_incident
 
 
-def secbi_get_incident_by_host_command(client: SecBIClient, args: Dict) -> Tuple[str, Dict, Dict]:
+def secbi_get_incident_by_host_command(client: SecBIClient, args: dict) -> tuple[str, dict, dict]:
     """
     SecBI Get Incident by Host command
     :param client: The SecBI client to use
@@ -139,7 +138,7 @@ def secbi_get_incident_by_host_command(client: SecBIClient, args: Dict) -> Tuple
     raw_incident = client.secbi_get_incident_by_host(host)
     incident_data = as_secbi_incident(raw_incident)
 
-    human_readable = tableToMarkdown('SecBI incident by host "{}"'.format(host), incident_data)
+    human_readable = tableToMarkdown(f'SecBI incident by host "{host}"', incident_data)
     entry_context = {
         # ID comparison might be problematic if the host changes Incidents and the ID changes
         'SecBI.Incident(val.ID === obj.ID)': incident_data
@@ -151,7 +150,7 @@ def secbi_get_incident_by_host_command(client: SecBIClient, args: Dict) -> Tuple
 
 
 def main():
-    LOG('Command being called is {}'.format(demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
 
     params = demisto.params()
     command = demisto.command()
