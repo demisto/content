@@ -14360,10 +14360,8 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
         queries_dict = {
             log_type: log_type_query
             for log_type in active_log_type_queries
-            if (log_type_query := params.get(f'{log_type.lower()}_query', ""))
+            if (log_type_query := params.get(f'{log_type.lower()}_query'))
         }
-        if no_query_log := next():
-            raise 
     return cast(QueryMap, queries_dict)
 
 
