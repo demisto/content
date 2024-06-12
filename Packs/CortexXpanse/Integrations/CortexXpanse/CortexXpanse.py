@@ -1244,9 +1244,9 @@ def add_note_to_asset_command (client: Client, args: dict[str, Any]) -> CommandR
     response = client.add_note_to_asset(asm_asset_id=asset_id, entity_type=entity_type, annotation_note=note_to_add)
     response_message = {"status": response.get('reply', {})}
     response_message['asset'] = asset_id
-    markdown = tableToMarkdown('Add Note to Asset Command Results:', response_message.get('status'), removeNull=True)
+    markdown = tableToMarkdown('Add Note to Asset Command Results:', response_message.get('status'), headers=['Status'], removeNull=True)
     command_results = CommandResults(
-        outputs_prefix='ASM.Annotation',
+        outputs_prefix='ASM.AssetAnnotation',
         outputs_key_field='',
         outputs=response_message,
         raw_response=response,
@@ -1546,26 +1546,26 @@ def main() -> None:
                 demisto.debug(demisto.debug(f"CortexXpanse - Integration Severity: {severity}"))
 
         commands = {
-            'asm-list-external-service': list_external_service_command,
-            'asm-get-external-service': get_external_service_command,
-            'asm-list-external-ip-address-range': list_external_ip_address_range_command,
-            'asm-get-external-ip-address-range': get_external_ip_address_range_command,
-            'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
+            'asm-add-note-to-asset': add_note_to_asset_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
-            'asm-list-alerts': list_alerts_command,
             'asm-get-attack-surface-rule': list_attack_surface_rules_command,
+            'asm-get-external-ip-address-range': get_external_ip_address_range_command,
+            'asm-get-external-service': get_external_service_command,
+            'asm-get-incident': get_incident_command,
+            'asm-list-alerts': list_alerts_command,
+            'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
+            'asm-list-external-ip-address-range': list_external_ip_address_range_command,
+            'asm-list-external-service': list_external_service_command,
+            'asm-list-external-websites': list_external_websites_command,
+            'asm-list-incidents': list_incidents_command,
             'asm-tag-asset-assign': assign_tag_to_assets_command,
             'asm-tag-asset-remove': remove_tag_to_assets_command,
             'asm-tag-range-assign': assign_tag_to_ranges_command,
             'asm-tag-range-remove': remove_tag_to_ranges_command,
-            'asm-list-incidents': list_incidents_command,
-            'asm-get-incident': get_incident_command,
-            'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command,
-            'asm-list-external-websites': list_external_websites_command,
-            'asm-add-note-to-asset': add_note_to_asset_command,
+            'asm-update-incident': update_incident_command,
+            'domain': domain_command,
             'ip': ip_command,
-            'domain': domain_command
         }
 
         if command == 'test-module':
