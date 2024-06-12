@@ -553,6 +553,22 @@ script:
       required: true
       description: The name of the tags to apply to supplied assets.
     description: Assigns tags to a list of assets.
+  - name: asm-add-note-to-asset
+    description: Adds a note to an asset in Xpanse.
+    arguments:
+    - name: asset_id
+      required: true
+      description: The asset ID to add a note to.
+    - name: entity_type
+      auto: PREDEFINED
+      predefined:
+      - ip_range
+      - asset
+      required: true
+      description: "The type of Xpanse asset. Allowed values are: 'asset' or 'ip_range'."
+    - name: note_to_add
+      required: true
+      description: The custom note to be added to the notes section of the asset in Xpanse.
   - name: asm-tag-asset-remove
     arguments:
     - name: asm_id_list
