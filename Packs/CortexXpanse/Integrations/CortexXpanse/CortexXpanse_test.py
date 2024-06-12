@@ -2,6 +2,23 @@
 Tests module for Cortex Xpanse integration.
 """
 
+### Helper Functions
+
+def new_client():
+    from CortexXpanse import Client
+    
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorization": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+        
+    return client
+
 
 def test_format_asm_id_func(requests_mock):
     """Tests format_asm_id helper function.
@@ -34,22 +51,14 @@ def test_list_external_service_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_external_service_command
+    from CortexXpanse import list_external_service_command
 
     from test_data.raw_response import EXTERNAL_SERVICES_RESPONSE
     from test_data.expected_results import EXTERNAL_SERVICES_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_services/',
                        json=EXTERNAL_SERVICES_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
 
     args = {
         'domain': 'testdomain.com',
@@ -73,22 +82,14 @@ def test_get_external_service_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, get_external_service_command
+    from CortexXpanse import get_external_service_command
 
     from test_data.raw_response import EXTERNAL_SERVICE_RESPONSE
     from test_data.expected_results import EXTERNAL_SERVICE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_service',
                        json=EXTERNAL_SERVICE_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
 
     args = {
         'service_id': '94232f8a-f001-3292-aa65-63fa9d981427'
@@ -112,22 +113,14 @@ def test_list_external_ip_address_range_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_external_ip_address_range_command
+    from CortexXpanse import list_external_ip_address_range_command
 
     from test_data.raw_response import EXTERNAL_RANGES_RESPONSE
     from test_data.expected_results import EXTERNAL_RANGES_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_ip_address_ranges/',
                        json=EXTERNAL_RANGES_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {}
 
     response = list_external_ip_address_range_command(client, args)
@@ -148,22 +141,14 @@ def test_get_external_ip_address_range_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, get_external_ip_address_range_command
+    from CortexXpanse import get_external_ip_address_range_command
 
     from test_data.raw_response import EXTERNAL_RANGE_RESPONSE
     from test_data.expected_results import EXTERNAL_RANGE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_ip_address_range/',
                        json=EXTERNAL_RANGE_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'range_id': '1093124c-ce26-33ba-8fb8-937fecb4c7b6'
     }
@@ -186,22 +171,14 @@ def test_list_asset_internet_exposure_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_asset_internet_exposure_command
+    from CortexXpanse import list_asset_internet_exposure_command
 
     from test_data.raw_response import EXTERNAL_EXPOSURES_RESPONSE
     from test_data.expected_results import EXTERNAL_EXPOSURES_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=EXTERNAL_EXPOSURES_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {'name': 'testdomain.com'}
     args_externally_inferred_cves = {"externally_inferred_cves": ["CVE-2020-15778"]}
     args_ipv6s = {"ipv6s": ["2600:1900:4000:9664:0:7::"]}
@@ -289,22 +266,14 @@ def test_get_asset_internet_exposure_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, get_asset_internet_exposure_command
+    from CortexXpanse import get_asset_internet_exposure_command
 
     from test_data.raw_response import EXTERNAL_EXPOSURE_RESPONSE
     from test_data.expected_results import EXTERNAL_EXPOSURE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_asset_internet_exposure/',
                        json=EXTERNAL_EXPOSURE_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'asm_id': 'testdomain.com'
     }
@@ -327,22 +296,14 @@ def test_list_alerts_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_alerts_command
+    from CortexXpanse import list_alerts_command
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
     from test_data.expected_results import LIST_ALERTS_RESULTS
     requests_mock.post('https://test.com/public_api/v2/alerts/get_alerts_multi_events/',
                        json=LIST_ALERTS_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'limit': '3',
         'sort_by_creation_time': 'asc'
@@ -371,22 +332,14 @@ def test_list_attack_surface_rules_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_attack_surface_rules_command
+    from CortexXpanse import list_attack_surface_rules_command
 
     from test_data.raw_response import ATTACK_SURFACE_RULES_RAW
     from test_data.expected_results import ATTACK_SURFACE_RULES_RESULTS
     requests_mock.post('https://test.com/public_api/v1/get_attack_surface_rules/',
                        json=ATTACK_SURFACE_RULES_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'enabled_status': 'on',
         'severity': 'high',
@@ -411,22 +364,14 @@ def test_assign_tag_to_assets_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, assign_tag_to_assets_command
+    from CortexXpanse import assign_tag_to_assets_command
 
     from test_data.raw_response import TAG_APPLY_RAW
     from test_data.expected_results import TAG_APPLY_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/assign/',
                        json=TAG_APPLY_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'asm_id_list': '11111111-1111-1111-1111-111111111111',
         'tags': 'Test'
@@ -449,22 +394,14 @@ def test_remove_tag_to_assets_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, remove_tag_to_assets_command
+    from CortexXpanse import remove_tag_to_assets_command
 
     from test_data.raw_response import TAG_REMOVE_RAW
     from test_data.expected_results import TAG_REMOVE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/remove/',
                        json=TAG_REMOVE_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'asm_id_list': '11111111-1111-1111-1111-111111111111',
         'tags': 'Test'
@@ -487,22 +424,14 @@ def test_assign_tag_to_ranges_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, assign_tag_to_ranges_command
+    from CortexXpanse import assign_tag_to_ranges_command
 
     from test_data.raw_response import TAG_APPLY_RAW
     from test_data.expected_results import TAG_APPLY_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/assign/',
                        json=TAG_APPLY_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'range_id_list': '11111111-1111-1111-1111-111111111111',
         'tags': 'Test'
@@ -525,22 +454,14 @@ def test_remove_tag_to_ranges_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, remove_tag_to_ranges_command
+    from CortexXpanse import remove_tag_to_ranges_command
 
     from test_data.raw_response import TAG_REMOVE_RAW
     from test_data.expected_results import TAG_REMOVE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/remove/',
                        json=TAG_REMOVE_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'range_id_list': '11111111-1111-1111-1111-111111111111',
         'tags': 'Test'
@@ -563,22 +484,14 @@ def test_list_incidents_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_incidents_command
+    from CortexXpanse import list_incidents_command
 
     from test_data.raw_response import LIST_INCIDENTS_RAW
     from test_data.expected_results import LIST_INCIDENTS_RESULTS
     requests_mock.post('https://test.com/public_api/v1/incidents/get_incidents/',
                        json=LIST_INCIDENTS_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'limit': 1,
         'status': 'new'
@@ -602,22 +515,14 @@ def test_get_incident_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, get_incident_command
+    from CortexXpanse import get_incident_command
 
     from test_data.raw_response import INCIDENT_GET_RAW
     from test_data.expected_results import INCIDENT_GET_RESULTS
     requests_mock.post('https://test.com/public_api/v1/incidents/get_incident_extra_data/',
                        json=INCIDENT_GET_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'incident_id': 1
     }
@@ -639,22 +544,14 @@ def test_update_incident_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, update_incident_command
+    from CortexXpanse import update_incident_command
 
     from test_data.raw_response import INCIDENT_UPDATE_RAW
     from test_data.expected_results import INCIDENT_UPDATE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/incidents/update_incident/',
                        json=INCIDENT_UPDATE_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'incident_id': 1,
         'status': 'new'
@@ -677,22 +574,14 @@ def test_update_alert_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, update_alert_command
+    from CortexXpanse import update_alert_command
 
     from test_data.raw_response import ALERT_UPDATE_RAW
     from test_data.expected_results import ALERT_UPDATE_RESULTS
     requests_mock.post('https://test.com/public_api/v1/alerts/update_alerts/',
                        json=ALERT_UPDATE_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'alert_id_list': 602,
         'status': 'new'
@@ -702,6 +591,37 @@ def test_update_alert_command(requests_mock):
 
     assert response.outputs == ALERT_UPDATE_RESULTS
     assert response.outputs_prefix == 'ASM.UpdatedAlerts'
+    
+
+def test_successfully_add_note_to_asset_command(requests_mock):
+    """Tests update_alert_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_alert_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'update_alert_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import add_note_to_asset_command
+
+    json_data = {"reply": "succeeded"}
+    requests_mock.post('https://test.com/public_api/v1/assets/assets_internet_exposure/annotation',
+                       json=json_data)
+
+    client = new_client()
+    args = {
+        'asset_id': "abcd1234-a1b2-a1b2-a1b2-abcdefg12345",
+        'entity_type': 'ip_range',
+        'note_to_add': 'Test note adding to asset in Ev2'
+    }
+
+    response = add_note_to_asset_command(client, args)
+
+    assert response.outputs.get('status') == "succeeded"
+    assert response.outputs_prefix == 'ASM.AssetAnnotation'
+
 
 
 def test_ip_command(requests_mock):
@@ -715,22 +635,14 @@ def test_ip_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, ip_command
+    from CortexXpanse import ip_command
 
     from test_data.raw_response import IP_DOMAIN_RAW
     from test_data.expected_results import IP_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'ip': "1.1.1.1"
     }
@@ -755,22 +667,14 @@ def test_domain_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, domain_command
+    from CortexXpanse import domain_command
 
     from test_data.raw_response import IP_DOMAIN_RAW
     from test_data.expected_results import IP_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
     args = {
         'domain': "*.acme.com"
     }
@@ -796,22 +700,14 @@ def test_fetch_incidents(requests_mock, mocker):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, fetch_incidents
+    from CortexXpanse import fetch_incidents
     import json
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
     requests_mock.post('https://test.com/public_api/v2/alerts/get_alerts_multi_events/',
                        json=LIST_ALERTS_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
 
     last_run = {'last_fetch': 1659452708759}
     next_run, incidents = fetch_incidents(
@@ -840,22 +736,14 @@ def test_list_external_websites_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, list_external_websites_command
+    from CortexXpanse import list_external_websites_command
 
     from test_data.raw_response import EXTERNAL_WEBSITES_RESPONSE
     from test_data.expected_results import EXTERNAL_WEBSITES_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_websites/',
                        json=EXTERNAL_WEBSITES_RESPONSE)
 
-    client = Client(
-        base_url='https://test.com',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorizatio": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
+    client = new_client()
 
     args = {
         'authentication': 'Form',
@@ -866,4 +754,3 @@ def test_list_external_websites_command(requests_mock):
 
     assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsite', {}).get('websites')
     assert response.outputs_prefix == 'ASM.ExternalWebsite'
-    # assert response.outputs_key_field == ''
