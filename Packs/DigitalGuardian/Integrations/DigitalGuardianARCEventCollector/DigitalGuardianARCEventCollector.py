@@ -141,7 +141,10 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     limit = int(args.get("limit", 1000))
     if limit:
         event_list = event_list[:limit]
-    hr = tableToMarkdown(name='Test Event', t=event_list)
+    if not event_list:
+        hr = "No events found."
+    else:
+        hr = tableToMarkdown(name='Test Event', t=event_list)
     demisto.debug(f'get events command that ran with the limit: {limit}')
     return event_list, CommandResults(readable_output=hr)
 
