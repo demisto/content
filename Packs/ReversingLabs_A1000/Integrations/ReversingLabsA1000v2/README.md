@@ -6212,7 +6212,7 @@ Get a report for the submitted domain.
                     {
                         "detection": "undetected",
                         "source": "botvrij",
-                        "update_time": "2023-06-06T01:26:07"
+                        "update_time": "2023-06reversinglabs-a1000-static-analysis-report-06T01:26:07"
                     },
                     {
                         "detection": "undetected",
@@ -6847,6 +6847,14 @@ Retrieve the static analysis report for a local sample.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | ReversingLabs.a1000_static_analysis_report | Unknown | The static analysis report. | 
 
 #### Command example
@@ -10597,6 +10605,14 @@ Perform sample classification actions - get sample classification, set sample cl
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | ReversingLabs.a1000_sample_classification | Unknown | Sample classification actions. | 
 
 #### Command example
@@ -10916,6 +10932,14 @@ Actions for uploading a sample from a URL and fetching the analysis results.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | ReversingLabs.a1000_upload_from_url_actions | Unknown | Actions for uploading a sample from a URL and fetching the analysis results. | 
 
 #### Command example
