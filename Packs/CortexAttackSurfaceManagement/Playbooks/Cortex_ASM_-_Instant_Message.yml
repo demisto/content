@@ -193,7 +193,7 @@ tasks:
       channel_id:
         simple: ${inputs.InstantMessageChannel}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: SlackV3
       description: Sends a message to a user, group, or channel.
