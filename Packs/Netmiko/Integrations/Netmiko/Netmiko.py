@@ -189,7 +189,7 @@ def main():  # pragma: no cover
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     ssh_key = params.get('credentials', {}).get('credentials', {}).get('sshkey')
-    timeout = params.get('timeout_override', 60)
+    timeout = params.get('timeoutOverride', 60)
 
     keys = None
     if ssh_key:
