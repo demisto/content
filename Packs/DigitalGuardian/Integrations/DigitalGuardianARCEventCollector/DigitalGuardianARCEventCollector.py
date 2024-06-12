@@ -118,12 +118,12 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
     current_time = datetime_to_string(datetime.now())
     events = client.get_events(time_of_last_event_str, current_time)
-    for field_names in events["fields"]:
-        outcome.append(field_names['name'])
-    for event in events["data"]:
+    for field_names in events.get("fields"):
+        outcome.append(field_names.get('name'))
+    for event in events.get("data"):
         result = dict(zip(outcome, event))
         event_list.append(result)
-    event_list.sort(key=lambda item: (item["inc_mtime"], item["dg_guid"]))
+    event_list.sort(key=lambda item: (item.get("inc_mtime"), item.get("dg_guid")))
     return event_list
 
 
