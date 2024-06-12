@@ -59,23 +59,23 @@ class Client:  # pragma: no cover
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
             if enable:
-                self.net_connect.enable()  # type: ignore
+                self.net_connect.enable()
             if isConfig:
                 output['Commands'].append({"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow(
-                ).isoformat(), "Config": self.net_connect.send_config_set(commands, read_timeout=self.timeout)})  # type: ignore
+                ).isoformat(), "Config": self.net_connect.send_config_set(commands, read_timeout=self.timeout)})
             if not isConfig:
                 for cmd in commands:
-                    prompt = self.net_connect.find_prompt()  # type: ignore
+                    prompt = self.net_connect.find_prompt()
 
                     pre_out = self.net_connect.send_command_timing(
-                        cmd, read_timeout=self.timeout, strip_prompt=False, last_read=LAST_READ_TIMEOUT)  # type: ignore
+                        cmd, read_timeout=self.timeout, strip_prompt=False, last_read=LAST_READ_TIMEOUT)
 
                     pattern_to_keep = re.escape(prompt)
 
                     out = re.sub(pattern_to_keep, '', pre_out, count=len(re.findall(pattern_to_keep, pre_out))).strip()
 
                     c = {"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow().isoformat(), "Command": cmd,
-                         "Output": f"{out}"}  # type: ignore
+                         "Output": f"{out}"}
                     output['Commands'].append(c)
 
         except Exception as err:
@@ -189,7 +189,7 @@ def main():  # pragma: no cover
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     ssh_key = params.get('credentials', {}).get('credentials', {}).get('sshkey')
-    timeout = params.get('timeout_override', 60)
+    timeout = params.get('TimeoutOverride', 60)
 
     keys = None
     if ssh_key:
