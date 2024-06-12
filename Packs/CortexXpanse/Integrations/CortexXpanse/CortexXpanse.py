@@ -1237,6 +1237,19 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 
 def add_note_to_asset_command (client: Client, args: dict[str, Any]) -> CommandResults:
+    """Adds an annotation (also called a note) to an asset or IP range
+       using the /assets/assets_internet_exposure/annotation endpoint.
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from demisto.args().
+            args['asset_id'] (str): The Xpanse asset ID.
+            args['entity_type'] (str): The type of Xpanse asset, Allowed values: 'asset' or 'ip_range'.
+            args['annotation_note'] (str): The custom note to be added to the notes section of the asset in Xpanse
+
+    Returns:
+        CommandResults: A CommandResults demisto object that is then passed to return_results
+    """
     asset_id = str(args.get('asset_id'))
     entity_type = str(args.get('entity_type'))
     note_to_add = str(args.get('note_to_add'))
