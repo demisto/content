@@ -188,8 +188,8 @@ configuration:
     additionalinfo: null
     displaypassword: ""
     hiddenusername: false
-  - name: timeoutOverride
-    display: timeoutOverride
+  - name: TimeoutOverride
+    display: TimeoutOverride
     required: false
     defaultvalue: "60"
     type: 0
