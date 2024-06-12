@@ -2,13 +2,16 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-import io
 # Logging only needed for netmiko debugging
 # import logging
+import io
 import paramiko
 import sys
 from datetime import datetime
 from netmiko import ConnectHandler
+
+# value for Netmiko last_read parameter
+LAST_READ_TIMEOUT = 15.0
 
 # Return only specific keys from dictionary
 
@@ -27,7 +30,7 @@ class Client:  # pragma: no cover
         self.timeout = int(timeout)
         self.port = port
         self.keys = keys
-        self.net_connect = None
+        self.net_connect = ConnectHandler
 
     def connect(self):
         if self.keys:
@@ -64,16 +67,15 @@ class Client:  # pragma: no cover
                 for cmd in commands:
                     prompt = self.net_connect.find_prompt()  # type: ignore
 
-                    pre_out = ""
-                    pre_out = self.net_connect.send_command_timing(  # type: ignore
-                        cmd, read_timeout=self.timeout, strip_prompt=False)  # type: ignore
+                    pre_out = self.net_connect.send_command_timing(
+                        cmd, read_timeout=self.timeout, strip_prompt=False, last_read=LAST_READ_TIMEOUT)  # type: ignore
 
                     pattern_to_keep = re.escape(prompt)
 
                     out = re.sub(pattern_to_keep, '', pre_out, count=len(re.findall(pattern_to_keep, pre_out))).strip()
 
                     c = {"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow().isoformat(), "Command": cmd,
-                         "Output": f"{prompt} {out}"}  # type: ignore
+                         "Output": f"{out}"}  # type: ignore
                     output['Commands'].append(c)
 
         except Exception as err:
@@ -169,9 +171,9 @@ def cmds_command(client, args):
 
 
 def main():  # pragma: no cover
-
-    # Uncomment the below line to turn on netmiko debugging (shown in integration-instance.log when debug mode is on)
+    # Uncomment the logging.getLogger line to turn on netmiko debugging (shown in integration-instance.log when debug mode is on)
     # Be sure to uncomment the import logging command at the top of the integration
+    # Helpful in troubleshooting incorrect command outputs from remote devices
     # logging.getLogger("netmiko").setLevel(logging.DEBUG)
     params = demisto.params()
     args = demisto.args()
