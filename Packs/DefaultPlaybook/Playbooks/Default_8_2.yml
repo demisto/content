@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Default
 description: |+
-  This playbook executes when no other playbook is associated with an incident. It performs the following actions:
+  XSOAR SAAS. This playbook executes when no other playbook is associated with an incident. It performs the following actions:
   - Extracts and enriches indicators in an incident using one or more integrations.
   - Deduplicates by linking and closing similar incidents.
   - Retrieves related files from endpoints using hash / file path.
