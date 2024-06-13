@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS MENTION_BY_A_THREAT_ACTOR",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS MENTION_BY_A_THREAT_ACTOR",
 	"onChangeRepAlg": 0,

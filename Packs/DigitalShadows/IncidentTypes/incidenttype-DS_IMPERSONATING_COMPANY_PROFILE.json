@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS IMPERSONATING_COMPANY_PROFILE",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS IMPERSONATING_COMPANY_PROFILE",
 	"onChangeRepAlg": 0,

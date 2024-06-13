@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS EVIDENCE-OF-RECONNAISSANCE",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS EVIDENCE-OF-RECONNAISSANCE",
 	"onChangeRepAlg": 0,

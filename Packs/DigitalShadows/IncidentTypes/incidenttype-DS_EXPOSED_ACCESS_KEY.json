@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS EXPOSED_ACCESS_KEY",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS EXPOSED_ACCESS_KEY",
 	"onChangeRepAlg": 0,

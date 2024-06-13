@@ -27,19 +27,9 @@ configuration:
   required: true
   type: 9
 - display: API Secret
-  hiddenpassword: true
   name: apiSecret
   required: true
   type: 9
-- defaultvalue: "1"
-  display: First fetch time
-  name: first_fetch
-  required: false
-  type: 0
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 0
 - defaultvalue: "true"
   display: Trust any certificate (not secure)
   name: insecure
@@ -91,10 +81,6 @@ configuration:
   - all
   required: true
   type: 16
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 - additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
   defaultvalue: all
   display: Risk Level
@@ -109,6 +95,28 @@ configuration:
   - very-high
   required: false
   type: 16
+- additionalinfo: No of incidents want to fetch per iteration
+  defaultvalue: "50"
+  display: Fetch Limit
+  name: fetchLimit
+  required: true
+  type: 0
+- additionalinfo: This controls how often the integration will perform a fetch_incidents command
+  defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Since when want to fetch the data with given format(%Y-%m-%dT%H:%M:%SZ)
+  defaultvalue: "2024-01-20T00:00:00Z"
+  display: Start date
+  name: sinceDate
+  required: true
+  type: 0
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
 description: This is digital shadows integration.
 display: Digital Shadows V2 (Partner Contribution)
 name: Digital Shadows V2
@@ -120,14 +128,11 @@ script:
     description: Perform a general search against incidents, threats closed sources, etc.
     name: ds-search
   dockerimage: demisto/python3:3.10.13.74666
+  feed: true
+  isFetchSamples: true
   isfetch: true
-  ismappable: true
   isremotesyncin: true
-  isremotesyncout: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-
-defaultmapperin: DigitalShadowsIncidentMapper V2
-defaultclassifier: DigitalShadowsIncidentClassifier V2

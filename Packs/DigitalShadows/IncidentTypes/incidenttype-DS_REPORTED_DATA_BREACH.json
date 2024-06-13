@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS REPORTED_DATA_BREACH",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS REPORTED_DATA_BREACH",
 	"onChangeRepAlg": 0,

@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS EXPOSED-EMPLOYEE-PII",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS EXPOSED-EMPLOYEE-PII",
 	"onChangeRepAlg": 0,

@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS IMPERSONATING-EMPLOYEE-PROFILE",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS IMPERSONATING-EMPLOYEE-PROFILE",
 	"onChangeRepAlg": 0,

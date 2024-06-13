@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS WEAK_CERTIFICATE",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS WEAK_CERTIFICATE",
 	"onChangeRepAlg": 0,

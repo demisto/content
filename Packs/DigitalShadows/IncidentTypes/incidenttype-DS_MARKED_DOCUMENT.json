@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS MARKED_DOCUMENT",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS MARKED_DOCUMENT",
 	"onChangeRepAlg": 0,

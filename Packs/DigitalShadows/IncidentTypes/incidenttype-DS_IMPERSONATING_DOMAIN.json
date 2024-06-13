@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS IMPERSONATING_DOMAIN",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS IMPERSONATING_DOMAIN",
 	"onChangeRepAlg": 0,

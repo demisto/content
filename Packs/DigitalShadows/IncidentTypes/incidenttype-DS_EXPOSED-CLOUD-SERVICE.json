@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS EXPOSED-CLOUD-SERVICE",
 	"itemVersion": "",
-	"layout": "",
+	"layout": "DigitalShadowsIncidentLayout V2",
 	"locked": false,
 	"name": "DS EXPOSED-CLOUD-SERVICE",
 	"onChangeRepAlg": 0,

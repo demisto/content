@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 """Digital Shadows for Cortex XSOAR."""
 
@@ -818,7 +821,11 @@ class SearchLightTriagePoller(object):
         asset_map = {asset[ID]: asset for asset in assets}
         comment_map = get_comments_map(triage_item_comments)
         for triage_item in triage_items:
-            data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
+            if not events:
+                data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
+            else:
+                data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
+
             if triage_item[ID] in comment_map:
                 data_item[COMMENTS] = json.dumps(comment_map[triage_item[ID]])
 
@@ -961,8 +968,7 @@ class SearchLightTriagePoller(object):
         asset_ids = set(
             [asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]])
         assets = get_assets(self.request_handler, asset_ids=asset_ids)
-
-        return self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets)
+        return self.merge_data([], triage_items, triage_item_comments, alerts, incidents, assets)
 
 
 '''SearchLightIndicatorsPoller'''
@@ -1084,12 +1090,13 @@ class Client(BaseClient):
         self.secret_key = kwargs["secret_key"]
         self.auth = kwargs["auth"]
         self.headers = self.build_auth_headers()
-        self.limit = kwargs["limit"]
 
     def test_client(self):
         r = requests.request("GET", self.base_url + '/v1/test', headers=self.headers)
         r_data = r.json()
         LOG(f"response------->{json.dumps(r_data)}")
+        if r_data.get('message') and "'accountId' is invalid" in r_data.get('message'):
+            return 400, "Account Id invalid"
         if not r_data.get("api-key-valid"):
             return 400, "Invalid API Key"
         if not r_data.get("access-account-enabled"):
@@ -1121,7 +1128,7 @@ def test_module(client):
         return 'Test failed because ......' + message
 
 
-def get_remote_incident_data(client, incident_id):
+def get_remote_incident_data(client, incident_ids):
     """
     Gets the remote incident data.
     Args:
@@ -1132,8 +1139,9 @@ def get_remote_incident_data(client, incident_id):
         mirrored_data: The raw mirrored data.
         updated_object: The updated object to set in the XSOAR incident.
     """
-    LOG(f"inside---get_remote_incident_data")
-    return
+    LOG(f"inside---get_remote_incident_data{incident_ids}")
+    return client.get_triage_details(incident_ids)
+
     # mirrored_data = client.http_request('GET', f'incidents/{incident_id}')
     # incident_mirrored_data = incident_data_to_xsoar_format(mirrored_data, is_fetch_incidents=True)
     # fetch_incidents_additional_info(client, incident_mirrored_data)
@@ -1152,9 +1160,20 @@ def get_remote_data_command(client, args):
     parsed_args = GetRemoteDataArgs(args)
 
     LOG(f"remote args {parsed_args}")
-    new_incident_data = get_remote_incident_data(client, parsed_args.remote_incident_id)
+    new_incident_data = get_remote_incident_data(client, [parsed_args.remote_incident_id])
     LOG(f"new incident data : {new_incident_data}")
 
+
+def parse_date(since):
+    SINCE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+    SINCE_DATE_FORMAT_WITH_MILLISECONDS = "%Y-%m-%dT%H:%M:%S.%fZ"
+    try:
+        return datetime.strptime(since, SINCE_DATE_FORMAT)
+    except Exception as e:
+        return datetime.strptime(since, SINCE_DATE_FORMAT_WITH_MILLISECONDS)
+    except Exception as ee:
+        LOG(f"Unable to parse date from input: {since}")
+        raise ee
 
 def main():
     """
@@ -1178,13 +1197,17 @@ def main():
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
-
+    fetchLimit = demisto.params().get('fetchLimit')
+    sinceDate = demisto.params().get('sinceDate')
+    try:
+        sinceDate = parse_date(sinceDate)
+    except Exception as ee:
+        demisto.results('Unable to parse date from input')
+    if sinceDate>datetime.now():
+        demisto.results('Date should be less than current date')
     proxy = demisto.params().get('proxy', False)
-    limit = demisto.params().get('limit', 1)
-    LOG('before last run-----')
     last_run = demisto.getLastRun()
     LOG(f'after last run----- {last_run}')
-
     LOG(f'Command being called is {demisto.command()}')
     try:
         searchLightClient = Client(
@@ -1194,7 +1217,6 @@ def main():
             secret_key=secretKey,
             verify=verify_certificate,
             auth=(secretKey, accessKey),
-            limit=limit
         )
         LOG("client initialized ----- test client")
         search_light_request_handler = SearchLightRequestHandler(base_url,
@@ -1204,7 +1226,10 @@ def main():
         digital_shadows_request_handler = DSApiRequestHandler(DS_BASE_URL, accessKey, secretKey)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            LOG('calling test module')
+            if fetchLimit.isdigit() and int(fetchLimit) > 100:
+                demisto.results('fetch limit must be less than 100')
+            elif not fetchLimit.isdigit():
+                demisto.results('fetch limit must be number')
             result = test_module(searchLightClient)
             demisto.results(result)
         if demisto.command() == 'fetch-indicators':
@@ -1217,7 +1242,8 @@ def main():
             search_light_indicators_poller = SearchLightIndicatorsPoller(search_light_request_handler)
             LOG(f"search_light_indicators_poller indicatores-----> ")
 
-            poll_result = search_light_indicators_poller.poll_indicators(event_num_start=last_event_num, limit=2)
+            poll_result = search_light_indicators_poller.poll_indicators(event_num_start=last_event_num, limit=fetchLimit,
+                                                                         event_created_after=sinceDate)
             LOG(f"poll_result indicatores-----> ")
 
             data = poll_result.data
@@ -1239,7 +1265,6 @@ def main():
                     demisto.createIndicators(b)
 
             demisto.setLastRun({'indicators': {'last_fetch': last_polled_number}})
-
         elif demisto.command() == 'fetch-incidents':
             LOG(f"inside command ------>{demisto.command()}")
             last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
@@ -1248,7 +1273,8 @@ def main():
             search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
             LOG(f"after search_list_triage_poller ------>")
 
-            poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=2,
+            poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=fetchLimit,
+                                                                event_created_after=sinceDate,
                                                                 alert_risk_types=riskTypes, risk_level=riskLevel)
             LOG(f"after poll_result ------>")
             data = poll_result.triage_data
@@ -1269,7 +1295,8 @@ def main():
         elif demisto.command() == 'ds-search':
             demisto.results(search_find(digital_shadows_request_handler, demisto.args()))
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(search_light_request_handler, demisto.args()))
+            search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
+            return_results(get_remote_data_command(search_list_triage_poller, demisto.args()))
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
     # Log exceptions
@@ -1282,3 +1309,4 @@ def main():
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
