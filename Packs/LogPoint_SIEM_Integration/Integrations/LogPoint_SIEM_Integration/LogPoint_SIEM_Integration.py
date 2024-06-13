@@ -738,7 +738,6 @@ def search_logs_command(client, args):
         rows += search_result.get('rows', [])
         if search_result.get('final'):
             break
-        time.sleep(2)
     if rows and len(rows) > 0:
         display_title = f"Found {len(rows)} logs"
         markdown = tableToMarkdown(display_title, rows, headers=None,
