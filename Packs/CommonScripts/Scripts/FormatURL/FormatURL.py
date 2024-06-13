@@ -5,7 +5,7 @@ from FormatURLApiModule import *  # noqa: E402
 
 
 def main():
-    the_raw_input = argToList(demisto.args().get('input'))
+    the_raw_input = demisto.args().get('input')
     raw_urls = argToList(the_raw_input, separator='|')
     try:
         formatted_urls = format_urls(raw_urls)
