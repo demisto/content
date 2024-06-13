@@ -7,4 +7,4 @@ wList = []
 wList.append({"Max Limit": res["checkRuns"]["diagnostic.docker.containers.count"]["result"]["metrics"]["issueLimit"],\
              "Current Count": res["checkRuns"]["diagnostic.docker.containers.count"]["result"]["metrics"]["currentCount"]})
 
-demisto.results({"total": len(wList), "data": wList})
+return_results({"total": len(wList), "data": wList})
