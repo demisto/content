@@ -185,7 +185,7 @@ def test_set_audit_next_run(audit_events, res):
     assert set_audit_next_run(audit_events) == res
 
 
-def test_siem_custom_run():
+def test_siem_custom_run(mocker):
     """
     Given:
          - A list of events_from_prev_run
@@ -195,9 +195,10 @@ def test_siem_custom_run():
         - assert that the stored returned are the events from last run and that the events_from_prev_run has been modified
     """
     mock_events_from_prev_run: list = list(range(500))
+    mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=[])
     siem_event_handler.events_from_prev_run = mock_events_from_prev_run
-    assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
-    assert siem_event_handler.events_from_prev_run == mock_events_from_prev_run[SIEM_LOG_LIMIT:]
+    assert siem_event_handler.run() == mock_events_from_prev_run
+    assert siem_event_handler.events_from_prev_run == []
 
 
 def test_siem_custom_run2(mocker):
@@ -205,9 +206,9 @@ def test_siem_custom_run2(mocker):
     Given:
         - A list of events from last run
     When:
-        - The events_from_prev_run is smaller than SIEM_LOG_LIMIT
+        - calling the run function
     Then:
-        - Checke the events are stored correctly
+        - Verify all the events from prev run are stored correctly.
     """
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=[])
     mock_events_from_prev_run: list = list(range(200))
@@ -225,18 +226,16 @@ def test_siem_custom_run3(mocker):
     Then:
         - Check the events are stored correctly
     """
-    iter_events_mock_return_val = [list(range(600, 900))]
+    # This is a list of list so the iter_events loop will take into acount as one batch of events.
+    iter_events_mock_return_val = [list(range(600,900))]
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=iter_events_mock_return_val)
-    mock_events_from_prev_run: list = list(range(200))
-    siem_event_handler.events_from_prev_run = mock_events_from_prev_run.copy()
+    events_from_prev_run = list(range(200))
+    siem_event_handler.events_from_prev_run = events_from_prev_run
 
     stored = siem_event_handler.run()
 
-    len_from_last_run = len(mock_events_from_prev_run)
-    len_from_iter_events = SIEM_LOG_LIMIT - len_from_last_run
-
-    assert stored == mock_events_from_prev_run + iter_events_mock_return_val[0][:len_from_iter_events]
-    assert siem_event_handler.events_from_prev_run == iter_events_mock_return_val[0][len_from_iter_events:]
+    assert stored == events_from_prev_run + iter_events_mock_return_val[0]
+    assert siem_event_handler.events_from_prev_run == []
 
 
 def test_prepare_siem_request_body():
@@ -326,13 +325,10 @@ def test_siem_events_last_run_with_new_events():
     siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
     siem_event_handler.token = 'token99'
     siem_event_handler.events_from_prev_run = ['evnet1', 'event2']
-    siem_next_run, siem_fetched_events_for_next_run = \
-        siem_events_last_run(siem_event_handler, last_run_object)
+    siem_next_run = siem_events_last_run(siem_event_handler, last_run_object)
 
     # When the token is set on the current run, use the new token.
     assert siem_next_run == 'token99'
-    # Verify that events for next run are passed.
-    assert siem_fetched_events_for_next_run == ['evnet1', 'event2']
 
 
 def test_siem_events_last_run_without_new_events():
@@ -344,10 +340,7 @@ def test_siem_events_last_run_without_new_events():
     }
     siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
     siem_event_handler.events_from_prev_run = []
-    siem_next_run, siem_fetched_events_for_next_run = \
-        siem_events_last_run(siem_event_handler, last_run_object)
+    siem_next_run = siem_events_last_run(siem_event_handler, last_run_object)
 
     # When no new events arrive use the previous token set on the past run.
     assert siem_next_run == 'token2'
-    # Verify that events for next run are passed.
-    assert siem_fetched_events_for_next_run == []
