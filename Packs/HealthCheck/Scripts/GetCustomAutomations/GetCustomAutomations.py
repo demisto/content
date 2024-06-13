@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import datetime
 import dateutil.parser
 import pytz
 
@@ -17,9 +16,9 @@ scriptsList = []
 for item in res["scripts"]:
     script = {}
     insertion_date = dateutil.parser.parse(item['modified'])
-    diffretiation = pytz.utc.localize(datetime.datetime.utcnow()) - insertion_date
+    diffretiation = pytz.utc.localize(datetime.utcnow()) - insertion_date
     if diffretiation.days < 30:
         script['name'] = item['name']
         scriptsList.append(script)
 
-demisto.results({"total": len(scriptsList), "data": scriptsList})
+return_results({"total": len(scriptsList), "data": scriptsList})
