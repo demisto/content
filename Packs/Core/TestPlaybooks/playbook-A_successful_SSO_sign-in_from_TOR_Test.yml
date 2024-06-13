@@ -1229,87 +1229,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 93aeab78-058f-4c7c-8793-d433b29ff20d
-    type: condition
-    task:
-      id: 93aeab78-058f-4c7c-8793-d433b29ff20d
-      version: -1
-      name: Verify Account Status
-      description: Verify that the ‘accountstatus’ alert field was populated correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "33"
-      "yes":
-      - "34"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Account.Status
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1180,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 64e4eecc-7d37-4d23-8136-2189d024ff8c
-    type: regular
-    task:
-      id: 64e4eecc-7d37-4d23-8136-2189d024ff8c
-      version: -1
-      name: Verify Context Error - Account Status
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: |-
-          The ‘ accountstatus’ alert field was populated correctly. One of the following may be the cause:
-          1- The 'SetAndHandleEmpty' script failed to execute in the 'Set Number of Related Alerts' task.
-          2- The 'Account Enrichment - Generic v2.1' playbook did not return any results.
-          3- The mapping rule for the 'accountstatus' alert field was removed.
-          4- A change was made to the 'outputs' value for the 'accountstatus' alert field mapping rule.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1180,
-          "y": 2540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 3f7aa750-f1d8-427a-89ed-143485a87d95
@@ -1386,8 +1305,7 @@ view: |-
       "26_34_yes": 0.16,
       "28_29_#default#": 0.67,
       "28_34_yes": 0.15,
-      "30_34_yes": 0.1,
-      "32_34_yes": 0.1
+      "30_34_yes": 0.1
     },
     "paper": {
       "dimensions": {
