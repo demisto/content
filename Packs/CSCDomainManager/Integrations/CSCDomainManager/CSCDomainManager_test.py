@@ -9,7 +9,6 @@ from CSCDomainManager import get_domains_search_hr_fields
 from CSCDomainManager import get_domains_configurations_hr_fields
 from CSCDomainManager import get_domains_availability_check_hr_fields
 from CSCDomainManager import get_domain_hr_fields
-from CSCDomainManager import get_whois_contacts_fields_for_search_domains
 from CSCDomainManager import get_whois_contacts_fields_for_domain
 from CommonServerPython import DBotScoreReliability
 
@@ -103,11 +102,6 @@ def test_get_domain_hr_fields():
     assert len(results) == 17
     assert results.get('Domain') == 'example'
     assert results.get('Generic top-level domains') is False
-
-
-def test_get_whois_contacts_fields_for_search_domains():
-    results = get_whois_contacts_fields_for_search_domains(WHOIS_CONTACTS, 'firstName')
-    assert results == ['Domain', 'Domain', 'DNS']
 
 
 def test_get_whois_contacts_fields_for_domain():

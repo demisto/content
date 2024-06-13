@@ -102,8 +102,7 @@ class Client(BaseClient):
                 params=params,
                 headers=self._headers
             )
-        except DemistoException as e:
-            print (e)
+        except DemistoException:
             results = CommandResults(
                 readable_output="No results were found",
                 outputs=None,
@@ -516,9 +515,9 @@ def domain(client: Client, args, reliability):
 
     for name in domains_name:
         domain_json = client.get_qualified_domain_name(name)
-        if isinstance(domain_json, CommandResults): #domain not found, continue to next name
+        if isinstance(domain_json, CommandResults):  # domain not found, continue to next name
             continue
-        
+
         hr_data = get_domain_hr_fields(domain_json)
 
         dbot_score = create_common_dbot_score(name, reliability)
@@ -531,13 +530,13 @@ def domain(client: Client, args, reliability):
         )
         final_data.append(results)
 
-    if final_data == []: #if no domains were found
-        final_data = CommandResults(
-                readable_output="No results were found",
-                outputs=None,
-                raw_response=None,
-            )
-        
+    if final_data == []:  # if no domains were found
+        final_data.append(CommandResults(
+            readable_output="No results were found",
+            outputs=None,
+            raw_response=None,
+        ))
+
     return final_data
 
 
@@ -573,14 +572,6 @@ def main():
             token=token,
             apikey=api_key
         )
-
-        # results = client._http_request(
-        #     method="PUT",
-        #     url_suffix='token/refresh',
-        #     params="",
-        #     headers=client._headers
-        # )
-        # print(results)
 
         if demisto.command() == 'test-module':
             return_results(test_module(client))
