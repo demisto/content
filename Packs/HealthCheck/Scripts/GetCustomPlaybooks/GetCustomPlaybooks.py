@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import datetime
 import dateutil.parser
 import pytz
 
@@ -17,9 +16,9 @@ for item in res["playbooks"]:
     playbook = {}
     if (item.get('system') is None):
         insertion_date = dateutil.parser.parse(item['modified'])
-        diffretiation = pytz.utc.localize(datetime.datetime.utcnow()) - insertion_date
+        diffretiation = pytz.utc.localize(datetime.utcnow()) - insertion_date
         if diffretiation.days < 30:
             playbook['name'] = item['name']
             playbooksList.append(playbook)
 
-demisto.results({"total": len(playbooksList), "data": playbooksList})
+return_results({"total": len(playbooksList), "data": playbooksList})
