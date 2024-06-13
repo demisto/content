@@ -8,4 +8,4 @@ wList.append({"Big Workplans > 3 MB": res["checkRuns"]["diagnostic.workplan.big.
               "Big tasks": res["checkRuns"]["diagnostic.workplan.big.tasks"]["result"]["metrics"], \
               "Tasks turned to quiet mode": res["checkRuns"]["diagnostic.workplan.auto.quiet.task"]["result"]["metrics"]})
 
-demisto.results({"total": len(wList), "data": wList})
+return_results({"total": len(wList), "data": wList})
