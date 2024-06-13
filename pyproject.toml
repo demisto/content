@@ -11,14 +11,14 @@ name = "pypi-public"
 url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = "^3.8,<3.11"
+defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = "1.30.0"
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
-defusedxml = "^0.7.1"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
