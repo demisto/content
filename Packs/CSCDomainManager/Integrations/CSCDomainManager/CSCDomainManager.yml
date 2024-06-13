@@ -280,7 +280,7 @@ script:
       name: limit
       required: false
     description: Get configuration information for owned domains with optional filtering.
-    name: csc-domains-configuration-list
+    name: csc-domains-configuration-search
     outputs:
     - contextPath: CSCDomainManager.Domain.Configuration.domain
       description: The domain.
