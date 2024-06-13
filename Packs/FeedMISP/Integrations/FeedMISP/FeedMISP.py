@@ -255,7 +255,7 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: st
         params["limit"] = params.get("limit") or LIMIT
         if params.get("timestamp"):
             params['attribute_timestamp'] = params.pop("timestamp")
-        if not params.get("attribute_timestamp") or from_timestamp:
+        if from_timestamp:
             params['attribute_timestamp'] = from_timestamp
     except Exception as err:
         demisto.debug(str(err))

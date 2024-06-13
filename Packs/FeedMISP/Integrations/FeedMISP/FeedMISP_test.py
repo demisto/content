@@ -141,7 +141,8 @@ def test_parsing_user_query_remove_timestamp():
     Then
         - Return query without the timestamp parameter
     """
-    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000}'
+    good_query = ('{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000,'
+                  ' "attribute_timestamp": "1617875568"}')
     querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
     params = parsing_user_query(querystr, limit=2)
     assert good_query == json.dumps(params)
