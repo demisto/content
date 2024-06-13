@@ -13,6 +13,7 @@ MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
 IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
 
+
 """HELPER FUNCTIONS"""
 
 
@@ -176,11 +177,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
             results = executor.map(run_command, accounts)
         return list(results)
 
-    if (ROLE_NAME and not IS_ARN_PROVIDED):
-        support_multithreading()
-        demisto.debug('using multiple accounts')
-        return account_runner
-    return func
+    return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
 
 
 """MAIN FUNCTIONS"""
@@ -393,7 +390,7 @@ def describe_images_command(args: dict) -> CommandResults:
 def describe_addresses_command(args: dict) -> CommandResults:
     demisto.debug('calling build_client')
     client = build_client(args)
-    demisto.debug('build_client called')
+    demisto.debug(f'build_client called: {client=}, {dir(client)=}')
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -3096,6 +3093,10 @@ def main():
         args = demisto.args()
 
         demisto.debug(f'Command being called is {command}')
+
+        if (ROLE_NAME and not IS_ARN_PROVIDED):
+            support_multithreading()
+            demisto.debug('using multiple accounts')
 
         match command:
             case 'test-module':
