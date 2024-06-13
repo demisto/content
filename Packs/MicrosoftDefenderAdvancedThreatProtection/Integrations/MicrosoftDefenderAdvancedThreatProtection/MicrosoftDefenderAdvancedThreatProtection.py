@@ -1267,7 +1267,9 @@ class MsClient:
         """
 
         Args:
-            filter_req string: a query request to use to filter machines
+            filter_req string: a query request to use to filter machines,
+            for example: "(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)".
+            Link to documentation: https://learn.microsoft.com/en-us/defender-endpoint/api/find-machines-by-ip?view=o365-worldwide
         Returns:
             dict: Machines info
         """
