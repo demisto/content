@@ -1,5 +1,5 @@
-id: a9aa3de6-5877-483a-8fda-7985d6422555
-version: 17
+id: CSCDomainManager_Test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CSCDomainManager_Test
 starttaskid: "0"
