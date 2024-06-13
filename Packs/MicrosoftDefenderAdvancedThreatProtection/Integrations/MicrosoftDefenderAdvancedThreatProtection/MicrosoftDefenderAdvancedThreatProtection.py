@@ -1263,11 +1263,11 @@ class MsClient:
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
     
-    def get_machines_v2(self, filter_req):
+    def get_machines_for_get_machine_by_ip_command(self, filter_req):
         """
 
         Args:
-            filter_req string
+            filter_req string: a query request to use to filter machines
         Returns:
             dict: Machines info
         """
@@ -5144,7 +5144,7 @@ def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResul
 
     filter = f"(ip='{ip}',timestamp={timestamp})"
 
-    machines_response = client.get_machines_v2(filter)
+    machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
     machines_response = machines_response.get('value', [])
     
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
