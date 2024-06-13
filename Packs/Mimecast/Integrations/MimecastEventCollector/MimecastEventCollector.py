@@ -562,7 +562,7 @@ def main():  # pragma: no cover
                 siem_event_handler, demisto_last_run)
 
             events = events_siem + de_dup_events_audit
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run, siem_fetched_events_for_next_run)
             demisto.setLastRun(next_run_obj)
 
