@@ -1039,7 +1039,7 @@ Updates the chat name. It can only be set for group chats.
 
 There is no context output for this command.
 
-##### Command Example test
+##### Command Example
 ```!microsoft-teams-chat-update chat="example chat" chat_name="update chat_name"```
 
 ##### Human Readable Output
