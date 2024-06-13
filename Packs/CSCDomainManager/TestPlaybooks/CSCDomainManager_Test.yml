@@ -1,5 +1,6 @@
-id: CSCDomainManager_Test
-version: -1
+id: a9aa3de6-5877-483a-8fda-7985d6422555
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
 name: CSCDomainManager_Test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -157,7 +157,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -294,44 +294,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 79752b1d-8f2b-4d9a-8b19-8a2c11db6514
-    type: regular
-    task:
-      id: 79752b1d-8f2b-4d9a-8b19-8a2c11db6514
-      version: -1
-      name: csc-domains-configuration-list by domain_name
-      script: CSCDomainManager|||csc-domains-configuration-list
-      type: regular
-      iscommand: true
-      brand: CSCDomainManager
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      domain_name:
-        complex:
-          root: CSCDomainManager.Domain.Configuration
-          accessor: domain
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1115
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: c4765886-a582-4844-893d-22f89c926cc5
@@ -414,37 +376,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 58f88324-7808-401e-81ce-95f14d00e2d9
-    type: regular
-    task:
-      id: 58f88324-7808-401e-81ce-95f14d00e2d9
-      version: -1
-      name: csc-domains-configuration-list - no input
-      script: CSCDomainManager|||csc-domains-configuration-list
-      type: regular
-      iscommand: true
-      brand: CSCDomainManager
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 930
         }
       }
     note: false
@@ -589,7 +520,8 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: ${CSCDomainManager.Domain.DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type).Indicator}
+        simple: ${CSCDomainManager.Domain.DBotScore(val.Indicator && val.Indicator
+          == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type).Indicator}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -597,6 +529,77 @@ tasks:
         "position": {
           "x": 1390,
           "y": 1925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 53ef4bdd-a77a-4923-8540-52b03d493362
+    type: regular
+    task:
+      id: 53ef4bdd-a77a-4923-8540-52b03d493362
+      version: -1
+      name: csc-domains-configuration-search - no input
+      description: Get configuration information for owned domains with optional filtering.
+      script: CSCDomainManager|||csc-domains-configuration-search
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 20238a83-f162-4179-8e9b-36279f64a2a8
+    type: regular
+    task:
+      id: 20238a83-f162-4179-8e9b-36279f64a2a8
+      version: -1
+      name: csc-domains-configuration-search by domain_name
+      description: Get configuration information for owned domains with optional filtering.
+      script: CSCDomainManager|||csc-domains-configuration-search
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain_name:
+        complex:
+          root: CSCDomainManager.Domain.Configuration
+          accessor: domain
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1095
         }
       }
     note: false
@@ -620,6 +623,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
-
-description: ''
