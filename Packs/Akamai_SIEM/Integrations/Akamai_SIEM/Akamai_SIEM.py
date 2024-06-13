@@ -489,6 +489,7 @@ def main():
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
+                demisto.debug(f"Sending {len(events)} events to xsiam.")
                 send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({'eventsPulled': total_events_count})
