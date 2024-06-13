@@ -1,0 +1,107 @@
+{
+    "attributes": {
+        "categories": {
+            "Forcepoint ThreatSeeker": "newly registered websites",
+            "Sophos": "illegal phishing, phishing and fraud",
+            "Webroot": "Phishing and Other Frauds"
+        },
+        "first_submission_date": 1603275371,
+        "last_analysis_date": 1635971126,
+        "last_analysis_stats": {
+            "harmless": 77,
+            "malicious": 7,
+            "suspicious": 0,
+            "timeout": 0,
+            "undetected": 8
+        },
+        "last_final_url": "http://www.example.com",
+        "last_http_response_code": 200,
+        "last_http_response_content_length": 4372,
+        "last_http_response_content_sha256": "67c1bc796bffe9169be3ef87dd8af4e8776d04484812a5bfdc7c5c9042aed1ca",
+        "last_http_response_headers": {
+            "accept-ch": "viewport-width, dpr, device-memory, rtt, downlink, ect, ua, ua-full-version, ua-platform, ua-platform-version, ua-arch, ua-model, ua-mobile",
+            "accept-ch-lifetime": "30",
+            "connection": "keep-alive",
+            "content-type": "text/html; charset=UTF-8",
+            "date": "Wed, 03 Nov 2021 20:25:28 GMT",
+            "server": "nginx",
+            "transfer-encoding": "chunked",
+            "vary": "Accept-Encoding",
+            "x-redirect": "skenzo"
+        },
+        "last_modification_date": 1635971440,
+        "last_submission_date": 1635971126,
+        "reputation": 0,
+        "tags": [],
+        "threat_names": ["Mal/HTMLGen-A"],
+        "times_submitted": 18,
+        "title": "something_definitely_unsecure.com",
+        "total_votes": {
+            "harmless": 0,
+            "malicious": 0
+        },
+        "trackers": {
+            "Amazon Cloudfront": [{
+                "id": "d1lxhc4jvstzrp",
+                "timestamp": 1635971126,
+                "url": "//something_definitely_unsecure.js"
+            }]
+        },
+        "url": "http://www.example.com",
+        "gti_assessment": {
+            "threat_score": {
+                "value": 100
+            },
+            "severity": {
+                "value": "SEVERITY_HIGH"
+            },
+            "contributing_factors": {
+                "mandiant_association_report": true,
+                "mandiant_association_actor": true,
+                "gavs_detections": 3,
+                "normalised_categories": [
+                    "trojan"
+                ],
+                "mandiant_association_malware": true,
+                "mandiant_confidence_score": 100
+            },
+            "verdict": {
+                "value": "VERDICT_MALICIOUS"
+            },
+            "description": "This indicator is malicious (high severity) with high impact."
+        }
+    },
+    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20",
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20"
+    },
+    "relationships": {
+        "last_serving_ip_address": {
+            "data": {
+                "id": "1.1.1.1",
+                "type": "ip_address"
+            },
+            "links": {
+                "related": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/last_serving_ip_address",
+                "self": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/relationships/last_serving_ip_address"
+            },
+            "meta": {
+                "count": 1
+            }
+        },
+        "network_location": {
+            "data": {
+                "id": "something_definitely_unsecure.com",
+                "type": "domain"
+            },
+            "links": {
+                "related": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/network_location",
+                "self": "https://www.virustotal.com/api/v3/urls/aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20/relationships/network_location"
+            },
+            "meta": {
+                "count": 1
+            }
+        }
+    },
+    "type": "url"
+}

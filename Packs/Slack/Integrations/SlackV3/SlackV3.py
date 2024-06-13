@@ -1030,6 +1030,10 @@ class SlackLogger(IntegrationLogger):
         text = self.encode(message)
         self.messages.append(text)
 
+    def exception(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
     def warning(self, message):
         text = self.encode(message)
         self.messages.append(text)

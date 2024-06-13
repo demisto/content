@@ -1,0 +1,16 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "criteria": [
+        {
+          "field": "---unused---",
+          "operator": "---unused---",
+          "value": "---unused---"
+        }
+      ]
+    }
+  ]
+}

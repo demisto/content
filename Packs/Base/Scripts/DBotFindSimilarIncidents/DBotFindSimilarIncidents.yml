@@ -14,7 +14,7 @@ args:
   description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
   name: fieldsToDisplay
 - auto: PREDEFINED
-  description: Comma-separated list of incident fields that have to be equal to the current incident fields. This helps reduce the query size.
+  description: Comma-separated list of incident fields that have to be equal to the current incident fields. This helps reduce the query size. These fields are not part of the similarity calculation.
   name: fieldExactMatch
 - auto: PREDEFINED
   defaultValue: 'False'
@@ -74,7 +74,9 @@ args:
   name: indicatorsTypes
 - description: Help to filter out indicators that appear in many incidents. Relevant if includeIndicatorsSimilarity is "True".
   name: maxIncidentsInIndicatorsForWhiteList
-comment: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+comment: |-
+  Finds past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+  Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
 commonfields:
   id: DBotFindSimilarIncidents
   version: -1
@@ -84,7 +86,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.88591
+dockerimage: demisto/ml:1.0.0.94241
 runas: DBotWeakRole
 runonce: true
 tests:

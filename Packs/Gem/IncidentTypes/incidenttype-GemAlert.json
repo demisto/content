@@ -1,0 +1,22 @@
+{
+    "fromVersion": "6.12.0",
+    "autorun": true,
+    "closureScript": "ResolveGemAlert",
+    "color": "#32EAC2",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Gem Alert",
+    "locked": false,
+    "name": "Gem Alert",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "layout": "Gem Layout"
+}
