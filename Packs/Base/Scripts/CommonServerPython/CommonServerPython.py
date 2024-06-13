@@ -33,8 +33,6 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
-MAX_ERROR_MESSAGE_LENGTH = 50000
-
 
 def __line__():
     cf = currentframe()
@@ -54,6 +52,7 @@ DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
+MAX_ERROR_MESSAGE_LENGTH = 50000
 
 try:
     if 'ExecutedCommands' in demisto.callingContext['context'] \
