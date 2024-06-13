@@ -232,8 +232,10 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'limit': limit,
         'page': page
     }
+    if params.get("timestamp"):
+        params['attribute_timestamp'] = params.pop("timestamp")
     if from_timestamp:
-        params['from'] = from_timestamp
+        params['attribute_timestamp'] = from_timestamp
     return params
 
 
@@ -251,6 +253,8 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: st
         if 'page' not in params:
             params["page"] = page
         params["limit"] = params.get("limit") or LIMIT
+        if params.get("timestamp"):
+            params['attribute_timestamp'] = params.pop("timestamp")
         if not params.get("attribute_timestamp") or from_timestamp:
             params['attribute_timestamp'] = from_timestamp
     except Exception as err:
