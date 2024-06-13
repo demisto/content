@@ -401,7 +401,7 @@ script:
       name: process_name
     - auto: PREDEFINED
       defaultValue: first_event_timestamp
-      description: Field by which to sort the results. Can be "first_event_time", or "last_event_time".
+      description: Field by which to sort the results. Can be "first_event_timestamp", or "last_event_timestamp".
       name: sort_field
       predefined:
       - first_event_timestamp
@@ -426,7 +426,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.threat_id
       description: Threat ID.
       type: String
-    - contextPath: CarbonBlackEEDR.Alert.first_event_time
+    - contextPath: CarbonBlackEEDR.Alert.first_event_timestamp
       description: First event time.
       type: Date
     - contextPath: CarbonBlackEEDR.Alert.target_value
