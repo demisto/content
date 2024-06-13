@@ -1584,7 +1584,7 @@ def test_return_error_truncated_message(mocker):
     mocker.patch.object(sys, 'exit')
     return_error(err_msg)
     assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
-        len("... This error body was truncated...")
+        len("...This error body was truncated...")
     assert "This error body was truncated" in results.call_args[0][0]["Contents"]
 
 

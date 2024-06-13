@@ -7298,12 +7298,14 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
-        truncated_message = f'{message[:MAX_ERROR_MESSAGE_LENGTH // 2]}... This error body was truncated...' \
-                            f'{message[-MAX_ERROR_MESSAGE_LENGTH // 2:]}' if len(message) > MAX_ERROR_MESSAGE_LENGTH else message
+        if len(message) > MAX_ERROR_MESSAGE_LENGTH:
+            half_length = MAX_ERROR_MESSAGE_LENGTH // 2
+            message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
+
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': truncated_message,
+            'Contents': message,
             'EntryContext': outputs,
         })
         sys.exit(0)
