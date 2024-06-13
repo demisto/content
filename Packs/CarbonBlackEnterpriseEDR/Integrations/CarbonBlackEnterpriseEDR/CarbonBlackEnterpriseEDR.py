@@ -502,7 +502,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
             'PolicyName': alert.get('device_policy'),
             'ProcessName': alert.get('process_name'),
             'Type': alert.get('type'),
-            'WorkflowState': alert.get('workflow', {}).get('state')
+            'WorkflowState': alert.get('workflow', {}).get('status')
         })
 
     readable_output = tableToMarkdown('Alerts list results', contents, headers, removeNull=True)

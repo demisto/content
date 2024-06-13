@@ -404,8 +404,8 @@ script:
       description: Field by which to sort the results. Can be "first_event_time", or "last_event_time".
       name: sort_field
       predefined:
-      - first_event_time
-      - last_event_time
+      - first_event_timestamp
+      - last_event_timestamp
     - auto: PREDEFINED
       defaultValue: DESC
       description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
