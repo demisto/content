@@ -90,14 +90,14 @@ def test_third_fetch_incidents(mocker):
 
 test_list_machines_by_ip_data = [
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
-     {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}),  # expected two machines
+     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a':'b'}, {'c':'d'}, {'e':'f'}]),  # expected two machines
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
-     [{'a':'b'}])  # expected only 1 machine
+     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a':'b'}])  # expected only 1 machine
 ]
 
 
-@pytest.mark.parametrize('params, expected', test_list_machines_by_ip_data, ids=['no_limit', 'with_limit'])
-def test_list_machines_by_ip_with_limit(mocker, params, expected):
+@pytest.mark.parametrize('params, ip, timestamp, expected', test_list_machines_by_ip_data)
+def test_list_machines_by_ip_with_limit(mocker, params, ip, timestamp, expected):
     """
     Given:
         -A limit argument.
@@ -111,7 +111,7 @@ def test_list_machines_by_ip_with_limit(mocker, params, expected):
     mock_get_machines_v2 = mocker.patch.object(MsClient, 'get_machines_v2', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     list_machines_by_ip_command(client_mocker, params)
-    assert mock_get_machines_v2.call_args == {'filter': f"machines/findbyip(ip='{params['ip']}',timestamp={params['timestamp']})"}
+    assert mock_get_machines_v2.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
     assert mock_handle_machines.call_args.args[0] == expected
     
 

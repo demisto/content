@@ -1271,9 +1271,8 @@ class MsClient:
         Returns:
             dict: Machines info
         """
-        cmd_url = 'machines/findbyip'
-        params = filter_req
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        cmd_url = 'api/machines/findbyip'+filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         
 
     def get_file_related_machines(self, file):
