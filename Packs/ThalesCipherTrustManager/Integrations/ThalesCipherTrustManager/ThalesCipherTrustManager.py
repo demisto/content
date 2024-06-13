@@ -465,6 +465,15 @@ def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> s
     return f'{start} to {end} of {total} {name}'
 
 
+def date_to_markdown(iso_date: Optional[str], empty_value: Optional[str] = None) -> str:
+    if not iso_date:
+        return empty_value
+    #transform this 2024-06-13T12:07:00.841794Z to 13 Jun 2024, 12:07 format
+    return datetime.strptime(iso_date, DATE_FORMAT).strftime('%d %b %Y, %H:%M')
+
+
+
+
 def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: Optional[dict] = None,
                                                  keys_value_mapping: Optional[dict] = None):
     transformed_data = {}
@@ -556,7 +565,8 @@ def group_create_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(NAME)} has been created successfully!'
     )
 
 
@@ -578,7 +588,8 @@ def group_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(GROUP_NAME)} has been updated successfully!'
     )
 
 
@@ -588,7 +599,8 @@ def user_to_group_add_command(client: CipherTrustClient, args: dict[str, Any]) -
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(USER_ID)} has been added successfully to {args.get(GROUP_NAME)}'
     )
 
 
@@ -605,6 +617,8 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
     if user_id := args.get(USER_ID):
         raw_response = client.get_user(user_id=user_id)
         outputs = raw_response
+        hr_title = outputs.get('username', '')
+
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
                                                            args.get(PAGE),
@@ -625,12 +639,37 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
             return_groups=optional_arg_to_bool(args.get(RETURN_GROUPS)), )
         raw_response = client.get_users_list(params=params)
         outputs = raw_response.get('resources', [])
+        hr_title = 'Users'
+    hr = ciphertrust_table_to_markdown(hr_title, data=raw_response,
+                                       keys=['username', 'name', 'email', 'created_at', 'updated_at', 'expires_at', 'user_id',
+                                             'last_login', 'logins_count', 'last_failed_login_at', 'password_changed_at',
+                                             'password_change_required'],
+                                       keys_headers_mapping={'username': 'Username',
+                                                             'name': 'Full Name',
+                                                             'email': 'Email',
+                                                             'created_at': 'Created',
+                                                             'updated_at': 'Updated',
+                                                             'expires_at': 'Expires', 'user_id': 'ID', 'last_login': 'Last Login',
+                                                             'logins_count': 'Logins',
+                                                             'last_failed_login_at': 'Last Failed Login',
+                                                             'password_changed_at': 'Password Changed',
+                                                             'password_change_required': 'Password Change Required'},
+
+                                       keys_value_mapping={'expires_at': lambda x: date_to_markdown(x, 'Never'),
+                                                           'last_login': lambda x: date_to_markdown(x, 'Never Logged In'),
+                                                           'last_failed_login_at': lambda x: date_to_markdown(x,
+                                                                                                              'Never Failed A Login'),
+                                                           'password_changed_at': date_to_markdown,
+                                                           'created_at': date_to_markdown,
+                                                           'updated_at': date_to_markdown,
+                                                           }
+                                       )
+
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=tableToMarkdown(name='users list',
-                                        t=raw_response.get('resources') if raw_response.get('resources') else raw_response),
+        readable_output=hr,
     )
 
 

@@ -2291,9 +2291,6 @@ script:
       default: false
       defaultValue: 50
     outputs:
-    - contextPath: CipherTrust.Users.userid
-      description: A unique identifier for API call usage.
-      type: String
     - contextPath: CipherTrust.Users.username
       description: The login name of the user. This is the identifier used to login. This attribute is required to create a user, but is omitted when getting or listing user  It cannot be updated.
       type: String
