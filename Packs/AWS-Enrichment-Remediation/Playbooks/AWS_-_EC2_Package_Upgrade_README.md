@@ -10,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* AWS - System Manager
+AWS - System Manager
 
 ### Scripts
 
