@@ -7462,4 +7462,3 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
         last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
     assert entries[0]["name"] == "Correlation 1"
-

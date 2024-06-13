@@ -14223,7 +14223,7 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: MaxFetch, l
     # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
     # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
     new_max_fetch = {
-        log_type: max_fetch_dict[log_type] + configured_max_fetch
+        log_type: max_fetch_dict[log_type] + configured_max_fetch  # type: ignore[literal-required]
         for log_type, last_fetch in last_fetch_dict.items()
         if previous_last_fetch.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
     }
@@ -14250,7 +14250,7 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
 
     entries = {}
     for log_type, query in queries_dict.items():
-        max_fetch = max_fetch_dict[log_type]
+        max_fetch = max_fetch_dict[log_type]  # type: ignore[literal-required]
         fetch_start_time = fetch_start_datetime_dict.get(log_type)
         if fetch_start_time:
             query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))  # type: ignore
@@ -14267,13 +14267,16 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
-    occurred = incident_entry.get('match_time', '')
-    if occurred_datetime := dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}):
-        occurred_datetime = occurred_datetime.strftime(DATE_FORMAT)
+    match_time = incident_entry.get('match_time', '')
+    occurred = (
+        occurred_datetime.strftime(DATE_FORMAT)
+        if (occurred_datetime := dateparser.parse(match_time, settings={'TIMEZONE': 'UTC'}))
+        else None
+    )
 
     return {
         'name': f"Correlation {incident_entry.get('@logid')}",
-        'occurred': occurred_datetime,
+        'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
         'type': 'CORRELATION'
     }
@@ -14288,13 +14291,16 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
-    occurred = incident_entry.get('time_generated', '')
-    if occurred_datetime := dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'}):
-        occurred_datetime = occurred_datetime.strftime(DATE_FORMAT)
+    time_generated = incident_entry.get('time_generated', '')
+    occurred = (
+        occurred_datetime.strftime(DATE_FORMAT)
+        if (occurred_datetime := dateparser.parse(time_generated, settings={'TIMEZONE': 'UTC'}))
+        else None
+    )
 
     return {
         'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
-        'occurred': occurred_datetime,
+        'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
         'type': incident_entry.get('type')
     }
@@ -14321,11 +14327,11 @@ def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
 
     # add new log types to last_fetch_dict
     if queries_dict:
-        last_fetch_dict |= {
+        last_fetch_dict |= {  # type: ignore[assignment]
             log_type: ''
             for log_type in queries_dict
             if log_type not in last_fetch_dict
-        }  # type: ignore[literal-required]
+        }
 
     # update fetch_start_datetime_dict with relevant last fetch time per log type in datetime UTC format
     # if there is no prior last fetch time available for a log type - it will be set it to first_fetch
@@ -14354,15 +14360,16 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
     Returns:
         QueryMap: queries per log type dictionary
     """
+    queries_dict = QueryMap()  # type: ignore[typeddict-item]
     if log_types := params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
-        queries_dict = {
+        queries_dict |= {
             log_type: log_type_query
             for log_type in active_log_type_queries
             if (log_type_query := params.get(f'{log_type.lower()}_query'))
         }
-    return cast(QueryMap, queries_dict)
+    return queries_dict
 
 
 def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, Any]]],
