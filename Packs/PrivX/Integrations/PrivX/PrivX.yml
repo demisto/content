@@ -1,0 +1,145 @@
+category: Identity and Access Management
+commonfields:
+  id: PrivX
+  version: -1
+configuration:
+- defaultvalue: 
+  display: Your PrivX server address (FQDN or IP address)
+  name: hostname
+  required: true
+  type: 0
+- defaultvalue: 443
+  display: Your PrivX server HTTPS port
+  name: port
+  required: true
+  type: 0
+- defaultvalue: privx-external
+  display: OAuth client ID
+  name: oauth-client-id
+  required: true
+  type: 0
+  additionalinfo: default value "privx-external" recommended
+- display: OAuth client secret
+  name: oauth-client-secret
+  required: true
+  secret: true
+  hiddenusername: true
+  type: 0
+- display: API client ID
+  name: api-client-id
+  required: true
+  hiddenusername: true
+  secret: true
+  type: 0
+- display: API client secret
+  name: api-client-secret
+  required: true
+  hiddenusername: true
+  secret: true
+  type: 0
+- defaultvalue: |
+   -----BEGIN CERTIFICATE-----
+   Insert PrivX TLS trust anchor here
+   See https://yourprivxserver/privx/deployment/api-clients for more information
+   -----END CERTIFICATE-----
+  display: PrivX CA certificate
+  name: ca-certificate
+  required: true
+  type: 12
+- defaultvalue: |
+   ssh-rsa ...
+  display: 'User''s public key. Can be defined either here or as a parameter for each privx-get-cert request.'
+  name: public-key
+  required: false
+  type: 12
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'Integration to PrivX installation can be used for fetching short term certificates for authenticating against target hosts or fetching secrets from PrivX secrets vault for administrative purposes. To allow fetching certificates, make sure you have the "Use with PrivX Agent" permission enabled in your role.'
+display: 'PrivX'
+name: PrivX
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'UUID of the PrivX role that is used for accessing the target host (Optional)'
+      isArray: false
+      name: role-id
+      required: false
+      secret: false
+    - default: false
+      description: 'Target host''s username (Optional). Use either username or user id when fetching the certificate.'
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: 'Target host''s hostname (Optional). Use either hostname or host-id when fetching the certificate.'
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: 'Target host''s UUID (Optional). Use either host-id or hostname when fetching the certificate.'
+      isArray: false
+      name: host-id
+      required: false
+      secret: false
+    - default: false
+      description: 'User''s public key. Required only if the public key was not configured in integration settings'
+      isArray: false
+      name: public-key
+      required: false
+      secret: false
+    - default: false
+      description: 'Target host service (Optional). SSH, RDP or WEB. API clients can only fetch SSH certificates.'
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Fetches short-term SSH certificate via PrivX for accessing SSH target hosts. Connect to target with SSH client using received certificate and client''s private key.'
+    execution: false
+    name: privx-get-cert
+    outputs:
+    - contextPath: PrivX.Certificates
+      description: 'SSH certificates. Copy the used certificate to a file and use it with private key to access target hosts: ssh -o CertificateFile=id_rsa-cert -i ~/.ssh/id_rsa targetuser@targethost'
+      type: String
+    example: |
+      {
+          "role-id": "1234-5678-9101",
+          "username": "targetuser",
+          "hostname": "targethost",
+          "host-id": "host-uuid-1234",
+          "public-key": "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA7... user@hostname",
+          "service": "SSH"
+      }
+  - arguments:
+    - default: false
+      description: 'Name of the secret to be fetched.'
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Fetches a secret from PrivX Secrets Vault.'
+    execution: false
+    name: privx-get-secret
+    outputs:
+    - contextPath: PrivX.SecretValue
+      description: 'Secret from the PrivX secrets vault'
+      type: String
+    example: |
+      {
+          "name": "my-secret"
+      }
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/privx-api:26.0.0.97238
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

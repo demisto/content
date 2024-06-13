@@ -1,0 +1,3 @@
+!privx-get-cert username=xsoar hostname=10.1.12.15
+!privx-get-cert username=xsoar hostname=10.1.12.15 service=SSH role-id=b4a9749e-bc9b-5e96-4c63-9bfd58b74e7b
+!privx-get-secret name="the-secret"

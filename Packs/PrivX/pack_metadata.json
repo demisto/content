@@ -1,0 +1,23 @@
+{
+    "name": "PrivX",
+    "description": "Fetching certificates and secrets via PrivX instance",
+    "support": "partner",
+    "currentVersion": "1.26.0",
+    "author": "SSH Communications Security",
+    "url": "https://www.ssh.com/products/privileged-access-management-privx",
+    "email": "",
+    "categories": [
+        "Authentication & Identity Management"
+    ],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
