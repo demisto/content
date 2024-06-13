@@ -1196,12 +1196,12 @@
         {
             "integrations": "MimecastV2",
             "playbookID": "Mimecast test",
-            "instance_names": "api1"
+            "instance_names": "mimecast_api_v1"
         },
         {
             "integrations": "MimecastV2",
             "playbookID": "Mimecast Test api 2.0",
-            "instance_names": "api2"
+            "instance_names": "mimecast_api_v2"
         },
         {
             "playbookID": "CreateEmailHtmlBody_test_pb",
