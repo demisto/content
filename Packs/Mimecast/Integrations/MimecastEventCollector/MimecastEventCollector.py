@@ -107,6 +107,11 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         """
         limit = 1 if demisto.command() == 'test-module' else SIEM_LOG_LIMIT
         stored = []
+            
+        if self.events_from_prev_run:
+            # In order to ensure no bc break and missing events v 2.2.6
+            stored.extend(self.events_from_prev_run)
+            self.events_from_prev_run = []
 
         for logs in self._iter_events():
             stored.extend(logs)
@@ -413,7 +418,7 @@ def set_audit_next_run(audit_events: list) -> str:
     return next_run
 
 
-def handle_last_run_exit(audit_next_run: str, duplicates_audit: list, siem_next_run: str, siem_fetched_events_for_next_run: list):
+def handle_last_run_exit(audit_next_run: str, duplicates_audit: list, siem_next_run: str):
     """Sets the next_run object
 
     Args:
@@ -430,8 +435,7 @@ def handle_last_run_exit(audit_next_run: str, duplicates_audit: list, siem_next_
                        AUDIT_LAST_RUN: audit_next_run,
                        AUDIT_EVENT_DEDUP_LIST: duplicates_audit}
     demisto.info(f'audit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
-                 f'audit potential dups: {duplicates_audit}\n'
-                 f'siem_events_for_next_run: {len(siem_fetched_events_for_next_run)}\n')
+                 f'audit potential dups: {duplicates_audit}\n')
     return next_run_object
 
 
@@ -446,7 +450,7 @@ def siem_events_last_run(siem_event_handler: MimecastGetSiemEvents, demisto_last
         siem_fetched_events_for_next_run (list): list of events for next run.
     """
     siem_next_run = siem_event_handler.token if siem_event_handler.token else demisto_last_run.get(SIEM_LAST_RUN, '')
-    return siem_next_run, siem_event_handler.events_from_prev_run
+    return siem_next_run
 
 
 def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run_time: str) -> list:
@@ -525,7 +529,7 @@ def main():  # pragma: no cover
         demisto_last_run: dict = demisto.getLastRun()
         de_dup_events_audit, audit_next_run, duplicates_audit = audit_events_last_run(
             audit_event_handler, events_audit, demisto_last_run)
-        siem_next_run, siem_fetched_events_for_next_run = siem_events_last_run(
+        siem_next_run = siem_events_last_run(
             siem_event_handler, demisto_last_run)
             
         if command == 'test-module':
@@ -534,7 +538,7 @@ def main():  # pragma: no cover
         elif command == 'fetch-events':
             events = events_siem + de_dup_events_audit
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run, siem_fetched_events_for_next_run)
+            next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run)
             demisto.setLastRun(next_run_obj)
 
         elif command == 'mimecast-get-events':
