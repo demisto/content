@@ -1578,12 +1578,12 @@ def test_return_error_truncated_message(mocker):
     Then
     - Return a truncated message that contains clarification about the truncation
     """
-    from CommonServerPython import return_error
-    err_msg = "1" * 100000
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * (MAX_ERROR_MESSAGE_LENGTH + 1)
     results = mocker.spy(demisto, 'results')
     mocker.patch.object(sys, 'exit')
     return_error(err_msg)
-    assert len(results.call_args[0][0]["Contents"]) == CommonServerPython.MAX_ERROR_MESSAGE_LENGTH + \
+    assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
         len("... This error body was truncated...")
     assert "This error body was truncated" in results.call_args[0][0]["Contents"]
 
@@ -1600,8 +1600,8 @@ def test_return_error_valid_message(mocker):
     - Ensure the same message is returned
     - Ensure the error message does not contain clarification about a truncation
     """
-    from CommonServerPython import return_error
-    err_msg = "1" * 30
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * int(MAX_ERROR_MESSAGE_LENGTH * 0.9)
     results = mocker.spy(demisto, 'results')
     mocker.patch.object(sys, 'exit')
     return_error(err_msg)
