@@ -97,10 +97,10 @@ class Client(BaseClient):
     def send_get_request(self, url_suffix, params) -> Any:
         try:
             results = self._http_request(
-            method="GET",
-            url_suffix=url_suffix,
-            params=params,
-            headers=self._headers
+                method="GET",
+                url_suffix=url_suffix,
+                params=params,
+                headers=self._headers
             )
         except DemistoException as e:
             if e.res:
@@ -190,7 +190,7 @@ def get_domains_search_hr_fields(domains_list) -> list:
     hr_formatted_domains = []
     if not isinstance(domains_list, list):
         domains_list = [domains_list]
-    
+
     for domain in domains_list:
         filtered_domain = {
             'Qualified Domain Name': domain.get('qualifiedDomainName'),
@@ -369,7 +369,7 @@ def create_common_domain(domain_json, dbot_score):
         tech_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'TECHNICAL'),
         dbot_score=dbot_score
     )
-    
+
     return domain_context
 
 
@@ -382,6 +382,7 @@ def create_common_dbot_score(domain_name, reliability):
         reliability=reliability
     )
     return dbot_score
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -442,7 +443,7 @@ def csc_domains_search_command(client: Client, args) -> CommandResults:
     results = CommandResults(
         readable_output=tableToMarkdown('Filtered Domains', domains_with_required_fields,
                                         headers=HR_HEADERS_FOR_DOMAINS_SEARCH,
-                                        removeNull= True),
+                                        removeNull=True),
         outputs_prefix='CSCDomainManager.Domain',
         outputs_key_field='QualifiedDomainName',
         outputs=domains_list
@@ -470,7 +471,7 @@ def csc_domains_availability_check_command(client: Client, args) -> CommandResul
     results = CommandResults(
         readable_output=tableToMarkdown('Domains Availability', hr_output,
                                         headers=HR_HEADERS_FOR_AVAILABILITY,
-                                        removeNull= True),
+                                        removeNull=True),
         outputs_prefix='CSCDomainManager.Domain.Availability',
         outputs=available_domains_results
     )
@@ -506,7 +507,7 @@ def csc_domains_configuration_search_command(client: Client, args) -> CommandRes
         readable_output=tableToMarkdown('Filtered Configurations',
                                         configurations_with_required_fields,
                                         headers=HR_HEADERS_FOR_DOMAIN_CONFI_LIST,
-                                        removeNull= True),
+                                        removeNull=True),
         outputs_prefix='CSCDomainManager.Domain.Configuration',
         outputs_key_field='CSCDomainManager.Domain.Configuration.Domain',
         outputs=configurations_list
@@ -528,11 +529,11 @@ def domain(client: Client, args, reliability):
     """
     domains_name = args.get('domain').split(",")
     final_data = []
-    
+
     for name in domains_name:
         domain_json = client.get_qualified_domain_name(name)
         hr_data = get_domain_hr_fields(domain_json)
-        
+
         dbot_score = create_common_dbot_score(name, reliability)
         domain_context = create_common_domain(domain_json, dbot_score)
         results = CommandResults(
@@ -542,7 +543,7 @@ def domain(client: Client, args, reliability):
             outputs=domain_json
         )
         final_data.append(results)
-        
+
     return final_data
 
 
@@ -578,7 +579,7 @@ def main():
             token=token,
             apikey=api_key
         )
-        
+
         # results = client._http_request(
         #     method="PUT",
         #     url_suffix='token/refresh',
