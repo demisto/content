@@ -419,7 +419,7 @@ def load_content_from_file(entry_id: str) -> str:
 def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
     if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
         return_results(
-            [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data)])
+            [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data) if file_data])
     elif isinstance(data, str) or isinstance(data, bytes) and isinstance(filenames, str):
         return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
     else:
@@ -468,10 +468,10 @@ def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> s
 def date_to_markdown(iso_date: Optional[str], empty_value: Optional[str] = None) -> str:
     if not iso_date:
         return empty_value
-    #transform this 2024-06-13T12:07:00.841794Z to 13 Jun 2024, 12:07 format
-    return datetime.strptime(iso_date, DATE_FORMAT).strftime('%d %b %Y, %H:%M')
-
-
+    try:
+        return datetime.strptime(iso_date, DATE_FORMAT).strftime('%d %b %Y, %H:%M')
+    except ValueError:
+        return datetime.strptime(iso_date, '%Y-%m-%dT%H:%M:%SZ').strftime('%d %b %Y, %H:%M')
 
 
 def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: Optional[dict] = None,
@@ -491,20 +491,64 @@ def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_
 
 def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: Optional[list[str]],
                                   keys_headers_mapping: Optional[dict] = None, keys_value_mapping: Optional[dict] = None) -> str:
-    if resources := data.get('resources', []):
-        skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
-        data = resources
-    if resources:
+    resources = []
+    if isinstance(data, dict):
+        if resources := data.get('resources', []):
+            skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
+            data = resources
+        if resources:
+            transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping) for d
+                                in data]
+        else:
+            transformed_data = ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping, keys_value_mapping)
+    else:
         transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping) for d
                             in data]
-
-    else:
-        transformed_data = ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping, keys_value_mapping)
 
     t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
     if resources:
         return t + '\n' + skip_limit_total_hr
     return t
+
+
+def hr_local_ca_list(raw_response):
+    active_keys = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
+                   'purpose_client_authentication', 'purpose_user_authentication']
+    other_keys = ['name', 'subject', 'createdAt', 'sha1Fingerprint']
+    keys_headers_mapping = {'name': 'Name', 'subject': 'Subject', 'serialNumber': 'Serial #', 'notBefore': 'Activation',
+                            'notAfter': 'Expiration',
+                            'purpose_client_authentication': 'Client Auth', 'purpose_user_authentication': 'User Auth',
+                            'createdAt': 'Created',
+                            'sha1Fingerprint': 'Fingerprint'}
+    keys_value_mapping = {'notBefore': date_to_markdown,
+                          'notAfter': date_to_markdown,
+                          'createdAt': date_to_markdown,
+                          'purpose_user_authentication': lambda x: 'Enabled' if x else 'Disabled',
+                          'purpose_client_authentication': lambda x: 'Enabled' if x else 'Disabled'}
+
+    active_cas, pending_cas, expired_cas = [], [], []
+    for ca in raw_response.get('resources', []):
+        if purpose := ca.pop('purpose', {}):
+            ca['purpose_user_authentication'] = purpose.get('user_authentication')
+            ca['purpose_client_authentication'] = purpose.get('client_authentication')
+        if ca.get('state') == 'active':
+            active_cas.append(ca)
+        elif ca.get('state') == 'pending':
+            pending_cas.append(ca)
+        elif ca.get('state') == 'expired':
+            expired_cas.append(ca)
+
+    hr_title = '### Local Certificate Authorities \n'
+    hr_skip_limit_title = hr_skip_limit_to_markdown(raw_response.get('skip', 0), raw_response.get('limit', 0),
+                                                    raw_response.get('total', 0), 'Local '
+                                                                               'CAs')
+    active_cas_hr = ciphertrust_table_to_markdown('Active CAs', active_cas, active_keys, keys_headers_mapping, keys_value_mapping)
+    pending_cas_hr = ciphertrust_table_to_markdown('Pending CAs', pending_cas, other_keys, keys_headers_mapping,
+                                                   keys_value_mapping)
+    expired_cas_hr = ciphertrust_table_to_markdown('Expired CAs', expired_cas, other_keys, keys_headers_mapping,
+                                                   keys_value_mapping)
+
+    return f'{hr_title}{active_cas_hr}\n{pending_cas_hr}\n{expired_cas_hr}\n{hr_skip_limit_title}'
 
 
 ''' COMMAND FUNCTIONS '''
@@ -694,7 +738,8 @@ def user_create_command(client: CipherTrustClient, args: dict[str, Any]) -> Comm
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(USERNAME)} has been created successfully!'
     )
 
 
@@ -763,7 +808,8 @@ def local_ca_create_command(client: CipherTrustClient, args: dict[str, Any]) -> 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'Pending Local CA {args.get(CN)} has been created successfully!'
     )
 
 
@@ -777,6 +823,15 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
+
+        if raw_response.get('state') == 'pending':
+            keys = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
+                    'sha256Fingerprint', 'sha512Fingerprint']
+        else:
+            keys = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'size', 'serialNumber', 'subject', 'issuer',
+                    'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+        hr_title = raw_response.get('resources').get('cn', '')
+        hr = ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys)
         outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
         return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
     else:  # get a list of local CAs with optional filtering
@@ -794,12 +849,13 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raw_response = client.get_local_ca_list(params=params)
         outputs = [remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
                    raw_response.get('resources', [])]
+        hr = hr_local_ca_list(raw_response)
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=tableToMarkdown('local CAs', outputs),
+        readable_output=hr,
     )
 
 
