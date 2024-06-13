@@ -1,4 +1,4 @@
-description: This playbook upgrades supported package on an AWS EC2 instance.
+description: This playbook upgrades supported packages on an AWS EC2 instance.
 id: AWS - EC2 Package Upgrade
 inputSections:
 - description: Generic group for inputs.
