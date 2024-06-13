@@ -29,6 +29,9 @@ CSC generates the API key and creates the service account, with requested permis
  
 The client API administrator then logs into our CSCDomainManagerSM at https://weblogin.cscglobal.com to retrieve the key and generate the bearer token for the API service account.
 
+### Token Refresh
+Token will expire after 30 consecutive days of no activity, you can reactive it by using the [token refresh endpoint](https://www.cscglobal.com/cscglobal/docs/dbs/domainmanager/api-v2/#/token/put_token_refresh).
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

@@ -14,6 +14,9 @@ The client API administrator then logs into the CSCDomainManagerSM at https://we
 
 The API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
 
+### Token Refresh
+Token will expire after 30 consecutive days of no activity, you can reactive it by using the [token refresh endpoint](https://www.cscglobal.com/cscglobal/docs/dbs/domainmanager/api-v2/#/token/put_token_refresh).
+
 ### For more information
 - [Visit the CSC website](https://www.cscdbs.com/)
 - [See the api page](https://www.cscglobal.com/cscglobal/docs/dbs/domainmanager/api-v2/#/)

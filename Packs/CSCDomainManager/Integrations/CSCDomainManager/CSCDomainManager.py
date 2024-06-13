@@ -103,14 +103,12 @@ class Client(BaseClient):
                 headers=self._headers
             )
         except DemistoException as e:
-            if e.res:
-                error = e.res.status_code
-                if error == 404:
-                    results = CommandResults(
-                        readable_output="No results were found",
-                        outputs=None,
-                        raw_response=None,
-                    )
+            print (e)
+            results = CommandResults(
+                readable_output="No results were found",
+                outputs=None,
+                raw_response=None,
+            )
         return results
 
     def get_qualified_domain_name(self, qualified_domain_name):
@@ -299,20 +297,6 @@ def get_domain_hr_fields(domain) -> dict:
 
     domain.get('whoisContacts')
     return hr_formatted_domain
-
-
-def get_whois_contacts_fields_for_search_domains(whois_contacts, field_name: str) -> list:
-    """
-    Create a list of contact.field_name for each contact in whois_contacts. Specific arrangement for the search domains command
-
-    Args:
-        whois_contacts: list of contacts
-        field_name: the field to get for each contact
-
-    Returns:
-        A list of contact.field_name
-    """
-    return [contact.get(field_name) for contact in whois_contacts]
 
 
 def get_whois_contacts_fields_for_domain(whois_contact, field_names: List[str], contact_type_condition: str) -> list:
@@ -532,6 +516,9 @@ def domain(client: Client, args, reliability):
 
     for name in domains_name:
         domain_json = client.get_qualified_domain_name(name)
+        if isinstance(domain_json, CommandResults): #domain not found, continue to next name
+            continue
+        
         hr_data = get_domain_hr_fields(domain_json)
 
         dbot_score = create_common_dbot_score(name, reliability)
@@ -544,6 +531,13 @@ def domain(client: Client, args, reliability):
         )
         final_data.append(results)
 
+    if final_data == []: #if no domains were found
+        final_data = CommandResults(
+                readable_output="No results were found",
+                outputs=None,
+                raw_response=None,
+            )
+        
     return final_data
 
 
