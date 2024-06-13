@@ -2,7 +2,7 @@ import json
 from CSCDomainManager import Client
 from CSCDomainManager import csc_domains_search_command
 from CSCDomainManager import csc_domains_availability_check_command
-from CSCDomainManager import csc_domains_configuration_list_command
+from CSCDomainManager import csc_domains_configuration_search_command
 from CSCDomainManager import domain
 from CSCDomainManager import create_params_string
 from CSCDomainManager import get_domains_search_hr_fields
@@ -152,10 +152,9 @@ def test_csc_domains_search_with_qualified_domain_name(mocker):
     mocker.patch.object(client, 'send_get_request', return_value=GET_REQUEST_QUALIFIED_DOMAIN_NAME)
     result = csc_domains_search_command(client, args)
     result_output = result.to_context().get('Contents')
-    assert len(result_output) == 1
-    assert result_output[0].get('qualifiedDomainName') == 'csc-panw.com'
-    assert result_output[0].get('registrationDate') == '22-Apr-2024 UTC'
-    assert result_output[0].get('extension') == 'com'
+    assert result_output.get('qualifiedDomainName') == 'csc-panw.com'
+    assert result_output.get('registrationDate') == '22-Apr-2024 UTC'
+    assert result_output.get('extension') == 'com'
 
 
 def test_csc_domains_availability_check(mocker):
@@ -178,7 +177,7 @@ def test_csc_domains_configuration_list(mocker):
         'domain_name': 'csc-panw.biz'
     }
     mocker.patch.object(client, 'send_get_request', return_value=GET_DOMAINS_CONFI_LIST)
-    result = csc_domains_configuration_list_command(client, args)
+    result = csc_domains_configuration_search_command(client, args)
     result_output = result.to_context().get('Contents')
     assert len(result_output) == 1
     assert result_output[0].get('domain') == 'csc-panw.biz'
@@ -193,7 +192,7 @@ def test_domain(mocker):
     mocker.patch.object(client, 'send_get_request', return_value=DOMAIN_DOMAIN)
     reliability = DBotScoreReliability.A
     result = domain(client, args, reliability)
-    result_output = result.to_context()
+    result_output = result[0].to_context()
     result_output = result_output.get('Contents')
     assert result_output.get('qualifiedDomainName') == 'example.com'
     assert result_output.get('domain') == 'example'
