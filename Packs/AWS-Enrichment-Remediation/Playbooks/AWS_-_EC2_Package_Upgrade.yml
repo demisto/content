@@ -140,7 +140,7 @@ tasks:
       description: Determines if the AWS - Systems Manager integration instance is configured and input values are defined.
       id: 75306cbe-5048-4052-8a48-ac85290e53e4
       iscommand: false
-      name: Is AWS - Systems Manager enabled and are Input values defined?
+      name: Is AWS - Systems Manager enabled and are input values defined?
       type: condition
       version: -1
     taskid: 75306cbe-5048-4052-8a48-ac85290e53e4
