@@ -7174,14 +7174,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### microsoft-atp-list-machines-by-ip
+### microsoft-atp-get-machine-by-ip
 
 ***
 Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
 
 #### Base Command
 
-`microsoft-atp-list-machines-by-ip`
+`microsoft-atp-get-machine-by-ip`
 
 #### Input
 
@@ -7221,7 +7221,7 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
 
 #### Command example
-```!microsoft-atp-list-machines-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
+```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
 #### Human Readable Output
 
 >### Microsoft Defender ATP Machine:

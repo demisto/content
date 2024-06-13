@@ -5128,7 +5128,7 @@ def handle_machines(machines_response: list) ->list[CommandResults]:
     return machines_outputs
 
 
-def list_machines_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
+def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
     """Retreives Machines that were seen with the requested internal IP
     in the time range of 15 minutes prior and aftera given timestamp.
     Args:
@@ -5616,8 +5616,8 @@ def main():  # pragma: no cover
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
 
-        elif command == 'microsoft-atp-list-machines-by-ip':
-            return_results(list_machines_by_ip_command(client, args))
+        elif command == 'microsoft-atp-get-machine-by-ip':
+            return_results(get_machine_by_ip_command(client, args))
 
         elif command == 'microsoft-atp-isolate-machine':
             return_outputs(*isolate_machine_command(client, args))
