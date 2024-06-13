@@ -110,7 +110,7 @@ class IntegrationEventsClient(ABC):
 
     def call(self, request: IntegrationHTTPRequest) -> requests.Response:
         try:
-            response = self.session.request(**request.model_dump())
+            response = self.session.request(**request.dict())
             response.raise_for_status()
             return response
         except Exception as exc:
