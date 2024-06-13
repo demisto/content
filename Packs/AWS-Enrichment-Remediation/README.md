@@ -1,7 +1,7 @@
 ##### What does this pack do?
 
 The pack contains AWS playbooks that conduct enrichment and/or remediation and can use multiple other AWS content packs:
-- Enrichment: Give an IP address, see if there is an associated EC2 instance and if so pull information on the associated security group. If an SSM agent is installed on the instance, pull information from the SSM agent.
+- Enrichment: Given an IP address, see if there is an associated EC2 instance and if so pull information on the associated security group. If an SSM agent is installed on the instance, pull information from the SSM agent.
 - Remediation: Given the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved. If there is a matching ASM rule ID that is supported, upgrade the associated package to the latest available version.
 - Unclaimed S3 Bucket Validation: The playbook sends a HTTP get response to the domain and validates the missing bucket information.
 - Unclaimed S3 Bucket Remediation: The playbook will create the unclaimed S3 bucket.
