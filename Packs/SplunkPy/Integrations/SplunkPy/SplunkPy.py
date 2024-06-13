@@ -1378,11 +1378,13 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
 
     try:
         handle_submitted_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        demisto.debug(f'####splunk incidents to be submitted: {len(incidents)} incidents')
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper,
                            comment_tag_to_splunk=comment_tag_to_splunk,
                            comment_tag_from_splunk=comment_tag_from_splunk)
         submit_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        demisto.debug(f'####splunk submitted incidents: {len(incidents)} incidents')
 
     except Exception as e:
         err = f'Caught an exception while executing the enriching fetch mechanism. Additional Info: {str(e)}'
