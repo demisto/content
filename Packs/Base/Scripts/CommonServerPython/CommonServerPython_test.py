@@ -1570,7 +1570,7 @@ def test_is_mac_address():
 def test_return_error_truncated_message(mocker):
     """
     Given
-    - invalid error message due to longer than max length (60,000)
+    - invalid error message due to longer than max length (50,000)
 
     When
     - return_error function is called
@@ -1583,7 +1583,8 @@ def test_return_error_truncated_message(mocker):
     results = mocker.spy(demisto, 'results')
     mocker.patch.object(sys, 'exit')
     return_error(err_msg)
-    assert len(results.call_args[0][0]["Contents"]) == 20000 + len("... This error body was truncated...")
+    assert len(results.call_args[0][0]["Contents"]) == CommonServerPython.MAX_ERROR_MESSAGE_LENGTH + \
+        len("... This error body was truncated...")
     assert "This error body was truncated" in results.call_args[0][0]["Contents"]
 
 

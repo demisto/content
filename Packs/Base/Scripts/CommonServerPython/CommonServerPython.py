@@ -33,8 +33,7 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
-MAX_MSG_LENGTH = 60000
-MAX_CHARS_PREFIX_SUFFIX = 10000  # for shortening a long message
+MAX_ERROR_MESSAGE_LENGTH = 50000
 
 
 def __line__():
@@ -7261,7 +7260,7 @@ def return_error(message, error='', outputs=None):
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return in the entry (required)
+        :param message: The message to return to the entry (required)
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
@@ -7300,8 +7299,8 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
-        truncated_message = f'{message[:MAX_CHARS_PREFIX_SUFFIX]}... This error body was truncated...' \
-                            f'{message[-MAX_CHARS_PREFIX_SUFFIX:]}' if len(message) > MAX_MSG_LENGTH else message
+        truncated_message = f'{message[:MAX_ERROR_MESSAGE_LENGTH // 2]}... This error body was truncated...' \
+                            f'{message[-MAX_ERROR_MESSAGE_LENGTH // 2:]}' if len(message) > MAX_ERROR_MESSAGE_LENGTH else message
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
