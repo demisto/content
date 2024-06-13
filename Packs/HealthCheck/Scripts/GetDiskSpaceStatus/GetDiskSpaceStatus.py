@@ -7,4 +7,4 @@ wList = []
 wList.append({"Total space (In GB)": round(res["checkRuns"]["diagnostic.disk.space"]["result"]["metrics"]["totalGb"], 2),\
               "Used space (In GB)": round(res["checkRuns"]["diagnostic.disk.space"]["result"]["metrics"]["usedGb"], 2)})
 
-demisto.results({"total": len(wList), "data": wList})
+return_results({"total": len(wList), "data": wList})
