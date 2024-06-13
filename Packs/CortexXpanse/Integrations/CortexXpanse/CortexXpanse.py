@@ -1208,6 +1208,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     alert_id_list = argToList(args.get('alert_id_list'))
     severity = args.get('severity')
     status = args.get('status')
+    comment = str(args.get('comment'))
 
     update_params = {"update_data": {}}  # type: ignore
     if alert_id_list:
@@ -1222,6 +1223,8 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
             update_params["update_data"]["status"] = status
         else:
             raise ValueError(f'status must be one of {ALERT_STATUSES}')
+    if comment:
+        update_params["update_data"]["comment"] = comment
 
     response = client.update_alert_request(request_data=update_params)
 

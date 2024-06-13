@@ -584,7 +584,8 @@ def test_update_alert_command(requests_mock):
     client = new_client()
     args = {
         'alert_id_list': 602,
-        'status': 'new'
+        'status': 'new',
+        'comment': 'test updating'
     }
 
     response = update_alert_command(client, args)
