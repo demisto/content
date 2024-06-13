@@ -170,6 +170,7 @@ class AzureSentinelClient:
         )
 
         if res.content:
+
             return res.json()
 
         return res
