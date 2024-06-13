@@ -14,4 +14,4 @@ for item in res:
 wList = []
 wList.append({"Update Available packs": counter1, "Deprecated packs": counter2})
 
-demisto.results({"total": len(wList), "data": wList})
+return_results({"total": len(wList), "data": wList})
