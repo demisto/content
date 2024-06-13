@@ -102,12 +102,15 @@ class Client(BaseClient):
             params=params,
             headers=self._headers
             )
-        except:
-            results = CommandResults(
-                readable_output="No results were found",
-                outputs=None,
-                raw_response=None,
-            )
+        except DemistoException as e:
+            if e.res:
+                error = e.res.status_code
+                if error == 404:
+                    results = CommandResults(
+                        readable_output="No results were found",
+                        outputs=None,
+                        raw_response=None,
+                    )
         return results
 
     def get_qualified_domain_name(self, qualified_domain_name):
