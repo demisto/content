@@ -359,6 +359,15 @@ script:
       description: Duration in seconds after which this SecretID expires. A value of zero will allow the SecretID to not expire.
       type: number
     description: Generates and issues a new SecretID on an existing AppRole.
+  - name: hashicorp-get-role-id
+    arguments:
+    - name: role_name
+      required: true
+      description: The name of the AppRole.
+    outputs:
+    - contextPath: HashiCorp.AppRole
+      description: AppRole ID.
+      type: string
   dockerimage: demisto/vendors-sdk:1.0.0.97265
 tests:
 - hashicorp_test

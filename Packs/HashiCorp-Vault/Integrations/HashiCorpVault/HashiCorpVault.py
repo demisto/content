@@ -102,7 +102,7 @@ def send_request(path, method='get', body=None, params=None, headers=None):
 def generate_role_secret_command():
     args = demisto.args()
     role_name = args.get('role_name')
-    meta_data = args.get('meta_data', '')
+    meta_data = args.get('meta_data')
     cidr_list = argToList(args.get('cidr_list', ''))
     token_bound_cidrs = argToList(args.get('token_bound_cidrs', ''))
     num_uses = arg_to_number(args.get('num_uses', ''))
@@ -120,7 +120,18 @@ def generate_role_secret_command():
     body = remove_empty_elements(body)
 
     response = send_request(path=path, method='post', body=body)
-    return CommandResults(readable_output=response)
+    return_results(CommandResults(readable_output=response))
+
+
+def get_role_id_command():
+    args = demisto.args()
+    role_name = args.get('role_name')
+    path = f'/auth/approle/role/{role_name}/role-id'
+    response = send_request(path=path, method='get', body={'role_name': role_name})
+    if response:
+        role_id = response.get('data', {}).get('role_id', '')
+    if role_id:
+        return_results(CommandResults(outputs_prefix='HashiCorp.AppRole', outputs=role_id))
 
 
 def list_secrets_engines_command():  # pragma: no cover
@@ -869,6 +880,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
             reset_config_command()
         elif command == 'hashicorp-generate-role-secret':
             generate_role_secret_command()
+        elif command == 'hashicorp-get-role-id':
+            get_role_id_command()
 
     except Exception as e:
         demisto.debug(f'An error occurred: {e}')
