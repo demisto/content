@@ -43,7 +43,7 @@ mainengineinfo: {}
 name: AWSEC2PackageUpgrade
 outputs:
 - contextPath: awsec2packageupgrade
-  description: The command ID of the command initiated by AWS SSM command.
+  description: The command ID of the command initiated by the AWS SSM command.
 pswd: ""
 runas: DBotWeakRole
 runonce: false
