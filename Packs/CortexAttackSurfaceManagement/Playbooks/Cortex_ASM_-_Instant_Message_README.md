@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* SlackV3
+SlackV3
 
 ### Scripts
 
@@ -19,7 +19,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* send-notification
+send-notification
 
 ## Playbook Inputs
 
