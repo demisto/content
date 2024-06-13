@@ -458,6 +458,46 @@ def return_password_protected_zip_file_result(zip_filename: str, filename: str, 
     return_file_results(file_data, zip_filename)
 
 
+def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> str:
+    start = skip + 1
+    to_bring = skip + limit
+    end = to_bring if to_bring < total else total
+    return f'{start} to {end} of {total} {name}'
+
+
+def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: Optional[dict] = None,
+                                                 keys_value_mapping: Optional[dict] = None):
+    transformed_data = {}
+    for k in keys:
+        v = data.get(k)
+        if keys_value_mapping and k in keys_value_mapping:
+            transformed_data[k] = keys_value_mapping.get(k)(v)
+        if keys_headers_mapping and k in keys_headers_mapping:
+            transformed_data[keys_headers_mapping.get(k)] = transformed_data.pop(k, v)
+        else:
+            transformed_data[k] = transformed_data.pop(k, v)
+    print(transformed_data)
+    return transformed_data
+
+
+def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: Optional[list[str]],
+                                  keys_headers_mapping: Optional[dict] = None, keys_value_mapping: Optional[dict] = None) -> str:
+    if resources := data.get('resources', []):
+        skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
+        data = resources
+    if resources:
+        transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping) for d
+                            in data]
+
+    else:
+        transformed_data = ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping, keys_value_mapping)
+
+    t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
+    if resources:
+        return t + '\n' + skip_limit_total_hr
+    return t
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -491,11 +531,21 @@ def group_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
         clients=args.get(CLIENT_ID)
     )
     raw_response = client.get_group_list(params=params)
+    hr = ciphertrust_table_to_markdown('Groups', data=raw_response,
+                                       keys=['name', 'app_metadata', 'users_count', 'description'],
+                                       keys_headers_mapping={'name': 'Name',
+                                                             'app_metadata': 'Defined By',
+                                                             'users_count': 'No. of members',
+                                                             'description': 'Description'},
+                                       keys_value_mapping={'app_metadata': lambda x: 'System' if isinstance(x, dict) and x.get(
+                                           'system') else 'User'},
+                                       )
+
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response.get('resources'),
         raw_response=raw_response,
-        readable_output=tableToMarkdown('group', raw_response.get('resources'))
+        readable_output=hr
     )
 
 

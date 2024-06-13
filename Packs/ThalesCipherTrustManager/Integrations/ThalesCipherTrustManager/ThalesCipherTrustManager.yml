@@ -966,7 +966,7 @@ script:
     description: Deletes a group given the group name.
     name: ciphertrust-group-delete
     arguments:
-    - name: name
+    - name: group_name
       isArray: false
       description: Name of the group
       required: true
