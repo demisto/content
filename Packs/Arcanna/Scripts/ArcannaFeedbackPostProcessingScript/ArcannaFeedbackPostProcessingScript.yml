@@ -9,7 +9,7 @@ args:
   description: Closing Notes for manual overriding.
   name: closing_notes
 - default: true
-  description: aaa
+  description: aaa.
   name: closing_reason
 comment: |-
   Arcanna.Ai post-processing script for sending feedback back to Arcanna about the closed incident. Additional modification might be required depending on each Cortex setup.
@@ -25,7 +25,7 @@ tags:
 - post-processing
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.14.95956
 runas: DBotWeakRole
 dependson:
   should:
