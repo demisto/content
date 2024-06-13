@@ -27,4 +27,4 @@ if not res3['playbooks']:
 wList = []
 wList.append({"OOTB": len(res1["playbooks"]), "Custom": len(res2["playbooks"]), "Deprecated": len(res3["playbooks"])})
 
-demisto.results({"total": len(wList), "data": wList})
+return_results({"total": len(wList), "data": wList})
