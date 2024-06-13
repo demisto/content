@@ -118,7 +118,7 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
     current_time = datetime_to_string(datetime.now())
     events = client.get_events(time_of_last_event_str, current_time)
-    events = [] if events is None else events
+    events = {} if events is None else events
     for field_names in events.get("fields"):
         outcome.append(field_names.get('name'))
     for event in events.get("data"):
