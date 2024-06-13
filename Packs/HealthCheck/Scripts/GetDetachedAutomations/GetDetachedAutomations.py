@@ -17,4 +17,4 @@ for item in res["scripts"]:
             scriptsList.append(script)
 
 
-demisto.results({"total": len(scriptsList), "data": scriptsList})
+return_results({"total": len(scriptsList), "data": scriptsList})
