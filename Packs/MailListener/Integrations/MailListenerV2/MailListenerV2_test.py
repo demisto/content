@@ -761,5 +761,5 @@ def test_fetch_mails__uid_is_str(mocker):
     mocker.patch.object(IMAPClient, 'search', return_value=['1', '2', '3'])
     mocker.patch.object(IMAPClient, 'fetch')
     mocker.patch.object(IMAPClient, '_create_IMAP4')
-    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=4)
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from='4')
     assert next_uid_to_fetch_from == 4
