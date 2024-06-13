@@ -979,6 +979,8 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
     incident_id_list = argToList(args.get('incident_id_list'))
     description = args.get('description')
     status = args.get('status')
+    starred = args.get('starred')
+    cloud_management_status = args.get('cloud_management_status')
     lte_creation_time = args.get('lte_creation_time')
     gte_creation_time = args.get('gte_creation_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
@@ -1003,6 +1005,10 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
         search_params.append({"field": "description", "operator": "contains", "value": description})
     if status:
         search_params.append({"field": "status", "operator": "eq", "value": status})
+    if starred:
+        search_params.append({"field": "starred", "operator": "eq", "value": starred})
+    if cloud_management_status:
+        search_params.append({"field": "cloud_management_status", "operator": "eq", "value": cloud_management_status})
     if lte_creation_time:
         search_params.append({
             'field': 'creation_time',
