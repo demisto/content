@@ -1110,6 +1110,8 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
      'View all wineventlogs involving user="test"'),
     ({}, 'Test query name', {}, True, 'Test query name'),
     ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
+     'index="test" | where user = "test\\\\crusher"'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
      'index="test" | where user = "test\\\\crusher"')
 ], ids=[
     "search query fields in notables data and raw data",
@@ -1118,7 +1120,8 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name fields in notables data and raw data",
     "query name fields in raw data",
     "query name without fields to replace",
-    "search query with a user field that contains a backslash"
+    "search query with a user field that contains a backslash",
+    "search query with a user field that is surrounded by quotation marks and contains a backslash"
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
@@ -1133,6 +1136,7 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - A raw query name with fields in the notable's raw data
     - A raw query name without any fields to replace.
     - A raw query search with a user field that contains a backslash
+    - A raw query search with a user field that is surrounded by quotation marks and contains a backslash
 
 
     When:

@@ -980,10 +980,9 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
                 add_backslash = True
             replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash)
 
-        elif field in USER_RELATED_FIELDS and not is_query_name:
+        elif field in USER_RELATED_FIELDS:
             # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
             # the backslash by using the double-slash ( \\ ) string
-            # No need to edit query names cause they aren't submitted to Splunk
             replacement = replacement.replace('\\', '\\\\')
             replacement = f""""{replacement.strip('"')}\""""
 
@@ -993,6 +992,8 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     searchable_search.append(search[start:])  # Handling the tail of the query
 
     parsed_query = ''.join(searchable_search)
+    # Avoiding double quotes in splunk variables that were surrounded by quotation marks in the original query (ex: '"$user|s"')
+    parsed_query = parsed_query.replace('""', '"') 
     demisto.debug(f"Parsed query is: {parsed_query}")
 
     return parsed_query
