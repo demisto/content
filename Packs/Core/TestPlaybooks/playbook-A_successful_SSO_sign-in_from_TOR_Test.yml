@@ -778,7 +778,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: alert.accountid
+              simple: Account.ID
             iscontext: true
           right:
             value:
@@ -936,8 +936,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: alert.accountstatus
+              simple: Account.Status
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1251,8 +1253,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: alert.accountstatus
+              simple: Account.Status
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-
