@@ -19,7 +19,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* aws-ssm-command-list
+aws-ssm-command-list
 
 ## Playbook Inputs
 
