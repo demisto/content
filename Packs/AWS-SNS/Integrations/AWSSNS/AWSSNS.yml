@@ -17,11 +17,8 @@ configuration:
   type: 0
   required: false
 - display: Access Key
-  name: access_key
-  required: true
-  type: 0
-- display: Secret Key
-  name: secret_key
+  displaypassword: Secret Key
+  name: credentials
   required: true
   type: 9
 - display: Role Session Duration
