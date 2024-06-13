@@ -10,7 +10,7 @@ configuration:
   display: Update list on demand only
   name: on_demand
   type: 8
-  section: Connect
+  section: Collect
   advanced: true
   required: false
 - additionalinfo: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators. See integration docs for troubleshooting information.
@@ -432,7 +432,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.87872
+  dockerimage: demisto/flask-nginx:1.0.0.96292
   longRunning: true
   longRunningPort: true
   script: '-'

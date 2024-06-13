@@ -526,7 +526,7 @@ def fetch_incidents(client, last_run, is_test=False):
                         break
                 if len(others) != max_fetch:
                     break
-        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- vulnerability before filtering: {len(alerts)}")
+        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- vulnerability before filtering: {len(vulns)}")
         for vuln in vulns:
             detected_date = vuln['detected_date']
             if detected_date and isinstance(detected_date, list):
@@ -538,7 +538,7 @@ def fetch_incidents(client, last_run, is_test=False):
             incident = {
                 'name': vuln['name'],
                 "type": "IoT Vulnerability",
-                'occurred': vuln['detected_date'],
+                'occurred': detected_date,
                 'rawJSON': json.dumps(vuln),
                 'details': f'Device {vuln["name"]} at IP {vuln["ip"]}: {vuln["vulnerability_name"]}',
                 'CustomFields': {

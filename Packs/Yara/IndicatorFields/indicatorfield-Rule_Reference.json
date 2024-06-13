@@ -1,0 +1,31 @@
+{
+    "id": "indicator_rulereference",
+    "version": -1,
+    "modified": "2024-04-14T10:56:14.314413193Z",
+    "name": "Rule Reference",
+    "ownerOnly": false,
+    "cliName": "rulereference",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "YARA Rule"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

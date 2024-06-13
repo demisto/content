@@ -1,0 +1,77 @@
+category: Analytics & SIEM
+commonfields:
+  id: ExabeamSecOpsPlatform
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Client ID
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+  displaypassword: Client Secret
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
+display: Exabeam Security Operations Platform
+name: ExabeamSecOpsPlatform
+script:
+  commands:
+  - arguments:
+    - defaultValue: "7 days ago"
+      description: The starting date for the search range.
+      name: start_time
+    - defaultValue: "today"
+      description: The ending date for the search range.
+      name: end_time
+    - defaultValue: ""
+      description: Query, using Lucene syntax, filters log data for precise analysis.
+      name: query
+      required: false
+    - description: Comma-separated list of fields to be returned from the search.
+      name: fields
+      required: false
+      isArray: true
+    - description: Comma-separated list of fields by which to group the results.
+      name: group_by
+      isArray: true
+      required: false
+    - description: The maximal number of results to return. Maximum value is 3000.
+      name: limit
+      required: false
+    description: Get events from Exabeam Security Operations Platform.
+    name: exabeam-platform-event-search
+    outputs:
+    - contextPath: ExabeamPlatform.Event.id
+      description: The unique identifier associated with the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.rawLogIds
+      description: The raw log identifiers associated with the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.tier
+      description: The tier associated with the event.
+      type: String
+    - contextPath: ExabeamPlatform.Event.parsed
+      description: Whether the event has been parsed.
+      type: String
+    - contextPath: ExabeamPlatform.Event.rawLogs
+      description: The raw logs associated with the event.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.14.95956
+fromversion: 6.10.0
+tests:
+- ExabeamSecurityOperationsPlatform-test

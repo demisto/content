@@ -1,0 +1,103 @@
+{
+    "id": "incident_stellarcybercasealerts",
+    "version": -1,
+    "name": "Stellar Cyber Case Alerts",
+    "ownerOnly": false,
+    "description": "Table of names, descriptions, and URLs of Alerts associated to the Stellar Cyber Case",
+    "cliName": "stellarcybercasealerts",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Stellar Cyber Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "displayname",
+            "displayName": "Name",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 200,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "description",
+            "displayName": "Description",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "width": 400,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "alerturl",
+            "displayName": "URL",
+            "type": "url",
+            "orgType": "url",
+            "required": false,
+            "width": 150,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "xdrtacticname",
+            "displayName": "Tactic",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 120,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "xdrtechniquename",
+            "displayName": "Technique",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 200,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "detectedfield",
+            "displayName": "Detected Field",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 300,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "detectedvalue",
+            "displayName": "Detected Value",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 300,
+            "isDefault": true,
+            "isReadOnly": true
+        }
+    ],
+    "defaultRows": [],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.6.0"
+}

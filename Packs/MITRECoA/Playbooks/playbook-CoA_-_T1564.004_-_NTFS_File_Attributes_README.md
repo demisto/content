@@ -56,4 +56,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1564.004 - NTFS File Attributes](../doc_files/MITRE_ATT&CK_CoA_-_T1564.004_-_NTFS_File_Attributes.png)
+![MITRE ATT&CK CoA - T1564.004 - NTFS File Attributes](../doc_files/MITRE_ATTandCK_CoA_-_T1564_004_-_NTFS_File_Attributes.png)

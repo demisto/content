@@ -5,6 +5,7 @@ from docx import Document
 from pptx import Presentation
 import zipfile
 import pandas as pd
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 
 def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
@@ -34,10 +35,10 @@ def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
 def extract_hyperlinks_from_docx(file_path: str) -> Set:
     doc = Document(file_path)
     links = set()
-    for para in doc.paragraphs:
-        for hyper in para.hyperlinks:
-            if hyper.address:
-                links.add(hyper.address)
+    for rel in doc.part.rels.values():
+        if rel.reltype == RT.HYPERLINK and rel.is_external:
+            links.add(rel._target)
+
     return links
 
 

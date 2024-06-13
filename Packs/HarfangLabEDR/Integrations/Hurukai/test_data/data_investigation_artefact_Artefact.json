@@ -1,0 +1,16 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "---unused---",
+      "size": 0,
+      "msg": "---unused---",
+      "download_link": "---unused---",
+      "agent": {
+        "hostname": "---unused---"
+      }
+    }
+  ]
+}

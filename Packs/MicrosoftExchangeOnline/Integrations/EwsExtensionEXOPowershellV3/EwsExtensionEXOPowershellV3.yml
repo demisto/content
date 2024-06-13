@@ -313,6 +313,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to add items to.
       defaultValue: Tenant
     - name: action
@@ -398,6 +399,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to retrieve items from.
       defaultValue: Tenant
     - name: action
@@ -481,6 +483,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to retrieve items from.
       defaultValue: Tenant
     outputs:
@@ -2003,6 +2006,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
+      - Submission
       description: List subtype to remove items from.
       defaultValue: Tenant
     outputs:

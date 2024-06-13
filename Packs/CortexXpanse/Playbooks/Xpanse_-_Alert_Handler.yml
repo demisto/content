@@ -126,11 +126,6 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    scriptarguments:
-      RemoteIP:
-        complex:
-          root: incident
-          accessor: xpanseip
     separatecontext: true
     continueonerrortype: ""
     loop:

@@ -1,22 +1,32 @@
+
 from CommonServerPython import *
 
 
-def search_and_quarantine(farm: str, customer: str, date_range: str, sender: str, subject: str):
+def get_sender_and_subject(entity: str) -> tuple[str, str]:
+    email_info = demisto.executeCommand(
+        "checkpointhec-get-entity",
+        {'entity': entity}
+    )[0]['Contents']
+
+    return email_info.get('fromEmail'), email_info.get('subject')
+
+
+def search_and_quarantine(date_range: str, sender: str, subject: str):
     result = demisto.executeCommand(
         "checkpointhec-search-emails",
         {
-            'date_range': date_range,
-            'sender': sender,
-            'subject': subject
+            'date_last': date_range,
+            'sender_match': sender,
+            'subject_contains': subject
         }
     )
-    if ids := result[0].get('Contents', {}).get('ids'):
+
+    entity_ids = [x.get('entityId') for x in result[0].get('Contents')]
+    if entity_ids:
         result = demisto.executeCommand(
             "checkpointhec-send-action",
             {
-                'farm': farm,
-                'customer': customer,
-                'entity': ids,
+                'entity': entity_ids,
                 'action': 'quarantine'
             }
         )
@@ -43,17 +53,14 @@ def main():  # pragma: no cover
             raise Exception('Need to select at least one option to search for')
 
         custom_fields = demisto.incident()['CustomFields']
-        sender = subject = ''
-        if by_sender:
-            sender = custom_fields.get('checkpointhecemailsender')
-        if by_subject:
-            subject = custom_fields.get('checkpointhecemailsubject')
+        entity = custom_fields.get('checkpointhecentity')
+        sender, subject = get_sender_and_subject(entity)
+        if not by_sender:
+            sender = ''
+        if not by_subject:
+            subject = ''
 
-        farm = custom_fields.get('checkpointhecfarm')
-        customer = custom_fields.get('checkpointheccustomer')
-        return_results(
-            search_and_quarantine(farm, customer, date_range, sender, subject)
-        )
+        return_results(search_and_quarantine(date_range, sender, subject))
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
