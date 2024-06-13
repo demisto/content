@@ -2447,8 +2447,8 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
 | offset | The first page from which we bring the alerts. Default is 0. | Optional | 
 | limit | The last page from which we bring the alerts. Default is 50. | Optional | 
-| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
-| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
+| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
+| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
 | starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
 | mitre_technique_id_and_name | The MITRE attack technique. | Optional | 
 
