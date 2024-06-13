@@ -15,4 +15,4 @@ for item in res["playbooks"]:
             playbook['name'] = item['name']
             playbooksList.append(playbook)
 
-demisto.results({"total": len(playbooksList), "data": playbooksList})
+return_results({"total": len(playbooksList), "data": playbooksList})
