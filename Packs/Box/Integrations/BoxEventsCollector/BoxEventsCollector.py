@@ -215,7 +215,7 @@ def _decrypt_private_key(app_auth: AppAuth):
 
 def main(command: str, demisto_params: dict):
     try:
-        box_credentials = BoxCredentials.model_validate_json(
+        box_credentials = BoxCredentials.parse_raw(
             demisto_params['credentials_json']['password']
         )
         events_request_params = demisto_params.copy()
