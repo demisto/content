@@ -10,7 +10,7 @@
 
 ### URL
 1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API key** page.
-2. Click the **Copy URL** button in the top right corner.
+2. Click the **Copy API URL** button in the top right corner.
 
 ---
 
