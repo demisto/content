@@ -110,16 +110,17 @@ def extract_fqdn(the_input):
 
 def main():
     try:
-        the_input = demisto.args().get('input')
+        the_raw_input = demisto.args().get('input')
 
         # argToList returns the argument as is if it's already a list so no need to check here
-        the_input = argToList(the_input)
+        the_input = argToList(the_raw_input)
         fqdns = []
         domains = []
         # Otherwise assumes it's already an array
         for item in the_input:
             fqdns.append(extract_fqdn(item))
             domains.append(item)
+        demisto.info(f'{the_raw_input=}, {the_input=}, {fqdns=}, {domains=}')
         if fqdns or domains:
             if fqdns == ['']:
                 fqdns = []
