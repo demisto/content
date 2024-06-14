@@ -155,7 +155,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
             if fail_reason := json_response.get('fail', []):
                 raise DemistoException(f'There was an error with siem events call {fail_reason}')
-            demisto.info('No more logs siem available')
+            
+            demisto.info('No siem logs available')
             return []
         # Process log file
         elif content_type == 'application/octet-stream':
@@ -391,9 +392,9 @@ def handle_last_run_entrance(user_inserted_last_run: str, audit_event_handler: M
         audit_event_handler.start_time = demisto_last_run.get(AUDIT_LAST_RUN, '')
         siem_event_handler.token = demisto_last_run.get(SIEM_LAST_RUN, '')
         siem_event_handler.events_from_prev_run = demisto_last_run.get(SIEM_EVENTS_FROM_LAST_RUN, [])
-        demisto.info(f'\n handle_last_run_entrance \n audit start time: {audit_event_handler.start_time} \n'
+        demisto.info(f'\nhandle_last_run_entrance \naudit start time: {audit_event_handler.start_time} \n'
                      f'siem next token: {siem_event_handler.token}\n'
-                     f'duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST), []}\n')
+                     f'duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST, [])}\n')
 
 
 def dedup_audit_events(audit_events: list, last_run_potential_dup: list) -> list:
@@ -434,7 +435,7 @@ def handle_last_run_exit(audit_next_run: str, duplicates_audit: list, siem_next_
                        SIEM_EVENTS_FROM_LAST_RUN: [],
                        AUDIT_LAST_RUN: audit_next_run,
                        AUDIT_EVENT_DEDUP_LIST: duplicates_audit}
-    demisto.info(f'audit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
+    demisto.info(f'last_run_exit\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
                  f'audit potential dups: {duplicates_audit}\n')
     return next_run_object
 
@@ -572,7 +573,7 @@ def main():  # pragma: no cover
         if 'HTTPSConnectionPool' in exc_message:
             exc_message = exc_message + '\n Try checking your Base url'
 
-        return_error(f'Failed to execute {command} command.\nError:\n{exc_message}', error=exc)
+        return_error(f'Failed to execute {command} command.\nError:\n{exc_message}', error=str(exc))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
