@@ -8,17 +8,6 @@ sectionOrder:
 - Connect
 - Collect
 description: "Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions."
-detaileddescription: |-
-  ### Sekoia XDR Integration
-   #### Author: Sekoia.io
-  Support and maintenance for this integration are provided by the author. Please use the following contact details:
-  - Email: team-integration@sekoia.io
-  - URL: [https://www.sekoia.io/en/contact/](https://www.sekoia.io/en/contact/)
-  ***
-  ## Sekoia XDR
-  - The mandatory fields are the API Key and the base URL of the API (i.e. https://api.sekoia.io/v1/sic/)
-  ---
-   [View documentation for the API calls](https://docs.sekoia.io/xdr/)
 configuration:
 - display: API key
   displaypassword: API Key
