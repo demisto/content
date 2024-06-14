@@ -20,7 +20,6 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Jizo Alert",
     "detached": false,
     "extractSettings": {
         "mode": "All",
