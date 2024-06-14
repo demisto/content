@@ -189,7 +189,7 @@ A playbook that given the IP address enriches GCP information relevant to ASM al
 
 A playbook that is used to create instant messages toward service owners to notify them of their internet exposures.
 
-![ortex ASM - Instant Message](https://raw.githubusercontent.com/demisto/content/f00e2443782383c76dcfa7e537c03940afe3197c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Instant_Message.png)
+![Cortex ASM - Instant Message](https://raw.githubusercontent.com/demisto/content/f00e2443782383c76dcfa7e537c03940afe3197c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Instant_Message.png)
 
 #### Cortex ASM - Jira Notification
 
