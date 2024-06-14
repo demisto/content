@@ -1,4 +1,4 @@
-comment: Get the count of OOTB, custom and deprecated automations count.
+comment: Get the count of OOTB, custom and deprecated automations
 commonfields:
   id: getAutomationsCount
   version: -1
