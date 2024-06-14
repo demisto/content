@@ -48,8 +48,8 @@ script:
       - pre
       - post
     - description: Is there an alternate device group to query?
-      name: override_device_groupoverride_device_group
-      type: textArea
+      name: override_device_group
+      type: unknown
     outputs:
     - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
       description: Number of rules with no apps specified.
@@ -78,7 +78,7 @@ script:
       - post
     - description: Is there an alternate device group to query?
       name: override_device_group
-      type: textArea
+      type: unknown
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains information about the rules that have no apps specified. For example, Source and Destination.
@@ -93,10 +93,9 @@ script:
       predefined:
       - pre
       - post
-    - auto: PREDEFINED
-      description: Is there an alternate device group to query?
+    - description: Is there an alternate device group to query?
       name: override_device_group
-      type: keyValue
+      type: unknown
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security rules with unused apps.
@@ -151,10 +150,9 @@ script:
       name: page_size
     - description: A specific pagination page to get items from.
       name: page
-    - auto: PREDEFINED
-      description: Is there an alternate device group to query?
+    - description: Is there an alternate device group to query?
       name: override_device_group
-      type: textArea
+      type: unknown
     description: Gets unused, used, or any rules.
     name: pan-os-po-get-rules
     outputs:
@@ -185,10 +183,10 @@ script:
       required: true
     - description: Is there an alternate device group to query?
       name: override_device_group
-      type: textArea
+      type: unknown
     description: Gets a specific dynamic address group.
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.14.95663
+  dockerimage: demisto/python3:3.10.14.97608
   runonce: false
   script: ''
   subtype: python3
