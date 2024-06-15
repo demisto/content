@@ -367,6 +367,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None , []
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -374,6 +375,7 @@ class EWSClient:
         reply = reply.save(account.drafts)
         m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
 
+        attachments += htmlAttachments
         for attachment in attachments:
             if not attachment.get('cid'):
                 new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
@@ -1665,14 +1667,13 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
+def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
     We might not have Beautiful Soup so just do regex search
     """
     attachments = []
-    file_results = []
     clean_body = ''
     last_index = 0
     for i, m in enumerate(
@@ -1687,10 +1688,9 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
         attachments.append(attachment)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
-        file_results.append(fileResult(attachment['name'], attachment['data']))
 
     clean_body += html_body[last_index:]
-    return clean_body, attachments, file_results
+    return clean_body, attachments
 
 
 def collect_manual_attachments(manualAttachObj):  # pragma: no cover
@@ -1874,7 +1874,6 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
     Returns:
         Message. Message object ready to be sent.
     """
-    file_results: list = []
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
@@ -1885,7 +1884,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                 message.attach(new_attachment)
 
     else:
-        html_body, html_attachments, file_results = handle_html(html_body)
+        html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
@@ -1900,7 +1899,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
 
             message.attach(new_attachment)
 
-    return message, file_results
+    return message
 
 
 def add_additional_headers(additional_headers):
@@ -1974,14 +1973,12 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             if htmlBody:
                 htmlBody = htmlBody.format(**template_params)
 
-        message, file_results = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
                                                reply_to, importance)
 
     client.send_email(message)
 
-    results = []
-    results.append(file_results)
-    results.append(CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully'))
+    results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
     if render_body:
         results.append(CommandResults(
             entry_type=EntryType.NOTE,

@@ -740,10 +740,9 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         raw_message (str): Raw email message from MimeContent type.
         from_address (str): the email address from which to reply.
     """
-    file_results = []
     if not attachments:
         attachments = []
-    message_body, inline_attachments, file_results = get_message_for_body_type(body, body_type, html_body)
+    message_body, inline_attachments = get_message_for_body_type(body, body_type, html_body)
     attachments += inline_attachments
     m = Message(
         account=account,
@@ -766,17 +765,16 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         for attachment in attachments:
             m.attach(attachment)
         m.send_and_save()
-    return m, file_results
+    return m
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, Any]]]:
+def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
     We might not have Beautiful Soup so just do regex search
     """
     attachments = []
-    file_results = []
     clean_body = ''
     last_index = 0
     for i, m in enumerate(
@@ -791,13 +789,12 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]], List[dict[str, An
         attachment['cid'] = cid
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
-        file_results.append(fileResult(f"{cid}-imageName:{name}", attachment['data']))
         new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                         content_id=attachment.get('cid'), is_inline=True)
         attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
-    return clean_body, attachments, file_results
+    return clean_body, attachments
 
 
 def get_message_for_body_type(body, body_type, html_body):
@@ -813,14 +810,13 @@ def get_message_for_body_type(body, body_type, html_body):
         Body: the body of the message.
     """
     attachments: list = []
-    file_results: list = []
     if html_body:
-        html_body, attachments, file_results = handle_html(html_body)
+        html_body, attachments = handle_html(html_body)
     if body_type is None:  # When called from a data collection task.
-        return (HTMLBody(html_body) if html_body else Body(body)), attachments, file_results
+        return (HTMLBody(html_body) if html_body else Body(body)), attachments
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
-        return HTMLBody(html_body), attachments, file_results
-    return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments, file_results
+        return HTMLBody(html_body), attachments
+    return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
@@ -2403,7 +2399,7 @@ def send_email(args):
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     body_type = args.get('bodyType', args.get('body_type'))
-    _, file_results = send_email_to_mailbox(
+    send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
         from_address=args.get('from')
@@ -2415,22 +2411,19 @@ def send_email(args):
         'attachments': attachments_names
     }
 
-    results = []
-    results.append({
+    results = [{
         'Type': entryTypes['note'],
         'Contents': result_object,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sent email', result_object),
-    })
+    }]
     if render_body:
         results.append({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['html'],
             'Contents': args.get('htmlBody')
         })
-    for file in file_results:
-        results.append(file)
     return results
 
 
