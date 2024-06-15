@@ -739,7 +739,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             chunk_data=chunk_data,
             attachment_size=attachment_size
         )
-        demisto.debug(f"{response.status_code=}")
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
             if response.status_code not in (201, 200):
                 raise Exception(f'{response.json()}')
