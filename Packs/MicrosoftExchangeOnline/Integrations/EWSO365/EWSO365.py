@@ -367,7 +367,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None , []
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -1974,7 +1974,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
                 htmlBody = htmlBody.format(**template_params)
 
         message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                               reply_to, importance)
+                                 reply_to, importance)
 
     client.send_email(message)
 

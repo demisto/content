@@ -410,16 +410,10 @@ def test_handle_transient_files(transient_files, transient_files_contents, trans
 
 
 HTML_PACKAGE = [
-    ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [], [])),
+    ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [])),
     ('<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>',
      ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
       [{'data': b'i\xb7\x1d', 'name': 'image0@abcd1234_abcd1234-imageName:image0', 'cid': 'image0@abcd1234_abcd1234'}],
-      [{
-          'Contents': '',
-          'ContentsFormat': 'text',
-          'Type': 3,
-          'File': 'image0@abcd1234_abcd1234-imageName:image0',
-          'FileID': '12345678'}]
       )
      )
 ]
@@ -438,7 +432,7 @@ def test_handle_html(mocker, html_input, expected_output):
 
     """
     mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
-    mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
+    # mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
     assert handle_html(html_input) == expected_output
 
 
@@ -909,11 +903,6 @@ class TestEmailModule(unittest.TestCase):
             mock_html_body.assert_called_once_with(original_html_body)
             mock_message.assert_called_once()
             assert isinstance(result[0], MagicMock)
-            assert result[1] == [{'Contents': '',
-                                  'ContentsFormat': 'text',
-                                  'Type': 3, 'File':
-                                      'image0@11111111_11111111-imageName:image0',
-                                      'FileID': '1234567'}]
 
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [

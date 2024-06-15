@@ -460,16 +460,13 @@ def test_send_mail(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('', [
-        {'Contents': '', 'ContentsFormat': 'text', 'Type': 'html', 'File': 'image0.png', 'FileID': '123456'}]))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=(''))
     results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
-    assert results[1].get('FileID') == '123456'
-
 
 def test_send_mail_with_from_arg(mocker):
     """
@@ -625,7 +622,7 @@ def test_list_parse_item_as_dict():
 def test_parse_item_as_dict_with_empty_field():
     """
     Given -
-        a Message where effective rights is None and other fields are false\empty strings.
+        a Message where effective rights is None and other fields are false/empty strings.
 
     When -
         running the parse_item_as_dict function.
@@ -792,7 +789,6 @@ def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker)
     result = get_message_for_body_type(body, None, html_body)
     assert isinstance(result[0], HTMLBody)
     assert isinstance(result[1][0], FileAttachment)
-    assert 'FileID' in result[2][0]
     assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>')
 
 
