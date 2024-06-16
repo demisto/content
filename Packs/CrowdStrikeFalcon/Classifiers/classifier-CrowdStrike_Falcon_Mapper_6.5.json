@@ -3,13 +3,13 @@
     "feed": false,
     "id": "CrowdStrike Falcon-Mapper",
     "mapping": {
-        "CrowdStrike Falcon Mobile Detections": {
+        "CrowdStrike Falcon Mobile Detection": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"Agent ID": {
 					"simple": "agent_id"
 				},
-				"Statea": {
+				"State": {
 					"simple": "status"
 				},
 				"CrowdStrike Falcon Crawled Timestamp": {

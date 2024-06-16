@@ -272,7 +272,7 @@ tasks:
       version: -1
       name: Run ad-search with limit
       description: Runs Active Directory queries.
-      script: '|||ad-searchh'
+      script: '|||ad-search'
       type: regular
       iscommand: true
       brand: ""
