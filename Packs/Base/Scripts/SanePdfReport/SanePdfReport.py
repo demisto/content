@@ -133,15 +133,9 @@ def main():
         forceServerFormattedTimeString = demisto.args().get('forceServerFormattedTimeString', 'false')
         addUtf8Bom = demisto.args().get('addUtf8Bom', 'false')
 
-        with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:  # type: ignore[call-overload]
-            input_file = tmpdir + '/input.json'
-            output_file = tmpdir + '/output.pdf'
-            dist_dir = tmpdir + '/dist'
-            header_left_image_path = tmpdir + "/customer_logo"
-
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
-                    f'"{header_left_image_path}" "{headerRightImage}" "" ' + \
+                    f'"{headerLeftImage}" "{headerRightImage}" "" ' + \
                     f'"{pageSize}" "{disableHeaders}"'
 
         if isMDImagesSupported:  # pragma: no cover
@@ -171,13 +165,22 @@ def main():
             extra_cmd += f' "{forceServerFormattedTimeString}"'
             extra_cmd += f' "{addUtf8Bom}"'
 
+        with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:  # type: ignore[call-overload]
+            input_file = tmpdir + '/input.json'
+            output_file = tmpdir + '/output.pdf'
+            dist_dir = tmpdir + '/dist'
+
             shutil.copytree(WORKING_DIR / 'dist', dist_dir)
 
             with open(input_file, 'wb') as f:
                 f.write(base64.b64decode(sane_json_b64))
 
-            with open(header_left_image_path, "wb") as f:
-                f.write(base64.b64decode(headerLeftImage))
+            if headerLeftImage:
+                customer_logo_file_path = tmpdir + "/customer-logo-base64.txt"
+                with open(customer_logo_file_path, "w") as f:
+                    f.write(headerLeftImage)
+                extra_cmd = extra_cmd.replace(headerLeftImage, customer_logo_file_path)
+                headerLeftImage = customer_logo_file_path
 
             cmd = ['./reportsServer', input_file, output_file, dist_dir] + shlex.split(
                 extra_cmd)
@@ -193,15 +196,14 @@ def main():
             if isMDImagesSupported:
                 params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
 
-            LOG(f"Sane-pdf parameters: {params}]")
+            demisto.debug(f"Sane-PDF parameters: {params}]")
             cmd_string = " ".join(cmd)
-            demisto.error(f'{cmd_string=}')
-            LOG.print_log()
+            demisto.debug(f'Sane-PDF report commmad: {cmd_string}')
 
             # Execute the report creation
             out = subprocess.check_output(cmd, cwd=WORKING_DIR,
                                           stderr=subprocess.STDOUT)
-            LOG(f"Sane-pdf output: {str(out)}")
+            demisto.debug(f"Sane-pdf output: {out}")
 
             with open(output_file, 'rb') as f:
                 encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
