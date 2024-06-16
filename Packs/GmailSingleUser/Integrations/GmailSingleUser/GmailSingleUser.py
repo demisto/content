@@ -772,7 +772,7 @@ class Client:
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
-                'name': f'{cid}-imageName:{name}',
+                'name': name,
                 'cid': cid,
                 'ID': cid
             }

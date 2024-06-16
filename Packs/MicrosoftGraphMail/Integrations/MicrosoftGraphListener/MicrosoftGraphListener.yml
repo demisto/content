@@ -112,7 +112,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g., "example@demisto.com")
+- display: Email address from which to fetch incidents (e.g., "example@mail.com")
   name: mailbox_to_fetch
   required: true
   type: 0

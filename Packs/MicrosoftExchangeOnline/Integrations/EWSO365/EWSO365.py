@@ -367,7 +367,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, [] # type: ignore
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -1682,7 +1682,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
             'data': base64.b64decode(m.group(3)),
-            'name': f'{cid}-imageName:{name}'
+            'name': name
         }
         attachment['cid'] = cid
         attachments.append(attachment)
