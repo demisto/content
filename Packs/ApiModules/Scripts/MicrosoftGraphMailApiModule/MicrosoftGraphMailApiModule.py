@@ -285,7 +285,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             if not attachment_name.isascii():
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
-                    attachment_name = base64.b64decode(attachment_name) # type: ignore
+                    attachment_name = base64.b64decode(attachment_name)  # type: ignore
                 except Exception as e:
                     demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
 

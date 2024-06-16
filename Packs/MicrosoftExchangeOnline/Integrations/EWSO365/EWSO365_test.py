@@ -413,7 +413,7 @@ HTML_PACKAGE = [
     ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [])),
     ('<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>',
      ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
-      [{'data': b'i\xb7\x1d', 'name': 'image0@abcd1234_abcd1234-imageName:image0', 'cid': 'image0@abcd1234_abcd1234'}],
+      [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}],
       )
      )
 ]
