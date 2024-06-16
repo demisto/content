@@ -293,8 +293,17 @@ def test_module(client: Client) -> str:
 
 
 def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of Jira asset object schemas with an option to limit the number of results returned.
+
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'limit': The maximum number of object schemas to return. Defaults to 50.
+        - 'all_results': A boolean indicating whether to return all results or to respect the limit. Defaults to False.
+    :return: A CommandResults object containing the list of object schemas as output, and a human-readable markdown table.
+    """
     limit = args.get('limit', 50)
-    all_results = args.get('all_results', False)
+    all_results = argToBoolean(args.get('all_results', False))
     res = client.get_schema_list()
     object_schemas = res.get('objectschemas', [])
     key_mapping = {'id': 'ID', 'objectSchemaKey': 'Key'}
@@ -314,11 +323,23 @@ def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) 
 
 
 def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of Jira asset object types based on provided arguments.
+
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'schema_id': The ID of the schema to retrieve object types from.
+        - 'query': A string to filter object types by name or other attributes.
+        - 'exclude': A string to specify object types that should be excluded from the results.
+        - 'limit': The maximum number of object types to return. Defaults to 50.
+        - 'all_results': A boolean indicating whether to return all results or to respect the limit. Defaults to False.
+    :return: A CommandResults object containing the list of object types as output, and a human-readable markdown table.
+    """
     schema_id = args.get('schema_id')
     query = args.get('query')
     exclude = args.get('exclude')
     limit = args.get('limit', 50)
-    all_results = args.get('all_results', False)
+    all_results = argToBoolean(args.get('all_results', False))
 
     # build outputs
     res = client.get_object_type_list(schema_id, query, exclude)
@@ -340,6 +361,22 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
 
 
 def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+        Retrieves a list of attributes for a specific Jira asset object type with various filtering and sorting options.
+
+        :param client: Client object for performing API requests.
+        :param args: A dictionary of command arguments:
+            - 'object_type_id': The ID of the object type to retrieve attributes for.
+            - 'limit': The maximum number of attributes to return. Defaults to 50.
+            - 'all_results': A boolean indicating whether to return all results or to respect the limit. Defaults to False.
+            - Additional boolean arguments for filtering and sorting:
+                * 'order_by_name'
+                * 'include_value_exist'
+                * 'exclude_parent_attributes'
+                * 'include_children'
+                * 'order_by_required'
+        :return: A CommandResults object containing the list of attributes as output, and a human-readable markdown table.
+    """
     object_type_id = args.get('object_type_id')
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
@@ -371,6 +408,15 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
 
 
 def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a new Jira asset object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_type_id': The ID of the object type to create the object for.
+        - 'attributes': A list of attribute names and values to set for the object.
+        - 'attributes_json': A JSON string of attributes to set for the object.
+    :return: A CommandResults object containing the created object as output, and a human-readable markdown table.
+    """
     object_type_id = args.get('object_type_id')
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
@@ -387,6 +433,15 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Updates an existing Jira asset object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to update.
+        - 'attributes': A list of attribute names and values to set for the object.
+        - 'attributes_json': A JSON string of attributes to set for the object.
+    :return: A CommandResults object containing the updated object as output, and a human-readable markdown table.
+    """
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
     object_id = args.get('object_id')
@@ -401,6 +456,13 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def jira_asset_object_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes an existing Jira asset object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to delete.
+    :return: A CommandResults object containing a human-readable message.
+    """
     object_id = args.get('object_id')
 
     try:
@@ -415,6 +477,13 @@ def jira_asset_object_delete_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an existing Jira asset object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to retrieve.
+    :return: A CommandResults object containing the object as output, and a human-readable markdown table.
+    """
     object_id = args.get('object_id')
 
     try:
@@ -437,6 +506,17 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
 
 
 def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Searches for Jira asset objects.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'ql_query': The query string to search for.
+        - 'include_attributes': Whether to include the object's attributes in the response.
+        - 'page': The page number to retrieve.
+        - 'page_size': The number of objects to retrieve per page.
+        - 'limit': The maximum number of objects to retrieve.
+    :return: A CommandResults object containing the objects as output, and a human-readable markdown table.
+    """
     # build request params
     ql_query = args.get('ql_query')
     include_attributes = argToBoolean(args.get('include_attributes', False))
@@ -459,6 +539,15 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any]) -> [dict, CommandResults]:
+    """
+    Creates a Jira asset attribute JSON object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_type_id': The ID of the object type to create the attribute JSON for.
+        - 'is_required': Whether to include only required attributes in the response.
+        - 'is_editable': Whether to include only editable attributes in the response.
+    :return: A CommandResults object containing the attribute JSON as a file entry, and a human-readable json string.
+    """
     # build request params
     object_type_id = args.get('object_type_id')
     is_editable = args.get('is_editable', False)
@@ -479,6 +568,14 @@ def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any
 
 
 def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a Jira asset comment.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to create the comment for.
+        - 'comment': The comment to add to the object.
+    :return: A CommandResults object containing the comment as output, and a confirmation message.
+    """
     object_id = args.get('object_id')
     comment = args.get('comment')
     res = client.create_comment(object_id, comment)
@@ -493,6 +590,13 @@ def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> C
 
 
 def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists Jira asset comments.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to retrieve comments for.
+    :return: A CommandResults object containing the comments as output, and a human-readable markdown table.
+    """
     object_id = args.get('object_id')
     res = client.get_comment_list(object_id)
     outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
@@ -508,6 +612,13 @@ def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> Com
 
 
 def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists Jira asset connected tickets.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to retrieve connected tickets for.
+    :return: A CommandResults object containing the connected tickets as output, and a human-readable markdown table.
+    """
     object_id = args.get('object_id')
     res = client.get_object_connected_tickets(object_id)
     outputs = convert_keys_to_pascal(list(res.get('tickets')), {'id': 'ID'})
@@ -523,6 +634,14 @@ def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any
 
 
 def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Adds a Jira asset attachment to a specific object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to add the attachment to.
+        - 'entry_id': The entry ID of the file to add as an attachment.
+    :return: A CommandResults object containing the attachment as output, and a confirmation message.
+    """
     object_id = args.get('object_id')
     entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(entry_id)
@@ -539,6 +658,16 @@ def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> C
 
 
 def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> List[CommandResults | dict] | CommandResults:
+    """
+    Lists Jira asset attachments for a specific object.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'object_id': The ID of the object to retrieve attachments for.
+        - 'download_file': Whether to download the attachments.
+    :return: A CommandResults object containing the attachments as output, and a human-readable markdown table if download_file is
+        False. If download_file is True, a list of CommandResults objects containing the attachments as output, and a fileResult
+        object.
+    """
     object_id = args.get('object_id')
     download_file = argToBoolean(args.get('download_file', False))
     res = client.get_object_attachment_list(f'/attachments/object/{object_id}')
@@ -580,6 +709,13 @@ def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> 
 
 
 def jira_asset_attachment_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a Jira asset attachment.
+    :param client: Client object for performing API requests.
+    :param args: A dictionary of command arguments:
+        - 'id': The ID of the attachment to remove.
+    :return: A CommandResults object containing the attachment as output, and a confirmation message.
+    """
     attachment_id = args.get('id')
 
     try:
