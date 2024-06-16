@@ -976,13 +976,11 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
             return ""
 
         if prefix:
-            demisto.debug(f"field is User and Prefix - {field}")
             if field in USER_RELATED_FIELDS:
                 add_backslash = True
             replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash)
 
         elif field in USER_RELATED_FIELDS:
-            demisto.debug(f"field is User - {field}")
             # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
             # the backslash by using the double-slash ( \\ ) string
             replacement = replacement.replace('\\', '\\\\')
