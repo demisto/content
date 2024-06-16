@@ -1,0 +1,25 @@
+{
+    "name": "ISO 27001 Compliance",
+    "description": "Ensure your organization is following ISO 27001 guidelines with the relevant dashboard and report evidence.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "compliance"
+    ],
+    "modules": [
+        "compliance"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
