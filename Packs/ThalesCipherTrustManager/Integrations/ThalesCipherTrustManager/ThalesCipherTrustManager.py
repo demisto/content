@@ -127,6 +127,22 @@ LOCAL_CA_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name', 'subject': 'Subject', 'ser
                                       'createdAt': 'Created',
                                       'sha1Fingerprint': 'Fingerprint'}
 
+CERTIFICATE_LIST_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'ca', 'revoked_reason',
+                         'revoked_at', 'state', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint', 'serialNumber',
+                         'subject', 'issuer', 'notBefore', 'notAfter']
+
+EXTERNAL_CA_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'serialNumber', 'subject', 'issuer',
+                    'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+
+EXTERNAL_CA_LIST_KEYS = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
+                         'purpose_client_authentication', 'purpose_user_authentication']
+EXTERNAL_CA_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name', 'subject': 'Subject', 'serialNumber': 'Serial #',
+                                         'notBefore': 'Activation',
+                                         'notAfter': 'Expiration',
+                                         'purpose_client_authentication': 'Client Auth',
+                                         'purpose_user_authentication': 'User Auth',
+                                         }
+
 '''CLIENT CLASS'''
 
 
@@ -687,6 +703,29 @@ def hr_local_ca(raw_response: dict[str, Any]) -> str:
     return ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys, keys_headers_mapping={}, keys_value_mapping={})
 
 
+def hr_external_ca_list(raw_response: dict[str, Any]) -> str:
+    """
+    Create a human-readable string for a list of external CAs.
+    Args:
+        raw_response: The raw response.
+    Returns:
+        The human-readable string.
+    """
+    keys_value_mapping = {'notBefore': date_to_markdown,
+                          'notAfter': date_to_markdown,
+                          'purpose_user_authentication': lambda x: 'Enabled' if x else 'Disabled',
+                          'purpose_client_authentication': lambda x: 'Enabled' if x else 'Disabled'}
+    for ca in raw_response.get('resources', []):
+        ca_copy = ca.copy()
+        if purpose := ca_copy.pop('purpose', {}):
+            ca_copy['purpose_user_authentication'] = purpose.get('user_authentication')
+            ca_copy['purpose_client_authentication'] = purpose.get('client_authentication')
+    return ciphertrust_table_to_markdown('External Certificate Authorities', data=raw_response,
+                                         keys=EXTERNAL_CA_LIST_KEYS,
+                                         keys_headers_mapping=EXTERNAL_CA_LIST_KEYS_HEADERS_MAPPING,
+                                         keys_value_mapping=keys_value_mapping)
+
+
 def hr_local_ca_list(raw_response: dict[str, Any]) -> str:
     """
     Create a human-readable string for a list of local CAs.
@@ -704,15 +743,16 @@ def hr_local_ca_list(raw_response: dict[str, Any]) -> str:
 
     active_cas, pending_cas, expired_cas = [], [], []
     for ca in raw_response.get('resources', []):
-        if purpose := ca.pop('purpose', {}):
-            ca['purpose_user_authentication'] = purpose.get('user_authentication')
-            ca['purpose_client_authentication'] = purpose.get('client_authentication')
-        if ca.get('state') == 'active':
-            active_cas.append(ca)
-        elif ca.get('state') == 'pending':
-            pending_cas.append(ca)
-        elif ca.get('state') == 'expired':
-            expired_cas.append(ca)
+        ca_copy = ca.copy()
+        if purpose := ca_copy.pop('purpose', {}):
+            ca_copy['purpose_user_authentication'] = purpose.get('user_authentication')
+            ca_copy['purpose_client_authentication'] = purpose.get('client_authentication')
+        if ca_copy.get('state') == 'active':
+            active_cas.append(ca_copy)
+        elif ca_copy.get('state') == 'pending':
+            pending_cas.append(ca_copy)
+        elif ca_copy.get('state') == 'expired':
+            expired_cas.append(ca_copy)
 
     hr_title = '### Local Certificate Authorities \n'
     hr_skip_limit_title = hr_skip_limit_to_markdown(raw_response.get('skip', 0), raw_response.get('limit', 0),
@@ -1138,12 +1178,16 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
                                                 params=params)
     outputs = [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
                raw_response.get('resources', [])]
+
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=tableToMarkdown('certificates',
-                                        raw_response.get('resources')),
+        readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
+                                                      data=raw_response,
+                                                      keys=CERTIFICATE_LIST_KEYS,
+                                                      keys_headers_mapping={},
+                                                      keys_value_mapping={}),
     )
 
 
@@ -1231,14 +1275,17 @@ def external_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) 
 def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if external_ca_id := args.get(EXTERNAL_CA_ID):
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
-        outputs_single_ca, cert = remove_key_from_outputs(raw_response, 'cert')
+        outputs, cert = remove_key_from_outputs(raw_response, 'cert')
         return_file_results(cert, 'Certificate.pem')
         return CommandResults(
             outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
-            outputs=outputs_single_ca,
+            outputs=outputs,
             raw_response=raw_response,
-            readable_output=tableToMarkdown('external certificates',
-                                            outputs_single_ca),
+            readable_output=ciphertrust_table_to_markdown(raw_response.get('subject', ''),
+                                                          data=raw_response,
+                                                          keys=EXTERNAL_CA_KEYS,
+                                                          keys_headers_mapping={},
+                                                          keys_value_mapping={}),
         )
 
     skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
@@ -1255,14 +1302,12 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
 
     raw_response = client.get_external_ca_list(params=params)
 
-    outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0] for external_ca_entry in
-               raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
-        outputs=outputs,
+        outputs=[remove_key_from_outputs(external_ca_entry, ['cert'])[0]
+                 for external_ca_entry in raw_response.get('resources', [])],
         raw_response=raw_response,
-        readable_output=tableToMarkdown('external certificates',
-                                        outputs),
+        readable_output=hr_external_ca_list(raw_response),
     )
 
 
@@ -1313,7 +1358,6 @@ def main():
 
     server_url = params.get('server_url')
 
-    # todo: pass credentials to the client without opening them up
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
