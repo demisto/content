@@ -61,11 +61,18 @@ configuration:
   required: false
   type: 0
   section: Collect
+- display: Enable admin audits events
+  defaultvalue: 'true'
+  name: enable_admin_audits
+  required: false
+  type: 8
+  advanced: true
+  section: Connect
 - display: Policy Audit Events
   additionalinfo: A comma-separated list of policy audits event type to fetch
   name: policy_audits_event_type
   required: false
-  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  defaultvalue: 'AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock'
   type: 16
   options:
   - AttackAttempt
@@ -88,7 +95,7 @@ configuration:
   additionalinfo: A comma-separated list of detailed events event type to fetch
   name: raw_events_event_type
   required: false
-  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  defaultvalue: 'AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock'
   type: 16
   options:
   - AttackAttempt
