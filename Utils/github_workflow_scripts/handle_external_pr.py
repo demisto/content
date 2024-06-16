@@ -255,7 +255,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def check_if_pack_or_integration_is_feed(content_object: dict) -> bool:
+def check_if_item_is_tim(content_object: dict) -> bool:
     """
     Checks whether a given object (graph object) is a feed or related to TIM
 
@@ -264,14 +264,11 @@ def check_if_pack_or_integration_is_feed(content_object: dict) -> bool:
 
     Returns: `bool` whether the content object is a feed or has the relevant tags/categories
     """
-    print(f'check_if_pack_or_integration_is_feed - content object {content_object}')
     if isinstance(content_object, Integration):
-        print(f'check_if_pack_or_integration_is_feed - content object {content_object}')
         if content_object.is_feed:
             return True
     try:
         pack = content_object.in_pack  # type: ignore
-        print(f' check_if_pack_or_integration_is_feed the pack is: {pack} ')
         tags = pack.tags
         categories = pack.categories
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
@@ -337,7 +334,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
-                is_tim_needed = check_if_pack_or_integration_is_feed(content_object)
+                is_tim_needed = is_tim_content(content_object)
                 if is_tim_needed:
                     return True
     except Exception as er:
@@ -360,6 +357,7 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
 
     Returns: returns True or False if tim reviewer needed
     """
+    is_tim = False
     for file in pr_files:
         if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
             continue
@@ -367,9 +365,11 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
         if not content_object:
             # This means we were not able to find the file in content repo, and the contribution is new
             print(f'for file {file}, the pack doesn\'t exist in Master and going to be searched in the remote branch')
-            return check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-        return check_if_pack_or_integration_is_feed(content_object)
-    return False
+            is_tim = check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
+            break
+        else:
+            is_tim = check_if_item_is_tim(content_object)
+    return is_tim
 
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
