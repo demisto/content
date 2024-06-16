@@ -1273,6 +1273,7 @@ class MsClient:
         Returns:
             dict: Machines info
         """
+        demisto.debug(f'current request is: api/machines/findbyip{filter_req}')
         cmd_url = 'api/machines/findbyip'+filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         
@@ -5149,8 +5150,10 @@ def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResul
     machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
     machines_response = machines_response.get('value', [])
     
+    demisto.debug(f'limit is set to: {limit}')
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
 
+    demisto.debug('Colling handle_machines function to convert raw response to CommandResults list')
     return handle_machines(limited_machines_response)
 
 
